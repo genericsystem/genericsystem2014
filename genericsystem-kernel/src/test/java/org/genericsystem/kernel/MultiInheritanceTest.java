@@ -3,7 +3,7 @@ package org.genericsystem.kernel;
 import org.testng.annotations.Test;
 
 @Test
-public class MultiInheritance extends AbstractTest {
+public class MultiInheritanceTest extends AbstractTest {
 
 	public void multiInheritanceWithDiamond() {
 		Vertex engine = new Engine();

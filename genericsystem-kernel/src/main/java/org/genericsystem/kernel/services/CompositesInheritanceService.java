@@ -12,7 +12,7 @@ import org.genericsystem.kernel.iterator.AbstractConcateIterator;
 import org.genericsystem.kernel.iterator.AbstractConcateIterator.ConcateIterator;
 import org.genericsystem.kernel.iterator.SingletonIterator;
 
-public interface ComponentsInheritanceService {
+public interface CompositesInheritanceService {
 
 	default Snapshot<Vertex> getAttributes(Vertex attribute) {
 		return getInheritings(attribute, 1);
@@ -45,10 +45,10 @@ public interface ComponentsInheritanceService {
 			private final Vertex origin;
 			private final int level;
 
-			public Forbidden(Vertex vertex, Vertex origin, int level) {
+			public Forbidden(Vertex origin, int level) {
 				this.origin = origin;
 				this.level = level;
-				inheritings = new InheritingsSameBase((Vertex) ComponentsInheritanceService.this);
+				inheritings = new InheritingsSameBase((Vertex) CompositesInheritanceService.this);
 			}
 
 			private Iterator<Vertex> inheritanceIterator() {
@@ -81,9 +81,13 @@ public interface ComponentsInheritanceService {
 					return new AbstractConcateIterator<Vertex, Vertex>(supersIterator) {
 						@Override
 						protected Iterator<Vertex> getIterator(final Vertex superVertex) {
-							return ((Vertex) ComponentsInheritanceService.this).equals(base) ? new InheritingsSameBase(superVertex).inheritanceIterator() : new Inheritings(superVertex).inheritanceIterator();
+							return getInheritanceIterator(superVertex);
 						}
 					};
+				}
+
+				private Iterator<Vertex> getInheritanceIterator(Vertex superVertex) {
+					return ((Vertex) CompositesInheritanceService.this).equals(base) ? new InheritingsSameBase(superVertex).inheritanceIterator() : new Inheritings(superVertex).inheritanceIterator();
 				}
 
 				protected Iterator<Vertex> projectIterator(Iterator<Vertex> iteratorToProject) {
@@ -91,15 +95,21 @@ public interface ComponentsInheritanceService {
 						@Override
 						protected Iterator<Vertex> getIterator(final Vertex holder) {
 							Iterator<Vertex> indexIterator = holder.getLevel() < level ? new ConcateIterator<>(base.getMetaComposites(holder).iterator(), base.getSuperComposites(holder).iterator()) : base.getSuperComposites(holder).iterator();
-							if (indexIterator.hasNext())
+							if (indexIterator.hasNext()) {
 								add(holder);
-							return internalProjectIterator(indexIterator, holder);
+								return nextProjectIterator(indexIterator, holder);
+							}
+							return endProjectIterator(indexIterator, holder);
 						}
 					};
 				}
 
-				protected Iterator<Vertex> internalProjectIterator(Iterator<Vertex> indexIterator, Vertex holder) {
-					return indexIterator.hasNext() ? new ConcateIterator<Vertex>(new SingletonIterator<Vertex>(holder), projectIterator(indexIterator)) : new SingletonIterator<Vertex>(holder);
+				protected Iterator<Vertex> nextProjectIterator(Iterator<Vertex> indexIterator, Vertex holder) {
+					return new ConcateIterator<Vertex>(new SingletonIterator<Vertex>(holder), projectIterator(indexIterator));
+				}
+
+				protected Iterator<Vertex> endProjectIterator(Iterator<Vertex> indexIterator, Vertex holder) {
+					return new SingletonIterator<Vertex>(holder);
 				}
 			}
 
@@ -110,12 +120,17 @@ public interface ComponentsInheritanceService {
 				}
 
 				@Override
-				protected Iterator<Vertex> internalProjectIterator(Iterator<Vertex> indexIterator, Vertex holder) {
-					return indexIterator.hasNext() ? projectIterator(indexIterator) : (holder.getLevel() == level && !contains(holder) ? new SingletonIterator<Vertex>(holder) : Collections.emptyIterator());
+				protected Iterator<Vertex> nextProjectIterator(Iterator<Vertex> indexIterator, Vertex holder) {
+					return projectIterator(indexIterator);
+				}
+
+				@Override
+				protected Iterator<Vertex> endProjectIterator(Iterator<Vertex> indexIterator, Vertex holder) {
+					return holder.getLevel() == level && !contains(holder) ? new SingletonIterator<Vertex>(holder) : Collections.emptyIterator();
 				}
 
 			}
 		}
-		return new Forbidden((Vertex) ComponentsInheritanceService.this, origin, level).inheritanceIterator();
+		return new Forbidden(origin, level).inheritanceIterator();
 	}
 }
