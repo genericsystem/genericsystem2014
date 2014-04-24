@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 import org.genericsystem.kernel.Engine.ValueCache;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.BindingService;
-import org.genericsystem.kernel.services.CompositesInheritanceService;
+import org.genericsystem.kernel.services.ComponentsInheritanceService;
 import org.genericsystem.kernel.services.DependenciesService;
 import org.genericsystem.kernel.services.DisplayService;
 import org.genericsystem.kernel.services.FactoryService;
@@ -16,16 +16,17 @@ import org.genericsystem.kernel.services.SystemPropertiesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Vertex implements AncestorsService, DependenciesService, InheritanceService, BindingService, CompositesInheritanceService, FactoryService, DisplayService, SystemPropertiesService {
+public class Vertex implements AncestorsService, DependenciesService, InheritanceService, BindingService, ComponentsInheritanceService, FactoryService, DisplayService, SystemPropertiesService {
 
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 
 	private final Serializable value;
 	private final Vertex meta;
 	private final Vertex[] components;
-	private final Dependencies instances;
-	private final Dependencies inheritings;
-	private final Dependencies composites;
+	private final Dependencies<Vertex> instances;
+	private final Dependencies<Vertex> inheritings;
+	private final CompositesDependencies<Vertex> metaComposites;
+	private final CompositesDependencies<Vertex> superComposites;
 	private final Vertex[] supers;
 
 	// Engine constructor
@@ -37,7 +38,8 @@ public class Vertex implements AncestorsService, DependenciesService, Inheritanc
 		components = Statics.EMPTY_VERTICES;
 		instances = getFactory().buildDependency(this);
 		inheritings = getFactory().buildDependency(this);
-		composites = getFactory().buildDependency(this);
+		metaComposites = getFactory().buildComponentDependency(this);
+		superComposites = getFactory().buildComponentDependency(this);
 		supers = Statics.EMPTY_VERTICES;
 	}
 
@@ -47,7 +49,8 @@ public class Vertex implements AncestorsService, DependenciesService, Inheritanc
 		this.components = components;
 		instances = getFactory().buildDependency(this);
 		inheritings = getFactory().buildDependency(this);
-		composites = getFactory().buildDependency(this);
+		metaComposites = getFactory().buildComponentDependency(this);
+		superComposites = getFactory().buildComponentDependency(this);
 		supers = getSupers(overrides);
 		checkOverrides(overrides);
 		checkSupers();
@@ -69,33 +72,44 @@ public class Vertex implements AncestorsService, DependenciesService, Inheritanc
 	}
 
 	@Override
-	public Dependencies getInstances() {
+	public Dependencies<Vertex> getInstances() {
 		return instances;
 	}
 
 	@Override
-	public Dependencies getInheritings() {
+	public Dependencies<Vertex> getInheritings() {
 		return inheritings;
 	}
 
 	@Override
-	public CompositesDependencies getComposites() {
-		return composites;
-	}
-
-	@Override
 	public Snapshot<Vertex> getMetaComposites(Vertex meta) {
-		return getComposites().filter(composite -> composite.getMeta().equals(meta));
+		return metaComposites.getByIndex(meta);
 	}
 
 	@Override
 	public Snapshot<Vertex> getSuperComposites(Vertex superVertex) {
-		return getComposites().filter(composite -> composite.getSupersStream().anyMatch(next -> next.equals(superVertex)));
+		return superComposites.getByIndex(superVertex);
+	}
+
+	@Override
+	public CompositesDependencies<Vertex> getMetaComposites() {
+		return metaComposites;
+	}
+
+	@Override
+	public CompositesDependencies<Vertex> getSuperComposites() {
+		return superComposites;
 	}
 
 	@Override
 	public Stream<Vertex> getSupersStream() {
-		return Arrays.stream(supers);
+		return Arrays.stream(supers);default boolean contains(Object o) {
+			Iterator<T> it = iterator();
+			while (it.hasNext())
+				if (o.equals(it.next()))
+					return true;
+			return false;
+		}
 	}
 
 	@Override
