@@ -1,7 +1,7 @@
 package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
-
+import java.util.Arrays;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
 
@@ -23,7 +23,14 @@ public interface BindingService extends AncestorsService, FactoryService {
 		return getFactory().buildVertex((Vertex) this, overrides, value, components).plug(false);
 	}
 
-	default Vertex getInstance(/* Vertex[] supers, */Serializable value, Vertex... components) {
+	default Vertex getInstance(Serializable value, Vertex... components) {
 		return getFactory().buildVertex((Vertex) this, Statics.EMPTY_VERTICES, value, components).getPlugged();
+	}
+
+	default Vertex getInstance(Vertex[] supers, Serializable value, Vertex... components) {
+		Vertex result = getInstance(value, components);
+		if (result != null && Arrays.stream(supers).allMatch(superVertex -> result.inheritsFrom(result)))
+			return result;
+		return null;
 	}
 }

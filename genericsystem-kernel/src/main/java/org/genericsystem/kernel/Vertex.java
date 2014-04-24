@@ -4,12 +4,12 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Engine.ValueCache;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.BindingService;
 import org.genericsystem.kernel.services.ComponentsInheritanceService;
 import org.genericsystem.kernel.services.DependenciesService;
+import org.genericsystem.kernel.services.DisplayService;
 import org.genericsystem.kernel.services.FactoryService;
 import org.genericsystem.kernel.services.InheritanceService;
 import org.genericsystem.kernel.services.SystemPropertiesService;
@@ -27,10 +27,6 @@ public class Vertex implements AncestorsService, DependenciesService, Inheritanc
 	private final Dependencies inheritings;
 	private final Dependencies composites;
 	private final Vertex[] supers;
-
-	private Vertex(Vertex meta, Serializable value, Vertex[] components) {
-		this(meta, Statics.EMPTY_VERTICES, value, components);
-	}
 
 	// Engine constructor
 	protected Vertex(Factory factory) {

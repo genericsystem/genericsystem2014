@@ -1,9 +1,7 @@
-package org.genericsystem.kernel;
+package org.genericsystem.kernel.services;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
-
-import org.genericsystem.kernel.services.AncestorsService;
 
 public interface DisplayService extends AncestorsService {
 
