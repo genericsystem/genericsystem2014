@@ -1,0 +1,206 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.genericsystem</groupId>
+	<artifactId>genericsystem2014</artifactId>
+	<version>3.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>Generic System</name>
+
+	<properties>
+		<!-- <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> -->
+		<java.version>1.8</java.version>
+
+		<maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
+		<maven-eclipse-plugin.version>2.9</maven-eclipse-plugin.version>
+		<!-- <cargo-maven2-plugin.version>1.2.1</cargo-maven2-plugin.version> -->
+		<!-- <wildfly-maven-plugin.version>1.0.1.Final</wildfly-maven-plugin.version> -->
+		<maven-surefire-plugin.version>2.9</maven-surefire-plugin.version>
+		<maven-javadoc-plugin.version>2.9.1</maven-javadoc-plugin.version>
+		<wagon-ftp.version>1.0-beta-6</wagon-ftp.version>
+
+		<!-- <jsf.version>2.1.19</jsf.version> -->
+		<!-- <jstl.version>1.2</jstl.version> -->
+
+		<!-- <org.richfaces.bom.version>4.3.2.Final</org.richfaces.bom.version> -->
+
+		<!-- <weld.core.version>2.1.2.Final</weld.core.version> -->
+
+		<!-- <arquillian.version>1.1.4.Final</arquillian.version> -->
+
+		<!-- <seam.version>3.1.0.Final</seam.version> -->
+		<!-- <juel.version>2.2.5</juel.version> -->
+		<!-- <deltaspike.version>0.6</deltaspike.version> -->
+
+		<!-- <jboss-ejb3-api.version>3.1.0</jboss-ejb3-api.version> -->
+
+		<testng.version>6.8.1</testng.version>
+		<slf4j.version>1.7.2</slf4j.version>
+		<javassist.version>3.12.1.GA</javassist.version>
+	</properties>
+
+	<modules>
+		<module>genericsystem-api</module>
+		<module>genericsystem-impl</module>
+		<!-- <module>genericsystem-cdi</module> -->
+		<!-- <module>genericsystem-file</module> -->
+		<!-- <module>genericsystem-example</module> -->
+		<!-- <module>genericsystem-jsf</module> -->
+		<!-- <module>genericsystem-jsf-resolver</module> -->
+		<!-- <module>genericsystem-framework</module> -->
+		<!-- <module>genericsystem-security</module> -->
+		<!-- <module>genericsystem-jsf-example</module> -->
+		<!-- <module>genericsystem-myadmin</module> -->
+		<!-- <module>genericsystem-tracker</module> -->
+	</modules>
+
+	<distributionManagement>
+		<repository>
+			<id>ftp-repository</id>
+			<url>ftp://genericsystem.org/home/middleware/repository/</url>
+		</repository>
+	</distributionManagement>
+
+	<build>
+		<finalName>${project.artifactId}</finalName>
+		<extensions>
+			<!-- Enabling the use of FTP -->
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ftp</artifactId>
+				<version>${wagon-ftp.version}</version>
+			</extension>
+		</extensions>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.version}</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>${maven-eclipse-plugin.version}</version>
+				<configuration>
+					<downloadSources>true</downloadSources>
+					<downloadJavadocs>true</downloadJavadocs>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${maven-surefire-plugin.version}</version>
+				<configuration>
+					<reportsDirectory>target/surefire-reports/</reportsDirectory>
+					<argLine>-Xmx512m</argLine>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<repositories>
+		<repository>
+			<id>jboss-nexus</id>
+			<name>JBoss (Nexus) Stable Repository</name>
+			<url>https://repository.jboss.org/nexus/content/groups/public-jboss</url>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+			</snapshots>
+		</repository>
+
+		<repository>
+			<id>jboss-nexus-snapshots</id>
+			<name>JBoss (Nexus) Snapshots Repository</name>
+			<url>https://repository.jboss.org/nexus/content/repositories/snapshots</url>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+			</snapshots>
+		</repository>
+
+		<repository>
+			<id>maven2-repository.dev.java.net</id>
+			<name>Java .net</name>
+			<url>http://download.java.net/maven/2</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+			</releases>
+		</repository>
+
+		<repository>
+			<id>glassfish</id>
+			<name>Glassfish</name>
+			<url>http://download.java.net/maven/glassfish</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+			</releases>
+		</repository>
+
+		<repository>
+			<id>maven.atlassian</id>
+			<name>maven.atlassian</name>
+			<url>http://maven.atlassian.com/repository/public</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+			</releases>
+		</repository>
+
+		<repository>
+			<id>java.net2</id>
+			<name>Repository hosting the jee6 artifacts</name>
+			<url>http://download.java.net/maven/2</url>
+		</repository>
+
+		<repository>
+			<url>http://download.java.net/maven/2/</url>
+			<id>jsf20</id>
+			<layout>default</layout>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+			</releases>
+		</repository>
+
+	</repositories>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.testng</groupId>
+				<artifactId>testng</artifactId>
+				<version>${testng.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+</project>
