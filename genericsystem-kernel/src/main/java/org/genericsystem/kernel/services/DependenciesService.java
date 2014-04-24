@@ -1,6 +1,7 @@
 package org.genericsystem.kernel.services;
 
 import java.util.Arrays;
+import java.util.Map.Entry;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Snapshot.AbstractSnapshot;
 import org.genericsystem.kernel.Vertex;
@@ -25,19 +26,29 @@ public interface DependenciesService extends AncestorsService, FactoryService {
 		}
 	}
 
+	public static abstract class CompositesDependencies extends AbstractSnapshot<Entry<Vertex, Dependencies>> {
+
+		abstract protected boolean remove(Vertex vertex);
+
+		abstract protected void add(Vertex vertex);
+
+		public Vertex set(Vertex vertex) {
+			Vertex result = get(vertex);
+			if (result == null) {
+				add(vertex);
+				return vertex;
+			}
+			return result;
+		}
+	}
+
 	Dependencies getInstances();
 
 	Dependencies getInheritings();
 
-	Dependencies getComposites();
+	default Snapshot<Vertex> getMetaComposites(Vertex meta);
 
-	default Snapshot<Vertex> getMetaComposites(Vertex meta) {
-		return getComposites().filter(composite -> composite.getMeta().equals(meta));
-	}
-
-	default Snapshot<Vertex> getSuperComposites(Vertex superVertex) {
-		return getComposites().filter(composite -> composite.getSupersStream().anyMatch(next -> next.equals(superVertex)));
-	}
+	Snapshot<Vertex> getSuperComposites(Vertex superVertex);
 
 	default boolean isPlugged() throws NotFoundException {
 		return this == getPlugged();

@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 import org.genericsystem.kernel.Engine.ValueCache;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.BindingService;
-import org.genericsystem.kernel.services.ComponentsInheritanceService;
+import org.genericsystem.kernel.services.CompositesInheritanceService;
 import org.genericsystem.kernel.services.DependenciesService;
 import org.genericsystem.kernel.services.DisplayService;
 import org.genericsystem.kernel.services.FactoryService;
@@ -16,7 +16,7 @@ import org.genericsystem.kernel.services.SystemPropertiesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Vertex implements AncestorsService, DependenciesService, InheritanceService, BindingService, ComponentsInheritanceService, FactoryService, DisplayService, SystemPropertiesService {
+public class Vertex implements AncestorsService, DependenciesService, InheritanceService, BindingService, CompositesInheritanceService, FactoryService, DisplayService, SystemPropertiesService {
 
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 
@@ -79,8 +79,18 @@ public class Vertex implements AncestorsService, DependenciesService, Inheritanc
 	}
 
 	@Override
-	public Dependencies getComposites() {
+	public CompositesDependencies getComposites() {
 		return composites;
+	}
+
+	@Override
+	public Snapshot<Vertex> getMetaComposites(Vertex meta) {
+		return getComposites().filter(composite -> composite.getMeta().equals(meta));
+	}
+
+	@Override
+	public Snapshot<Vertex> getSuperComposites(Vertex superVertex) {
+		return getComposites().filter(composite -> composite.getSupersStream().anyMatch(next -> next.equals(superVertex)));
 	}
 
 	@Override
