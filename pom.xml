@@ -42,8 +42,7 @@
 	</properties>
 
 	<modules>
-		<module>genericsystem-api</module>
-		<module>genericsystem-impl</module>
+		<module>genericsystem-kernel</module>
 		<!-- <module>genericsystem-cdi</module> -->
 		<!-- <module>genericsystem-file</module> -->
 		<!-- <module>genericsystem-example</module> -->
