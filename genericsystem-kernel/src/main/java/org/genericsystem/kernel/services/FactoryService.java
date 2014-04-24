@@ -3,13 +3,16 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import org.genericsystem.kernel.DependenciesImpl;
 import org.genericsystem.kernel.Vertex;
-import org.genericsystem.kernel.services.DependenciesService.Dependencies;
 
-public interface FactoryService extends AncestorsService {
+public interface FactoryService extends AncestorsService, DependenciesService {
 
 	public static interface Factory {
-		default Dependencies buildDependency(Vertex vertex) {
-			return new DependenciesImpl();
+		default <T> Dependencies<T> buildDependency(Vertex vertex) {
+			return new DependenciesImpl<T>();
+		}
+
+		default CompositesDependencies<Vertex> buildComponentDependency(Vertex vertex) {
+			return new CompositesDependencies<Vertex>();
 		}
 
 		default Vertex buildVertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {

@@ -1,20 +1,19 @@
 package org.genericsystem.kernel;
 
 import java.util.Iterator;
-
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 import org.genericsystem.kernel.services.DependenciesService.Dependencies;
 
-public class DependenciesImpl extends Dependencies {
+public class DependenciesImpl<T> extends Dependencies<T> {
 
-	private Node head = null;
-	private Node tail = null;
+	private Node<T> head = null;
+	private Node<T> tail = null;
 
 	@Override
-	protected void add(Vertex element) {
+	protected void add(T element) {
 		assert !this.contains(element);
 		assert element != null;
-		Node newNode = new Node(element);
+		Node<T> newNode = new Node<T>(element);
 		if (head == null)
 			head = newNode;
 		else
@@ -23,8 +22,8 @@ public class DependenciesImpl extends Dependencies {
 	}
 
 	@Override
-	protected boolean remove(Vertex element) {
-		Iterator<Vertex> iterator = iterator();
+	protected boolean remove(T element) {
+		Iterator<T> iterator = iterator();
 		while (iterator.hasNext())
 			if (element.equals(iterator.next())) {
 				iterator.remove();
@@ -39,13 +38,13 @@ public class DependenciesImpl extends Dependencies {
 	}
 
 	@Override
-	public Iterator<Vertex> iterator() {
+	public Iterator<T> iterator() {
 		return new InternalIterator();
 	}
 
-	private class InternalIterator extends AbstractGeneralAwareIterator<Node, Vertex> implements Iterator<Vertex> {
+	private class InternalIterator extends AbstractGeneralAwareIterator<Node<T>, T> implements Iterator<T> {
 
-		private Node last;
+		private Node<T> last;
 
 		@Override
 		protected void advance() {
@@ -54,7 +53,7 @@ public class DependenciesImpl extends Dependencies {
 		}
 
 		@Override
-		public Vertex project() {
+		public T project() {
 			return next.content;
 		}
 
@@ -72,11 +71,11 @@ public class DependenciesImpl extends Dependencies {
 		}
 	}
 
-	private static class Node {
-		final Vertex content;
-		Node next;
+	private static class Node<T> {
+		final T content;
+		Node<T> next;
 
-		private Node(Vertex content) {
+		private Node(T content) {
 			this.content = content;
 		}
 	}

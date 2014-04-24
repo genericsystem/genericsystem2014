@@ -1,7 +1,6 @@
 package org.genericsystem.kernel;
 
 import java.util.Arrays;
-
 import org.testng.annotations.Test;
 
 @Test
@@ -30,12 +29,11 @@ public class VertexTest extends AbstractTest {
 		assert engine.getInstances().containsAll(Arrays.asList(vehicle, car));
 		assert car.getInstances().contains(myBmw) : car.getInstances() + car.info();
 		assert power.getInstances().contains(v233);
-		assert car.getComposites().contains(power);
+		assert car.getMetaComposites(power.getMeta()).contains(power);
 		assert car.getSupersStream().findFirst().get() == vehicle : car.getSupersStream().findFirst().get().info();
 		assert car.getSupersStream().anyMatch(vehicle::equals);
 		assert vehicle.getInheritings().contains(car);
-		assert car.getComposites().contains(power);
-		assert myBmw.getComposites().contains(v233);
+		assert myBmw.getMetaComposites().contains(v233);
 		assert myBmw.isInstanceOf(car);
 		assert myBmw.isInstanceOf(vehicle);
 		assert !myBmw.isInstanceOf(engine);

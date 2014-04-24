@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -92,6 +93,16 @@ public interface Snapshot<T> extends Iterable<T> {
 	}
 
 	public static abstract class AbstractSnapshot<T> implements Snapshot<T> {
+
+		public static <T> Snapshot<T> emptySnapshot() {
+			return new AbstractSnapshot<T>() {
+				@Override
+				public Iterator<T> iterator() {
+					return Collections.emptyIterator();
+				}
+			};
+		}
+
 		@Override
 		public String toString() {
 			Iterator<T> it = iterator();
