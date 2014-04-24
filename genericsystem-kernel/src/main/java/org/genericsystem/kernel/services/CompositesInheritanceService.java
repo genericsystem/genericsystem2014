@@ -80,14 +80,14 @@ public interface CompositesInheritanceService {
 
 					return new AbstractConcateIterator<Vertex, Vertex>(supersIterator) {
 						@Override
-						protected Iterator<Vertex> getIterator(final Vertex superVertex) {
-							return getInheritanceIterator(superVertex);
+						protected Iterator<Vertex> getIterator(Vertex superVertex) {
+							return buildInheritings(superVertex).inheritanceIterator();
 						}
 					};
 				}
 
-				private Iterator<Vertex> getInheritanceIterator(Vertex superVertex) {
-					return ((Vertex) CompositesInheritanceService.this).equals(base) ? new InheritingsSameBase(superVertex).inheritanceIterator() : new Inheritings(superVertex).inheritanceIterator();
+				private Inheritings buildInheritings(Vertex superVertex) {
+					return ((Vertex) CompositesInheritanceService.this).equals(base) ? new InheritingsSameBase(superVertex) : new Inheritings(superVertex);
 				}
 
 				protected Iterator<Vertex> projectIterator(Iterator<Vertex> iteratorToProject) {
