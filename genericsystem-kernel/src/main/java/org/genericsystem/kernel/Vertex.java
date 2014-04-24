@@ -103,13 +103,7 @@ public class Vertex implements AncestorsService, DependenciesService, Inheritanc
 
 	@Override
 	public Stream<Vertex> getSupersStream() {
-		return Arrays.stream(supers);default boolean contains(Object o) {
-			Iterator<T> it = iterator();
-			while (it.hasNext())
-				if (o.equals(it.next()))
-					return true;
-			return false;
-		}
+		return Arrays.stream(supers);
 	}
 
 	@Override
