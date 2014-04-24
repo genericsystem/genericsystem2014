@@ -1,7 +1,6 @@
 package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
-
 import org.genericsystem.kernel.DependenciesImpl;
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.services.DependenciesService.Dependencies;
@@ -14,8 +13,7 @@ public interface FactoryService extends AncestorsService {
 		}
 
 		default Vertex buildVertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
-			return new DefaultVertex(meta, overrides, value, components) {
-			};
+			return new DefaultVertex(meta, overrides, value, components) {};
 		}
 	}
 

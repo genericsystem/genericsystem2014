@@ -3,8 +3,8 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Iterator;
-
 import org.genericsystem.kernel.Snapshot;
+import org.genericsystem.kernel.Snapshot.AbstractSnapshot;
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.iterator.AbstractConcateIterator;
 import org.genericsystem.kernel.iterator.SingletonIterator;
@@ -24,7 +24,7 @@ public interface ComponentsInheritanceService {
 	}
 
 	default Snapshot<Vertex> getInheritings(final Vertex origin, final int level) {
-		return new Snapshot<Vertex>() {
+		return new AbstractSnapshot<Vertex>() {
 			@Override
 			public Iterator<Vertex> iterator() {
 				return inheritingsIterator(origin, level);
@@ -60,12 +60,12 @@ public interface ComponentsInheritanceService {
 				if (!supersIterator.hasNext())
 					return (base.isEngine() || !origin.isAttributeOf(base.getMeta())) ? new SingletonIterator<Vertex>(origin) : new Inheritings(base.getMeta(), origin, level).inheritanceIterator();
 
-				return new AbstractConcateIterator<Vertex, Vertex>(supersIterator) {
-					@Override
-					protected Iterator<Vertex> getIterator(final Vertex superVertex) {
-						return new Inheritings(superVertex, origin, level).inheritanceIterator();
-					}
-				};
+					return new AbstractConcateIterator<Vertex, Vertex>(supersIterator) {
+						@Override
+						protected Iterator<Vertex> getIterator(final Vertex superVertex) {
+							return new Inheritings(superVertex, origin, level).inheritanceIterator();
+						}
+					};
 			}
 
 			private Iterator<Vertex> projectIterator(Iterator<Vertex> iteratorToProject) {

@@ -1,15 +1,15 @@
 package org.genericsystem.kernel.services;
 
 import java.util.Arrays;
-
 import org.genericsystem.kernel.Snapshot;
+import org.genericsystem.kernel.Snapshot.AbstractSnapshot;
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.exceptions.ExistException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 
 public interface DependenciesService extends AncestorsService, FactoryService {
 
-	public abstract static class Dependencies extends Snapshot<Vertex> {
+	public static abstract class Dependencies extends AbstractSnapshot<Vertex> {
 
 		abstract protected boolean remove(Vertex vertex);
 
