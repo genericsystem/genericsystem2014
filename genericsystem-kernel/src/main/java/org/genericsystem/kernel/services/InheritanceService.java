@@ -24,7 +24,7 @@ public interface InheritanceService extends AncestorsService {
 			return false;
 		if (!componentsDepends(subMeta, subComponents, superComponents))
 			return false;
-		return subMeta.isPropertyConstraint() || Objects.equals(subValue, superValue);
+		return subMeta.isPropertyConstraintEnabled() || Objects.equals(subValue, superValue);
 	}
 
 	static boolean componentsDepends(Vertex subMeta, Vertex[] subComponents, Vertex[] superComponents) {
@@ -34,7 +34,7 @@ public interface InheritanceService extends AncestorsService {
 			for (; subIndex < subComponents.length; subIndex++) {
 				Vertex subComponent = subComponents[subIndex];
 				if (subComponent.inheritsFrom(superComponent) || subComponent.isInstanceOf(superComponent)) {
-					if (subMeta.isSingularConstraint(subIndex))
+					if (subMeta.isSingularConstraintEnabled(subIndex))
 						return true;
 					subIndex++;
 					continue loop;

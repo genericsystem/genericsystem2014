@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Engine;
 import org.genericsystem.kernel.Vertex;
 
@@ -47,6 +46,7 @@ public interface AncestorsService {
 			return true;
 		if (getLevel() != superVertex.getLevel())
 			return false;
+		// stream could be parallel here ??
 		return getSupersStream().anyMatch(vertex -> vertex.inheritsFrom(superVertex));
 	}
 
@@ -56,6 +56,16 @@ public interface AncestorsService {
 
 	default boolean isAttributeOf(Vertex vertex) {
 		return isEngine() || Arrays.asList(getComponents()).stream().anyMatch(component -> vertex.inheritsFrom(component) || vertex.isInstanceOf(component));
+	}
+
+	default boolean isAncestorOf(final Vertex dependency) {
+		if (dependency.inheritsFrom((Vertex) this))
+			return true;
+		for (Vertex component : dependency.getComponents())
+			if (!dependency.equals(component))
+				if (isAncestorOf(component))
+					return true;
+		return false;
 	}
 
 	default boolean equals(Vertex meta, Serializable value, Vertex... components) {

@@ -33,4 +33,59 @@ public interface BindingService extends AncestorsService, FactoryService {
 			return result;
 		return null;
 	}
+
+	// default Snapshot<Vertex> getInstances(Vertex[] supers, Serializable value, Vertex... components) {
+	// return new AbstractSnapshot<Vertex>() {
+	// @Override
+	// public Iterator<Vertex> iterator() {
+	// return null;// TODO
+	// }
+	// };
+	// }
+
+	// default NavigableSet<Vertex> getDependencies(final Vertex[] toReplace, final boolean existException) {
+	// Iterator<Vertex> iterator = new AbstractFilterIterator<Vertex>(new AbstractPreTreeIterator<Vertex>((getMeta())) {
+	// private static final long serialVersionUID = 3038922934693070661L;
+	// {
+	// next();
+	// }
+	//
+	// @Override
+	// public Iterator<Vertex> children(Vertex node) {
+	// return !isAncestorOf(node) ? node.dependenciesIterator() : Collections.<Vertex> emptyIterator();
+	// }
+	// }) {
+	// @Override
+	// public boolean isSelected() {
+	// if (isAncestorOf((next)))
+	// return true;
+	// if (!existException && isExtention(next)) {
+	// toReplace[0] = next;
+	// return true;
+	// }
+	// return false;
+	//
+	// }
+	// };
+	//
+	// OrderedDependencies dependencies = new OrderedDependencies();
+	// while (iterator.hasNext())
+	// dependencies.addDependencies(iterator.next());
+	// return dependencies;
+	// }
+	//
+	// default boolean isExtention(Vertex candidate) {
+	// if (isFactual() && candidate.getMeta().equals((getMeta()))) {
+	// if (getMeta().isPropertyConstraintEnabled())
+	// if (InheritanceService.componentsDepends(candidate.getMeta(), candidate.getComponents(), getComponents()))
+	// return true;
+	// for (int pos = 0; pos < candidate.getComponents().length; pos++)
+	// if (getMeta().isSingularConstraintEnabled(pos) && !getMeta().isReferentialIntegrity(pos))
+	// if (candidate.getComponents()[pos].equals(getComponents()[pos]))
+	// if (!this.inheritsFrom(candidate))
+	// return true;
+	// }
+	// return false;
+	//
+	// }
 }
