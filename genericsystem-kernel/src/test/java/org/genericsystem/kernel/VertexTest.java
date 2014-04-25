@@ -33,7 +33,7 @@ public class VertexTest extends AbstractTest {
 		assert car.getSupersStream().findFirst().get() == vehicle : car.getSupersStream().findFirst().get().info();
 		assert car.getSupersStream().anyMatch(vehicle::equals);
 		assert vehicle.getInheritings().contains(car);
-		assert myBmw.getMetaComposites().contains(v233);
+		assert myBmw.getMetaComposites(v233.getMeta()).contains(v233);
 		assert myBmw.isInstanceOf(car);
 		assert myBmw.isInstanceOf(vehicle);
 		assert !myBmw.isInstanceOf(engine);
@@ -99,7 +99,7 @@ public class VertexTest extends AbstractTest {
 		Vertex car = engine.addInstance(new Vertex[] { vehicle }, "Car");
 		Vertex vehiclePower = engine.addInstance("VehiclePower", vehicle);
 		Vertex carPower = engine.addInstance("CarPower", car);
-		assert car.getAttributes(engine).containsAll(Arrays.asList(vehiclePower, carPower));
+		assert car.getAttributes(engine).containsAll(Arrays.asList(vehiclePower, carPower)) : car.getAttributes(engine);
 		assert car.getAttributes(engine).size() == 2;
 	}
 

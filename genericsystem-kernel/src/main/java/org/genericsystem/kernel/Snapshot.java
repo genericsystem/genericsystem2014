@@ -145,5 +145,6 @@ public interface Snapshot<T> extends Iterable<T> {
 				hashCode = 31 * hashCode + (e == null ? 0 : e.hashCode());
 			return hashCode;
 		}
+
 	}
 }

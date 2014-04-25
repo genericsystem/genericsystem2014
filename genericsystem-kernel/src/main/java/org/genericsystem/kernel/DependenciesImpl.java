@@ -1,16 +1,17 @@
 package org.genericsystem.kernel;
 
 import java.util.Iterator;
+import org.genericsystem.kernel.Snapshot.AbstractSnapshot;
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 import org.genericsystem.kernel.services.DependenciesService.Dependencies;
 
-public class DependenciesImpl<T> extends Dependencies<T> {
+public class DependenciesImpl<T> extends AbstractSnapshot<T> implements Dependencies<T> {
 
 	private Node<T> head = null;
 	private Node<T> tail = null;
 
 	@Override
-	protected void add(T element) {
+	public void add(T element) {
 		assert !this.contains(element);
 		assert element != null;
 		Node<T> newNode = new Node<T>(element);
@@ -22,7 +23,7 @@ public class DependenciesImpl<T> extends Dependencies<T> {
 	}
 
 	@Override
-	protected boolean remove(T element) {
+	public boolean remove(T element) {
 		Iterator<T> iterator = iterator();
 		while (iterator.hasNext())
 			if (element.equals(iterator.next())) {
@@ -79,4 +80,5 @@ public class DependenciesImpl<T> extends Dependencies<T> {
 			this.content = content;
 		}
 	}
+
 }

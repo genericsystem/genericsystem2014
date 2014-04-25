@@ -36,10 +36,10 @@ public class Vertex implements AncestorsService, DependenciesService, Inheritanc
 		meta = this;
 		value = ((Engine) this).getCachedValue(Statics.ENGINE_VALUE);
 		components = Statics.EMPTY_VERTICES;
-		instances = getFactory().buildDependency(this);
-		inheritings = getFactory().buildDependency(this);
-		metaComposites = getFactory().buildComponentDependency(this);
-		superComposites = getFactory().buildComponentDependency(this);
+		instances = getFactory().buildDependencies();
+		inheritings = getFactory().buildDependencies();
+		metaComposites = getFactory().<Vertex> buildCompositeDependencies();
+		superComposites = getFactory().<Vertex> buildCompositeDependencies();
 		supers = Statics.EMPTY_VERTICES;
 	}
 
@@ -47,10 +47,10 @@ public class Vertex implements AncestorsService, DependenciesService, Inheritanc
 		this.meta = isEngine() ? (Vertex) this : meta;
 		this.value = getEngine().getCachedValue(value);
 		this.components = components;
-		instances = getFactory().buildDependency(this);
-		inheritings = getFactory().buildDependency(this);
-		metaComposites = getFactory().buildComponentDependency(this);
-		superComposites = getFactory().buildComponentDependency(this);
+		instances = getFactory().buildDependencies();
+		inheritings = getFactory().buildDependencies();
+		metaComposites = getFactory().<Vertex> buildCompositeDependencies();
+		superComposites = getFactory().<Vertex> buildCompositeDependencies();
 		supers = getSupers(overrides);
 		checkOverrides(overrides);
 		checkSupers();
@@ -125,5 +125,4 @@ public class Vertex implements AncestorsService, DependenciesService, Inheritanc
 	public String toString() {
 		return Objects.toString(getValue());
 	}
-
 }
