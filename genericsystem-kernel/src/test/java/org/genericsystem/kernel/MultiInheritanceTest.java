@@ -5,6 +5,21 @@ import org.testng.annotations.Test;
 @Test
 public class MultiInheritanceTest extends AbstractTest {
 
+	public void multiInheritance() {
+		Vertex engine = new Engine();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex vehicleSizable = engine.addInstance("Sizable", vehicle);
+		Vertex robot = engine.addInstance("Robot");
+		Vertex robotSizable = engine.addInstance("Sizable", robot);
+		Vertex transformer = engine.addInstance(new Vertex[] { vehicle, robot }, "Transformer");
+		assert transformer.getAttributes(engine).size() == 2;
+		assert transformer.getAttributes(engine).contains(vehicleSizable);
+		assert transformer.getAttributes(engine).contains(robotSizable);
+		Vertex transformerSizable = engine.addInstance("Sizable", transformer);
+		assert transformer.getAttributes(engine).size() == 1;
+		assert transformer.getAttributes(engine).contains(transformerSizable);
+	}
+
 	public void multiInheritanceWithDiamond() {
 		Vertex engine = new Engine();
 		Vertex object = engine.addInstance("Object");
@@ -28,18 +43,12 @@ public class MultiInheritanceTest extends AbstractTest {
 		assert transformer.getAttributes(engine).contains(transformerSizable);
 	}
 
-	public void multiInheritance() {
+	public void meta() {
 		Vertex engine = new Engine();
 		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex vehicleSizable = engine.addInstance("Sizable", vehicle);
-		Vertex robot = engine.addInstance("Robot");
-		Vertex robotSizable = engine.addInstance("Sizable", robot);
-		Vertex transformer = engine.addInstance(new Vertex[] { vehicle, robot }, "Transformer");
-		assert transformer.getAttributes(engine).size() == 2;
-		assert transformer.getAttributes(engine).contains(vehicleSizable);
-		assert transformer.getAttributes(engine).contains(robotSizable);
-		Vertex transformerSizable = engine.addInstance("Sizable", transformer);
-		assert transformer.getAttributes(engine).size() == 1;
-		assert transformer.getAttributes(engine).contains(transformerSizable);
+		Vertex vehiclePower = engine.addInstance("Power", vehicle);
+		Vertex percent = engine.addInstance("Percent");
+		Vertex vehiclePercent = engine.addInstance(new Vertex[] { vehiclePower }, "Power", vehicle, percent);
+		// assert vehicle.getAttributes(engine).size() == 0 : vehicle.getAttributes(engine);
 	}
 }

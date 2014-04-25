@@ -51,7 +51,7 @@ public interface CompositesInheritanceService {
 
 			private Iterator<Vertex> inheritanceIterator() {
 				return new InheritingsSameBase((Vertex) CompositesInheritanceService.this).inheritanceIterator();
-			}
+			};
 
 			class Inheritings {
 
@@ -116,10 +116,12 @@ public interface CompositesInheritanceService {
 					super(base);
 				}
 
+				@Override
 				protected Iterator<Vertex> nextProjectIterator(Iterator<Vertex> indexIterator, Vertex holder) {
 					return projectIterator(indexIterator);
 				}
 
+				@Override
 				protected Iterator<Vertex> endProjectIterator(Iterator<Vertex> indexIterator, Vertex holder) {
 					return holder.getLevel() == level && !contains(holder) ? new SingletonIterator<Vertex>(holder) : Collections.emptyIterator();
 				}

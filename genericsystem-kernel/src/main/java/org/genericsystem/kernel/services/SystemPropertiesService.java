@@ -16,13 +16,13 @@ public interface SystemPropertiesService {
 
 	}
 
-	default boolean isSingularConstraint(int pos) {
+	default boolean isSingularConstraintEnabled(int pos) {
 		return isEnabled(SingularConstraint.class, pos);
-	};
+	}
 
-	default boolean isPropertyConstraint() {
+	default boolean isPropertyConstraintEnabled() {
 		return isEnabled(PropertyConstraint.class);
-	};
+	}
 
 	default boolean isEnabled(Class<? extends Constraint> clazz) {
 		return isEnabled(clazz, Statics.NO_POSITION);
@@ -30,5 +30,10 @@ public interface SystemPropertiesService {
 
 	default boolean isEnabled(Class<?> clazz, int pos) {
 		return false;
+	}
+
+	default boolean isReferentialIntegrity(int pos) {
+		// assert -1 != Statics.NO_POSITION;
+		return pos != Statics.BASE_POSITION;
 	}
 }

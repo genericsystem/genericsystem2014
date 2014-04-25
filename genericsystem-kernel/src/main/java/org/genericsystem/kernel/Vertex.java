@@ -125,4 +125,5 @@ public class Vertex implements AncestorsService, DependenciesService, Inheritanc
 	public String toString() {
 		return Objects.toString(getValue());
 	}
+
 }
