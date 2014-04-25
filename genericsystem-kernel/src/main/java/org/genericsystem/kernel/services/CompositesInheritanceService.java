@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.stream.Stream;
 
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Snapshot.AbstractSnapshot;
@@ -64,23 +65,26 @@ public interface CompositesInheritanceService {
 					return projectIterator(fromAboveIterator());
 				}
 
-				private Iterator<Vertex> supersIterator() {
-					return base.getSupersStream().filter(next -> base.getMeta().equals(next.getMeta()) && origin.isAttributeOf(next)).iterator();
+				private Stream<Vertex> supers() {
+					return base.getSupersStream().filter(next -> origin.isAttributeOf(next));
 				}
 
 				private Iterator<Vertex> fromAboveIterator() {
 					if (!origin.isAttributeOf(base))
 						return Collections.emptyIterator();
-					Iterator<Vertex> supersIterator = supersIterator();
+					Iterator<Vertex> supersIterator = supers().iterator();
 					if (!supersIterator.hasNext())
 						return (base.isEngine() || !origin.isAttributeOf(base.getMeta())) ? new SingletonIterator<Vertex>(origin) : new Inheritings(base.getMeta()).inheritanceIterator();
 
-					return new AbstractConcateIterator<Vertex, Vertex>(supersIterator) {
+					Iterator<Vertex> concateIterator = new AbstractConcateIterator<Vertex, Vertex>(supersIterator) {
 						@Override
 						protected Iterator<Vertex> getIterator(Vertex superVertex) {
 							return new Inheritings(superVertex).inheritanceIterator();
 						}
 					};
+					if (supers().noneMatch(next -> base.getMeta().equals(next.getMeta())))
+						return new ConcateIterator<Vertex>(concateIterator, new Inheritings(base.getMeta()).inheritanceIterator());
+					return concateIterator;
 				}
 
 				protected Iterator<Vertex> projectIterator(Iterator<Vertex> iteratorToProject) {
