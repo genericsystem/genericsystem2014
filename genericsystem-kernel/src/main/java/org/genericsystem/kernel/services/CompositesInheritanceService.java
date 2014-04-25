@@ -49,11 +49,7 @@ public interface CompositesInheritanceService {
 
 			private Iterator<Vertex> inheritanceIterator() {
 				return new InheritingsSameBase((Vertex) CompositesInheritanceService.this).inheritanceIterator();
-<<<<<<< HEAD
 			};
-=======
-			}
->>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 
 			class Inheritings {
 
@@ -77,22 +73,12 @@ public interface CompositesInheritanceService {
 					Iterator<Vertex> supersIterator = supersIterator();
 					if (!supersIterator.hasNext())
 						return (base.isEngine() || !origin.isAttributeOf(base.getMeta())) ? new SingletonIterator<Vertex>(origin) : new Inheritings(base.getMeta()).inheritanceIterator();
-<<<<<<< HEAD
-						return new AbstractConcateIterator<Vertex, Vertex>(supersIterator) {
-							@Override
-							protected Iterator<Vertex> getIterator(Vertex superVertex) {
-								return new Inheritings(superVertex).inheritanceIterator();
-							}
-						};
-=======
-
 					return new AbstractConcateIterator<Vertex, Vertex>(supersIterator) {
 						@Override
 						protected Iterator<Vertex> getIterator(Vertex superVertex) {
 							return new Inheritings(superVertex).inheritanceIterator();
 						}
 					};
->>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 				}
 
 				protected Iterator<Vertex> projectIterator(Iterator<Vertex> iteratorToProject) {

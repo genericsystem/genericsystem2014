@@ -18,11 +18,11 @@ public interface SystemPropertiesService {
 
 	default boolean isSingularConstraintEnabled(int pos) {
 		return isEnabled(SingularConstraint.class, pos);
-	};
+	}
 
 	default boolean isPropertyConstraintEnabled() {
 		return isEnabled(PropertyConstraint.class);
-	};
+	}
 
 	default boolean isEnabled(Class<? extends Constraint> clazz) {
 		return isEnabled(clazz, Statics.NO_POSITION);
@@ -33,7 +33,7 @@ public interface SystemPropertiesService {
 	}
 
 	default boolean isReferentialIntegrity(int pos) {
-		assert pos != Statics.NO_POSITION;
+		// assert -1 != Statics.NO_POSITION;
 		return pos != Statics.BASE_POSITION;
 	}
 }
