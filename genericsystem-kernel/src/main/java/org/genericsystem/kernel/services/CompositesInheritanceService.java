@@ -47,7 +47,7 @@ public interface CompositesInheritanceService {
 			public Forbidden(Vertex origin, int level) {
 				this.origin = origin;
 				this.level = level;
-				inheritings = new Inheritings((Vertex) CompositesInheritanceService.this);
+				inheritings = new InheritingsSameBase((Vertex) CompositesInheritanceService.this);
 			}
 
 			private Iterator<Vertex> inheritanceIterator() {
@@ -63,7 +63,7 @@ public interface CompositesInheritanceService {
 				}
 
 				protected Iterator<Vertex> inheritanceIterator() {
-					return projectIterator(fromAboveIterator());
+					return ((Vertex) CompositesInheritanceService.this).equals(base) ? projectIteratorSameBase(fromAboveIterator()) : projectIterator(fromAboveIterator());
 				}
 
 				private Iterator<Vertex> supersIterator() {
@@ -80,9 +80,13 @@ public interface CompositesInheritanceService {
 					return new AbstractConcateIterator<Vertex, Vertex>(supersIterator) {
 						@Override
 						protected Iterator<Vertex> getIterator(Vertex superVertex) {
-							return new Inheritings(superVertex).inheritanceIterator();
+							return /* buildInheritings(superVertex) */new Inheritings(superVertex).inheritanceIterator();
 						}
 					};
+				}
+
+				private Inheritings buildInheritings(Vertex superVertex) {
+					return ((Vertex) CompositesInheritanceService.this).equals(base) ? new InheritingsSameBase(superVertex) : new Inheritings(superVertex);
 				}
 
 				protected Iterator<Vertex> projectIterator(Iterator<Vertex> iteratorToProject) {
@@ -92,8 +96,37 @@ public interface CompositesInheritanceService {
 							Iterator<Vertex> indexIterator = holder.getLevel() < level ? new ConcateIterator<>(base.getMetaComposites(holder).iterator(), base.getSuperComposites(holder).iterator()) : base.getSuperComposites(holder).iterator();
 							if (indexIterator.hasNext())
 								add(holder);
-							if (!((Vertex) CompositesInheritanceService.this).equals(base))
-								return indexIterator.hasNext() ? new ConcateIterator<Vertex>(new SingletonIterator<Vertex>(holder), projectIterator(indexIterator)) : new SingletonIterator<Vertex>(holder);
+							return indexIterator.hasNext() ? new ConcateIterator<Vertex>(new SingletonIterator<Vertex>(holder), projectIterator(indexIterator)) : new SingletonIterator<Vertex>(holder);
+						}
+					};
+				}
+
+				protected Iterator<Vertex> projectIteratorSameBase(Iterator<Vertex> iteratorToProject) {
+					return new AbstractConcateIterator<Vertex, Vertex>(iteratorToProject) {
+						@Override
+						protected Iterator<Vertex> getIterator(Vertex holder) {
+							Iterator<Vertex> indexIterator = holder.getLevel() < level ? new ConcateIterator<>(base.getMetaComposites(holder).iterator(), base.getSuperComposites(holder).iterator()) : base.getSuperComposites(holder).iterator();
+							if (indexIterator.hasNext())
+								add(holder);
+							return indexIterator.hasNext() ? projectIterator(indexIterator) : (holder.getLevel() == level && !contains(holder) ? new SingletonIterator<Vertex>(holder) : Collections.emptyIterator());
+						}
+					};
+				}
+			}
+
+			class InheritingsSameBase extends Inheritings {
+
+				private InheritingsSameBase(Vertex base) {
+					super(base);
+				}
+
+				protected Iterator<Vertex> projectIterator(Iterator<Vertex> iteratorToProject) {
+					return new AbstractConcateIterator<Vertex, Vertex>(iteratorToProject) {
+						@Override
+						protected Iterator<Vertex> getIterator(Vertex holder) {
+							Iterator<Vertex> indexIterator = holder.getLevel() < level ? new ConcateIterator<>(base.getMetaComposites(holder).iterator(), base.getSuperComposites(holder).iterator()) : base.getSuperComposites(holder).iterator();
+							if (indexIterator.hasNext())
+								add(holder);
 							return indexIterator.hasNext() ? projectIterator(indexIterator) : (holder.getLevel() == level && !contains(holder) ? new SingletonIterator<Vertex>(holder) : Collections.emptyIterator());
 						}
 					};
