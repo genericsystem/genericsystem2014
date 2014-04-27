@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.genericsystem.kernel.Vertex;
 
-public interface InheritanceService extends AncestorsService {
+public interface InheritanceService extends AncestorsService, SystemPropertiesService {
 
 	default boolean isSuperOf(Vertex subMeta, Vertex[] overrides, Serializable subValue, Vertex... subComponents) {
 		return Arrays.asList(overrides).stream().anyMatch(override -> override.inheritsFrom((Vertex) InheritanceService.this)) || inheritsFrom(subMeta, subValue, subComponents, getMeta(), getValue(), getComponents());
@@ -23,19 +23,35 @@ public interface InheritanceService extends AncestorsService {
 	public static boolean inheritsFrom(Vertex subMeta, Serializable subValue, Vertex[] subComponents, Vertex superMeta, Serializable superValue, Vertex[] superComponents) {
 		if (!subMeta.inheritsFrom(superMeta))
 			return false;
-		if (!componentsDepends(subMeta, subComponents, superComponents))
+		if (!subMeta.componentsDepends(subComponents, superComponents))
 			return false;
 		return subMeta.isPropertyConstraintEnabled() || Objects.equals(subValue, superValue);
 	}
 
-	static boolean componentsDepends(Vertex subMeta, Vertex[] subComponents, Vertex[] superComponents) {
+	static interface SingularsLazyCache {
+		boolean get(int i);
+	}
+
+	default boolean componentsDepends(Vertex[] subComponents, Vertex[] superComponents) {
+		class SingularsLazyCacheImpl implements SingularsLazyCache {
+			private Boolean[] singulars = new Boolean[subComponents.length];
+
+			@Override
+			public boolean get(int i) {
+				return singulars[i] != null ? singulars[i] : (singulars[i] = ((Vertex) InheritanceService.this).isSingularConstraintEnabled(i));
+			}
+		}
+		return componentsDepends(new SingularsLazyCacheImpl(), subComponents, superComponents);
+	}
+
+	static boolean componentsDepends(SingularsLazyCache singulars, Vertex[] subComponents, Vertex[] superComponents) {
 		int subIndex = 0;
 		loop: for (int superIndex = 0; superIndex < superComponents.length; superIndex++) {
 			Vertex superComponent = superComponents[superIndex];
 			for (; subIndex < subComponents.length; subIndex++) {
 				Vertex subComponent = subComponents[subIndex];
 				if (subComponent.inheritsFrom(superComponent) || subComponent.isInstanceOf(superComponent)) {
-					if (subMeta.isSingularConstraintEnabled(subIndex))
+					if (singulars.get(subIndex))
 						return true;
 					subIndex++;
 					continue loop;
@@ -123,7 +139,7 @@ public interface InheritanceService extends AncestorsService {
 	}
 
 	default void checkSupers() {
-		if (!InheritanceService.componentsDepends(getMeta(), getComponents(), getMeta().getComponents()))
+		if (!getMeta().componentsDepends(getComponents(), getMeta().getComponents()))
 			throw new IllegalStateException("Inconsistant overrides : " + Arrays.toString(getComponents()));
 		if (!getSupersStream().allMatch(superVertex -> getMeta().inheritsFrom(superVertex.getMeta())))
 			throw new IllegalStateException("Inconsistant supers : " + getSupersStream().collect(Collectors.toList()));

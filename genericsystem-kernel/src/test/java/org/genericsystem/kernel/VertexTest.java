@@ -168,5 +168,6 @@ public class VertexTest extends AbstractTest {
 		Vertex transformerPower = engine.addInstance("Power", transformer);
 		assert transformer.getAttributes(engine).contains(transformerPower) : transformer.getAttributes(engine);
 		assert transformer.getAttributes(engine).size() == 1;
+		assert transformer.getAttributes(robot).size() == 0 : transformer.getAttributes(robot);
 	}
 }
