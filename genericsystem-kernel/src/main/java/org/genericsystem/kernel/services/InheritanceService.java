@@ -3,7 +3,6 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
@@ -72,10 +71,10 @@ public interface InheritanceService extends AncestorsService, SystemPropertiesSe
 
 			private SupersComputer(Vertex[] overrides) {
 				this.overrides = overrides;
-				isSelected(getMeta().getEngine());
+				visit(getMeta().getEngine());
 			}
 
-			private boolean isSelected(Vertex candidate) {
+			private boolean visit(Vertex candidate) {
 				Boolean result = alreadyComputed.get(candidate);
 				if (result != null)
 					return result;
@@ -91,12 +90,12 @@ public interface InheritanceService extends AncestorsService, SystemPropertiesSe
 				}
 				boolean selectable = true;
 				for (Vertex inheriting : candidate.getInheritings())
-					if (isSelected(inheriting))
+					if (visit(inheriting))
 						selectable = false;
 				if (isMeta) {
 					selectable = false;
 					for (Vertex instance : candidate.getInstances())
-						isSelected(instance);
+						visit(instance);
 				}
 				result = alreadyComputed.put(candidate, selectable);
 				assert result == null;
@@ -110,25 +109,25 @@ public interface InheritanceService extends AncestorsService, SystemPropertiesSe
 				return toArray(new Vertex[size()]);
 			}
 
-			@Override
-			public boolean add(Vertex candidate) {
-				for (Vertex vertex : this) {
-					if (vertex.equals(candidate)) {
-						assert false : "Candidate already exists : " + candidate.info();
-					} else if (vertex.inheritsFrom(candidate)) {
-						assert false : vertex.info() + candidate.info();
-					}
-				}
-				Iterator<Vertex> it = iterator();
-				while (it.hasNext())
-					if (candidate.inheritsFrom(it.next())) {
-						assert false;
-						it.remove();
-					}
-				boolean result = super.add(candidate);
-				assert result;
-				return true;
-			}
+			// @Override
+			// public boolean add(Vertex candidate) {
+			// for (Vertex vertex : this) {
+			// if (vertex.equals(candidate)) {
+			// assert false : "Candidate already exists : " + candidate.info();
+			// } else if (vertex.inheritsFrom(candidate)) {
+			// assert false : vertex.info() + candidate.info();
+			// }
+			// }
+			// Iterator<Vertex> it = iterator();
+			// while (it.hasNext())
+			// if (candidate.inheritsFrom(it.next())) {
+			// assert false;
+			// it.remove();
+			// }
+			// boolean result = super.add(candidate);
+			// assert result;
+			// return true;
+			// }
 		}
 		return new SupersComputer(overrides).toArray();
 	}

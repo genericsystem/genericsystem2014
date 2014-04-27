@@ -10,13 +10,14 @@ import org.genericsystem.kernel.services.BindingService;
 import org.genericsystem.kernel.services.CompositesInheritanceService;
 import org.genericsystem.kernel.services.DependenciesService;
 import org.genericsystem.kernel.services.DisplayService;
+import org.genericsystem.kernel.services.CatcherService;
 import org.genericsystem.kernel.services.FactoryService;
 import org.genericsystem.kernel.services.InheritanceService;
 import org.genericsystem.kernel.services.SystemPropertiesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Vertex implements AncestorsService, DependenciesService, InheritanceService, BindingService, CompositesInheritanceService, FactoryService, DisplayService, SystemPropertiesService {
+public class Vertex implements AncestorsService, DependenciesService, InheritanceService, BindingService, CompositesInheritanceService, FactoryService, DisplayService, SystemPropertiesService, CatcherService {
 
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 

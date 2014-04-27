@@ -9,7 +9,7 @@ import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.exceptions.ExistException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 
-public interface DependenciesService extends AncestorsService, FactoryService {
+public interface DependenciesService extends AncestorsService, FactoryService, CatcherService {
 
 	interface Dependencies<T> extends Snapshot<T> {
 
@@ -88,7 +88,7 @@ public interface DependenciesService extends AncestorsService, FactoryService {
 		Vertex vertex = getMeta().getInstances().set((Vertex) this);
 		if (this != vertex) {
 			if (throwsExistException)
-				throw new ExistException(vertex);
+				rollback(new ExistException(vertex));
 			return vertex;
 		}
 		getSupersStream().forEach(superGeneric -> superGeneric.getInheritings().set((Vertex) this));
@@ -102,10 +102,10 @@ public interface DependenciesService extends AncestorsService, FactoryService {
 		return vertex;
 	}
 
-	default boolean unplug() throws NotFoundException {
+	default boolean unplug() {
 		boolean result = getMeta().getInstances().remove((Vertex) this);
 		if (!result)
-			throw new NotFoundException((Vertex) this);
+			rollback(new NotFoundException((Vertex) this));
 		getSupersStream().forEach(superGeneric -> superGeneric.getInheritings().remove((Vertex) this));
 		Arrays.asList(getComponents()).forEach(component -> component.getMetaComposites().removeByIndex(getMeta(), (Vertex) this));
 		getSupersStream().forEach(superGeneric -> Arrays.asList(getComponents()).forEach(component -> component.getSuperComposites().removeByIndex(superGeneric, (Vertex) this)));
