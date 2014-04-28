@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
-import org.genericsystem.kernel.Engine;
+import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Vertex;
 
 public interface AncestorsService {
@@ -21,12 +21,12 @@ public interface AncestorsService {
 		return getMeta().getLevel() + 1;
 	}
 
-	default boolean isEngine() {
+	default boolean isRoot() {
 		return false;
 	}
 
-	default Engine getEngine() {
-		return getMeta().getEngine();
+	default Root getRoot() {
+		return getMeta().getRoot();
 	}
 
 	default boolean isMeta() {
@@ -55,7 +55,7 @@ public interface AncestorsService {
 	}
 
 	default boolean isAttributeOf(Vertex vertex) {
-		return isEngine() || Arrays.asList(getComponents()).stream().anyMatch(component -> vertex.inheritsFrom(component) || vertex.isInstanceOf(component));
+		return isRoot() || Arrays.asList(getComponents()).stream().anyMatch(component -> vertex.inheritsFrom(component) || vertex.isInstanceOf(component));
 	}
 
 	default boolean isAncestorOf(final Vertex dependency) {

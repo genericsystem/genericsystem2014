@@ -71,18 +71,18 @@ public interface InheritanceService extends AncestorsService, SystemPropertiesSe
 
 			private SupersComputer(Vertex[] overrides) {
 				this.overrides = overrides;
-				visit(getMeta().getEngine());
+				visit(getMeta().getRoot());
 			}
 
 			private boolean visit(Vertex candidate) {
 				Boolean result = alreadyComputed.get(candidate);
 				if (result != null)
 					return result;
-				if ((!isEngine() && candidate.equals(getMeta(), getValue(), getComponents()))) {
+				if ((!isRoot() && candidate.equals(getMeta(), getValue(), getComponents()))) {
 					alreadyComputed.put(candidate, false);
 					return false;
 				}
-				boolean isMeta = getMeta().inheritsFrom(candidate) || candidate.isEngine();
+				boolean isMeta = getMeta().inheritsFrom(candidate) || candidate.isRoot();
 				boolean isSuper = candidate.isSuperOf(getMeta(), overrides, getValue(), getComponents());
 				if (!isMeta && !isSuper) {
 					alreadyComputed.put(candidate, false);

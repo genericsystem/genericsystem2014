@@ -4,20 +4,20 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
-import org.genericsystem.kernel.Engine.ValueCache;
+import org.genericsystem.kernel.Root.ValueCache;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.BindingService;
 import org.genericsystem.kernel.services.CompositesInheritanceService;
 import org.genericsystem.kernel.services.DependenciesService;
 import org.genericsystem.kernel.services.DisplayService;
-import org.genericsystem.kernel.services.CacheService;
+import org.genericsystem.kernel.services.ExceptionAdviserService;
 import org.genericsystem.kernel.services.FactoryService;
 import org.genericsystem.kernel.services.InheritanceService;
 import org.genericsystem.kernel.services.SystemPropertiesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Vertex implements AncestorsService, DependenciesService, InheritanceService, BindingService, CompositesInheritanceService, FactoryService, DisplayService, SystemPropertiesService, CacheService {
+public class Vertex implements AncestorsService, DependenciesService, InheritanceService, BindingService, CompositesInheritanceService, FactoryService, DisplayService, SystemPropertiesService, ExceptionAdviserService {
 
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 
@@ -32,10 +32,10 @@ public class Vertex implements AncestorsService, DependenciesService, Inheritanc
 
 	// Engine constructor
 	protected Vertex(Factory factory) {
-		((Engine) this).valueCache = new ValueCache();
-		((Engine) this).factory = factory;
+		((Root) this).valueCache = new ValueCache();
+		((Root) this).factory = factory;
 		meta = this;
-		value = ((Engine) this).getCachedValue(Statics.ENGINE_VALUE);
+		value = ((Root) this).getCachedValue(Statics.ENGINE_VALUE);
 		components = Statics.EMPTY_VERTICES;
 		instances = getFactory().buildDependencies();
 		inheritings = getFactory().buildDependencies();
@@ -45,8 +45,8 @@ public class Vertex implements AncestorsService, DependenciesService, Inheritanc
 	}
 
 	protected Vertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
-		this.meta = isEngine() ? (Vertex) this : meta;
-		this.value = getEngine().getCachedValue(value);
+		this.meta = isRoot() ? (Vertex) this : meta;
+		this.value = getRoot().getCachedValue(value);
 		this.components = components;
 		instances = getFactory().buildDependencies();
 		inheritings = getFactory().buildDependencies();

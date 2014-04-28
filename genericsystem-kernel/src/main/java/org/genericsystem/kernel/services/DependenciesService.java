@@ -9,7 +9,7 @@ import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.exceptions.ExistException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 
-public interface DependenciesService extends AncestorsService, FactoryService, CacheService {
+public interface DependenciesService extends AncestorsService, FactoryService, ExceptionAdviserService {
 
 	interface Dependencies<T> extends Snapshot<T> {
 
@@ -88,7 +88,7 @@ public interface DependenciesService extends AncestorsService, FactoryService, C
 		Vertex vertex = getMeta().getInstances().set((Vertex) this);
 		if (this != vertex) {
 			if (throwsExistException)
-				getCurrentCache().rollbackAndThrowException(new ExistException(vertex));
+				rollbackAndThrowException(new ExistException(vertex));
 			return vertex;
 		}
 		getSupersStream().forEach(superGeneric -> superGeneric.getInheritings().set((Vertex) this));
@@ -105,7 +105,7 @@ public interface DependenciesService extends AncestorsService, FactoryService, C
 	default boolean unplug() {
 		boolean result = getMeta().getInstances().remove((Vertex) this);
 		if (!result)
-			getCurrentCache().rollbackAndThrowException(new NotFoundException((Vertex) this));
+			rollbackAndThrowException(new NotFoundException((Vertex) this));
 		getSupersStream().forEach(superGeneric -> superGeneric.getInheritings().remove((Vertex) this));
 		Arrays.asList(getComponents()).forEach(component -> component.getMetaComposites().removeByIndex(getMeta(), (Vertex) this));
 		getSupersStream().forEach(superGeneric -> Arrays.asList(getComponents()).forEach(component -> component.getSuperComposites().removeByIndex(superGeneric, (Vertex) this)));

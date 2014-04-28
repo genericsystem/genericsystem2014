@@ -87,7 +87,7 @@ public interface CompositesInheritanceService {
 						return Stream.empty();
 					Stream<Vertex> supersStream = supersStream();
 					if (!supersStream().iterator().hasNext())
-						return (base.isEngine() || !origin.isAttributeOf(base.getMeta())) ? Stream.of(origin) : getInheringsStream(base.getMeta());
+						return (base.isRoot() || !origin.isAttributeOf(base.getMeta())) ? Stream.of(origin) : getInheringsStream(base.getMeta());
 						return Statics.concat(supersStream, superVertex -> getInheringsStream(superVertex)).distinct();
 				}
 

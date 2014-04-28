@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 public class VertexTest extends AbstractTest {
 
 	public void test() {
-		Vertex engine = new Engine();
+		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex vehicle2 = engine.addInstance("Vehicle2");
 		assert !vehicle2.inheritsFrom(vehicle);
@@ -86,7 +86,7 @@ public class VertexTest extends AbstractTest {
 
 	@Test(enabled = false)
 	public void test2() {
-		Vertex engine = new Engine();
+		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex vehicle2 = engine.addInstance("Vehicle2");
 		assert vehicle == engine.setInstance("Vehicle");
@@ -94,7 +94,7 @@ public class VertexTest extends AbstractTest {
 	}
 
 	public void test3() {
-		Vertex engine = new Engine();
+		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex car = engine.addInstance(new Vertex[] { vehicle }, "Car");
 		Vertex vehiclePower = engine.addInstance("VehiclePower", vehicle);
@@ -104,7 +104,7 @@ public class VertexTest extends AbstractTest {
 	}
 
 	public void test4() {
-		Vertex engine = new Engine();
+		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex car = engine.addInstance(new Vertex[] { vehicle }, "Car");
 		Vertex vehiclePower = engine.addInstance("Power", vehicle);
@@ -114,7 +114,7 @@ public class VertexTest extends AbstractTest {
 	}
 
 	public void test5() {
-		Vertex engine = new Engine();
+		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex car = engine.addInstance(new Vertex[] { vehicle }, "Car");
 		Vertex vehiclePower = engine.addInstance("VehiclePower", vehicle);
@@ -124,7 +124,7 @@ public class VertexTest extends AbstractTest {
 	}
 
 	public void test6() {
-		Vertex engine = new Engine();
+		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex car = engine.addInstance(new Vertex[] { vehicle }, "Car");
 		Vertex sportCar = engine.addInstance(new Vertex[] { car }, "SportCar");
@@ -136,7 +136,7 @@ public class VertexTest extends AbstractTest {
 	}
 
 	public void test7() {
-		Vertex engine = new Engine();
+		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex robot = engine.addInstance("robot");
 		Vertex transformer = engine.addInstance(new Vertex[] { vehicle, robot }, "Transformer");
@@ -147,7 +147,7 @@ public class VertexTest extends AbstractTest {
 	}
 
 	public void test8() {
-		Vertex engine = new Engine();
+		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex robot = engine.addInstance("robot");
 		Vertex transformer = engine.addInstance(new Vertex[] { vehicle, robot }, "Transformer");
@@ -159,7 +159,7 @@ public class VertexTest extends AbstractTest {
 	}
 
 	public void test9() {
-		Vertex engine = new Engine();
+		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex robot = engine.addInstance("robot");
 		Vertex transformer = engine.addInstance(new Vertex[] { vehicle, robot }, "Transformer");

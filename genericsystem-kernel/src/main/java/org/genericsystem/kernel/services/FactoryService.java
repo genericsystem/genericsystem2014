@@ -44,7 +44,7 @@ public interface FactoryService extends AncestorsService {
 		}
 
 		default Vertex buildVertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
-			return new DefaultVertex(meta, overrides, value, components) {};
+			return new DefaultVertex(meta, overrides, value, components);
 		}
 	}
 
@@ -55,6 +55,6 @@ public interface FactoryService extends AncestorsService {
 	}
 
 	default Factory getFactory() {
-		return getEngine().getFactory();
+		return getRoot().getFactory();
 	}
 }

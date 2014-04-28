@@ -6,7 +6,7 @@ import org.testng.annotations.Test;
 public class MultiInheritanceTest extends AbstractTest {
 
 	public void multiInheritance() {
-		Vertex engine = new Engine();
+		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex vehicleSizable = engine.addInstance("Sizable", vehicle);
 		Vertex robot = engine.addInstance("Robot");
@@ -21,7 +21,7 @@ public class MultiInheritanceTest extends AbstractTest {
 	}
 
 	public void multiInheritanceWithDiamond() {
-		Vertex engine = new Engine();
+		Vertex engine = new Root();
 		Vertex object = engine.addInstance("Object");
 		Vertex objectSizable = engine.addInstance("Sizable", object);
 		Vertex vehicle = engine.addInstance(new Vertex[] { object }, "Vehicle");
@@ -44,7 +44,7 @@ public class MultiInheritanceTest extends AbstractTest {
 	}
 
 	public void meta() {
-		Vertex engine = new Engine();
+		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex vehiclePower = engine.addInstance("Power", vehicle);
 		Vertex percent = engine.addInstance("Percent");

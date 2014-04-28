@@ -2,26 +2,27 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import org.genericsystem.kernel.exceptions.RollbackException;
 
-public class Engine extends Vertex implements Cache {
+public class Root extends Vertex {
 	ValueCache valueCache;
 	Factory factory;
 
-	public Engine(Factory factory) {
+	public Root(Factory factory) {
 		super(factory);
 	}
 
-	public Engine() {
+	public Root() {
 		this(new Factory() {});
 	}
 
 	@Override
-	public boolean isEngine() {
+	public boolean isRoot() {
 		return true;
 	}
 
 	@Override
-	public Engine getEngine() {
+	public Root getRoot() {
 		return this;
 	}
 
@@ -40,11 +41,11 @@ public class Engine extends Vertex implements Cache {
 	}
 
 	@Override
-	public Cache getCurrentCache() {
-		return getEngine();
+	public void rollbackAndThrowException(Exception exception) throws RollbackException {
+		rollback();
+		throw new RollbackException(exception);
 	}
 
-	@Override
 	public void rollback() {
 		// Hook for cache management
 	}
