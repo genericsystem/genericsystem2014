@@ -139,7 +139,7 @@ public interface InheritanceService extends AncestorsService, SystemPropertiesSe
 
 	default void checkSupers() {
 		if (!getMeta().componentsDepends(getComponents(), getMeta().getComponents()))
-			throw new IllegalStateException("Inconsistant overrides : " + Arrays.toString(getComponents()));
+			throw new IllegalStateException("Inconsistant components : " + Arrays.toString(getComponents()));
 		if (!getSupersStream().allMatch(superVertex -> getMeta().inheritsFrom(superVertex.getMeta())))
 			throw new IllegalStateException("Inconsistant supers : " + getSupersStream().collect(Collectors.toList()));
 		if (!getSupersStream().noneMatch(superVertex -> superVertex.equals(this)))

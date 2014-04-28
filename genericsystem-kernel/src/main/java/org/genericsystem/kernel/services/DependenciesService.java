@@ -1,7 +1,6 @@
 package org.genericsystem.kernel.services;
 
 import java.util.AbstractMap;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import org.genericsystem.kernel.Snapshot;
@@ -108,7 +107,7 @@ public interface DependenciesService extends AncestorsService, FactoryService, E
 			rollbackAndThrowException(new NotFoundException((Vertex) this));
 		getSupersStream().forEach(superGeneric -> superGeneric.getInheritings().remove((Vertex) this));
 		getComponentsStream().forEach(component -> component.getMetaComposites().removeByIndex(getMeta(), (Vertex) this));
-		getSupersStream().forEach(superGeneric -> Arrays.asList(getComponents()).forEach(component -> component.getSuperComposites().removeByIndex(superGeneric, (Vertex) this)));
+		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> component.getSuperComposites().removeByIndex(superGeneric, (Vertex) this)));
 		return result;
 	}
 }
