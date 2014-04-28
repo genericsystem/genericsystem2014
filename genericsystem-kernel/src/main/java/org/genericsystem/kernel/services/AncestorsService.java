@@ -13,6 +13,8 @@ public interface AncestorsService {
 
 	Stream<Vertex> getSupersStream();
 
+	Stream<Vertex> getComponentsStream();
+
 	Vertex[] getComponents();
 
 	abstract Serializable getValue();
@@ -25,7 +27,7 @@ public interface AncestorsService {
 		return false;
 	}
 
-	default Root getRoot() {
+	default <T extends Root> T getRoot() {
 		return getMeta().getRoot();
 	}
 
@@ -46,7 +48,6 @@ public interface AncestorsService {
 			return true;
 		if (getLevel() != superVertex.getLevel())
 			return false;
-		// stream could be parallel here ??
 		return getSupersStream().anyMatch(vertex -> vertex.inheritsFrom(superVertex));
 	}
 
@@ -55,17 +56,11 @@ public interface AncestorsService {
 	}
 
 	default boolean isAttributeOf(Vertex vertex) {
-		return isRoot() || Arrays.asList(getComponents()).stream().anyMatch(component -> vertex.inheritsFrom(component) || vertex.isInstanceOf(component));
+		return isRoot() || getComponentsStream().anyMatch(component -> vertex.inheritsFrom(component) || vertex.isInstanceOf(component));
 	}
 
 	default boolean isAncestorOf(final Vertex dependency) {
-		if (dependency.inheritsFrom((Vertex) this))
-			return true;
-		for (Vertex component : dependency.getComponents())
-			if (!dependency.equals(component))
-				if (isAncestorOf(component))
-					return true;
-		return false;
+		return dependency.inheritsFrom((Vertex) this) || dependency.getComponentsStream().filter(component -> !dependency.equals(component)).anyMatch(component -> isAncestorOf(component));
 	}
 
 	default boolean equals(Vertex meta, Serializable value, Vertex... components) {
