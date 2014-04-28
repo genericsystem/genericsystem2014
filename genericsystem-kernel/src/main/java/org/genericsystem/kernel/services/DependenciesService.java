@@ -9,7 +9,7 @@ import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.exceptions.ExistException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 
-public interface DependenciesService extends AncestorsService, FactoryService, CatcherService {
+public interface DependenciesService extends AncestorsService, FactoryService, CacheService {
 
 	interface Dependencies<T> extends Snapshot<T> {
 
@@ -88,16 +88,16 @@ public interface DependenciesService extends AncestorsService, FactoryService, C
 		Vertex vertex = getMeta().getInstances().set((Vertex) this);
 		if (this != vertex) {
 			if (throwsExistException)
-				rollback(new ExistException(vertex));
+				getCurrentCache().rollbackAndThrowException(new ExistException(vertex));
 			return vertex;
 		}
 		getSupersStream().forEach(superGeneric -> superGeneric.getInheritings().set((Vertex) this));
 		Arrays.stream(getComponents()).forEach(component -> component.getMetaComposites().setByIndex(getMeta(), (Vertex) this));
 		getSupersStream().forEach(superGeneric -> Arrays.asList(getComponents()).forEach(component -> component.getSuperComposites().setByIndex(superGeneric, (Vertex) this)));
 
-		getSupersStream().allMatch(superGeneric -> this == superGeneric.getInheritings().get((Vertex) this));
-		Arrays.stream(getComponents()).allMatch(component -> this == component.getMetaComposites(getMeta()).get((Vertex) this));
-		getSupersStream().forEach(superGeneric -> Arrays.stream(getComponents()).allMatch(component -> component == component.getSuperComposites(superGeneric).get((Vertex) this)));
+		// assert getSupersStream().allMatch(superGeneric -> this == superGeneric.getInheritings().get((Vertex) this));
+		// assert Arrays.stream(getComponents()).allMatch(component -> this == component.getMetaComposites(getMeta()).get((Vertex) this));
+		// assert getSupersStream().allMatch(superGeneric -> Arrays.stream(getComponents()).allMatch(component -> component == component.getSuperComposites(superGeneric).get((Vertex) this)));
 
 		return vertex;
 	}
@@ -105,7 +105,7 @@ public interface DependenciesService extends AncestorsService, FactoryService, C
 	default boolean unplug() {
 		boolean result = getMeta().getInstances().remove((Vertex) this);
 		if (!result)
-			rollback(new NotFoundException((Vertex) this));
+			getCurrentCache().rollbackAndThrowException(new NotFoundException((Vertex) this));
 		getSupersStream().forEach(superGeneric -> superGeneric.getInheritings().remove((Vertex) this));
 		Arrays.asList(getComponents()).forEach(component -> component.getMetaComposites().removeByIndex(getMeta(), (Vertex) this));
 		getSupersStream().forEach(superGeneric -> Arrays.asList(getComponents()).forEach(component -> component.getSuperComposites().removeByIndex(superGeneric, (Vertex) this)));
