@@ -1,7 +1,6 @@
 package org.genericsystem.kernel.services;
 
 import java.util.AbstractMap;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import org.genericsystem.kernel.Snapshot;
@@ -92,8 +91,8 @@ public interface DependenciesService extends AncestorsService, FactoryService, E
 			return vertex;
 		}
 		getSupersStream().forEach(superGeneric -> superGeneric.getInheritings().set((Vertex) this));
-		Arrays.stream(getComponents()).forEach(component -> component.getMetaComposites().setByIndex(getMeta(), (Vertex) this));
-		getSupersStream().forEach(superGeneric -> Arrays.asList(getComponents()).forEach(component -> component.getSuperComposites().setByIndex(superGeneric, (Vertex) this)));
+		getComponentsStream().forEach(component -> component.getMetaComposites().setByIndex(getMeta(), (Vertex) this));
+		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> component.getSuperComposites().setByIndex(superGeneric, (Vertex) this)));
 
 		// assert getSupersStream().allMatch(superGeneric -> this == superGeneric.getInheritings().get((Vertex) this));
 		// assert Arrays.stream(getComponents()).allMatch(component -> this == component.getMetaComposites(getMeta()).get((Vertex) this));
@@ -107,8 +106,8 @@ public interface DependenciesService extends AncestorsService, FactoryService, E
 		if (!result)
 			rollbackAndThrowException(new NotFoundException((Vertex) this));
 		getSupersStream().forEach(superGeneric -> superGeneric.getInheritings().remove((Vertex) this));
-		Arrays.asList(getComponents()).forEach(component -> component.getMetaComposites().removeByIndex(getMeta(), (Vertex) this));
-		getSupersStream().forEach(superGeneric -> Arrays.asList(getComponents()).forEach(component -> component.getSuperComposites().removeByIndex(superGeneric, (Vertex) this)));
+		getComponentsStream().forEach(component -> component.getMetaComposites().removeByIndex(getMeta(), (Vertex) this));
+		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> component.getSuperComposites().removeByIndex(superGeneric, (Vertex) this)));
 		return result;
 	}
 }

@@ -62,9 +62,13 @@ public class Vertex implements AncestorsService, DependenciesService, Inheritanc
 		return meta;
 	}
 
-	@Override
 	public Vertex[] getComponents() {
 		return components;
+	}
+
+	@Override
+	public Stream<Vertex> getComponentsStream() {
+		return Arrays.stream(components);
 	}
 
 	@Override
