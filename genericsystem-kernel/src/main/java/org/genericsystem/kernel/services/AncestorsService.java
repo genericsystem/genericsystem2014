@@ -48,7 +48,6 @@ public interface AncestorsService {
 			return true;
 		if (getLevel() != superVertex.getLevel())
 			return false;
-		// stream could be parallel here ??
 		return getSupersStream().anyMatch(vertex -> vertex.inheritsFrom(superVertex));
 	}
 
@@ -61,13 +60,7 @@ public interface AncestorsService {
 	}
 
 	default boolean isAncestorOf(final Vertex dependency) {
-		if (dependency.inheritsFrom((Vertex) this))
-			return true;
-		for (Vertex component : dependency.getComponents())
-			if (!dependency.equals(component))
-				if (isAncestorOf(component))
-					return true;
-		return false;
+		return dependency.inheritsFrom((Vertex) this) || dependency.getComponentsStream().filter(component -> !dependency.equals(component)).anyMatch(component -> isAncestorOf(component));
 	}
 
 	default boolean equals(Vertex meta, Serializable value, Vertex... components) {
