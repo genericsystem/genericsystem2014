@@ -68,6 +68,11 @@ public class Vertex implements AncestorsService, DependenciesService, Inheritanc
 	}
 
 	@Override
+	public Stream<Vertex> getComponentsStream() {
+		return Arrays.stream(components);
+	}
+
+	@Override
 	public Serializable getValue() {
 		return value;
 	}

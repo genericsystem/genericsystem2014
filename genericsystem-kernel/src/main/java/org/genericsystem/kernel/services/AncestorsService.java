@@ -13,6 +13,8 @@ public interface AncestorsService {
 
 	Stream<Vertex> getSupersStream();
 
+	Stream<Vertex> getComponentsStream();
+
 	Vertex[] getComponents();
 
 	abstract Serializable getValue();
@@ -55,7 +57,7 @@ public interface AncestorsService {
 	}
 
 	default boolean isAttributeOf(Vertex vertex) {
-		return isRoot() || Arrays.asList(getComponents()).stream().anyMatch(component -> vertex.inheritsFrom(component) || vertex.isInstanceOf(component));
+		return isRoot() || getComponentsStream().anyMatch(component -> vertex.inheritsFrom(component) || vertex.isInstanceOf(component));
 	}
 
 	default boolean isAncestorOf(final Vertex dependency) {
