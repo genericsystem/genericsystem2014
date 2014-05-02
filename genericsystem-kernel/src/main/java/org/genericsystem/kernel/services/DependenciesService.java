@@ -8,7 +8,7 @@ import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.exceptions.ExistException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 
-public interface DependenciesService extends AncestorsService, FactoryService, ExceptionAdviserService {
+public interface DependenciesService extends AncestorsService<Vertex>, FactoryService, ExceptionAdviserService {
 
 	interface Dependencies<T> extends Snapshot<T> {
 

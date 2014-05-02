@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.genericsystem.kernel.Vertex;
 
-public interface InheritanceService extends AncestorsService, SystemPropertiesService {
+public interface InheritanceService extends AncestorsService<Vertex>, SystemPropertiesService {
 
 	default boolean isSuperOf(Vertex subMeta, Vertex[] overrides, Serializable subValue, Vertex... subComponents) {
 		return Arrays.asList(overrides).stream().anyMatch(override -> override.inheritsFrom((Vertex) InheritanceService.this)) || inheritsFrom(subMeta, subValue, subComponents, getMeta(), getValue(), getComponents());

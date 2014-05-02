@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
 
-public interface BindingService extends AncestorsService, DependenciesService, FactoryService, InheritanceService {
+public interface BindingService extends AncestorsService<Vertex>, DependenciesService, FactoryService, InheritanceService {
 
 	default Vertex addInstance(Serializable value, Vertex... components) {
 		return addInstance(Statics.EMPTY_VERTICES, value, components);

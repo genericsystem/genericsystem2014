@@ -5,17 +5,16 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
 import org.genericsystem.kernel.Root;
-import org.genericsystem.kernel.Vertex;
 
-public interface AncestorsService {
+public interface AncestorsService<T extends AncestorsService<T>> {
 
-	Vertex getMeta();
+	T getMeta();
 
-	Stream<Vertex> getSupersStream();
+	Stream<T> getSupersStream();
 
-	Stream<Vertex> getComponentsStream();
+	Stream<T> getComponentsStream();
 
-	Vertex[] getComponents();
+	T[] getComponents();
 
 	abstract Serializable getValue();
 
@@ -43,7 +42,7 @@ public interface AncestorsService {
 		return getLevel() == 2;
 	}
 
-	default boolean inheritsFrom(Vertex superVertex) {
+	default boolean inheritsFrom(T superVertex) {
 		if (this == superVertex || equals(superVertex))
 			return true;
 		if (getLevel() != superVertex.getLevel())
@@ -51,19 +50,19 @@ public interface AncestorsService {
 		return getSupersStream().anyMatch(vertex -> vertex.inheritsFrom(superVertex));
 	}
 
-	default boolean isInstanceOf(Vertex metaVertex) {
+	default boolean isInstanceOf(T metaVertex) {
 		return getMeta().inheritsFrom(metaVertex);
 	}
 
-	default boolean isAttributeOf(Vertex vertex) {
+	default boolean isAttributeOf(T vertex) {
 		return isRoot() || getComponentsStream().anyMatch(component -> vertex.inheritsFrom(component) || vertex.isInstanceOf(component));
 	}
 
-	default boolean isAncestorOf(final Vertex dependency) {
-		return dependency.inheritsFrom((Vertex) this) || dependency.getComponentsStream().filter(component -> !dependency.equals(component)).anyMatch(component -> isAncestorOf(component));
+	default boolean isAncestorOf(final T dependency) {
+		return dependency.inheritsFrom((T) this) || dependency.getComponentsStream().filter(component -> !dependency.equals(component)).anyMatch(component -> isAncestorOf(component));
 	}
 
-	default boolean equals(Vertex meta, Serializable value, Vertex... components) {
+	default boolean equals(T meta, Serializable value, T... components) {
 		return this.getMeta().equals(meta) && Objects.equals(this.getValue(), value) && Arrays.equals(this.getComponents(), components);
 	}
 }

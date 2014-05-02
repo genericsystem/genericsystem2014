@@ -17,7 +17,7 @@ import org.genericsystem.kernel.services.SystemPropertiesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Vertex implements AncestorsService, DependenciesService, InheritanceService, BindingService, CompositesInheritanceService, FactoryService, DisplayService, SystemPropertiesService, ExceptionAdviserService {
+public class Vertex implements AncestorsService<Vertex>, DependenciesService, InheritanceService, BindingService, CompositesInheritanceService, FactoryService, DisplayService, SystemPropertiesService, ExceptionAdviserService {
 
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 
@@ -62,6 +62,7 @@ public class Vertex implements AncestorsService, DependenciesService, Inheritanc
 		return meta;
 	}
 
+	@Override
 	public Vertex[] getComponents() {
 		return components;
 	}

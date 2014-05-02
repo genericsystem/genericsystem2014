@@ -8,7 +8,7 @@ import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.services.DependenciesService.CompositesDependencies;
 import org.genericsystem.kernel.services.DependenciesService.Dependencies;
 
-public interface FactoryService extends AncestorsService {
+public interface FactoryService extends AncestorsService<Vertex> {
 
 	public static interface Factory {
 
