@@ -11,37 +11,33 @@ import org.genericsystem.kernel.services.AncestorsService;
 
 public class GenericImpl implements Generic {
 
-	private Supplier<AncestorsService<Vertex>> supplier;
+	private Supplier<AncestorsService<Generic>> supplier;
 
-	private static final Function<Vertex, Generic> VERTEX_WRAPPER = GenericImpl::new;
-
-	public GenericImpl(final Vertex vertex) {
-		this(() -> vertex.getPlugged());
+	public GenericImpl(Supplier<AncestorsService<Generic>> supplier) {
+		this.supplier = supplier;
 	}
 
-	//
-	public GenericImpl(final Supplier<Vertex> metaSupplier, final Supplier<Stream<Vertex>> supersSupplier, final Supplier<Serializable> valueSupplier, final Supplier<Vertex[]> componentsSupplier) {
-		this(() -> new AncestorsService<Vertex>() {
+	// public GenericImpl(final AncestorsService<Generic> service) {
+	// this(() -> vertex.getPlugged());
+	// }
+
+	public GenericImpl(final Supplier<Generic> metaSupplier, final Supplier<Stream<Generic>> supersSupplier, final Supplier<Serializable> valueSupplier, final Supplier<Stream<Generic>> componentsSupplier) {
+		this(() -> new AncestorsService<Generic>() {
 
 			@Override
-			public Vertex getMeta() {
+			public Generic getMeta() {
 				return metaSupplier.get();
 			}
 
 			@Override
-			public Stream<Vertex> getSupersStream() {
+			public Stream<Generic> getSupersStream() {
 				return supersSupplier.get();
 			}
 
 			@Override
-			public Stream<Vertex> getComponentsStream() {
-				return null;
+			public Stream<Generic> getComponentsStream() {
+				return componentsSupplier.get();
 			}
-
-			// @Override
-			// public Vertex[] getComponents() {
-			// return componentsSupplier.get();
-			// }
 
 			@Override
 			public Serializable getValue() {
@@ -55,34 +51,52 @@ public class GenericImpl implements Generic {
 	// supplier = () -> getMeta().getInstance(getSupersStream(), getValue(), getComponents());
 	// }
 
-	public GenericImpl(Supplier<AncestorsService<Vertex>> supplier) {
-		this.supplier = supplier;
+	Supplier<AncestorsService<Generic>> getSupplier() {
+		return supplier;
 	}
 
-	Supplier<AncestorsService<Vertex>> getSupplier() {
-		return supplier;
+	private static final Function<Vertex, Generic> VERTEX_WRAPPER = GenericImpl::new;
+
+	public GenericImpl(final Vertex vertex) {
+		this(() -> new AncestorsService<Generic>() {
+
+			@Override
+			public Generic getMeta() {
+				return VERTEX_WRAPPER.apply(vertex.getPlugged().getMeta());
+			}
+
+			@Override
+			public Stream<Generic> getSupersStream() {
+				return vertex.getPlugged().getSupersStream().map(VERTEX_WRAPPER);
+			}
+
+			@Override
+			public Stream<Generic> getComponentsStream() {
+				return vertex.getPlugged().getComponentsStream().map(VERTEX_WRAPPER);
+			}
+
+			@Override
+			public Serializable getValue() {
+				return vertex.getValue();
+			}
+
+		});
 	}
 
 	@Override
 	public Generic getMeta() {
-		return VERTEX_WRAPPER.apply(getSupplier().get().getMeta());
+		return getSupplier().get().getMeta();
 	}
 
 	@Override
 	public Stream<Generic> getSupersStream() {
-		return getSupplier().get().getSupersStream().map(VERTEX_WRAPPER);
+		return getSupplier().get().getSupersStream();
 	}
 
 	@Override
 	public Stream<Generic> getComponentsStream() {
-		return getSupplier().get().getComponentsStream().map(VERTEX_WRAPPER);
+		return getSupplier().get().getComponentsStream();
 	}
-
-	// @Override
-	// public Generic[] getComponents() {
-	// assert false;// TODO
-	// return null;
-	// }
 
 	@Override
 	public Serializable getValue() {

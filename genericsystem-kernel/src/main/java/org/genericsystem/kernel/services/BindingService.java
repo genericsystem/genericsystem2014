@@ -35,6 +35,7 @@ public interface BindingService extends AncestorsService<Vertex>, DependenciesSe
 	}
 
 	default Vertex getInstance(Serializable value, Vertex... components) {
+		// here we should avoid to compute supers
 		return new AncestorsService<Vertex>() {
 
 			@Override
