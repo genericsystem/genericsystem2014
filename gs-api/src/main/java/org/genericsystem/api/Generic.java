@@ -1,4 +1,4 @@
-package org.genericsystem.core.api;
+package org.genericsystem.api;
 
 import org.genericsystem.kernel.services.AncestorsService;
 

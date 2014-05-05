@@ -1,4 +1,4 @@
-package org.genericsystem.core.impl;
+package org.genericsystem.impl;
 
 import java.io.Serializable;
 import java.util.List;
@@ -7,7 +7,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.genericsystem.core.api.Generic;
+
+import org.genericsystem.api.Generic;
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.services.AncestorsService;
 
