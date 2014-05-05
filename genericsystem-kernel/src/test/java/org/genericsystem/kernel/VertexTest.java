@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.util.Arrays;
+import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.testng.annotations.Test;
 
 @Test
@@ -169,5 +170,29 @@ public class VertexTest extends AbstractTest {
 		assert transformer.getAttributes(engine).contains(transformerPower) : transformer.getAttributes(engine);
 		assert transformer.getAttributes(engine).size() == 1;
 		assert transformer.getAttributes(robot).size() == 0 : transformer.getAttributes(robot);
+	}
+
+	public void test10() {
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		engine.removeInstance("Vehicle");
+		new RollbackCatcher() {
+			@Override
+			public void intercept() {
+				engine.addInstance(new Vertex[] { vehicle }, "Car");
+			}
+		}.assertIsCausedBy(NotAliveException.class);
+	}
+	
+	public void test11() {
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		engine.removeInstance("Vehicle");
+		new RollbackCatcher() {
+			@Override
+			public void intercept() {
+				vehicle.addInstance("myVehicle");
+			}
+		}.assertIsCausedBy(NotAliveException.class);
 	}
 }
