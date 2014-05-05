@@ -1,9 +1,11 @@
 package org.genericsystem.core.impl;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.genericsystem.core.api.Generic;
 import org.genericsystem.kernel.Vertex;
@@ -24,26 +26,30 @@ public class GenericImpl implements Generic {
 	public GenericImpl(final Supplier<Generic> metaSupplier, final Supplier<Stream<Generic>> supersSupplier, final Supplier<Serializable> valueSupplier, final Supplier<Stream<Generic>> componentsSupplier) {
 		this(() -> new AncestorsService<Generic>() {
 
+			private final Generic meta = metaSupplier.get();
+			private final List<Generic> supers = supersSupplier.get().collect(Collectors.toList());
+			private final List<Generic> components = componentsSupplier.get().collect(Collectors.toList());
+			private final Serializable value = valueSupplier.get();
+
 			@Override
 			public Generic getMeta() {
-				return metaSupplier.get();
+				return meta;
 			}
 
 			@Override
 			public Stream<Generic> getSupersStream() {
-				return supersSupplier.get();
+				return supers.stream();
 			}
 
 			@Override
 			public Stream<Generic> getComponentsStream() {
-				return componentsSupplier.get();
+				return components.stream();
 			}
 
 			@Override
 			public Serializable getValue() {
-				return valueSupplier.get();
+				return value;
 			}
-
 		});
 	}
 
