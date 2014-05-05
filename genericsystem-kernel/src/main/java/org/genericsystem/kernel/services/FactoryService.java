@@ -2,11 +2,11 @@ package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
 import java.util.Iterator;
-import java.util.Map.Entry;
 import org.genericsystem.kernel.DependenciesImpl;
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.services.DependenciesService.CompositesDependencies;
 import org.genericsystem.kernel.services.DependenciesService.Dependencies;
+import org.genericsystem.kernel.services.DependenciesService.DependenciesEntry;
 
 public interface FactoryService extends AncestorsService<Vertex> {
 
@@ -18,20 +18,20 @@ public interface FactoryService extends AncestorsService<Vertex> {
 
 		default <T> CompositesDependencies<T> buildCompositeDependencies() {
 			class CompositesDependenciesImpl<E> implements CompositesDependencies<E> {
-				private Dependencies<Entry<E, Dependencies<E>>> delegate = Factory.this.buildDependencies();
+				private Dependencies<DependenciesEntry<E>> delegate = Factory.this.buildDependencies();
 
 				@Override
-				public boolean remove(Entry<E, Dependencies<E>> vertex) {
+				public boolean remove(DependenciesEntry<E> vertex) {
 					return delegate.remove(vertex);
 				}
 
 				@Override
-				public void add(Entry<E, Dependencies<E>> vertex) {
+				public void add(DependenciesEntry<E> vertex) {
 					delegate.add(vertex);
 				}
 
 				@Override
-				public Iterator<Entry<E, Dependencies<E>>> iterator() {
+				public Iterator<DependenciesEntry<E>> iterator() {
 					return delegate.iterator();
 				}
 
