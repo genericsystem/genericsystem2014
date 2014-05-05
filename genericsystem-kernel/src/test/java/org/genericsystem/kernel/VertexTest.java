@@ -183,4 +183,16 @@ public class VertexTest extends AbstractTest {
 			}
 		}.assertIsCausedBy(NotAliveException.class);
 	}
+	
+	public void test11() {
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		engine.removeInstance("Vehicle");
+		new RollbackCatcher() {
+			@Override
+			public void intercept() {
+				vehicle.addInstance("myVehicle");
+			}
+		}.assertIsCausedBy(NotAliveException.class);
+	}
 }

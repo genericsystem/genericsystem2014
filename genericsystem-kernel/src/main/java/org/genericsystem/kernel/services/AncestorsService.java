@@ -75,7 +75,10 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 	}
 
 	default Vertex getPlugged() {
-		Iterator<Vertex> it = getMeta().getPlugged().getInstances().iterator();
+		Vertex pluggedMeta = getMeta().getPlugged();
+		if (pluggedMeta == null)
+			return null;
+		Iterator<Vertex> it = pluggedMeta.getInstances().iterator();
 		while (it.hasNext()) {
 			Vertex next = it.next();
 			if (equiv(next))
