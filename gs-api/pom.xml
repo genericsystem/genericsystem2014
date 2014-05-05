@@ -7,21 +7,7 @@
 		<version>3.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>genericsystem-impl</artifactId>
-	<name>Generic System Impl</name>
+	<artifactId>gs-api</artifactId>
+	<name>Generic System API</name>
 	<packaging>jar</packaging>
-
-	<dependencies>
-		<dependency>
-			<groupId>org.genericsystem</groupId>
-			<artifactId>genericsystem-cache</artifactId>
-			<version>3.0-SNAPSHOT</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.testng</groupId>
-			<artifactId>testng</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
 </project>

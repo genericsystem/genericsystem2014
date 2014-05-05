@@ -42,17 +42,10 @@
 	</properties>
 
 	<modules>
-		<module>genericsystem-kernel</module>
-		<!-- <module>genericsystem-cdi</module> -->
-		<!-- <module>genericsystem-file</module> -->
-		<!-- <module>genericsystem-example</module> -->
-		<!-- <module>genericsystem-jsf</module> -->
-		<!-- <module>genericsystem-jsf-resolver</module> -->
-		<!-- <module>genericsystem-framework</module> -->
-		<!-- <module>genericsystem-security</module> -->
-		<!-- <module>genericsystem-jsf-example</module> -->
-		<!-- <module>genericsystem-myadmin</module> -->
-		<!-- <module>genericsystem-tracker</module> -->
+		<module>gs-kernel</module>
+		<module>gs-api</module>
+		<module>gs-impl</module>
+		<module>gs-cache</module>		
 	</modules>
 
 	<distributionManagement>
