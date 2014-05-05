@@ -1,20 +1,19 @@
 package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
-import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.genericsystem.kernel.Root;
+import org.genericsystem.kernel.Vertex;
+import org.genericsystem.kernel.exceptions.NotFoundException;
 
 public interface AncestorsService<T extends AncestorsService<T>> {
 
 	T getMeta();
 
-	Stream<T> getSupersStream();
-
 	Stream<T> getComponentsStream();
-
-	T[] getComponents();
 
 	abstract Serializable getValue();
 
@@ -42,6 +41,13 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		return getLevel() == 2;
 	}
 
+	@SuppressWarnings("unchecked")
+	default boolean isAncestorOf(final T dependency) {
+		return dependency.inheritsFrom((T) this) || dependency.getComponentsStream().filter(component -> !dependency.equals(component)).anyMatch(component -> isAncestorOf(component));
+	}
+
+	Stream<T> getSupersStream();
+
 	default boolean inheritsFrom(T superVertex) {
 		if (this == superVertex || equals(superVertex))
 			return true;
@@ -58,11 +64,24 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		return isRoot() || getComponentsStream().anyMatch(component -> vertex.inheritsFrom(component) || vertex.isInstanceOf(component));
 	}
 
-	default boolean isAncestorOf(final T dependency) {
-		return dependency.inheritsFrom((T) this) || dependency.getComponentsStream().filter(component -> !dependency.equals(component)).anyMatch(component -> isAncestorOf(component));
+	default boolean equiv(AncestorsService<?> service) {
+		if (this == service)
+			return true;
+		// TODO improve streams comparison
+		return this.getMeta().equals(service.getMeta()) && Objects.equals(this.getValue(), service.getValue()) && this.getComponentsStream().collect(Collectors.toList()).equals(service.getComponentsStream().collect(Collectors.toList()));
 	}
 
-	default boolean equals(T meta, Serializable value, T... components) {
-		return this.getMeta().equals(meta) && Objects.equals(this.getValue(), value) && Arrays.equals(this.getComponents(), components);
+	default boolean isPlugged() throws NotFoundException {
+		return this == getPlugged();
+	}
+
+	default Vertex getPlugged() {
+		Iterator<Vertex> it = getMeta().getPlugged().getInstances().iterator();
+		while (it.hasNext()) {
+			Vertex next = it.next();
+			if (equiv(next))
+				return next;
+		}
+		return null;
 	}
 }

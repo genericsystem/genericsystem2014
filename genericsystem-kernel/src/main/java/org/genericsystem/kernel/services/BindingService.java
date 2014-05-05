@@ -7,6 +7,8 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
+import org.genericsystem.kernel.exceptions.ExistException;
+import org.genericsystem.kernel.exceptions.NotFoundException;
 
 public interface BindingService extends AncestorsService<Vertex>, DependenciesService, FactoryService, InheritanceService {
 
@@ -15,7 +17,10 @@ public interface BindingService extends AncestorsService<Vertex>, DependenciesSe
 	}
 
 	default Vertex addInstance(Vertex[] overrides, Serializable value, Vertex... components) {
-		return getFactory().buildVertex((Vertex) this, overrides, value, components).plug(true);
+		Vertex vertex = getInstance(overrides, value, components);
+		if (vertex != null)
+			rollbackAndThrowException(new ExistException(vertex));
+		return getFactory().buildVertex((Vertex) this, overrides, value, components).plug();
 	}
 
 	default Vertex setInstance(Serializable value, Vertex... components) {
@@ -23,11 +28,60 @@ public interface BindingService extends AncestorsService<Vertex>, DependenciesSe
 	}
 
 	default Vertex setInstance(Vertex[] overrides, Serializable value, Vertex... components) {
-		return getFactory().buildVertex((Vertex) this, overrides, value, components).plug(false);
+		Vertex vertex = getInstance(overrides, value, components);
+		if (vertex != null)
+			return vertex;
+		return getFactory().buildVertex((Vertex) this, overrides, value, components).plug();
 	}
 
 	default Vertex getInstance(Serializable value, Vertex... components) {
-		return getFactory().buildVertex((Vertex) this, Statics.EMPTY_VERTICES, value, components).getPlugged();
+		return new AncestorsService<Vertex>() {
+
+			@Override
+			public Vertex getMeta() {
+				return (Vertex) BindingService.this;
+			}
+
+			@Override
+			public Stream<Vertex> getSupersStream() {
+				return Stream.empty();// TODO Strange to have this
+			}
+
+			@Override
+			public Stream<Vertex> getComponentsStream() {
+				return Stream.of(components);
+			}
+
+			@Override
+			public Serializable getValue() {
+				return value;
+			}
+		}.getPlugged();
+
+		// return getFactory().buildVertex((Vertex) this, Statics.EMPTY_VERTICES, value, components).getPlugged();
+	}
+
+	default Vertex plug() {
+		Vertex vertex = getMeta().getInstances().set((Vertex) this);
+		getSupersStream().forEach(superGeneric -> superGeneric.getInheritings().set((Vertex) this));
+		getComponentsStream().forEach(component -> component.getMetaComposites().setByIndex(getMeta(), (Vertex) this));
+		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> component.getSuperComposites().setByIndex(superGeneric, (Vertex) this)));
+
+		// assert getSupersStream().allMatch(superGeneric -> this == superGeneric.getInheritings().get((Vertex) this));
+		// assert Arrays.stream(getComponents()).allMatch(component -> this == component.getMetaComposites(getMeta()).get((Vertex) this));
+		// assert getSupersStream().allMatch(superGeneric -> Arrays.stream(getComponents()).allMatch(component -> component == component.getSuperComposites(superGeneric).get((Vertex) this)));
+
+		return vertex;
+	}
+
+	default boolean unplug() {
+		boolean result = getMeta().getInstances().remove((Vertex) this);
+		if (!result)
+			rollbackAndThrowException(new NotFoundException((Vertex) this));
+		getSupersStream().forEach(superGeneric -> superGeneric.getInheritings().remove((Vertex) this));
+		getComponentsStream().forEach(component -> component.getMetaComposites().removeByIndex(getMeta(), (Vertex) this));
+		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> component.getSuperComposites().removeByIndex(superGeneric, (Vertex) this)));
+		return result;
 	}
 
 	default Vertex getInstance(Vertex[] supers, Serializable value, Vertex... components) {

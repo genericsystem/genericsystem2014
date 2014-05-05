@@ -1,12 +1,12 @@
 package org.genericsystem.kernel.services;
 
 import java.util.AbstractMap;
+import java.util.Arrays;
 import java.util.Iterator;
-import java.util.Map.Entry;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Vertex;
-import org.genericsystem.kernel.exceptions.ExistException;
-import org.genericsystem.kernel.exceptions.NotFoundException;
 
 public interface DependenciesService extends AncestorsService<Vertex>, FactoryService, ExceptionAdviserService {
 
@@ -15,6 +15,17 @@ public interface DependenciesService extends AncestorsService<Vertex>, FactorySe
 		boolean remove(T vertex);
 
 		void add(T vertex);
+
+		@Override
+		default T get(T vertex) {
+			Iterator<T> it = iterator();
+			while (it.hasNext()) {
+				T next = it.next();
+				if (next.equals(vertex))
+					return next;
+			}
+			return null;
+		}
 
 		default T set(T vertex) {
 			T result = get(vertex);
@@ -27,12 +38,21 @@ public interface DependenciesService extends AncestorsService<Vertex>, FactorySe
 
 	}
 
-	interface CompositesDependencies<T> extends Dependencies<Entry<T, Dependencies<T>>> {
+	static class DependenciesEntry<T> extends AbstractMap.SimpleImmutableEntry<T, Dependencies<T>> {
+
+		private static final long serialVersionUID = -1887797796331264050L;
+
+		public DependenciesEntry(T key, Dependencies<T> value) {
+			super(key, value);
+		}
+	}
+
+	interface CompositesDependencies<T> extends Dependencies<DependenciesEntry<T>> {
 
 		default Dependencies<T> internalGetByIndex(T index) {
-			Iterator<Entry<T, Dependencies<T>>> it = iterator();
+			Iterator<DependenciesEntry<T>> it = iterator();
 			while (it.hasNext()) {
-				Entry<T, Dependencies<T>> next = it.next();
+				DependenciesEntry<T> next = it.next();
 				if (index.equals(next.getKey()))
 					return next.getValue();
 			}
@@ -48,7 +68,7 @@ public interface DependenciesService extends AncestorsService<Vertex>, FactorySe
 			Dependencies<T> result = internalGetByIndex(index);
 			if (result == null) {
 				result = buildDependencies();
-				set(new AbstractMap.SimpleEntry<T, Dependencies<T>>(index, result));
+				set(new DependenciesEntry<T>(index, result));
 			}
 			return result.set(vertex);
 		}
@@ -75,39 +95,37 @@ public interface DependenciesService extends AncestorsService<Vertex>, FactorySe
 
 	Snapshot<?> getSuperComposites();
 
-	default boolean isPlugged() throws NotFoundException {
-		return this == getPlugged();
+	@Override
+	@SuppressWarnings("unchecked")
+	default boolean isAncestorOf(final Vertex dependency) {
+		return dependency.inheritsFrom((Vertex) this) || dependency.getComponentsStream().filter(component -> !dependency.equals(component)).anyMatch(component -> isAncestorOf(component));
 	}
 
-	default Vertex getPlugged() {
-		return getMeta().getInstances().get((Vertex) this);
+	@Override
+	Stream<Vertex> getSupersStream();
+
+	@Override
+	default boolean inheritsFrom(Vertex superVertex) {
+		if (this == superVertex || equals(superVertex))
+			return true;
+		if (getLevel() != superVertex.getLevel())
+			return false;
+		return getSupersStream().anyMatch(vertex -> vertex.inheritsFrom(superVertex));
 	}
 
-	default Vertex plug(boolean throwsExistException) {
-		Vertex vertex = getMeta().getInstances().set((Vertex) this);
-		if (this != vertex) {
-			if (throwsExistException)
-				rollbackAndThrowException(new ExistException(vertex));
-			return vertex;
-		}
-		getSupersStream().forEach(superGeneric -> superGeneric.getInheritings().set((Vertex) this));
-		getComponentsStream().forEach(component -> component.getMetaComposites().setByIndex(getMeta(), (Vertex) this));
-		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> component.getSuperComposites().setByIndex(superGeneric, (Vertex) this)));
-
-		// assert getSupersStream().allMatch(superGeneric -> this == superGeneric.getInheritings().get((Vertex) this));
-		// assert Arrays.stream(getComponents()).allMatch(component -> this == component.getMetaComposites(getMeta()).get((Vertex) this));
-		// assert getSupersStream().allMatch(superGeneric -> Arrays.stream(getComponents()).allMatch(component -> component == component.getSuperComposites(superGeneric).get((Vertex) this)));
-
-		return vertex;
+	@Override
+	default boolean isInstanceOf(Vertex metaVertex) {
+		return getMeta().inheritsFrom(metaVertex);
 	}
 
-	default boolean unplug() {
-		boolean result = getMeta().getInstances().remove((Vertex) this);
-		if (!result)
-			rollbackAndThrowException(new NotFoundException((Vertex) this));
-		getSupersStream().forEach(superGeneric -> superGeneric.getInheritings().remove((Vertex) this));
-		getComponentsStream().forEach(component -> component.getMetaComposites().removeByIndex(getMeta(), (Vertex) this));
-		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> component.getSuperComposites().removeByIndex(superGeneric, (Vertex) this)));
-		return result;
+	@Override
+	default boolean isAttributeOf(Vertex vertex) {
+		return isRoot() || getComponentsStream().anyMatch(component -> vertex.inheritsFrom(component) || vertex.isInstanceOf(component));
 	}
+
+	default void checkOverrides(Vertex[] overrides) {
+		if (!Arrays.asList(overrides).stream().allMatch(override -> getSupersStream().anyMatch(superVertex -> superVertex.inheritsFrom(override))))
+			throw new IllegalStateException("Inconsistant overrides : " + Arrays.toString(overrides) + " " + getSupersStream().collect(Collectors.toList()));
+	}
+
 }

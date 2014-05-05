@@ -1,6 +1,7 @@
 package org.genericsystem.core.impl;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -18,6 +19,7 @@ public class GenericImpl implements Generic {
 		this(() -> vertex.getPlugged());
 	}
 
+	//
 	public GenericImpl(final Supplier<Vertex> metaSupplier, final Supplier<Stream<Vertex>> supersSupplier, final Supplier<Serializable> valueSupplier, final Supplier<Vertex[]> componentsSupplier) {
 		this(() -> new AncestorsService<Vertex>() {
 
@@ -36,10 +38,10 @@ public class GenericImpl implements Generic {
 				return null;
 			}
 
-			@Override
-			public Vertex[] getComponents() {
-				return componentsSupplier.get();
-			}
+			// @Override
+			// public Vertex[] getComponents() {
+			// return componentsSupplier.get();
+			// }
 
 			@Override
 			public Serializable getValue() {
@@ -76,15 +78,31 @@ public class GenericImpl implements Generic {
 		return getSupplier().get().getComponentsStream().map(VERTEX_WRAPPER);
 	}
 
-	@Override
-	public Generic[] getComponents() {
-		assert false;// TODO
-		return null;
-	}
+	// @Override
+	// public Generic[] getComponents() {
+	// assert false;// TODO
+	// return null;
+	// }
 
 	@Override
 	public Serializable getValue() {
 		return getSupplier().get().getValue();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof Generic))
+			return false;
+		Generic service = (Generic) obj;
+		return this.equiv(service);
+	}
+
+	@Override
+	public int hashCode() {
+		// TODO introduce : meta and components length
+		return Objects.hashCode(getValue());
 	}
 
 }

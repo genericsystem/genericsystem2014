@@ -61,4 +61,10 @@ public class Root extends Vertex {
 			return result;
 		}
 	}
+
+	@Override
+	public Vertex getPlugged() {
+		// TODO is enough ?
+		return this;
+	}
 }

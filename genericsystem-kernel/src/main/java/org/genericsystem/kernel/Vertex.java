@@ -113,23 +113,24 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService, In
 	}
 
 	@Override
-	public int hashCode() {
-		return Objects.hashCode(getValue());
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (!(o instanceof Vertex))
-			return false;
-		Vertex vertex = (Vertex) o;
-		return equals(vertex.getMeta(), vertex.getValue(), vertex.getComponents());
-	}
-
-	@Override
 	public String toString() {
 		return Objects.toString(getValue());
 	}
+
+	// @Override
+	// public boolean equals(Object obj) {
+	// if (this == obj)
+	// return true;
+	// if (!(obj instanceof Vertex))
+	// return false;
+	// Vertex service = (Vertex) obj;
+	// return this.equiv(service);
+	// }
+	//
+	// @Override
+	// public int hashCode() {
+	// // TODO introduce : meta and components length
+	// return Objects.hashCode(getValue());
+	// }
 
 }
