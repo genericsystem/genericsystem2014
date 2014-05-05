@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
 import org.genericsystem.kernel.Root.ValueCache;
+import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.BindingService;
 import org.genericsystem.kernel.services.CompositesInheritanceService;
@@ -17,7 +18,7 @@ import org.genericsystem.kernel.services.SystemPropertiesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Vertex implements AncestorsService, DependenciesService, InheritanceService, BindingService, CompositesInheritanceService, FactoryService, DisplayService, SystemPropertiesService, ExceptionAdviserService {
+public class Vertex implements AncestorsService<Vertex>, DependenciesService, InheritanceService, BindingService, CompositesInheritanceService, FactoryService, DisplayService, SystemPropertiesService, ExceptionAdviserService {
 
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 
@@ -44,6 +45,15 @@ public class Vertex implements AncestorsService, DependenciesService, Inheritanc
 		supers = Statics.EMPTY_VERTICES;
 	}
 
+	private void checkAreAlive(Vertex... vertices) {
+		Arrays.stream(vertices).forEach(this::checkIsAlive);
+	};
+
+	private void checkIsAlive(Vertex vertex) {
+		if (!vertex.isPlugged())
+			rollbackAndThrowException(new NotAliveException(vertex));
+	};
+
 	protected Vertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
 		this.meta = isRoot() ? (Vertex) this : meta;
 		this.value = getRoot().getCachedValue(value);
@@ -52,6 +62,10 @@ public class Vertex implements AncestorsService, DependenciesService, Inheritanc
 		inheritings = getFactory().buildDependencies();
 		metaComposites = getFactory().<Vertex> buildCompositeDependencies();
 		superComposites = getFactory().<Vertex> buildCompositeDependencies();
+
+		checkIsAlive(meta);
+		checkAreAlive(overrides);
+		checkAreAlive(components);
 		supers = getSupers(overrides);
 		checkOverrides(overrides);
 		checkSupers();
@@ -62,6 +76,7 @@ public class Vertex implements AncestorsService, DependenciesService, Inheritanc
 		return meta;
 	}
 
+	@Override
 	public Vertex[] getComponents() {
 		return components;
 	}
@@ -112,23 +127,24 @@ public class Vertex implements AncestorsService, DependenciesService, Inheritanc
 	}
 
 	@Override
-	public int hashCode() {
-		return Objects.hashCode(getValue());
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (!(o instanceof Vertex))
-			return false;
-		Vertex vertex = (Vertex) o;
-		return equals(vertex.getMeta(), vertex.getValue(), vertex.getComponents());
-	}
-
-	@Override
 	public String toString() {
 		return Objects.toString(getValue());
 	}
+
+	// @Override
+	// public boolean equals(Object obj) {
+	// if (this == obj)
+	// return true;
+	// if (!(obj instanceof Vertex))
+	// return false;
+	// Vertex service = (Vertex) obj;
+	// return this.equiv(service);
+	// }
+	//
+	// @Override
+	// public int hashCode() {
+	// // TODO introduce : meta and components length
+	// return Objects.hashCode(getValue());
+	// }
 
 }
