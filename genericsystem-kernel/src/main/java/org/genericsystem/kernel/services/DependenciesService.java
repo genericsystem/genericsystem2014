@@ -96,7 +96,6 @@ public interface DependenciesService extends AncestorsService<Vertex>, FactorySe
 	Snapshot<?> getSuperComposites();
 
 	@Override
-	@SuppressWarnings("unchecked")
 	default boolean isAncestorOf(final Vertex dependency) {
 		return dependency.inheritsFrom((Vertex) this) || dependency.getComponentsStream().filter(component -> !dependency.equals(component)).anyMatch(component -> isAncestorOf(component));
 	}

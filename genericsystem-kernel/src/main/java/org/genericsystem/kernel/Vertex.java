@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
 import org.genericsystem.kernel.Root.ValueCache;
+import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.BindingService;
 import org.genericsystem.kernel.services.CompositesInheritanceService;
@@ -44,6 +45,15 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService, In
 		supers = Statics.EMPTY_VERTICES;
 	}
 
+	private void checkAreAlive(Vertex... vertices) {
+		Arrays.stream(vertices).forEach(this::checkIsAlive);
+	};
+
+	private void checkIsAlive(Vertex vertex) {
+		if (!vertex.isPlugged())
+			rollbackAndThrowException(new NotAliveException(vertex));
+	};
+
 	protected Vertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
 		this.meta = isRoot() ? (Vertex) this : meta;
 		this.value = getRoot().getCachedValue(value);
@@ -52,6 +62,10 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService, In
 		inheritings = getFactory().buildDependencies();
 		metaComposites = getFactory().<Vertex> buildCompositeDependencies();
 		superComposites = getFactory().<Vertex> buildCompositeDependencies();
+
+		checkIsAlive(meta);
+		checkAreAlive(overrides);
+		checkAreAlive(components);
 		supers = getSupers(overrides);
 		checkOverrides(overrides);
 		checkSupers();

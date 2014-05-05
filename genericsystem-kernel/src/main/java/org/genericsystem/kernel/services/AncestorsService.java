@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Vertex;
-import org.genericsystem.kernel.exceptions.NotFoundException;
 
 public interface AncestorsService<T extends AncestorsService<T>> {
 
@@ -71,7 +70,7 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		return this.getMeta().equals(service.getMeta()) && Objects.equals(this.getValue(), service.getValue()) && this.getComponentsStream().collect(Collectors.toList()).equals(service.getComponentsStream().collect(Collectors.toList()));
 	}
 
-	default boolean isPlugged() throws NotFoundException {
+	default boolean isPlugged() {
 		return this == getPlugged();
 	}
 

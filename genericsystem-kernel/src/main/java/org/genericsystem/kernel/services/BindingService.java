@@ -91,6 +91,13 @@ public interface BindingService extends AncestorsService<Vertex>, DependenciesSe
 		return null;
 	}
 
+	default void removeInstance(Serializable value, Vertex... components) {
+		Vertex vertex = getInstance(value, components);
+		if (vertex == null)
+			rollbackAndThrowException(new NotFoundException((Vertex) this));
+		vertex.unplug();
+	}
+
 	default Stream<Vertex> select() {
 		return Stream.of((Vertex) this);
 	}
