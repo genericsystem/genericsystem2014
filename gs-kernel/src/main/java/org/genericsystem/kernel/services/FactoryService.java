@@ -2,7 +2,9 @@ package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
 import java.util.Iterator;
+
 import org.genericsystem.kernel.DependenciesImpl;
+import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.services.DependenciesService.CompositesDependencies;
 import org.genericsystem.kernel.services.DependenciesService.Dependencies;
@@ -16,7 +18,11 @@ public interface FactoryService<T extends FactoryService<T>> extends AncestorsSe
 
 	public static interface Factory<T> {
 
-		T buildVertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components);
+		T build(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components);
+
+		default public Root buildRoot() {
+			return new Root();
+		}
 
 		default Dependencies<T> buildDependencies() {
 			return new DependenciesImpl<T>();
@@ -24,7 +30,7 @@ public interface FactoryService<T extends FactoryService<T>> extends AncestorsSe
 
 		default CompositesDependencies<T> buildCompositeDependencies() {
 			class CompositesDependenciesImpl<E> implements CompositesDependencies<E> {
-				private Dependencies<DependenciesEntry<E>> delegate = Factory.this.buildDependencies();
+				private Dependencies<DependenciesEntry<E>> delegate = (Dependencies<DependenciesEntry<E>>) Factory.this.buildDependencies();
 
 				@Override
 				public boolean remove(DependenciesEntry<E> vertex) {
@@ -43,7 +49,7 @@ public interface FactoryService<T extends FactoryService<T>> extends AncestorsSe
 
 				@Override
 				public Dependencies<E> buildDependencies() {
-					return Factory.this.buildDependencies();
+					return (Dependencies<E>) Factory.this.buildDependencies();
 				}
 			}
 			return new CompositesDependenciesImpl<T>();
