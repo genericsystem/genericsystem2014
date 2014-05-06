@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.HashMap;
+
 import org.genericsystem.kernel.exceptions.RollbackException;
 
 public class Root extends Vertex {
@@ -15,7 +16,7 @@ public class Root extends Vertex {
 	public Root() {
 		this(new Factory<Vertex>() {
 			@Override
-			public Vertex buildVertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
+			public Vertex build(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
 				return new Vertex(meta, overrides, value, components);
 			}
 		});
