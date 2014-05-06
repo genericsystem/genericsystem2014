@@ -2,16 +2,29 @@ package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
 import java.util.Iterator;
-
 import org.genericsystem.kernel.DependenciesImpl;
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.services.DependenciesService.CompositesDependencies;
 import org.genericsystem.kernel.services.DependenciesService.Dependencies;
 import org.genericsystem.kernel.services.DependenciesService.DependenciesEntry;
 
-public interface FactoryService extends AncestorsService<Vertex> {
+public interface FactoryService<T extends FactoryService<T>> extends AncestorsService<T> {
 
-	public static interface Factory {
+	default Factory<T> getFactory() {
+		return getRoot().getFactory();
+	}
+
+	public static interface Factory<T> {
+
+		default Vertex buildVertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
+			return new DefaultVertex(meta, overrides, value, components);
+		}
+
+		static class DefaultVertex extends Vertex {
+			protected DefaultVertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
+				super(meta, overrides, value, components);
+			}
+		}
 
 		default <T> Dependencies<T> buildDependencies() {
 			return new DependenciesImpl<T>();
@@ -43,19 +56,5 @@ public interface FactoryService extends AncestorsService<Vertex> {
 			}
 			return new CompositesDependenciesImpl<T>();
 		}
-
-		default Vertex buildVertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
-			return new DefaultVertex(meta, overrides, value, components);
-		}
-	}
-
-	static class DefaultVertex extends Vertex {
-		protected DefaultVertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
-			super(meta, overrides, value, components);
-		}
-	}
-
-	default Factory getFactory() {
-		return getRoot().getFactory();
 	}
 }

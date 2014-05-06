@@ -22,7 +22,7 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		return false;
 	}
 
-	default <U extends T> U getRoot() {
+	default T getRoot() {
 		return getMeta().getRoot();
 	}
 

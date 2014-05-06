@@ -2,20 +2,18 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.HashMap;
-
 import org.genericsystem.kernel.exceptions.RollbackException;
 
 public class Root extends Vertex {
 	ValueCache valueCache;
-	Factory factory;
+	Factory<Vertex> factory;
 
-	public Root(Factory factory) {
+	public Root(Factory<Vertex> factory) {
 		super(factory);
 	}
 
 	public Root() {
-		this(new Factory() {
-		});
+		this(new Factory<Vertex>() {});
 	}
 
 	@Override
@@ -23,7 +21,6 @@ public class Root extends Vertex {
 		return true;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Root getRoot() {
 		return this;
@@ -39,7 +36,7 @@ public class Root extends Vertex {
 	}
 
 	@Override
-	public Factory getFactory() {
+	public Factory<Vertex> getFactory() {
 		return factory;
 	}
 

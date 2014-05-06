@@ -5,11 +5,10 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Vertex;
 
-public interface DependenciesService extends AncestorsService<Vertex>, FactoryService, ExceptionAdviserService {
+public interface DependenciesService extends AncestorsService<Vertex>, FactoryService<Vertex>, ExceptionAdviserService {
 
 	interface Dependencies<T> extends Snapshot<T> {
 
