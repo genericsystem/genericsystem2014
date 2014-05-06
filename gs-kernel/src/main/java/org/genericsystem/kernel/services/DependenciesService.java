@@ -1,14 +1,23 @@
 package org.genericsystem.kernel.services;
 
 import java.util.AbstractMap;
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Vertex;
 
 public interface DependenciesService extends AncestorsService<Vertex>, FactoryService<Vertex>, ExceptionAdviserService {
+
+	Snapshot<Vertex> getInstances();
+
+	Snapshot<Vertex> getInheritings();
+
+	Snapshot<Vertex> getMetaComposites(Vertex meta);
+
+	Snapshot<?> getMetaComposites();
+
+	Snapshot<?> getSuperComposites(Vertex superVertex);
+
+	Snapshot<?> getSuperComposites();
 
 	interface Dependencies<T> extends Snapshot<T> {
 
@@ -81,49 +90,5 @@ public interface DependenciesService extends AncestorsService<Vertex>, FactorySe
 		}
 
 		Dependencies<T> buildDependencies();
-	}
-
-	Snapshot<Vertex> getInstances();
-
-	Snapshot<Vertex> getInheritings();
-
-	Snapshot<Vertex> getMetaComposites(Vertex meta);
-
-	Snapshot<?> getMetaComposites();
-
-	Snapshot<?> getSuperComposites(Vertex superVertex);
-
-	Snapshot<?> getSuperComposites();
-
-	@Override
-	default boolean isAncestorOf(final Vertex dependency) {
-		return dependency.inheritsFrom((Vertex) this) || dependency.getComponentsStream().filter(component -> !dependency.equals(component)).anyMatch(component -> isAncestorOf(component));
-	}
-
-	@Override
-	Stream<Vertex> getSupersStream();
-
-	@Override
-	default boolean inheritsFrom(Vertex superVertex) {
-		if (this == superVertex || equals(superVertex))
-			return true;
-		if (getLevel() != superVertex.getLevel())
-			return false;
-		return getSupersStream().anyMatch(vertex -> vertex.inheritsFrom(superVertex));
-	}
-
-	@Override
-	default boolean isInstanceOf(Vertex metaVertex) {
-		return getMeta().inheritsFrom(metaVertex);
-	}
-
-	@Override
-	default boolean isAttributeOf(Vertex vertex) {
-		return isRoot() || getComponentsStream().anyMatch(component -> vertex.inheritsFrom(component) || vertex.isInstanceOf(component));
-	}
-
-	default void checkOverrides(Vertex[] overrides) {
-		if (!Arrays.asList(overrides).stream().allMatch(override -> getSupersStream().anyMatch(superVertex -> superVertex.inheritsFrom(override))))
-			throw new IllegalStateException("Inconsistant overrides : " + Arrays.toString(overrides) + " " + getSupersStream().collect(Collectors.toList()));
 	}
 }
