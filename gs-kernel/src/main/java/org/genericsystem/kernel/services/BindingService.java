@@ -5,9 +5,10 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
-import org.genericsystem.kernel.exceptions.ExistException;
+import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 
 public interface BindingService extends AncestorsService<Vertex>, DependenciesService, FactoryService<Vertex>, InheritanceService {
@@ -19,7 +20,7 @@ public interface BindingService extends AncestorsService<Vertex>, DependenciesSe
 	default Vertex addInstance(Vertex[] overrides, Serializable value, Vertex... components) {
 		Vertex vertex = getInstance(overrides, value, components);
 		if (vertex != null)
-			rollbackAndThrowException(new ExistException(vertex));
+			rollbackAndThrowException(new ExistsException(vertex));
 		return getFactory().build((Vertex) this, overrides, value, components).plug();
 	}
 
@@ -108,7 +109,7 @@ public interface BindingService extends AncestorsService<Vertex>, DependenciesSe
 	}
 
 	default Stream<Vertex> selectInstances() {
-		return getAllInheritings().map(inheriting -> inheriting.getInstances().stream()).reduce(Stream.empty(), Stream::concat);
+		return getAllInheritings().map(inheriting -> inheriting.getInstances().stream()).flatMap(x -> x);// .reduce(Stream.empty(), Stream::concat);
 	}
 
 	default Stream<Vertex> selectInstances(Predicate<Vertex> valuePredicate) {
