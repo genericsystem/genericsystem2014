@@ -2,7 +2,6 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.function.Function;
 
 import org.genericsystem.kernel.exceptions.RollbackException;
 
@@ -19,11 +18,6 @@ public class Root extends Vertex {
 			@Override
 			public Vertex build(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
 				return new Vertex(meta, overrides, value, components);
-			}
-
-			@Override
-			public Function<Vertex, Vertex> getVertexWrapper(Vertex vertex) {
-				throw new IllegalStateException();
 			}
 		});
 	}

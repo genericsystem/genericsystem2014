@@ -11,7 +11,7 @@ import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 
-public interface BindingService extends AncestorsService<Vertex>, DependenciesService, FactoryService<Vertex>, InheritanceService {
+public interface BindingService extends AncestorsService<Vertex>, DependenciesService, FactoryService<Vertex>, InheritanceService, ExceptionAdviserService {
 
 	default Vertex addInstance(Serializable value, Vertex... components) {
 		return addInstance(Statics.EMPTY_VERTICES, value, components);

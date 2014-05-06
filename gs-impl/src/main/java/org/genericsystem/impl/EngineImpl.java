@@ -2,11 +2,8 @@ package org.genericsystem.impl;
 
 import java.io.Serializable;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.Generic;
-import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.services.DependenciesService;
 
 public class EngineImpl extends GenericImpl {
@@ -16,12 +13,7 @@ public class EngineImpl extends GenericImpl {
 	private static class GenericFactory implements Factory<Generic> {
 		@Override
 		public Generic build(Generic meta, Generic[] overrides, Serializable value, Generic[] components) {
-			return new GenericImpl(() -> meta, () -> Stream.of(overrides), () -> value, () -> Stream.of(components));
-		}
-
-		@Override
-		public Function<Vertex, Generic> getVertexWrapper(Vertex vertex) {
-			return v -> v.isRoot() ? new EngineImpl(GenericFactory.this) : new GenericImpl(v, GenericFactory.this);
+			return new GenericImpl(meta, Stream.of(overrides), value, Stream.of(components));
 		}
 	}
 
@@ -30,7 +22,7 @@ public class EngineImpl extends GenericImpl {
 	}
 
 	public EngineImpl(Factory<Generic> factory) {
-		super(factory.buildRoot(), factory);
+		super(factory.buildRoot());
 		this.factory = factory;
 	}
 

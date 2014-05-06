@@ -3,6 +3,7 @@ package org.genericsystem.impl;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -15,6 +16,10 @@ public class GenericImpl implements Generic {
 
 	protected Supplier<AncestorsService<Generic>> supplier;
 
+	public static Function<Vertex, Generic> getVertexWrapper(Vertex vertex) {
+		return v -> v.isRoot() ? new EngineImpl() : new GenericImpl(v);
+	}
+
 	public GenericImpl(Supplier<AncestorsService<Generic>> supplier) {
 		this.supplier = supplier;
 	}
@@ -23,13 +28,17 @@ public class GenericImpl implements Generic {
 	// this(() -> vertex.getPlugged());
 	// }
 
-	public GenericImpl(final Supplier<Generic> metaSupplier, final Supplier<Stream<Generic>> supersSupplier, final Supplier<Serializable> valueSupplier, final Supplier<Stream<Generic>> componentsSupplier) {
+	// public GenericImpl(final Supplier<Generic> metaSupplier, final Supplier<Stream<Generic>> supersSupplier, final Supplier<Serializable> valueSupplier, final Supplier<Stream<Generic>> componentsSupplier) {
+	// this(metaSupplier.get(), supersSupplier.get(), valueSupplier.get(), componentsSupplier.get());
+	// }
+
+	public GenericImpl(Generic _meta, Stream<Generic> _supers, Serializable _value, Stream<Generic> _components) {
 		this(() -> new AncestorsService<Generic>() {
 
-			private final Generic meta = metaSupplier.get();
-			private final List<Generic> supers = supersSupplier.get().collect(Collectors.toList());
-			private final List<Generic> components = componentsSupplier.get().collect(Collectors.toList());
-			private final Serializable value = valueSupplier.get();
+			private final Generic meta = _meta;
+			private final List<Generic> supers = _supers.collect(Collectors.toList());
+			private final List<Generic> components = _components.collect(Collectors.toList());
+			private final Serializable value = _value;
 
 			@Override
 			public Generic getMeta() {
@@ -61,22 +70,22 @@ public class GenericImpl implements Generic {
 		return supplier;
 	}
 
-	public GenericImpl(final Vertex vertex, Factory<Generic> factory) {
+	public GenericImpl(final Vertex vertex) {
 		this(() -> new AncestorsService<Generic>() {
 
 			@Override
 			public Generic getMeta() {
-				return factory.getVertexWrapper(vertex).apply(vertex.getAlive().getMeta());
+				return getVertexWrapper(vertex).apply(vertex.getAlive().getMeta());
 			}
 
 			@Override
 			public Stream<Generic> getSupersStream() {
-				return vertex.getAlive().getSupersStream().map(factory.getVertexWrapper(vertex));
+				return vertex.getAlive().getSupersStream().map(getVertexWrapper(vertex));
 			}
 
 			@Override
 			public Stream<Generic> getComponentsStream() {
-				return vertex.getAlive().getComponentsStream().map(factory.getVertexWrapper(vertex));
+				return vertex.getAlive().getComponentsStream().map(getVertexWrapper(vertex));
 			}
 
 			@Override
