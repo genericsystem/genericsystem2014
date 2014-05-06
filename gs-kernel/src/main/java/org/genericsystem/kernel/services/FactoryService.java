@@ -2,12 +2,10 @@ package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
 import java.util.Iterator;
-
+import org.genericsystem.kernel.Dependencies;
+import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.DependenciesImpl;
 import org.genericsystem.kernel.Root;
-import org.genericsystem.kernel.services.DependenciesService.CompositesDependencies;
-import org.genericsystem.kernel.services.DependenciesService.Dependencies;
-import org.genericsystem.kernel.services.DependenciesService.DependenciesEntry;
 
 public interface FactoryService<T extends FactoryService<T>> extends AncestorsService<T> {
 
