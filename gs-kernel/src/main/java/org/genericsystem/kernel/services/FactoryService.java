@@ -16,21 +16,13 @@ public interface FactoryService<T extends FactoryService<T>> extends AncestorsSe
 
 	public static interface Factory<T> {
 
-		default Vertex buildVertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
-			return new DefaultVertex(meta, overrides, value, components);
-		}
+		T buildVertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components);
 
-		static class DefaultVertex extends Vertex {
-			protected DefaultVertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
-				super(meta, overrides, value, components);
-			}
-		}
-
-		default <T> Dependencies<T> buildDependencies() {
+		default Dependencies<T> buildDependencies() {
 			return new DependenciesImpl<T>();
 		}
 
-		default <T> CompositesDependencies<T> buildCompositeDependencies() {
+		default CompositesDependencies<T> buildCompositeDependencies() {
 			class CompositesDependenciesImpl<E> implements CompositesDependencies<E> {
 				private Dependencies<DependenciesEntry<E>> delegate = Factory.this.buildDependencies();
 

@@ -18,7 +18,7 @@ import org.genericsystem.kernel.services.SystemPropertiesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class Vertex implements AncestorsService<Vertex>, DependenciesService, InheritanceService, BindingService, CompositesInheritanceService, FactoryService<Vertex>, DisplayService<Vertex>, SystemPropertiesService, ExceptionAdviserService {
+public class Vertex implements AncestorsService<Vertex>, DependenciesService, InheritanceService, BindingService, CompositesInheritanceService, FactoryService<Vertex>, DisplayService<Vertex>, SystemPropertiesService, ExceptionAdviserService {
 
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 

@@ -13,7 +13,12 @@ public class Root extends Vertex {
 	}
 
 	public Root() {
-		this(new Factory<Vertex>() {});
+		this(new Factory<Vertex>() {
+			@Override
+			public Vertex buildVertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
+				return new Vertex(meta, overrides, value, components);
+			}
+		});
 	}
 
 	@Override
