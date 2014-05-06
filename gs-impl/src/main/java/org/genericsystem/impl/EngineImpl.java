@@ -40,7 +40,7 @@ public class EngineImpl extends GenericImpl {
 	}
 
 	@Override
-	public <U extends DependenciesService> U getPlugged() {
+	public <U extends DependenciesService> U getAlive() {
 		return null;
 	}
 

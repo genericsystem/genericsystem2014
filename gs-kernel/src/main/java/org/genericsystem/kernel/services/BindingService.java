@@ -57,7 +57,7 @@ public interface BindingService extends AncestorsService<Vertex>, DependenciesSe
 			public Serializable getValue() {
 				return value;
 			}
-		}.getPlugged();
+		}.getAlive();
 
 		// return getFactory().buildVertex((Vertex) this, Statics.EMPTY_VERTICES, value, components).getPlugged();
 	}

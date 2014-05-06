@@ -51,7 +51,7 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService, In
 	}
 
 	private void checkIsAlive(Vertex vertex) {
-		if (!vertex.isPlugged())
+		if (!vertex.isAlive())
 			rollbackAndThrowException(new NotAliveException(vertex));
 	}
 

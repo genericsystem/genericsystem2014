@@ -68,12 +68,12 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		return this.getMeta().equals(service.getMeta()) && Objects.equals(this.getValue(), service.getValue()) && this.getComponentsStream().collect(Collectors.toList()).equals(service.getComponentsStream().collect(Collectors.toList()));
 	}
 
-	default boolean isPlugged() {
-		return this == getPlugged();
+	default boolean isAlive() {
+		return this == getAlive();
 	}
 
-	default <U extends DependenciesService> U getPlugged() {
-		U pluggedMeta = getMeta().getPlugged();
+	default <U extends DependenciesService> U getAlive() {
+		U pluggedMeta = getMeta().getAlive();
 		if (pluggedMeta == null)
 			return null;
 		Iterator<U> it = (Iterator<U>) pluggedMeta.getInstances().iterator();

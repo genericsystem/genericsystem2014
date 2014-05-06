@@ -69,17 +69,17 @@ public class GenericImpl implements Generic {
 
 			@Override
 			public Generic getMeta() {
-				return VERTEX_WRAPPER.apply(vertex.getPlugged().getMeta());
+				return VERTEX_WRAPPER.apply(vertex.getAlive().getMeta());
 			}
 
 			@Override
 			public Stream<Generic> getSupersStream() {
-				return vertex.getPlugged().getSupersStream().map(VERTEX_WRAPPER);
+				return vertex.getAlive().getSupersStream().map(VERTEX_WRAPPER);
 			}
 
 			@Override
 			public Stream<Generic> getComponentsStream() {
-				return vertex.getPlugged().getComponentsStream().map(VERTEX_WRAPPER);
+				return vertex.getAlive().getComponentsStream().map(VERTEX_WRAPPER);
 			}
 
 			@Override

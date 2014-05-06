@@ -69,7 +69,7 @@ public class Root extends Vertex {
 	}
 
 	@Override
-	public Vertex getPlugged() {
+	public Vertex getAlive() {
 		// TODO is enough ?
 		return this;
 	}
