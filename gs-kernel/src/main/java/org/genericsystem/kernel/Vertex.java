@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Root.ValueCache;
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.genericsystem.kernel.services.AncestorsService;
@@ -32,7 +33,7 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService, In
 	private final Vertex[] supers;
 
 	// Engine constructor
-	protected Vertex(Factory factory) {
+	protected Vertex(Factory<Vertex> factory) {
 		((Root) this).valueCache = new ValueCache();
 		((Root) this).factory = factory;
 		meta = this;
@@ -40,28 +41,28 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService, In
 		components = Statics.EMPTY_VERTICES;
 		instances = getFactory().buildDependencies();
 		inheritings = getFactory().buildDependencies();
-		metaComposites = getFactory().<Vertex> buildCompositeDependencies();
-		superComposites = getFactory().<Vertex> buildCompositeDependencies();
+		metaComposites = getFactory().buildCompositeDependencies();
+		superComposites = getFactory().buildCompositeDependencies();
 		supers = Statics.EMPTY_VERTICES;
 	}
 
 	private void checkAreAlive(Vertex... vertices) {
 		Arrays.stream(vertices).forEach(this::checkIsAlive);
-	};
+	}
 
 	private void checkIsAlive(Vertex vertex) {
 		if (!vertex.isPlugged())
 			rollbackAndThrowException(new NotAliveException(vertex));
-	};
+	}
 
-	protected Vertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
+	public Vertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
 		this.meta = isRoot() ? (Vertex) this : meta;
 		this.value = ((Root) this.getRoot()).getCachedValue(value);
 		this.components = components;
 		instances = getFactory().buildDependencies();
 		inheritings = getFactory().buildDependencies();
-		metaComposites = getFactory().<Vertex> buildCompositeDependencies();
-		superComposites = getFactory().<Vertex> buildCompositeDependencies();
+		metaComposites = getFactory().buildCompositeDependencies();
+		superComposites = getFactory().buildCompositeDependencies();
 
 		checkIsAlive(meta);
 		checkAreAlive(overrides);
