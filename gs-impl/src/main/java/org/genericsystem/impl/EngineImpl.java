@@ -3,7 +3,6 @@ package org.genericsystem.impl;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.Generic;
 import org.genericsystem.kernel.services.DependenciesService;
 

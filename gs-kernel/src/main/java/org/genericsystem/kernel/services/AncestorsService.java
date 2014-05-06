@@ -84,5 +84,4 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		}
 		return null;
 	}
-
 }

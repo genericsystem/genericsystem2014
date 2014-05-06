@@ -142,4 +142,10 @@ public interface InheritanceService extends AncestorsService<Vertex>, SystemProp
 		if (!getSupersStream().noneMatch(superVertex -> superVertex.equals(this)))
 			throw new IllegalStateException("Inconsistant supers : " + getSupersStream().collect(Collectors.toList()));
 	}
+
+	default void checkOverrides(Vertex[] overrides) {
+		if (!Arrays.asList(overrides).stream().allMatch(override -> getSupersStream().anyMatch(superVertex -> superVertex.inheritsFrom(override))))
+			throw new IllegalStateException("Inconsistant overrides : " + Arrays.toString(overrides) + " " + getSupersStream().collect(Collectors.toList()));
+	}
+
 }
