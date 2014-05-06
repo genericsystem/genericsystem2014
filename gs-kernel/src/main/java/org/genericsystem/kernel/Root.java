@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.HashMap;
+
 import org.genericsystem.kernel.exceptions.RollbackException;
 
 public class Root extends Vertex {
@@ -13,7 +14,8 @@ public class Root extends Vertex {
 	}
 
 	public Root() {
-		this(new Factory() {});
+		this(new Factory() {
+		});
 	}
 
 	@Override
@@ -21,6 +23,7 @@ public class Root extends Vertex {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Root getRoot() {
 		return this;

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Root.ValueCache;
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.genericsystem.kernel.services.AncestorsService;
@@ -18,7 +19,7 @@ import org.genericsystem.kernel.services.SystemPropertiesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Vertex implements AncestorsService<Vertex>, DependenciesService, InheritanceService, BindingService, CompositesInheritanceService, FactoryService, DisplayService, SystemPropertiesService, ExceptionAdviserService {
+public abstract class Vertex implements AncestorsService<Vertex>, DependenciesService, InheritanceService, BindingService, CompositesInheritanceService, FactoryService, DisplayService<Vertex>, SystemPropertiesService, ExceptionAdviserService {
 
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 
@@ -56,7 +57,7 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService, In
 
 	protected Vertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
 		this.meta = isRoot() ? (Vertex) this : meta;
-		this.value = getRoot().getCachedValue(value);
+		this.value = this.<Root> getRoot().getCachedValue(value);
 		this.components = components;
 		instances = getFactory().buildDependencies();
 		inheritings = getFactory().buildDependencies();

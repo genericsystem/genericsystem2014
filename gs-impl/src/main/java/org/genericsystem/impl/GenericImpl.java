@@ -14,7 +14,7 @@ import org.genericsystem.kernel.services.AncestorsService;
 
 public class GenericImpl implements Generic {
 
-	private Supplier<AncestorsService<Generic>> supplier;
+	protected Supplier<AncestorsService<Generic>> supplier;
 
 	public GenericImpl(Supplier<AncestorsService<Generic>> supplier) {
 		this.supplier = supplier;
@@ -62,7 +62,7 @@ public class GenericImpl implements Generic {
 		return supplier;
 	}
 
-	private static final Function<Vertex, Generic> VERTEX_WRAPPER = GenericImpl::new;
+	public static final Function<Vertex, Generic> VERTEX_WRAPPER = vertex -> vertex.isRoot() ? new EngineImpl(vertex) : new GenericImpl(vertex);
 
 	public GenericImpl(final Vertex vertex) {
 		this(() -> new AncestorsService<Generic>() {
@@ -124,6 +124,11 @@ public class GenericImpl implements Generic {
 	public int hashCode() {
 		// TODO introduce : meta and components length
 		return Objects.hashCode(getValue());
+	}
+
+	@Override
+	public String toString() {
+		return Objects.toString(getValue());
 	}
 
 }

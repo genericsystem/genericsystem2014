@@ -2,6 +2,7 @@ package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
 import java.util.Iterator;
+
 import org.genericsystem.kernel.DependenciesImpl;
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.services.DependenciesService.CompositesDependencies;
