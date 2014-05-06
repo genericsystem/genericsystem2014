@@ -3,7 +3,6 @@ package org.genericsystem.impl;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -62,24 +61,22 @@ public class GenericImpl implements Generic {
 		return supplier;
 	}
 
-	public static final Function<Vertex, Generic> VERTEX_WRAPPER = vertex -> vertex.isRoot() ? new EngineImpl(vertex) : new GenericImpl(vertex);
-
-	public GenericImpl(final Vertex vertex) {
+	public GenericImpl(final Vertex vertex, Factory<Generic> factory) {
 		this(() -> new AncestorsService<Generic>() {
 
 			@Override
 			public Generic getMeta() {
-				return VERTEX_WRAPPER.apply(vertex.getAlive().getMeta());
+				return factory.getVertexWrapper(vertex).apply(vertex.getAlive().getMeta());
 			}
 
 			@Override
 			public Stream<Generic> getSupersStream() {
-				return vertex.getAlive().getSupersStream().map(VERTEX_WRAPPER);
+				return vertex.getAlive().getSupersStream().map(factory.getVertexWrapper(vertex));
 			}
 
 			@Override
 			public Stream<Generic> getComponentsStream() {
-				return vertex.getAlive().getComponentsStream().map(VERTEX_WRAPPER);
+				return vertex.getAlive().getComponentsStream().map(factory.getVertexWrapper(vertex));
 			}
 
 			@Override

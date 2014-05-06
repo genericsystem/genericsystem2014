@@ -2,6 +2,7 @@ package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.function.Function;
 
 import org.genericsystem.kernel.DependenciesImpl;
 import org.genericsystem.kernel.Root;
@@ -18,7 +19,9 @@ public interface FactoryService<T extends FactoryService<T>> extends AncestorsSe
 
 	public static interface Factory<T> {
 
-		T build(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components);
+		T build(T meta, T[] overrides, Serializable value, T[] components);
+
+		Function<Vertex, T> getVertexWrapper(Vertex vertex);
 
 		default public Root buildRoot() {
 			return new Root();
