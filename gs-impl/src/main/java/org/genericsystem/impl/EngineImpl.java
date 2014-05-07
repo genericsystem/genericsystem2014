@@ -42,6 +42,11 @@ public class EngineImpl extends GenericImpl {
 	}
 
 	@Override
+	public boolean isAlive() {
+		return equiv(getAlive());
+	}
+
+	@Override
 	public EngineImpl getRoot() {
 		return this;
 	}

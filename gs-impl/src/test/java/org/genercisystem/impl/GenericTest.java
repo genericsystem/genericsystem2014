@@ -15,14 +15,18 @@ public class GenericTest extends AbstractTest {
 
 	public void testEngine() {
 		EngineImpl engine = new EngineImpl();
-		assert engine.getMeta().equals(engine);
+		assert engine.getAlive() != null;
 		assert engine.getComponentsStream().count() == 0;
-		assert engine.getSupersStream().count() == 0;
+		assert engine.getInheritings().stream().count() == 0;
+		assert engine.getInstances().stream().count() == 0;
 		assert engine.getLevel() == 0;
+		assert engine.getMeta().equals(engine);
 		assert engine.getRoot().equals(engine);
+		assert engine.getSupersStream().count() == 0;
 		assert engine.getValue().equals(Statics.ENGINE_VALUE);
+		assert engine.isAlive();
+		assert engine.isMeta();
 		assert engine.isRoot();
-		// assert engine.isPlugged();
 	}
 
 	public void testFactory() {
@@ -48,9 +52,12 @@ public class GenericTest extends AbstractTest {
 		Generic powerVehicle = engine.getInstances().filter(g -> g.getValue().equals("Power")).stream().findFirst().get();
 		assert vehicle.getAlive().equiv(vehicleVertex) : engine.getInstances();
 		assert powerVehicle.getAlive().equiv(powerVehicleVertex) : engine.getInstances();
-		// GenericImpl vehicle = new GenericImpl(engine.<EngineImpl> getRoot().addInstance("Vehicle"));
-		// assert vehicle.isPlugged();
-		// assert engine.isAncestorOf(vehicle);
+	}
+
+	public void testAddInstance() {
+		EngineImpl engine = new EngineImpl();
+		// Generic vehicle = engine.addInstance("Vehicle");
+		// assert engine.getInstances().contains(vehicle);
 	}
 	// public void test() {
 	// Vertex engine = new Root();
