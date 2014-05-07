@@ -3,7 +3,6 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Objects;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.genericsystem.kernel.Vertex;
@@ -17,11 +16,6 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 	abstract Serializable getValue();
 
 	default int getLevel() {
-		Stream<T> components = getComponentsStream();
-		final Predicate<T> condition = x -> x.getLevel() == 0;
-		if (components.allMatch(condition))
-			return 0;
-
 		return getMeta().getLevel() + 1;
 	}
 
