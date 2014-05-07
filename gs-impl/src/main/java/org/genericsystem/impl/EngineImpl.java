@@ -2,28 +2,38 @@ package org.genericsystem.impl;
 
 import java.io.Serializable;
 import java.util.Objects;
-import java.util.stream.Stream;
+
 import org.genericsystem.api.Generic;
-import org.genericsystem.kernel.services.DependenciesService;
+import org.genericsystem.kernel.Root;
+import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.Vertex;
+import org.genericsystem.kernel.services.AncestorsService;
 
 public class EngineImpl extends GenericImpl {
 
 	Factory<Generic> factory;
 
-	private static class GenericFactory implements Factory<Generic> {
-		@Override
-		public Generic build(Generic meta, Generic[] overrides, Serializable value, Generic[] components) {
-			return new GenericImpl(meta, Stream.of(overrides), value, Stream.of(components));
-		}
-	}
+	Root root = null;
 
 	public EngineImpl() {
-		this(new GenericFactory());
+		this(new Factory<Generic>() {
+			@Override
+			public Generic build(Generic meta, Generic[] overrides, Serializable value, Generic[] components) {
+				return new GenericImpl(meta, overrides, value, components);
+			}
+		});
 	}
 
 	public EngineImpl(Factory<Generic> factory) {
-		super(factory.buildRoot());
+		super(null, new Generic[] {}, Statics.ENGINE_VALUE, new Generic[] {});
 		this.factory = factory;
+		this.root = factory.buildRoot();
+	}
+
+	public EngineImpl(Root root) {
+		super(null, new Generic[] {}, Statics.ENGINE_VALUE, new Generic[] {});
+		this.factory = null;
+		this.root = root;
 	}
 
 	@Override
@@ -37,8 +47,8 @@ public class EngineImpl extends GenericImpl {
 	}
 
 	@Override
-	public <U extends DependenciesService> U getAlive() {
-		return null;
+	public Generic getMeta() {
+		return this;
 	}
 
 	@Override
@@ -47,12 +57,18 @@ public class EngineImpl extends GenericImpl {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+	public Factory<Generic> getFactory() {
+		return factory;
+	}
+
+	@Override
+	public Vertex getAlive() {
+		return root;
+	}
+
+	public boolean equiv(AncestorsService<?> service) {
+		if (this == service)
 			return true;
-		if (!(obj instanceof EngineImpl))
-			return false;
-		EngineImpl service = (EngineImpl) obj;
-		return Objects.equals(this.getValue(), service.getValue());
+		return Objects.equals(getValue(), service.getValue()) && equivComponents(service);
 	}
 }
