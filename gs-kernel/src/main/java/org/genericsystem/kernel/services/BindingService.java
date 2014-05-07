@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.exceptions.ExistsException;
@@ -87,7 +88,7 @@ public interface BindingService extends AncestorsService<Vertex>, DependenciesSe
 
 	default Vertex getInstance(Vertex[] supers, Serializable value, Vertex... components) {
 		Vertex result = getInstance(value, components);
-		if (result != null && Arrays.stream(supers).allMatch(superVertex -> result.inheritsFrom(superVertex)))
+		if (result != null && Arrays.stream(supers).allMatch(superVertex -> result.inheritsFrom(result)))
 			return result;
 		return null;
 	}
