@@ -88,7 +88,7 @@ public interface BindingService extends AncestorsService<Vertex>, DependenciesSe
 
 	default Vertex getInstance(Vertex[] supers, Serializable value, Vertex... components) {
 		Vertex result = getInstance(value, components);
-		if (result != null && Arrays.stream(supers).allMatch(superVertex -> result.inheritsFrom(result)))
+		if (result != null && Arrays.stream(supers).allMatch(superVertex -> result.inheritsFrom(superVertex)))
 			return result;
 		return null;
 	}
