@@ -33,7 +33,6 @@ public interface SystemPropertiesService {
 	}
 
 	default boolean isReferentialIntegrity(int pos) {
-		// assert -1 != Statics.NO_POSITION;
 		return pos != Statics.BASE_POSITION;
 	}
 }

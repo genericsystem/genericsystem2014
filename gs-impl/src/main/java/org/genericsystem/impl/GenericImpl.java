@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.genericsystem.api.Generic;
+import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.services.AncestorsService;
 
@@ -16,9 +17,7 @@ public class GenericImpl implements Generic {
 
 	protected Supplier<AncestorsService<Generic>> supplier;
 
-	public static Function<Vertex, Generic> getVertexWrapper(Vertex vertex) {
-		return v -> v.isRoot() ? new EngineImpl() : new GenericImpl(v);
-	}
+	public static final Function<Vertex, Generic> VERTEX_WRAPPER = v -> v.isRoot() ? new EngineImpl() : new GenericImpl(v);
 
 	public GenericImpl(Supplier<AncestorsService<Generic>> supplier) {
 		this.supplier = supplier;
@@ -75,17 +74,17 @@ public class GenericImpl implements Generic {
 
 			@Override
 			public Generic getMeta() {
-				return getVertexWrapper(vertex).apply(vertex.getAlive().getMeta());
+				return VERTEX_WRAPPER.apply(vertex.getAlive().getMeta());
 			}
 
 			@Override
 			public Stream<Generic> getSupersStream() {
-				return vertex.getAlive().getSupersStream().map(getVertexWrapper(vertex));
+				return vertex.getAlive().getSupersStream().map(VERTEX_WRAPPER);
 			}
 
 			@Override
 			public Stream<Generic> getComponentsStream() {
-				return vertex.getAlive().getComponentsStream().map(getVertexWrapper(vertex));
+				return vertex.getAlive().getComponentsStream().map(VERTEX_WRAPPER);
 			}
 
 			@Override
@@ -135,6 +134,36 @@ public class GenericImpl implements Generic {
 	@Override
 	public String toString() {
 		return Objects.toString(getValue());
+	}
+
+	@Override
+	public Snapshot<Generic> getInstances() {
+		return getAlive().getInstances().project(VERTEX_WRAPPER);
+	}
+
+	@Override
+	public Snapshot<Generic> getInheritings() {
+		return getMeta().getInheritings();
+	}
+
+	@Override
+	public Snapshot<Generic> getMetaComposites(Generic meta) {
+		return getMeta().getMetaComposites(meta);
+	}
+
+	@Override
+	public Snapshot<?> getMetaComposites() {
+		return getMeta().getMetaComposites();
+	}
+
+	@Override
+	public Snapshot<?> getSuperComposites(Generic superVertex) {
+		return getMeta().getSuperComposites(superVertex);
+	}
+
+	@Override
+	public Snapshot<?> getSuperComposites() {
+		return getMeta().getSuperComposites();
 	}
 
 }

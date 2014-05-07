@@ -1,13 +1,20 @@
 package org.genercisystem.impl;
 
+import java.io.Serializable;
+import java.util.stream.Stream;
+
+import org.genericsystem.api.Generic;
 import org.genericsystem.impl.EngineImpl;
+import org.genericsystem.impl.GenericImpl;
 import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.Vertex;
+import org.genericsystem.kernel.services.FactoryService.Factory;
 import org.testng.annotations.Test;
 
 @Test
 public class GenericTest extends AbstractTest {
 
-	public void test() {
+	public void testEngine() {
 		EngineImpl engine = new EngineImpl();
 		assert engine.getMeta().equals(engine);
 		assert engine.getComponentsStream().count() == 0;
@@ -19,8 +26,26 @@ public class GenericTest extends AbstractTest {
 		// assert engine.isPlugged();
 	}
 
-	public void testType() {
+	public void testFactory() {
+		MyFactory myFactory = new MyFactory();
+		EngineImpl engine = new EngineImpl(myFactory);
+		assert engine.getFactory().equals(myFactory);
+		assert engine.getFactory() == myFactory;
+	}
+
+	private static class MyFactory implements Factory<Generic> {
+		@Override
+		public Generic build(Generic meta, Generic[] overrides, Serializable value, Generic[] components) {
+			return new GenericImpl(meta, Stream.of(overrides), value, Stream.of(components));
+		}
+	}
+
+	public void testGetInstances() {
 		EngineImpl engine = new EngineImpl();
+		assert engine.getInstances().isEmpty();
+		Vertex vehicle = engine.getAlive().addInstance("Vehicle");
+		log.info("findFirst " + engine.getInstances().stream().findFirst().get().info());
+		assert engine.getInstances().stream().findFirst().get().getAlive().equiv(vehicle) : engine.getInstances();
 		// GenericImpl vehicle = new GenericImpl(engine.<EngineImpl> getRoot().addInstance("Vehicle"));
 		// assert vehicle.isPlugged();
 		// assert engine.isAncestorOf(vehicle);

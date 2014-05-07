@@ -33,6 +33,11 @@ public class Root extends Vertex {
 	}
 
 	@Override
+	public Vertex getMeta() {
+		return this;
+	}
+
+	@Override
 	public int getLevel() {
 		return 0;
 	}

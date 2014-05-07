@@ -6,6 +6,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.genericsystem.kernel.Vertex;
+
 public interface AncestorsService<T extends AncestorsService<T>> {
 
 	T getMeta();
@@ -72,13 +74,13 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		return this == getAlive();
 	}
 
-	default <U extends DependenciesService> U getAlive() {
-		U pluggedMeta = getMeta().getAlive();
+	default Vertex getAlive() {
+		Vertex pluggedMeta = getMeta().getAlive();
 		if (pluggedMeta == null)
 			return null;
-		Iterator<U> it = (Iterator<U>) pluggedMeta.getInstances().iterator();
+		Iterator<Vertex> it = pluggedMeta.getInstances().iterator();
 		while (it.hasNext()) {
-			U next = it.next();
+			Vertex next = it.next();
 			if (equiv(next))
 				return next;
 		}

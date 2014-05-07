@@ -3,12 +3,17 @@ package org.genericsystem.impl;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.Generic;
-import org.genericsystem.kernel.services.DependenciesService;
+import org.genericsystem.kernel.Root;
+import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.Vertex;
 
 public class EngineImpl extends GenericImpl {
 
 	Factory<Generic> factory;
+
+	Root root = null;
 
 	private static class GenericFactory implements Factory<Generic> {
 		@Override
@@ -22,8 +27,9 @@ public class EngineImpl extends GenericImpl {
 	}
 
 	public EngineImpl(Factory<Generic> factory) {
-		super(factory.buildRoot());
+		super(null, Stream.of(new Generic[] {}), Statics.ENGINE_VALUE, Stream.of(new Generic[] {}));
 		this.factory = factory;
+		this.root = factory.buildRoot();
 	}
 
 	@Override
@@ -37,13 +43,19 @@ public class EngineImpl extends GenericImpl {
 	}
 
 	@Override
+	public Generic getMeta() {
+		return this;
+	}
+
+	@Override
 	public Factory<Generic> getFactory() {
 		return factory;
 	}
 
 	@Override
-	public <U extends DependenciesService> U getAlive() {
-		return null;
+	public Vertex getAlive() {
+		assert root != null;
+		return root;
 	}
 
 	@Override
