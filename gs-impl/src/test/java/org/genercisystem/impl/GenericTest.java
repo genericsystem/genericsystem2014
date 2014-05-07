@@ -1,7 +1,6 @@
 package org.genercisystem.impl;
 
 import java.io.Serializable;
-import java.util.stream.Stream;
 
 import org.genericsystem.api.Generic;
 import org.genericsystem.impl.EngineImpl;
@@ -36,21 +35,23 @@ public class GenericTest extends AbstractTest {
 	private static class MyFactory implements Factory<Generic> {
 		@Override
 		public Generic build(Generic meta, Generic[] overrides, Serializable value, Generic[] components) {
-			return new GenericImpl(meta, Stream.of(overrides), value, Stream.of(components));
+			return new GenericImpl(meta, overrides, value, components);
 		}
 	}
 
 	public void testGetInstances() {
 		EngineImpl engine = new EngineImpl();
 		assert engine.getInstances().isEmpty();
-		Vertex vehicle = engine.getAlive().addInstance("Vehicle");
-		log.info("findFirst " + engine.getInstances().stream().findFirst().get().info());
-		assert engine.getInstances().stream().findFirst().get().getAlive().equiv(vehicle) : engine.getInstances();
+		Vertex vehicleVertex = engine.getAlive().addInstance("Vehicle");
+		Vertex powerVehicleVertex = engine.getAlive().addInstance("Power", vehicleVertex);
+		Generic vehicle = engine.getInstances().filter(g -> g.getValue().equals("Vehicle")).stream().findFirst().get();
+		Generic powerVehicle = engine.getInstances().filter(g -> g.getValue().equals("Power")).stream().findFirst().get();
+		assert vehicle.getAlive().equiv(vehicleVertex) : engine.getInstances();
+		assert powerVehicle.getAlive().equiv(powerVehicleVertex) : engine.getInstances();
 		// GenericImpl vehicle = new GenericImpl(engine.<EngineImpl> getRoot().addInstance("Vehicle"));
 		// assert vehicle.isPlugged();
 		// assert engine.isAncestorOf(vehicle);
 	}
-
 	// public void test() {
 	// Vertex engine = new Root();
 	// Vertex vehicle = engine.addInstance("Vehicle");
