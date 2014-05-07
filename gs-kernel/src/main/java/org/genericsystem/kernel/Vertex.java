@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Root.ValueCache;
 import org.genericsystem.kernel.exceptions.NotAliveException;
@@ -19,7 +20,7 @@ import org.genericsystem.kernel.services.SystemPropertiesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Vertex implements AncestorsService<Vertex>, DependenciesService, InheritanceService, BindingService, CompositesInheritanceService, FactoryService<Vertex>, DisplayService<Vertex>, SystemPropertiesService, ExceptionAdviserService {
+public class Vertex implements AncestorsService<Vertex>, DependenciesService<Vertex>, InheritanceService, BindingService, CompositesInheritanceService, FactoryService<Vertex>, DisplayService<Vertex>, SystemPropertiesService, ExceptionAdviserService {
 
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 
@@ -33,7 +34,7 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService, In
 	private final Vertex[] supers;
 
 	// Engine constructor
-	protected Vertex(Factory<Vertex> factory) {
+	Vertex(Factory<Vertex> factory) {
 		((Root) this).valueCache = new ValueCache();
 		((Root) this).factory = factory;
 		meta = this;
@@ -55,10 +56,12 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService, In
 			rollbackAndThrowException(new NotAliveException(vertex));
 	}
 
-	public Vertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
+	Vertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
 		this.meta = isRoot() ? (Vertex) this : meta;
 		this.value = ((Root) this.getRoot()).getCachedValue(value);
-		this.components = components;
+		this.components = new Vertex[components.length];
+		for (int i = 0; i < components.length; i++)
+			this.components[i] = components[i] == null ? this : components[i];
 		instances = getFactory().buildDependencies();
 		inheritings = getFactory().buildDependencies();
 		metaComposites = getFactory().buildCompositeDependencies();
@@ -102,22 +105,18 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService, In
 		return inheritings;
 	}
 
-	@Override
 	public Snapshot<Vertex> getMetaComposites(Vertex meta) {
 		return metaComposites.getByIndex(meta);
 	}
 
-	@Override
 	public Snapshot<Vertex> getSuperComposites(Vertex superVertex) {
 		return superComposites.getByIndex(superVertex);
 	}
 
-	@Override
 	public CompositesDependencies<Vertex> getMetaComposites() {
 		return metaComposites;
 	}
 
-	@Override
 	public CompositesDependencies<Vertex> getSuperComposites() {
 		return superComposites;
 	}
