@@ -3,8 +3,9 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.genericsystem.kernel.Vertex;
 
 public interface AncestorsService<T extends AncestorsService<T>> {
 
@@ -65,20 +66,34 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		if (this == service)
 			return true;
 		// TODO improve streams comparison
-		return this.getMeta().equals(service.getMeta()) && Objects.equals(this.getValue(), service.getValue()) && this.getComponentsStream().collect(Collectors.toList()).equals(service.getComponentsStream().collect(Collectors.toList()));
+		return this.getMeta().equiv(service.getMeta()) && Objects.equals(getValue(), service.getValue()) && equivComponents(service);
+	}
+
+	default boolean equivComponents(AncestorsService<?> service) {
+		Iterator<T> components = getComponentsStream().iterator();
+		LOOP: while (components.hasNext()) {
+			T component = components.next();
+			Iterator<?> otherComponents = service.getComponentsStream().iterator();
+			while (otherComponents.hasNext()) {
+				if (component.equiv((AncestorsService<?>) otherComponents.next()))
+					continue LOOP;
+			}
+			return false;
+		}
+		return true;
 	}
 
 	default boolean isAlive() {
 		return this == getAlive();
 	}
 
-	default <U extends DependenciesService> U getAlive() {
-		U pluggedMeta = getMeta().getAlive();
+	default Vertex getAlive() {
+		Vertex pluggedMeta = getMeta().getAlive();
 		if (pluggedMeta == null)
 			return null;
-		Iterator<U> it = (Iterator<U>) pluggedMeta.getInstances().iterator();
+		Iterator<Vertex> it = pluggedMeta.getInstances().iterator();
 		while (it.hasNext()) {
-			U next = it.next();
+			Vertex next = it.next();
 			if (equiv(next))
 				return next;
 		}
