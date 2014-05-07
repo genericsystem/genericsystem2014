@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.exceptions.ExistsException;
@@ -36,31 +35,31 @@ public interface BindingService extends AncestorsService<Vertex>, DependenciesSe
 	}
 
 	default Vertex getInstance(Serializable value, Vertex... components) {
-		// here we should avoid to compute supers
-		return new AncestorsService<Vertex>() {
+		// // here we should avoid to compute supers
+		// return new AncestorsService<Vertex>() {
+		//
+		// @Override
+		// public Vertex getMeta() {
+		// return (Vertex) BindingService.this;
+		// }
+		//
+		// @Override
+		// public Stream<Vertex> getSupersStream() {
+		// return Stream.empty();// TODO Strange to have this
+		// }
+		//
+		// @Override
+		// public Stream<Vertex> getComponentsStream() {
+		// return Stream.of(components);
+		// }
+		//
+		// @Override
+		// public Serializable getValue() {
+		// return value;
+		// }
+		// }.getAlive();
 
-			@Override
-			public Vertex getMeta() {
-				return (Vertex) BindingService.this;
-			}
-
-			@Override
-			public Stream<Vertex> getSupersStream() {
-				return Stream.empty();// TODO Strange to have this
-			}
-
-			@Override
-			public Stream<Vertex> getComponentsStream() {
-				return Stream.of(components);
-			}
-
-			@Override
-			public Serializable getValue() {
-				return value;
-			}
-		}.getAlive();
-
-		// return getFactory().buildVertex((Vertex) this, Statics.EMPTY_VERTICES, value, components).getPlugged();
+		return getFactory().build((Vertex) this, Statics.EMPTY_VERTICES, value, components).getAlive();
 	}
 
 	default Vertex plug() {
@@ -108,12 +107,12 @@ public interface BindingService extends AncestorsService<Vertex>, DependenciesSe
 		return Stream.concat(select(), Statics.concat(getInheritings().stream(), inheriting -> inheriting.getAllInheritings()).distinct());
 	}
 
-	default Stream<Vertex> selectInstances() {
+	default Stream<Vertex> getAllInstances() {
 		return getAllInheritings().map(inheriting -> inheriting.getInstances().stream()).flatMap(x -> x);// .reduce(Stream.empty(), Stream::concat);
 	}
 
 	default Stream<Vertex> selectInstances(Predicate<Vertex> valuePredicate) {
-		return selectInstances().filter(valuePredicate);
+		return getAllInstances().filter(valuePredicate);
 	}
 
 	default Stream<Vertex> selectInstances(Serializable value) {
