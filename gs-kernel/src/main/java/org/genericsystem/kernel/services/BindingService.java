@@ -5,12 +5,13 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 
-public interface BindingService extends AncestorsService<Vertex>, DependenciesService, FactoryService<Vertex>, InheritanceService, ExceptionAdviserService {
+public interface BindingService extends AncestorsService<Vertex>, DependenciesService<Vertex>, FactoryService<Vertex>, InheritanceService, ExceptionAdviserService {
 
 	default Vertex addInstance(Serializable value, Vertex... components) {
 		return addInstance(Statics.EMPTY_VERTICES, value, components);

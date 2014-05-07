@@ -9,10 +9,6 @@ public class Root extends Vertex {
 	ValueCache valueCache;
 	Factory<Vertex> factory;
 
-	public Root(Factory<Vertex> factory) {
-		super(factory);
-	}
-
 	public Root() {
 		this(new Factory<Vertex>() {
 			@Override
@@ -22,6 +18,10 @@ public class Root extends Vertex {
 		});
 	}
 
+	public Root(Factory<Vertex> factory) {
+		super(factory);
+	}
+
 	@Override
 	public boolean isRoot() {
 		return true;
@@ -29,6 +29,11 @@ public class Root extends Vertex {
 
 	@Override
 	public Root getRoot() {
+		return this;
+	}
+
+	@Override
+	public Vertex getMeta() {
 		return this;
 	}
 
@@ -73,4 +78,5 @@ public class Root extends Vertex {
 		// TODO is enough ?
 		return this;
 	}
+
 }
