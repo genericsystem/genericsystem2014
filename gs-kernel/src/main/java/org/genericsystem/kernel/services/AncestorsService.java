@@ -3,8 +3,10 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
+
+import org.genericsystem.kernel.Vertex;
 
 public interface AncestorsService<T extends AncestorsService<T>> {
 
@@ -15,6 +17,11 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 	abstract Serializable getValue();
 
 	default int getLevel() {
+		Stream<T> components = getComponentsStream();
+		final Predicate<T> condition = x -> x.getLevel() == 0;
+		if (components.allMatch(condition))
+			return 0;
+
 		return getMeta().getLevel() + 1;
 	}
 
@@ -65,20 +72,29 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		if (this == service)
 			return true;
 		// TODO improve streams comparison
-		return this.getMeta().equals(service.getMeta()) && Objects.equals(this.getValue(), service.getValue()) && this.getComponentsStream().collect(Collectors.toList()).equals(service.getComponentsStream().collect(Collectors.toList()));
+		return this.getMeta().equiv(service.getMeta()) && Objects.equals(getValue(), service.getValue()) && equivComponents(service);
+	}
+
+	default boolean equivComponents(AncestorsService<?> service) {
+		Iterator<T> components = getComponentsStream().iterator();
+		Iterator<?> otherComponents = service.getComponentsStream().iterator();
+		while (components.hasNext())
+			if (!otherComponents.hasNext() || !components.next().equiv((AncestorsService<?>) otherComponents.next()))
+				return false;
+		return true;
 	}
 
 	default boolean isAlive() {
 		return this == getAlive();
 	}
 
-	default <U extends DependenciesService> U getAlive() {
-		U pluggedMeta = getMeta().getAlive();
+	default Vertex getAlive() {
+		Vertex pluggedMeta = getMeta().getAlive();
 		if (pluggedMeta == null)
 			return null;
-		Iterator<U> it = (Iterator<U>) pluggedMeta.getInstances().iterator();
+		Iterator<Vertex> it = pluggedMeta.getInstances().iterator();
 		while (it.hasNext()) {
-			U next = it.next();
+			Vertex next = it.next();
 			if (equiv(next))
 				return next;
 		}
