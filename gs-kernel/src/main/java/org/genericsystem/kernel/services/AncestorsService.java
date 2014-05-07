@@ -71,15 +71,10 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 
 	default boolean equivComponents(AncestorsService<?> service) {
 		Iterator<T> components = getComponentsStream().iterator();
-		LOOP: while (components.hasNext()) {
-			T component = components.next();
-			Iterator<?> otherComponents = service.getComponentsStream().iterator();
-			while (otherComponents.hasNext()) {
-				if (component.equiv((AncestorsService<?>) otherComponents.next()))
-					continue LOOP;
-			}
-			return false;
-		}
+		Iterator<?> otherComponents = service.getComponentsStream().iterator();
+		while (components.hasNext())
+			if (!otherComponents.hasNext() || !components.next().equiv((AncestorsService<?>) otherComponents.next()))
+				return false;
 		return true;
 	}
 
