@@ -104,22 +104,18 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService, In
 		return inheritings;
 	}
 
-	@Override
 	public Snapshot<Vertex> getMetaComposites(Vertex meta) {
 		return metaComposites.getByIndex(meta);
 	}
 
-	@Override
 	public Snapshot<Vertex> getSuperComposites(Vertex superVertex) {
 		return superComposites.getByIndex(superVertex);
 	}
 
-	@Override
 	public CompositesDependencies<Vertex> getMetaComposites() {
 		return metaComposites;
 	}
 
-	@Override
 	public CompositesDependencies<Vertex> getSuperComposites() {
 		return superComposites;
 	}

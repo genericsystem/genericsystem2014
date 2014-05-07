@@ -107,12 +107,12 @@ public interface BindingService extends AncestorsService<Vertex>, DependenciesSe
 		return Stream.concat(select(), Statics.concat(getInheritings().stream(), inheriting -> inheriting.getAllInheritings()).distinct());
 	}
 
-	default Stream<Vertex> selectInstances() {
+	default Stream<Vertex> getAllInstances() {
 		return getAllInheritings().map(inheriting -> inheriting.getInstances().stream()).flatMap(x -> x);// .reduce(Stream.empty(), Stream::concat);
 	}
 
 	default Stream<Vertex> selectInstances(Predicate<Vertex> valuePredicate) {
-		return selectInstances().filter(valuePredicate);
+		return getAllInstances().filter(valuePredicate);
 	}
 
 	default Stream<Vertex> selectInstances(Serializable value) {

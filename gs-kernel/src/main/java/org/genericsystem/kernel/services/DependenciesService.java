@@ -9,11 +9,8 @@ public interface DependenciesService extends AncestorsService<Vertex> {
 
 	Snapshot<Vertex> getInheritings();
 
-	Snapshot<Vertex> getMetaComposites(Vertex meta);
+	// Snapshot<Vertex> getMetaComposites(Vertex meta);
 
-	Snapshot<?> getMetaComposites();
+	// Snapshot<?> getSuperComposites(Vertex superVertex);
 
-	Snapshot<?> getSuperComposites(Vertex superVertex);
-
-	Snapshot<?> getSuperComposites();
 }
