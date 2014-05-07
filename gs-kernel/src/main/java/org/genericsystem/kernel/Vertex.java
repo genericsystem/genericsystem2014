@@ -33,7 +33,7 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService, In
 	private final Vertex[] supers;
 
 	// Engine constructor
-	protected Vertex(Factory<Vertex> factory) {
+	Vertex(Factory<Vertex> factory) {
 		((Root) this).valueCache = new ValueCache();
 		((Root) this).factory = factory;
 		meta = this;
@@ -55,10 +55,12 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService, In
 			rollbackAndThrowException(new NotAliveException(vertex));
 	}
 
-	public Vertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
+	Vertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
 		this.meta = isRoot() ? (Vertex) this : meta;
 		this.value = ((Root) this.getRoot()).getCachedValue(value);
-		this.components = components;
+		this.components = new Vertex[components.length];
+		for (int i = 0; i < components.length; i++)
+			this.components[i] = components[i] == null ? this : components[i];
 		instances = getFactory().buildDependencies();
 		inheritings = getFactory().buildDependencies();
 		metaComposites = getFactory().buildCompositeDependencies();
