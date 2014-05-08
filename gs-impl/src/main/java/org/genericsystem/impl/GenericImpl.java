@@ -19,7 +19,7 @@ public class GenericImpl implements Generic {
 	private final Serializable value;
 	public static final Generic[] EMPTY_GENERICS = new Generic[] {};
 
-	// Constructor forEngine
+	// Constructor for EngineImpl only
 	GenericImpl() {
 		meta = this;
 		value = Statics.ENGINE_VALUE;
@@ -27,7 +27,7 @@ public class GenericImpl implements Generic {
 		supers = EMPTY_GENERICS;
 	}
 
-	public GenericImpl(Generic meta, Generic[] supers, Serializable value, Generic... components) {
+	GenericImpl(Generic meta, Generic[] supers, Serializable value, Generic... components) {
 		this.meta = meta;
 		this.supers = supers;
 		this.value = value;

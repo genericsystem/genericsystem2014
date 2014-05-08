@@ -11,12 +11,12 @@ public class EngineImpl extends GenericImpl {
 	private final Root root;
 
 	public EngineImpl() {
-		this(new Root());
+		super();
+		root = buildSubRoot();
 	}
 
-	EngineImpl(Root root) {
-		super();
-		this.root = root;
+	protected Root buildSubRoot() {
+		return new Root();
 	}
 
 	@Override
