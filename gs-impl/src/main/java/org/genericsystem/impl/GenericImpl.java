@@ -85,13 +85,13 @@ public class GenericImpl implements Generic {
 		return getAlive().getInheritings().project(this::getGeneric);
 	}
 
-	Generic getGeneric(Vertex vertex) {
+	protected Generic getGeneric(Vertex vertex) {
 		if (vertex.isRoot())
 			return getRoot();
-		Vertex alive = vertex.getAlive();
-		List<Generic> overrides = alive.getSupersStream().map(this::getGeneric).collect(Collectors.toList());
-		List<Generic> components = alive.getComponentsStream().map(this::getGeneric).collect(Collectors.toList());
-		return build(getGeneric(alive.getMeta()), overrides.toArray(new Generic[overrides.size()]), alive.getValue(), components.toArray(new Generic[components.size()]));
+		// vertex = vertex.getAlive();// is this necessary ?
+		List<Generic> overrides = vertex.getSupersStream().map(this::getGeneric).collect(Collectors.toList());
+		List<Generic> components = vertex.getComponentsStream().map(this::getGeneric).collect(Collectors.toList());
+		return build(getGeneric(vertex.getMeta()), overrides.toArray(new Generic[overrides.size()]), vertex.getValue(), components.toArray(new Generic[components.size()]));
 	}
 
 	@Override
