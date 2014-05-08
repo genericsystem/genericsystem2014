@@ -3,6 +3,7 @@ package org.genericsystem.impl;
 import java.util.Objects;
 import org.genericsystem.api.Generic;
 import org.genericsystem.kernel.Root;
+import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.services.AncestorsService;
 
@@ -11,7 +12,7 @@ public class EngineImpl extends GenericImpl {
 	private final Root root;
 
 	public EngineImpl() {
-		super();
+		super(null, EMPTY_GENERICS, Statics.ENGINE_VALUE, EMPTY_GENERICS);
 		root = buildRoot();
 	}
 

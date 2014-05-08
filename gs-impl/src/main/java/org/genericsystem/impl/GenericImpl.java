@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.genericsystem.api.Generic;
 import org.genericsystem.kernel.Snapshot;
-import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
 
 public class GenericImpl implements Generic {
@@ -19,16 +18,8 @@ public class GenericImpl implements Generic {
 	private final Serializable value;
 	public static final Generic[] EMPTY_GENERICS = new Generic[] {};
 
-	// Constructor for EngineImpl only
-	GenericImpl() {
-		meta = this;
-		value = Statics.ENGINE_VALUE;
-		components = EMPTY_GENERICS;
-		supers = EMPTY_GENERICS;
-	}
-
 	GenericImpl(Generic meta, Generic[] supers, Serializable value, Generic... components) {
-		this.meta = meta;
+		this.meta = meta == null ? this : meta;
 		this.supers = supers;
 		this.value = value;
 		this.components = components;
