@@ -10,8 +10,6 @@ public interface FactoryService<T extends FactoryService<T>> extends AncestorsSe
 
 	T build(T meta, T[] overrides, Serializable value, T[] components);
 
-	T buildRoot();
-
 	default Dependencies<T> buildDependencies() {
 		return new DependenciesImpl<T>();
 	}

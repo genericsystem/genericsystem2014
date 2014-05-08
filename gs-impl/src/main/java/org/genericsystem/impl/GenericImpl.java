@@ -99,9 +99,4 @@ public class GenericImpl implements Generic {
 		return new GenericImpl(meta, overrides, value, components);
 	}
 
-	@Override
-	public Generic buildRoot() {
-		return new EngineImpl();
-	}
-
 }

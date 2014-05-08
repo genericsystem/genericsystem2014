@@ -134,11 +134,6 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService<Ver
 		return new Vertex(meta, overrides, value, components);
 	}
 
-	@Override
-	public Root buildRoot() {
-		return new Root();
-	}
-
 	// @Override
 	// public boolean equals(Object obj) {
 	// if (this == obj)
