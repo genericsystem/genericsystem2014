@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.exceptions.ExistsException;
@@ -21,7 +20,7 @@ public interface BindingService extends AncestorsService<Vertex>, DependenciesSe
 		Vertex vertex = getInstance(overrides, value, components);
 		if (vertex != null)
 			rollbackAndThrowException(new ExistsException(vertex));
-		return getFactory().build((Vertex) this, overrides, value, components).plug();
+		return build((Vertex) this, overrides, value, components).plug();
 	}
 
 	default Vertex setInstance(Serializable value, Vertex... components) {
@@ -32,35 +31,11 @@ public interface BindingService extends AncestorsService<Vertex>, DependenciesSe
 		Vertex vertex = getInstance(overrides, value, components);
 		if (vertex != null)
 			return vertex;
-		return getFactory().build((Vertex) this, overrides, value, components).plug();
+		return build((Vertex) this, overrides, value, components).plug();
 	}
 
 	default Vertex getInstance(Serializable value, Vertex... components) {
-		// // here we should avoid to compute supers
-		// return new AncestorsService<Vertex>() {
-		//
-		// @Override
-		// public Vertex getMeta() {
-		// return (Vertex) BindingService.this;
-		// }
-		//
-		// @Override
-		// public Stream<Vertex> getSupersStream() {
-		// return Stream.empty();// TODO Strange to have this
-		// }
-		//
-		// @Override
-		// public Stream<Vertex> getComponentsStream() {
-		// return Stream.of(components);
-		// }
-		//
-		// @Override
-		// public Serializable getValue() {
-		// return value;
-		// }
-		// }.getAlive();
-
-		return getFactory().build((Vertex) this, Statics.EMPTY_VERTICES, value, components).getAlive();
+		return build((Vertex) this, Statics.EMPTY_VERTICES, value, components).getAlive();
 	}
 
 	default Vertex plug() {

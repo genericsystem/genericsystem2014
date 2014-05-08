@@ -2,36 +2,36 @@ package org.genericsystem.impl;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.Generic;
-import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Snapshot;
+import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
 
 public class GenericImpl implements Generic {
-
-	public static final Function<Vertex, Generic> VERTEX_WRAPPER = v -> {
-		// assert !v.isRoot() : v.info();
-		return v.isRoot() ? new EngineImpl((Root) v) : new GenericImpl(v);
-	};
 
 	private final Generic meta;
 	private final Generic[] supers;
 	private final Generic[] components;
 	private final Serializable value;
+	public static final Generic[] EMPTY_GENERICS = new Generic[] {};
+
+	// Constructor forEngine
+	GenericImpl() {
+		meta = this;
+		value = Statics.ENGINE_VALUE;
+		components = EMPTY_GENERICS;
+		supers = EMPTY_GENERICS;
+	}
 
 	public GenericImpl(Generic meta, Generic[] supers, Serializable value, Generic... components) {
 		this.meta = meta;
 		this.supers = supers;
 		this.value = value;
 		this.components = components;
-	}
-
-	public GenericImpl(Vertex vertex) {
-		this(VERTEX_WRAPPER.apply(vertex.getAlive().getMeta()), vertex.getAlive().getSupersStream().map(VERTEX_WRAPPER).toArray(Generic[]::new), vertex.getValue(), vertex.getAlive().getComponentsStream().map(VERTEX_WRAPPER).toArray(Generic[]::new));
 	}
 
 	@Override
@@ -77,12 +77,31 @@ public class GenericImpl implements Generic {
 
 	@Override
 	public Snapshot<Generic> getInstances() {
-		return getAlive().getInstances().project(VERTEX_WRAPPER);
+		return getAlive().getInstances().project(this::getGeneric);
 	}
 
 	@Override
 	public Snapshot<Generic> getInheritings() {
-		return getAlive().getInheritings().project(VERTEX_WRAPPER);
+		return getAlive().getInheritings().project(this::getGeneric);
+	}
+
+	Generic getGeneric(Vertex vertex) {
+		if (vertex.isRoot())
+			return getRoot();
+		Vertex alive = vertex.getAlive();
+		List<Generic> overrides = alive.getSupersStream().map(this::getGeneric).collect(Collectors.toList());
+		List<Generic> components = alive.getComponentsStream().map(this::getGeneric).collect(Collectors.toList());
+		return build(getGeneric(alive.getMeta()), overrides.toArray(new Generic[overrides.size()]), alive.getValue(), components.toArray(new Generic[components.size()]));
+	}
+
+	@Override
+	public Generic build(Generic meta, Generic[] overrides, Serializable value, Generic[] components) {
+		return new GenericImpl(meta, overrides, value, components);
+	}
+
+	@Override
+	public Generic buildRoot() {
+		return new EngineImpl();
 	}
 
 }
