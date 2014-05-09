@@ -9,10 +9,10 @@ import org.genericsystem.kernel.DependenciesImpl;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Vertex;
 
-public interface FactoryService<T extends FactoryService<T>> extends AncestorsService<T> {
+public interface FactoryService<T extends AncestorsService<T>> extends AncestorsService<T> {
 
 	default Factory<T> getFactory() {
-		return getRoot().getFactory();
+		return ((FactoryService<T>) getRoot()).getFactory();
 	}
 
 	public static interface Factory<T> {
