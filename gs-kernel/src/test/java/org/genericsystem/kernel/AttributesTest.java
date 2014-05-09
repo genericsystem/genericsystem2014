@@ -301,7 +301,7 @@ public class AttributesTest extends AbstractTest {
 		assert transformer.getAttributes(root).contains(power);
 	}
 
-	public void test1AttributWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel1AttributLevelSecondChild() {
+	public void test1AttributWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel1AttributLevel1SecondChild() {
 		Vertex root = new Root();
 		Vertex object = root.addInstance("Object");
 		Vertex vehicle = root.addInstance(new Vertex[] { object }, "Vehicle");
@@ -315,6 +315,96 @@ public class AttributesTest extends AbstractTest {
 		assert robot.getAttributes(root).size() == 0;
 		assert transformer.getAttributes(root).size() == 1;
 		assert transformer.getAttributes(root).contains(power);
+	}
+
+	public void test1AttributWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel1AttributLevel2Child1() {
+		Vertex root = new Root();
+		Vertex object = root.addInstance("Object");
+		Vertex vehicle = root.addInstance(new Vertex[] { object }, "Vehicle");
+		Vertex robot = root.addInstance(new Vertex[] { object }, "Robot");
+		Vertex transformer = root.addInstance(new Vertex[] { vehicle, robot }, "Transformer");
+		Vertex power = root.addInstance("Power", transformer);
+		assert object.getAttributes(root).size() == 0;
+		assert vehicle.getAttributes(root).size() == 0;
+		assert robot.getAttributes(root).size() == 0;
+		assert transformer.getAttributes(root).size() == 1;
+		assert transformer.getAttributes(root).contains(power);
+	}
+
+	public void test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsOnParent() {
+		Vertex root = new Root();
+		Vertex object = root.addInstance("Object");
+		Vertex power = root.addInstance("Power", object);
+		Vertex airconditioner = root.addInstance("AirConditioner", object);
+
+		Vertex vehicle = root.addInstance(new Vertex[] { object }, "Vehicle");
+		Vertex robot = root.addInstance(new Vertex[] { object }, "Robot");
+		Vertex transformer = root.addInstance(new Vertex[] { vehicle, robot }, "Transformer");
+
+		assert object.getAttributes(root).size() == 2;
+		assert object.getAttributes(root).contains(power);
+		assert object.getAttributes(root).contains(airconditioner);
+		assert vehicle.getAttributes(root).size() == 2;
+		assert vehicle.getAttributes(root).contains(power);
+		assert vehicle.getAttributes(root).contains(airconditioner);
+		assert robot.getAttributes(root).size() == 2;
+		assert robot.getAttributes(root).contains(power);
+		assert robot.getAttributes(root).contains(airconditioner);
+		assert transformer.getAttributes(root).size() == 4;
+	}
+
+	public void test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsLevel1FirstChild() {
+		Vertex root = new Root();
+		Vertex object = root.addInstance("Object");
+		Vertex vehicle = root.addInstance(new Vertex[] { object }, "Vehicle");
+		Vertex power = root.addInstance("Power", vehicle);
+		Vertex airconditioner = root.addInstance("AirConditioner", vehicle);
+		Vertex robot = root.addInstance(new Vertex[] { object }, "Robot");
+		Vertex transformer = root.addInstance(new Vertex[] { vehicle, robot }, "Transformer");
+
+		assert object.getAttributes(root).size() == 0;
+		assert vehicle.getAttributes(root).size() == 2;
+		assert vehicle.getAttributes(root).contains(power);
+		assert vehicle.getAttributes(root).contains(airconditioner);
+		assert robot.getAttributes(root).size() == 0;
+		assert transformer.getAttributes(root).size() == 2;
+		assert transformer.getAttributes(root).contains(power);
+		assert transformer.getAttributes(root).contains(airconditioner);
+	}
+
+	public void test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsLevel1SecondChild() {
+		Vertex root = new Root();
+		Vertex object = root.addInstance("Object");
+		Vertex vehicle = root.addInstance(new Vertex[] { object }, "Vehicle");
+		Vertex robot = root.addInstance(new Vertex[] { object }, "Robot");
+		Vertex power = root.addInstance("Power", robot);
+		Vertex airconditioner = root.addInstance("AirConditioner", robot);
+		Vertex transformer = root.addInstance(new Vertex[] { vehicle, robot }, "Transformer");
+
+		assert object.getAttributes(root).size() == 0;
+		assert vehicle.getAttributes(root).size() == 0;
+		assert robot.getAttributes(root).size() == 2;
+		assert robot.getAttributes(root).contains(power);
+		assert robot.getAttributes(root).contains(airconditioner);
+		assert transformer.getAttributes(root).size() == 2;
+		assert transformer.getAttributes(root).contains(power);
+		assert transformer.getAttributes(root).contains(airconditioner);
+	}
+
+	public void test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsLevel2() {
+		Vertex root = new Root();
+		Vertex object = root.addInstance("Object");
+		Vertex vehicle = root.addInstance(new Vertex[] { object }, "Vehicle");
+		Vertex robot = root.addInstance(new Vertex[] { object }, "Robot");
+		Vertex transformer = root.addInstance(new Vertex[] { vehicle, robot }, "Transformer");
+		Vertex power = root.addInstance("Power", transformer);
+		Vertex airconditioner = root.addInstance("AirConditioner", transformer);
+		assert object.getAttributes(root).size() == 0;
+		assert vehicle.getAttributes(root).size() == 0;
+		assert robot.getAttributes(root).size() == 0;
+		assert transformer.getAttributes(root).size() == 2;
+		assert transformer.getAttributes(root).contains(power);
+		assert transformer.getAttributes(root).contains(airconditioner);
 	}
 
 }
