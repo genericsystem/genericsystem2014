@@ -21,7 +21,7 @@ public interface BindingService extends AncestorsService<Vertex>, DependenciesSe
 		Vertex vertex = getInstance(overrides, value, components);
 		if (vertex != null)
 			rollbackAndThrowException(new ExistsException(vertex));
-		return getFactory().build((Vertex) this, overrides, value, components).plug();
+		return getFactory().buildVertex((Vertex) this, overrides, value, components).plug();
 	}
 
 	default Vertex setInstance(Serializable value, Vertex... components) {
@@ -32,7 +32,7 @@ public interface BindingService extends AncestorsService<Vertex>, DependenciesSe
 		Vertex vertex = getInstance(overrides, value, components);
 		if (vertex != null)
 			return vertex;
-		return getFactory().build((Vertex) this, overrides, value, components).plug();
+		return getFactory().buildVertex((Vertex) this, overrides, value, components).plug();
 	}
 
 	default Vertex getInstance(Serializable value, Vertex... components) {
@@ -60,7 +60,7 @@ public interface BindingService extends AncestorsService<Vertex>, DependenciesSe
 		// }
 		// }.getAlive();
 
-		return getFactory().build((Vertex) this, Statics.EMPTY_VERTICES, value, components).getAlive();
+		return getFactory().buildVertex((Vertex) this, Statics.EMPTY_VERTICES, value, components).getAlive();
 	}
 
 	default Vertex plug() {

@@ -56,7 +56,7 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService<Ver
 			rollbackAndThrowException(new NotAliveException(vertex));
 	}
 
-	Vertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
+	public Vertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex... components) {
 		this.meta = isRoot() ? (Vertex) this : meta;
 		this.value = ((Root) this.getRoot()).getCachedValue(value);
 		this.components = new Vertex[components.length];

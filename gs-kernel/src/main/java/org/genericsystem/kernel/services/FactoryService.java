@@ -2,10 +2,12 @@ package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
 import java.util.Iterator;
+
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.DependenciesImpl;
 import org.genericsystem.kernel.Root;
+import org.genericsystem.kernel.Vertex;
 
 public interface FactoryService<T extends FactoryService<T>> extends AncestorsService<T> {
 
@@ -15,11 +17,9 @@ public interface FactoryService<T extends FactoryService<T>> extends AncestorsSe
 
 	public static interface Factory<T> {
 
-		T build(T meta, T[] overrides, Serializable value, T[] components);
+		Vertex buildVertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components);
 
-		default public Root buildRoot() {
-			return new Root();
-		}
+		Root buildRoot();
 
 		default Dependencies<T> buildDependencies() {
 			return new DependenciesImpl<T>();
