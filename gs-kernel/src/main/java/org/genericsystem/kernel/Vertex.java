@@ -47,15 +47,6 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService<Ver
 		supers = Statics.EMPTY_VERTICES;
 	}
 
-	private void checkAreAlive(Vertex... vertices) {
-		Arrays.stream(vertices).forEach(this::checkIsAlive);
-	}
-
-	private void checkIsAlive(Vertex vertex) {
-		if (!vertex.isAlive())
-			rollbackAndThrowException(new NotAliveException(vertex.info()));
-	}
-
 	public Vertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
 		this.meta = isRoot() ? this : meta;
 		this.value = ((Root) getRoot()).getCachedValue(value);
@@ -73,6 +64,20 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService<Ver
 		supers = getSupers(overrides).toArray(Vertex[]::new);
 		checkOverrides(overrides);
 		checkSupers();
+	}
+
+	@Override
+	public Vertex build(Vertex meta, Stream<Vertex> overrides, Serializable value, Stream<Vertex> components) {
+		return new Vertex(meta, overrides.toArray(Vertex[]::new), value, components.toArray(Vertex[]::new));
+	}
+
+	private void checkAreAlive(Vertex... vertices) {
+		Arrays.stream(vertices).forEach(this::checkIsAlive);
+	}
+
+	private void checkIsAlive(Vertex vertex) {
+		if (!vertex.isAlive())
+			rollbackAndThrowException(new NotAliveException(vertex.info()));
 	}
 
 	@Override
@@ -136,12 +141,6 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService<Ver
 	@Override
 	public Vertex[] getEmptyArray() {
 		return Statics.EMPTY_VERTICES;
-	}
-	
-
-	@Override
-	public Vertex build(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
-		return new Vertex(meta, overrides, value, components);
 	}
 
 	// @Override

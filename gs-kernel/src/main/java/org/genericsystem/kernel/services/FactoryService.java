@@ -2,6 +2,7 @@ package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.stream.Stream;
 
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
@@ -9,7 +10,7 @@ import org.genericsystem.kernel.DependenciesImpl;
 
 public interface FactoryService<T extends AncestorsService<T>> extends AncestorsService<T> {
 
-	T build(T meta, T[] overrides, Serializable value, T[] components);
+	T build(T meta, Stream<T> overrides, Serializable value, Stream<T> components);
 
 	default Dependencies<T> buildDependencies() {
 		return new DependenciesImpl<T>();

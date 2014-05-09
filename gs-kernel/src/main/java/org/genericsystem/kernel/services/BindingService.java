@@ -23,7 +23,7 @@ public interface BindingService<T extends AncestorsService<T>> extends Ancestors
 		T T = getInstance(overrides, value, components);
 		if (T != null)
 			rollbackAndThrowException(new ExistsException(((DisplayService<T>) T).info()));
-		return ((BindingService<T>) build((T) this, overrides, value, components)).plug();
+		return ((BindingService<T>) build((T) this, Arrays.stream(overrides), value, Arrays.stream(components))).plug();
 	}
 
 	default T setInstance(Serializable value, T... components) {
@@ -34,12 +34,12 @@ public interface BindingService<T extends AncestorsService<T>> extends Ancestors
 		T T = getInstance(overrides, value, components);
 		if (T != null)
 			return T;
-		return ((BindingService<T>) build((T) this, overrides, value, components)).plug();
+		return ((BindingService<T>) build((T) this, Arrays.stream(overrides), value, Arrays.stream(components))).plug();
 	}
 
 	default T getInstance(Serializable value, T... components) {
 		// TODO KK
-		return (T) build((T) this, getEmptyArray(), value, components).getAlive();
+		return (T) build((T) this, Arrays.stream(getEmptyArray()), value, Arrays.stream(components)).getAlive();
 	}
 
 	default T plug() {

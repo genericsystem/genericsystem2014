@@ -24,8 +24,8 @@ public class GenericImpl implements Generic {
 	}
 
 	@Override
-	public Generic buildGeneric(Generic meta, Generic[] overrides, Serializable value, Generic[] components) {
-		return new GenericImpl(meta, overrides, value, components);
+	public Generic build(Generic meta, Stream<Generic> overrides, Serializable value, Stream<Generic> components) {
+		return new GenericImpl(meta, overrides.toArray(Generic[]::new), value, components.toArray(Generic[]::new));
 	}
 
 	@Override
