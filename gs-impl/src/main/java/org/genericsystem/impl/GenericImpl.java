@@ -24,6 +24,11 @@ public class GenericImpl implements Generic {
 	}
 
 	@Override
+	public Generic buildGeneric(Generic meta, Generic[] overrides, Serializable value, Generic[] components) {
+		return new GenericImpl(meta, overrides, value, components);
+	}
+
+	@Override
 	public Generic getMeta() {
 		return meta;
 	}

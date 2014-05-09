@@ -35,16 +35,15 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService<Ver
 	private final Vertex[] supers;
 
 	// Engine constructor
-	Vertex(Factory<Vertex> factory) {
-		((Root) this).factory = factory;
+	Vertex() {
 		((Root) this).valueCache = new ValueCache();
 		meta = this;
 		value = ((Root) this).getCachedValue(Statics.ENGINE_VALUE);
 		components = Statics.EMPTY_VERTICES;
-		instances = getFactory().buildDependencies();
-		inheritings = getFactory().buildDependencies();
-		metaComposites = getFactory().buildCompositeDependencies();
-		superComposites = getFactory().buildCompositeDependencies();
+		instances = buildDependencies();
+		inheritings = buildDependencies();
+		metaComposites = buildCompositeDependencies();
+		superComposites = buildCompositeDependencies();
 		supers = Statics.EMPTY_VERTICES;
 	}
 
@@ -63,10 +62,10 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService<Ver
 		this.components = new Vertex[components.length];
 		for (int i = 0; i < components.length; i++)
 			this.components[i] = components[i] == null ? this : components[i];
-		instances = getFactory().buildDependencies();
-		inheritings = getFactory().buildDependencies();
-		metaComposites = getFactory().buildCompositeDependencies();
-		superComposites = getFactory().buildCompositeDependencies();
+		instances = buildDependencies();
+		inheritings = buildDependencies();
+		metaComposites = buildCompositeDependencies();
+		superComposites = buildCompositeDependencies();
 
 		checkIsAlive(meta);
 		checkAreAlive(overrides);
@@ -137,6 +136,12 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService<Ver
 	@Override
 	public Vertex[] getEmptyArray() {
 		return Statics.EMPTY_VERTICES;
+	}
+	
+
+	@Override
+	public Vertex build(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
+		return new Vertex(meta, overrides, value, components);
 	}
 
 	// @Override

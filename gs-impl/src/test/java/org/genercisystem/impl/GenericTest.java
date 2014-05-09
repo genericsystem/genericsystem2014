@@ -1,11 +1,7 @@
 package org.genercisystem.impl;
 
-import java.io.Serializable;
-
 import org.genericsystem.api.Generic;
-import org.genericsystem.api.services.GenericFactoryService.GenericFactory;
 import org.genericsystem.impl.EngineImpl;
-import org.genericsystem.impl.GenericImpl;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
 import org.testng.annotations.Test;
@@ -29,19 +25,19 @@ public class GenericTest extends AbstractTest {
 		assert engine.isRoot();
 	}
 
-	public void testFactory() {
-		MyFactory myFactory = new MyFactory();
-		EngineImpl engine = new EngineImpl(myFactory);
-		assert engine.getFactory().equals(myFactory);
-		assert engine.getFactory() == myFactory;
-	}
+	// public void testFactory() {
+	// MyFactory myFactory = new MyFactory();
+	// EngineImpl engine = new EngineImpl(myFactory);
+	// assert engine.getFactory().equals(myFactory);
+	// assert engine.getFactory() == myFactory;
+	// }
 
-	private static class MyFactory implements GenericFactory<Generic> {
-		@Override
-		public Generic buildGeneric(Generic meta, Generic[] overrides, Serializable value, Generic[] components) {
-			return new GenericImpl(meta, overrides, value, components);
-		}
-	}
+	// private static class MyFactory implements GenericFactory<Generic> {
+	// @Override
+	// public Generic buildGeneric(Generic meta, Generic[] overrides, Serializable value, Generic[] components) {
+	// return new GenericImpl(meta, overrides, value, components);
+	// }
+	// }
 
 	public void testGetInstances() {
 		EngineImpl engine = new EngineImpl();
