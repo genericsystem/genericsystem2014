@@ -57,8 +57,8 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService<Ver
 	}
 
 	public Vertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
-		this.meta = isRoot() ? (Vertex) this : meta;
-		this.value = ((Root) this.getRoot()).getCachedValue(value);
+		this.meta = isRoot() ? this : meta;
+		this.value = ((Root) getRoot()).getCachedValue(value);
 		this.components = new Vertex[components.length];
 		for (int i = 0; i < components.length; i++)
 			this.components[i] = components[i] == null ? this : components[i];

@@ -41,11 +41,6 @@ public class GenericTest extends AbstractTest {
 		public Generic buildGeneric(Generic meta, Generic[] overrides, Serializable value, Generic[] components) {
 			return new GenericImpl(meta, overrides, value, components);
 		}
-
-		// @Override
-		// public Generic buildEngine(Root root) {
-		// return new EngineImpl(root);
-		// }
 	}
 
 	public void testGetInstances() {

@@ -42,13 +42,14 @@ public class Root extends Vertex {
 		return this;
 	}
 
-	public Factory<Vertex> getFactory() {
-		return factory;
-	}
-
 	@Override
 	public int getLevel() {
 		return 0;
+	}
+
+	@Override
+	public Factory<Vertex> getFactory() {
+		return factory;
 	}
 
 	public Serializable getCachedValue(Serializable value) {

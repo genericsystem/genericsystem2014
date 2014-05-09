@@ -14,7 +14,6 @@ public class GenericImpl implements Generic {
 	private final Generic[] supers;
 	private final Generic[] components;
 	private final Serializable value;
-	public static final Generic[] EMPTY_GENERICS = new Generic[] {};
 
 	public GenericImpl(Generic meta, Generic[] supers, Serializable value, Generic... components) {
 		this.meta = meta == null ? this : meta;
