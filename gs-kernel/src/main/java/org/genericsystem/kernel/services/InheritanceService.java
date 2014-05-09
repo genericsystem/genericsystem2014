@@ -7,47 +7,47 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import org.genericsystem.kernel.Vertex;
+import java.util.stream.Stream;
 
-public interface InheritanceService extends AncestorsService<Vertex>, SystemPropertiesService {
+public interface InheritanceService<T extends AncestorsService<T>> extends AncestorsService<T>, SystemPropertiesService {
 
-	default boolean isSuperOf(Vertex subMeta, Vertex[] overrides, Serializable subValue, Vertex... subComponents) {
-		return Arrays.asList(overrides).stream().anyMatch(override -> override.inheritsFrom((Vertex) InheritanceService.this)) || inheritsFrom(subMeta, subValue, subComponents, getMeta(), getValue(), getComponents());
+	default boolean isSuperOf(T subMeta, T[] overrides, Serializable subValue, T... subComponents) {
+		return Arrays.asList(overrides).stream().anyMatch(override -> override.inheritsFrom((T) InheritanceService.this)) || inheritsFrom(subMeta, subValue, subComponents, getMeta(), getValue(), getComponents());
 	}
 
 	// default boolean inheritsFrom(Vertex superMeta, Serializable superValue, Vertex... superComponents) {
 	// return inheritsFrom(getMeta(), getValue(), getComponents(), superMeta, superValue, superComponents);
 	// }
 
-	public static boolean inheritsFrom(Vertex subMeta, Serializable subValue, Vertex[] subComponents, Vertex superMeta, Serializable superValue, Vertex[] superComponents) {
+	default boolean inheritsFrom(T subMeta, Serializable subValue, T[] subComponents, T superMeta, Serializable superValue, T[] superComponents) {
 		if (!subMeta.inheritsFrom(superMeta))
 			return false;
-		if (!subMeta.componentsDepends(subComponents, superComponents))
+		if (!((InheritanceService<T>) subMeta).componentsDepends(subComponents, superComponents))
 			return false;
-		return subMeta.isPropertyConstraintEnabled() || Objects.equals(subValue, superValue);
+		return ((SystemPropertiesService) subMeta).isPropertyConstraintEnabled() || Objects.equals(subValue, superValue);
 	}
 
 	static interface SingularsLazyCache {
 		boolean get(int i);
 	}
 
-	default boolean componentsDepends(Vertex[] subComponents, Vertex[] superComponents) {
+	default boolean componentsDepends(T[] subComponents, T[] superComponents) {
 		class SingularsLazyCacheImpl implements SingularsLazyCache {
 			private Boolean[] singulars = new Boolean[subComponents.length];
 
 			@Override
 			public boolean get(int i) {
-				return singulars[i] != null ? singulars[i] : (singulars[i] = ((Vertex) InheritanceService.this).isSingularConstraintEnabled(i));
+				return singulars[i] != null ? singulars[i] : (singulars[i] = InheritanceService.this.isSingularConstraintEnabled(i));
 			}
 		}
 		return componentsDepends(new SingularsLazyCacheImpl(), subComponents, superComponents);
 	}
 
-	static boolean componentsDepends(SingularsLazyCache singulars, Vertex[] subComponents, Vertex[] superComponents) {
+	default boolean componentsDepends(SingularsLazyCache singulars, T[] subComponents, T[] superComponents) {
 		int subIndex = 0;
-		loop: for (Vertex superComponent : superComponents) {
+		loop: for (T superComponent : superComponents) {
 			for (; subIndex < subComponents.length; subIndex++) {
-				Vertex subComponent = subComponents[subIndex];
+				T subComponent = subComponents[subIndex];
 				if (subComponent.inheritsFrom(superComponent) || subComponent.isInstanceOf(superComponent)) {
 					if (singulars.get(subIndex))
 						return true;
@@ -61,22 +61,22 @@ public interface InheritanceService extends AncestorsService<Vertex>, SystemProp
 	}
 
 	// TODO Remove this
-	Vertex[] getComponents();
+	T[] getComponents();
 
-	default Vertex[] getSupers(Vertex[] overrides) {
-		class SupersComputer extends LinkedHashSet<Vertex> {
+	default Stream<T> getSupers(T[] overrides) {
+		class SupersComputer extends LinkedHashSet<T> {
 
 			private static final long serialVersionUID = -1078004898524170057L;
 
-			private final Vertex[] overrides;
-			private final Map<Vertex, Boolean> alreadyComputed = new HashMap<>();
+			private final T[] overrides;
+			private final Map<T, Boolean> alreadyComputed = new HashMap<>();
 
-			private SupersComputer(Vertex[] overrides) {
+			private SupersComputer(T[] overrides) {
 				this.overrides = overrides;
 				visit(getMeta().getRoot());
 			}
 
-			private boolean visit(Vertex candidate) {
+			private boolean visit(T candidate) {
 				Boolean result = alreadyComputed.get(candidate);
 				if (result != null)
 					return result;
@@ -85,18 +85,18 @@ public interface InheritanceService extends AncestorsService<Vertex>, SystemProp
 					return false;
 				}
 				boolean isMeta = getMeta().inheritsFrom(candidate) || candidate.isRoot();
-				boolean isSuper = candidate.isSuperOf(getMeta(), overrides, getValue(), getComponents());
+				boolean isSuper = ((InheritanceService<T>) candidate).isSuperOf(getMeta(), overrides, getValue(), getComponents());
 				if (!isMeta && !isSuper) {
 					alreadyComputed.put(candidate, false);
 					return false;
 				}
 				boolean selectable = true;
-				for (Vertex inheriting : candidate.getInheritings())
+				for (T inheriting : ((DependenciesService<T>) candidate).getInheritings())
 					if (visit(inheriting))
 						selectable = false;
 				if (isMeta) {
 					selectable = false;
-					for (Vertex instance : candidate.getInstances())
+					for (T instance : ((DependenciesService<T>) candidate).getInstances())
 						visit(instance);
 				}
 				result = alreadyComputed.put(candidate, selectable);
@@ -106,10 +106,10 @@ public interface InheritanceService extends AncestorsService<Vertex>, SystemProp
 				return selectable;
 			}
 
-			@Override
-			public Vertex[] toArray() {
-				return toArray(new Vertex[size()]);
-			}
+			// @Override
+			// public Vertex[] toArray() {
+			// return toArray(new Vertex[size()]);
+			// }
 
 			// @Override
 			// public boolean add(Vertex candidate) {
@@ -131,11 +131,11 @@ public interface InheritanceService extends AncestorsService<Vertex>, SystemProp
 			// return true;
 			// }
 		}
-		return new SupersComputer(overrides).toArray();
+		return new SupersComputer(overrides).stream();
 	}
 
 	default void checkSupers() {
-		if (!getMeta().componentsDepends(getComponents(), getMeta().getComponents()))
+		if (!((InheritanceService<T>) getMeta()).componentsDepends(getComponents(), ((InheritanceService<T>) getMeta()).getComponents()))
 			throw new IllegalStateException("Inconsistant components : " + getComponentsStream().collect(Collectors.toList()));
 		if (!getSupersStream().allMatch(superVertex -> getMeta().inheritsFrom(superVertex.getMeta())))
 			throw new IllegalStateException("Inconsistant supers : " + getSupersStream().collect(Collectors.toList()));
@@ -143,7 +143,7 @@ public interface InheritanceService extends AncestorsService<Vertex>, SystemProp
 			throw new IllegalStateException("Inconsistant supers : " + getSupersStream().collect(Collectors.toList()));
 	}
 
-	default void checkOverrides(Vertex[] overrides) {
+	default void checkOverrides(T[] overrides) {
 		if (!Arrays.asList(overrides).stream().allMatch(override -> getSupersStream().anyMatch(superVertex -> superVertex.inheritsFrom(override))))
 			throw new IllegalStateException("Inconsistant overrides : " + Arrays.toString(overrides) + " " + getSupersStream().collect(Collectors.toList()));
 	}

@@ -20,7 +20,8 @@ import org.genericsystem.kernel.services.SystemPropertiesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Vertex implements AncestorsService<Vertex>, DependenciesService<Vertex>, InheritanceService, BindingService, CompositesInheritanceService, FactoryService<Vertex>, DisplayService<Vertex>, SystemPropertiesService, ExceptionAdviserService {
+public class Vertex implements AncestorsService<Vertex>, DependenciesService<Vertex>, InheritanceService<Vertex>, BindingService<Vertex>, CompositesInheritanceService, FactoryService<Vertex>, DisplayService<Vertex>, SystemPropertiesService,
+		ExceptionAdviserService<Vertex> {
 
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 
@@ -34,17 +35,40 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService<Ver
 	private final Vertex[] supers;
 
 	// Engine constructor
-	Vertex(Factory<Vertex> factory) {
-		((Root) this).factory = factory;
+	Vertex() {
 		((Root) this).valueCache = new ValueCache();
 		meta = this;
 		value = ((Root) this).getCachedValue(Statics.ENGINE_VALUE);
 		components = Statics.EMPTY_VERTICES;
-		instances = getFactory().buildDependencies();
-		inheritings = getFactory().buildDependencies();
-		metaComposites = getFactory().buildCompositeDependencies();
-		superComposites = getFactory().buildCompositeDependencies();
+		instances = buildDependencies();
+		inheritings = buildDependencies();
+		metaComposites = buildCompositeDependencies();
+		superComposites = buildCompositeDependencies();
 		supers = Statics.EMPTY_VERTICES;
+	}
+
+	public Vertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
+		this.meta = isRoot() ? this : meta;
+		this.value = ((Root) getRoot()).getCachedValue(value);
+		this.components = new Vertex[components.length];
+		for (int i = 0; i < components.length; i++)
+			this.components[i] = components[i] == null ? this : components[i];
+		instances = buildDependencies();
+		inheritings = buildDependencies();
+		metaComposites = buildCompositeDependencies();
+		superComposites = buildCompositeDependencies();
+
+		checkIsAlive(meta);
+		checkAreAlive(overrides);
+		checkAreAlive(components);
+		supers = getSupers(overrides).toArray(Vertex[]::new);
+		checkOverrides(overrides);
+		checkSupers();
+	}
+
+	@Override
+	public Vertex build(Vertex meta, Stream<Vertex> overrides, Serializable value, Stream<Vertex> components) {
+		return new Vertex(meta, overrides.toArray(Vertex[]::new), value, components.toArray(Vertex[]::new));
 	}
 
 	private void checkAreAlive(Vertex... vertices) {
@@ -53,26 +77,7 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService<Ver
 
 	private void checkIsAlive(Vertex vertex) {
 		if (!vertex.isAlive())
-			rollbackAndThrowException(new NotAliveException(vertex));
-	}
-
-	public Vertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
-		this.meta = isRoot() ? (Vertex) this : meta;
-		this.value = ((Root) this.getRoot()).getCachedValue(value);
-		this.components = new Vertex[components.length];
-		for (int i = 0; i < components.length; i++)
-			this.components[i] = components[i] == null ? this : components[i];
-		instances = getFactory().buildDependencies();
-		inheritings = getFactory().buildDependencies();
-		metaComposites = getFactory().buildCompositeDependencies();
-		superComposites = getFactory().buildCompositeDependencies();
-
-		checkIsAlive(meta);
-		checkAreAlive(overrides);
-		checkAreAlive(components);
-		supers = getSupers(overrides);
-		checkOverrides(overrides);
-		checkSupers();
+			rollbackAndThrowException(new NotAliveException(vertex.info()));
 	}
 
 	@Override
@@ -113,10 +118,12 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService<Ver
 		return superComposites.getByIndex(superVertex);
 	}
 
+	@Override
 	public CompositesDependencies<Vertex> getMetaComposites() {
 		return metaComposites;
 	}
 
+	@Override
 	public CompositesDependencies<Vertex> getSuperComposites() {
 		return superComposites;
 	}
@@ -129,6 +136,11 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService<Ver
 	@Override
 	public String toString() {
 		return Objects.toString(getValue());
+	}
+
+	@Override
+	public Vertex[] getEmptyArray() {
+		return Statics.EMPTY_VERTICES;
 	}
 
 	// @Override

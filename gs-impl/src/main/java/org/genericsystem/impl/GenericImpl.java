@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.genericsystem.api.Generic;
+import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
 
 public class GenericImpl implements Generic {
@@ -14,13 +15,17 @@ public class GenericImpl implements Generic {
 	private final Generic[] supers;
 	private final Generic[] components;
 	private final Serializable value;
-	public static final Generic[] EMPTY_GENERICS = new Generic[] {};
 
 	public GenericImpl(Generic meta, Generic[] supers, Serializable value, Generic... components) {
 		this.meta = meta == null ? this : meta;
 		this.supers = supers;
 		this.value = value;
 		this.components = components;
+	}
+
+	@Override
+	public Generic build(Generic meta, Stream<Generic> overrides, Serializable value, Stream<Generic> components) {
+		return new GenericImpl(meta, overrides.toArray(Generic[]::new), value, components.toArray(Generic[]::new));
 	}
 
 	@Override
@@ -72,5 +77,17 @@ public class GenericImpl implements Generic {
 	@Override
 	public Snapshot<Generic> getInheritings() {
 		return getAlive().getInheritings().project(getVertexWrapper());
+	}
+
+	@Override
+	public CompositesDependencies<Generic> getMetaComposites() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CompositesDependencies<Generic> getSuperComposites() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

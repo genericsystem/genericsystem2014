@@ -1,14 +1,15 @@
 package org.genericsystem.kernel.services;
 
+import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
 
 public interface DependenciesService<T extends AncestorsService<T>> extends AncestorsService<T> {
 
-	Snapshot<T> getInstances();
+	<U extends Snapshot<T>> U getInstances();
 
-	Snapshot<T> getInheritings();
+	<U extends Snapshot<T>> U getInheritings();
 
-	//Snapshot<T> getMetaComposites(T meta);
+	CompositesDependencies<T> getMetaComposites();
 
-	//Snapshot<?> getSuperComposites(T superVertex);
+	CompositesDependencies<T> getSuperComposites();
 }

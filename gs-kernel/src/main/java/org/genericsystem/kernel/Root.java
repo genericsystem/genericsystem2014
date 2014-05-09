@@ -7,25 +7,6 @@ import org.genericsystem.kernel.exceptions.RollbackException;
 
 public class Root extends Vertex {
 	ValueCache valueCache;
-	Factory<Vertex> factory;
-
-	public Root() {
-		this(new Factory<Vertex>() {
-			@Override
-			public Vertex buildVertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
-				return new Vertex(meta, overrides, value, components);
-			}
-
-			@Override
-			public Root buildRoot() {
-				return new Root();
-			}
-		});
-	}
-
-	public Root(Factory<Vertex> factory) {
-		super(factory);
-	}
 
 	@Override
 	public boolean isRoot() {
@@ -40,10 +21,6 @@ public class Root extends Vertex {
 	@Override
 	public Vertex getMeta() {
 		return this;
-	}
-
-	public Factory<Vertex> getFactory() {
-		return factory;
 	}
 
 	@Override
