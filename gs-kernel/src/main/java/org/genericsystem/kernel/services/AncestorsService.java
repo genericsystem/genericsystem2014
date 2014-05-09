@@ -65,17 +65,14 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 	default boolean equiv(AncestorsService<?> service) {
 		if (this == service)
 			return true;
-		// TODO improve streams comparison
 		return this.getMeta().equiv(service.getMeta()) && Objects.equals(getValue(), service.getValue()) && equivComponents(service);
 	}
 
 	default boolean equivComponents(AncestorsService<?> service) {
-		Iterator<T> components = getComponentsStream().iterator();
+		if (getComponentsStream().count() != service.getComponentsStream().count())
+			return false;
 		Iterator<?> otherComponents = service.getComponentsStream().iterator();
-		while (components.hasNext())
-			if (!otherComponents.hasNext() || !components.next().equiv((AncestorsService<?>) otherComponents.next()))
-				return false;
-		return true;
+		return getComponentsStream().allMatch(x -> x.equiv((AncestorsService<?>) otherComponents.next()));
 	}
 
 	default boolean isAlive() {

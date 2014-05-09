@@ -42,6 +42,10 @@ public class Root extends Vertex {
 		return this;
 	}
 
+	public Factory<Vertex> getFactory() {
+		return factory;
+	}
+
 	@Override
 	public int getLevel() {
 		return 0;
@@ -49,11 +53,6 @@ public class Root extends Vertex {
 
 	public Serializable getCachedValue(Serializable value) {
 		return valueCache.get(value);
-	}
-
-	@Override
-	public Factory<Vertex> getFactory() {
-		return factory;
 	}
 
 	@Override

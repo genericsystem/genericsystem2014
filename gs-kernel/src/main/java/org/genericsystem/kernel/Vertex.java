@@ -35,8 +35,8 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService<Ver
 
 	// Engine constructor
 	Vertex(Factory<Vertex> factory) {
-		((Root) this).valueCache = new ValueCache();
 		((Root) this).factory = factory;
+		((Root) this).valueCache = new ValueCache();
 		meta = this;
 		value = ((Root) this).getCachedValue(Statics.ENGINE_VALUE);
 		components = Statics.EMPTY_VERTICES;
@@ -56,7 +56,7 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService<Ver
 			rollbackAndThrowException(new NotAliveException(vertex));
 	}
 
-	public Vertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex... components) {
+	public Vertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
 		this.meta = isRoot() ? (Vertex) this : meta;
 		this.value = ((Root) this.getRoot()).getCachedValue(value);
 		this.components = new Vertex[components.length];

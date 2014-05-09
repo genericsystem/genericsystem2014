@@ -14,9 +14,10 @@ public class GenericImpl implements Generic {
 	private final Generic[] supers;
 	private final Generic[] components;
 	private final Serializable value;
+	public static final Generic[] EMPTY_GENERICS = new Generic[] {};
 
 	public GenericImpl(Generic meta, Generic[] supers, Serializable value, Generic... components) {
-		this.meta = meta;
+		this.meta = meta == null ? this : meta;
 		this.supers = supers;
 		this.value = value;
 		this.components = components;
@@ -72,5 +73,4 @@ public class GenericImpl implements Generic {
 	public Snapshot<Generic> getInheritings() {
 		return getAlive().getInheritings().project(getVertexWrapper());
 	}
-
 }
