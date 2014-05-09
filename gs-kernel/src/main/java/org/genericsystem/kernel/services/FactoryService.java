@@ -7,7 +7,6 @@ import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.DependenciesImpl;
 import org.genericsystem.kernel.Root;
-import org.genericsystem.kernel.Vertex;
 
 public interface FactoryService<T extends AncestorsService<T>> extends AncestorsService<T> {
 
@@ -17,7 +16,7 @@ public interface FactoryService<T extends AncestorsService<T>> extends Ancestors
 
 	public static interface Factory<T> {
 
-		Vertex buildVertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components);
+		T build(T meta, T[] overrides, Serializable value, T[] components);
 
 		Root buildRoot();
 

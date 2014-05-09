@@ -20,7 +20,7 @@ import org.genericsystem.kernel.services.SystemPropertiesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Vertex implements AncestorsService<Vertex>, DependenciesService<Vertex>, InheritanceService<Vertex>, BindingService, CompositesInheritanceService, FactoryService<Vertex>, DisplayService<Vertex>, SystemPropertiesService,
+public class Vertex implements AncestorsService<Vertex>, DependenciesService<Vertex>, InheritanceService<Vertex>, BindingService<Vertex>, CompositesInheritanceService, FactoryService<Vertex>, DisplayService<Vertex>, SystemPropertiesService,
 		ExceptionAdviserService<Vertex> {
 
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
@@ -54,7 +54,7 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService<Ver
 
 	private void checkIsAlive(Vertex vertex) {
 		if (!vertex.isAlive())
-			rollbackAndThrowException(new NotAliveException(vertex));
+			rollbackAndThrowException(new NotAliveException(vertex.info()));
 	}
 
 	public Vertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
@@ -114,10 +114,12 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService<Ver
 		return superComposites.getByIndex(superVertex);
 	}
 
+	@Override
 	public CompositesDependencies<Vertex> getMetaComposites() {
 		return metaComposites;
 	}
 
+	@Override
 	public CompositesDependencies<Vertex> getSuperComposites() {
 		return superComposites;
 	}
@@ -130,6 +132,11 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService<Ver
 	@Override
 	public String toString() {
 		return Objects.toString(getValue());
+	}
+
+	@Override
+	public Vertex[] getEmptyArray() {
+		return Statics.EMPTY_VERTICES;
 	}
 
 	// @Override

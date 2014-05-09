@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.genericsystem.api.Generic;
+import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
 
 public class GenericImpl implements Generic {
@@ -71,5 +72,17 @@ public class GenericImpl implements Generic {
 	@Override
 	public Snapshot<Generic> getInheritings() {
 		return getAlive().getInheritings().project(getVertexWrapper());
+	}
+
+	@Override
+	public CompositesDependencies<Generic> getMetaComposites() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CompositesDependencies<Generic> getSuperComposites() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

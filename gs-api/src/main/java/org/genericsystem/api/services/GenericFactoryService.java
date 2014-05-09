@@ -24,6 +24,11 @@ public interface GenericFactoryService<T extends GenericFactoryService<T>> exten
 		Generic buildGeneric(Generic meta, Generic[] overrides, Serializable value, Generic[] components);
 
 		@Override
+		default T build(T meta, T[] overrides, Serializable value, T[] components) {
+			// TODO KK
+			throw new IllegalStateException();
+		}
+
 		default public Vertex buildVertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
 			return new Vertex(meta, overrides, value, components);
 		}
