@@ -3,11 +3,11 @@ package org.genercisystem.impl;
 import java.io.Serializable;
 
 import org.genericsystem.api.Generic;
+import org.genericsystem.api.services.GenericFactoryService.GenericFactory;
 import org.genericsystem.impl.EngineImpl;
 import org.genericsystem.impl.GenericImpl;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
-import org.genericsystem.kernel.services.FactoryService.Factory;
 import org.testng.annotations.Test;
 
 @Test
@@ -36,11 +36,16 @@ public class GenericTest extends AbstractTest {
 		assert engine.getFactory() == myFactory;
 	}
 
-	private static class MyFactory implements Factory<Generic> {
+	private static class MyFactory implements GenericFactory<Generic> {
 		@Override
-		public Generic build(Generic meta, Generic[] overrides, Serializable value, Generic[] components) {
+		public Generic buildGeneric(Generic meta, Generic[] overrides, Serializable value, Generic[] components) {
 			return new GenericImpl(meta, overrides, value, components);
 		}
+
+		// @Override
+		// public Generic buildEngine(Root root) {
+		// return new EngineImpl(root);
+		// }
 	}
 
 	public void testGetInstances() {

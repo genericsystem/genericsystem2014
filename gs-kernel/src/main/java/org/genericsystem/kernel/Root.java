@@ -12,8 +12,13 @@ public class Root extends Vertex {
 	public Root() {
 		this(new Factory<Vertex>() {
 			@Override
-			public Vertex build(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
+			public Vertex buildVertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
 				return new Vertex(meta, overrides, value, components);
+			}
+
+			@Override
+			public Root buildRoot() {
+				return new Root();
 			}
 		});
 	}
@@ -37,6 +42,10 @@ public class Root extends Vertex {
 		return this;
 	}
 
+	public Factory<Vertex> getFactory() {
+		return factory;
+	}
+
 	@Override
 	public int getLevel() {
 		return 0;
@@ -44,11 +53,6 @@ public class Root extends Vertex {
 
 	public Serializable getCachedValue(Serializable value) {
 		return valueCache.get(value);
-	}
-
-	@Override
-	public Factory<Vertex> getFactory() {
-		return factory;
 	}
 
 	@Override

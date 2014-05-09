@@ -11,29 +11,23 @@ import org.genericsystem.kernel.services.AncestorsService;
 
 public class EngineImpl extends GenericImpl {
 
-	Factory<Generic> factory;
+	GenericFactory<Generic> factory;
 
 	Root root = null;
 
 	public EngineImpl() {
-		this(new Factory<Generic>() {
+		this(new GenericFactory<Generic>() {
 			@Override
-			public Generic build(Generic meta, Generic[] overrides, Serializable value, Generic[] components) {
+			public Generic buildGeneric(Generic meta, Generic[] overrides, Serializable value, Generic[] components) {
 				return new GenericImpl(meta, overrides, value, components);
 			}
 		});
 	}
 
-	public EngineImpl(Factory<Generic> factory) {
+	public EngineImpl(GenericFactory<Generic> factory) {
 		super(null, new Generic[] {}, Statics.ENGINE_VALUE, new Generic[] {});
 		this.factory = factory;
 		this.root = factory.buildRoot();
-	}
-
-	public EngineImpl(Root root) {
-		super(null, new Generic[] {}, Statics.ENGINE_VALUE, new Generic[] {});
-		this.factory = null;
-		this.root = root;
 	}
 
 	@Override
@@ -62,7 +56,7 @@ public class EngineImpl extends GenericImpl {
 	}
 
 	@Override
-	public Factory<Generic> getFactory() {
+	public GenericFactory<Generic> getFactory() {
 		return factory;
 	}
 
@@ -71,6 +65,7 @@ public class EngineImpl extends GenericImpl {
 		return root;
 	}
 
+	@Override
 	public boolean equiv(AncestorsService<?> service) {
 		if (this == service)
 			return true;
