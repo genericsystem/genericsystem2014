@@ -9,13 +9,14 @@ import org.genericsystem.kernel.services.AncestorsService;
 
 public class EngineImpl extends GenericImpl {
 
-	Root root = null;
+	private final Root root;
 
 	public EngineImpl() {
 		super(null, new Generic[] {}, Statics.ENGINE_VALUE, new Generic[] {});
 		root = buildVerticesRoot();
 	}
 
+	@SuppressWarnings("static-method")
 	protected Root buildVerticesRoot() {
 		return new Root();
 	}
