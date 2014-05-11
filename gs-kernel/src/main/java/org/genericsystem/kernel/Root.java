@@ -2,10 +2,13 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.HashMap;
-
 import org.genericsystem.kernel.exceptions.RollbackException;
 
 public class Root extends Vertex {
+	public Root() {
+		super(null, EMPTY_VERTICES, Statics.ENGINE_VALUE, EMPTY_VERTICES);
+	}
+
 	ValueCache valueCache;
 
 	@Override

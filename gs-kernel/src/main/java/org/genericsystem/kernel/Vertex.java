@@ -27,10 +27,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Vertex implements AncestorsService<Vertex>, DependenciesService<Vertex>, InheritanceService<Vertex>, BindingService<Vertex>, CompositesInheritanceService<Vertex>, FactoryService<Vertex>, DisplayService<Vertex>, SystemPropertiesService,
-		ExceptionAdviserService<Vertex> {
+ExceptionAdviserService<Vertex> {
 
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
-	private static final Vertex[] EMPTY_VERTICES = new Vertex[] {};
+	protected static final Vertex[] EMPTY_VERTICES = new Vertex[] {};
 
 	private final Serializable value;
 	private final Vertex meta;
@@ -41,20 +41,9 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService<Ver
 	private final CompositesDependencies<Vertex> superComposites;
 	private final Vertex[] supers;
 
-	// Engine constructor
-	Vertex() {
-		((Root) this).valueCache = new ValueCache();
-		meta = this;
-		value = ((Root) this).getCachedValue(Statics.ENGINE_VALUE);
-		components = getEmptyArray();
-		instances = buildDependencies();
-		inheritings = buildDependencies();
-		metaComposites = buildCompositeDependencies();
-		superComposites = buildCompositeDependencies();
-		supers = getEmptyArray();
-	}
-
-	public Vertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
+	Vertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
+		if (isRoot())
+			((Root) this).valueCache = new ValueCache();
 		this.meta = isRoot() ? this : meta;
 		this.value = ((Root) getRoot()).getCachedValue(value);
 		this.components = new Vertex[components.length];
@@ -65,9 +54,9 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService<Ver
 		metaComposites = buildCompositeDependencies();
 		superComposites = buildCompositeDependencies();
 
-		checkIsAlive(meta);
+		checkIsAlive(this.meta);
 		checkAreAlive(overrides);
-		checkAreAlive(components);
+		checkAreAlive(this.components);
 		supers = getSupers(overrides).toArray(Vertex[]::new);
 		checkOverrides(overrides);
 		checkSupers();
@@ -232,7 +221,7 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService<Ver
 				Stream<Vertex> supersStream = supersStream();
 				if (!supersStream().iterator().hasNext())
 					return (base.isRoot() || !origin.isAttributeOf(base.getMeta())) ? Stream.of(origin) : getInheringsStream(base.getMeta());
-					return Statics.concat(supersStream, superVertex -> getInheringsStream(superVertex)).distinct();
+				return Statics.concat(supersStream, superVertex -> getInheringsStream(superVertex)).distinct();
 			}
 
 			protected Stream<Vertex> projectStream(Stream<Vertex> streamToProject) {
