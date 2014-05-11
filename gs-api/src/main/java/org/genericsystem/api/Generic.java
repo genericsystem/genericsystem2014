@@ -5,14 +5,17 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
+import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.BindingService;
+import org.genericsystem.kernel.services.CompositesInheritanceService;
 import org.genericsystem.kernel.services.DependenciesService;
 import org.genericsystem.kernel.services.DisplayService;
 import org.genericsystem.kernel.services.FactoryService;
+import org.genericsystem.kernel.services.InheritanceService;
 
-public interface Generic extends AncestorsService<Generic>, DependenciesService<Generic>, DisplayService<Generic>, BindingService<Generic>, FactoryService<Generic> {
+public interface Generic extends AncestorsService<Generic>, DependenciesService<Generic>, DisplayService<Generic>, BindingService<Generic>, FactoryService<Generic>, CompositesInheritanceService<Generic>, InheritanceService<Generic> {
 
 	final static Generic[] EMPTY_ARRAY = new Generic[] {};
 
@@ -62,5 +65,10 @@ public interface Generic extends AncestorsService<Generic>, DependenciesService<
 		if (alive == null)
 			return null;
 		return wrap(alive);
+	}
+
+	@Override
+	default Snapshot<Generic> getInheritings(Generic origin, int level) {
+		return getAlive().getInheritings(origin.getAlive(), level).project(this::wrap);
 	}
 }

@@ -2,10 +2,17 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Root.ValueCache;
+import org.genericsystem.kernel.Snapshot.AbstractSnapshot;
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.BindingService;
@@ -19,7 +26,7 @@ import org.genericsystem.kernel.services.SystemPropertiesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Vertex implements AncestorsService<Vertex>, DependenciesService<Vertex>, InheritanceService<Vertex>, BindingService<Vertex>, CompositesInheritanceService, FactoryService<Vertex>, DisplayService<Vertex>, SystemPropertiesService,
+public class Vertex implements AncestorsService<Vertex>, DependenciesService<Vertex>, InheritanceService<Vertex>, BindingService<Vertex>, CompositesInheritanceService<Vertex>, FactoryService<Vertex>, DisplayService<Vertex>, SystemPropertiesService,
 		ExceptionAdviserService<Vertex> {
 
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
@@ -147,6 +154,7 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService<Ver
 	public Vertex[] getEmptyArray() {
 		return EMPTY_VERTICES;
 	}
+
 	// @Override
 	// public boolean equals(Object obj) {
 	// if (this == obj)
@@ -162,5 +170,87 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService<Ver
 	// // TODO introduce : meta and components length
 	// return Objects.hashCode(getValue());
 	// }
+
+	@Override
+	public Snapshot<Vertex> getInheritings(final Vertex origin, final int level) {
+		return new AbstractSnapshot<Vertex>() {
+			@Override
+			public Iterator<Vertex> iterator() {
+				return inheritingsIterator(origin, level);
+			}
+		};
+	}
+
+	private class Forbidden extends HashSet<Vertex> {
+
+		private static final long serialVersionUID = 1877502935577170921L;
+
+		private final Map<Vertex, Collection<Vertex>> inheritings = new HashMap<>();
+
+		private final Vertex origin;
+		private final int level;
+
+		public Forbidden(Vertex origin, int level) {
+			this.origin = origin;
+			this.level = level;
+		}
+
+		private Iterator<Vertex> inheritanceIterator() {
+			return getInheringsStream(Vertex.this).iterator();
+		};
+
+		private Stream<Vertex> getInheringsStream(Vertex superVertex) {
+			Collection<Vertex> result = inheritings.get(superVertex);
+			if (result == null)
+				inheritings.put(superVertex, result = new Inheritings(superVertex).inheritanceStream().collect(Collectors.toList()));
+			return result.stream();
+		}
+
+		class Inheritings {
+
+			private final Vertex base;
+
+			private Inheritings(Vertex base) {
+				this.base = base;
+			}
+
+			private boolean isTerminal() {
+				return base.equals(Vertex.this);
+			}
+
+			protected Stream<Vertex> inheritanceStream() {
+				return projectStream(fromAboveStream());
+			}
+
+			private Stream<Vertex> supersStream() {
+				return base.getSupersStream().filter(next -> base.getMeta().equals(next.getMeta()) && origin.isAttributeOf(next));
+			}
+
+			private Stream<Vertex> fromAboveStream() {
+				if (!origin.isAttributeOf(base))
+					return Stream.empty();
+				Stream<Vertex> supersStream = supersStream();
+				if (!supersStream().iterator().hasNext())
+					return (base.isRoot() || !origin.isAttributeOf(base.getMeta())) ? Stream.of(origin) : getInheringsStream(base.getMeta());
+					return Statics.concat(supersStream, superVertex -> getInheringsStream(superVertex)).distinct();
+			}
+
+			protected Stream<Vertex> projectStream(Stream<Vertex> streamToProject) {
+				return Statics.concat(streamToProject, holder -> getStream(holder)).distinct();
+			}
+
+			protected Stream<Vertex> getStream(final Vertex holder) {
+				if (holder.getLevel() != level || base.getSuperComposites(holder).iterator().hasNext())
+					add(holder);
+				Stream<Vertex> indexStream = Stream.concat(holder.getLevel() < level ? base.getMetaComposites(holder).stream() : Stream.empty(), base.getSuperComposites(holder).stream());
+				return Stream.concat(isTerminal() && contains(holder) ? Stream.empty() : Stream.of(holder), projectStream(indexStream));
+			}
+		}
+	}
+
+	public Iterator<Vertex> inheritingsIterator(final Vertex origin, final int level) {
+
+		return new Forbidden(origin, level).inheritanceIterator();
+	}
 
 }
