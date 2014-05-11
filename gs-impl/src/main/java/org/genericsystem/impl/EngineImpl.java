@@ -1,7 +1,6 @@
 package org.genericsystem.impl;
 
 import java.util.Objects;
-
 import org.genericsystem.api.Generic;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
@@ -14,7 +13,11 @@ public class EngineImpl extends GenericImpl {
 
 	public EngineImpl() {
 		super(null, new Generic[] {}, Statics.ENGINE_VALUE, new Generic[] {});
-		this.root = buildRoot();
+		root = buildVerticesRoot();
+	}
+
+	protected Root buildVerticesRoot() {
+		return new Root();
 	}
 
 	@Override

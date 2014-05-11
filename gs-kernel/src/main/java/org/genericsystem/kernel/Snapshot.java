@@ -5,9 +5,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
 import org.genericsystem.kernel.iterator.AbstractFilterIterator;
 import org.genericsystem.kernel.iterator.AbstractProjectionIterator;
 
@@ -28,14 +28,14 @@ public interface Snapshot<T> extends Iterable<T> {
 		boolean isSelected(T candidate);
 	}
 
-	default Snapshot<T> filter(final Filter<T> filter) {
+	default Snapshot<T> filter(final Predicate<T> filter) {
 		return new AbstractSnapshot<T>() {
 			@Override
 			public Iterator<T> iterator() {
 				return new AbstractFilterIterator<T>(Snapshot.this.iterator()) {
 					@Override
 					public boolean isSelected() {
-						return filter.isSelected(next);
+						return filter.test(next);
 					}
 				};
 			}

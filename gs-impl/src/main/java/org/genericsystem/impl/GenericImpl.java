@@ -4,10 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.Generic;
-import org.genericsystem.kernel.Dependencies.CompositesDependencies;
-import org.genericsystem.kernel.Snapshot;
 
 public class GenericImpl implements Generic {
 
@@ -44,6 +41,11 @@ public class GenericImpl implements Generic {
 	}
 
 	@Override
+	public Generic[] getComponents() {
+		return components;
+	}
+
+	@Override
 	public Serializable getValue() {
 		return value;
 	}
@@ -69,25 +71,4 @@ public class GenericImpl implements Generic {
 		return Objects.toString(getValue());
 	}
 
-	@Override
-	public Snapshot<Generic> getInstances() {
-		return getAlive().getInstances().project(getVertexWrapper());
-	}
-
-	@Override
-	public Snapshot<Generic> getInheritings() {
-		return getAlive().getInheritings().project(getVertexWrapper());
-	}
-
-	@Override
-	public CompositesDependencies<Generic> getMetaComposites() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public CompositesDependencies<Generic> getSuperComposites() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

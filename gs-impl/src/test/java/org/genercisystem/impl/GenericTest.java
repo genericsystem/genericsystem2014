@@ -52,8 +52,8 @@ public class GenericTest extends AbstractTest {
 
 	public void testAddInstance() {
 		EngineImpl engine = new EngineImpl();
-		// Generic vehicle = engine.addInstance("Vehicle");
-		// assert engine.getInstances().contains(vehicle);
+		Generic vehicle = engine.addInstance("Vehicle");
+		assert engine.getInstances().contains(vehicle);
 	}
 	// public void test() {
 	// Vertex engine = new Root();

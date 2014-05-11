@@ -281,8 +281,8 @@ public class AttributesTest extends AbstractTest {
 		assert vehicle.getAttributes(root).contains(power);
 		assert robot.getAttributes(root).size() == 1;
 		assert robot.getAttributes(root).contains(power);
-		assert transformer.getAttributes(root).size() == 2;
-		// assert transformer.getAttributes(root).contains(power);
+		assert transformer.getAttributes(root).size() == 1;
+		assert transformer.getAttributes(root).contains(power);
 	}
 
 	public void test1AttributWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel1AttributLevel1FistChild() {
@@ -350,7 +350,9 @@ public class AttributesTest extends AbstractTest {
 		assert robot.getAttributes(root).size() == 2;
 		assert robot.getAttributes(root).contains(power);
 		assert robot.getAttributes(root).contains(airconditioner);
-		assert transformer.getAttributes(root).size() == 4;
+		assert transformer.getAttributes(root).size() == 2;
+		assert transformer.getAttributes(root).contains(power);
+		assert transformer.getAttributes(root).contains(airconditioner);
 	}
 
 	public void test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsLevel1FirstChild() {

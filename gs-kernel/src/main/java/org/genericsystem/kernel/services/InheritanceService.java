@@ -9,10 +9,11 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public interface InheritanceService<T extends AncestorsService<T>> extends AncestorsService<T>, SystemPropertiesService {
+public interface InheritanceService<T extends InheritanceService<T>> extends DependenciesService<T>, SystemPropertiesService {
 
+	@SuppressWarnings("unchecked")
 	default boolean isSuperOf(T subMeta, T[] overrides, Serializable subValue, T... subComponents) {
-		return Arrays.asList(overrides).stream().anyMatch(override -> override.inheritsFrom((T) InheritanceService.this)) || inheritsFrom(subMeta, subValue, subComponents, getMeta(), getValue(), getComponents());
+		return Arrays.asList(overrides).stream().anyMatch(override -> override.inheritsFrom((T) this)) || inheritsFrom(subMeta, subValue, subComponents, getMeta(), getValue(), getComponents());
 	}
 
 	// default boolean inheritsFrom(Vertex superMeta, Serializable superValue, Vertex... superComponents) {
@@ -91,12 +92,12 @@ public interface InheritanceService<T extends AncestorsService<T>> extends Ances
 					return false;
 				}
 				boolean selectable = true;
-				for (T inheriting : ((DependenciesService<T>) candidate).getInheritings())
+				for (T inheriting : candidate.getInheritings())
 					if (visit(inheriting))
 						selectable = false;
 				if (isMeta) {
 					selectable = false;
-					for (T instance : ((DependenciesService<T>) candidate).getInstances())
+					for (T instance : candidate.getInstances())
 						visit(instance);
 				}
 				result = alreadyComputed.put(candidate, selectable);

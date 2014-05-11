@@ -6,47 +6,54 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Dependencies;
+import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 
-public interface BindingService<T extends AncestorsService<T>> extends AncestorsService<T>, DependenciesService<T>, FactoryService<T>, InheritanceService<T>, ExceptionAdviserService<T> {
+public interface BindingService<T extends BindingService<T>> extends AncestorsService<T>, DependenciesService<T>, FactoryService<T>, InheritanceService<T>, ExceptionAdviserService<T>, DisplayService<T> {
 
 	T[] getEmptyArray();
 
-	default T addInstance(Serializable value, T... components) {
+	default T addInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
 		return addInstance(getEmptyArray(), value, components);
 	}
 
+	@SuppressWarnings("unchecked")
 	default T addInstance(T[] overrides, Serializable value, T... components) {
-		T T = getInstance(overrides, value, components);
-		if (T != null)
-			rollbackAndThrowException(new ExistsException(((DisplayService<T>) T).info()));
-		return ((BindingService<T>) build((T) this, Arrays.stream(overrides), value, Arrays.stream(components))).plug();
+		T instance = getInstance(overrides, value, components);
+		if (instance != null)
+			rollbackAndThrowException(new ExistsException(instance.info()));
+		return this.build((T) this, Arrays.stream(overrides), value, Arrays.stream(components)).plug();
 	}
 
-	default T setInstance(Serializable value, T... components) {
+	default T setInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
 		return setInstance(getEmptyArray(), value, components);
 	}
 
+	@SuppressWarnings("unchecked")
 	default T setInstance(T[] overrides, Serializable value, T... components) {
-		T T = getInstance(overrides, value, components);
-		if (T != null)
-			return T;
-		return ((BindingService<T>) build((T) this, Arrays.stream(overrides), value, Arrays.stream(components))).plug();
+		T instance = getInstance(overrides, value, components);
+		if (instance != null)
+			return instance;
+		return build((T) this, Arrays.stream(overrides), value, Arrays.stream(components)).plug();
 	}
 
-	default T getInstance(Serializable value, T... components) {
-		// TODO KK
-		return (T) build((T) this, Arrays.stream(getEmptyArray()), value, Arrays.stream(components)).getAlive();
-	}
+	@SuppressWarnings("unchecked")
+	T getInstance(Serializable value, T... components);
 
+	@Override
+	public Dependencies<T> getInstances();
+
+	@Override
+	public Dependencies<T> getInheritings();
+
+	@SuppressWarnings("unchecked")
 	default T plug() {
-		T t = ((DependenciesService<T>) getMeta()).<Dependencies<T>> getInstances().set((T) this);
-		getSupersStream().forEach(superGeneric -> ((DependenciesService<T>) superGeneric).<Dependencies<T>> getInheritings().set((T) this));
-		getComponentsStream().forEach(component -> ((DependenciesService<T>) component).getMetaComposites().setByIndex(getMeta(), (T) this));
-		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> ((DependenciesService<T>) component).getSuperComposites().setByIndex(superGeneric, (T) this)));
+		T t = getMeta().getInstances().set((T) this);
+		getSupersStream().forEach(superGeneric -> superGeneric.getInheritings().set((T) this));
+		getComponentsStream().forEach(component -> component.getMetaComposites().setByIndex(getMeta(), (T) this));
+		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> component.getSuperComposites().setByIndex(superGeneric, (T) this)));
 
 		// assert getSupersStream().allMatch(superGeneric -> this == superGeneric.getInheritings().get((T) this));
 		// assert Arrays.stream(getComponents()).allMatch(component -> this == component.getMetaComposites(getMeta()).get((T) this));
@@ -55,16 +62,24 @@ public interface BindingService<T extends AncestorsService<T>> extends Ancestors
 		return t;
 	}
 
+	@SuppressWarnings("unchecked")
 	default boolean unplug() {
-		boolean result = ((DependenciesService<T>) getMeta()).<Dependencies<T>> getInstances().remove((T) this);
+		boolean result = getMeta().getInstances().remove((T) this);
 		if (!result)
 			rollbackAndThrowException(new NotFoundException(((DisplayService<T>) this).info()));
-		getSupersStream().forEach(superGeneric -> ((DependenciesService<T>) superGeneric).<Dependencies<T>> getInheritings().remove((T) this));
-		getComponentsStream().forEach(component -> ((DependenciesService<T>) component).getMetaComposites().removeByIndex(getMeta(), (T) this));
-		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> ((DependenciesService<T>) component).getSuperComposites().removeByIndex(superGeneric, (T) this)));
+		getSupersStream().forEach(superGeneric -> superGeneric.getInheritings().remove((T) this));
+		getComponentsStream().forEach(component -> component.getMetaComposites().removeByIndex(getMeta(), (T) this));
+		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> component.getSuperComposites().removeByIndex(superGeneric, (T) this)));
 		return result;
 	}
 
+	@Override
+	CompositesDependencies<T> getMetaComposites();
+
+	@Override
+	CompositesDependencies<T> getSuperComposites();
+
+	@SuppressWarnings("unchecked")
 	default T getInstance(T[] supers, Serializable value, T... components) {
 		T result = getInstance(value, components);
 		if (result != null && Arrays.stream(supers).allMatch(superT -> result.inheritsFrom(result)))
@@ -72,6 +87,7 @@ public interface BindingService<T extends AncestorsService<T>> extends Ancestors
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	default void removeInstance(Serializable value, T... components) {
 		T t = getInstance(value, components);
 		if (t == null)
@@ -79,6 +95,7 @@ public interface BindingService<T extends AncestorsService<T>> extends Ancestors
 		((BindingService<T>) t).unplug();
 	}
 
+	@SuppressWarnings("unchecked")
 	default Stream<T> select() {
 		return Stream.of((T) this);
 	}
@@ -111,6 +128,7 @@ public interface BindingService<T extends AncestorsService<T>> extends Ancestors
 		return selectInstances(value).filter(componentsPredicate);
 	}
 
+	@SuppressWarnings("unchecked")
 	default Stream<T> selectInstances(Predicate<T> valuePredicate, T... components) {
 		return selectInstances(valuePredicate, instance -> componentsDepends(components, ((InheritanceService<T>) instance).getComponents()));
 	}
@@ -119,6 +137,7 @@ public interface BindingService<T extends AncestorsService<T>> extends Ancestors
 		return selectInstances(valuePredicate).filter(componentsPredicate);
 	}
 
+	@SuppressWarnings("unchecked")
 	default Stream<T> selectInstances(Predicate<T> supersPredicate, Serializable value, T... components) {
 		return selectInstances(value, components).filter(supersPredicate);
 	}
@@ -127,6 +146,7 @@ public interface BindingService<T extends AncestorsService<T>> extends Ancestors
 		return selectInstances(value, componentsPredicate).filter(supersPredicate);
 	}
 
+	@SuppressWarnings("unchecked")
 	default Stream<T> selectInstances(Predicate<T> supersPredicate, Predicate<T> valuePredicate, T... components) {
 		return selectInstances(valuePredicate, components).filter(supersPredicate);
 	}
@@ -139,6 +159,7 @@ public interface BindingService<T extends AncestorsService<T>> extends Ancestors
 		return selectInstances(instance -> supers.allMatch(superT -> instance.inheritsFrom(superT)), value, componentsPredicate);
 	}
 
+	@SuppressWarnings("unchecked")
 	default Stream<T> selectInstances(Stream<T> supers, Predicate<T> valuePredicate, T... components) {
 		return selectInstances((Predicate<T>) (instance -> supers.allMatch(superT -> instance.inheritsFrom(superT))), valuePredicate, components);
 	}

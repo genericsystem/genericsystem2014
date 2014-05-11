@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Root.ValueCache;
 import org.genericsystem.kernel.exceptions.NotAliveException;
@@ -24,6 +23,7 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService<Ver
 		ExceptionAdviserService<Vertex> {
 
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
+	private static final Vertex[] EMPTY_VERTICES = new Vertex[] {};
 
 	private final Serializable value;
 	private final Vertex meta;
@@ -39,12 +39,12 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService<Ver
 		((Root) this).valueCache = new ValueCache();
 		meta = this;
 		value = ((Root) this).getCachedValue(Statics.ENGINE_VALUE);
-		components = Statics.EMPTY_VERTICES;
+		components = getEmptyArray();
 		instances = buildDependencies();
 		inheritings = buildDependencies();
 		metaComposites = buildCompositeDependencies();
 		superComposites = buildCompositeDependencies();
-		supers = Statics.EMPTY_VERTICES;
+		supers = getEmptyArray();
 	}
 
 	public Vertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
@@ -110,6 +110,11 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService<Ver
 		return inheritings;
 	}
 
+	@Override
+	public Vertex getInstance(Serializable value, Vertex... components) {
+		return build(this, Arrays.stream(getEmptyArray()), value, Arrays.stream(components)).getAlive();
+	}
+
 	public Snapshot<Vertex> getMetaComposites(Vertex meta) {
 		return metaComposites.getByIndex(meta);
 	}
@@ -140,9 +145,8 @@ public class Vertex implements AncestorsService<Vertex>, DependenciesService<Ver
 
 	@Override
 	public Vertex[] getEmptyArray() {
-		return Statics.EMPTY_VERTICES;
+		return EMPTY_VERTICES;
 	}
-
 	// @Override
 	// public boolean equals(Object obj) {
 	// if (this == obj)
