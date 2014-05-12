@@ -2,25 +2,14 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.HashMap;
-
 import org.genericsystem.kernel.exceptions.RollbackException;
 
 public class Root extends Vertex {
-	ValueCache valueCache;
-	Factory<Vertex> factory;
-
 	public Root() {
-		this(new Factory<Vertex>() {
-			@Override
-			public Vertex build(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
-				return new Vertex(meta, overrides, value, components);
-			}
-		});
+		super(null, EMPTY_VERTICES, Statics.ENGINE_VALUE, EMPTY_VERTICES);
 	}
 
-	public Root(Factory<Vertex> factory) {
-		super(factory);
-	}
+	ValueCache valueCache;
 
 	@Override
 	public boolean isRoot() {
@@ -44,11 +33,6 @@ public class Root extends Vertex {
 
 	public Serializable getCachedValue(Serializable value) {
 		return valueCache.get(value);
-	}
-
-	@Override
-	public Factory<Vertex> getFactory() {
-		return factory;
 	}
 
 	@Override
