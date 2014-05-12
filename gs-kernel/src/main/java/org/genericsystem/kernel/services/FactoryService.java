@@ -3,6 +3,7 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.DependenciesImpl;
@@ -16,30 +17,31 @@ public interface FactoryService<T extends FactoryService<T>> extends AncestorsSe
 	}
 
 	default CompositesDependencies<T> buildCompositeDependencies() {
-		class CompositesDependenciesImpl implements CompositesDependencies<T> {
+		class CompositesDependenciesImpl<E> implements CompositesDependencies<E> {
 			@SuppressWarnings("unchecked")
-			private Dependencies<DependenciesEntry<T>> delegate = (Dependencies<DependenciesEntry<T>>) buildDependencies();
+			private Dependencies<DependenciesEntry<E>> delegate = (Dependencies<DependenciesEntry<E>>) buildDependencies();
 
 			@Override
-			public boolean remove(DependenciesEntry<T> vertex) {
+			public boolean remove(DependenciesEntry<E> vertex) {
 				return delegate.remove(vertex);
 			}
 
 			@Override
-			public void add(DependenciesEntry<T> vertex) {
+			public void add(DependenciesEntry<E> vertex) {
 				delegate.add(vertex);
 			}
 
 			@Override
-			public Iterator<DependenciesEntry<T>> iterator() {
+			public Iterator<DependenciesEntry<E>> iterator() {
 				return delegate.iterator();
 			}
 
+			@SuppressWarnings("unchecked")
 			@Override
-			public Dependencies<T> buildDependencies() {
-				return FactoryService.this.buildDependencies();
+			public Dependencies<E> buildDependencies() {
+				return (Dependencies<E>) FactoryService.this.buildDependencies();
 			}
 		}
-		return new CompositesDependenciesImpl();
+		return new CompositesDependenciesImpl<T>();
 	}
 }

@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.util.Arrays;
+
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.testng.annotations.Test;
 
@@ -77,7 +78,7 @@ public class VertexTest extends AbstractTest {
 		assert v233.isInstanceOf(power);
 
 		assert myBmw.getHolders(power).contains(v233) : myBmw.getHolders(power);
-		assert myBmw.getHolders(power).size() == 1 : myBmw.getHolders(engine);
+		assert myBmw.getHolders(power).size() == 1 : myBmw.getHolders(power);
 		assert myBmw.getValues(power).contains(233);
 		assert engine.isAttributeOf(myBmw);
 		log.info("----------------------------------");
@@ -183,7 +184,7 @@ public class VertexTest extends AbstractTest {
 			}
 		}.assertIsCausedBy(NotAliveException.class);
 	}
-	
+
 	public void test11() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
