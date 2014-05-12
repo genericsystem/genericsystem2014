@@ -1,8 +1,9 @@
 package org.genercisystem.impl;
 
 import java.util.Arrays;
-import org.genericsystem.api.Generic;
+
 import org.genericsystem.impl.EngineImpl;
+import org.genericsystem.impl.Generic;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
 import org.testng.annotations.Test;
