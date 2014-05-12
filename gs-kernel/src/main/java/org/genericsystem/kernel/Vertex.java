@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Root.ValueCache;
 import org.genericsystem.kernel.Snapshot.AbstractSnapshot;
@@ -26,22 +26,17 @@ import org.genericsystem.kernel.services.SystemPropertiesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Vertex implements AncestorsService<Vertex>, DependenciesService<Vertex>, InheritanceService<Vertex>, BindingService<Vertex>, CompositesInheritanceService<Vertex>, FactoryService<Vertex>, DisplayService<Vertex>, SystemPropertiesService,
-ExceptionAdviserService<Vertex> {
-
+public class Vertex extends AbstractVertex<Vertex> implements AncestorsService<Vertex>, DependenciesService<Vertex>, InheritanceService<Vertex>, BindingService<Vertex>, CompositesInheritanceService<Vertex>, FactoryService<Vertex>, DisplayService<Vertex>,
+SystemPropertiesService, ExceptionAdviserService<Vertex> {
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 	protected static final Vertex[] EMPTY_VERTICES = new Vertex[] {};
-
-	private final Serializable value;
-	private final Vertex meta;
-	private final Vertex[] components;
 	private final Dependencies<Vertex> instances;
 	private final Dependencies<Vertex> inheritings;
 	private final CompositesDependencies<Vertex> metaComposites;
 	private final CompositesDependencies<Vertex> superComposites;
-	private final Vertex[] supers;
 
 	Vertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
+		super(meta, null, value, components);
 		if (isRoot())
 			((Root) this).valueCache = new ValueCache();
 		this.meta = isRoot() ? this : meta;
@@ -56,8 +51,8 @@ ExceptionAdviserService<Vertex> {
 
 		checkIsAlive(this.meta);
 		checkAreAlive(overrides);
-		checkAreAlive(this.components);
-		supers = getSupers(overrides).toArray(Vertex[]::new);
+		checkAreAlive(super.components);
+		super.supers = getSupers(overrides).toArray(Vertex[]::new);
 		checkOverrides(overrides);
 		checkSupers();
 	}
@@ -74,26 +69,6 @@ ExceptionAdviserService<Vertex> {
 	private void checkIsAlive(Vertex vertex) {
 		if (!vertex.isAlive())
 			rollbackAndThrowException(new NotAliveException(vertex.info()));
-	}
-
-	@Override
-	public Vertex getMeta() {
-		return meta;
-	}
-
-	@Override
-	public Vertex[] getComponents() {
-		return components;
-	}
-
-	@Override
-	public Stream<Vertex> getComponentsStream() {
-		return Arrays.stream(components);
-	}
-
-	@Override
-	public Serializable getValue() {
-		return value;
 	}
 
 	@Override
@@ -127,16 +102,6 @@ ExceptionAdviserService<Vertex> {
 	@Override
 	public CompositesDependencies<Vertex> getSuperComposites() {
 		return superComposites;
-	}
-
-	@Override
-	public Stream<Vertex> getSupersStream() {
-		return Arrays.stream(supers);
-	}
-
-	@Override
-	public String toString() {
-		return Objects.toString(getValue());
 	}
 
 	@Override
@@ -221,7 +186,7 @@ ExceptionAdviserService<Vertex> {
 				Stream<Vertex> supersStream = supersStream();
 				if (!supersStream().iterator().hasNext())
 					return (base.isRoot() || !origin.isAttributeOf(base.getMeta())) ? Stream.of(origin) : getInheringsStream(base.getMeta());
-				return Statics.concat(supersStream, superVertex -> getInheringsStream(superVertex)).distinct();
+					return Statics.concat(supersStream, superVertex -> getInheringsStream(superVertex)).distinct();
 			}
 
 			protected Stream<Vertex> projectStream(Stream<Vertex> streamToProject) {

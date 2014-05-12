@@ -6,20 +6,17 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 public class AbstractVertex<T> {
-	private final T meta;
-	private final T[] supers;
-	private final T[] components;
-	private final Serializable value;
+	protected T meta;
+	protected T[] supers;
+	protected T[] components;
+	protected Serializable value;
 
 	@SuppressWarnings("unchecked")
 	public AbstractVertex(T meta, T[] supers, Serializable value, T... components) {
 		this.meta = meta == null ? (T) this : meta;
 		this.supers = supers;
 		this.value = value;
-		this.components = components.clone();
-		for (int i = 0; i < components.length; i++)
-			if (components[i] == null)
-				this.components[i] = (T) this;
+		this.components = components;
 	}
 
 	public T getMeta() {
