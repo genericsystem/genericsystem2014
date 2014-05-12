@@ -1,7 +1,7 @@
 package org.genericsystem.impl;
 
 import java.util.Objects;
-import org.genericsystem.api.Generic;
+
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;

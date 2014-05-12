@@ -1,4 +1,4 @@
-package org.genericsystem.api;
+package org.genericsystem.impl;
 
 import java.io.Serializable;
 import java.util.Arrays;

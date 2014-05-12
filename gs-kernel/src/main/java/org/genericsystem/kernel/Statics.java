@@ -9,6 +9,7 @@ public class Statics {
 	public static final int NO_POSITION = -1;
 	public static final int BASE_POSITION = 0;
 	public final static String ENGINE_VALUE = "Engine";
+	public static final long MILLI_TO_NANOSECONDS = 1000000L;
 
 	public static Stream<Vertex> concat(Stream<Vertex>[] array) {
 		return Arrays.stream(array).flatMap(x -> x);

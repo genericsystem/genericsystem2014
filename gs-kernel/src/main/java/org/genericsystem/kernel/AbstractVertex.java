@@ -1,6 +1,9 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 public class AbstractVertex<T> {
 	private final T meta;
@@ -33,5 +36,18 @@ public class AbstractVertex<T> {
 
 	public Serializable getValue() {
 		return value;
+	}
+
+	public Stream<T> getSupersStream() {
+		return Arrays.stream(supers);
+	}
+
+	public Stream<T> getComponentsStream() {
+		return Arrays.stream(components);
+	}
+
+	@Override
+	public String toString() {
+		return Objects.toString(getValue());
 	}
 }
