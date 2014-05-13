@@ -11,7 +11,7 @@ public interface EngineService<T extends GenericService<T>> extends GenericServi
 		return 0;
 	}
 
-	default Root buildVerticesRoot() {
+	default Root buildRoot() {
 		return new Root();
 	}
 
