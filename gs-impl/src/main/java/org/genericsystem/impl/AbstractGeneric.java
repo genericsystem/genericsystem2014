@@ -10,9 +10,9 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!(obj instanceof Generic))
+		if (!(obj instanceof AbstractGeneric))
 			return false;
-		Generic service = (Generic) obj;
+		AbstractGeneric service = (AbstractGeneric) obj;
 		return equiv(service);
 	}
 
