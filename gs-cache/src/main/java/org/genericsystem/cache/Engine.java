@@ -10,7 +10,7 @@ public class Engine extends Generic implements EngineService<Generic> {
 	private final Cache currentCache = buildCache();
 
 	public Engine() {
-		init(null, new Generic[] {}, Statics.ENGINE_VALUE, new Generic[] {});
+		init(null, getEmptyArray(), Statics.ENGINE_VALUE, getEmptyArray());
 	}
 
 	@Override
