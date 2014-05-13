@@ -11,12 +11,12 @@ public class Statics {
 	public final static String ENGINE_VALUE = "Engine";
 	public static final long MILLI_TO_NANOSECONDS = 1000000L;
 
-	public static Stream<Vertex> concat(Stream<Vertex>[] array) {
+	public static <T> Stream<T> concat(Stream<T>[] array) {
 		return Arrays.stream(array).flatMap(x -> x);
 	}
 
-	public static Stream<Vertex> concat(Stream<Vertex> stream, Function<Vertex, Stream<Vertex>> mappers) {
-		return stream.<Stream<Vertex>> map(mappers).flatMap(x -> x);
+	public static <T> Stream<T> concat(Stream<T> stream, Function<T, Stream<T>> mappers) {
+		return stream.<Stream<T>> map(mappers).flatMap(x -> x);
 		// return stream.<Stream<Vertex>> map(mappers).reduce(Stream.empty(), Stream::concat)
 	}
 }

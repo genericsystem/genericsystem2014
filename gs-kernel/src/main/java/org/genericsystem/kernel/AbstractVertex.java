@@ -6,13 +6,15 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 public class AbstractVertex<T> {
-	private final T meta;
-	private final T[] supers;
-	private final T[] components;
-	private final Serializable value;
+	protected T meta;
+	protected T[] supers;
+	protected T[] components;
+	protected Serializable value;
 
 	@SuppressWarnings("unchecked")
 	public AbstractVertex(T meta, T[] supers, Serializable value, T... components) {
+		// if (isRoot())
+		// ((Root) this).valueCache = new ValueCache();
 		this.meta = meta == null ? (T) this : meta;
 		this.supers = supers;
 		this.value = value;
