@@ -6,11 +6,11 @@ import org.genericsystem.kernel.Vertex;
 
 public class Engine extends Generic implements EngineService<Generic> {
 
-	private final Root root = buildVerticesRoot();
-	private Cache currentCache = new Cache();
+	private final Root root = buildRoot();
+	private final Cache currentCache = buildCache();
 
 	public Engine() {
-		init(null, new Generic[] {}, Statics.ENGINE_VALUE, new Generic[] {});
+		init(null, getEmptyArray(), Statics.ENGINE_VALUE, getEmptyArray());
 	}
 
 	@Override
