@@ -3,23 +3,17 @@ package org.genericsystem.impl;
 import java.io.Serializable;
 import java.util.stream.Stream;
 
-public class Generic<T extends Generic<T>> extends AbstractGeneric<T> implements GenericService<T> {
+public class Generic extends AbstractGeneric<Generic> implements GenericService<Generic> {
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public T build(T meta, Stream<T> overrides, Serializable value, Stream<T> components) {
-		return (T) new GenericImpl().init((GenericImpl) meta, overrides.toArray(GenericImpl[]::new), value, components.toArray(GenericImpl[]::new));
+	public Generic build(Generic meta, Stream<Generic> overrides, Serializable value, Stream<Generic> components) {
+		return new Generic().init(meta, overrides.toArray(Generic[]::new), value, components.toArray(Generic[]::new));
 	}
 
 	private final static Generic[] EMPTY_ARRAY = new Generic[] {};
 
 	@Override
-	public T[] getEmptyArray() {
-		return (T[]) EMPTY_ARRAY;
+	public Generic[] getEmptyArray() {
+		return EMPTY_ARRAY;
 	}
-
-	public static class GenericImpl extends Generic<GenericImpl> {
-
-	}
-
 }

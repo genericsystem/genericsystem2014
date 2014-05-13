@@ -2,7 +2,7 @@ package org.genercisystem.impl;
 
 import java.util.Arrays;
 import org.genericsystem.impl.Engine;
-import org.genericsystem.impl.Generic.GenericImpl;
+import org.genericsystem.impl.Generic;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
 import org.testng.annotations.Test;
@@ -31,15 +31,15 @@ public class GenericTest extends AbstractTest {
 		assert engine.getInstances().isEmpty();
 		Vertex vehicleVertex = engine.getAlive().addInstance("Vehicle");
 		Vertex powerVehicleVertex = engine.getAlive().addInstance("Power", vehicleVertex);
-		GenericImpl vehicle = engine.getInstances().filter(g -> g.getValue().equals("Vehicle")).stream().findFirst().get();
-		GenericImpl powerVehicle = engine.getInstances().filter(g -> g.getValue().equals("Power")).stream().findFirst().get();
+		Generic vehicle = engine.getInstances().filter(g -> g.getValue().equals("Vehicle")).stream().findFirst().get();
+		Generic powerVehicle = engine.getInstances().filter(g -> g.getValue().equals("Power")).stream().findFirst().get();
 		assert vehicle.getAlive().equiv(vehicleVertex) : engine.getInstances();
 		assert powerVehicle.getAlive().equiv(powerVehicleVertex) : engine.getInstances();
 	}
 
 	public void testAddInstance() {
 		Engine engine = new Engine();
-		GenericImpl vehicle = engine.addInstance("Vehicle");
+		Generic vehicle = engine.addInstance("Vehicle");
 		assert engine.getInstances().contains(vehicle);
 	}
 
@@ -135,10 +135,10 @@ public class GenericTest extends AbstractTest {
 		Engine engine = new Engine();
 
 		assert engine.isRoot();
-		GenericImpl vehicle = engine.addInstance("Vehicle");
-		GenericImpl car = engine.addInstance(new GenericImpl[] { vehicle }, "Car", new GenericImpl[] {});
-		GenericImpl vehiclePower = engine.addInstance("VehiclePower", vehicle);
-		GenericImpl carPower = engine.addInstance("CarPower", car);
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = engine.addInstance(new Generic[] { vehicle }, "Car", new Generic[] {});
+		Generic vehiclePower = engine.addInstance("VehiclePower", vehicle);
+		Generic carPower = engine.addInstance("CarPower", car);
 		assert car.getAttributes(engine).containsAll(Arrays.asList(vehiclePower, carPower)) : car.getAttributes(engine);
 		assert car.getAttributes(engine).size() == 2;
 	}

@@ -1,17 +1,16 @@
 package org.genericsystem.cache;
 
-import org.genericsystem.cache.Generic.GenericImpl;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
 
-public class Engine extends GenericImpl implements EngineService<GenericImpl> {
+public class Engine extends Generic implements EngineService<Generic> {
 
 	private final Root root = buildVerticesRoot();
 	private Cache currentCache = new Cache();
 
 	public Engine() {
-		init(null, new GenericImpl[] {}, Statics.ENGINE_VALUE, new GenericImpl[] {});
+		init(null, new Generic[] {}, Statics.ENGINE_VALUE, new Generic[] {});
 	}
 
 	@Override
