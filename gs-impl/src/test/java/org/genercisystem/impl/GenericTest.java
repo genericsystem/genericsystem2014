@@ -2,10 +2,7 @@ package org.genercisystem.impl;
 
 import java.util.Arrays;
 import org.genericsystem.impl.Engine;
-import org.genericsystem.impl.Engine.EngineImpl;
-import org.genericsystem.impl.Generic;
 import org.genericsystem.impl.Generic.GenericImpl;
-import org.genericsystem.impl.GenericService;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
 import org.testng.annotations.Test;
@@ -30,7 +27,7 @@ public class GenericTest extends AbstractTest {
 	}
 
 	public void testGetInstances() {
-		EngineImpl engine = new EngineImpl();
+		Engine engine = new Engine();
 		assert engine.getInstances().isEmpty();
 		Vertex vehicleVertex = engine.getAlive().addInstance("Vehicle");
 		Vertex powerVehicleVertex = engine.getAlive().addInstance("Power", vehicleVertex);
@@ -42,7 +39,7 @@ public class GenericTest extends AbstractTest {
 
 	public void testAddInstance() {
 		Engine engine = new Engine();
-		GenericService vehicle = engine.addInstance("Vehicle");
+		GenericImpl vehicle = engine.addInstance("Vehicle");
 		assert engine.getInstances().contains(vehicle);
 	}
 
@@ -135,13 +132,13 @@ public class GenericTest extends AbstractTest {
 	//
 
 	public void test3() {
-		Engine<?> engine = new Engine<>();
+		Engine engine = new Engine();
 
 		assert engine.isRoot();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic car = engine.addInstance(new Generic[] { vehicle }, "Car", new Generic[] {});
-		Generic vehiclePower = engine.addInstance("VehiclePower", vehicle);
-		Generic<?> carPower = engine.addInstance("CarPower", car);
+		GenericImpl vehicle = engine.addInstance("Vehicle");
+		GenericImpl car = engine.addInstance(new GenericImpl[] { vehicle }, "Car", new GenericImpl[] {});
+		GenericImpl vehiclePower = engine.addInstance("VehiclePower", vehicle);
+		GenericImpl carPower = engine.addInstance("CarPower", car);
 		assert car.getAttributes(engine).containsAll(Arrays.asList(vehiclePower, carPower)) : car.getAttributes(engine);
 		assert car.getAttributes(engine).size() == 2;
 	}

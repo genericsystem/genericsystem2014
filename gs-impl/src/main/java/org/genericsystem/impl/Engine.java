@@ -1,15 +1,16 @@
 package org.genericsystem.impl;
 
+import org.genericsystem.impl.Generic.GenericImpl;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
 
-public class Engine<T extends Generic<T>> extends Generic<T> implements EngineService<T> {
+public class Engine extends GenericImpl implements EngineService<GenericImpl> {
 
 	private final Root root;
 
 	public Engine() {
-		super(null, (T[]) new Generic[] {}, Statics.ENGINE_VALUE, (T[]) new Generic[] {});
+		super(null, new GenericImpl[] {}, Statics.ENGINE_VALUE, new GenericImpl[] {});
 		root = buildVerticesRoot();
 	}
 
@@ -20,8 +21,8 @@ public class Engine<T extends Generic<T>> extends Generic<T> implements EngineSe
 
 	// Why is this necessary ??? what does maven do here ?
 	@Override
-	public T getRoot() {
-		return EngineService.super.getRoot();
+	public Engine getRoot() {
+		return (Engine) EngineService.super.getRoot();
 	}
 
 	// Not necessary ! where is the logic ?
@@ -29,9 +30,5 @@ public class Engine<T extends Generic<T>> extends Generic<T> implements EngineSe
 	// public boolean isRoot() {
 	// return EngineService.super.isRoot();
 	// }
-
-	public static class EngineImpl extends Engine<GenericImpl> {
-
-	}
 
 }
