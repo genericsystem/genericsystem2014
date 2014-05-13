@@ -3,6 +3,7 @@ package org.genericsystem.impl;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
@@ -15,7 +16,7 @@ import org.genericsystem.kernel.services.DisplayService;
 import org.genericsystem.kernel.services.FactoryService;
 import org.genericsystem.kernel.services.InheritanceService;
 
-public interface GenericService<T extends GenericService<T>> extends AncestorsService<T>, DependenciesService<T>, DisplayService<T>, BindingService<T>, FactoryService<T>, CompositesInheritanceService<T>, InheritanceService<T> {
+public interface GenericService<T extends GenericService<T>> extends AncestorsService<T>, DependenciesService<T>, InheritanceService<T>, BindingService<T>, CompositesInheritanceService<T>, FactoryService<T>, DisplayService<T> {
 
 	default T wrap(Vertex vertex) {
 		return vertex.isRoot() ? getRoot() : build(wrap(vertex.getAlive().getMeta()), vertex.getAlive().getSupersStream().map(this::wrap), vertex.getValue(), vertex.getAlive().getComponentsStream().map(this::wrap));
@@ -50,7 +51,7 @@ public interface GenericService<T extends GenericService<T>> extends AncestorsSe
 	}
 
 	@Override
-	default T getInstance(Serializable value, T... components) {
+	default T getInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
 		Vertex alive = getAlive();
 		if (alive == null)
 			return null;
