@@ -3,7 +3,6 @@ package org.genericsystem.impl;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
@@ -64,5 +63,15 @@ public interface GenericService<T extends GenericService<T>> extends AncestorsSe
 	@Override
 	default Snapshot<T> getInheritings(T origin, int level) {
 		return getAlive().getInheritings(origin.getAlive(), level).project(this::wrap);
+	}
+
+	@Override
+	default Snapshot<T> getMetaComposites(T meta) {
+		return getAlive().getMetaComposites(meta.getAlive()).project(this::wrap);
+	}
+
+	@Override
+	default Snapshot<T> getSuperComposites(T superVertex) {
+		return getAlive().getSuperComposites(superVertex.getAlive()).project(this::wrap);
 	}
 }
