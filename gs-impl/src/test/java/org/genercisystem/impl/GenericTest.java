@@ -2,7 +2,9 @@ package org.genercisystem.impl;
 
 import java.util.Arrays;
 import org.genericsystem.impl.Engine;
+import org.genericsystem.impl.Engine.EngineImpl;
 import org.genericsystem.impl.Generic;
+import org.genericsystem.impl.Generic.GenericImpl;
 import org.genericsystem.impl.GenericService;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
@@ -28,12 +30,12 @@ public class GenericTest extends AbstractTest {
 	}
 
 	public void testGetInstances() {
-		Engine engine = new Engine();
+		EngineImpl engine = new EngineImpl();
 		assert engine.getInstances().isEmpty();
 		Vertex vehicleVertex = engine.getAlive().addInstance("Vehicle");
 		Vertex powerVehicleVertex = engine.getAlive().addInstance("Power", vehicleVertex);
-		GenericService vehicle = engine.getInstances().filter(g -> g.getValue().equals("Vehicle")).stream().findFirst().get();
-		GenericService powerVehicle = engine.getInstances().filter(g -> g.getValue().equals("Power")).stream().findFirst().get();
+		GenericImpl vehicle = engine.getInstances().filter(g -> g.getValue().equals("Vehicle")).stream().findFirst().get();
+		GenericImpl powerVehicle = engine.getInstances().filter(g -> g.getValue().equals("Power")).stream().findFirst().get();
 		assert vehicle.getAlive().equiv(vehicleVertex) : engine.getInstances();
 		assert powerVehicle.getAlive().equiv(powerVehicleVertex) : engine.getInstances();
 	}
@@ -132,8 +134,6 @@ public class GenericTest extends AbstractTest {
 	// }
 	//
 
-	public static class Generic extends org.genercisystem.impl.
-
 	public void test3() {
 		Engine<?> engine = new Engine<>();
 
@@ -145,6 +145,7 @@ public class GenericTest extends AbstractTest {
 		assert car.getAttributes(engine).containsAll(Arrays.asList(vehiclePower, carPower)) : car.getAttributes(engine);
 		assert car.getAttributes(engine).size() == 2;
 	}
+
 	//
 	// public void test4() {
 	// Vertex engine = new Root();

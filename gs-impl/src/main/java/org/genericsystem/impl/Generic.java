@@ -21,7 +21,7 @@ public class Generic<T extends Generic<T>> implements GenericService<T> {
 
 	@Override
 	public T build(T meta, Stream<T> overrides, Serializable value, Stream<T> components) {
-		return (T) new Generic(meta, overrides.toArray(Generic[]::new), value, components.toArray(Generic[]::new));
+		return (T) new GenericImpl((GenericImpl) meta, overrides.toArray(GenericImpl[]::new), value, components.toArray(GenericImpl[]::new));
 	}
 
 	@Override
@@ -75,6 +75,14 @@ public class Generic<T extends Generic<T>> implements GenericService<T> {
 	@Override
 	public T[] getEmptyArray() {
 		return (T[]) EMPTY_ARRAY;
+	}
+
+	public static class GenericImpl extends Generic<GenericImpl> {
+
+		public GenericImpl(GenericImpl meta, GenericImpl[] supers, Serializable value, GenericImpl[] components) {
+			super(meta, supers, value, components);
+		}
+
 	}
 
 }

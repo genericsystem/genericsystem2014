@@ -30,4 +30,8 @@ public class Engine<T extends Generic<T>> extends Generic<T> implements EngineSe
 	// return EngineService.super.isRoot();
 	// }
 
+	public static class EngineImpl extends Engine<GenericImpl> {
+
+	}
+
 }
