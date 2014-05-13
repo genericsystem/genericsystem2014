@@ -32,7 +32,6 @@ SystemPropertiesService, ExceptionAdviserService<Vertex> {
 		inheritings = buildDependencies();
 		metaComposites = buildCompositeDependencies();
 		superComposites = buildCompositeDependencies();
-
 		checkIsAlive(this.meta);
 		checkAreAlive(overrides);
 		checkAreAlive(super.components);
