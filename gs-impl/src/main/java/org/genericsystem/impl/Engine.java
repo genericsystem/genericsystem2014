@@ -10,7 +10,7 @@ public class Engine extends GenericImpl implements EngineService<GenericImpl> {
 	private final Root root;
 
 	public Engine() {
-		super(null, new GenericImpl[] {}, Statics.ENGINE_VALUE, new GenericImpl[] {});
+		init(null, new GenericImpl[] {}, Statics.ENGINE_VALUE, new GenericImpl[] {});
 		root = buildVerticesRoot();
 	}
 

@@ -12,9 +12,7 @@ public class AbstractVertex<T> {
 	protected Serializable value;
 
 	@SuppressWarnings("unchecked")
-	public AbstractVertex(T meta, T[] supers, Serializable value, T... components) {
-		// if (isRoot())
-		// ((Root) this).valueCache = new ValueCache();
+	protected T init(T meta, T[] supers, Serializable value, T... components) {
 		this.meta = meta == null ? (T) this : meta;
 		this.supers = supers;
 		this.value = value;
@@ -22,6 +20,7 @@ public class AbstractVertex<T> {
 		for (int i = 0; i < components.length; i++)
 			if (components[i] == null)
 				this.components[i] = (T) this;
+		return (T) this;
 	}
 
 	public T getMeta() {

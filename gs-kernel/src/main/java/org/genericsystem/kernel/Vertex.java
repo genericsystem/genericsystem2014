@@ -21,28 +21,26 @@ public class Vertex extends AbstractVertex<Vertex> implements AncestorsService<V
 SystemPropertiesService, ExceptionAdviserService<Vertex> {
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 	protected static final Vertex[] EMPTY_VERTICES = new Vertex[] {};
-	private final Dependencies<Vertex> instances;
-	private final Dependencies<Vertex> inheritings;
-	private final CompositesDependencies<Vertex> superComposites;
-	private final CompositesDependencies<Vertex> metaComposites;
+	private final Dependencies<Vertex> instances = buildDependencies();
+	private final Dependencies<Vertex> inheritings = buildDependencies();
+	private final CompositesDependencies<Vertex> superComposites = buildCompositeDependencies();
+	private final CompositesDependencies<Vertex> metaComposites = buildCompositeDependencies();
 
-	Vertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
-		super(meta, null, value, components);
-		instances = buildDependencies();
-		inheritings = buildDependencies();
-		metaComposites = buildCompositeDependencies();
-		superComposites = buildCompositeDependencies();
+	@Override
+	protected Vertex init(Vertex meta, Vertex[] overrides, Serializable value, Vertex... components) {
+		super.init(meta, overrides, value, components);
 		checkIsAlive(this.meta);
 		checkAreAlive(overrides);
 		checkAreAlive(super.components);
 		super.supers = getSupers(overrides).toArray(Vertex[]::new);
 		checkOverrides(overrides);
 		checkSupers();
+		return this;
 	}
 
 	@Override
 	public Vertex build(Vertex meta, Stream<Vertex> overrides, Serializable value, Stream<Vertex> components) {
-		return new Vertex(meta, overrides.toArray(Vertex[]::new), value, components.toArray(Vertex[]::new));
+		return new Vertex().init(meta, overrides.toArray(Vertex[]::new), value, components.toArray(Vertex[]::new));
 	}
 
 	private void checkAreAlive(Vertex... vertices) {
@@ -69,10 +67,12 @@ SystemPropertiesService, ExceptionAdviserService<Vertex> {
 		return build(this, Arrays.stream(getEmptyArray()), value, Arrays.stream(components)).getAlive();
 	}
 
+	@Override
 	public Snapshot<Vertex> getMetaComposites(Vertex meta) {
 		return metaComposites.getByIndex(meta);
 	}
 
+	@Override
 	public Snapshot<Vertex> getSuperComposites(Vertex superVertex) {
 		return superComposites.getByIndex(superVertex);
 	}

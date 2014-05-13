@@ -7,14 +7,10 @@ import org.genericsystem.kernel.AbstractVertex;
 
 public class Generic<T extends Generic<T>> extends AbstractVertex<T> implements GenericService<T> {
 
-	public Generic(T meta, T[] supers, Serializable value, T... components) {
-		super(meta, supers, value, components);
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public T build(T meta, Stream<T> overrides, Serializable value, Stream<T> components) {
-		return (T) new GenericImpl((GenericImpl) meta, overrides.toArray(GenericImpl[]::new), value, components.toArray(GenericImpl[]::new));
+		return (T) new GenericImpl().init((GenericImpl) meta, overrides.toArray(GenericImpl[]::new), value, components.toArray(GenericImpl[]::new));
 	}
 
 	@Override
@@ -41,10 +37,6 @@ public class Generic<T extends Generic<T>> extends AbstractVertex<T> implements 
 	}
 
 	public static class GenericImpl extends Generic<GenericImpl> {
-
-		public GenericImpl(GenericImpl meta, GenericImpl[] supers, Serializable value, GenericImpl[] components) {
-			super(meta, supers, value, components);
-		}
 
 	}
 
