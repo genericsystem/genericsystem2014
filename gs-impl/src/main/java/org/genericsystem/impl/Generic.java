@@ -5,42 +5,42 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public class Generic implements GenericService<Generic> {
+public class Generic<T extends Generic<T>> implements GenericService<T> {
 
-	private final Generic meta;
-	private final Generic[] supers;
-	private final Generic[] components;
+	private final T meta;
+	private final T[] supers;
+	private final T[] components;
 	private final Serializable value;
 
-	public Generic(Generic meta, Generic[] supers, Serializable value, Generic... components) {
-		this.meta = meta == null ? this : meta;
+	public Generic(T meta, T[] supers, Serializable value, T... components) {
+		this.meta = meta == null ? (T) this : meta;
 		this.supers = supers;
 		this.value = value;
 		this.components = components;
 	}
 
 	@Override
-	public Generic build(Generic meta, Stream<Generic> overrides, Serializable value, Stream<Generic> components) {
-		return new Generic(meta, overrides.toArray(Generic[]::new), value, components.toArray(Generic[]::new));
+	public T build(T meta, Stream<T> overrides, Serializable value, Stream<T> components) {
+		return (T) new Generic(meta, overrides.toArray(Generic[]::new), value, components.toArray(Generic[]::new));
 	}
 
 	@Override
-	public Generic getMeta() {
+	public T getMeta() {
 		return meta;
 	}
 
 	@Override
-	public Stream<Generic> getSupersStream() {
+	public Stream<T> getSupersStream() {
 		return Arrays.stream(supers);
 	}
 
 	@Override
-	public Stream<Generic> getComponentsStream() {
+	public Stream<T> getComponentsStream() {
 		return Arrays.stream(components);
 	}
 
 	@Override
-	public Generic[] getComponents() {
+	public T[] getComponents() {
 		return components;
 	}
 
@@ -73,8 +73,8 @@ public class Generic implements GenericService<Generic> {
 	private final static Generic[] EMPTY_ARRAY = new Generic[] {};
 
 	@Override
-	public Generic[] getEmptyArray() {
-		return EMPTY_ARRAY;
+	public T[] getEmptyArray() {
+		return (T[]) EMPTY_ARRAY;
 	}
 
 }

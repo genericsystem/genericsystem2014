@@ -1,11 +1,12 @@
 package org.genericsystem.cache;
 
-import java.io.Serializable;
+public class Engine extends org.genericsystem.impl.Engine implements EngineService<org.genericsystem.impl.Engine> {
 
-public class Engine extends Generic {
+	private Cache currentCache = new Cache();
 
-	public Engine(Generic meta, Generic[] supers, Serializable value, Generic[] components) {
-		super(meta, supers, value, components);
+	@Override
+	public Cache getCurrentCache() {
+		return currentCache;
 	}
 
 }

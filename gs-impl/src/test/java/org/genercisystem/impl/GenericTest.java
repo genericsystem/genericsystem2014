@@ -131,14 +131,17 @@ public class GenericTest extends AbstractTest {
 	// assert vehicle != engine.setInstance(new Vertex[] { vehicle2 }, "Vehicle");
 	// }
 	//
+
+	public static class Generic extends org.genercisystem.impl.
+
 	public void test3() {
-		Engine engine = new Engine();
+		Engine<?> engine = new Engine<>();
 
 		assert engine.isRoot();
 		Generic vehicle = engine.addInstance("Vehicle");
-		Generic car = engine.addInstance(new Generic[] { vehicle }, "Car");
+		Generic car = engine.addInstance(new Generic[] { vehicle }, "Car", new Generic[] {});
 		Generic vehiclePower = engine.addInstance("VehiclePower", vehicle);
-		Generic carPower = engine.addInstance("CarPower", car);
+		Generic<?> carPower = engine.addInstance("CarPower", car);
 		assert car.getAttributes(engine).containsAll(Arrays.asList(vehiclePower, carPower)) : car.getAttributes(engine);
 		assert car.getAttributes(engine).size() == 2;
 	}

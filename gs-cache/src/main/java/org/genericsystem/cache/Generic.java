@@ -18,10 +18,6 @@ public class Generic extends AbstractVertex<Generic> implements GenericService<G
 		return new Generic(meta, overrides.toArray(Generic[]::new), value, components.toArray(Generic[]::new));
 	}
 
-	Cache getCurrentCache() {
-		return getMeta().getCurrentCache();
-	}
-
 	@Override
 	public Generic[] getEmptyArray() {
 		// TODO Auto-generated method stub
