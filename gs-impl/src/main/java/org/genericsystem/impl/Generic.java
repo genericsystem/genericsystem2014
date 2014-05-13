@@ -3,7 +3,7 @@ package org.genericsystem.impl;
 import java.io.Serializable;
 import java.util.stream.Stream;
 
-public class Generic extends AbstractGeneric<Generic> implements GenericService<Generic> {
+public class Generic extends GenericSignature<Generic> implements GenericService<Generic> {
 
 	private final static Generic[] EMPTY_ARRAY = new Generic[] {};
 
