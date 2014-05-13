@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Vertex extends Signature<Vertex> implements AncestorsService<Vertex>, DependenciesService<Vertex>, InheritanceService<Vertex>, BindingService<Vertex>, CompositesInheritanceService<Vertex>, FactoryService<Vertex>, DisplayService<Vertex>,
-SystemPropertiesService, ExceptionAdviserService<Vertex> {
+		SystemPropertiesService, ExceptionAdviserService<Vertex> {
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 	protected static final Vertex[] EMPTY_VERTICES = new Vertex[] {};
 
@@ -30,7 +30,8 @@ SystemPropertiesService, ExceptionAdviserService<Vertex> {
 
 	@Override
 	protected Vertex init(Vertex meta, Vertex[] overrides, Serializable value, Vertex... components) {
-		super.init(meta, getSupers(overrides).toArray(Vertex[]::new), value, components);
+		super.init(meta, overrides, value, components);
+		super.supers = getSupers(overrides).toArray(Vertex[]::new);
 		checkIsAlive(this.meta);
 		checkAreAlive(overrides);
 		checkAreAlive(super.components);
