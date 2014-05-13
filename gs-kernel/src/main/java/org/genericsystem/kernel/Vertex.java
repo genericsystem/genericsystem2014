@@ -9,8 +9,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
-import org.genericsystem.kernel.Root.ValueCache;
 import org.genericsystem.kernel.Snapshot.AbstractSnapshot;
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.genericsystem.kernel.services.AncestorsService;
@@ -26,23 +26,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Vertex extends AbstractVertex<Vertex> implements AncestorsService<Vertex>, DependenciesService<Vertex>, InheritanceService<Vertex>, BindingService<Vertex>, CompositesInheritanceService<Vertex>, FactoryService<Vertex>, DisplayService<Vertex>,
-SystemPropertiesService, ExceptionAdviserService<Vertex> {
+		SystemPropertiesService, ExceptionAdviserService<Vertex> {
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 	protected static final Vertex[] EMPTY_VERTICES = new Vertex[] {};
 	private final Dependencies<Vertex> instances;
 	private final Dependencies<Vertex> inheritings;
-	private final CompositesDependencies<Vertex> metaComposites;
 	private final CompositesDependencies<Vertex> superComposites;
+	private final CompositesDependencies<Vertex> metaComposites;
 
 	Vertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
 		super(meta, null, value, components);
-		if (isRoot())
-			((Root) this).valueCache = new ValueCache();
-		// this.meta = isRoot() ? this : meta;
 		this.value = ((Root) getRoot()).getCachedValue(value);
-		this.components = new Vertex[components.length];
-		for (int i = 0; i < components.length; i++)
-			this.components[i] = components[i] == null ? this : components[i];
+
 		instances = buildDependencies();
 		inheritings = buildDependencies();
 		metaComposites = buildCompositeDependencies();
@@ -169,7 +164,7 @@ SystemPropertiesService, ExceptionAdviserService<Vertex> {
 				Stream<Vertex> supersStream = supersStream();
 				if (!supersStream().iterator().hasNext())
 					return (base.isRoot() || !origin.isAttributeOf(base.getMeta())) ? Stream.of(origin) : getInheringsStream(base.getMeta());
-					return Statics.concat(supersStream, superVertex -> getInheringsStream(superVertex)).distinct();
+				return Statics.concat(supersStream, superVertex -> getInheringsStream(superVertex)).distinct();
 			}
 
 			protected Stream<Vertex> projectStream(Stream<Vertex> streamToProject) {

@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import org.genericsystem.kernel.Root.ValueCache;
+
 public class AbstractVertex<T> {
 	protected T meta;
 	protected T[] supers;
@@ -13,10 +15,19 @@ public class AbstractVertex<T> {
 
 	@SuppressWarnings("unchecked")
 	public AbstractVertex(T meta, T[] supers, Serializable value, T... components) {
+		if (isRoot())
+			((Root) this).valueCache = new ValueCache();
 		this.meta = meta == null ? (T) this : meta;
 		this.supers = supers;
 		this.value = value;
-		this.components = components;
+		this.components = components.clone();
+		for (int i = 0; i < components.length; i++)
+			if (components[i] == null)
+				this.components[i] = (T) this;
+	}
+
+	public boolean isRoot() {
+		return false;
 	}
 
 	public T getMeta() {
