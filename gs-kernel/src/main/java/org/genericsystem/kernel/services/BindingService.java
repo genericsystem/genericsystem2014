@@ -15,7 +15,8 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 
 	T[] getEmptyArray();
 
-	default T addInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
+	@SuppressWarnings("unchecked")
+	default T addInstance(Serializable value, T... components) {
 		return addInstance(getEmptyArray(), value, components);
 	}
 
