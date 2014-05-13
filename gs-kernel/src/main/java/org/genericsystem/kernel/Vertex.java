@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Vertex extends AbstractVertex<Vertex> implements AncestorsService<Vertex>, DependenciesService<Vertex>, InheritanceService<Vertex>, BindingService<Vertex>, CompositesInheritanceService<Vertex>, FactoryService<Vertex>, DisplayService<Vertex>,
-SystemPropertiesService, ExceptionAdviserService<Vertex> {
+		SystemPropertiesService, ExceptionAdviserService<Vertex> {
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 	protected static final Vertex[] EMPTY_VERTICES = new Vertex[] {};
 	private final Dependencies<Vertex> instances;
@@ -36,13 +36,10 @@ SystemPropertiesService, ExceptionAdviserService<Vertex> {
 
 	Vertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
 		super(meta, null, value, components);
-		this.value = value;// ((Root) getRoot()).getCachedValue(value);
-
 		instances = buildDependencies();
 		inheritings = buildDependencies();
 		metaComposites = buildCompositeDependencies();
 		superComposites = buildCompositeDependencies();
-
 		checkIsAlive(this.meta);
 		checkAreAlive(overrides);
 		checkAreAlive(super.components);
@@ -164,7 +161,7 @@ SystemPropertiesService, ExceptionAdviserService<Vertex> {
 				Stream<Vertex> supersStream = supersStream();
 				if (!supersStream().iterator().hasNext())
 					return (base.isRoot() || !origin.isAttributeOf(base.getMeta())) ? Stream.of(origin) : getInheringsStream(base.getMeta());
-					return Statics.concat(supersStream, superVertex -> getInheringsStream(superVertex)).distinct();
+				return Statics.concat(supersStream, superVertex -> getInheringsStream(superVertex)).distinct();
 			}
 
 			protected Stream<Vertex> projectStream(Stream<Vertex> streamToProject) {
