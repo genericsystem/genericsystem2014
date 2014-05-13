@@ -19,11 +19,11 @@ public class Engine extends GenericImpl implements EngineService<GenericImpl> {
 		return root;
 	}
 
-	// @Override
-	// public Engine getRoot() {
-	// return (Engine) EngineService.super.getRoot();
-	// // return super.getRoot();
-	// }
+	@Override
+	public Engine getRoot() {
+		return (Engine) EngineService.super.getRoot();
+		// return super.getRoot();
+	}
 
 	// @Override
 	// public boolean isRoot() {

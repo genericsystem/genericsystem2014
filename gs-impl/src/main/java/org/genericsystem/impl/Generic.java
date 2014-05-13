@@ -3,7 +3,6 @@ package org.genericsystem.impl;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.AbstractVertex;
 
 public class Generic<T extends Generic<T>> extends AbstractVertex<T> implements GenericService<T> {

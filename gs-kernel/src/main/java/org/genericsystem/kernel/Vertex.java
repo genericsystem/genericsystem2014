@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Root.ValueCache;
 import org.genericsystem.kernel.Snapshot.AbstractSnapshot;
@@ -27,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Vertex extends AbstractVertex<Vertex> implements AncestorsService<Vertex>, DependenciesService<Vertex>, InheritanceService<Vertex>, BindingService<Vertex>, CompositesInheritanceService<Vertex>, FactoryService<Vertex>, DisplayService<Vertex>,
-		SystemPropertiesService, ExceptionAdviserService<Vertex> {
+SystemPropertiesService, ExceptionAdviserService<Vertex> {
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 	protected static final Vertex[] EMPTY_VERTICES = new Vertex[] {};
 	private final Dependencies<Vertex> instances;
@@ -39,7 +38,7 @@ public class Vertex extends AbstractVertex<Vertex> implements AncestorsService<V
 		super(meta, null, value, components);
 		if (isRoot())
 			((Root) this).valueCache = new ValueCache();
-		this.meta = isRoot() ? this : meta;
+		// this.meta = isRoot() ? this : meta;
 		this.value = ((Root) getRoot()).getCachedValue(value);
 		this.components = new Vertex[components.length];
 		for (int i = 0; i < components.length; i++)
@@ -109,22 +108,6 @@ public class Vertex extends AbstractVertex<Vertex> implements AncestorsService<V
 		return EMPTY_VERTICES;
 	}
 
-	// @Override
-	// public boolean equals(Object obj) {
-	// if (this == obj)
-	// return true;
-	// if (!(obj instanceof Vertex))
-	// return false;
-	// Vertex service = (Vertex) obj;
-	// return this.equiv(service);
-	// }
-	//
-	// @Override
-	// public int hashCode() {
-	// // TODO introduce : meta and components length
-	// return Objects.hashCode(getValue());
-	// }
-
 	@Override
 	public Snapshot<Vertex> getInheritings(final Vertex origin, final int level) {
 		return new AbstractSnapshot<Vertex>() {
@@ -186,7 +169,7 @@ public class Vertex extends AbstractVertex<Vertex> implements AncestorsService<V
 				Stream<Vertex> supersStream = supersStream();
 				if (!supersStream().iterator().hasNext())
 					return (base.isRoot() || !origin.isAttributeOf(base.getMeta())) ? Stream.of(origin) : getInheringsStream(base.getMeta());
-				return Statics.concat(supersStream, superVertex -> getInheringsStream(superVertex)).distinct();
+					return Statics.concat(supersStream, superVertex -> getInheringsStream(superVertex)).distinct();
 			}
 
 			protected Stream<Vertex> projectStream(Stream<Vertex> streamToProject) {
