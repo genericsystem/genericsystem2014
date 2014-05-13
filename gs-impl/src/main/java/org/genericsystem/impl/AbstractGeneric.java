@@ -12,7 +12,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 			return true;
 		if (!(obj instanceof AbstractGeneric))
 			return false;
-		AbstractGeneric service = (AbstractGeneric) obj;
+		AbstractGeneric<?> service = (AbstractGeneric<?>) obj;
 		return equiv(service);
 	}
 
