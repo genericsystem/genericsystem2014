@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public class AbstractVertex<T> {
+public class Signature<T> {
 	protected T meta;
 	protected T[] supers;
 	protected T[] components;

@@ -1,18 +1,18 @@
 package org.genericsystem.impl;
 
 import java.util.Objects;
-import org.genericsystem.kernel.AbstractVertex;
+import org.genericsystem.kernel.Signature;
 import org.genericsystem.kernel.services.AncestorsService;
 
-public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends AbstractVertex<T> implements AncestorsService<T> {
+public abstract class GenericSignature<T extends GenericSignature<T>> extends Signature<T> implements AncestorsService<T> {
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!(obj instanceof AbstractGeneric))
+		if (!(obj instanceof GenericSignature))
 			return false;
-		AbstractGeneric<?> service = (AbstractGeneric<?>) obj;
+		GenericSignature<?> service = (GenericSignature<?>) obj;
 		return equiv(service);
 	}
 
