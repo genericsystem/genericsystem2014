@@ -1,11 +1,9 @@
 package org.genericsystem.cache;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.stream.Stream;
 import org.genericsystem.kernel.AbstractVertex;
-import org.genericsystem.kernel.Dependencies;
-import org.genericsystem.kernel.Dependencies.CompositesDependencies;
-import org.genericsystem.kernel.Snapshot;
 
 public class Generic<T extends Generic<T>> extends AbstractVertex<T> implements GenericService<T> {
 
@@ -20,45 +18,26 @@ public class Generic<T extends Generic<T>> extends AbstractVertex<T> implements 
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof Generic))
+			return false;
+		Generic service = (Generic) obj;
+		return equiv(service);
+	}
+
+	@Override
+	public int hashCode() {
+		// TODO introduce : meta and components length
+		return Objects.hashCode(getValue());
+	}
+
+	private final static Generic[] EMPTY_ARRAY = new Generic[] {};
+
+	@Override
 	public T[] getEmptyArray() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public T getInstance(Serializable value, Generic... components) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Dependencies<T> getInstances() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Dependencies<T> getInheritings() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public CompositesDependencies<T> getMetaComposites() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public CompositesDependencies<T> getSuperComposites() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Snapshot<T> getInheritings(Generic origin, int level) {
-		// TODO Auto-generated method stub
-		return null;
+		return (T[]) EMPTY_ARRAY;
 	}
 
 	public static class GenericImpl extends Generic<GenericImpl> {

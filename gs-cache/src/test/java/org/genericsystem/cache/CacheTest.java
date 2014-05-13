@@ -12,10 +12,10 @@ public class CacheTest extends AbstractTest {
 
 		assert engine.isRoot();
 		GenericImpl vehicle = engine.addInstance("Vehicle");
-		GenericImpl car = engine.addInstance(new GenericImpl[] { vehicle }, "Car", new GenericImpl[] {});
+		GenericImpl car = engine.addInstance(new GenericImpl[] { vehicle }, "Car");
 		GenericImpl vehiclePower = engine.addInstance("VehiclePower", vehicle);
 		GenericImpl carPower = engine.addInstance("CarPower", car);
-		assert car.getAttributes(engine).containsAll(Arrays.asList(vehiclePower, carPower)) : car.getAttributes(engine);
+		assert car.getAttributes(engine).containsAll(Arrays.asList(carPower, vehiclePower)) : car.getAttributes(engine);
 		assert car.getAttributes(engine).size() == 2;
 	}
 }

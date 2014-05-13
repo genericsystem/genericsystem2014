@@ -7,18 +7,16 @@ import org.genericsystem.kernel.Vertex;
 
 public class Engine extends GenericImpl implements EngineService<GenericImpl> {
 
+	private final Root root = buildVerticesRoot();
 	private Cache currentCache = new Cache();
+
+	public Engine() {
+		super(null, new GenericImpl[] {}, Statics.ENGINE_VALUE, new GenericImpl[] {});
+	}
 
 	@Override
 	public Cache getCurrentCache() {
 		return currentCache;
-	}
-
-	private final Root root;
-
-	public Engine() {
-		super(null, new GenericImpl[] {}, Statics.ENGINE_VALUE, new GenericImpl[] {});
-		root = buildVerticesRoot();
 	}
 
 	@Override
