@@ -28,8 +28,6 @@ SystemPropertiesService, ExceptionAdviserService<Vertex> {
 
 	Vertex(Vertex meta, Vertex[] overrides, Serializable value, Vertex[] components) {
 		super(meta, null, value, components);
-		// this.value = ((Root) getRoot()).getCachedValue(value);
-
 		instances = buildDependencies();
 		inheritings = buildDependencies();
 		metaComposites = buildCompositeDependencies();
