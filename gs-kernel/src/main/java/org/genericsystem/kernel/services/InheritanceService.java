@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public interface InheritanceService<T extends InheritanceService<T>> extends DependenciesService<T>, SystemPropertiesService {
+public interface InheritanceService<T extends InheritanceService<T>> extends DependenciesService<T>, SystemPropertiesService, ExceptionAdviserService<T> {
 
 	@SuppressWarnings("unchecked")
 	default boolean isSuperOf(T subMeta, T[] overrides, Serializable subValue, T... subComponents) {
@@ -34,7 +34,7 @@ public interface InheritanceService<T extends InheritanceService<T>> extends Dep
 
 	default boolean componentsDepends(T[] subComponents, T[] superComponents) {
 		class SingularsLazyCacheImpl implements SingularsLazyCache {
-			private Boolean[] singulars = new Boolean[subComponents.length];
+			private final Boolean[] singulars = new Boolean[subComponents.length];
 
 			@Override
 			public boolean get(int i) {
@@ -136,12 +136,19 @@ public interface InheritanceService<T extends InheritanceService<T>> extends Dep
 	}
 
 	default void checkSupers() {
-		if (!((InheritanceService<T>) getMeta()).componentsDepends(getComponents(), ((InheritanceService<T>) getMeta()).getComponents()))
-			throw new IllegalStateException("Inconsistant components : " + getComponentsStream().collect(Collectors.toList()));
 		if (!getSupersStream().allMatch(superVertex -> getMeta().inheritsFrom(superVertex.getMeta())))
-			throw new IllegalStateException("Inconsistant supers : " + getSupersStream().collect(Collectors.toList()));
+			rollbackAndThrowException(new IllegalStateException("Inconsistant supers : " + getSupersStream().collect(Collectors.toList())));
 		if (!getSupersStream().noneMatch(superVertex -> superVertex.equals(this)))
-			throw new IllegalStateException("Inconsistant supers : " + getSupersStream().collect(Collectors.toList()));
+			rollbackAndThrowException(new IllegalStateException("Inconsistant supers : " + getSupersStream().collect(Collectors.toList())));
+	}
+
+	default void checkComponents() {
+		if (!(componentsDepends(getComponents(), ((InheritanceService<T>) getMeta()).getComponents())))
+			rollbackAndThrowException(new IllegalStateException("Inconsistant components : " + getComponentsStream().collect(Collectors.toList())));
+		getSupersStream().forEach(superVertex -> {
+			if (!(componentsDepends(getComponents(), superVertex.getComponents())))
+				rollbackAndThrowException(new IllegalStateException("Inconsistant components : " + getComponentsStream().collect(Collectors.toList())));
+		});
 	}
 
 	default void checkOverrides(T[] overrides) {

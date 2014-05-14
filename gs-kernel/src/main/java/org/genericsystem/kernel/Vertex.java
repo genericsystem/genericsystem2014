@@ -37,6 +37,7 @@ public class Vertex extends Signature<Vertex> implements AncestorsService<Vertex
 		checkAreAlive(super.components);
 		checkOverrides(overrides);
 		checkSupers();
+		checkComponents();
 		return this;
 	}
 
