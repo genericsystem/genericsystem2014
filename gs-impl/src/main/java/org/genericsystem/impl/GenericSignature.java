@@ -1,6 +1,7 @@
 package org.genericsystem.impl;
 
 import java.util.Objects;
+
 import org.genericsystem.kernel.Signature;
 import org.genericsystem.kernel.services.AncestorsService;
 
@@ -10,9 +11,9 @@ public abstract class GenericSignature<T extends GenericSignature<T>> extends Si
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!(obj instanceof GenericSignature))
+		if (!(obj instanceof AncestorsService))
 			return false;
-		GenericSignature<?> service = (GenericSignature<?>) obj;
+		AncestorsService<?> service = (AncestorsService<?>) obj;
 		return equiv(service);
 	}
 
