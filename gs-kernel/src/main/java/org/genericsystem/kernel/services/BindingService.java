@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.exceptions.ExistsException;
@@ -84,7 +85,7 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 	@SuppressWarnings("unchecked")
 	default T getInstance(T[] supers, Serializable value, T... components) {
 		T result = getInstance(value, components);
-		if (result != null && Arrays.stream(supers).allMatch(superT -> result.inheritsFrom(result)))
+		if (result != null && Arrays.stream(supers).allMatch(superT -> result.inheritsFrom(superT)))
 			return result;
 		return null;
 	}
