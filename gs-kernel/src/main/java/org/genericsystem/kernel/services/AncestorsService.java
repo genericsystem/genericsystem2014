@@ -40,7 +40,7 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 
 	@SuppressWarnings("unchecked")
 	default boolean isAncestorOf(final T dependency) {
-		return dependency.inheritsFrom((T) this) || dependency.getComponentsStream().filter(component -> !dependency.equals(component)).anyMatch(component -> isAncestorOf(component));
+		return dependency.inheritsFrom((T) this) || dependency.getComponentsStream().filter(component -> !dependency.equals(component)).anyMatch(component -> isAncestorOf(dependency));
 	}
 
 	Stream<T> getSupersStream();
