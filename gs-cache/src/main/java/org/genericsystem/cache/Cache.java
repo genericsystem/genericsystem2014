@@ -1,5 +1,6 @@
 package org.genericsystem.cache;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -10,13 +11,16 @@ import org.genericsystem.kernel.iterator.AbstractAwareIterator;
 
 public class Cache<T extends GenericService<T>> {
 
-	private transient Map<GenericService<T>, CacheDependencies<T>> inheritingDependenciesMap;
+	private transient Map<GenericService<T>, CacheDependencies<T>> inheritingDependenciesMap = new HashMap<GenericService<T>, Cache.CacheDependencies<T>>();
 
-	public CacheDependencies<T> getInheritings(GenericService<T> generic) {
-		CacheDependencies<T> dependencies = inheritingDependenciesMap.get(generic);
+	public CacheDependencies<T> getInheritingDependencies(GenericService<T> generic) {
+		return inheritingDependenciesMap.get(generic);
+	}
+
+	public CacheDependencies<T> putInheritingDependencies(GenericService<T> generic, Dependencies<T> inheritingDependencies) {
+		CacheDependencies<T> dependencies = getInheritingDependencies(generic);
 		if (dependencies == null) {
-			// TODO KK
-			Dependencies<T> result = inheritingDependenciesMap.put(generic, dependencies = new CacheDependencies<T>(generic.getInheritings()));
+			Dependencies<T> result = inheritingDependenciesMap.put(generic, dependencies = new CacheDependencies<T>(inheritingDependencies));
 			assert result == null;
 		}
 		return dependencies;
