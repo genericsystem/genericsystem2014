@@ -2,6 +2,7 @@ package org.genericsystem.cache;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.function.Supplier;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.DependenciesImpl;
 import org.genericsystem.kernel.iterator.AbstractConcateIterator.ConcateIterator;
@@ -13,13 +14,21 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 		return getMeta().getCurrentCache();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	default Dependencies<T> getInheritings() {
-		Map<T, Dependencies<T>> inheritingDependenciesMap = getCurrentCache().getInheritingDependenciesMap();
-		Dependencies<T> dependencies = inheritingDependenciesMap.get(GenericService.this);
+		return getDependencies(getCurrentCache().getInstancesDependenciesMap(), () -> org.genericsystem.impl.GenericService.super.getInheritings().iterator());
+	}
+
+	@Override
+	default Dependencies<T> getInstances() {
+		return getDependencies(getCurrentCache().getInstancesDependenciesMap(), () -> org.genericsystem.impl.GenericService.super.getInstances().iterator());
+	}
+
+	@SuppressWarnings("unchecked")
+	default Dependencies<T> getDependencies(Map<T, Dependencies<T>> dependenciesMap, Supplier<Iterator<T>> supplier) {
+
+		Dependencies<T> dependencies = dependenciesMap.get(GenericService.this);
 		if (dependencies == null) {
-			Iterator<T> inheritingsIterator = org.genericsystem.impl.GenericService.super.getInheritings().iterator();
 
 			class CacheDependencies implements Dependencies<T> {
 
@@ -43,7 +52,7 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 
 				@Override
 				public Iterator<T> iterator() {
-					return new ConcateIterator<T>(new AbstractFilterIterator<T>(inheritingsIterator) {
+					return new ConcateIterator<T>(new AbstractFilterIterator<T>(supplier.get()) {
 						@Override
 						public boolean isSelected() {
 							return !deletes.contains(next);
@@ -51,7 +60,7 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 					}, inserts.iterator());
 				}
 			}
-			inheritingDependenciesMap.put((T) GenericService.this, dependencies = new CacheDependencies());
+			dependenciesMap.put((T) GenericService.this, dependencies = new CacheDependencies());
 		}
 		return dependencies;
 	}
