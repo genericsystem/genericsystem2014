@@ -6,9 +6,9 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
+import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 
@@ -76,10 +76,8 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 		return result;
 	}
 
-	@Override
 	CompositesDependencies<T> getMetaComposites();
 
-	@Override
 	CompositesDependencies<T> getSuperComposites();
 
 	@SuppressWarnings("unchecked")
