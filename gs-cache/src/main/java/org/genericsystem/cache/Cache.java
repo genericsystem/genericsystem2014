@@ -3,7 +3,6 @@ package org.genericsystem.cache;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
 import org.genericsystem.impl.GenericService;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.DependenciesImpl;
@@ -14,13 +13,9 @@ public class Cache<T extends GenericService<T>> {
 	private transient Map<GenericService<T>, CacheDependencies<T>> inheritingDependenciesMap = new HashMap<GenericService<T>, Cache.CacheDependencies<T>>();
 
 	public CacheDependencies<T> getInheritingDependencies(GenericService<T> generic) {
-		return inheritingDependenciesMap.get(generic);
-	}
-
-	public CacheDependencies<T> putInheritingDependencies(GenericService<T> generic, Dependencies<T> inheritingDependencies) {
 		CacheDependencies<T> dependencies = getInheritingDependencies(generic);
 		if (dependencies == null) {
-			Dependencies<T> result = inheritingDependenciesMap.put(generic, dependencies = new CacheDependencies<T>(inheritingDependencies));
+			Dependencies<T> result = inheritingDependenciesMap.put(generic, dependencies = new CacheDependencies<T>(generic.getAlive().getInheritings().project(generic::wrap, GenericService::unwrap)));
 			assert result == null;
 		}
 		return dependencies;
@@ -28,6 +23,8 @@ public class Cache<T extends GenericService<T>> {
 
 	static class CacheDependencies<T> implements Dependencies<T> {
 
+		// TODO : underlyingDependencies make a cache here
+		// TODO : underlyingDependencies iterator should be gettable on demand !
 		private transient Dependencies<T> underlyingDependencies;
 
 		private final DependenciesImpl<T> inserts = new DependenciesImpl<T>();
@@ -57,6 +54,7 @@ public class Cache<T extends GenericService<T>> {
 			return new InternalIterator(underlyingDependencies.iterator());
 		}
 
+		// TODO This implementation is inefficient !
 		private class InternalIterator extends AbstractAwareIterator<T> implements Iterator<T> {
 			private final Iterator<T> underlyingIterator;
 			private final Iterator<T> insertsIterator = inserts.iterator();
