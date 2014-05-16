@@ -3,8 +3,8 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
-import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.BindingService;
 import org.genericsystem.kernel.services.CompositesInheritanceService;
@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Vertex extends ExtendedSignature<Vertex> implements AncestorsService<Vertex>, DependenciesService<Vertex>, InheritanceService<Vertex>, BindingService<Vertex>, CompositesInheritanceService<Vertex>, FactoryService<Vertex>,
-DisplayService<Vertex>, SystemPropertiesService, ExceptionAdviserService<Vertex> {
+		DisplayService<Vertex>, SystemPropertiesService, ExceptionAdviserService<Vertex> {
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 	protected static final Vertex[] EMPTY_VERTICES = new Vertex[] {};
 
@@ -34,39 +34,12 @@ DisplayService<Vertex>, SystemPropertiesService, ExceptionAdviserService<Vertex>
 
 	@Override
 	public Vertex initFromOverrides(Vertex meta, Stream<Vertex> overrides, Serializable value, Stream<Vertex> components) {
-		Vertex[] overridesArray = overrides.toArray(Vertex[]::new);
-		Vertex[] componentsArray = components.toArray(Vertex[]::new);
-		super.initFromOverrides(meta, overridesArray, value, componentsArray);
-		checkIsAlive(meta);
-		checkAreAlive(overridesArray);
-		checkAreAlive(componentsArray);
-		checkOverrides(overridesArray);
-		checkSupers();
-		checkComponents();
-		return this;
+		return super.initFromOverrides(meta, overrides.toArray(Vertex[]::new), value, components.toArray(Vertex[]::new));
 	}
 
 	@Override
 	public Vertex initFromSupers(Vertex meta, Stream<Vertex> supers, Serializable value, Stream<Vertex> components) {
-		Vertex[] supersArray = supers.toArray(Vertex[]::new);
-		Vertex[] componentsArray = components.toArray(Vertex[]::new);
-		super.initFromSupers(meta, supersArray, value, componentsArray);
-		checkIsAlive(this.meta);
-		checkAreAlive(supersArray);
-		checkAreAlive(componentsArray);
-		checkOverrides(supersArray);
-		checkSupers();
-		checkComponents();
-		return this;
-	}
-
-	private void checkAreAlive(Vertex... vertices) {
-		Arrays.stream(vertices).forEach(this::checkIsAlive);
-	}
-
-	private void checkIsAlive(Vertex vertex) {
-		if (!vertex.isAlive())
-			rollbackAndThrowException(new NotAliveException(vertex.info()));
+		return super.initFromSupers(meta, supers.toArray(Vertex[]::new), value, components.toArray(Vertex[]::new));
 	}
 
 	@Override

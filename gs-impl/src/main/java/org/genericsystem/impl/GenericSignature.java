@@ -1,10 +1,12 @@
 package org.genericsystem.impl;
 
 import java.util.Objects;
+
 import org.genericsystem.kernel.ExtendedSignature;
 import org.genericsystem.kernel.services.AncestorsService;
+import org.genericsystem.kernel.services.InheritanceService;
 
-public abstract class GenericSignature<T extends GenericSignature<T>> extends ExtendedSignature<T> implements AncestorsService<T> {
+public abstract class GenericSignature<T extends InheritanceService<T>> extends ExtendedSignature<T> implements AncestorsService<T> {
 
 	@Override
 	public boolean equals(Object obj) {
