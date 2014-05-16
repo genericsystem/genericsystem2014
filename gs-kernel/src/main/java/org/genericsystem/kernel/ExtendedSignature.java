@@ -16,7 +16,7 @@ public abstract class ExtendedSignature<T extends InheritanceService<T>> extends
 	private T[] supers;
 
 	protected T initFromOverrides(T meta, T[] overrides, Serializable value, @SuppressWarnings("unchecked") T... components) {
-		return init(meta, () -> computeSupers(overrides), value, components);
+		return init(meta, () -> computeSupersCheckOverrides(overrides), value, components);
 	}
 
 	protected T initFromSupers(T meta, T[] supers, Serializable value, @SuppressWarnings("unchecked") T... components) {
@@ -30,9 +30,8 @@ public abstract class ExtendedSignature<T extends InheritanceService<T>> extends
 		checkIsAlive(this.meta);
 		checkAreAlive(this.supers);
 		checkAreAlive(this.components);
-		checkOverrides(this.supers);
-		checkSupers(this.supers);
-		checkComponents(this.components);
+		checkSupers();
+		checkComponents();
 		return (T) this;
 	}
 
@@ -52,13 +51,15 @@ public abstract class ExtendedSignature<T extends InheritanceService<T>> extends
 			((ExceptionAdviserService<T>) this).rollbackAndThrowException(new NotAliveException(((DisplayService<T>) vertex).info()));
 	}
 
-	private void checkOverrides(T[] overrides) {
-		if (!Arrays.asList(overrides).stream().allMatch(override -> getSupersStream().anyMatch(superVertex -> superVertex.inheritsFrom(override))))
-			throw new IllegalStateException("Inconsistant overrides : " + Arrays.toString(overrides) + " " + getSupersStream().collect(Collectors.toList()));
+	private T[] computeSupersCheckOverrides(T[] overrides) {
+		T[] supers = computeSupers(overrides);
+		if (!Arrays.asList(overrides).stream().allMatch(override -> Arrays.stream(supers).anyMatch(superVertex -> superVertex.inheritsFrom(override))))
+			throw new IllegalStateException("Inconsistant overrides : " + Arrays.toString(overrides) + " " + Arrays.stream(supers).collect(Collectors.toList()));
+		return supers;
 	}
 
 	@SuppressWarnings("unchecked")
-	private void checkSupers(T[] supers) {
+	private void checkSupers() {
 		if (!getSupersStream().allMatch(superVertex -> getMeta().inheritsFrom(superVertex.getMeta())))
 			((ExceptionAdviserService<T>) this).rollbackAndThrowException(new IllegalStateException("Inconsistant supers : " + getSupersStream().collect(Collectors.toList())));
 		if (!getSupersStream().noneMatch(superVertex -> superVertex.equals(this)))
@@ -66,7 +67,7 @@ public abstract class ExtendedSignature<T extends InheritanceService<T>> extends
 	}
 
 	@SuppressWarnings("unchecked")
-	private void checkComponents(T[] components) {
+	private void checkComponents() {
 		if (!(((InheritanceService<T>) this).componentsDepends(getComponents(), ((InheritanceService<T>) getMeta()).getComponents())))
 			((ExceptionAdviserService<T>) this).rollbackAndThrowException(new IllegalStateException("Inconsistant components : " + getComponentsStream().collect(Collectors.toList())));
 		getSupersStream().forEach(superVertex -> {
