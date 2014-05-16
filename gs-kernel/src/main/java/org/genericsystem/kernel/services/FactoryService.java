@@ -3,14 +3,17 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.DependenciesImpl;
 
 public interface FactoryService<T extends FactoryService<T>> extends AncestorsService<T> {
 
-	T build(T meta, Stream<T> overrides, Serializable value, Stream<T> components);
+	T build();
+
+	T initFromOverrides(T meta, Stream<T> overrides, Serializable value, Stream<T> components);
+
+	T initFromSupers(T meta, Stream<T> overrides, Serializable value, Stream<T> components);
 
 	default Dependencies<T> buildDependencies() {
 		return new DependenciesImpl<T>();

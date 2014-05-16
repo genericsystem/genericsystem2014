@@ -5,16 +5,14 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public class Signature<T> {
+public abstract class Signature<T> {
 	protected T meta;
-	protected T[] supers;
 	protected T[] components;
 	protected Serializable value;
 
 	@SuppressWarnings("unchecked")
-	protected T init(T meta, T[] supers, Serializable value, T... components) {
+	protected T init(T meta, Serializable value, T... components) {
 		this.meta = meta == null ? (T) this : meta;
-		this.supers = supers;
 		this.value = value;
 		this.components = components.clone();
 		for (int i = 0; i < components.length; i++)
@@ -27,20 +25,12 @@ public class Signature<T> {
 		return meta;
 	}
 
-	public T[] getSupers() {
-		return supers;
-	}
-
 	public T[] getComponents() {
 		return components;
 	}
 
 	public Serializable getValue() {
 		return value;
-	}
-
-	public Stream<T> getSupersStream() {
-		return Arrays.stream(supers);
 	}
 
 	public Stream<T> getComponentsStream() {

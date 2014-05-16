@@ -2,7 +2,6 @@ package org.genericsystem.cache;
 
 import java.io.Serializable;
 import java.util.stream.Stream;
-
 import org.genericsystem.impl.GenericSignature;
 
 public class Generic extends GenericSignature<Generic> implements GenericService<Generic> {
@@ -17,5 +16,9 @@ public class Generic extends GenericSignature<Generic> implements GenericService
 	@Override
 	public Generic[] getEmptyArray() {
 		return EMPTY_ARRAY;
+	}
+
+	public Generic[] computeSupers(Generic[] overrides) {
+		return computeSupersStream(overrides).toArray(Generic[]::new);
 	}
 }

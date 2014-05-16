@@ -64,7 +64,7 @@ public interface InheritanceService<T extends InheritanceService<T>> extends Dep
 	// TODO Remove this
 	T[] getComponents();
 
-	default Stream<T> getSupers(T[] overrides) {
+	default Stream<T> computeSupersStream(T[] overrides) {
 		class SupersComputer extends LinkedHashSet<T> {
 
 			private static final long serialVersionUID = -1078004898524170057L;
