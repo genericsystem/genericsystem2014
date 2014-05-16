@@ -1,6 +1,8 @@
 package org.genericsystem.kernel;
 
+import java.util.Objects;
 import org.genericsystem.kernel.exceptions.RollbackException;
+import org.genericsystem.kernel.services.AncestorsService;
 
 public class Root extends Vertex {
 	public Root() {
@@ -46,13 +48,20 @@ public class Root extends Vertex {
 
 	/*
 	 * public static class ValueCache extends HashMap<Serializable, Serializable> { private static final long serialVersionUID = 8474952153415905986L;
-	 *
+	 * 
 	 * @Override public Serializable get(Object key) { Serializable result = super.get(key); if (result == null) put(result = (Serializable) key, result); return result; } }
 	 */
 	@Override
 	public Vertex getAlive() {
 		// TODO is enough ?
 		return this;
+	}
+
+	@Override
+	public boolean equiv(AncestorsService<?> service) {
+		if (this == service)
+			return true;
+		return Objects.equals(getValue(), service.getValue()) && equivComponents(service);
 	}
 
 }

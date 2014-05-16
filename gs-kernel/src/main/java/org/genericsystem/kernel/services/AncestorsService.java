@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Vertex;
 
 public interface AncestorsService<T extends AncestorsService<T>> {

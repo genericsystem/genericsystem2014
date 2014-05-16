@@ -17,10 +17,6 @@ public class CacheTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Vertex car = engine.getAlive().addInstance(new Vertex[] { vehicle.getAlive() }, "Car");
-		assert vehicle.getCurrentCache().getInheritingDependencies(vehicle) == null;
-		assert vehicle.getInheritings().filter(g -> g.equiv(car)).size() == 1;
-		assert vehicle.getInheritings().filter(g -> g.equals(car)).size() == 1;
-		assert vehicle.getCurrentCache().getInheritingDependencies(vehicle).filter(g -> g.equiv(car)).size() == 1;
-		assert vehicle.getCurrentCache().getInheritingDependencies(vehicle).filter(g -> g.equals(car)).size() == 1;
+		assert vehicle.getInheritings().filter(car::equiv).size() == 1;
 	}
 }
