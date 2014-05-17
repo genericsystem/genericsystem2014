@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
-import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.BindingService;
 import org.genericsystem.kernel.services.CompositesInheritanceService;
@@ -18,8 +17,8 @@ import org.genericsystem.kernel.services.SystemPropertiesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Vertex extends Signature<Vertex> implements AncestorsService<Vertex>, DependenciesService<Vertex>, InheritanceService<Vertex>, BindingService<Vertex>, CompositesInheritanceService<Vertex>, FactoryService<Vertex>, DisplayService<Vertex>,
-		SystemPropertiesService, ExceptionAdviserService<Vertex> {
+public class Vertex extends ExtendedSignature<Vertex> implements AncestorsService<Vertex>, DependenciesService<Vertex>, InheritanceService<Vertex>, BindingService<Vertex>, CompositesInheritanceService<Vertex>, FactoryService<Vertex>,
+		DisplayService<Vertex>, SystemPropertiesService, ExceptionAdviserService<Vertex> {
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 	protected static final Vertex[] EMPTY_VERTICES = new Vertex[] {};
 
@@ -29,30 +28,18 @@ public class Vertex extends Signature<Vertex> implements AncestorsService<Vertex
 	private final CompositesDependencies<Vertex> metaComposites = buildCompositeDependencies();
 
 	@Override
-	protected Vertex init(Vertex meta, Vertex[] overrides, Serializable value, Vertex... components) {
-		super.init(meta, overrides, value, components);
-		super.supers = getSupers(overrides).toArray(Vertex[]::new);
-		checkIsAlive(this.meta);
-		checkAreAlive(overrides);
-		checkAreAlive(super.components);
-		checkOverrides(overrides);
-		checkSupers();
-		checkComponents();
-		return this;
+	public Vertex build() {
+		return new Vertex();
 	}
 
 	@Override
-	public Vertex build(Vertex meta, Stream<Vertex> overrides, Serializable value, Stream<Vertex> components) {
-		return new Vertex().init(meta, overrides.toArray(Vertex[]::new), value, components.toArray(Vertex[]::new));
+	public Vertex initFromOverrides(Vertex meta, Stream<Vertex> overrides, Serializable value, Stream<Vertex> components) {
+		return super.initFromOverrides(meta, overrides.toArray(Vertex[]::new), value, components.toArray(Vertex[]::new));
 	}
 
-	private void checkAreAlive(Vertex... vertices) {
-		Arrays.stream(vertices).forEach(this::checkIsAlive);
-	}
-
-	private void checkIsAlive(Vertex vertex) {
-		if (!vertex.isAlive())
-			rollbackAndThrowException(new NotAliveException(vertex.info()));
+	@Override
+	public Vertex initFromSupers(Vertex meta, Stream<Vertex> supers, Serializable value, Stream<Vertex> components) {
+		return super.initFromSupers(meta, supers.toArray(Vertex[]::new), value, components.toArray(Vertex[]::new));
 	}
 
 	@Override
@@ -67,7 +54,7 @@ public class Vertex extends Signature<Vertex> implements AncestorsService<Vertex
 
 	@Override
 	public Vertex getInstance(Serializable value, Vertex... components) {
-		return build(this, Arrays.stream(getEmptyArray()), value, Arrays.stream(components)).getAlive();
+		return build().initFromOverrides(this, Arrays.stream(getEmptyArray()), value, Arrays.stream(components)).getAlive();
 	}
 
 	@Override
@@ -93,6 +80,11 @@ public class Vertex extends Signature<Vertex> implements AncestorsService<Vertex
 	@Override
 	public Vertex[] getEmptyArray() {
 		return EMPTY_VERTICES;
+	}
+
+	@Override
+	public Vertex[] computeSupers(Vertex[] overrides) {
+		return computeSupersStream(overrides).toArray(Vertex[]::new);
 	}
 
 }

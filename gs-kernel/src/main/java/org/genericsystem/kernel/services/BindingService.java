@@ -8,7 +8,6 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
-import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 
@@ -27,7 +26,7 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 		if (instance != null)
 			rollbackAndThrowException(new ExistsException(instance.info()));
 
-		return this.build((T) this, Arrays.stream(overrides), value, Arrays.stream(components)).plug();
+		return build().initFromOverrides((T) this, Arrays.stream(overrides), value, Arrays.stream(components)).plug();
 	}
 
 	default T setInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
@@ -39,7 +38,7 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 		T instance = getInstance(overrides, value, components);
 		if (instance != null)
 			return instance;
-		return build((T) this, Arrays.stream(overrides), value, Arrays.stream(components)).plug();
+		return build().initFromOverrides((T) this, Arrays.stream(overrides), value, Arrays.stream(components)).plug();
 	}
 
 	@SuppressWarnings("unchecked")

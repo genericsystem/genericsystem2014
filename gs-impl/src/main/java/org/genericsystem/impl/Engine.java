@@ -9,8 +9,8 @@ public class Engine extends Generic implements EngineService<Generic> {
 	private final Root root;
 
 	public Engine() {
-		init(null, getEmptyArray(), Statics.ENGINE_VALUE, getEmptyArray());
 		root = buildRoot();
+		initFromSupers(null, getEmptyArray(), Statics.ENGINE_VALUE, getEmptyArray());
 	}
 
 	@Override

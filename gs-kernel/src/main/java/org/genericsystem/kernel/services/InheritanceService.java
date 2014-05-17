@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public interface InheritanceService<T extends InheritanceService<T>> extends DependenciesService<T>, SystemPropertiesService, ExceptionAdviserService<T> {
@@ -15,10 +14,6 @@ public interface InheritanceService<T extends InheritanceService<T>> extends Dep
 	default boolean isSuperOf(T subMeta, T[] overrides, Serializable subValue, T... subComponents) {
 		return Arrays.asList(overrides).stream().anyMatch(override -> override.inheritsFrom((T) this)) || inheritsFrom(subMeta, subValue, subComponents, getMeta(), getValue(), getComponents());
 	}
-
-	// default boolean inheritsFrom(Vertex superMeta, Serializable superValue, Vertex... superComponents) {
-	// return inheritsFrom(getMeta(), getValue(), getComponents(), superMeta, superValue, superComponents);
-	// }
 
 	default boolean inheritsFrom(T subMeta, Serializable subValue, T[] subComponents, T superMeta, Serializable superValue, T[] superComponents) {
 		if (!subMeta.inheritsFrom(superMeta))
@@ -64,7 +59,7 @@ public interface InheritanceService<T extends InheritanceService<T>> extends Dep
 	// TODO Remove this
 	T[] getComponents();
 
-	default Stream<T> getSupers(T[] overrides) {
+	default Stream<T> computeSupersStream(T[] overrides) {
 		class SupersComputer extends LinkedHashSet<T> {
 
 			private static final long serialVersionUID = -1078004898524170057L;
@@ -106,54 +101,8 @@ public interface InheritanceService<T extends InheritanceService<T>> extends Dep
 					add(candidate);
 				return selectable;
 			}
-
-			// @Override
-			// public Vertex[] toArray() {
-			// return toArray(new Vertex[size()]);
-			// }
-
-			// @Override
-			// public boolean add(Vertex candidate) {
-			// for (Vertex vertex : this) {
-			// if (vertex.equals(candidate)) {
-			// assert false : "Candidate already exists : " + candidate.info();
-			// } else if (vertex.inheritsFrom(candidate)) {
-			// assert false : vertex.info() + candidate.info();
-			// }
-			// }
-			// Iterator<Vertex> it = iterator();
-			// while (it.hasNext())
-			// if (candidate.inheritsFrom(it.next())) {
-			// assert false;
-			// it.remove();
-			// }
-			// boolean result = super.add(candidate);
-			// assert result;
-			// return true;
-			// }
 		}
 		return new SupersComputer(overrides).stream();
-	}
-
-	default void checkSupers() {
-		if (!getSupersStream().allMatch(superVertex -> getMeta().inheritsFrom(superVertex.getMeta())))
-			rollbackAndThrowException(new IllegalStateException("Inconsistant supers : " + getSupersStream().collect(Collectors.toList())));
-		if (!getSupersStream().noneMatch(superVertex -> superVertex.equals(this)))
-			rollbackAndThrowException(new IllegalStateException("Inconsistant supers : " + getSupersStream().collect(Collectors.toList())));
-	}
-
-	default void checkComponents() {
-		if (!(componentsDepends(getComponents(), ((InheritanceService<T>) getMeta()).getComponents())))
-			rollbackAndThrowException(new IllegalStateException("Inconsistant components : " + getComponentsStream().collect(Collectors.toList())));
-		getSupersStream().forEach(superVertex -> {
-			if (!(componentsDepends(getComponents(), superVertex.getComponents())))
-				rollbackAndThrowException(new IllegalStateException("Inconsistant components : " + getComponentsStream().collect(Collectors.toList())));
-		});
-	}
-
-	default void checkOverrides(T[] overrides) {
-		if (!Arrays.asList(overrides).stream().allMatch(override -> getSupersStream().anyMatch(superVertex -> superVertex.inheritsFrom(override))))
-			throw new IllegalStateException("Inconsistant overrides : " + Arrays.toString(overrides) + " " + getSupersStream().collect(Collectors.toList()));
 	}
 
 }
