@@ -3,7 +3,6 @@ package org.genericsystem.impl;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
@@ -19,7 +18,7 @@ import org.genericsystem.kernel.services.InheritanceService;
 public interface GenericService<T extends GenericService<T>> extends AncestorsService<T>, DependenciesService<T>, InheritanceService<T>, BindingService<T>, CompositesInheritanceService<T>, FactoryService<T>, DisplayService<T> {
 
 	default T wrap(Vertex vertex) {
-		return vertex.isRoot() ? getRoot() : build(wrap(vertex.getAlive().getMeta()), vertex.getAlive().getSupersStream().map(this::wrap), vertex.getValue(), vertex.getAlive().getComponentsStream().map(this::wrap));
+		return vertex.isRoot() ? getRoot() : build().initFromSupers(wrap(vertex.getAlive().getMeta()), vertex.getAlive().getSupersStream().map(this::wrap), vertex.getValue(), vertex.getAlive().getComponentsStream().map(this::wrap));
 	}
 
 	default Vertex unwrap() {
@@ -27,7 +26,7 @@ public interface GenericService<T extends GenericService<T>> extends AncestorsSe
 		if (alive != null)
 			return alive;
 		alive = getMeta().getAlive();
-		return alive.build(alive, getSupersStream().map(GenericService::getAlive), getValue(), getComponentsStream().map(GenericService::getAlive));
+		return alive.build().initFromOverrides(alive, getSupersStream().map(GenericService::getAlive), getValue(), getComponentsStream().map(GenericService::getAlive));
 	}
 
 	@Override
