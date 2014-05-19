@@ -8,13 +8,13 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
+import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 
-public interface BindingService<T extends BindingService<T>> extends AncestorsService<T>, DependenciesService<T>, FactoryService<T>, InheritanceService<T>, ExceptionAdviserService<T>, DisplayService<T> {
+public interface BindingService<T extends BindingService<T>> extends AncestorsService<T>, DependenciesService<T>, FactoryService<T>, CompositesInheritanceService<T>, InheritanceService<T>, ExceptionAdviserService<T>, DisplayService<T> {
 
 	@SuppressWarnings("unchecked")
 	default T addInstance(Serializable value, T... components) {
@@ -60,6 +60,20 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 	@Override
 	public Dependencies<T> getInheritings();
 
+	CompositesDependencies<T> getMetaComposites();
+
+	CompositesDependencies<T> getSuperComposites();
+
+	@Override
+	default Snapshot<T> getMetaComposites(T meta) {
+		return getMetaComposites().getByIndex(meta);
+	}
+
+	@Override
+	default Snapshot<T> getSuperComposites(T superVertex) {
+		return getSuperComposites().getByIndex(superVertex);
+	}
+
 	@SuppressWarnings("unchecked")
 	default T plug() {
 		T t = getMeta().getInstances().set((T) this);
@@ -84,10 +98,6 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> component.getSuperComposites().removeByIndex(superGeneric, (T) this)));
 		return result;
 	}
-
-	CompositesDependencies<T> getMetaComposites();
-
-	CompositesDependencies<T> getSuperComposites();
 
 	@SuppressWarnings("unchecked")
 	default T getInstance(List<T> supers, Serializable value, T... components) {

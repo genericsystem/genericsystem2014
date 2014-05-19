@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Vertex extends ExtendedSignature<Vertex> implements AncestorsService<Vertex>, DependenciesService<Vertex>, InheritanceService<Vertex>, BindingService<Vertex>, CompositesInheritanceService<Vertex>, FactoryService<Vertex>,
-		DisplayService<Vertex>, SystemPropertiesService, ExceptionAdviserService<Vertex> {
+DisplayService<Vertex>, SystemPropertiesService, ExceptionAdviserService<Vertex> {
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 
 	private final Dependencies<Vertex> instances = buildDependencies();
@@ -43,16 +43,6 @@ public class Vertex extends ExtendedSignature<Vertex> implements AncestorsServic
 	@Override
 	public Vertex getInstance(Serializable value, Vertex... components) {
 		return build().initFromOverrides(this, Collections.emptyList(), value, Arrays.asList(components)).getAlive();
-	}
-
-	@Override
-	public Snapshot<Vertex> getMetaComposites(Vertex meta) {
-		return metaComposites.getByIndex(meta);
-	}
-
-	@Override
-	public Snapshot<Vertex> getSuperComposites(Vertex superVertex) {
-		return superComposites.getByIndex(superVertex);
 	}
 
 	@Override
