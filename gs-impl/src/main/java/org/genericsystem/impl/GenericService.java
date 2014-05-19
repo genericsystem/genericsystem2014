@@ -24,44 +24,39 @@ public interface GenericService<T extends GenericService<T>> extends AncestorsSe
 	}
 
 	default Vertex unwrap() {
-		Vertex alive = getAlive();
+		Vertex alive = getVertex();
 		if (alive != null)
 			return alive;
-		alive = getMeta().getAlive();
-		return alive.build().initFromOverrides(alive, getSupersStream().map(GenericService::getAlive).collect(Collectors.toList()), getValue(), getComponentsStream().map(GenericService::getAlive).collect(Collectors.toList()));
-	}
-
-	@Override
-	default boolean isAlive() {
-		return equals(getAlive());
+		alive = getMeta().getVertex();
+		return alive.build().initFromOverrides(alive, getSupersStream().map(GenericService::getVertex).collect(Collectors.toList()), getValue(), getComponentsStream().map(GenericService::getVertex).collect(Collectors.toList()));
 	}
 
 	@Override
 	default Dependencies<T> getInstances() {
-		return getAlive().getInstances().project(this::wrap, GenericService::unwrap);
+		return getVertex().getInstances().project(this::wrap, GenericService::unwrap);
 	}
 
 	@Override
 	default Dependencies<T> getInheritings() {
-		return getAlive().getInheritings().project(this::wrap, GenericService::unwrap);
+		return getVertex().getInheritings().project(this::wrap, GenericService::unwrap);
 	}
 
 	@Override
 	default CompositesDependencies<T> getMetaComposites() {
-		return getAlive().getMetaComposites().projectComposites(this::wrap, GenericService::unwrap);
+		return getVertex().getMetaComposites().projectComposites(this::wrap, GenericService::unwrap);
 	}
 
 	@Override
 	default CompositesDependencies<T> getSuperComposites() {
-		return getAlive().getSuperComposites().projectComposites(this::wrap, GenericService::unwrap);
+		return getVertex().getSuperComposites().projectComposites(this::wrap, GenericService::unwrap);
 	}
 
 	@Override
 	default T getInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
-		Vertex vertex = getAlive();
+		Vertex vertex = getVertex();
 		if (vertex == null)
 			return null;
-		vertex = vertex.getInstance(value, Arrays.stream(components).map(GenericService::getAlive).collect(Collectors.toList()).toArray(new Vertex[components.length]));
+		vertex = vertex.getInstance(value, Arrays.stream(components).map(GenericService::getVertex).collect(Collectors.toList()).toArray(new Vertex[components.length]));
 		if (vertex == null)
 			return null;
 		return wrap(vertex);
@@ -69,16 +64,16 @@ public interface GenericService<T extends GenericService<T>> extends AncestorsSe
 
 	@Override
 	default Snapshot<T> getInheritings(T origin, int level) {
-		return getAlive().getInheritings(origin.getAlive(), level).project(this::wrap);
+		return getVertex().getInheritings(origin.getVertex(), level).project(this::wrap);
 	}
 
 	@Override
 	default Snapshot<T> getMetaComposites(T meta) {
-		return getAlive().getMetaComposites(meta.getAlive()).project(this::wrap);
+		return getVertex().getMetaComposites(meta.getVertex()).project(this::wrap);
 	}
 
 	@Override
 	default Snapshot<T> getSuperComposites(T superVertex) {
-		return getAlive().getSuperComposites(superVertex.getAlive()).project(this::wrap);
+		return getVertex().getSuperComposites(superVertex.getVertex()).project(this::wrap);
 	}
 }

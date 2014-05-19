@@ -76,11 +76,24 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 	}
 
 	default boolean isAlive() {
-		return this == getAlive();
+		return equals(getAlive());
 	}
 
-	default Vertex getAlive() {
-		Vertex pluggedMeta = getMeta().getAlive();
+	default T getAlive() {
+		T pluggedMeta = getMeta().getAlive();
+		if (pluggedMeta == null)
+			return null;
+		Iterator<T> it = ((DependenciesService<T>) pluggedMeta).getInstances().iterator();
+		while (it.hasNext()) {
+			T next = it.next();
+			if (equiv(next))
+				return next;
+		}
+		return null;
+	}
+
+	default Vertex getVertex() {
+		Vertex pluggedMeta = getMeta().getVertex();
 		if (pluggedMeta == null)
 			return null;
 		Iterator<Vertex> it = pluggedMeta.getInstances().iterator();
@@ -91,17 +104,4 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		}
 		return null;
 	}
-
-	// default Vertex getVertex() {
-	// Vertex pluggedMeta = getMeta().getVertex();
-	// if (pluggedMeta == null)
-	// return null;
-	// Iterator<Vertex> it = pluggedMeta.getInstances().iterator();
-	// while (it.hasNext()) {
-	// Vertex next = it.next();
-	// if (equiv(next))
-	// return next;
-	// }
-	// return null;
-	// }
 }

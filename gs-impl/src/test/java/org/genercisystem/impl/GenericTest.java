@@ -30,8 +30,8 @@ public class GenericTest extends AbstractTest {
 	public void testGetInstances() {
 		Engine engine = new Engine();
 		assert engine.getInstances().isEmpty();
-		Vertex vehicleVertex = engine.getAlive().addInstance("Vehicle");
-		Vertex powerVehicleVertex = engine.getAlive().addInstance("Power", vehicleVertex);
+		Vertex vehicleVertex = engine.getVertex().addInstance("Vehicle");
+		Vertex powerVehicleVertex = engine.getVertex().addInstance("Power", vehicleVertex);
 		Generic vehicle = engine.getInstances().filter(g -> g.getValue().equals("Vehicle")).stream().findFirst().get();
 		Generic powerVehicle = engine.getInstances().filter(g -> g.getValue().equals("Power")).stream().findFirst().get();
 		assert vehicle.getAlive().equiv(vehicleVertex) : engine.getInstances();

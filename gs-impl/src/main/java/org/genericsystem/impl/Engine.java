@@ -16,14 +16,14 @@ public class Engine extends Generic implements EngineService<Generic> {
 	}
 
 	@Override
-	public Vertex getAlive() {
-		return root;
+	public Engine getAlive() {
+		return this;
 	}
 
-	// @Override
-	// public Vertex getVertex() {
-	// return root;
-	// }
+	@Override
+	public Vertex getVertex() {
+		return root;
+	}
 
 	@Override
 	public Engine getRoot() {
