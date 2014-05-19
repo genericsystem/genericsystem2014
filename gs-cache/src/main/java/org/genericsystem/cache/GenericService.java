@@ -3,7 +3,6 @@ package org.genericsystem.cache;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.function.Function;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
@@ -40,13 +39,12 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 	@SuppressWarnings("unchecked")
 	@Override
 	default public CompositesDependencies<T> getMetaComposites() {
-		return getCurrentCache().getMetaComposites((T) this, () -> (Iterator<DependenciesEntry<T>>) iteratorFromAliveComposite(Vertex::getMetaComposites));
+		return getCurrentCache().getMetaComposites((T) this, () -> iteratorFromAliveComposite(x -> x.getMetaComposites()));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default public CompositesDependencies<T> getSuperComposites() {
-		return getCurrentCache().getSuperComposites((T) this, () -> (Iterator<DependenciesEntry<T>>) iteratorFromAliveComposite(Vertex::getSuperComposites));
+		return getCurrentCache().getSuperComposites((T) this, () -> iteratorFromAliveComposite(x -> x.getSuperComposites()));
 	}
-
 }
