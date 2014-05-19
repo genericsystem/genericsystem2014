@@ -136,7 +136,7 @@ public class GenericTest extends AbstractTest {
 
 		assert engine.isRoot();
 		Generic vehicle = engine.addInstance("Vehicle");
-		Generic car = engine.addInstance(new Generic[] { vehicle }, "Car", new Generic[] {});
+		Generic car = engine.addInstance(Arrays.asList(vehicle), "Car");
 		Generic vehiclePower = engine.addInstance("VehiclePower", vehicle);
 		Generic carPower = engine.addInstance("CarPower", car);
 		assert car.getAttributes(engine).containsAll(Arrays.asList(vehiclePower, carPower)) : car.getAttributes(engine);

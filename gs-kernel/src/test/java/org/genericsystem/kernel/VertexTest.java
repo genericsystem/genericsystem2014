@@ -1,7 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.util.Arrays;
-
+import java.util.Collections;
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.testng.annotations.Test;
 
@@ -15,7 +15,7 @@ public class VertexTest extends AbstractTest {
 		assert !vehicle2.inheritsFrom(vehicle);
 		assert vehicle == engine.setInstance("Vehicle");
 		// assert vehicle == engine.setInstance(new Vertex[] { vehicle2 }, "Vehicle");
-		Vertex car = engine.addInstance(new Vertex[] { vehicle }, "Car");
+		Vertex car = engine.addInstance(Arrays.asList(vehicle), "Car");
 		assert car.inheritsFrom(vehicle);
 		Vertex power = engine.addInstance("Power", car);
 		Vertex myBmw = car.addInstance("myBmw");
@@ -50,19 +50,19 @@ public class VertexTest extends AbstractTest {
 		assert power.getInstance(233, myBmw) != null;
 		Vertex carRed = vehicleColor.addInstance("CarRed", car, red);
 		Vertex carGreen = vehicleColor.addInstance("CarGreen", car, green);
-		assert carRed.isSuperOf(vehicleColor, new Vertex[] { carRed }, "myBmwRed", myBmw, red);
-		assert !carRed.isSuperOf(vehicleColor, new Vertex[] {}, "myBmwRed", red, red);
-		assert carRed.isSuperOf(vehicleColor, new Vertex[] { carRed }, "CarRed", myBmw, red);
+		assert carRed.isSuperOf(vehicleColor, Arrays.asList(carRed), "myBmwRed", Arrays.asList(myBmw, red));
+		assert !carRed.isSuperOf(vehicleColor, Collections.emptyList(), "myBmwRed", Arrays.asList(red, red));
+		assert carRed.isSuperOf(vehicleColor, Collections.singletonList(carRed), "CarRed", Arrays.asList(myBmw, red));
 		log.info("**************************************************************" + carGreen.info());
 		assert carGreen.isInstanceOf(vehicleColor);
 		assert vehicleColor.getInstances().contains(carGreen);
 
-		Vertex myBmwYellow = vehicleColor.addInstance(new Vertex[] { carGreen }, "CarRed", myBmw, red);
-		assert carRed.isSuperOf(vehicleColor, new Vertex[] { carGreen }, "CarRed", myBmw, red);
+		Vertex myBmwYellow = vehicleColor.addInstance(Arrays.asList(carGreen), "CarRed", myBmw, red);
+		assert carRed.isSuperOf(vehicleColor, Collections.singletonList(carGreen), "CarRed", Arrays.asList(myBmw, red));
 		assert myBmwYellow.inheritsFrom(carRed);
 		log.info(myBmwYellow.info());
 
-		Vertex myBmwRed = vehicleColor.addInstance(new Vertex[] { carRed }, "myBmwRed", myBmw, red);
+		Vertex myBmwRed = vehicleColor.addInstance(Arrays.asList(carRed), "myBmwRed", myBmw, red);
 		log.info(myBmwRed.info());
 		assert !yellow.inheritsFrom(red);
 		assert !yellow.isInstanceOf(red);
@@ -92,13 +92,13 @@ public class VertexTest extends AbstractTest {
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex vehicle2 = engine.addInstance("Vehicle2");
 		assert vehicle == engine.setInstance("Vehicle");
-		assert vehicle != engine.setInstance(new Vertex[] { vehicle2 }, "Vehicle");
+		assert vehicle != engine.setInstance(vehicle2, "Vehicle");
 	}
 
 	public void test3() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = engine.addInstance(new Vertex[] { vehicle }, "Car");
+		Vertex car = engine.addInstance(vehicle, "Car");
 		Vertex vehiclePower = engine.addInstance("VehiclePower", vehicle);
 		Vertex carPower = engine.addInstance("CarPower", car);
 		assert car.getAttributes(engine).containsAll(Arrays.asList(vehiclePower, carPower)) : car.getAttributes(engine);
@@ -108,7 +108,7 @@ public class VertexTest extends AbstractTest {
 	public void test4() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = engine.addInstance(new Vertex[] { vehicle }, "Car");
+		Vertex car = engine.addInstance(vehicle, "Car");
 		Vertex vehiclePower = engine.addInstance("Power", vehicle);
 		Vertex carPower = engine.addInstance("Power", car);
 		assert car.getAttributes(engine).contains(carPower);
@@ -118,9 +118,9 @@ public class VertexTest extends AbstractTest {
 	public void test5() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = engine.addInstance(new Vertex[] { vehicle }, "Car");
+		Vertex car = engine.addInstance(vehicle, "Car");
 		Vertex vehiclePower = engine.addInstance("VehiclePower", vehicle);
-		Vertex carPower = engine.addInstance(new Vertex[] { vehiclePower }, "CarPower", car);
+		Vertex carPower = engine.addInstance(vehiclePower, "CarPower", car);
 		assert car.getAttributes(engine).contains(carPower);
 		assert car.getAttributes(engine).size() == 1 : car.getAttributes(engine);
 	}
@@ -128,11 +128,11 @@ public class VertexTest extends AbstractTest {
 	public void test6() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = engine.addInstance(new Vertex[] { vehicle }, "Car");
-		Vertex sportCar = engine.addInstance(new Vertex[] { car }, "SportCar");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex sportCar = engine.addInstance(car, "SportCar");
 		Vertex vehiclePower = engine.addInstance("VehiclePower", vehicle);
-		Vertex carPower = engine.addInstance(new Vertex[] { vehiclePower }, "CarPower", car);
-		Vertex sportCarPower = engine.addInstance(new Vertex[] { vehiclePower }, "SportCarPower", sportCar);
+		Vertex carPower = engine.addInstance(vehiclePower, "CarPower", car);
+		Vertex sportCarPower = engine.addInstance(vehiclePower, "SportCarPower", sportCar);
 		assert sportCar.getAttributes(engine).containsAll(Arrays.asList(carPower, sportCarPower)) : car.getAttributes(engine) + " " + sportCarPower.info();
 		assert sportCar.getAttributes(engine).size() == 2;
 	}
@@ -141,7 +141,7 @@ public class VertexTest extends AbstractTest {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex robot = engine.addInstance("robot");
-		Vertex transformer = engine.addInstance(new Vertex[] { vehicle, robot }, "Transformer");
+		Vertex transformer = engine.addInstance(Arrays.asList(vehicle, robot), "Transformer");
 		Vertex vehiclePower = engine.addInstance("Power", vehicle);
 		Vertex robotPower = engine.addInstance("Power", robot);
 		assert transformer.getAttributes(engine).containsAll(Arrays.asList(robotPower, vehiclePower)) : transformer.getAttributes(engine);
@@ -152,10 +152,10 @@ public class VertexTest extends AbstractTest {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex robot = engine.addInstance("robot");
-		Vertex transformer = engine.addInstance(new Vertex[] { vehicle, robot }, "Transformer");
+		Vertex transformer = engine.addInstance(Arrays.asList(vehicle, robot), "Transformer");
 		Vertex vehiclePower = engine.addInstance("VehiclePower", vehicle);
 		Vertex robotPower = engine.addInstance("RobotPower", robot);
-		Vertex transformerPower = engine.addInstance(new Vertex[] { vehiclePower, robotPower }, "TransformerPower", transformer);
+		Vertex transformerPower = engine.addInstance(Arrays.asList(vehiclePower, robotPower), "TransformerPower", transformer);
 		assert transformer.getAttributes(engine).contains(transformerPower) : transformer.getAttributes(engine);
 		assert transformer.getAttributes(engine).size() == 1;
 	}
@@ -164,7 +164,7 @@ public class VertexTest extends AbstractTest {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex robot = engine.addInstance("robot");
-		Vertex transformer = engine.addInstance(new Vertex[] { vehicle, robot }, "Transformer");
+		Vertex transformer = engine.addInstance(Arrays.asList(vehicle, robot), "Transformer");
 		Vertex vehiclePower = engine.addInstance("Power", vehicle);
 		Vertex robotPower = engine.addInstance("Power", robot);
 		Vertex transformerPower = engine.addInstance("Power", transformer);
@@ -180,7 +180,7 @@ public class VertexTest extends AbstractTest {
 		new RollbackCatcher() {
 			@Override
 			public void intercept() {
-				engine.addInstance(new Vertex[] { vehicle }, "Car");
+				engine.addInstance(vehicle, "Car");
 			}
 		}.assertIsCausedBy(NotAliveException.class);
 	}

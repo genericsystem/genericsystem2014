@@ -1,5 +1,6 @@
 package org.genericsystem.kernel;
 
+import java.util.Arrays;
 import org.testng.annotations.Test;
 
 @Test
@@ -32,7 +33,7 @@ public class HolderTest extends AbstractTest {
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
 		Vertex power = root.addInstance("Power", vehicle);
-		Vertex car = root.addInstance(new Vertex[] { vehicle }, "Car");
+		Vertex car = root.addInstance(Arrays.asList(vehicle), "Car");
 		int powerValue = 1;
 		Vertex v1 = power.addInstance(powerValue, vehicle);
 
@@ -57,11 +58,11 @@ public class HolderTest extends AbstractTest {
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
 		Vertex power = root.addInstance("Power", vehicle);
-		Vertex car = root.addInstance(new Vertex[] { vehicle }, "Car");
+		Vertex car = root.addInstance(Arrays.asList(vehicle), "Car");
 		int powerValue1 = 1;
 		int powerValue2 = 2;
 		Vertex v1 = power.addInstance(powerValue1, vehicle);
-		Vertex v2 = power.addInstance(new Vertex[] { v1 }, powerValue2, car);
+		Vertex v2 = power.addInstance(Arrays.asList(v1), powerValue2, car);
 
 		assert v1.isInstanceOf(power);
 		assert vehicle.getHolders(power) != null;
@@ -88,11 +89,11 @@ public class HolderTest extends AbstractTest {
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
 		Vertex power = root.addInstance("Power", vehicle);
-		Vertex car = root.addInstance(new Vertex[] { vehicle }, "Car");
+		Vertex car = root.addInstance(Arrays.asList(vehicle), "Car");
 		int powerValue1 = 1;
 		int powerValue2 = 1;
 		Vertex v1 = power.addInstance(powerValue1, vehicle);
-		Vertex v2 = power.addInstance(new Vertex[] { v1 }, powerValue2, car);
+		Vertex v2 = power.addInstance(Arrays.asList(v1), powerValue2, car);
 
 		assert v1.isInstanceOf(power);
 		assert vehicle.getHolders(power) != null;
@@ -118,7 +119,7 @@ public class HolderTest extends AbstractTest {
 	public void testHolder1AttributWith2LevelsInheritance1AttributOnFirstChild() {
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(new Vertex[] { vehicle }, "Car");
+		Vertex car = root.addInstance(Arrays.asList(vehicle), "Car");
 		Vertex power = root.addInstance("Power", car);
 
 		int powerValue = 1;
@@ -139,8 +140,8 @@ public class HolderTest extends AbstractTest {
 	public void testHolder1AttributWith2LevelsInheritance2children1AttributOnParent() {
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(new Vertex[] { vehicle }, "Car");
-		Vertex bike = root.addInstance(new Vertex[] { vehicle }, "bike");
+		Vertex car = root.addInstance(Arrays.asList(vehicle), "Car");
+		Vertex bike = root.addInstance(Arrays.asList(vehicle), "bike");
 		Vertex power = root.addInstance("Power", vehicle);
 		int powerValue = 1;
 		Vertex v1 = power.addInstance(powerValue, vehicle);
@@ -169,13 +170,13 @@ public class HolderTest extends AbstractTest {
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
 		Vertex power = root.addInstance("Power", vehicle);
-		Vertex car = root.addInstance(new Vertex[] { vehicle }, "Car");
-		Vertex microcar = root.addInstance(new Vertex[] { car }, "Microcar");
+		Vertex car = root.addInstance(Arrays.asList(vehicle), "Car");
+		Vertex microcar = root.addInstance(Arrays.asList(car), "Microcar");
 
 		int powerValue1 = 1;
 		int powerValue2 = 1;
 		Vertex v1 = power.addInstance(powerValue1, vehicle);
-		Vertex v2 = power.addInstance(new Vertex[] { v1 }, powerValue2, car);
+		Vertex v2 = power.addInstance(Arrays.asList(v1), powerValue2, car);
 
 		assert v1.isInstanceOf(power);
 		assert vehicle.getHolders(power) != null;
@@ -209,13 +210,13 @@ public class HolderTest extends AbstractTest {
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
 		Vertex power = root.addInstance("Power", vehicle);
-		Vertex car = root.addInstance(new Vertex[] { vehicle }, "Car");
-		Vertex microcar = root.addInstance(new Vertex[] { car }, "Microcar");
+		Vertex car = root.addInstance(Arrays.asList(vehicle), "Car");
+		Vertex microcar = root.addInstance(Arrays.asList(car), "Microcar");
 
 		int powerValue1 = 1;
 		int powerValue2 = 1;
 		Vertex v1 = power.addInstance(powerValue1, vehicle);
-		Vertex v2 = power.addInstance(new Vertex[] { v1 }, powerValue2, microcar);
+		Vertex v2 = power.addInstance(Arrays.asList(v1), powerValue2, microcar);
 
 		assert v1.isInstanceOf(power);
 		assert vehicle.getHolders(power) != null;
@@ -291,13 +292,13 @@ public class HolderTest extends AbstractTest {
 		Vertex power = root.addInstance("Power", vehicle);
 		Vertex unit = root.addInstance("Unit", power);
 
-		Vertex car = root.addInstance(new Vertex[] { vehicle }, "Car");
+		Vertex car = root.addInstance(Arrays.asList(vehicle), "Car");
 
 		int powerValue1 = 1;
 		int powerValue2 = 2;
 		String unitValue = "Watt";
 		Vertex v1 = power.addInstance(powerValue1, vehicle);
-		Vertex v2 = power.addInstance(new Vertex[] { v1 }, powerValue2, car);
+		Vertex v2 = power.addInstance(Arrays.asList(v1), powerValue2, car);
 
 		Vertex vUnit = unit.addInstance(unitValue, power);
 
@@ -341,9 +342,9 @@ public class HolderTest extends AbstractTest {
 		Vertex vehicle = root.addInstance("Vehicle");
 		Vertex power1 = root.addInstance("Power", vehicle);
 		Vertex unit = root.addInstance("Unit", power1);
-		Vertex car = root.addInstance(new Vertex[] { vehicle }, "Car");
+		Vertex car = root.addInstance(Arrays.asList(vehicle), "Car");
 		Vertex power2 = root.addInstance("Power", car);
-		Vertex microcar = root.addInstance(new Vertex[] { car }, "Microcar");
+		Vertex microcar = root.addInstance(Arrays.asList(car), "Microcar");
 
 		// same value for power1 and power2
 		int powerValue = 1;
@@ -351,10 +352,10 @@ public class HolderTest extends AbstractTest {
 		String unitValue2 = "KWatt";
 
 		Vertex v1 = power1.addInstance(powerValue, vehicle);
-		Vertex v2 = power2.addInstance(new Vertex[] { v1 }, powerValue, car);
+		Vertex v2 = power2.addInstance(Arrays.asList(v1), powerValue, car);
 
 		Vertex vUnit1 = unit.addInstance(unitValue1, power1);
-		Vertex vUnit2 = unit.addInstance(new Vertex[] { vUnit1 }, unitValue2, power2);
+		Vertex vUnit2 = unit.addInstance(Arrays.asList(vUnit1), unitValue2, power2);
 
 		assert !power1.equals(power2);
 		assert v1.isInstanceOf(power1);

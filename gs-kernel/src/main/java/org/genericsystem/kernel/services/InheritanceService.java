@@ -1,21 +1,21 @@
 package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 public interface InheritanceService<T extends InheritanceService<T>> extends DependenciesService<T>, SystemPropertiesService, ExceptionAdviserService<T> {
 
 	@SuppressWarnings("unchecked")
-	default boolean isSuperOf(T subMeta, T[] overrides, Serializable subValue, T... subComponents) {
-		return Arrays.asList(overrides).stream().anyMatch(override -> override.inheritsFrom((T) this)) || inheritsFrom(subMeta, subValue, subComponents, getMeta(), getValue(), getComponents());
+	default boolean isSuperOf(T subMeta, List<T> overrides, Serializable subValue, List<T> subComponents) {
+		return overrides.stream().anyMatch(override -> override.inheritsFrom((T) this)) || inheritsFrom(subMeta, subValue, subComponents, getMeta(), getValue(), getComponents());
 	}
 
-	default boolean inheritsFrom(T subMeta, Serializable subValue, T[] subComponents, T superMeta, Serializable superValue, T[] superComponents) {
+	default boolean inheritsFrom(T subMeta, Serializable subValue, List<T> subComponents, T superMeta, Serializable superValue, List<T> superComponents) {
 		if (!subMeta.inheritsFrom(superMeta))
 			return false;
 		if (!((InheritanceService<T>) subMeta).componentsDepends(subComponents, superComponents))
@@ -27,9 +27,9 @@ public interface InheritanceService<T extends InheritanceService<T>> extends Dep
 		boolean get(int i);
 	}
 
-	default boolean componentsDepends(T[] subComponents, T[] superComponents) {
+	default boolean componentsDepends(List<T> subComponents, List<T> superComponents) {
 		class SingularsLazyCacheImpl implements SingularsLazyCache {
-			private final Boolean[] singulars = new Boolean[subComponents.length];
+			private final Boolean[] singulars = new Boolean[subComponents.size()];
 
 			@Override
 			public boolean get(int i) {
@@ -39,11 +39,11 @@ public interface InheritanceService<T extends InheritanceService<T>> extends Dep
 		return componentsDepends(new SingularsLazyCacheImpl(), subComponents, superComponents);
 	}
 
-	default boolean componentsDepends(SingularsLazyCache singulars, T[] subComponents, T[] superComponents) {
+	default boolean componentsDepends(SingularsLazyCache singulars, List<T> subComponents, List<T> superComponents) {
 		int subIndex = 0;
 		loop: for (T superComponent : superComponents) {
-			for (; subIndex < subComponents.length; subIndex++) {
-				T subComponent = subComponents[subIndex];
+			for (; subIndex < subComponents.size(); subIndex++) {
+				T subComponent = subComponents.get(subIndex);
 				if (subComponent.inheritsFrom(superComponent) || subComponent.isInstanceOf(superComponent)) {
 					if (singulars.get(subIndex))
 						return true;
@@ -57,17 +57,17 @@ public interface InheritanceService<T extends InheritanceService<T>> extends Dep
 	}
 
 	// TODO Remove this
-	T[] getComponents();
+	List<T> getComponents();
 
-	default Stream<T> computeSupersStream(T[] overrides) {
+	default List<T> computeSupers(List<T> overrides) {
 		class SupersComputer extends LinkedHashSet<T> {
 
 			private static final long serialVersionUID = -1078004898524170057L;
 
-			private final T[] overrides;
+			private final List<T> overrides;
 			private final Map<T, Boolean> alreadyComputed = new HashMap<>();
 
-			private SupersComputer(T[] overrides) {
+			private SupersComputer(List<T> overrides) {
 				this.overrides = overrides;
 				visit(getMeta().getRoot());
 			}
@@ -102,7 +102,7 @@ public interface InheritanceService<T extends InheritanceService<T>> extends Dep
 				return selectable;
 			}
 		}
-		return new SupersComputer(overrides).stream();
+		return new ArrayList<T>(new SupersComputer(overrides));
 	}
 
 }

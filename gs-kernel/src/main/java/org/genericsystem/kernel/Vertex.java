@@ -2,8 +2,7 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.stream.Stream;
-
+import java.util.Collections;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.BindingService;
@@ -20,7 +19,6 @@ import org.slf4j.LoggerFactory;
 public class Vertex extends ExtendedSignature<Vertex> implements AncestorsService<Vertex>, DependenciesService<Vertex>, InheritanceService<Vertex>, BindingService<Vertex>, CompositesInheritanceService<Vertex>, FactoryService<Vertex>,
 		DisplayService<Vertex>, SystemPropertiesService, ExceptionAdviserService<Vertex> {
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
-	protected static final Vertex[] EMPTY_VERTICES = new Vertex[] {};
 
 	private final Dependencies<Vertex> instances = buildDependencies();
 	private final Dependencies<Vertex> inheritings = buildDependencies();
@@ -30,16 +28,6 @@ public class Vertex extends ExtendedSignature<Vertex> implements AncestorsServic
 	@Override
 	public Vertex build() {
 		return new Vertex();
-	}
-
-	@Override
-	public Vertex initFromOverrides(Vertex meta, Stream<Vertex> overrides, Serializable value, Stream<Vertex> components) {
-		return super.initFromOverrides(meta, overrides.toArray(Vertex[]::new), value, components.toArray(Vertex[]::new));
-	}
-
-	@Override
-	public Vertex initFromSupers(Vertex meta, Stream<Vertex> supers, Serializable value, Stream<Vertex> components) {
-		return super.initFromSupers(meta, supers.toArray(Vertex[]::new), value, components.toArray(Vertex[]::new));
 	}
 
 	@Override
@@ -54,7 +42,7 @@ public class Vertex extends ExtendedSignature<Vertex> implements AncestorsServic
 
 	@Override
 	public Vertex getInstance(Serializable value, Vertex... components) {
-		return build().initFromOverrides(this, Arrays.stream(getEmptyArray()), value, Arrays.stream(components)).getAlive();
+		return build().initFromOverrides(this, Collections.emptyList(), value, Arrays.asList(components)).getAlive();
 	}
 
 	@Override
@@ -76,15 +64,4 @@ public class Vertex extends ExtendedSignature<Vertex> implements AncestorsServic
 	public CompositesDependencies<Vertex> getSuperComposites() {
 		return superComposites;
 	}
-
-	@Override
-	public Vertex[] getEmptyArray() {
-		return EMPTY_VERTICES;
-	}
-
-	@Override
-	public Vertex[] computeSupers(Vertex[] overrides) {
-		return computeSupersStream(overrides).toArray(Vertex[]::new);
-	}
-
 }

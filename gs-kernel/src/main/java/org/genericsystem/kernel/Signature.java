@@ -1,23 +1,24 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
 public abstract class Signature<T> {
 	protected T meta;
-	protected T[] components;
+	protected List<T> components;
 	protected Serializable value;
 
 	@SuppressWarnings("unchecked")
-	protected T init(T meta, Serializable value, T... components) {
+	protected T init(T meta, Serializable value, List<T> components) {
 		this.meta = meta == null ? (T) this : meta;
 		this.value = value;
-		this.components = components.clone();
-		for (int i = 0; i < components.length; i++)
-			if (components[i] == null)
-				this.components[i] = (T) this;
+		this.components = new ArrayList<>(components);
+		for (int i = 0; i < components.size(); i++)
+			if (components.get(i) == null)
+				this.components.set(i, (T) this);
 		return (T) this;
 	}
 
@@ -25,7 +26,7 @@ public abstract class Signature<T> {
 		return meta;
 	}
 
-	public T[] getComponents() {
+	public List<T> getComponents() {
 		return components;
 	}
 
@@ -34,7 +35,7 @@ public abstract class Signature<T> {
 	}
 
 	public Stream<T> getComponentsStream() {
-		return Arrays.stream(components);
+		return components.stream();
 	}
 
 	@Override

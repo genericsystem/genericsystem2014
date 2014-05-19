@@ -1,5 +1,6 @@
 package org.genericsystem.cache;
 
+import java.util.Arrays;
 import org.genericsystem.kernel.Vertex;
 import org.testng.annotations.Test;
 
@@ -9,7 +10,7 @@ public class CacheTest extends AbstractTest {
 	public void testTypeInheritings() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
-		Generic car = engine.addInstance(new Generic[] { vehicle }, "Car");
+		Generic car = engine.addInstance(Arrays.asList(vehicle), "Car");
 		assert vehicle.getInheritings().stream().anyMatch(g -> g.equals(car));
 	}
 
@@ -17,7 +18,7 @@ public class CacheTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		// assert vehicle.getAlive() != null;
-		Vertex car = engine.getAlive().addInstance(new Vertex[] { vehicle.getAlive() }, "Car");
+		Vertex car = engine.getAlive().addInstance(Arrays.asList(vehicle.getAlive()), "Car");
 		assert vehicle.getInheritings().filter(car::equiv).size() == 1;
 	}
 }

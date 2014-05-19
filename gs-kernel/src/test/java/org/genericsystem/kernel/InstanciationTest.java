@@ -1,8 +1,8 @@
 package org.genericsystem.kernel;
 
+import java.util.Arrays;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.testng.annotations.Test;
 
@@ -107,8 +107,7 @@ public class InstanciationTest extends AbstractTest {
 	public void testTwoTypeInstanciationWithInheritance() {
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(new Vertex[] { vehicle }, "Car");
-
+		Vertex car = root.addInstance(Arrays.asList(vehicle), "Car");
 		// log.info(root.info());
 		// log.info(vehicle.info());
 		// log.info(car.info());
@@ -142,7 +141,7 @@ public class InstanciationTest extends AbstractTest {
 
 			@Override
 			public void intercept() {
-				Vertex vehicle2 = root.addInstance(new Vertex[] { vehicle }, "Vehicle");
+				Vertex vehicle2 = root.addInstance(Arrays.asList(vehicle), "Vehicle");
 
 			}
 		}.assertIsCausedBy(ExistsException.class);
@@ -152,7 +151,7 @@ public class InstanciationTest extends AbstractTest {
 		Root root = new Root();
 		Vertex car = root.addInstance("Car");
 		Vertex robot = root.addInstance("Robot");
-		Vertex transformer = root.addInstance(new Vertex[] { car, robot }, "Transformer");
+		Vertex transformer = root.addInstance(Arrays.asList(car, robot), "Transformer");
 
 		// log.info(car.info());
 		// log.info(robot.info());
@@ -184,10 +183,10 @@ public class InstanciationTest extends AbstractTest {
 	public void test5TypeInstanciationWithMultipleInheritence() {
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(new Vertex[] { vehicle }, "Car");
+		Vertex car = root.addInstance(Arrays.asList(vehicle), "Car");
 		Vertex device = root.addInstance("Device");
-		Vertex robot = root.addInstance(new Vertex[] { device }, "Robot");
-		Vertex transformer = root.addInstance(new Vertex[] { car, robot }, "Transformer");
+		Vertex robot = root.addInstance(Arrays.asList(device), "Robot");
+		Vertex transformer = root.addInstance(Arrays.asList(car, robot), "Transformer");
 
 		// log.info(vehicle.info());
 		// log.info(car.info());
@@ -233,11 +232,11 @@ public class InstanciationTest extends AbstractTest {
 	public void test6TypeInstanciationWithMultipleInheritence() {
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(new Vertex[] { vehicle }, "Car");
+		Vertex car = root.addInstance(Arrays.asList(vehicle), "Car");
 		Vertex device = root.addInstance("Device");
-		Vertex robot = root.addInstance(new Vertex[] { device }, "Robot");
-		Vertex transformer = root.addInstance(new Vertex[] { car, robot }, "Transformer");
-		Vertex transformer2 = root.addInstance(new Vertex[] { transformer }, "Transformer2");
+		Vertex robot = root.addInstance(Arrays.asList(device), "Robot");
+		Vertex transformer = root.addInstance(Arrays.asList(car, robot), "Transformer");
+		Vertex transformer2 = root.addInstance(Arrays.asList(transformer), "Transformer2");
 
 		// log.info(vehicle.info());
 		// log.info(car.info());

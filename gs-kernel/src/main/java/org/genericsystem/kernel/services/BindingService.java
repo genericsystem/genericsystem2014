@@ -2,6 +2,8 @@ package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -13,32 +15,39 @@ import org.genericsystem.kernel.exceptions.NotFoundException;
 
 public interface BindingService<T extends BindingService<T>> extends AncestorsService<T>, DependenciesService<T>, FactoryService<T>, InheritanceService<T>, ExceptionAdviserService<T>, DisplayService<T> {
 
-	T[] getEmptyArray();
-
 	@SuppressWarnings("unchecked")
 	default T addInstance(Serializable value, T... components) {
-		return addInstance(getEmptyArray(), value, components);
+		return addInstance(Collections.emptyList(), value, components);
 	}
 
 	@SuppressWarnings("unchecked")
-	default T addInstance(T[] overrides, Serializable value, T... components) {
+	default T addInstance(T superGeneric, Serializable value, T... components) {
+		return addInstance(Collections.singletonList(superGeneric), value, components);
+	}
+
+	@SuppressWarnings("unchecked")
+	default T addInstance(List<T> overrides, Serializable value, T... components) {
 		T instance = getInstance(overrides, value, components);
 		if (instance != null)
 			rollbackAndThrowException(new ExistsException(instance.info()));
 
-		return build().initFromOverrides((T) this, Arrays.stream(overrides), value, Arrays.stream(components)).plug();
+		return build().initFromOverrides((T) this, overrides, value, Arrays.asList(components)).plug();
 	}
 
 	default T setInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
-		return setInstance(getEmptyArray(), value, components);
+		return setInstance(Collections.emptyList(), value, components);
+	}
+
+	default T setInstance(T superGeneric, Serializable value, @SuppressWarnings("unchecked") T... components) {
+		return setInstance(Collections.singletonList(superGeneric), value, components);
 	}
 
 	@SuppressWarnings("unchecked")
-	default T setInstance(T[] overrides, Serializable value, T... components) {
+	default T setInstance(List<T> overrides, Serializable value, T... components) {
 		T instance = getInstance(overrides, value, components);
 		if (instance != null)
 			return instance;
-		return build().initFromOverrides((T) this, Arrays.stream(overrides), value, Arrays.stream(components)).plug();
+		return build().initFromOverrides((T) this, overrides, value, Arrays.asList(components)).plug();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -80,9 +89,9 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 	CompositesDependencies<T> getSuperComposites();
 
 	@SuppressWarnings("unchecked")
-	default T getInstance(T[] supers, Serializable value, T... components) {
+	default T getInstance(List<T> supers, Serializable value, T... components) {
 		T result = getInstance(value, components);
-		if (result != null && Arrays.stream(supers).allMatch(superT -> result.inheritsFrom(superT)))
+		if (result != null && supers.stream().allMatch(superT -> result.inheritsFrom(superT)))
 			return result;
 		return null;
 	}
@@ -121,7 +130,7 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 	}
 
 	default Stream<T> selectInstances(Serializable value, T[] components) {
-		return selectInstances(value, instance -> componentsDepends(components, ((InheritanceService<T>) instance).getComponents()));
+		return selectInstances(value, instance -> componentsDepends(Arrays.asList(components), ((InheritanceService<T>) instance).getComponents()));
 	}
 
 	default Stream<T> selectInstances(Serializable value, Predicate<T> componentsPredicate) {
@@ -130,7 +139,7 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 
 	@SuppressWarnings("unchecked")
 	default Stream<T> selectInstances(Predicate<T> valuePredicate, T... components) {
-		return selectInstances(valuePredicate, instance -> componentsDepends(components, ((InheritanceService<T>) instance).getComponents()));
+		return selectInstances(valuePredicate, instance -> componentsDepends(Arrays.asList(components), ((InheritanceService<T>) instance).getComponents()));
 	}
 
 	default Stream<T> selectInstances(Predicate<T> valuePredicate, Predicate<T> componentsPredicate) {

@@ -1,5 +1,7 @@
 package org.genericsystem.impl;
 
+import java.util.Collections;
+import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
@@ -10,7 +12,17 @@ public class Engine extends Generic implements EngineService<Generic> {
 
 	public Engine() {
 		root = buildRoot();
-		initFromSupers(null, getEmptyArray(), Statics.ENGINE_VALUE, getEmptyArray());
+		initFromSupers(null, Collections.emptyList(), Statics.ENGINE_VALUE, Collections.emptyList());
+	}
+
+	@Override
+	public Dependencies<Generic> getInheritings() {
+		return super.getInheritings();
+	}
+
+	@Override
+	public Dependencies<Generic> getInstances() {
+		return super.getInstances();
 	}
 
 	@Override
