@@ -3,6 +3,7 @@ package org.genericsystem.impl;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
@@ -31,6 +32,11 @@ public interface GenericService<T extends GenericService<T>> extends AncestorsSe
 	}
 
 	@Override
+	default boolean isAlive() {
+		return equals(getAlive());
+	}
+
+	@Override
 	default Dependencies<T> getInstances() {
 		return getAlive().getInstances().project(this::wrap, GenericService::unwrap);
 	}
@@ -52,13 +58,13 @@ public interface GenericService<T extends GenericService<T>> extends AncestorsSe
 
 	@Override
 	default T getInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
-		Vertex alive = getAlive();
-		if (alive == null)
+		Vertex vertex = getAlive();
+		if (vertex == null)
 			return null;
-		alive = alive.getInstance(value, Arrays.stream(components).map(GenericService::getAlive).collect(Collectors.toList()).toArray(new Vertex[components.length]));
-		if (alive == null)
+		vertex = vertex.getInstance(value, Arrays.stream(components).map(GenericService::getAlive).collect(Collectors.toList()).toArray(new Vertex[components.length]));
+		if (vertex == null)
 			return null;
-		return wrap(alive);
+		return wrap(vertex);
 	}
 
 	@Override

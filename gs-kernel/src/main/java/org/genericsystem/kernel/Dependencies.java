@@ -3,6 +3,7 @@ package org.genericsystem.kernel;
 import java.util.AbstractMap;
 import java.util.Iterator;
 import java.util.function.Function;
+
 import org.genericsystem.kernel.iterator.AbstractProjectionIterator;
 
 public interface Dependencies<T> extends Snapshot<T> {

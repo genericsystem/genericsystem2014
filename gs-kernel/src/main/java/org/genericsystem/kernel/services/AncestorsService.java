@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Vertex;
 
 public interface AncestorsService<T extends AncestorsService<T>> {
@@ -90,4 +91,17 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		}
 		return null;
 	}
+
+	// default Vertex getVertex() {
+	// Vertex pluggedMeta = getMeta().getVertex();
+	// if (pluggedMeta == null)
+	// return null;
+	// Iterator<Vertex> it = pluggedMeta.getInstances().iterator();
+	// while (it.hasNext()) {
+	// Vertex next = it.next();
+	// if (equiv(next))
+	// return next;
+	// }
+	// return null;
+	// }
 }

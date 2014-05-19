@@ -1,6 +1,7 @@
 package org.genercisystem.impl;
 
 import java.util.Arrays;
+
 import org.genericsystem.impl.Engine;
 import org.genericsystem.impl.Generic;
 import org.genericsystem.kernel.Statics;
@@ -136,6 +137,7 @@ public class GenericTest extends AbstractTest {
 
 		assert engine.isRoot();
 		Generic vehicle = engine.addInstance("Vehicle");
+		assert vehicle.isAlive();
 		Generic car = engine.addInstance(Arrays.asList(vehicle), "Car");
 		Generic vehiclePower = engine.addInstance("VehiclePower", vehicle);
 		Generic carPower = engine.addInstance("CarPower", car);
