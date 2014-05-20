@@ -1,6 +1,7 @@
 package org.genericsystem.impl;
 
 import java.util.Objects;
+
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.services.AncestorsService;
 
@@ -18,11 +19,6 @@ public interface EngineService<T extends GenericService<T>> extends GenericServi
 	@Override
 	default boolean isRoot() {
 		return true;
-	}
-
-	@Override
-	default boolean isAlive() {
-		return equiv(getAlive());
 	}
 
 	@SuppressWarnings("unchecked")
