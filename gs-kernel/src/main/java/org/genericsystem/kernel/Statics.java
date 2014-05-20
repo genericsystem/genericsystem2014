@@ -25,7 +25,7 @@ public class Statics {
 		return Arrays.stream(array).flatMap(x -> x);
 	}
 
-	public static <T> Stream<T> concat(Stream<T> stream, Function<T, Stream<T>> mappers) {
+	public static <T, U> Stream<T> concat(Stream<U> stream, Function<U, Stream<T>> mappers) {
 		return stream.<Stream<T>> map(mappers).flatMap(x -> x);
 		// return stream.<Stream<Vertex>> map(mappers).reduce(Stream.empty(), Stream::concat)
 	}
