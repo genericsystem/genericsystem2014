@@ -1,8 +1,10 @@
 package org.genericsystem.cache;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.function.Function;
+
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
@@ -22,6 +24,18 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 	default Iterator<DependenciesEntry<T>> iteratorFromAliveComposite(Function<Vertex, CompositesDependencies<Vertex>> dependencies) {
 		Vertex vertex = getVertex();
 		return vertex == null ? Collections.emptyIterator() : dependencies.apply(vertex).projectComposites(this::wrap, org.genericsystem.impl.GenericService::unwrap).iterator();
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default public T addInstance(Serializable value, T... components) {
+		return getCurrentCache().insert(org.genericsystem.impl.GenericService.super.addInstance(value, components));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public default boolean isAlive() {
+		return getCurrentCache().isAlive((T) this);
 	}
 
 	@SuppressWarnings("unchecked")

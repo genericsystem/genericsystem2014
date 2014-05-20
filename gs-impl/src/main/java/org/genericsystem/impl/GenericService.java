@@ -32,6 +32,11 @@ public interface GenericService<T extends GenericService<T>> extends AncestorsSe
 	}
 
 	@Override
+	default boolean isAlive() {
+		return equiv(getAlive());
+	}
+
+	@Override
 	default Dependencies<T> getInstances() {
 		return getVertex().getInstances().project(this::wrap, GenericService::unwrap);
 	}

@@ -52,7 +52,7 @@ public abstract class ExtendedSignature<T extends InheritanceService<T>> extends
 	private List<T> computeSupersCheckOverrides(List<T> overrides) {
 		List<T> supers = computeSupers(overrides);
 		if (!overrides.stream().allMatch(override -> supers.stream().anyMatch(superVertex -> superVertex.inheritsFrom(override))))
-			throw new IllegalStateException("Inconsistant overrides : " + overrides + " " + supers);
+			rollbackAndThrowException(new IllegalStateException("Inconsistant overrides : " + overrides + " " + supers));
 		return supers;
 	}
 
