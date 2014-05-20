@@ -3,14 +3,18 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
+import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 
@@ -187,57 +191,60 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 	default Stream<T> selectInstances(Stream<T> supers, Predicate<T> valuePredicate, Predicate<T> componentsPredicate) {
 		return selectInstances((Predicate<T>) (instance -> supers.allMatch(superT -> instance.inheritsFrom(superT))), valuePredicate, componentsPredicate);
 	}
-	// static interface Filter<T> extends Predicate<T> {
-	// public static final Predicate<?> NO_FILTER = x -> true;
-	//
-	// public static Predicate<Serializable> valueFilter(T T) {
-	// return s -> Objects.equals(s, T.getValue());
-	// }
-	//
-	// public static Predicate<T[]> componentsDependsFilter(T[] components) {
-	// return InheritanceService.componentsDepends(subMeta, subComponents, superComponents);
-	// }
-	// }
 
-	// default NavigableSet<T> getDependencies(final T[] toReplace, final boolean existException) {
-	// Iterator<T> iterator = new AbstractFilterIterator<T>(new AbstractPreTreeIterator<T>((getMeta())) {
-	// private static final long serialVersionUID = 3038922934693070661L;
-	// {
-	// next();
-	// }
-	//
-	// @Override
-	// public Iterator<T> children(T node) {
-	// return !isAncestorOf(node) ? node.dependenciesIterator() : Collections.<T> emptyIterator();
-	// }
-	// }) {
-	// @Override
-	// public boolean isSelected() {
-	// if (isAncestorOf((next)))
-	// return true;
-	// if (!existException && isExtention(next)) {
-	// toReplace[0] = next;
-	// return true;
-	// }
-	// return false;
-	//
-	// }
-	// };
-	//
-	// OrderedDependencies dependencies = new OrderedDependencies();
-	// while (iterator.hasNext())
-	// dependencies.addDependencies(iterator.next());
-	// return dependencies;
-	// }
-	//
+	default Snapshot<T> getComposites() {
+		return () -> Statics.concat(getMetaComposites().stream(), entry -> entry.getValue().stream()).iterator();
+	}
+
+	default boolean isAncestorOf(final T dependency) {
+		return equiv(dependency) || (!dependency.equals(dependency.getMeta()) && isAncestorOf(dependency.getMeta())) || dependency.getSupersStream().anyMatch(component -> this.isAncestorOf(component))
+				|| dependency.getComponentsStream().filter(component -> !dependency.equals(component)).anyMatch(component -> this.isAncestorOf(component))
+				|| inheritsFrom(dependency.getMeta(), dependency.getValue(), dependency.getComponents(), getMeta(), getValue(), getComponents());
+	}
+
+	default LinkedHashSet<T> computeAllDependencies() {
+		class DirectDependencies extends LinkedHashSet<T> {
+			private static final long serialVersionUID = -5970021419012502402L;
+			private Set<T> alreadyVisited = new HashSet<>();
+
+			public DirectDependencies() {
+				visit(getMeta());
+			}
+
+			public void visit(T node) {
+				if (!alreadyVisited.contains(node))
+					if (!isAncestorOf(node)) {
+						alreadyVisited.add(node);
+						node.getInheritings().forEach(this::visit);
+						node.getInstances().forEach(this::visit);
+						node.getComposites().forEach(this::visit);
+					} else
+						add(node);
+			}
+
+			@Override
+			public boolean add(T node) {
+				if (!alreadyVisited.contains(node)) {
+					super.add(node);
+					alreadyVisited.add(node);
+					node.getInheritings().forEach(this::add);
+					node.getInstances().forEach(this::add);
+					node.getComposites().forEach(this::add);
+				}
+				return true;
+			}
+		}
+		return new DirectDependencies();
+	}
+
 	// default boolean isExtention(T candidate) {
 	// if (isFactual() && candidate.getMeta().equals((getMeta()))) {
 	// if (getMeta().isPropertyConstraintEnabled())
 	// if (InheritanceService.componentsDepends(candidate.getMeta(), candidate.getComponents(), getComponents()))
 	// return true;
-	// for (int pos = 0; pos < candidate.getComponents().length; pos++)
+	// for (int pos = 0; pos < candidate.getComponents().size(); pos++)
 	// if (getMeta().isSingularConstraintEnabled(pos) && !getMeta().isReferentialIntegrity(pos))
-	// if (candidate.getComponents()[pos].equals(getComponents()[pos]))
+	// if (candidate.getComponents().get(pos).equals(getComponents().get(pos)))
 	// if (!this.inheritsFrom(candidate))
 	// return true;
 	// }
