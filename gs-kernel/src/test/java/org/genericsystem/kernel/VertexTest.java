@@ -262,4 +262,21 @@ public class VertexTest extends AbstractTest {
 		assert vehicle.computeAllDependencies().contains(unit);
 		// assert false : engine.computeAllDependencies();
 	}
+
+	public void test16() {
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex vehiclePower = engine.addInstance("Power", vehicle);
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex myCar = car.addInstance("myCar");
+		Vertex v233 = vehiclePower.addInstance(233, myCar);
+		assert v233.isAncestorOf(v233);
+		assert myCar.isAncestorOf(v233);
+		assert car.isAncestorOf(v233);
+		assert vehiclePower.isAncestorOf(v233);
+		assert vehicle.isAncestorOf(v233);
+		Vertex car233 = vehiclePower.build().initFromOverrides(vehiclePower, Collections.emptyList(), 233, Arrays.asList(car));
+		assert car233.isAncestorOf(v233);
+		assert car233.computeAllDependencies().contains(v233);
+	}
 }

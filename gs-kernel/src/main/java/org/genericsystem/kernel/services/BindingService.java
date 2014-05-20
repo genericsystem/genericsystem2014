@@ -196,6 +196,12 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 		return () -> Statics.concat(getMetaComposites().stream(), entry -> entry.getValue().stream()).iterator();
 	}
 
+	default boolean isAncestorOf(final T dependency) {
+		return equiv(dependency) || (!dependency.equals(dependency.getMeta()) && isAncestorOf(dependency.getMeta())) || dependency.getSupersStream().anyMatch(component -> this.isAncestorOf(component))
+				|| dependency.getComponentsStream().filter(component -> !dependency.equals(component)).anyMatch(component -> this.isAncestorOf(component))
+				|| inheritsFrom(dependency.getMeta(), dependency.getValue(), dependency.getComponents(), getMeta(), getValue(), getComponents());
+	}
+
 	default LinkedHashSet<T> computeAllDependencies() {
 		class DirectDependencies extends LinkedHashSet<T> {
 			private static final long serialVersionUID = -5970021419012502402L;
@@ -212,9 +218,8 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 						node.getInheritings().forEach(this::visit);
 						node.getInstances().forEach(this::visit);
 						node.getComposites().forEach(this::visit);
-					} else {
+					} else
 						add(node);
-					}
 			}
 
 			@Override
@@ -231,36 +236,6 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 		}
 		return new DirectDependencies();
 	}
-	// default NavigableSet<T> getDependencies(final T[] toReplace, final boolean existException) {
-	// Iterator<T> iterator = new AbstractFilterIterator<T>(new AbstractPreTreeIterator<T>((getMeta())) {
-	// private static final long serialVersionUID = 3038922934693070661L;
-	// {
-	// next();
-	// }
-	//
-	// @Override
-	// public Iterator<T> children(T node) {
-	// return !isAncestorOf(node) ? node.dependenciesIterator() : Collections.<T> emptyIterator();
-	// }
-	// }) {
-	// @Override
-	// public boolean isSelected() {
-	// if (isAncestorOf((next)))
-	// return true;
-	// if (!existException && isExtention(next)) {
-	// toReplace[0] = next;
-	// return true;
-	// }
-	// return false;
-	//
-	// }
-	// };
-	//
-	// OrderedDependencies dependencies = new OrderedDependencies();
-	// while (iterator.hasNext())
-	// dependencies.addDependencies(iterator.next());
-	// return dependencies;
-	// }
 
 	// default boolean isExtention(T candidate) {
 	// if (isFactual() && candidate.getMeta().equals((getMeta()))) {

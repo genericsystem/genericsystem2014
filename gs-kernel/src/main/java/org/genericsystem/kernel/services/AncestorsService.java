@@ -38,12 +38,6 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		return getLevel() == 2;
 	}
 
-	// TODO optimize this method with level ?
-	default boolean isAncestorOf(final T dependency) {
-		return equals(dependency) || (!dependency.equals(dependency.getMeta()) && isAncestorOf(dependency.getMeta())) || dependency.getSupersStream().anyMatch(component -> this.isAncestorOf(component))
-				|| dependency.getComponentsStream().filter(component -> !dependency.equals(component)).anyMatch(component -> this.isAncestorOf(component));
-	}
-
 	Stream<T> getSupersStream();
 
 	default boolean inheritsFrom(T superVertex) {
