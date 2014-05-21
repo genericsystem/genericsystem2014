@@ -22,7 +22,7 @@ public abstract class Signature<T extends Signature<T>> implements DisplayServic
 			meta.checkIsAlive();
 			this.meta = meta;
 		} else
-			meta = (T) this;
+			this.meta = (T) this;
 		this.value = value;
 		this.components = new ArrayList<>(components);
 		for (int i = 0; i < components.size(); i++) {
