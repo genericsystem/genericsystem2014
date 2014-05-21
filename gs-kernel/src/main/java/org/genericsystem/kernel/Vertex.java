@@ -3,6 +3,7 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
+
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.BindingService;
@@ -17,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Vertex extends ExtendedSignature<Vertex> implements AncestorsService<Vertex>, DependenciesService<Vertex>, InheritanceService<Vertex>, BindingService<Vertex>, CompositesInheritanceService<Vertex>, FactoryService<Vertex>,
-DisplayService<Vertex>, SystemPropertiesService, ExceptionAdviserService<Vertex> {
+		DisplayService<Vertex>, SystemPropertiesService, ExceptionAdviserService<Vertex> {
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 
 	private final Dependencies<Vertex> instances = buildDependencies();
@@ -53,5 +54,9 @@ DisplayService<Vertex>, SystemPropertiesService, ExceptionAdviserService<Vertex>
 	@Override
 	public CompositesDependencies<Vertex> getSuperComposites() {
 		return superComposites;
+	}
+
+	public Vertex setValue(Serializable value) {
+		return build().initFromOverrides(this.getMeta(), Arrays.asList(this), value, getComponents());
 	}
 }

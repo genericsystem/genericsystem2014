@@ -4,36 +4,65 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.genericsystem.kernel.exceptions.NotAliveException;
+import org.genericsystem.kernel.services.DisplayService;
+import org.genericsystem.kernel.services.ExceptionAdviserService;
+import org.genericsystem.kernel.services.InheritanceService;
 
-public abstract class Signature<T> {
+public abstract class Signature<T extends Signature<T>> implements DisplayService<T>, ExceptionAdviserService<T>, InheritanceService<T> {
 	protected T meta;
 	protected List<T> components;
 	protected Serializable value;
 
 	@SuppressWarnings("unchecked")
 	protected T init(T meta, Serializable value, List<T> components) {
-		this.meta = meta == null ? (T) this : meta;
+		if (meta != null) {
+			meta.checkIsAlive();
+			this.meta = meta;
+		} else
+			this.meta = (T) this;
 		this.value = value;
 		this.components = new ArrayList<>(components);
-		for (int i = 0; i < components.size(); i++)
-			if (components.get(i) == null)
+		for (int i = 0; i < components.size(); i++) {
+			T component = components.get(i);
+			if (component != null) {
+				component.checkIsAlive();
+				this.components.set(i, component);
+			} else
 				this.components.set(i, (T) this);
+		}
+		checkDependsMetaComponents();
 		return (T) this;
 	}
 
+	private void checkDependsMetaComponents() {
+		if (!(componentsDepends(getComponents(), getMeta().getComponents())))
+			rollbackAndThrowException(new IllegalStateException("Inconsistant components : " + getComponentsStream().collect(Collectors.toList())));
+	}
+
+	protected void checkIsAlive() {
+		if (!isAlive())
+			rollbackAndThrowException(new NotAliveException(info()));
+	}
+
+	@Override
 	public T getMeta() {
 		return meta;
 	}
 
+	@Override
 	public List<T> getComponents() {
 		return components;
 	}
 
+	@Override
 	public Serializable getValue() {
 		return value;
 	}
 
+	@Override
 	public Stream<T> getComponentsStream() {
 		return components.stream();
 	}
