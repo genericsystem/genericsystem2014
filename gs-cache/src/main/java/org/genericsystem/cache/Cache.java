@@ -1,11 +1,13 @@
 package org.genericsystem.cache;
 
 import java.io.NotActiveException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.genericsystem.impl.GenericService;
@@ -13,6 +15,7 @@ import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 import org.genericsystem.kernel.exceptions.RollbackException;
@@ -29,23 +32,49 @@ public class Cache<T extends GenericService<T>> extends AbstractContext<T> {
 	private Set<T> adds = new LinkedHashSet<>();
 	private Set<T> removes = new LinkedHashSet<>();
 
-	public Cache(Cache<T> cache) {
-		subContext = cache;
-		clear();
-	}
-
-	public Cache(Engine engine) {
-		subContext = new Transaction<T>(engine);
-		clear();
-	}
-
-	private void clear() {
+	void clear() {
 		inheritingDependenciesMap = new HashMap<>();
 		instancesDependenciesMap = new HashMap<>();
 		metaCompositesDependenciesMap = new HashMap<>();
 		superCompositesDependenciesMap = new HashMap<>();
 		adds = new LinkedHashSet<>();
 		removes = new LinkedHashSet<>();
+	}
+
+	public Cache(T engine) {
+		this(new Transaction<T>(engine));
+	}
+
+	public Cache(AbstractContext<T> subContext) {
+		this.subContext = subContext;
+		clear();
+	}
+
+	@Override
+	public boolean isAlive(T generic) {
+		return adds.contains(generic) || (!removes.contains(generic) && getSubContext().isAlive(generic));
+	}
+
+	public Cache<T> mountNewCache() {
+		return ((EngineService) getEngine()).buildCache(this).start();
+	}
+
+	public Cache<T> flushAndUnmount() {
+		flush();
+		return subContext instanceof Cache ? ((Cache<T>) subContext).start() : this;
+	}
+
+	public Cache<T> discardAndUnmount() {
+		clear();
+		return subContext instanceof Cache ? ((Cache<T>) subContext).start() : this;
+	}
+
+	public Cache<T> start() {
+		return ((EngineService) getEngine()).start(this);
+	}
+
+	public void stop() {
+		((EngineService) getEngine()).stop(this);
 	}
 
 	T insert(T generic) throws RollbackException {
@@ -55,7 +84,7 @@ public class Cache<T extends GenericService<T>> extends AbstractContext<T> {
 		} catch (ConstraintViolationException e) {
 			rollback(e);
 		}
-		throw new IllegalStateException();// Unreachable;
+		throw new IllegalStateException();
 	}
 
 	public void flush() throws RollbackException {
@@ -100,29 +129,32 @@ public class Cache<T extends GenericService<T>> extends AbstractContext<T> {
 			removes.add(generic);
 	}
 
-	public boolean isAlive(T generic) {
-		return adds.contains(generic) || (!removes.contains(generic) && getSubContext().isAlive(generic));
-	}
-
 	void rollback(Throwable e) throws RollbackException {
 		clear();
 		throw new RollbackException(e);
 	}
 
-	Dependencies<T> getInheritings(T generic, Supplier<Iterator<T>> iteratorSupplier) {
-		return getDependencies(generic, inheritingDependenciesMap, iteratorSupplier);
+	Dependencies<T> getInheritings(T generic) {
+		return getDependencies(generic, inheritingDependenciesMap, () -> iteratorFromAlive(generic, Vertex::getInheritings));
 	}
 
-	Dependencies<T> getInstances(T generic, Supplier<Iterator<T>> iteratorSupplier) {
-		return getDependencies(generic, instancesDependenciesMap, iteratorSupplier);
+	Dependencies<T> getInstances(T generic) {
+		return getDependencies(generic, instancesDependenciesMap, () -> iteratorFromAlive(generic, Vertex::getInstances));
 	}
 
-	CompositesDependencies<T> getMetaComposites(T generic, Supplier<Iterator<DependenciesEntry<T>>> iteratorSupplier) {
-		return getCompositesDependencies(generic, metaCompositesDependenciesMap, iteratorSupplier);
+	CompositesDependencies<T> getMetaComposites(T generic) {
+		return getCompositesDependencies(generic, metaCompositesDependenciesMap, () -> iteratorFromAliveComposite(generic, x -> x.getMetaComposites()));
 	}
 
-	CompositesDependencies<T> getSuperComposites(T generic, Supplier<Iterator<DependenciesEntry<T>>> iteratorSupplier) {
-		return getCompositesDependencies(generic, superCompositesDependenciesMap, iteratorSupplier);
+	CompositesDependencies<T> getSuperComposites(T generic) {
+		return getCompositesDependencies(generic, superCompositesDependenciesMap, () -> iteratorFromAliveComposite(generic, x -> x.getSuperComposites()));
+	}
+
+	private Dependencies<T> getDependencies(T generic, Map<T, Dependencies<T>> dependenciesMap, Supplier<Iterator<T>> iteratorSupplier) {
+		Dependencies<T> dependencies = dependenciesMap.get(generic);
+		if (dependencies == null)
+			dependenciesMap.put(generic, dependencies = new CacheDependencies<T>(iteratorSupplier));
+		return dependencies;
 	}
 
 	private CompositesDependencies<T> getCompositesDependencies(T generic, Map<T, CompositesDependencies<T>> dependenciesMap, Supplier<Iterator<DependenciesEntry<T>>> iteratorSupplier) {
@@ -137,15 +169,18 @@ public class Cache<T extends GenericService<T>> extends AbstractContext<T> {
 		return dependencies;
 	}
 
-	private Dependencies<T> getDependencies(T generic, Map<T, Dependencies<T>> dependenciesMap, Supplier<Iterator<T>> iteratorSupplier) {
-		Dependencies<T> dependencies = dependenciesMap.get(generic);
-		if (dependencies == null)
-			dependenciesMap.put(generic, dependencies = new CacheDependencies<T>(iteratorSupplier));
-		return dependencies;
+	private Iterator<T> iteratorFromAlive(T generic, Function<Vertex, Dependencies<Vertex>> dependencies) {
+		Vertex vertex = generic.getVertex();
+		return vertex == null ? Collections.emptyIterator() : dependencies.apply(vertex).project(generic::wrap).iterator();
+	}
+
+	private Iterator<DependenciesEntry<T>> iteratorFromAliveComposite(T generic, Function<Vertex, CompositesDependencies<Vertex>> dependencies) {
+		Vertex vertex = generic.getVertex();
+		return vertex == null ? Collections.emptyIterator() : dependencies.apply(vertex).projectComposites(generic::wrap, org.genericsystem.impl.GenericService::unwrap).iterator();
 	}
 
 	@Override
-	public Engine getEngine() {
+	public T getEngine() {
 		return subContext.getEngine();
 	}
 
