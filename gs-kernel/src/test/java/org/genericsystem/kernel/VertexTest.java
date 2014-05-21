@@ -2,6 +2,10 @@ package org.genericsystem.kernel;
 
 import java.util.Arrays;
 import java.util.Collections;
+
+import junit.framework.Assert;
+
+import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.testng.annotations.Test;
 
@@ -57,12 +61,12 @@ public class VertexTest extends AbstractTest {
 		assert carGreen.isInstanceOf(vehicleColor);
 		assert vehicleColor.getInstances().contains(carGreen);
 
-		Vertex myBmwYellow = vehicleColor.addInstance(Arrays.asList(carGreen), "CarRed", myBmw, red);
+		Vertex myBmwYellow = vehicleColor.addInstance(carGreen, "CarRed", myBmw, red);
 		assert carRed.isSuperOf(vehicleColor, Collections.singletonList(carGreen), "CarRed", Arrays.asList(myBmw, red));
 		assert myBmwYellow.inheritsFrom(carRed);
 		log.info(myBmwYellow.info());
 
-		Vertex myBmwRed = vehicleColor.addInstance(Arrays.asList(carRed), "myBmwRed", myBmw, red);
+		Vertex myBmwRed = vehicleColor.addInstance(carRed, "myBmwRed", myBmw, red);
 		log.info(myBmwRed.info());
 		assert !yellow.inheritsFrom(red);
 		assert !yellow.isInstanceOf(red);
@@ -243,42 +247,190 @@ public class VertexTest extends AbstractTest {
 		// assert false : engine.computeAllDependencies();
 	}
 
-	public void test15() {
+	// test15 part1
+	public void isAncestorOf_subtypeLVL4_test() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex car = engine.addInstance(vehicle, "Car");
 		Vertex power = engine.addInstance("Power", car);
 		Vertex unit = engine.addInstance("Unit", power);
+
+		assert engine.isAncestorOf(unit);
+		assert engine.isAncestorOf(power);
+		assert engine.isAncestorOf(car);
+		assert engine.isAncestorOf(vehicle);
+		assert engine.isAncestorOf(engine);
+
 		assert vehicle.isAncestorOf(unit);
-		assert car.computeAllDependencies().contains(car);
-		assert !car.computeAllDependencies().contains(vehicle);
-		assert car.computeAllDependencies().contains(power);
-		assert car.computeAllDependencies().contains(unit);
-		assert !car.computeAllDependencies().contains(engine);
-		assert vehicle.computeAllDependencies().contains(car);
-		assert vehicle.computeAllDependencies().contains(vehicle);
+		assert vehicle.isAncestorOf(power);
+		assert vehicle.isAncestorOf(car);
+		assert vehicle.isAncestorOf(vehicle);
+		assert !vehicle.isAncestorOf(engine);
+
+		assert car.isAncestorOf(unit);
+		assert car.isAncestorOf(power);
+		assert car.isAncestorOf(car);
+		assert !car.isAncestorOf(vehicle);
+		assert !car.isAncestorOf(engine);
+
+		assert power.isAncestorOf(unit);
+		assert power.isAncestorOf(power);
+		assert !power.isAncestorOf(car);
+		assert !power.isAncestorOf(vehicle);
+		assert !power.isAncestorOf(engine);
+
+		assert unit.isAncestorOf(unit);
+		assert !unit.isAncestorOf(power);
+		assert !unit.isAncestorOf(car);
+		assert !unit.isAncestorOf(vehicle);
+		assert !unit.isAncestorOf(engine);
+	}
+
+	// test15 part2
+	public void checkDependencies_subtypeLVL4_test() {
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex power = engine.addInstance("Power", car);
+		Vertex unit = engine.addInstance("Unit", power);
+
+		assert engine.computeAllDependencies().contains(engine);
+		assert engine.computeAllDependencies().contains(vehicle);
+		assert engine.computeAllDependencies().contains(car);
+		assert engine.computeAllDependencies().contains(power);
+		assert engine.computeAllDependencies().contains(unit);
+
 		assert !vehicle.computeAllDependencies().contains(engine);
+		assert vehicle.computeAllDependencies().contains(vehicle);
+		assert vehicle.computeAllDependencies().contains(car);
 		assert vehicle.computeAllDependencies().contains(power);
 		assert vehicle.computeAllDependencies().contains(unit);
-		// assert false : engine.computeAllDependencies();
+
+		assert !car.computeAllDependencies().contains(engine);
+		assert !car.computeAllDependencies().contains(vehicle);
+		assert car.computeAllDependencies().contains(car);
+		assert car.computeAllDependencies().contains(power);
+		assert car.computeAllDependencies().contains(unit);
+
+		assert !power.computeAllDependencies().contains(engine);
+		assert !power.computeAllDependencies().contains(vehicle);
+		assert !power.computeAllDependencies().contains(car);
+		assert power.computeAllDependencies().contains(power);
+		assert power.computeAllDependencies().contains(unit);
+
+		assert !unit.computeAllDependencies().contains(engine);
+		assert !unit.computeAllDependencies().contains(vehicle);
+		assert !unit.computeAllDependencies().contains(car);
+		assert !unit.computeAllDependencies().contains(power);
+		assert unit.computeAllDependencies().contains(unit);
 	}
 
 	public void test16() {
+		// given
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex vehiclePower = engine.addInstance("Power", vehicle);
 		Vertex car = engine.addInstance(vehicle, "Car");
 		Vertex myCar = car.addInstance("myCar");
 		Vertex v233 = vehiclePower.addInstance(233, myCar);
+
+		// pre-test
 		assert v233.isAncestorOf(v233);
 		assert myCar.isAncestorOf(v233);
 		assert car.isAncestorOf(v233);
 		assert vehiclePower.isAncestorOf(v233);
 		assert vehicle.isAncestorOf(v233);
+
+		// when
 		Vertex car233 = vehiclePower.build().initFromOverrides(vehiclePower, Collections.emptyList(), 233, Arrays.asList(car));
+
+		// then
 		assert !car233.isAlive();
 		assert v233.isAlive();
 		assert car233.isAncestorOf(v233);
 		assert car233.computeAllDependencies().contains(v233);
 	}
+
+	public void doubleInstantiationWithSameValue() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex vehiclePower = engine.addInstance("Power", vehicle);
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex myCar = car.addInstance("myCar");
+		vehiclePower.addInstance(233, myCar);
+		vehiclePower.addInstance(233, car);
+
+		new RollbackCatcher() {
+			@Override
+			public void intercept() {
+				// when
+				vehiclePower.addInstance(233, myCar);
+			}
+		}// then
+		.assertIsCausedBy(ExistsException.class);
+	}
+
+	public void instantiationWithSameValueButDifferentSub() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex vehiclePower = engine.addInstance("Power", vehicle);
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex myCar = car.addInstance("myCar");
+		Vertex car233 = vehiclePower.addInstance(233, car);
+
+		// when
+		Vertex myCar233 = vehiclePower.addInstance(233, myCar);
+
+		// then
+		assert car233.isAlive();
+		assert myCar233.isAlive();
+		assert car.isAlive();
+		assert vehiclePower.isAlive();
+		assert vehicle.isAlive();
+		assert engine.isAlive();
+	}
+
+	public void setValue_easy_NewValueOK() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		String newValue = "elciheV";
+
+		// when
+		Vertex newVehicle = vehicle.setValue(newValue);
+
+		// then
+		Assert.assertEquals(newValue, newVehicle.getValue());
+	}
+
+	public void setValue_easy_isAliveOK() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		String newValue = "elciheV";
+
+		// when
+		Vertex newVehicle = vehicle.setValue(newValue);
+
+		// then
+		Assert.assertTrue(newVehicle.isAlive());
+	}
+
+	public void setValue_easy_TODO() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		String newValue = "elciheV";
+
+		// when
+		Vertex newVehicle = vehicle.setValue(newValue);
+
+		// then
+		Assert.assertEquals(newValue, newVehicle.getValue());
+		Assert.assertEquals(newValue, vehicle.getValue());
+		Assert.assertTrue(vehicle.equals(newVehicle));// a checker car fait un == uniquement
+	}
+
 }
