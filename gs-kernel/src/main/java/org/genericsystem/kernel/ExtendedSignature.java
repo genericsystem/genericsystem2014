@@ -2,7 +2,6 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -12,22 +11,19 @@ public abstract class ExtendedSignature<T extends ExtendedSignature<T>> extends 
 
 	@SuppressWarnings("unchecked")
 	public T initFromOverrides(T meta, List<T> overrides, Serializable value, List<T> components) {
-		init(meta, () -> computeSupers(overrides), value, components);
+		super.init(meta, value, components);
 		checkSupersOrOverrides(overrides);
+		this.supers = computeSupers(overrides);
 		checkSupersOrOverrides(supers);
 		checkOverridesAreReached(overrides);
 		checkDependsSuperComponents(overrides);
 		return (T) this;
 	}
 
-	public T initFromSupers(T meta, List<T> supers, Serializable value, List<T> components) {
-		return init(meta, () -> supers, value, components);
-	}
-
 	@SuppressWarnings("unchecked")
-	private T init(T meta, Supplier<List<T>> supersSupplier, Serializable value, List<T> components) {
+	public T initFromSupers(T meta, List<T> supers, Serializable value, List<T> components) {
 		super.init(meta, value, components);
-		this.supers = supersSupplier.get();
+		this.supers = supers;
 		checkSupersOrOverrides(this.supers);
 		return (T) this;
 	}
@@ -52,11 +48,6 @@ public abstract class ExtendedSignature<T extends ExtendedSignature<T>> extends 
 			if (!superVertex.isSuperOf(getMeta(), overrides, getValue(), getComponents()))
 				rollbackAndThrowException(new IllegalStateException("Inconsistant components : " + getComponentsStream().collect(Collectors.toList())));
 		});
-
-		// getSupersStream().forEach(superVertex -> {
-		// if (!(componentsDepends(getComponents(), superVertex.getComponents())))
-		// rollbackAndThrowException(new IllegalStateException("Inconsistant components : " + getComponentsStream().collect(Collectors.toList())));
-		// });
 	}
 
 	@Override
