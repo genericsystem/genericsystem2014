@@ -1,6 +1,7 @@
 package org.genericsystem.kernel.services;
 
 import java.util.Arrays;
+
 import org.genericsystem.kernel.AbstractTest;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Vertex;
@@ -39,12 +40,12 @@ public class AncestorsServiceTest extends AbstractTest {
 		assert robot.isAncestorOf(robot);
 		assert device.isAncestorOf(device);
 
-		assert !root.isAncestorOf(device);
-		assert !root.isAncestorOf(robot);
-		assert !root.isAncestorOf(vehicle);
-		assert !root.isAncestorOf(car);
-		assert !root.isAncestorOf(transformer);
-		assert !root.isAncestorOf(transformer2);
+		assert root.isAncestorOf(device);
+		assert root.isAncestorOf(robot);
+		assert root.isAncestorOf(vehicle);
+		assert root.isAncestorOf(car);
+		assert root.isAncestorOf(transformer);
+		assert root.isAncestorOf(transformer2);
 
 		assert !device.isAncestorOf(car);
 		assert !device.isAncestorOf(vehicle);
@@ -100,9 +101,9 @@ public class AncestorsServiceTest extends AbstractTest {
 		assert !microcar.isAncestorOf(power);
 		assert !microcar.isAncestorOf(airConditioner);
 
-		assert !root.isAncestorOf(power);
-		assert !root.isAncestorOf(airConditioner);
-		assert !root.isAncestorOf(radio);
+		assert root.isAncestorOf(power);
+		assert root.isAncestorOf(airConditioner);
+		assert root.isAncestorOf(radio);
 	}
 
 	public void isAncestorOfViaComponent2() {
@@ -118,29 +119,29 @@ public class AncestorsServiceTest extends AbstractTest {
 
 		assert vehicle.isAncestorOf(button);
 		assert !microcar.isAncestorOf(button);
-		assert !root.isAncestorOf(button);
+		assert root.isAncestorOf(button);
 	}
 
-	public void isAncestorOfViaComponent3() {
-		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(vehicle, "Car");
-		Vertex microcar = root.addInstance(car, "microcar");
-
-		Vertex airConditioner = root.addInstance("AirConditioner", car);
-		Vertex button = root.addInstance("button", airConditioner);
-		Vertex pushButton = root.addInstance(button, "PushButton");
-		Vertex color = root.addInstance("color", pushButton);
-
-		log.info(pushButton.info());
-		assert vehicle.isAncestorOf(color);
-		assert vehicle.isAncestorOf(color);
-		assert car.isAncestorOf(color);
-		assert !microcar.isAncestorOf(color);
-		assert !root.isAncestorOf(color);
-
-		assert vehicle.isAncestorOf(pushButton);
-		assert !microcar.isAncestorOf(pushButton);
-		assert !root.isAncestorOf(pushButton);
-	}
+	// public void isAncestorOfViaComponent3() {
+	// Root root = new Root();
+	// Vertex vehicle = root.addInstance("Vehicle");
+	// Vertex car = root.addInstance(vehicle, "Car");
+	// Vertex microcar = root.addInstance(car, "microcar");
+	//
+	// Vertex airConditioner = root.addInstance("AirConditioner", car);
+	// Vertex button = root.addInstance("button", airConditioner);
+	// Vertex pushButton = root.addInstance(button, "PushButton");
+	// Vertex color = root.addInstance("color", pushButton);
+	//
+	// log.info(pushButton.info());
+	// assert vehicle.isAncestorOf(color);
+	// assert vehicle.isAncestorOf(color);
+	// assert car.isAncestorOf(color);
+	// assert !microcar.isAncestorOf(color);
+	// assert root.isAncestorOf(color);
+	//
+	// assert vehicle.isAncestorOf(pushButton);
+	// assert !microcar.isAncestorOf(pushButton);
+	// assert root.isAncestorOf(pushButton);
+	// }
 }
