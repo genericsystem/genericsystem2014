@@ -51,18 +51,20 @@ public class VertexTest extends AbstractTest {
 		Vertex carRed = vehicleColor.addInstance("CarRed", car, red);
 		Vertex carGreen = vehicleColor.addInstance("CarGreen", car, green);
 		assert carRed.isSuperOf(vehicleColor, Arrays.asList(carRed), "myBmwRed", Arrays.asList(myBmw, red));
-		assert !carRed.isSuperOf(vehicleColor, Collections.emptyList(), "myBmwRed", Arrays.asList(red, red));
+		assert !carRed.isSuperOf(vehicleColor, Collections.emptyList(), "myBmwRed", Arrays.asList(myBmw, red));
 		assert carRed.isSuperOf(vehicleColor, Collections.singletonList(carRed), "CarRed", Arrays.asList(myBmw, red));
 		log.info("**************************************************************" + carGreen.info());
 		assert carGreen.isInstanceOf(vehicleColor);
 		assert vehicleColor.getInstances().contains(carGreen);
 
-		Vertex myBmwYellow = vehicleColor.addInstance(Arrays.asList(carGreen), "CarRed", myBmw, red);
-		assert carRed.isSuperOf(vehicleColor, Collections.singletonList(carGreen), "CarRed", Arrays.asList(myBmw, red));
-		assert myBmwYellow.inheritsFrom(carRed);
-		log.info(myBmwYellow.info());
+		Vertex myBmwYellow = vehicleColor.addInstance(carGreen, "CarRed", myBmw, yellow);
+		assert carGreen.isSuperOf(vehicleColor, Collections.singletonList(carGreen), "CarRed", Arrays.asList(myBmw, yellow));
+		assert myBmwYellow.inheritsFrom(carGreen);
+		// log.info(myBmwYellow.info());
 
-		Vertex myBmwRed = vehicleColor.addInstance(Arrays.asList(carRed), "myBmwRed", myBmw, red);
+		assert carRed.isSuperOf(vehicleColor, Collections.singletonList(carGreen), "CarRed", Arrays.asList(myBmw, red));
+		Vertex myBmwRed = vehicleColor.addInstance(carRed, "myBmwRed", myBmw, red);
+		assert myBmwRed.inheritsFrom(carRed);
 		log.info(myBmwRed.info());
 		assert !yellow.inheritsFrom(red);
 		assert !yellow.isInstanceOf(red);
