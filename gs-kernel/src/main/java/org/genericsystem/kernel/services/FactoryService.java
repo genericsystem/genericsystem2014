@@ -15,13 +15,7 @@ public interface FactoryService<T extends FactoryService<T>> extends AncestorsSe
 		return build().initFromOverrides(meta, overrides, value, components);
 	}
 
-	default T buildFromSupers(T meta, List<T> supers, Serializable value, List<T> components) {
-		return build().initFromSupers(meta, supers, value, components);
-	}
-
 	T initFromOverrides(T meta, List<T> overrides, Serializable value, List<T> components);
-
-	T initFromSupers(T meta, List<T> supers, Serializable value, List<T> components);
 
 	default Dependencies<T> buildDependencies() {
 		return new DependenciesImpl<T>();
