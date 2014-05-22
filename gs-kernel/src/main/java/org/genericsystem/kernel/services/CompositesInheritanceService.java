@@ -8,11 +8,16 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Snapshot.AbstractSnapshot;
 import org.genericsystem.kernel.Statics;
 
 public interface CompositesInheritanceService<T extends CompositesInheritanceService<T>> extends AncestorsService<T> {
+
+	default Snapshot<T> getMetaAttributes(T attribute) {
+		return getInheritings(attribute, 0);
+	}
 
 	default Snapshot<T> getAttributes(T attribute) {
 		return getInheritings(attribute, 1);

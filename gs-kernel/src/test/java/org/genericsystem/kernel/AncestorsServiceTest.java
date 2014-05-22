@@ -1,8 +1,7 @@
-package org.genericsystem.kernel.services;
+package org.genericsystem.kernel;
 
 import java.util.Arrays;
 
-import org.genericsystem.kernel.AbstractTest;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Vertex;
 import org.testng.annotations.Test;
