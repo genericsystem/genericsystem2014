@@ -35,7 +35,6 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 		T instance = getInstance(overrides, value, components);
 		if (instance != null)
 			rollbackAndThrowException(new ExistsException(instance.info()));
-
 		return buildInstance(overrides, value, Arrays.asList(components)).plug();
 	}
 

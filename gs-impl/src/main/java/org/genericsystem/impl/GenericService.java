@@ -69,7 +69,7 @@ public interface GenericService<T extends GenericService<T>> extends AncestorsSe
 		if (vertex == null)
 			return null;
 
-		// TODO change GenericService::getVertex with :unwrap
+		// TODO should we change GenericService::getVertex with ::unwrap ?
 		vertex = vertex.getInstance(value, Arrays.stream(components).map(GenericService::getVertex).collect(Collectors.toList()).toArray(new Vertex[components.length]));
 		if (vertex == null)
 			return null;
