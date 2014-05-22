@@ -18,8 +18,8 @@ import org.genericsystem.kernel.services.InheritanceService;
 public interface GenericService<T extends GenericService<T>> extends AncestorsService<T>, DependenciesService<T>, InheritanceService<T>, BindingService<T>, CompositesInheritanceService<T>, FactoryService<T>, DisplayService<T> {
 
 	default T wrap(Vertex vertex) {
-		return vertex.isRoot() ? getRoot() : build().initFromSupers(wrap(vertex.getAlive().getMeta()), vertex.getAlive().getSupersStream().map(this::wrap).collect(Collectors.toList()), vertex.getValue(),
-				vertex.getAlive().getComponentsStream().map(this::wrap).collect(Collectors.toList()));
+		return vertex.isRoot() ? getRoot() : buildFromSupers(wrap(vertex.getAlive().getMeta()), vertex.getAlive().getSupersStream().map(this::wrap).collect(Collectors.toList()), vertex.getValue(), vertex.getAlive().getComponentsStream().map(this::wrap)
+				.collect(Collectors.toList()));
 	}
 
 	default Vertex unwrap() {
@@ -29,7 +29,7 @@ public interface GenericService<T extends GenericService<T>> extends AncestorsSe
 		// TODO I don't understand why we build here a new Vertex in unwrap method ...
 		// It's not responsibility of unwrap method to build a Vertex...
 		alive = getMeta().getVertex();
-		return alive.build().initFromOverrides(alive, getSupersStream().map(GenericService::getVertex).collect(Collectors.toList()), getValue(), getComponentsStream().map(GenericService::getVertex).collect(Collectors.toList()));
+		return alive.buildFromOverrides(alive, getSupersStream().map(GenericService::getVertex).collect(Collectors.toList()), getValue(), getComponentsStream().map(GenericService::getVertex).collect(Collectors.toList()));
 	}
 
 	@Override
