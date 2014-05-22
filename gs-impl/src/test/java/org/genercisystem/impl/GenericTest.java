@@ -1,7 +1,6 @@
 package org.genercisystem.impl;
 
 import java.util.Arrays;
-
 import org.genericsystem.impl.Engine;
 import org.genericsystem.impl.Generic;
 import org.genericsystem.kernel.Statics;

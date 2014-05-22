@@ -5,7 +5,7 @@ import java.util.Arrays;
 public class MetaAttribut extends Vertex {
 
 	public MetaAttribut(Root root, String value) {
-		initFromSupers(root, Arrays.asList(root), value, Arrays.asList(root));
+		init(root, Arrays.asList(root), value, Arrays.asList(root));
 	}
 
 	@Override

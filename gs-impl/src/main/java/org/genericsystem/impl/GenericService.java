@@ -18,15 +18,16 @@ import org.genericsystem.kernel.services.InheritanceService;
 
 public interface GenericService<T extends GenericService<T>> extends AncestorsService<T>, DependenciesService<T>, InheritanceService<T>, BindingService<T>, CompositesInheritanceService<T>, FactoryService<T>, DisplayService<T> {
 
-	default T buildFromSupers(T meta, List<T> supers, Serializable value, List<T> components) {
-		return build().initFromSupers(meta, supers, value, components);
-	}
-
-	T initFromSupers(T meta, List<T> supers, Serializable value, List<T> components);
+	// default T buildFromSupers(T meta, List<T> supers, Serializable value, List<T> components) {
+	// return buildInstance().initFromSupers(meta, supers, value, components);
+	// }
+	//
+	// T initFromSupers(T meta, List<T> supers, Serializable value, List<T> components);
 
 	default T wrap(Vertex vertex) {
-		return vertex.isRoot() ? getRoot() : buildFromSupers(wrap(vertex.getAlive().getMeta()), vertex.getAlive().getSupersStream().map(this::wrap).collect(Collectors.toList()), vertex.getValue(), vertex.getAlive().getComponentsStream().map(this::wrap)
-				.collect(Collectors.toList()));
+		vertex.log();
+		List<T> supers = vertex.getAlive().getSupersStream().map(this::wrap).collect(Collectors.toList());
+		return vertex.isRoot() ? getRoot() : wrap(vertex.getAlive().getMeta()).buildInstance(supers, vertex.getValue(), vertex.getAlive().getComponentsStream().map(this::wrap).collect(Collectors.toList()));
 	}
 
 	default Vertex unwrap() {
@@ -34,7 +35,7 @@ public interface GenericService<T extends GenericService<T>> extends AncestorsSe
 		if (alive != null)
 			return alive;
 		alive = getMeta().unwrap();
-		return alive.buildFromOverrides(alive, getSupersStream().map(GenericService::unwrap).collect(Collectors.toList()), getValue(), getComponentsStream().map(GenericService::unwrap).collect(Collectors.toList()));
+		return alive.buildInstance(getSupersStream().map(GenericService::unwrap).collect(Collectors.toList()), getValue(), getComponentsStream().map(GenericService::unwrap).collect(Collectors.toList()));
 	}
 
 	@Override

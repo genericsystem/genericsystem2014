@@ -9,13 +9,14 @@ import org.genericsystem.kernel.DependenciesImpl;
 
 public interface FactoryService<T extends FactoryService<T>> extends AncestorsService<T> {
 
-	T build();
+	T buildInstance();
 
-	default T buildFromOverrides(T meta, List<T> overrides, Serializable value, List<T> components) {
-		return build().initFromOverrides(meta, overrides, value, components);
+	@SuppressWarnings("unchecked")
+	default T buildInstance(List<T> overrides, Serializable value, List<T> components) {
+		return buildInstance().init((T) this, overrides, value, components);
 	}
 
-	T initFromOverrides(T meta, List<T> overrides, Serializable value, List<T> components);
+	T init(T meta, List<T> overrides, Serializable value, List<T> components);
 
 	default Dependencies<T> buildDependencies() {
 		return new DependenciesImpl<T>();
