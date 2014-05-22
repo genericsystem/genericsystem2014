@@ -14,7 +14,7 @@ public abstract class ExtendedSignature<T extends ExtendedSignature<T>> extends 
 		super.init(meta, value, components);
 		checkSupersOrOverrides(overrides);
 		this.supers = computeSupers(overrides);
-		checkSupersOrOverrides(supers);
+		checkSupersOrOverrides(this.supers);
 		checkOverridesAreReached(overrides);
 		checkDependsSuperComponents(overrides);
 		return (T) this;
