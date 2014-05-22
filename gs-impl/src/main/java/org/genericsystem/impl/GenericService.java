@@ -3,7 +3,6 @@ package org.genericsystem.impl;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
@@ -27,6 +26,8 @@ public interface GenericService<T extends GenericService<T>> extends AncestorsSe
 		Vertex alive = getVertex();
 		if (alive != null)
 			return alive;
+		// TODO I don't understand why we build here a new Vertex in unwrap method ...
+		// It's not responsibility of unwrap method to build a Vertex...
 		alive = getMeta().getVertex();
 		return alive.build().initFromOverrides(alive, getSupersStream().map(GenericService::getVertex).collect(Collectors.toList()), getValue(), getComponentsStream().map(GenericService::getVertex).collect(Collectors.toList()));
 	}
@@ -61,6 +62,8 @@ public interface GenericService<T extends GenericService<T>> extends AncestorsSe
 		Vertex vertex = getVertex();
 		if (vertex == null)
 			return null;
+
+		// TODO change GenericService::getVertex with :unwrap
 		vertex = vertex.getInstance(value, Arrays.stream(components).map(GenericService::getVertex).collect(Collectors.toList()).toArray(new Vertex[components.length]));
 		if (vertex == null)
 			return null;

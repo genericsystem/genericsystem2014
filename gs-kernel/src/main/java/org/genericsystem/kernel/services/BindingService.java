@@ -36,7 +36,7 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 		if (instance != null)
 			rollbackAndThrowException(new ExistsException(instance.info()));
 
-		return build().initFromOverrides((T) this, overrides, value, Arrays.asList(components)).plug();
+		return buildFromOverrides((T) this, overrides, value, Arrays.asList(components)).plug();
 	}
 
 	default T setInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
@@ -52,7 +52,7 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 		T instance = getInstance(overrides, value, components);
 		if (instance != null)
 			return instance;
-		return build().initFromOverrides((T) this, overrides, value, Arrays.asList(components)).plug();
+		return buildFromOverrides((T) this, overrides, value, Arrays.asList(components)).plug();
 	}
 
 	@SuppressWarnings("unchecked")

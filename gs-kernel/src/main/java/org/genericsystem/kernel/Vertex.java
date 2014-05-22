@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Vertex extends ExtendedSignature<Vertex> implements AncestorsService<Vertex>, DependenciesService<Vertex>, InheritanceService<Vertex>, BindingService<Vertex>, CompositesInheritanceService<Vertex>, FactoryService<Vertex>,
-DisplayService<Vertex>, SystemPropertiesService, ExceptionAdviserService<Vertex> {
+		DisplayService<Vertex>, SystemPropertiesService, ExceptionAdviserService<Vertex> {
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 
 	private final Dependencies<Vertex> instances = buildDependencies();
@@ -40,9 +40,11 @@ DisplayService<Vertex>, SystemPropertiesService, ExceptionAdviserService<Vertex>
 		return inheritings;
 	}
 
+	// TODO what a pity to build a total Vertex with its dependencies for just call equiv in getAlive()
+	// equiv need only AncestorService as parameter
 	@Override
 	public Vertex getInstance(Serializable value, Vertex... components) {
-		return build().initFromOverrides(this, Collections.emptyList(), value, Arrays.asList(components)).getAlive();
+		return buildFromOverrides(this, Collections.emptyList(), value, Arrays.asList(components)).getAlive();
 	}
 
 	@Override

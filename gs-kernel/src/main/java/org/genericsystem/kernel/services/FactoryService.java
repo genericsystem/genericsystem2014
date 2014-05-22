@@ -3,7 +3,6 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.DependenciesImpl;
@@ -11,6 +10,14 @@ import org.genericsystem.kernel.DependenciesImpl;
 public interface FactoryService<T extends FactoryService<T>> extends AncestorsService<T> {
 
 	T build();
+
+	default T buildFromOverrides(T meta, List<T> overrides, Serializable value, List<T> components) {
+		return build().initFromOverrides(meta, overrides, value, components);
+	}
+
+	default T buildFromSupers(T meta, List<T> supers, Serializable value, List<T> components) {
+		return build().initFromSupers(meta, supers, value, components);
+	}
 
 	T initFromOverrides(T meta, List<T> overrides, Serializable value, List<T> components);
 
