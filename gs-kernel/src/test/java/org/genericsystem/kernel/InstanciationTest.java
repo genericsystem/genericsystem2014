@@ -3,6 +3,7 @@ package org.genericsystem.kernel;
 import java.util.Arrays;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.testng.annotations.Test;
 
@@ -11,9 +12,6 @@ public class InstanciationTest extends AbstractTest {
 
 	public void testRootInstanciation() {
 		Root root = new Root();
-
-		// log.info(root.info());
-
 		assert root.getMeta().equals(root);
 		assert root.getSupersStream().count() == 0;
 		assert root.getComponentsStream().count() == 0;

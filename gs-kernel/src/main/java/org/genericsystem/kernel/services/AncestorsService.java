@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Vertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,8 +20,15 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 	abstract Serializable getValue();
 
 	default int getLevel() {
-		return getMeta().getLevel() + 1;
-	}
+		return 0;
+	};
+
+	// {
+	// int level = getMeta().getLevel() + 1;
+	// if (level != 0 && (getSupersStream().anyMatch(getMeta()::equals)))
+	// level = 0;
+	// return level;
+	// }
 
 	default boolean isRoot() {
 		return false;
