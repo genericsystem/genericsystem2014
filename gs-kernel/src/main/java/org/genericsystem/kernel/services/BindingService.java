@@ -262,7 +262,7 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 
 			@Override
 			T rebuild() {
-				return (T) build().initFromOverrides(getMeta(), getSupersStream().collect(Collectors.toList()), value, getComponents()).plug();
+				return (T) buildInstance().init(getMeta(), getSupersStream().collect(Collectors.toList()), value, getComponents()).plug();
 			}
 		}.rebuildAll(old);
 	}
