@@ -11,6 +11,7 @@ public class CacheTest extends AbstractTest {
 		assert vehicle.isAlive();
 		assert vehicle.getVertex() == null;
 		Generic car = engine.addInstance(vehicle, "Car");
+
 		assert vehicle.getInheritings().stream().anyMatch(car::equals);
 	}
 
@@ -47,6 +48,7 @@ public class CacheTest extends AbstractTest {
 		Engine engine = new Engine();
 		Cache<Generic> currentCache = engine.getCurrentCache();
 		Cache<Generic> mountNewCache = currentCache.mountNewCache();
+		assert mountNewCache.getSubContext() == currentCache;
 		Generic vehicle = engine.addInstance("Vehicle");
 		assert currentCache == mountNewCache.flushAndUnmount();
 		assert vehicle.getVertex() == null;
