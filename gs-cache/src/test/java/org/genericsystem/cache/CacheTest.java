@@ -11,6 +11,7 @@ public class CacheTest extends AbstractTest {
 		assert vehicle.isAlive();
 		assert vehicle.getVertex() == null;
 		Generic car = engine.addInstance(vehicle, "Car");
+
 		assert vehicle.getInheritings().stream().anyMatch(car::equals);
 	}
 
