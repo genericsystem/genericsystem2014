@@ -27,7 +27,7 @@ public class Vertex extends ExtendedSignature<Vertex> implements AncestorsServic
 	private final CompositesDependencies<Vertex> metaComposites = buildCompositeDependencies();
 
 	@Override
-	public Vertex build() {
+	public Vertex buildInstance() {
 		return new Vertex();
 	}
 
@@ -41,9 +41,12 @@ public class Vertex extends ExtendedSignature<Vertex> implements AncestorsServic
 		return inheritings;
 	}
 
+	// TODO what a pity to build a total Vertex with its dependencies for just call equiv in getAlive()
+	// equiv need only AncestorService as parameter
 	@Override
 	public Vertex getInstance(Serializable value, Vertex... components) {
-		return build().initFromOverrides(this, Collections.emptyList(), value, Arrays.asList(components)).getAlive();
+		Vertex instanceTmp = buildInstance(Collections.emptyList(), value, Arrays.asList(components));
+		return instanceTmp.getAlive();
 	}
 
 	@Override
@@ -56,7 +59,14 @@ public class Vertex extends ExtendedSignature<Vertex> implements AncestorsServic
 		return superComposites;
 	}
 
-	public Vertex setValue(Serializable value) {
-		return build().initFromOverrides(this.getMeta(), Arrays.asList(this), value, getComponents());
+	@Override
+	public void rollback() {
+		getRoot().rollback();
 	}
+	
+	@Override
+	public Vertex setValue(Serializable value) {
+		return setValue(this, value);
+	}
+
 }

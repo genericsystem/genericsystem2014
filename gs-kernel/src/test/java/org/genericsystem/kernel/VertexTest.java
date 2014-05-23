@@ -3,8 +3,6 @@ package org.genericsystem.kernel;
 import java.util.Arrays;
 import java.util.Collections;
 
-import junit.framework.Assert;
-
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.testng.annotations.Test;
@@ -62,15 +60,18 @@ public class VertexTest extends AbstractTest {
 		assert vehicleColor.getInstances().contains(carGreen);
 
 		Vertex myBmwYellow = vehicleColor.addInstance(carGreen, "CarRed", myBmw, yellow);
+		assert carGreen.isSuperOf(vehicleColor, Collections.singletonList(carGreen), "CarRed", Arrays.asList(myBmw, yellow));
+		assert myBmwYellow.inheritsFrom(carGreen);
+		// log.info(myBmwYellow.info());
+
 		assert carRed.isSuperOf(vehicleColor, Collections.singletonList(carGreen), "CarRed", Arrays.asList(myBmw, red));
 		assert myBmwYellow.inheritsFrom(carRed);
 		log.info(myBmwYellow.info());
 
 		Vertex myBmwRed = vehicleColor.addInstance(carRed, "myBmwRed", myBmw, red);
 		log.info(myBmwRed.info());
-		assert !yellow.inheritsFrom(red);
-		assert !yellow.isInstanceOf(red);
-		assert myBmwRed == vehicleColor.setInstance("myBmwRed", myBmw, red);
+		assert !yellow.ieh		assert myBmwRed.inheritsFrom(carRed);
+icleColor.setInstance("myBmwRed", myBmw, red);
 		assert myBmwRed == vehicleColor.getInstance("myBmwRed", myBmw, red) : vehicleColor.getInstance("myBmwRed", myBmw, red).info();
 
 		assert myBmwRed.inheritsFrom(carRed);
@@ -390,47 +391,6 @@ public class VertexTest extends AbstractTest {
 		assert vehiclePower.isAlive();
 		assert vehicle.isAlive();
 		assert engine.isAlive();
-	}
-
-	public void setValue_easy_NewValueOK() {
-		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		String newValue = "elciheV";
-
-		// when
-		Vertex newVehicle = vehicle.setValue(newValue);
-
-		// then
-		Assert.assertEquals(newValue, newVehicle.getValue());
-	}
-
-	public void setValue_easy_isAliveOK() {
-		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		String newValue = "elciheV";
-
-		// when
-		Vertex newVehicle = vehicle.setValue(newValue);
-
-		// then
-		Assert.assertTrue(newVehicle.isAlive());
-	}
-
-	public void setValue_easy_TODO() {
-		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		String newValue = "elciheV";
-
-		// when
-		Vertex newVehicle = vehicle.setValue(newValue);
-
-		// then
-		Assert.assertEquals(newValue, newVehicle.getValue());
-		Assert.assertEquals(newValue, vehicle.getValue());
-		Assert.assertTrue(vehicle.equals(newVehicle));// a checker car fait un == uniquement
 	}
 
 }
