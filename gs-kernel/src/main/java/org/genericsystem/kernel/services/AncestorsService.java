@@ -23,13 +23,6 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		return 0;
 	};
 
-	// {
-	// int level = getMeta().getLevel() + 1;
-	// if (level != 0 && (getSupersStream().anyMatch(getMeta()::equals)))
-	// level = 0;
-	// return level;
-	// }
-
 	default boolean isRoot() {
 		return false;
 	}

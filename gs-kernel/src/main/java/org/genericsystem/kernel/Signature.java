@@ -17,8 +17,7 @@ public abstract class Signature<T extends Signature<T>> implements DisplayServic
 	protected List<T> components;
 	protected Serializable value;
 
-	// protected final int level = conditionOnMeta() ? 0 : getMeta().getLevel() + 1;
-	// TODO : change scope to final after checks
+	// TODO :  change scope to final
 	protected int level = 0;
 
 	@SuppressWarnings("unchecked")

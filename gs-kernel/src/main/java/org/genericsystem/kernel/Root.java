@@ -29,10 +29,6 @@ public class Root extends Vertex {
 		return this;
 	}
 
-	// @Override
-	// public int getLevel() {
-	// return 0;
-	// }
 
 	// public Serializable getCachedValue(Serializable value) {
 	// return valueCache.get(value);
