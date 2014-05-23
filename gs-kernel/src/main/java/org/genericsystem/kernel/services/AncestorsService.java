@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Vertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,9 +82,11 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		T pluggedMeta = getMeta().getAlive();
 		if (pluggedMeta == null)
 			return null;
+		System.out.println("this " + this + " pluggedMeta " + pluggedMeta);
 		Iterator<T> it = ((DependenciesService<T>) pluggedMeta).getInstances().iterator();
 		while (it.hasNext()) {
 			T next = it.next();
+			System.out.println("next " + next);
 			if (equiv(next))
 				return next;
 		}
