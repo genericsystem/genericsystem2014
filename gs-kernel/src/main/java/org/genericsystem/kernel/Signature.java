@@ -8,11 +8,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.genericsystem.kernel.exceptions.NotAliveException;
+import org.genericsystem.kernel.services.BindingService;
 import org.genericsystem.kernel.services.DisplayService;
 import org.genericsystem.kernel.services.ExceptionAdviserService;
 import org.genericsystem.kernel.services.InheritanceService;
 
-public abstract class Signature<T extends Signature<T>> implements DisplayService<T>, ExceptionAdviserService<T>, InheritanceService<T> {
+public abstract class Signature<T extends Signature<T>> implements DisplayService<T>, ExceptionAdviserService<T>, InheritanceService<T>, BindingService<T> {
 	protected T meta;
 	protected List<T> components;
 	protected Serializable value;
@@ -42,14 +43,14 @@ public abstract class Signature<T extends Signature<T>> implements DisplayServic
 		return (T) this;
 	}
 
-	private void checkDependsMetaComponents() {
-		if (!(componentsDepends(getComponents(), getMeta().getComponents())))
-			rollbackAndThrowException(new IllegalStateException("Inconsistant components : " + getComponentsStream().collect(Collectors.toList())));
-	}
-
 	protected void checkIsAlive() {
 		if (!isAlive())
 			rollbackAndThrowException(new NotAliveException(info()));
+	}
+
+	private void checkDependsMetaComponents() {
+		if (!(componentsDepends(getComponents(), getMeta().getComponents())))
+			rollbackAndThrowException(new IllegalStateException("Inconsistant components : " + getComponentsStream().collect(Collectors.toList())));
 	}
 
 	@Override

@@ -40,6 +40,7 @@ public class Root extends Vertex {
 		throw new RollbackException(exception);
 	}
 
+	@Override
 	public void rollback() {
 		// Hook for cache management
 	}

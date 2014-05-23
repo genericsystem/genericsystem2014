@@ -30,6 +30,11 @@ public class Engine extends Generic implements EngineService<Generic> {
 		// return super.getRoot();
 	}
 
+	@Override
+	public void rollback() {
+		root.rollback();
+	}
+
 	// @Override
 	// public boolean isRoot() {
 	// return EngineService.super.isRoot();

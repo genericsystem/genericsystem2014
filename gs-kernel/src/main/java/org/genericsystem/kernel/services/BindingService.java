@@ -10,12 +10,14 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 
@@ -254,4 +256,18 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 	// return false;
 	//
 	// }
+
+	T setValue(Serializable value);
+
+	default T setValue(Vertex old, Serializable value) {
+		return new Restructurator<T>() {
+			private static final long serialVersionUID = -2459793038860672894L;
+
+			@Override
+			T rebuild() {
+				return (T) buildInstance().init(getMeta(), getSupersStream().collect(Collectors.toList()), value, getComponents()).plug();
+			}
+		}.rebuildAll(old);
+	}
+
 }
