@@ -90,19 +90,18 @@ public interface InheritanceService<T extends InheritanceService<T>> extends Dep
 				for (T inheriting : candidate.getInheritings())
 					if (visit(inheriting))
 						selectable = false;
-				if (isMeta) {
-					selectable = false;
+				if (isMeta)
 					for (T instance : candidate.getInstances())
-						visit(instance);
-				}
+						if (visit(instance))
+							selectable = false;
+
 				result = alreadyComputed.put(candidate, selectable);
 				assert result == null;
-				if (selectable)
+				if (selectable && candidate.getLevel() == getLevel() && !candidate.equals(InheritanceService.this))
 					add(candidate);
 				return selectable;
 			}
 		}
 		return new ArrayList<T>(new SupersComputer(overrides));
 	}
-
 }
