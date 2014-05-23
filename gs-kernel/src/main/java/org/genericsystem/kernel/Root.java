@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.Collections;
 import java.util.Objects;
+
 import org.genericsystem.kernel.exceptions.RollbackException;
 import org.genericsystem.kernel.services.AncestorsService;
 
@@ -28,10 +29,6 @@ public class Root extends Vertex {
 		return this;
 	}
 
-	@Override
-	public int getLevel() {
-		return 0;
-	}
 
 	// public Serializable getCachedValue(Serializable value) {
 	// return valueCache.get(value);
@@ -43,13 +40,14 @@ public class Root extends Vertex {
 		throw new RollbackException(exception);
 	}
 
+	@Override
 	public void rollback() {
 		// Hook for cache management
 	}
 
 	/*
 	 * public static class ValueCache extends HashMap<Serializable, Serializable> { private static final long serialVersionUID = 8474952153415905986L;
-	 *
+	 * 
 	 * @Override public Serializable get(Object key) { Serializable result = super.get(key); if (result == null) put(result = (Serializable) key, result); return result; } }
 	 */
 	@Override

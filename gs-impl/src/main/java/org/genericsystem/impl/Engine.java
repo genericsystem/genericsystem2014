@@ -1,6 +1,7 @@
 package org.genericsystem.impl;
 
 import java.util.Collections;
+
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
@@ -27,6 +28,11 @@ public class Engine extends Generic implements EngineService<Generic> {
 	public Engine getRoot() {
 		return (Engine) EngineService.super.getRoot();
 		// return super.getRoot();
+	}
+
+	@Override
+	public void rollback() {
+		root.rollback();
 	}
 
 	// @Override

@@ -10,11 +10,14 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 
@@ -32,6 +35,9 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 
 	@SuppressWarnings("unchecked")
 	default T addInstance(List<T> overrides, Serializable value, T... components) {
+		for (T directInheriting : getInheritings())
+			if (directInheriting.isMetaOf(directInheriting, overrides, value, Arrays.asList(components)))
+				return directInheriting.addInstance(overrides, value, components);
 		T instance = getInstance(overrides, value, components);
 		if (instance != null)
 			rollbackAndThrowException(new ExistsException(instance.info()));
@@ -204,7 +210,7 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 	default LinkedHashSet<T> computeAllDependencies() {
 		class DirectDependencies extends LinkedHashSet<T> {
 			private static final long serialVersionUID = -5970021419012502402L;
-			private Set<T> alreadyVisited = new HashSet<>();
+			private final Set<T> alreadyVisited = new HashSet<>();
 
 			public DirectDependencies() {
 				visit(getMeta());
@@ -250,4 +256,18 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 	// return false;
 	//
 	// }
+
+	T setValue(Serializable value);
+
+	default T setValue(Vertex old, Serializable value) {
+		return new Restructurator<T>() {
+			private static final long serialVersionUID = -2459793038860672894L;
+
+			@Override
+			T rebuild() {
+				return (T) buildInstance().init(getMeta(), getSupersStream().collect(Collectors.toList()), value, getComponents()).plug();
+			}
+		}.rebuildAll(old);
+	}
+
 }

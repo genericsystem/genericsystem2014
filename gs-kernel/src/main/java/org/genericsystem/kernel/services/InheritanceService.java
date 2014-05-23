@@ -15,6 +15,10 @@ public interface InheritanceService<T extends InheritanceService<T>> extends Dep
 		return overrides.stream().anyMatch(override -> override.inheritsFrom((T) this)) || inheritsFrom(subMeta, subValue, subComponents, getMeta(), getValue(), getComponents());
 	}
 
+	default boolean isMetaOf(T subMeta, List<T> overrides, Serializable subValue, List<T> subComponents) {
+		return /* !subComponents.equals(getComponents()) && */(((InheritanceService<T>) subMeta).componentsDepends(subComponents, getComponents()));
+	}
+
 	default boolean inheritsFrom(T subMeta, Serializable subValue, List<T> subComponents, T superMeta, Serializable superValue, List<T> superComponents) {
 		if (!subMeta.inheritsFrom(superMeta))
 			return false;

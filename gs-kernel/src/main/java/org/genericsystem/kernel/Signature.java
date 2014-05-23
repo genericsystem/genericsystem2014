@@ -6,15 +6,20 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.exceptions.NotAliveException;
+import org.genericsystem.kernel.services.BindingService;
 import org.genericsystem.kernel.services.DisplayService;
 import org.genericsystem.kernel.services.ExceptionAdviserService;
 import org.genericsystem.kernel.services.InheritanceService;
 
-public abstract class Signature<T extends Signature<T>> implements DisplayService<T>, ExceptionAdviserService<T>, InheritanceService<T> {
+public abstract class Signature<T extends Signature<T>> implements DisplayService<T>, ExceptionAdviserService<T>, InheritanceService<T>, BindingService<T> {
 	protected T meta;
 	protected List<T> components;
 	protected Serializable value;
+
+	// TODO :  change scope to final
+	protected int level = 0;
 
 	@SuppressWarnings("unchecked")
 	protected T init(T meta, Serializable value, List<T> components) {
@@ -33,18 +38,19 @@ public abstract class Signature<T extends Signature<T>> implements DisplayServic
 			} else
 				this.components.set(i, (T) this);
 		}
+		level = conditionOnMeta() ? 0 : getMeta().getLevel() + 1;
 		checkDependsMetaComponents();
 		return (T) this;
-	}
-
-	private void checkDependsMetaComponents() {
-		if (!(componentsDepends(getComponents(), getMeta().getComponents())))
-			rollbackAndThrowException(new IllegalStateException("Inconsistant components : " + getComponentsStream().collect(Collectors.toList())));
 	}
 
 	protected void checkIsAlive() {
 		if (!isAlive())
 			rollbackAndThrowException(new NotAliveException(info()));
+	}
+
+	private void checkDependsMetaComponents() {
+		if (!(componentsDepends(getComponents(), getMeta().getComponents())))
+			rollbackAndThrowException(new IllegalStateException("Inconsistant components : " + getComponentsStream().collect(Collectors.toList())));
 	}
 
 	@Override
@@ -70,5 +76,14 @@ public abstract class Signature<T extends Signature<T>> implements DisplayServic
 	@Override
 	public String toString() {
 		return Objects.toString(getValue());
+	}
+
+	public boolean conditionOnMeta() {
+		return (meta == null) || this.value.equals(Statics.ENGINE_VALUE) || this.components.stream().anyMatch(component -> component.getLevel() == 0);
+	}
+
+	@Override
+	public int getLevel() {
+		return level;
 	}
 }
