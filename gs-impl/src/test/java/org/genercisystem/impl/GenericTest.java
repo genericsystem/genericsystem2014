@@ -1,6 +1,7 @@
 package org.genercisystem.impl;
 
 import java.util.Arrays;
+
 import org.genericsystem.impl.Engine;
 import org.genericsystem.impl.Generic;
 import org.genericsystem.kernel.Statics;
@@ -40,7 +41,7 @@ public class GenericTest extends AbstractTest {
 	public void testAddInstance() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
-		engine.getInstances().iterator().next();
+		assert engine.getInstances().iterator().next() == vehicle;
 	}
 
 	// public void test() {
