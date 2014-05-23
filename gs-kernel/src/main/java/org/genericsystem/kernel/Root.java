@@ -7,7 +7,7 @@ import org.genericsystem.kernel.services.AncestorsService;
 
 public class Root extends Vertex {
 	public Root() {
-		initFromSupers(null, Collections.emptyList(), Statics.ENGINE_VALUE, Collections.emptyList());
+		init(null, Collections.emptyList(), Statics.ENGINE_VALUE, Collections.emptyList());
 		// valueCache = new ValueCache();
 	}
 
@@ -49,7 +49,7 @@ public class Root extends Vertex {
 
 	/*
 	 * public static class ValueCache extends HashMap<Serializable, Serializable> { private static final long serialVersionUID = 8474952153415905986L;
-	 * 
+	 *
 	 * @Override public Serializable get(Object key) { Serializable result = super.get(key); if (result == null) put(result = (Serializable) key, result); return result; } }
 	 */
 	@Override

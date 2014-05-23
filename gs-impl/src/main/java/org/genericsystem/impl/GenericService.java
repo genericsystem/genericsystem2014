@@ -2,8 +2,8 @@ package org.genericsystem.impl;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
@@ -18,17 +18,25 @@ import org.genericsystem.kernel.services.InheritanceService;
 
 public interface GenericService<T extends GenericService<T>> extends AncestorsService<T>, DependenciesService<T>, InheritanceService<T>, BindingService<T>, CompositesInheritanceService<T>, FactoryService<T>, DisplayService<T> {
 
+	// default T buildFromSupers(T meta, List<T> supers, Serializable value, List<T> components) {
+	// return buildInstance().initFromSupers(meta, supers, value, components);
+	// }
+	//
+	// T initFromSupers(T meta, List<T> supers, Serializable value, List<T> components);
+
 	default T wrap(Vertex vertex) {
-		return vertex.isRoot() ? getRoot() : build().initFromSupers(wrap(vertex.getAlive().getMeta()), vertex.getAlive().getSupersStream().map(this::wrap).collect(Collectors.toList()), vertex.getValue(),
-				vertex.getAlive().getComponentsStream().map(this::wrap).collect(Collectors.toList()));
+		vertex.log();
+		List<T> supers = vertex.getAlive().getSupersStream().map(this::wrap).collect(Collectors.toList());
+		return vertex.isRoot() ? getRoot() : wrap(vertex.getAlive().getMeta()).buildInstance(supers, vertex.getValue(), vertex.getAlive().getComponentsStream().map(this::wrap).collect(Collectors.toList()));
 	}
 
 	default Vertex unwrap() {
-		Vertex alive = getVertex();
-		if (alive != null)
-			return alive;
-		alive = getMeta().getVertex();
-		return alive.build().initFromOverrides(alive, getSupersStream().map(GenericService::getVertex).collect(Collectors.toList()), getValue(), getComponentsStream().map(GenericService::getVertex).collect(Collectors.toList()));
+		return getVertex();
+		// Vertex alive = getVertex();
+		// if (alive != null)
+		// return alive;
+		// alive = getMeta().unwrap();
+		// return alive.buildInstance(getSupersStream().map(GenericService::unwrap).collect(Collectors.toList()), getValue(), getComponentsStream().map(GenericService::unwrap).collect(Collectors.toList()));
 	}
 
 	@Override
@@ -61,7 +69,7 @@ public interface GenericService<T extends GenericService<T>> extends AncestorsSe
 		Vertex vertex = getVertex();
 		if (vertex == null)
 			return null;
-		vertex = vertex.getInstance(value, Arrays.stream(components).map(GenericService::getVertex).collect(Collectors.toList()).toArray(new Vertex[components.length]));
+		vertex = vertex.getInstance(value, Arrays.stream(components).map(GenericService::unwrap).collect(Collectors.toList()).toArray(new Vertex[components.length]));
 		if (vertex == null)
 			return null;
 		return wrap(vertex);

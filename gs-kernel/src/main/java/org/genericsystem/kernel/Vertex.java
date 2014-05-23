@@ -26,7 +26,7 @@ DisplayService<Vertex>, SystemPropertiesService, ExceptionAdviserService<Vertex>
 	private final CompositesDependencies<Vertex> metaComposites = buildCompositeDependencies();
 
 	@Override
-	public Vertex build() {
+	public Vertex buildInstance() {
 		return new Vertex();
 	}
 
@@ -40,9 +40,12 @@ DisplayService<Vertex>, SystemPropertiesService, ExceptionAdviserService<Vertex>
 		return inheritings;
 	}
 
+	// TODO what a pity to build a total Vertex with its dependencies for just call equiv in getAlive()
+	// equiv need only AncestorService as parameter
 	@Override
 	public Vertex getInstance(Serializable value, Vertex... components) {
-		return build().initFromOverrides(this, Collections.emptyList(), value, Arrays.asList(components)).getAlive();
+		Vertex instanceTmp = buildInstance(Collections.emptyList(), value, Arrays.asList(components));
+		return instanceTmp.getAlive();
 	}
 
 	@Override
