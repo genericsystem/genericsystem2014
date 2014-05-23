@@ -47,6 +47,7 @@ public class CacheTest extends AbstractTest {
 		Engine engine = new Engine();
 		Cache<Generic> currentCache = engine.getCurrentCache();
 		Cache<Generic> mountNewCache = currentCache.mountNewCache();
+		assert mountNewCache.getSubContext() == currentCache;
 		Generic vehicle = engine.addInstance("Vehicle");
 		assert currentCache == mountNewCache.flushAndUnmount();
 		assert vehicle.getVertex() == null;
