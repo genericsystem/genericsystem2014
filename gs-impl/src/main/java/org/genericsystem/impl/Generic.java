@@ -30,4 +30,9 @@ public class Generic extends GenericSignature<Generic> implements GenericService
 		return new Generic();
 	}
 
+	@Override
+	public void rollback() {
+		getRoot().rollback();
+	}
+
 }

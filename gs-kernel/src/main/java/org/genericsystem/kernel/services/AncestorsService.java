@@ -75,7 +75,8 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 	}
 
 	default boolean isAlive() {
-		return equals(getAlive());
+		T alive = getAlive();
+		return alive != null ? equiv(alive) : false;
 	}
 
 	default T getAlive() {

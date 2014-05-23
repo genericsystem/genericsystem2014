@@ -58,4 +58,9 @@ public class Vertex extends ExtendedSignature<Vertex> implements AncestorsServic
 	public CompositesDependencies<Vertex> getSuperComposites() {
 		return superComposites;
 	}
+
+	@Override
+	public void rollback() {
+		getRoot().rollback();
+	}
 }
