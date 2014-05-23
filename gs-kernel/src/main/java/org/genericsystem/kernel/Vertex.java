@@ -68,5 +68,4 @@ public class Vertex extends ExtendedSignature<Vertex> implements AncestorsServic
 	public Vertex setValue(Serializable value) {
 		return setValue(this, value);
 	}
-
 }

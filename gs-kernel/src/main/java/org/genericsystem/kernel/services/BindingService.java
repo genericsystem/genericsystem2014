@@ -38,8 +38,7 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 		T instance = getInstance(overrides, value, components);
 		if (instance != null)
 			rollbackAndThrowException(new ExistsException(instance.info()));
-
-		return build().initFromOverrides((T) this, overrides, value, Arrays.asList(components)).plug();
+		return buildInstance(overrides, value, Arrays.asList(components)).plug();
 	}
 
 	default T setInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {

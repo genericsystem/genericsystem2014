@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Vertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +75,8 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 	}
 
 	default boolean isAlive() {
-		return equals(getAlive());
+		T alive = getAlive();
+		return alive != null ? equiv(alive) : false;
 	}
 
 	default T getAlive() {

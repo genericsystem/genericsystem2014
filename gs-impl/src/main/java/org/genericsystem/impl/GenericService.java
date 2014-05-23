@@ -18,23 +18,9 @@ import org.genericsystem.kernel.services.InheritanceService;
 
 public interface GenericService<T extends GenericService<T>> extends AncestorsService<T>, DependenciesService<T>, InheritanceService<T>, BindingService<T>, CompositesInheritanceService<T>, FactoryService<T>, DisplayService<T> {
 
-	default T wrap(Vertex vertex) {
-		return vertex.isRoot() ? getRoot() : build().initFromSupers(wrap(vertex.getAlive().getMeta()), vertex.getAlive().getSupersStream().map(this::wrap).collect(Collectors.toList()), vertex.getValue(),
-				vertex.getAlive().getComponentsStream().map(this::wrap).collect(Collectors.toList()));
-	}
+	T wrap(Vertex vertex);
 
-	default Vertex unwrap() {
-		Vertex alive = getVertex();
-		if (alive != null)
-			return alive;
-		alive = getMeta().getVertex();
-		return alive.build().initFromOverrides(alive, getSupersStream().map(GenericService::getVertex).collect(Collectors.toList()), getValue(), getComponentsStream().map(GenericService::getVertex).collect(Collectors.toList()));
-	}
-
-	@Override
-	default boolean isAlive() {
-		return equiv(getAlive());
-	}
+	Vertex unwrap();
 
 	@Override
 	default Dependencies<T> getInstances() {
@@ -61,7 +47,7 @@ public interface GenericService<T extends GenericService<T>> extends AncestorsSe
 		Vertex vertex = getVertex();
 		if (vertex == null)
 			return null;
-		vertex = vertex.getInstance(value, Arrays.stream(components).map(GenericService::getVertex).collect(Collectors.toList()).toArray(new Vertex[components.length]));
+		vertex = vertex.getInstance(value, Arrays.stream(components).map(GenericService::unwrap).collect(Collectors.toList()).toArray(new Vertex[components.length]));
 		if (vertex == null)
 			return null;
 		return wrap(vertex);

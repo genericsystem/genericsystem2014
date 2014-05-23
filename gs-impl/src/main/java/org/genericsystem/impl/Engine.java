@@ -8,11 +8,10 @@ import org.genericsystem.kernel.Vertex;
 
 public class Engine extends Generic implements EngineService<Generic> {
 
-	private final Root root;
+	private final Root root = buildRoot();
 
 	public Engine() {
-		root = buildRoot();
-		initFromSupers(null, Collections.emptyList(), Statics.ENGINE_VALUE, Collections.emptyList());
+		init(null, Collections.emptyList(), Statics.ENGINE_VALUE, Collections.emptyList());
 	}
 
 	@Override
@@ -29,6 +28,11 @@ public class Engine extends Generic implements EngineService<Generic> {
 	public Engine getRoot() {
 		return (Engine) EngineService.super.getRoot();
 		// return super.getRoot();
+	}
+
+	@Override
+	public void rollback() {
+		root.rollback();
 	}
 
 	// @Override

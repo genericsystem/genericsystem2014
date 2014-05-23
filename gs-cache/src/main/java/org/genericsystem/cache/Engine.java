@@ -9,14 +9,33 @@ import org.genericsystem.kernel.Vertex;
 public class Engine extends Generic implements EngineService<Generic> {
 
 	private final Root root = buildRoot();
-	private final Cache<Generic> currentCache = buildCache();
+
+	private final ThreadLocal<Cache<Generic>> cacheLocal = new ThreadLocal<>();
 
 	public Engine() {
-		initFromSupers(null, Collections.emptyList(), Statics.ENGINE_VALUE, Collections.emptyList());
+		cacheLocal.set(buildCache(new Transaction<>(this)));
+		init(null, Collections.emptyList(), Statics.ENGINE_VALUE, Collections.emptyList());
+	}
+
+	@Override
+	public Cache<Generic> start(Cache<Generic> cache) {
+		if (!equals(cache.getEngine()))
+			throw new IllegalStateException();
+		cacheLocal.set(cache);
+		return cache;
+	}
+
+	@Override
+	public void stop(Cache<Generic> cache) {
+		assert cacheLocal.get() == cache;
+		cacheLocal.set(null);
 	}
 
 	@Override
 	public Cache<Generic> getCurrentCache() {
+		Cache<Generic> currentCache = cacheLocal.get();
+		if (currentCache == null)
+			throw new IllegalStateException();
 		return currentCache;
 	}
 
@@ -34,6 +53,11 @@ public class Engine extends Generic implements EngineService<Generic> {
 	@Override
 	public Engine getRoot() {
 		return (Engine) EngineService.super.getRoot();
+	}
+
+	@Override
+	public void rollback() {
+		root.rollback();
 	}
 
 }

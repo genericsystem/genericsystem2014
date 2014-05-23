@@ -1,14 +1,10 @@
 package org.genericsystem.cache;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.function.Function;
+import java.util.List;
 
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
-import org.genericsystem.kernel.Dependencies.DependenciesEntry;
-import org.genericsystem.kernel.Vertex;
 
 public interface GenericService<T extends GenericService<T>> extends org.genericsystem.impl.GenericService<T> {
 
@@ -16,49 +12,51 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 		return getMeta().getCurrentCache();
 	}
 
-	default Iterator<T> iteratorFromAlive(Function<Vertex, Dependencies<Vertex>> dependencies) {
-		Vertex vertex = getVertex();
-		return vertex == null ? Collections.emptyIterator() : dependencies.apply(vertex).project(this::wrap).iterator();
-	}
-
-	default Iterator<DependenciesEntry<T>> iteratorFromAliveComposite(Function<Vertex, CompositesDependencies<Vertex>> dependencies) {
-		Vertex vertex = getVertex();
-		return vertex == null ? Collections.emptyIterator() : dependencies.apply(vertex).projectComposites(this::wrap, org.genericsystem.impl.GenericService::unwrap).iterator();
+	@Override
+	@SuppressWarnings("unchecked")
+	default T addInstance(List<T> overrides, Serializable value, T... components) {
+		return getCurrentCache().insert(org.genericsystem.impl.GenericService.super.addInstance(overrides, value, components));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default public T addInstance(Serializable value, T... components) {
-		return getCurrentCache().insert(org.genericsystem.impl.GenericService.super.addInstance(value, components));
+	default T setInstance(List<T> overrides, Serializable value, T... components) {
+		return getCurrentCache().insert(org.genericsystem.impl.GenericService.super.setInstance(overrides, value, components));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public default boolean isAlive() {
+	default boolean isAlive() {
 		return getCurrentCache().isAlive((T) this);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default Dependencies<T> getInheritings() {
-		return getCurrentCache().getInheritings((T) this, () -> iteratorFromAlive(Vertex::getInheritings));
+		return getCurrentCache().getInheritings((T) this);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default Dependencies<T> getInstances() {
-		return getCurrentCache().getInstances((T) this, () -> iteratorFromAlive(Vertex::getInstances));
+		return getCurrentCache().getInstances((T) this);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default public CompositesDependencies<T> getMetaComposites() {
-		return getCurrentCache().getMetaComposites((T) this, () -> iteratorFromAliveComposite(x -> x.getMetaComposites()));
+	default CompositesDependencies<T> getMetaComposites() {
+		return getCurrentCache().getMetaComposites((T) this);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default public CompositesDependencies<T> getSuperComposites() {
-		return getCurrentCache().getSuperComposites((T) this, () -> iteratorFromAliveComposite(x -> x.getSuperComposites()));
+	default CompositesDependencies<T> getSuperComposites() {
+		return getCurrentCache().getSuperComposites((T) this);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default T getInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
+		return null;// TODO
 	}
 }
