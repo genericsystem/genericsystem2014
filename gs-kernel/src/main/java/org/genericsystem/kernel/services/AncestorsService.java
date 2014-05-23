@@ -82,11 +82,9 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		T pluggedMeta = getMeta().getAlive();
 		if (pluggedMeta == null)
 			return null;
-		System.out.println("this " + this + " pluggedMeta " + pluggedMeta);
 		Iterator<T> it = ((DependenciesService<T>) pluggedMeta).getInstances().iterator();
 		while (it.hasNext()) {
 			T next = it.next();
-			System.out.println("next " + next);
 			if (equiv(next))
 				return next;
 		}
