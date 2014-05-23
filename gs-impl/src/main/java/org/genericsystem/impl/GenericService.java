@@ -31,11 +31,12 @@ public interface GenericService<T extends GenericService<T>> extends AncestorsSe
 	}
 
 	default Vertex unwrap() {
-		Vertex alive = getVertex();
-		if (alive != null)
-			return alive;
-		alive = getMeta().unwrap();
-		return alive.buildInstance(getSupersStream().map(GenericService::unwrap).collect(Collectors.toList()), getValue(), getComponentsStream().map(GenericService::unwrap).collect(Collectors.toList()));
+		return getVertex();
+		// Vertex alive = getVertex();
+		// if (alive != null)
+		// return alive;
+		// alive = getMeta().unwrap();
+		// return alive.buildInstance(getSupersStream().map(GenericService::unwrap).collect(Collectors.toList()), getValue(), getComponentsStream().map(GenericService::unwrap).collect(Collectors.toList()));
 	}
 
 	@Override
@@ -68,9 +69,7 @@ public interface GenericService<T extends GenericService<T>> extends AncestorsSe
 		Vertex vertex = getVertex();
 		if (vertex == null)
 			return null;
-
-		// TODO should we change GenericService::getVertex with ::unwrap ?
-		vertex = vertex.getInstance(value, Arrays.stream(components).map(GenericService::getVertex).collect(Collectors.toList()).toArray(new Vertex[components.length]));
+		vertex = vertex.getInstance(value, Arrays.stream(components).map(GenericService::unwrap).collect(Collectors.toList()).toArray(new Vertex[components.length]));
 		if (vertex == null)
 			return null;
 		return wrap(vertex);
