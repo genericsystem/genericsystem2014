@@ -1,67 +1,62 @@
-package org.genericsystem.kernel.services;
+package org.genericsystem.kernel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.genericsystem.kernel.services.RestructuratorService;
 
-import org.genericsystem.kernel.Vertex;
-
-public abstract class Restructurator<T> extends HashMap<Vertex, Vertex> {
+public abstract class Restructurator<T extends RestructuratorService<T>> extends HashMap<T, T> {
 	private static final long serialVersionUID = -3498885981892406254L;
 
-	T rebuildAll(Vertex old) {
-		return rebuildAll(old, old.computeAllDependencies());
-	}
-
-	T rebuildAll(Vertex old, LinkedHashSet<Vertex> dependenciesToRebuild) {
+	public T rebuildAll(T old, LinkedHashSet<T> dependenciesToRebuild) {
 		disconnect(dependenciesToRebuild);
-		Vertex build = recreateNewVertex(old, dependenciesToRebuild);
+		T build = recreateNewVertex(old, dependenciesToRebuild);
 		reconstructAll(dependenciesToRebuild);
-		return (T) build;
+		return build;
 	}
 
-	private void disconnect(LinkedHashSet<Vertex> linkedHashSet) {
-		for (Vertex dependency : linkedHashSet)
+	private void disconnect(LinkedHashSet<T> linkedHashSet) {
+		for (T dependency : linkedHashSet)
 			dependency.unplug();
 	}
 
-	private Vertex recreateNewVertex(Vertex old, LinkedHashSet<Vertex> dependenciesToRebuild) {
-		Vertex build = (Vertex) rebuild();
+	private T recreateNewVertex(T old, LinkedHashSet<T> dependenciesToRebuild) {
+		T build = rebuild();
 		if (build != null)
 			dependenciesToRebuild.remove(old);
 		put(old, build);
 		return build;
 	}
 
-	abstract T rebuild();
+	protected abstract T rebuild();
 
-	private void reconstructAll(LinkedHashSet<Vertex> dependenciesToUpdate) {
-		for (Vertex oldDependency : dependenciesToUpdate)
+	private void reconstructAll(LinkedHashSet<T> dependenciesToUpdate) {
+		for (T oldDependency : dependenciesToUpdate)
 			put(oldDependency, reconstructConnectedVertex(oldDependency));
 	}
 
-	private Vertex reconstructConnectedVertex(Vertex oldDependency) {
+	private T reconstructConnectedVertex(T oldDependency) {
 		return oldDependency.buildInstance().init(replaceByNewValueIfExists(oldDependency.getMeta()), new AdjustList(oldDependency.getSupersStream().collect(Collectors.toList())), oldDependency.getValue(), new AdjustList(oldDependency.getComponents()))
 				.plug();
 	}
 
-	private Vertex replaceByNewValueIfExists(Vertex vertex) {
+	private T replaceByNewValueIfExists(T vertex) {
 		if (containsKey(vertex))
 			return get(vertex);
 		return vertex;
 	}
 
-	private class AdjustList extends ArrayList<Vertex> {
+	class AdjustList extends ArrayList<T> {
 		private static final long serialVersionUID = -82460896265173205L;
 
-		private AdjustList(List<Vertex> olds) {
-			for (Vertex vertexToAdjust : olds)
+		private AdjustList(List<T> olds) {
+			for (T vertexToAdjust : olds)
 				adjust(vertexToAdjust);
 		}
 
-		private void adjust(Vertex vertexToAdjust) {
+		private void adjust(T vertexToAdjust) {
 			if (vertexToAdjust.isAlive())
 				add(vertexToAdjust);
 			else {
@@ -72,16 +67,15 @@ public abstract class Restructurator<T> extends HashMap<Vertex, Vertex> {
 			}
 		}
 
-		private void adjustParents(Vertex vertexToAdjust) {
+		private void adjustParents(T vertexToAdjust) {
 			adjustVertexToReconstruct(vertexToAdjust.getSupersStream().collect(Collectors.toList()), vertexToAdjust.getComponents());
 		}
 
 		@SafeVarargs
-		private final void adjustVertexToReconstruct(List<Vertex>... varargs) {
-			for (List<Vertex> parentsToAdjust : varargs)
-				for (Vertex vertexToAdjust : parentsToAdjust)
+		private final void adjustVertexToReconstruct(List<T>... varargs) {
+			for (List<T> parentsToAdjust : varargs)
+				for (T vertexToAdjust : parentsToAdjust)
 					adjust(Restructurator.this.get(vertexToAdjust));
 		}
 	}
-
 }

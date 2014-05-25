@@ -2,7 +2,6 @@ package org.genericsystem.impl;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.Vertex;
 
 public class Generic extends GenericSignature<Generic> implements GenericService<Generic> {
@@ -13,7 +12,7 @@ public class Generic extends GenericSignature<Generic> implements GenericService
 		if (vertex.isRoot())
 			return getRoot();
 		Generic wrap = wrap(vertex.getAlive().getMeta());
-		return wrap.buildInstance().initFromSupers(wrap, supers, vertex.getValue(), vertex.getAlive().getComponentsStream().map(this::wrap).collect(Collectors.toList()));
+		return wrap.buildInstance().init(wrap, supers, vertex.getValue(), vertex.getAlive().getComponentsStream().map(this::wrap).collect(Collectors.toList()));
 	}
 
 	@Override
@@ -34,5 +33,4 @@ public class Generic extends GenericSignature<Generic> implements GenericService
 	public void rollback() {
 		getRoot().rollback();
 	}
-
 }
