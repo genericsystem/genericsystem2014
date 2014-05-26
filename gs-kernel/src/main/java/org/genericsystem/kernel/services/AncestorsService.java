@@ -2,6 +2,7 @@ package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 import org.genericsystem.kernel.Vertex;
@@ -14,13 +15,15 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 
 	T getMeta();
 
+	List<T> getComponents();
+
 	Stream<T> getComponentsStream();
 
 	abstract Serializable getValue();
 
 	default int getLevel() {
-		return getMeta().getLevel() + 1;
-	}
+		return 0;
+	};
 
 	default boolean isRoot() {
 		return false;
@@ -60,21 +63,24 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		return isRoot() || getComponentsStream().anyMatch(component -> vertex.inheritsFrom(component) || vertex.isInstanceOf(component));
 	}
 
-	default boolean equiv(AncestorsService<?> service) {
-		if (this == service)
-			return true;
-		return this.getMeta().equiv(service.getMeta()) && Objects.equals(getValue(), service.getValue()) && equivComponents(service);
+	default boolean equiv(AncestorsService<? extends AncestorsService<?>> service) {
+		return equiv(service.getMeta(), service.getValue(), service.getComponents());
 	}
 
-	default boolean equivComponents(AncestorsService<?> service) {
-		if (getComponentsStream().count() != service.getComponentsStream().count())
+	default boolean equiv(AncestorsService<?> ancestorsService, Serializable value, List<? extends AncestorsService<?>> components) {
+		return this.getMeta().equiv(ancestorsService) && Objects.equals(getValue(), value) && equivComponents(components);
+	}
+
+	default boolean equivComponents(List<? extends AncestorsService<?>> components) {
+		if (getComponentsStream().count() != components.size())
 			return false;
-		Iterator<?> otherComponents = service.getComponentsStream().iterator();
-		return getComponentsStream().allMatch(x -> x.equiv((AncestorsService<?>) otherComponents.next()));
+		Iterator<? extends AncestorsService<?>> otherComponents = components.iterator();
+		return getComponentsStream().allMatch(x -> x.equiv(otherComponents.next()));
 	}
 
 	default boolean isAlive() {
-		return equals(getAlive());
+		T alive = getAlive();
+		return alive != null ? equiv(alive) : false;
 	}
 
 	default T getAlive() {

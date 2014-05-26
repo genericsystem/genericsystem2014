@@ -2,7 +2,6 @@ package org.genericsystem.kernel;
 
 import java.util.Collections;
 import java.util.Objects;
-
 import org.genericsystem.kernel.exceptions.RollbackException;
 import org.genericsystem.kernel.services.AncestorsService;
 
@@ -29,11 +28,6 @@ public class Root extends Vertex {
 		return this;
 	}
 
-	@Override
-	public int getLevel() {
-		return 0;
-	}
-
 	// public Serializable getCachedValue(Serializable value) {
 	// return valueCache.get(value);
 	// }
@@ -44,6 +38,7 @@ public class Root extends Vertex {
 		throw new RollbackException(exception);
 	}
 
+	@Override
 	public void rollback() {
 		// Hook for cache management
 	}
@@ -63,7 +58,7 @@ public class Root extends Vertex {
 	public boolean equiv(AncestorsService<?> service) {
 		if (this == service)
 			return true;
-		return Objects.equals(getValue(), service.getValue()) && equivComponents(service);
+		return Objects.equals(getValue(), service.getValue()) && equivComponents(service.getComponents());
 	}
 
 }

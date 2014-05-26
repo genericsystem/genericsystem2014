@@ -2,9 +2,7 @@ package org.genericsystem.impl;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
@@ -16,29 +14,13 @@ import org.genericsystem.kernel.services.DependenciesService;
 import org.genericsystem.kernel.services.DisplayService;
 import org.genericsystem.kernel.services.FactoryService;
 import org.genericsystem.kernel.services.InheritanceService;
+import org.genericsystem.kernel.services.RestructuratorService;
 
-public interface GenericService<T extends GenericService<T>> extends AncestorsService<T>, DependenciesService<T>, InheritanceService<T>, BindingService<T>, CompositesInheritanceService<T>, FactoryService<T>, DisplayService<T> {
+public interface GenericService<T extends GenericService<T>> extends AncestorsService<T>, DependenciesService<T>, InheritanceService<T>, BindingService<T>, CompositesInheritanceService<T>, FactoryService<T>, DisplayService<T>, RestructuratorService<T> {
 
-	T buildInstanceFromSupers(List<T> overrides, Serializable value, List<T> components);
+	T wrap(Vertex vertex);
 
-	default T wrap(Vertex vertex) {
-		List<T> supers = vertex.getAlive().getSupersStream().map(this::wrap).collect(Collectors.toList());
-		return vertex.isRoot() ? getRoot() : wrap(vertex.getAlive().getMeta()).buildInstanceFromSupers(supers, vertex.getValue(), vertex.getAlive().getComponentsStream().map(this::wrap).collect(Collectors.toList()));
-	}
-
-	default Vertex unwrap() {
-		// return getVertex();
-		Vertex alive = getVertex();
-		if (alive != null)
-			return alive;
-		alive = getMeta().unwrap();
-		return alive.buildInstance(getSupersStream().map(GenericService::unwrap).collect(Collectors.toList()), getValue(), getComponentsStream().map(GenericService::unwrap).collect(Collectors.toList()));
-	}
-
-	@Override
-	default boolean isAlive() {
-		return equiv(getAlive());
-	}
+	Vertex unwrap();
 
 	@Override
 	default Dependencies<T> getInstances() {
@@ -85,4 +67,5 @@ public interface GenericService<T extends GenericService<T>> extends AncestorsSe
 	default Snapshot<T> getSuperComposites(T superVertex) {
 		return getVertex().getSuperComposites(superVertex.getVertex()).project(this::wrap);
 	}
+
 }

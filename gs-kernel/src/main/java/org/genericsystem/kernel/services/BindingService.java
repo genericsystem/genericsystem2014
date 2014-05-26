@@ -3,11 +3,8 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -32,6 +29,9 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 
 	@SuppressWarnings("unchecked")
 	default T addInstance(List<T> overrides, Serializable value, T... components) {
+		for (T directInheriting : getInheritings())
+			if (directInheriting.isMetaOf(directInheriting, overrides, value, Arrays.asList(components)))
+				return directInheriting.addInstance(overrides, value, components);
 		T instance = getInstance(overrides, value, components);
 		if (instance != null)
 			rollbackAndThrowException(new ExistsException(instance.info()));
@@ -201,41 +201,6 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 				|| inheritsFrom(dependency.getMeta(), dependency.getValue(), dependency.getComponents(), getMeta(), getValue(), getComponents());
 	}
 
-	default LinkedHashSet<T> computeAllDependencies() {
-		class DirectDependencies extends LinkedHashSet<T> {
-			private static final long serialVersionUID = -5970021419012502402L;
-			private Set<T> alreadyVisited = new HashSet<>();
-
-			public DirectDependencies() {
-				visit(getMeta());
-			}
-
-			public void visit(T node) {
-				if (!alreadyVisited.contains(node))
-					if (!isAncestorOf(node)) {
-						alreadyVisited.add(node);
-						node.getInheritings().forEach(this::visit);
-						node.getInstances().forEach(this::visit);
-						node.getComposites().forEach(this::visit);
-					} else
-						add(node);
-			}
-
-			@Override
-			public boolean add(T node) {
-				if (!alreadyVisited.contains(node)) {
-					super.add(node);
-					alreadyVisited.add(node);
-					node.getInheritings().forEach(this::add);
-					node.getInstances().forEach(this::add);
-					node.getComposites().forEach(this::add);
-				}
-				return true;
-			}
-		}
-		return new DirectDependencies();
-	}
-
 	// default boolean isExtention(T candidate) {
 	// if (isFactual() && candidate.getMeta().equals((getMeta()))) {
 	// if (getMeta().isPropertyConstraintEnabled())
@@ -250,4 +215,5 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 	// return false;
 	//
 	// }
+
 }

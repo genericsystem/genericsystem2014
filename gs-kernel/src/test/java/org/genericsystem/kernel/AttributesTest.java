@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.util.Arrays;
+
 import org.testng.annotations.Test;
 
 @Test
@@ -9,6 +10,7 @@ public class AttributesTest extends AbstractTest {
 	public void test1Attribut() {
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
+		assert vehicle.getLevel() == 1 : vehicle.getLevel();
 		Vertex power = root.addInstance("Power", vehicle);
 		assert power.getComponentsStream().count() == 1;
 		assert vehicle.equals(power.getComponents().get(0));
@@ -20,7 +22,9 @@ public class AttributesTest extends AbstractTest {
 		Vertex vehicle = root.addInstance("Vehicle");
 		Vertex power = root.addInstance("Power", vehicle);
 		Vertex car = root.addInstance(vehicle, "Car");
-		assert vehicle.getAttributes(root).size() == 1;
+		log.info(vehicle.info());
+		log.info(power.info());
+		assert vehicle.getAttributes(root).size() == 1 : vehicle.getAttributes(root);
 		assert vehicle.getAttributes(root).contains(power);
 		assert car.getAttributes(root).size() == 1;
 		assert car.getAttributes(root).contains(power);
@@ -31,6 +35,16 @@ public class AttributesTest extends AbstractTest {
 		Vertex vehicle = root.addInstance("Vehicle");
 		Vertex car = root.addInstance(vehicle, "Car");
 		Vertex power = root.addInstance("Power", car);
+
+		log.info(root.info());
+		log.info(vehicle.info());
+		log.info(car.info());
+		log.info(power.info());
+		assert root.getLevel() == 0;
+		assert vehicle.getLevel() == 1;
+		assert car.getLevel() == 1;
+		assert power.getLevel() == 1;
+
 		assert vehicle.getAttributes(root).size() == 0;
 		assert car.getAttributes(root).size() == 1;
 		assert car.getAttributes(root).contains(power);
@@ -342,7 +356,7 @@ public class AttributesTest extends AbstractTest {
 		Vertex robot = root.addInstance(object, "Robot");
 		Vertex transformer = root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
 
-		assert object.getAttributes(root).size() == 2;
+		assert object.getAttributes(root).size() == 2 : object.getAttributes(root);
 		assert object.getAttributes(root).contains(power);
 		assert object.getAttributes(root).contains(airconditioner);
 		assert vehicle.getAttributes(root).size() == 2;
