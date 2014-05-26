@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Snapshot;
 
 public interface InheritanceService<T extends InheritanceService<T>> extends DependenciesService<T>, SystemPropertiesService, ExceptionAdviserService<T> {

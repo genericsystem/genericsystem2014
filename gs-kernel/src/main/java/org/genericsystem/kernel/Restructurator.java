@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.services.RestructuratorService;
 
 public abstract class Restructurator<T extends RestructuratorService<T>> extends HashMap<T, T> {
@@ -38,8 +39,8 @@ public abstract class Restructurator<T extends RestructuratorService<T>> extends
 	}
 
 	private T reconstructConnectedVertex(T oldDependency) {
-		return oldDependency.buildInstance().init(replaceByNewValueIfExists(oldDependency.getMeta()), new AdjustList(oldDependency.getSupersStream().collect(Collectors.toList())), oldDependency.getValue(), new AdjustList(oldDependency.getComponents()))
-				.plug();
+		T meta = replaceByNewValueIfExists(oldDependency.getMeta());
+		return oldDependency.buildInstance().init(meta.getLevel() + 1, meta, new AdjustList(oldDependency.getSupersStream().collect(Collectors.toList())), oldDependency.getValue(), new AdjustList(oldDependency.getComponents())).plug();
 	}
 
 	private T replaceByNewValueIfExists(T vertex) {

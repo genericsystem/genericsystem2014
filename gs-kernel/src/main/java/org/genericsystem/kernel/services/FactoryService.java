@@ -14,10 +14,10 @@ public interface FactoryService<T extends FactoryService<T>> extends AncestorsSe
 
 	@SuppressWarnings("unchecked")
 	default T buildInstance(List<T> overrides, Serializable value, List<T> components) {
-		return buildInstance().init((T) this, overrides, value, components);
+		return buildInstance().init(getLevel() + 1, (T) this, overrides, value, components);
 	}
 
-	T init(T meta, List<T> overrides, Serializable value, List<T> components);
+	T init(int level, T meta, List<T> overrides, Serializable value, List<T> components);
 
 	default Dependencies<T> buildDependencies() {
 		return new DependenciesImpl<T>();
