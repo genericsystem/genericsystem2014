@@ -45,7 +45,7 @@ public class Root extends Vertex {
 
 	/*
 	 * public static class ValueCache extends HashMap<Serializable, Serializable> { private static final long serialVersionUID = 8474952153415905986L;
-	 *
+	 * 
 	 * @Override public Serializable get(Object key) { Serializable result = super.get(key); if (result == null) put(result = (Serializable) key, result); return result; } }
 	 */
 	@Override
@@ -58,7 +58,7 @@ public class Root extends Vertex {
 	public boolean equiv(AncestorsService<?> service) {
 		if (this == service)
 			return true;
-		return Objects.equals(getValue(), service.getValue()) && equivComponents(() -> service.getComponentsStream());
+		return Objects.equals(getValue(), service.getValue()) && equivComponents(service.getComponents());
 	}
 
 }

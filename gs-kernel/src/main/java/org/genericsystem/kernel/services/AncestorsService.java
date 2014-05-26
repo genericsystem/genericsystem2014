@@ -2,8 +2,8 @@ package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 import org.genericsystem.kernel.Vertex;
 import org.slf4j.Logger;
@@ -14,6 +14,8 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 	static Logger log = LoggerFactory.getLogger(AncestorsService.class);
 
 	T getMeta();
+
+	List<T> getComponents();
 
 	Stream<T> getComponentsStream();
 
@@ -61,18 +63,18 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		return isRoot() || getComponentsStream().anyMatch(component -> vertex.inheritsFrom(component) || vertex.isInstanceOf(component));
 	}
 
-	default boolean equiv(AncestorsService<?> service) {
-		return equiv(service.getMeta(), service.getValue(), () -> service.getComponentsStream());
+	default boolean equiv(AncestorsService<? extends AncestorsService<?>> service) {
+		return equiv(service.getMeta(), service.getValue(), service.getComponents());
 	}
 
-	default boolean equiv(AncestorsService<?> meta, Serializable value, Supplier<Stream<? extends AncestorsService<?>>> supplier) {
-		return this.getMeta().equiv(meta) && Objects.equals(getValue(), value) && equivComponents(supplier);
+	default boolean equiv(AncestorsService<?> ancestorsService, Serializable value, List<? extends AncestorsService<?>> components) {
+		return this.getMeta().equiv(ancestorsService) && Objects.equals(getValue(), value) && equivComponents(components);
 	}
 
-	default boolean equivComponents(Supplier<Stream<? extends AncestorsService<?>>> supplier) {
-		if (getComponentsStream().count() != supplier.get().count())
+	default boolean equivComponents(List<? extends AncestorsService<?>> components) {
+		if (getComponentsStream().count() != components.size())
 			return false;
-		Iterator<? extends AncestorsService<?>> otherComponents = supplier.get().iterator();
+		Iterator<? extends AncestorsService<?>> otherComponents = components.iterator();
 		return getComponentsStream().allMatch(x -> x.equiv(otherComponents.next()));
 	}
 
