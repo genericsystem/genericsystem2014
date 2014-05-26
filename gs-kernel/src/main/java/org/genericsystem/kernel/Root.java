@@ -2,13 +2,21 @@ package org.genericsystem.kernel;
 
 import java.util.Collections;
 import java.util.Objects;
+
 import org.genericsystem.kernel.exceptions.RollbackException;
 import org.genericsystem.kernel.services.AncestorsService;
 
 public class Root extends Vertex {
 	public Root() {
-		init(null, Collections.emptyList(), Statics.ENGINE_VALUE, Collections.emptyList());
+		init(0, null, Collections.emptyList(), Statics.ENGINE_VALUE, Collections.emptyList()).computeSupers();
 		// valueCache = new ValueCache();
+	}
+
+	Vertex setMetaAttribut() {
+		Vertex instance = getInstance(Collections.singletonList(this), Statics.ENGINE_VALUE, new Vertex[] { this });
+		if (instance != null)
+			return instance;
+		return buildInstance().init(0, this, Collections.singletonList(this), Statics.ENGINE_VALUE, Collections.singletonList(this)).computeSupers().plug();
 	}
 
 	// ValueCache valueCache;

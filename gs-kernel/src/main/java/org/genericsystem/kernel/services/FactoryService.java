@@ -7,17 +7,18 @@ import java.util.List;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.DependenciesImpl;
+import org.genericsystem.kernel.ExtendedSignature;
 
 public interface FactoryService<T extends FactoryService<T>> extends AncestorsService<T> {
 
 	T buildInstance();
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	default T buildInstance(List<T> overrides, Serializable value, List<T> components) {
-		return buildInstance().init((T) this, overrides, value, components);
+		return (T) ((ExtendedSignature) buildInstance().init(getLevel() + 1, (T) this, overrides, value, components)).computeSupers();
 	}
 
-	T init(T meta, List<T> overrides, Serializable value, List<T> components);
+	T init(int level, T meta, List<T> overrides, Serializable value, List<T> components);
 
 	default Dependencies<T> buildDependencies() {
 		return new DependenciesImpl<T>();

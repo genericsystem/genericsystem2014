@@ -267,24 +267,53 @@ public class SetValueTest {
 
 		// then 3. newValue of machine
 		assert newValue.equals(newMachine.getValue());
+		assert newMachine.getComponents().size() == 0;
+		assert newMachine.getSupersStream().count() == 0;
+		assert newMachine.computeAllDependencies().size() == 4;
+		assert newMachine.getInstances().size() == 0;
+		assert newMachine.getInheritings().size() == 1;
 
-		// then 4. newDependency of engine
-		// assert engine.getInheritings().size() == 1;
-		// Vertex newMachineFromEngine = engine.getInheritings().stream().collect(Collectors.toList()).get(0);
-		// newValue.equals(newMachineFromEngine);
-		// TODO
+		// then 4. check if we do not lose a dependency or instance in the process via engine
+		assert engine.getComponents().size() == 0;
+		assert engine.getSupersStream().count() == 0;
+		assert engine.computeAllDependencies().size() == 5;
+		assert engine.getInstances().size() == 3;
+		assert engine.getInheritings().size() == 0;
 
-		// then 5. newValue of vehicle
-		// assert newMachine.getInheritings().size() == 1;
-		// Vertex newVehicleFromNewMachine = newMachine.getInheritings().stream().collect(Collectors.toList()).get(0);
-		// assert vehicle.getValue().equals(newVehicleFromNewMachine.getValue());
-		// TODO
+		// then 5. check newVehicle
+		Vertex newVehicle = findElement("Vehicle", newMachine.computeAllDependencies().stream().collect(Collectors.toList()));
+		assert newVehicle != null;
+		assert newVehicle.getComponents().size() == 0;
+		assert newVehicle.getSupersStream().count() == 1;
+		assert newVehicle.computeAllDependencies().size() == 3;
+		assert newVehicle.getInstances().size() == 1;
+		assert newVehicle.getInheritings().size() == 0;
 
-		// then 6. newValue of power
-		// TODO
+		// then 6. check newPower
+		Vertex newPower = findElement("Power", newMachine.computeAllDependencies().stream().collect(Collectors.toList()));
+		assert newPower != null;
+		assert newPower.getComponents().size() == 1;
+		assert newPower.getSupersStream().count() == 0;
+		assert newPower.computeAllDependencies().size() == 1;
+		assert newPower.getInstances().size() == 0;
+		assert newPower.getInheritings().size() == 0;
 
-		// then 7. newValue of car
-		// TODO
+		// then 7. check newCar
+		Vertex newCar = findElement("Car", newMachine.computeAllDependencies().stream().collect(Collectors.toList()));
+		assert newCar != null;
+		assert newCar.getComponents().size() == 0;
+		assert newCar.getSupersStream().count() == 0;
+		assert newCar.computeAllDependencies().size() == 1;
+		assert newCar.getInstances().size() == 0;
+		assert newCar.getInheritings().size() == 0;
+	}
+
+	private Vertex findElement(Serializable value, List<Vertex> vertexList) {
+		assert value != null;
+		for (Vertex element : vertexList)
+			if (value.equals(element.getValue()))
+				return element;
+		return null;
 	}
 
 	@SuppressWarnings("unused")
@@ -309,7 +338,7 @@ public class SetValueTest {
 	@Deprecated
 	private void printInheritings(Vertex vertex) {
 		System.out.println("inheritings:-------------------" + vertex.info() + "---------------------");
-		for (Vertex vertexInheriting : vertex.getAllInheritings().collect(Collectors.toList()))
+		for (Vertex vertexInheriting : vertex.getInheritings())
 			System.out.println(vertexInheriting.info() + " - alive : " + vertexInheriting.isAlive() + " - meta : " + vertexInheriting.getMeta().info() + "meta alive : " + vertexInheriting.getMeta().isAlive());
 		System.out.println("----------------------------------------");
 	}

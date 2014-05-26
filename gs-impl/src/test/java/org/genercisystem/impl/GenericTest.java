@@ -1,6 +1,7 @@
 package org.genercisystem.impl;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import org.genericsystem.impl.Engine;
 import org.genericsystem.impl.Generic;
@@ -44,7 +45,7 @@ public class GenericTest extends AbstractTest {
 	public void testAddInstance() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
-		assert engine.getInstances().iterator().next().equals(vehicle);
+		assert engine.getInstances().contains(vehicle) : engine.getInstances().stream().collect(Collectors.toList());
 		new RollbackCatcher() {
 
 			@Override
@@ -57,7 +58,7 @@ public class GenericTest extends AbstractTest {
 	public void testSetInstance() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.setInstance("Vehicle");
-		assert engine.getInstances().iterator().next().equals(vehicle);
+		assert engine.getInstances().contains(vehicle);
 		assert engine.setInstance("Vehicle").equals(vehicle);
 	}
 
