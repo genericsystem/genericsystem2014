@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -10,23 +11,19 @@ public abstract class ExtendedSignature<T extends ExtendedSignature<T>> extends 
 	protected List<T> supers;
 
 	@SuppressWarnings("unchecked")
-	protected T initFromSupers(T meta, List<T> supers, Serializable value, List<T> components) {
-		super.init(meta, value, components);
-		this.supers = supers;
-		checkSupersOrOverrides(this.supers);
-		checkOverridesAreReached(this.supers);
-		checkDependsSuperComponents(this.supers);
+	public T init(int level, T meta, List<T> overrides, Serializable value, List<T> components) {
+		super.init(level, meta, value, components);
+		this.supers = overrides;
+		checkSupersOrOverrides(overrides);
+		checkOverridesAreReached(overrides);
+		checkDependsSuperComponents(overrides);
 		return (T) this;
 	}
 
 	@SuppressWarnings("unchecked")
-	public T init(T meta, List<T> overrides, Serializable value, List<T> components) {
-		super.init(meta, value, components);
-		checkSupersOrOverrides(overrides);
-		this.supers = computeSupers(overrides);
+	public T computeSupers() {
+		this.supers = new ArrayList<T>(new SupersComputer<>(level, meta, this.supers, value, components));
 		checkSupersOrOverrides(this.supers);
-		checkOverridesAreReached(overrides);
-		checkDependsSuperComponents(overrides);
 		return (T) this;
 	}
 

@@ -18,11 +18,11 @@ public abstract class Signature<T extends Signature<T>> implements DisplayServic
 	protected List<T> components;
 	protected Serializable value;
 
-	// TODO :  change scope to final
+	// TODO : change scope to final
 	protected int level = 0;
 
 	@SuppressWarnings("unchecked")
-	protected T init(T meta, Serializable value, List<T> components) {
+	protected T init(int level, T meta, Serializable value, List<T> components) {
 		if (meta != null) {
 			meta.checkIsAlive();
 			this.meta = meta;
@@ -38,7 +38,7 @@ public abstract class Signature<T extends Signature<T>> implements DisplayServic
 			} else
 				this.components.set(i, (T) this);
 		}
-		level = conditionOnMeta() ? 0 : getMeta().getLevel() + 1;
+		this.level = level;
 		checkDependsMetaComponents();
 		return (T) this;
 	}
@@ -76,10 +76,6 @@ public abstract class Signature<T extends Signature<T>> implements DisplayServic
 	@Override
 	public String toString() {
 		return Objects.toString(getValue());
-	}
-
-	public boolean conditionOnMeta() {
-		return (meta == null) || this.value.equals(Statics.ENGINE_VALUE) || this.components.stream().anyMatch(component -> component.getLevel() == 0);
 	}
 
 	@Override
