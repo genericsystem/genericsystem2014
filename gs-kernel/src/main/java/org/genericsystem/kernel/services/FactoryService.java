@@ -20,6 +20,7 @@ public interface FactoryService<T extends FactoryService<T>> extends AncestorsSe
 	default T buildInstance(List<T> overrides, Serializable value, List<T> components) {
 		int level = getLevel() + 1;
 		overrides.forEach(x -> ((Signature) x).checkIsAlive());
+		components.forEach(x -> ((Signature) x).checkIsAlive());
 		List<T> supers = new ArrayList<T>(new SupersComputer(level, (InheritanceService) this, overrides, value, components));
 		return (T) ((ExtendedSignature) buildInstance().init(level, (T) this, supers, value, components));
 	}

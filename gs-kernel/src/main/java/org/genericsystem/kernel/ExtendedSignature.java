@@ -19,7 +19,7 @@ public abstract class ExtendedSignature<T extends ExtendedSignature<T>> extends 
 		return (T) this;
 	}
 
-	public void checkSupers(List<T> supers) {
+	private void checkSupers(List<T> supers) {
 		supers.forEach(Signature::checkIsAlive);
 		if (!supers.stream().allMatch(superVertex -> superVertex.getLevel() == getLevel()))
 			rollbackAndThrowException(new IllegalStateException("Inconsistant supers : " + getSupersStream().collect(Collectors.toList())));
