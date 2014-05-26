@@ -17,7 +17,8 @@ public interface RestructuratorService<T extends RestructuratorService<T>> exten
 
 			@Override
 			protected T rebuild() {
-				return buildInstance().init(getMeta(), getSupersStream().collect(Collectors.toList()), value, getComponents()).plug();
+				T meta = getMeta();
+				return buildInstance().init(meta.getLevel() + 1, meta, getSupersStream().collect(Collectors.toList()), value, getComponents()).plug();
 			}
 		}.rebuildAll((T) RestructuratorService.this, computeAllDependencies());
 	}

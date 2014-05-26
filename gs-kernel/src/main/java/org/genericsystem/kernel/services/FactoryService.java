@@ -1,23 +1,31 @@
 package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.DependenciesImpl;
+import org.genericsystem.kernel.ExtendedSignature;
+import org.genericsystem.kernel.Signature;
+import org.genericsystem.kernel.SupersComputer;
 
 public interface FactoryService<T extends FactoryService<T>> extends AncestorsService<T> {
 
 	T buildInstance();
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	default T buildInstance(List<T> overrides, Serializable value, List<T> components) {
-		return buildInstance().init((T) this, overrides, value, components);
+		int level = getLevel() + 1;
+		overrides.forEach(x -> ((Signature) x).checkIsAlive());
+		components.forEach(x -> ((Signature) x).checkIsAlive());
+		List<T> supers = new ArrayList<T>(new SupersComputer(level, (InheritanceService) this, overrides, value, components));
+		return (T) ((ExtendedSignature) buildInstance().init(level, (T) this, supers, value, components));
 	}
 
-	T init(T meta, List<T> overrides, Serializable value, List<T> components);
+	T init(int level, T meta, List<T> overrides, Serializable value, List<T> components);
 
 	default Dependencies<T> buildDependencies() {
 		return new DependenciesImpl<T>();

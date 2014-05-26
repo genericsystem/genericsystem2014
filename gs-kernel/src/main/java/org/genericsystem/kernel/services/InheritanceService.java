@@ -1,13 +1,10 @@
 package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Snapshot;
 
 public interface InheritanceService<T extends InheritanceService<T>> extends DependenciesService<T>, SystemPropertiesService, ExceptionAdviserService<T> {
@@ -77,45 +74,4 @@ public interface InheritanceService<T extends InheritanceService<T>> extends Dep
 		return () -> Stream.concat(getInheritings().stream(), getInstances().stream()).iterator();
 	}
 
-	default List<T> computeSupers(List<T> overrides) {
-		class SupersComputer extends LinkedHashSet<T> {
-
-			private static final long serialVersionUID = -1078004898524170057L;
-
-			private final List<T> overrides;
-			private final Map<T, Boolean> alreadyComputed = new HashMap<>();
-
-			private SupersComputer(List<T> overrides) {
-				this.overrides = overrides;
-				visit(getMeta().getRoot());
-			}
-
-			private boolean visit(T candidate) {
-				Boolean result = alreadyComputed.get(candidate);
-				if (result != null)
-					return result;
-				boolean isMeta = getMeta().isSpecializationOf(candidate);
-				boolean isSuper = ((InheritanceService<T>) candidate).isSuperOf(getMeta(), overrides, getValue(), getComponents());
-				if (!isMeta && !isSuper) {
-					alreadyComputed.put(candidate, false);
-					return false;
-				}
-				boolean selectable = true;
-				for (T inheriting : candidate.getInheritings())
-					if (visit(inheriting))
-						selectable = false;
-				if (isMeta)
-					for (T instance : candidate.getInstances())
-						if (visit(instance))
-							selectable = false;
-
-				result = alreadyComputed.put(candidate, selectable);
-				assert result == null;
-				if (selectable && candidate.getLevel() == getLevel() && !candidate.equals(InheritanceService.this))
-					add(candidate);
-				return selectable;
-			}
-		}
-		return new ArrayList<T>(new SupersComputer(overrides));
-	}
 }

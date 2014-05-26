@@ -10,44 +10,33 @@ public abstract class ExtendedSignature<T extends ExtendedSignature<T>> extends 
 	protected List<T> supers;
 
 	@SuppressWarnings("unchecked")
-	protected T initFromSupers(T meta, List<T> supers, Serializable value, List<T> components) {
-		super.init(meta, value, components);
+	public T init(int level, T meta, List<T> supers, Serializable value, List<T> components) {
+		super.init(level, meta, value, components);
 		this.supers = supers;
-		checkSupersOrOverrides(this.supers);
-		checkOverridesAreReached(this.supers);
-		checkDependsSuperComponents(this.supers);
+		checkSupers(supers);
+		checkOverridesAreReached(supers);
+		checkDependsSuperComponents(supers);
 		return (T) this;
 	}
 
-	@SuppressWarnings("unchecked")
-	public T init(T meta, List<T> overrides, Serializable value, List<T> components) {
-		super.init(meta, value, components);
-		checkSupersOrOverrides(overrides);
-		this.supers = computeSupers(overrides);
-		checkSupersOrOverrides(this.supers);
-		checkOverridesAreReached(overrides);
-		checkDependsSuperComponents(overrides);
-		return (T) this;
-	}
-
-	protected void checkSupersOrOverrides(List<T> overrides) {
-		overrides.forEach(Signature::checkIsAlive);
-		if (!overrides.stream().allMatch(superVertex -> superVertex.getLevel() == getLevel()))
+	private void checkSupers(List<T> supers) {
+		supers.forEach(Signature::checkIsAlive);
+		if (!supers.stream().allMatch(superVertex -> superVertex.getLevel() == getLevel()))
 			rollbackAndThrowException(new IllegalStateException("Inconsistant supers : " + getSupersStream().collect(Collectors.toList())));
-		if (!overrides.stream().allMatch(superVertex -> getMeta().inheritsFrom(superVertex.getMeta())))
+		if (!supers.stream().allMatch(superVertex -> getMeta().inheritsFrom(superVertex.getMeta())))
 			rollbackAndThrowException(new IllegalStateException("Inconsistant supers : " + getSupersStream().collect(Collectors.toList())));
-		if (!overrides.stream().noneMatch(this::equals))
+		if (!supers.stream().noneMatch(this::equals))
 			rollbackAndThrowException(new IllegalStateException("Supers loop detected : " + info()));
 	}
 
-	private void checkOverridesAreReached(List<T> overrides) {
-		if (!overrides.stream().allMatch(override -> supers.stream().anyMatch(superVertex -> superVertex.inheritsFrom(override))))
-			rollbackAndThrowException(new IllegalStateException("Unable to reach overrides : " + overrides + " for : " + info()));
+	private void checkOverridesAreReached(List<T> supers) {
+		if (!supers.stream().allMatch(override -> supers.stream().anyMatch(superVertex -> superVertex.inheritsFrom(override))))
+			rollbackAndThrowException(new IllegalStateException("Unable to reach overrides : " + supers + " for : " + info()));
 	}
 
-	private void checkDependsSuperComponents(List<T> overrides) {
+	private void checkDependsSuperComponents(List<T> supers) {
 		getSupersStream().forEach(superVertex -> {
-			if (!superVertex.isSuperOf(getMeta(), overrides, getValue(), getComponents()))
+			if (!superVertex.isSuperOf(getMeta(), supers, getValue(), getComponents()))
 				rollbackAndThrowException(new IllegalStateException("Inconsistant components : " + getComponentsStream().collect(Collectors.toList())));
 		});
 	}

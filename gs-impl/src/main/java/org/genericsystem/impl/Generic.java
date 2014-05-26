@@ -22,7 +22,7 @@ public class Generic extends GenericSignature<Generic> implements GenericService
 			return getRoot();
 		Vertex alive = vertex.getAlive();
 		Generic meta = wrap(alive.getMeta());
-		return meta.buildInstance().initFromSupers(meta, wrap(alive.getSupersStream()), alive.getValue(), wrap(alive.getComponentsStream()));
+		return meta.buildInstance().init(meta.getLevel() + 1, meta, wrap(alive.getSupersStream()), alive.getValue(), wrap(alive.getComponentsStream()));
 	}
 
 	@Override
