@@ -14,7 +14,7 @@ public class Generic extends GenericSignature<Generic> implements GenericService
 		if (vertex.isRoot())
 			return getRoot();
 		Generic wrap = wrap(vertex.getAlive().getMeta());
-		return wrap.buildInstance().initFromSupers(wrap, supers, vertex.getValue(), vertex.getAlive().getComponentsStream().map(this::wrap).collect(Collectors.toList()));
+		return wrap.buildInstance().init(wrap.getLevel() + 1, wrap, supers, vertex.getValue(), vertex.getAlive().getComponentsStream().map(this::wrap).collect(Collectors.toList()));
 	}
 
 	@Override
