@@ -1,7 +1,6 @@
 package org.genericsystem.impl;
 
 import java.util.Objects;
-
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.services.AncestorsService;
 
@@ -37,6 +36,6 @@ public interface EngineService<T extends GenericService<T>> extends GenericServi
 	default boolean equiv(AncestorsService<?> service) {
 		if (this == service)
 			return true;
-		return Objects.equals(getValue(), service.getValue()) && equivComponents(service);
+		return Objects.equals(getValue(), service.getValue()) && equivComponents(service.getComponents());
 	}
 }
