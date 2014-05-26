@@ -8,7 +8,7 @@ import org.genericsystem.kernel.services.AncestorsService;
 
 public class Root extends Vertex {
 	public Root() {
-		init(0, null, Collections.emptyList(), Statics.ENGINE_VALUE, Collections.emptyList()).computeSupers();
+		init(0, null, Collections.emptyList(), Statics.ENGINE_VALUE, Collections.emptyList());
 		// valueCache = new ValueCache();
 	}
 
@@ -16,7 +16,7 @@ public class Root extends Vertex {
 		Vertex instance = getInstance(Collections.singletonList(this), Statics.ENGINE_VALUE, new Vertex[] { this });
 		if (instance != null)
 			return instance;
-		return buildInstance().init(0, this, Collections.singletonList(this), Statics.ENGINE_VALUE, Collections.singletonList(this)).computeSupers().plug();
+		return buildInstance().init(0, this, Collections.singletonList(this), Statics.ENGINE_VALUE, Collections.singletonList(this)).plug();
 	}
 
 	// ValueCache valueCache;
