@@ -3,8 +3,8 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Vertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,16 +62,18 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 	}
 
 	default boolean equiv(AncestorsService<?> service) {
-		if (this == service)
-			return true;
-		return this.getMeta().equiv(service.getMeta()) && Objects.equals(getValue(), service.getValue()) && equivComponents(service);
+		return equiv(service.getMeta(), service.getValue(), () -> service.getComponentsStream());
 	}
 
-	default boolean equivComponents(AncestorsService<?> service) {
-		if (getComponentsStream().count() != service.getComponentsStream().count())
+	default boolean equiv(AncestorsService<?> meta, Serializable value, Supplier<Stream<? extends AncestorsService<?>>> supplier) {
+		return this.getMeta().equiv(meta) && Objects.equals(getValue(), value) && equivComponents(supplier);
+	}
+
+	default boolean equivComponents(Supplier<Stream<? extends AncestorsService<?>>> supplier) {
+		if (getComponentsStream().count() != supplier.get().count())
 			return false;
-		Iterator<?> otherComponents = service.getComponentsStream().iterator();
-		return getComponentsStream().allMatch(x -> x.equiv((AncestorsService<?>) otherComponents.next()));
+		Iterator<? extends AncestorsService<?>> otherComponents = supplier.get().iterator();
+		return getComponentsStream().allMatch(x -> x.equiv(otherComponents.next()));
 	}
 
 	default boolean isAlive() {

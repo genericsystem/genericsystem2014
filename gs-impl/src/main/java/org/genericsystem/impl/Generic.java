@@ -2,17 +2,26 @@ package org.genericsystem.impl;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.genericsystem.kernel.Vertex;
 
 public class Generic extends GenericSignature<Generic> implements GenericService<Generic> {
 
+	private List<Generic> wrap(Stream<Vertex> stream) {
+		return stream.map(this::wrap).collect(Collectors.toList());
+	}
+
+	private static List<Vertex> unwrap(Stream<Generic> stream) {
+		return stream.map(Generic::unwrap).collect(Collectors.toList());
+	}
+
 	@Override
 	public Generic wrap(Vertex vertex) {
-		List<Generic> supers = vertex.getAlive().getSupersStream().map(this::wrap).collect(Collectors.toList());
 		if (vertex.isRoot())
 			return getRoot();
-		Generic wrap = wrap(vertex.getAlive().getMeta());
-		return wrap.buildInstance().init(wrap, supers, vertex.getValue(), vertex.getAlive().getComponentsStream().map(this::wrap).collect(Collectors.toList()));
+		Vertex alive = vertex.getAlive();
+		Generic meta = wrap(alive.getMeta());
+		return meta.buildInstance().init(meta, wrap(alive.getSupersStream()), alive.getValue(), wrap(alive.getComponentsStream()));
 	}
 
 	@Override
@@ -21,7 +30,7 @@ public class Generic extends GenericSignature<Generic> implements GenericService
 		if (alive != null)
 			return alive;
 		alive = getMeta().unwrap();
-		return alive.buildInstance(getSupersStream().map(GenericService::unwrap).collect(Collectors.toList()), getValue(), getComponentsStream().map(GenericService::unwrap).collect(Collectors.toList()));
+		return alive.buildInstance(unwrap(getSupersStream()), getValue(), unwrap(getComponentsStream()));
 	}
 
 	@Override
