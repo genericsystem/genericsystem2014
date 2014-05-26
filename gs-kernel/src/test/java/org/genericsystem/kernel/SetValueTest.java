@@ -3,6 +3,7 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.testng.annotations.Test;
@@ -174,8 +175,6 @@ public class SetValueTest {
 		assert vertex1asNewCar.equals(vertex2asNewNewBeetle.getMeta());
 	}
 
-	// FIXME
-	@Test(enabled = false)
 	public void test20_setValueOnInheriting_medium_LVL2_NewValueOnLVL1() {
 		// given
 		Vertex engine = new Root();
@@ -188,16 +187,25 @@ public class SetValueTest {
 		Vertex newVehicle = vehicle.setValue(newValue);
 
 		// then
-		assert newValue.equals(newVehicle.getValue());
+		assert newVehicle.isAlive();
+		assert !vehicle.isAlive();
 		assert !car.isAlive();
+
+		assert newValue.equals(newVehicle.getValue());
 		assert engine.equals(newVehicle.getMeta());
 		assert engine.computeAllDependencies().contains(newVehicle);
-		Vertex newCar = newVehicle.getInheritings().iterator().next();
-		assert newCar.getSupersStream().iterator().hasNext();
-		Vertex superOfNewCar = newCar.getSupersStream().iterator().next();
-		assert !newValue.equals(newCar.getSupersStream().iterator().hasNext());
-		assert newValue.equals(superOfNewCar.getValue());
+		assert newVehicle.computeAllDependencies().size() == 2;
+		assert newVehicle.computeAllDependencies().contains(newVehicle);
+		Vertex newCar = newVehicle.computeAllDependencies().stream().collect(Collectors.toList()).get(0);
+		assert newCar.isAlive();
+		if (newValue.equals(newCar.getValue()))
+			newCar = newVehicle.computeAllDependencies().stream().collect(Collectors.toList()).get(1);
 		assert engine.equals(newCar.getMeta());
+		assert car.getValue().equals(newCar.getValue());
+		List<Vertex> newCarSupers = newCar.getSupersStream().collect(Collectors.toList());
+		assert newCarSupers.size() == 1;
+		Vertex newVehicleFromNewCar = newCarSupers.get(0);
+		assert newValue.equals(newVehicleFromNewCar.getValue());
 	}
 
 	public void test40_setValueOnComponent_medium_LVL2_NewValueOnLVL1() {
@@ -230,8 +238,6 @@ public class SetValueTest {
 		return null;
 	}
 
-	// FIXME
-	@Test(enabled = false)
 	public void test60_setValueOnAll_advanced_LVL3_NewValueOnLVL1() {
 		// given
 		Vertex engine = new Root();
@@ -263,9 +269,15 @@ public class SetValueTest {
 		assert newValue.equals(newMachine.getValue());
 
 		// then 4. newDependency of engine
+		// assert engine.getInheritings().size() == 1;
+		// Vertex newMachineFromEngine = engine.getInheritings().stream().collect(Collectors.toList()).get(0);
+		// newValue.equals(newMachineFromEngine);
 		// TODO
 
 		// then 5. newValue of vehicle
+		// assert newMachine.getInheritings().size() == 1;
+		// Vertex newVehicleFromNewMachine = newMachine.getInheritings().stream().collect(Collectors.toList()).get(0);
+		// assert vehicle.getValue().equals(newVehicleFromNewMachine.getValue());
 		// TODO
 
 		// then 6. newValue of power
