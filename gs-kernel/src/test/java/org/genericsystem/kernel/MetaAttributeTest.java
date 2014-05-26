@@ -10,7 +10,7 @@ public class MetaAttributeTest extends AbstractTest {
 
 	public void testInstantiationOfMetaAttribute() {
 		Root engine = new Root();
-		Vertex metaAttribute = engine.addInstance(engine, Statics.ENGINE_VALUE, engine);
+		Vertex metaAttribute = engine.setMetaAttribut();
 		assert engine.getLevel() == 0;
 		assert metaAttribute.getLevel() == 0;
 	}
@@ -34,7 +34,7 @@ public class MetaAttributeTest extends AbstractTest {
 	public void testHolderWithMetaAttribut() {
 		// Given
 		Root engine = new Root();
-		Vertex metaAttribute = engine.addInstance(engine, Statics.ENGINE_VALUE, engine);
+		Vertex metaAttribute = engine.setMetaAttribut();
 		assert metaAttribute.inheritsFrom(engine) : metaAttribute.info();
 
 		Vertex vehicle = engine.addInstance("Vehicle");
@@ -53,7 +53,7 @@ public class MetaAttributeTest extends AbstractTest {
 	public void testMetaAttributeWithInheritance() {
 		// Given
 		Root engine = new Root();
-		Vertex metaAttribute = engine.addInstance(engine, Statics.ENGINE_VALUE, engine);
+		Vertex metaAttribute = engine.setMetaAttribut();
 
 		Vertex vehicle = engine.addInstance("Vehicle");
 		assert metaAttribute.isMetaOf(metaAttribute, Collections.emptyList(), "Power", Arrays.asList(vehicle));
