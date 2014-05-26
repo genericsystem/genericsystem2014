@@ -43,7 +43,7 @@ public abstract class Signature<T extends Signature<T>> implements DisplayServic
 		return (T) this;
 	}
 
-	protected void checkIsAlive() {
+	public void checkIsAlive() {
 		if (!isAlive())
 			rollbackAndThrowException(new NotAliveException(info()));
 	}

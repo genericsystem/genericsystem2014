@@ -14,7 +14,7 @@ public class Engine extends Generic implements EngineService<Generic> {
 
 	public Engine() {
 		cacheLocal.set(buildCache(new Transaction<>(this)));
-		init(0, null, Collections.emptyList(), Statics.ENGINE_VALUE, Collections.emptyList()).computeSupers();
+		init(0, null, Collections.emptyList(), Statics.ENGINE_VALUE, Collections.emptyList());
 	}
 
 	@Override
