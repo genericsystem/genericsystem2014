@@ -3,6 +3,7 @@ package org.genericsystem.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Vertex;
 
 public class Generic extends GenericSignature<Generic> implements GenericService<Generic> {
@@ -21,7 +22,7 @@ public class Generic extends GenericSignature<Generic> implements GenericService
 			return getRoot();
 		Vertex alive = vertex.getAlive();
 		Generic meta = wrap(alive.getMeta());
-		return meta.buildInstance().init(meta, wrap(alive.getSupersStream()), alive.getValue(), wrap(alive.getComponentsStream()));
+		return meta.buildInstance().initFromSupers(meta, wrap(alive.getSupersStream()), alive.getValue(), wrap(alive.getComponentsStream()));
 	}
 
 	@Override

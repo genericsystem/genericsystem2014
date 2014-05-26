@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Vertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +65,7 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 	}
 
 	default boolean equiv(AncestorsService<? extends AncestorsService<?>> service) {
-		return equiv(service.getMeta(), service.getValue(), service.getComponents());
+		return service == null ? false : equiv(service.getMeta(), service.getValue(), service.getComponents());
 	}
 
 	default boolean equiv(AncestorsService<?> ancestorsService, Serializable value, List<? extends AncestorsService<?>> components) {
@@ -79,8 +80,7 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 	}
 
 	default boolean isAlive() {
-		T alive = getAlive();
-		return alive != null ? equiv(alive) : false;
+		return equals(getAlive());
 	}
 
 	default T getAlive() {

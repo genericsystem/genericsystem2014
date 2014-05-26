@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.services.RestructuratorService;
 
 public abstract class Restructurator<T extends RestructuratorService<T>> extends HashMap<T, T> {
