@@ -35,4 +35,8 @@ public interface SystemPropertiesService {
 	default boolean isReferentialIntegrity(int pos) {
 		return pos != Statics.BASE_POSITION;
 	}
+
+	default boolean isReferentialIntegrity() {
+		return isEnabled(PropertyConstraint.class);
+	}
 }

@@ -1,7 +1,6 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,9 +8,9 @@ import java.util.stream.Collectors;
 import org.testng.annotations.Test;
 
 @Test
-public class SetValueTest {
+public class VertexRestructurationTest {
 
-	public void test01_setValueOnInstance_easy_NewValue_OK() {
+	public void test001_setValueOnInstance_easy_NewValue_OK() {
 		// given
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
@@ -24,7 +23,7 @@ public class SetValueTest {
 		assert newValue.equals(newVehicle.getValue());
 	}
 
-	public void test02_setValueOnInstance_easy_NewVertex_isAliveOK() {
+	public void test002_setValueOnInstance_easy_NewVertex_isAliveOK() {
 		// given
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
@@ -36,7 +35,7 @@ public class SetValueTest {
 		assert newVehicle.isAlive();
 	}
 
-	public void test03_setValueOnInstance_easy_LastValue_OK() {
+	public void test003_setValueOnInstance_easy_LastValue_OK() {
 		// given
 		Vertex engine = new Root();
 		String lastValue = "Vehicle";
@@ -50,7 +49,7 @@ public class SetValueTest {
 		assert lastValue.equals(vehicle.getValue());
 	}
 
-	public void test04_setValueOnInstance_easy_LastVertex_isAliveKO() {
+	public void test004_setValueOnInstance_easy_LastVertex_isAliveKO() {
 		// given
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
@@ -62,7 +61,7 @@ public class SetValueTest {
 		assert !vehicle.isAlive();
 	}
 
-	public void test05_setValueOnInstance_easy_NewValue_differentLastValue() {
+	public void test005_setValueOnInstance_easy_NewValue_differentLastValue() {
 		// given
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
@@ -74,7 +73,7 @@ public class SetValueTest {
 		assert !vehicle.equals(newVehicle);
 	}
 
-	public void test06_setValueOnInstance_medium_LVL2_NewValueOnLVL1() {
+	public void test006_setValueOnInstance_medium_LVL2_NewValueOnLVL1() {
 		// given
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
@@ -93,7 +92,7 @@ public class SetValueTest {
 		assert newValue.equals(newCar.getMeta().getValue());
 	}
 
-	public void test06_setValueOnInstance_medium_LVL2_NewValueOnLVL1_NoCollateralDommage() {
+	public void test006_setValueOnInstance_medium_LVL2_NewValueOnLVL1_NoCollateralDommage() {
 		// given
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
@@ -110,7 +109,7 @@ public class SetValueTest {
 		assert cave.isAlive();
 	}
 
-	public void test07_setValueOnInstance_medium_LVL3_NewValueOnLVL1() {
+	public void test007_setValueOnInstance_medium_LVL3_NewValueOnLVL1() {
 		// given
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
@@ -130,22 +129,20 @@ public class SetValueTest {
 		assert !engineAliveDependencies.contains(car);
 		assert !engineAliveDependencies.contains(newBeetle);
 
-		// FIXME: ordre non garanti
-		Iterator<Vertex> vertexIterator = engineAliveDependencies.iterator();
-		Vertex vertex1asNewVehicle = vertexIterator.next();
-		assert "elciheV".equals(vertex1asNewVehicle.getValue());
+		Vertex vertex1asNewVehicle = findElement(newValue, engineAliveDependencies.stream().collect(Collectors.toList()));
+		assert vertex1asNewVehicle != null;
 		assert engine.equals(vertex1asNewVehicle.getMeta());
 
-		Vertex vertex2asNewCar = vertexIterator.next();
-		assert "Car".equals(vertex2asNewCar.getValue());
+		Vertex vertex2asNewCar = findElement(valueCar, engineAliveDependencies.stream().collect(Collectors.toList()));
+		assert vertex2asNewCar != null;
 		assert vertex1asNewVehicle.equals(vertex2asNewCar.getMeta());
 
-		Vertex vertex3asNewNewBeetle = vertexIterator.next();
-		assert "NewBeetle".equals(vertex3asNewNewBeetle.getValue());
+		Vertex vertex3asNewNewBeetle = findElement(valueNewBeetle, engineAliveDependencies.stream().collect(Collectors.toList()));
+		assert vertex3asNewNewBeetle != null;
 		assert vertex2asNewCar.equals(vertex3asNewNewBeetle.getMeta());
 	}
 
-	public void test08_setValueOnInstance_medium_LVL3_NewValueOnLVL2() {
+	public void test008_setValueOnInstance_medium_LVL3_NewValueOnLVL2() {
 		// given
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
@@ -164,18 +161,16 @@ public class SetValueTest {
 		assert !engineAliveDependencies.contains(car);
 		assert !engineAliveDependencies.contains(newBeetle);
 
-		// FIXME: ordre non garanti
-		Iterator<Vertex> vertexIterator = engineAliveDependencies.iterator();
-		Vertex vertex1asNewCar = vertexIterator.next();
-		assert newValue.equals(vertex1asNewCar.getValue());
+		Vertex vertex1asNewCar = findElement(newValue, engineAliveDependencies.stream().collect(Collectors.toList()));
+		assert vertex1asNewCar != null;
 		assert vehicle.equals(vertex1asNewCar.getMeta());
 
-		Vertex vertex2asNewNewBeetle = vertexIterator.next();
-		assert valueNewBeetle.equals(vertex2asNewNewBeetle.getValue());
+		Vertex vertex2asNewNewBeetle = findElement(valueNewBeetle, engineAliveDependencies.stream().collect(Collectors.toList()));
+		assert vertex2asNewNewBeetle != null;
 		assert vertex1asNewCar.equals(vertex2asNewNewBeetle.getMeta());
 	}
 
-	public void test20_setValueOnInheriting_medium_LVL2_NewValueOnLVL1() {
+	public void test020_setValueOnInheriting_medium_LVL2_NewValueOnLVL1() {
 		// given
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
@@ -208,7 +203,7 @@ public class SetValueTest {
 		assert newValue.equals(newVehicleFromNewCar.getValue());
 	}
 
-	public void test40_setValueOnComponent_medium_LVL2_NewValueOnLVL1() {
+	public void test040_setValueOnComponent_medium_LVL2_NewValueOnLVL1() {
 		// given
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
@@ -238,7 +233,7 @@ public class SetValueTest {
 		return null;
 	}
 
-	public void test60_setValueOnAll_advanced_LVL3_NewValueOnLVL1() {
+	public void test060_setValueOnAll_advanced_LVL3_NewValueOnLVL1() {
 		// given
 		Vertex engine = new Root();
 		Vertex machine = engine.addInstance("Machine");
@@ -308,6 +303,13 @@ public class SetValueTest {
 		assert newCar.getInheritings().size() == 0;
 	}
 
+	/**
+	 * @param value
+	 *            the value of the vertex expected
+	 * @param vertexList
+	 *            the list of vertex in which we find the value
+	 * @return first vertex with the expected value, null otherwise
+	 */
 	private Vertex findElement(Serializable value, List<Vertex> vertexList) {
 		assert value != null;
 		for (Vertex element : vertexList)
@@ -316,7 +318,57 @@ public class SetValueTest {
 		return null;
 	}
 
+	public void test101_removeOnType_easy_OK() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+
+		// when
+		Vertex newVehicle = vehicle.remove();
+
+		// then
+		assert newVehicle == null;
+		assert !vehicle.isAlive();
+		assert engine.computeAllDependencies().stream().count() == 1;
+		assert engine.computeAllDependencies().contains(engine);
+	}
+
+	public void test102_removeOnTypeWithSubType_medium_OK() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = vehicle.addInstance("Car");
+		printAll(vehicle);
+
+		// when
+		Vertex newVehicle = vehicle.remove();
+		printAll(engine);
+
+		// then
+		assert newVehicle == null;
+		assert !vehicle.isAlive();
+		assert !car.isAlive();
+
+		List<Vertex> engineDependencies = engine.computeAllDependencies().stream().collect(Collectors.toList());
+		assert engineDependencies.size() == 2;
+		Vertex newCar = findElement("Car", engineDependencies);
+		printAll(newCar);
+		assert newCar.isAlive();
+		assert "Car".equals(newCar.getValue());
+		assert newCar.computeAllDependencies().isEmpty();
+	}
+
 	@SuppressWarnings("unused")
+	@Deprecated
+	private void printAll(Vertex vertex) {
+		System.out.println("\\\\\\\\\\\\\\\\\\\\ Toutes les infos sur le vertex" + vertex.info() + "//////////");
+		printComponents(vertex);
+		printDependencies(vertex);
+		printInheritings(vertex);
+		printInstances(vertex);
+		printSupers(vertex);
+	}
+
 	@Deprecated
 	private void printInstances(Vertex vertex) {
 		System.out.println("instances:-------------------" + vertex.info() + "---------------------");
@@ -325,7 +377,6 @@ public class SetValueTest {
 		System.out.println("----------------------------------------");
 	}
 
-	@SuppressWarnings("unused")
 	@Deprecated
 	private void printDependencies(Vertex vertex) {
 		System.out.println("dependencies:-------------------" + vertex.info() + "---------------------");
@@ -334,7 +385,6 @@ public class SetValueTest {
 		System.out.println("----------------------------------------");
 	}
 
-	@SuppressWarnings("unused")
 	@Deprecated
 	private void printInheritings(Vertex vertex) {
 		System.out.println("inheritings:-------------------" + vertex.info() + "---------------------");
@@ -343,7 +393,6 @@ public class SetValueTest {
 		System.out.println("----------------------------------------");
 	}
 
-	@SuppressWarnings("unused")
 	@Deprecated
 	private void printSupers(Vertex vertex) {
 		System.out.println("supers:-------------------" + vertex.info() + "---------------------");
@@ -352,7 +401,6 @@ public class SetValueTest {
 		System.out.println("----------------------------------------");
 	}
 
-	@SuppressWarnings("unused")
 	@Deprecated
 	private void printComponents(Vertex vertex) {
 		System.out.println("components:-------------------" + vertex.info() + "---------------------");

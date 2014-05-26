@@ -25,8 +25,7 @@ public abstract class Restructurator<T extends RestructuratorService<T>> extends
 
 	private T recreateNewVertex(T old, LinkedHashSet<T> dependenciesToRebuild) {
 		T build = rebuild();
-		if (build != null)
-			dependenciesToRebuild.remove(old);
+		dependenciesToRebuild.remove(old);
 		put(old, build);
 		return build;
 	}

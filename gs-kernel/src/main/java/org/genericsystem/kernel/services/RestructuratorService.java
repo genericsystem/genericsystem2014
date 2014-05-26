@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.Restructurator;
 
 public interface RestructuratorService<T extends RestructuratorService<T>> extends BindingService<T> {
@@ -17,6 +18,18 @@ public interface RestructuratorService<T extends RestructuratorService<T>> exten
 			@Override
 			protected T rebuild() {
 				return buildInstance().init(getMeta(), getSupersStream().collect(Collectors.toList()), value, getComponents()).plug();
+			}
+		}.rebuildAll((T) RestructuratorService.this, computeAllDependencies());
+	}
+
+	@SuppressWarnings("unchecked")
+	default T remove() {
+		return new Restructurator<T>() {
+			private static final long serialVersionUID = -2459793038860672894L;
+
+			@Override
+			protected T rebuild() {
+				return null;
 			}
 		}.rebuildAll((T) RestructuratorService.this, computeAllDependencies());
 	}
