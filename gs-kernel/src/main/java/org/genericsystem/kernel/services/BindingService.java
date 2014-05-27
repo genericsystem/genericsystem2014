@@ -13,6 +13,7 @@ import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.exceptions.AmbiguousSelectionException;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 
@@ -30,13 +31,24 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 
 	@SuppressWarnings("unchecked")
 	default T addInstance(List<T> overrides, Serializable value, T... components) {
-		for (T directInheriting : getInheritings())
-			if (directInheriting.isMetaOf(directInheriting, overrides, value, Arrays.asList(components)))
-				return directInheriting.addInstance(overrides, value, components);
+		T nearestMeta = computeNearestMeta(Collections.EMPTY_LIST, value, Arrays.asList(components));
+		if (nearestMeta != null)
+			return nearestMeta.addInstance(Collections.EMPTY_LIST, value, components);
 		T instance = getInstance(overrides, value, components);
 		if (instance != null)
 			rollbackAndThrowException(new ExistsException(instance.info()));
 		return buildInstance(overrides, value, Arrays.asList(components)).plug();
+	}
+
+	default T computeNearestMeta(List<T> overrides, Serializable subValue, List<T> subComponents) {
+		T firstDirectInheriting = null;
+		for (T directInheriting : getInheritings())
+			if (directInheriting.isMetaOf(directInheriting, overrides, subValue, subComponents))
+				if (firstDirectInheriting == null)
+					firstDirectInheriting = directInheriting;
+				else
+					rollbackAndThrowException(new AmbiguousSelectionException("Ambigous selection : " + firstDirectInheriting.info() + directInheriting.info()));
+		return firstDirectInheriting;
 	}
 
 	default T setInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {

@@ -1,5 +1,6 @@
 package org.genericsystem.kernel;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 
@@ -12,14 +13,33 @@ public class Root extends Vertex {
 		// valueCache = new ValueCache();
 	}
 
-	Vertex setMetaAttribut() {
-		Vertex instance = getInstance(Collections.singletonList(this), Statics.ENGINE_VALUE, new Vertex[] { this });
+
+	Vertex setMetaAttribute(Vertex... components) {
+
+		Vertex allComponents[] = unionOf(this, components);
+		SupersComputer<Vertex> superComputer = new SupersComputer(0, meta, Collections.EMPTY_LIST, Statics.ENGINE_VALUE, Arrays.asList(allComponents));
+		Vertex supers[] = superComputer.toArray(new Vertex[0]);
+		Vertex instance = getInstance(Arrays.asList(supers), Statics.ENGINE_VALUE, allComponents);
 		if (instance != null)
 			return instance;
-		return buildInstance().init(0, this, Collections.singletonList(this), Statics.ENGINE_VALUE, Collections.singletonList(this)).plug();
-	}
 
-	// ValueCache valueCache;
+		Vertex nearestMeta = computeNearestMeta(Collections.EMPTY_LIST, value, Arrays.asList(components));
+		if (nearestMeta != null)
+			return nearestMeta.buildInstance().init(0, nearestMeta, Arrays.asList(supers), Statics.ENGINE_VALUE, Arrays.asList(allComponents)).plug();
+
+		return buildInstance().init(0, this, Arrays.asList(supers), Statics.ENGINE_VALUE, Arrays.asList(allComponents)).plug();
+	}
+	
+	private static Vertex[] unionOf(Vertex v1, Vertex[] v2) {
+		Vertex result[] = new Vertex[v2.length + 1];
+		result[0] = v1;
+		int currentIdx = 1;
+		for (Vertex component : v2) {
+			result[currentIdx] = component;
+			currentIdx++;
+		}
+		return result;
+	}
 
 	@Override
 	public boolean isRoot() {
@@ -53,7 +73,7 @@ public class Root extends Vertex {
 
 	/*
 	 * public static class ValueCache extends HashMap<Serializable, Serializable> { private static final long serialVersionUID = 8474952153415905986L;
-	 *
+	 * 
 	 * @Override public Serializable get(Object key) { Serializable result = super.get(key); if (result == null) put(result = (Serializable) key, result); return result; } }
 	 */
 	@Override
