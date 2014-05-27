@@ -22,13 +22,7 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 
 	@SuppressWarnings("unchecked")
 	default T addInstance(Serializable value, T... components) {
-		checkSameEngine(components);
 		return addInstance(Collections.emptyList(), value, components);
-	}
-
-	default void checkSameEngine(T... components) {
-		if (Stream.of(components).anyMatch(component -> !component.getRoot().equals(getRoot())))
-			rollbackAndThrowException(new CrossEnginesAssignementsException());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -38,6 +32,8 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 
 	@SuppressWarnings("unchecked")
 	default T addInstance(List<T> overrides, Serializable value, T... components) {
+		checkSameEngine(Arrays.asList(components));
+		checkSameEngine(overrides);
 		T nearestMeta = computeNearestMeta(Collections.emptyList(), value, Arrays.asList(components));
 		if (nearestMeta != this)
 			return nearestMeta.addInstance(Collections.emptyList(), value, components);
@@ -45,6 +41,11 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 		if (instance != null)
 			rollbackAndThrowException(new ExistsException(instance.info()));
 		return buildInstance(overrides, value, Arrays.asList(components)).plug();
+	}
+
+	default void checkSameEngine(List<T> components) {
+		if (Stream.of(components.toArray()).anyMatch(component -> !((T) component).getRoot().equals(getRoot())))
+			rollbackAndThrowException(new CrossEnginesAssignementsException());
 	}
 
 	default T computeNearestMeta(List<T> overrides, Serializable subValue, List<T> subComponents) {

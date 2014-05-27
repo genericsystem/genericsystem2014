@@ -1,5 +1,7 @@
 package org.genericsystem.kernel;
 
+import java.util.Arrays;
+
 import org.genericsystem.kernel.exceptions.CrossEnginesAssignementsException;
 import org.testng.annotations.Test;
 
@@ -95,6 +97,20 @@ public class MultipleRootsTest extends AbstractTest {
 			@Override
 			public void intercept() {
 				Vertex metaRelation = engine2.setMetaAttribute(engine1);
+			}
+		}.assertIsCausedBy(CrossEnginesAssignementsException.class);
+	}
+
+	public void testEnginesWithDifferentNamesWithOverrides() {
+		Root engine1 = new Root();
+		Root engine2 = new Root("SecondEngine");
+		Vertex car = engine2.addInstance("Car");
+		Vertex robot = engine2.addInstance("Robot");
+
+		new RollbackCatcher() {
+			@Override
+			public void intercept() {
+				Vertex transformer = engine1.addInstance(Arrays.asList(car, robot), "Transformer");
 			}
 		}.assertIsCausedBy(CrossEnginesAssignementsException.class);
 	}
