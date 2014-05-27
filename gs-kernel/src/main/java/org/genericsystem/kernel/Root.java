@@ -1,6 +1,9 @@
 package org.genericsystem.kernel;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import org.genericsystem.kernel.exceptions.RollbackException;
@@ -12,14 +15,15 @@ public class Root extends Vertex {
 		// valueCache = new ValueCache();
 	}
 
-	Vertex setMetaAttribut() {
-		Vertex instance = getInstance(Collections.singletonList(this), Statics.ENGINE_VALUE, new Vertex[] { this });
+	Vertex setMetaAttribute(Vertex... components) {
+		Vertex allComponents[] = Statics.insertIntoArray(this, components, 0);
+		Vertex instance = getInstance(Statics.ENGINE_VALUE, allComponents);
 		if (instance != null)
 			return instance;
-		return buildInstance().init(0, this, Collections.singletonList(this), Statics.ENGINE_VALUE, Collections.singletonList(this)).plug();
+		List<Vertex> supersList = new ArrayList<>(new SupersComputer<>(0, meta, Collections.emptyList(), Statics.ENGINE_VALUE, Arrays.asList(allComponents)));
+		Vertex meta = computeNearestMeta(Collections.emptyList(), value, Arrays.asList(components));
+		return meta.buildInstance().init(0, meta, supersList, Statics.ENGINE_VALUE, Arrays.asList(allComponents)).plug();
 	}
-
-	// ValueCache valueCache;
 
 	@Override
 	public boolean isRoot() {
