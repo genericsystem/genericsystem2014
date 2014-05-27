@@ -6,7 +6,9 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.genericsystem.kernel.RemoveRestructurator;
 import org.genericsystem.kernel.Restructurator;
+import org.genericsystem.kernel.Vertex;
 
 public interface RestructuratorService<T extends RestructuratorService<T>> extends BindingService<T> {
 
@@ -24,15 +26,10 @@ public interface RestructuratorService<T extends RestructuratorService<T>> exten
 	}
 
 	@SuppressWarnings("unchecked")
-	default T remove() {
-		return new Restructurator<T>() {
-			private static final long serialVersionUID = -2459793038860672894L;
-
-			@Override
-			protected T rebuild() {
-				return null;
-			}
-		}.rebuildAll((T) RestructuratorService.this, computeAllDependencies());
+	default void simpleRemove() {
+		new RemoveRestructurator<T>((Vertex) RestructuratorService.this) {
+			private static final long serialVersionUID = 6513791665544090616L;
+		}.rebuildAll();
 	}
 
 	default LinkedHashSet<T> computeAllDependencies() {

@@ -8,82 +8,23 @@ import java.util.stream.Collectors;
 import org.testng.annotations.Test;
 
 @Test
-public class VertexRestructurationTest {
+public class VertexRestructurationTest extends AbstractTest {
 
-	public void test001_setValueOnInstance_easy_NewValue_OK() {
-		// given
+	public void test001_setValue_Type() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
-		String newValue = "elciheV";
-
-		// when
-		Vertex newVehicle = vehicle.setValue(newValue);
-
-		// then
-		assert newValue.equals(newVehicle.getValue());
+		Vertex vehicle2 = vehicle.setValue("Vehicle2");
+		assert "Vehicle2".equals(vehicle2.getValue());
+		assert vehicle2.isAlive();
 	}
 
-	public void test002_setValueOnInstance_easy_NewVertex_isAliveOK() {
-		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-
-		// when
-		Vertex newVehicle = vehicle.setValue("elciheV");
-
-		// then
-		assert newVehicle.isAlive();
-	}
-
-	public void test003_setValueOnInstance_easy_LastValue_OK() {
-		// given
-		Vertex engine = new Root();
-		String lastValue = "Vehicle";
-		Vertex vehicle = engine.addInstance(lastValue);
-		String newValue = "elciheV";
-
-		// when
-		vehicle.setValue(newValue);
-
-		// then
-		assert lastValue.equals(vehicle.getValue());
-	}
-
-	public void test004_setValueOnInstance_easy_LastVertex_isAliveKO() {
-		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-
-		// when
-		vehicle.setValue("elciheV");
-
-		// then
-		assert !vehicle.isAlive();
-	}
-
-	public void test005_setValueOnInstance_easy_NewValue_differentLastValue() {
-		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-
-		// when
-		Vertex newVehicle = vehicle.setValue("elciheV");
-
-		// then
-		assert !vehicle.equals(newVehicle);
-	}
-
-	public void test006_setValueOnInstance_medium_LVL2_NewValueOnLVL1() {
-		// given
+	public void test003_setValue_InstanceOfType() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		String valueCar = "Car";
 		Vertex car = vehicle.addInstance(valueCar);
 		String newValue = "elciheV";
-
-		// when
 		Vertex newVehicle = vehicle.setValue(newValue);
-
 		assert newValue.equals(newVehicle.getValue());
 		assert valueCar.equals(car.getValue());
 		assert engine == newVehicle.getMeta();
@@ -92,25 +33,20 @@ public class VertexRestructurationTest {
 		assert newValue.equals(newCar.getMeta().getValue());
 	}
 
-	public void test006_setValueOnInstance_medium_LVL2_NewValueOnLVL1_NoCollateralDommage() {
-		// given
+	public void test004_setValue_noCollateralDommage() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		vehicle.addInstance("Car");
 		String caveValue = "Cave";
 		Vertex cave = engine.addInstance(caveValue);
-
-		// when
 		vehicle.setValue("elciheV");
-
 		assert caveValue.equals(cave.getValue());
 		assert engine == cave.getMeta();
 		assert cave.getInstances().size() == 0;
 		assert cave.isAlive();
 	}
 
-	public void test007_setValueOnInstance_medium_LVL3_NewValueOnLVL1() {
-		// given
+	public void test007_setValue_Type() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		String valueCar = "Car";
@@ -119,10 +55,8 @@ public class VertexRestructurationTest {
 		Vertex newBeetle = car.addInstance(valueNewBeetle);
 		String newValue = "elciheV";
 
-		// when
 		Vertex newVehicle = vehicle.setValue(newValue);
 
-		// then
 		LinkedHashSet<Vertex> engineAliveDependencies = newVehicle.computeAllDependencies();
 		assert engineAliveDependencies.size() == 3;
 		assert !engineAliveDependencies.contains(vehicle);
@@ -142,8 +76,7 @@ public class VertexRestructurationTest {
 		assert vertex2asNewCar.equals(vertex3asNewNewBeetle.getMeta());
 	}
 
-	public void test008_setValueOnInstance_medium_LVL3_NewValueOnLVL2() {
-		// given
+	public void test008_setValue_Type() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		String valueCar = "Car";
@@ -152,10 +85,8 @@ public class VertexRestructurationTest {
 		Vertex newBeetle = car.addInstance(valueNewBeetle);
 		String newValue = "raC";
 
-		// when
 		Vertex newCar = car.setValue(newValue);
 
-		// then
 		LinkedHashSet<Vertex> engineAliveDependencies = newCar.computeAllDependencies();
 		assert engineAliveDependencies.size() == 2;
 		assert !engineAliveDependencies.contains(car);
@@ -170,71 +101,57 @@ public class VertexRestructurationTest {
 		assert vertex1asNewCar.equals(vertex2asNewNewBeetle.getMeta());
 	}
 
-	public void test020_setValueOnInheriting_medium_LVL2_NewValueOnLVL1() {
-		// given
+	public void test020_setValue_Inheritance() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
-		String valueCar = "Car";
-		Vertex car = engine.addInstance(vehicle, valueCar);
+		String valueOptions = "Options";
+		Vertex options = engine.addInstance(vehicle, valueOptions);
 		String newValue = "elciheV";
 
-		// when
 		Vertex newVehicle = vehicle.setValue(newValue);
 
-		// then
 		assert newVehicle.isAlive();
 		assert !vehicle.isAlive();
-		assert !car.isAlive();
+		assert !options.isAlive();
 
 		assert newValue.equals(newVehicle.getValue());
 		assert engine.equals(newVehicle.getMeta());
 		assert engine.computeAllDependencies().contains(newVehicle);
 		assert newVehicle.computeAllDependencies().size() == 2;
 		assert newVehicle.computeAllDependencies().contains(newVehicle);
-		Vertex newCar = newVehicle.computeAllDependencies().stream().collect(Collectors.toList()).get(0);
-		assert newCar.isAlive();
-		if (newValue.equals(newCar.getValue()))
-			newCar = newVehicle.computeAllDependencies().stream().collect(Collectors.toList()).get(1);
-		assert engine.equals(newCar.getMeta());
-		assert car.getValue().equals(newCar.getValue());
-		List<Vertex> newCarSupers = newCar.getSupersStream().collect(Collectors.toList());
-		assert newCarSupers.size() == 1;
-		Vertex newVehicleFromNewCar = newCarSupers.get(0);
-		assert newValue.equals(newVehicleFromNewCar.getValue());
+		Vertex newOptions = newVehicle.computeAllDependencies().stream().collect(Collectors.toList()).get(0);
+		assert newOptions.isAlive();
+		if (newValue.equals(newOptions.getValue()))
+			newOptions = newVehicle.computeAllDependencies().stream().collect(Collectors.toList()).get(1);
+		assert engine.equals(newOptions.getMeta());
+		assert options.getValue().equals(newOptions.getValue());
+		List<Vertex> newOptionsSupers = newOptions.getSupersStream().collect(Collectors.toList());
+		assert newOptionsSupers.size() == 1;
+		Vertex newVehicleFromNewOptions = newOptionsSupers.get(0);
+		assert newValue.equals(newVehicleFromNewOptions.getValue());
 	}
 
-	public void test040_setValueOnComponent_medium_LVL2_NewValueOnLVL1() {
-		// given
+	public void test040_setValue_Component() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		String valuePower = "Power";
 		Vertex power = engine.addInstance(valuePower, vehicle);
 		String newValue = "elciheV";
 
-		// when
 		Vertex newVehicle = vehicle.setValue(newValue);
 
-		// then
 		assert newValue.equals(newVehicle.getValue());
 		assert !power.isAlive();
 		assert engine.equals(newVehicle.getMeta());
 		assert engine.computeAllDependencies().contains(newVehicle);
-		Vertex newPower = findPower(newVehicle, valuePower);
+		Vertex newPower = findElement("Power", engine.computeAllDependencies().stream().collect(Collectors.toList()));
 		assert newPower.getComponentsStream().count() == 1;
 		Vertex componentOfPower = newPower.getComponents().get(0);
 		assert newVehicle.getValue().equals(componentOfPower.getValue());
 		assert engine.equals(componentOfPower.getMeta());
 	}
 
-	private Vertex findPower(Vertex newVehicle, Serializable power) {
-		for (Vertex vertex : newVehicle.computeAllDependencies())
-			if (power.equals(vertex.getValue()))
-				return vertex;
-		return null;
-	}
-
-	public void test060_setValueOnAll_advanced_LVL3_NewValueOnLVL1() {
-		// given
+	public void test060_setValue_Type_Inheritance_Component() {
 		Vertex engine = new Root();
 		Vertex machine = engine.addInstance("Machine");
 		Vertex vehicle = engine.addInstance(machine, "Vehicle");
@@ -243,24 +160,20 @@ public class VertexRestructurationTest {
 		Vertex car = vehicle.addInstance("Car");
 		String newValue = "enihcaM";
 
-		// when
 		Vertex newMachine = machine.setValue(newValue);
 
-		// then 1. isAlive
 		assert engine.isAlive();
 		assert !machine.isAlive();
 		assert !vehicle.isAlive();
 		assert !power.isAlive();
 		assert !car.isAlive();
 
-		// then 2. metas
 		assert engine.equals(engine.getMeta());
 		assert engine.equals(machine.getMeta());
 		assert engine.equals(vehicle.getMeta());
 		assert engine.equals(power.getMeta());
 		assert vehicle.equals(car.getMeta());
 
-		// then 3. newValue of machine
 		assert newValue.equals(newMachine.getValue());
 		assert newMachine.getComponents().size() == 0;
 		assert newMachine.getSupersStream().count() == 0;
@@ -268,14 +181,12 @@ public class VertexRestructurationTest {
 		assert newMachine.getInstances().size() == 0;
 		assert newMachine.getInheritings().size() == 1;
 
-		// then 4. check if we do not lose a dependency or instance in the process via engine
 		assert engine.getComponents().size() == 0;
 		assert engine.getSupersStream().count() == 0;
 		assert engine.computeAllDependencies().size() == 5;
 		assert engine.getInstances().size() == 3;
 		assert engine.getInheritings().size() == 0;
 
-		// then 5. check newVehicle
 		Vertex newVehicle = findElement("Vehicle", newMachine.computeAllDependencies().stream().collect(Collectors.toList()));
 		assert newVehicle != null;
 		assert newVehicle.getComponents().size() == 0;
@@ -284,7 +195,6 @@ public class VertexRestructurationTest {
 		assert newVehicle.getInstances().size() == 1;
 		assert newVehicle.getInheritings().size() == 0;
 
-		// then 6. check newPower
 		Vertex newPower = findElement("Power", newMachine.computeAllDependencies().stream().collect(Collectors.toList()));
 		assert newPower != null;
 		assert newPower.getComponents().size() == 1;
@@ -293,7 +203,6 @@ public class VertexRestructurationTest {
 		assert newPower.getInstances().size() == 0;
 		assert newPower.getInheritings().size() == 0;
 
-		// then 7. check newCar
 		Vertex newCar = findElement("Car", newMachine.computeAllDependencies().stream().collect(Collectors.toList()));
 		assert newCar != null;
 		assert newCar.getComponents().size() == 0;
@@ -301,6 +210,161 @@ public class VertexRestructurationTest {
 		assert newCar.computeAllDependencies().size() == 1;
 		assert newCar.getInstances().size() == 0;
 		assert newCar.getInheritings().size() == 0;
+	}
+
+	public void test101_remove_Type() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+
+		// when
+		vehicle.simpleRemove();
+
+		// then
+		assert !vehicle.isAlive();
+		assert engine.computeAllDependencies().stream().count() == 1;
+		assert engine.computeAllDependencies().contains(engine);
+	}
+
+	public void test102_remove_SubType() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = vehicle.addInstance("Car");
+
+		// when
+		vehicle.simpleRemove();
+
+		// then
+		assert !vehicle.isAlive();
+		assert !car.isAlive();
+
+		List<Vertex> engineDependencies = engine.computeAllDependencies().stream().collect(Collectors.toList());
+		assert engineDependencies.size() == 2;
+		Vertex newCar = findElement("Car", engineDependencies);
+		assert newCar.isAlive();
+		assert "Car".equals(newCar.getValue());
+		assert newCar.computeAllDependencies().size() == 1;
+		assert newCar.computeAllDependencies().contains(newCar);
+	}
+
+	public void test103_remove_with2SubTypes() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex automatic = engine.addInstance(vehicle, "Automatic");
+
+		// when
+		vehicle.simpleRemove();
+
+		// then
+		assert !vehicle.isAlive();
+		assert !car.isAlive();
+		assert !automatic.isAlive();
+
+		List<Vertex> engineDependencies = engine.computeAllDependencies().stream().collect(Collectors.toList());
+		assert engineDependencies.size() == 3;
+		assert engine.getAllInstances().count() == 2;
+
+		Vertex newCar = findElement("Car", engineDependencies);
+		assert newCar.isAlive();
+		assert "Car".equals(newCar.getValue());
+		assert newCar.computeAllDependencies().size() == 1;
+		assert newCar.getAllInstances().count() == 0;
+		assert newCar.computeAllDependencies().contains(newCar);
+
+		Vertex newAutomatic = findElement("Automatic", engineDependencies);
+		assert newAutomatic.isAlive();
+		assert "Automatic".equals(newAutomatic.getValue());
+		assert newAutomatic.computeAllDependencies().size() == 1;
+		assert newAutomatic.getAllInstances().count() == 0;
+		assert newAutomatic.computeAllDependencies().contains(newAutomatic);
+	}
+
+	public void test104_remove_SubSubTypes() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex automatic = engine.addInstance(car, "Automatic");
+
+		// when
+		vehicle.simpleRemove();
+
+		// then
+		assert !vehicle.isAlive();
+		assert !car.isAlive();
+		assert !automatic.isAlive();
+
+		List<Vertex> engineDependencies = engine.computeAllDependencies().stream().collect(Collectors.toList());
+		assert engineDependencies.size() == 3;
+		assert engine.getAllInstances().count() == 2;
+
+		Vertex newCar = findElement("Car", engineDependencies);
+		assert newCar.isAlive();
+		assert "Car".equals(newCar.getValue());
+		assert newCar.computeAllDependencies().size() == 2;
+		assert newCar.getSupersStream().count() == 0;
+
+		Vertex newAutomatic = findElement("Automatic", newCar.computeAllDependencies().stream().collect(Collectors.toList()));
+		assert newAutomatic.isAlive();
+		assert "Automatic".equals(newAutomatic.getValue());
+		assert newAutomatic.computeAllDependencies().size() == 1;
+		assert newAutomatic.getSupersStream().count() == 1;
+		assert newAutomatic.getSupersStream().collect(Collectors.toList()).contains(newCar);
+	}
+
+	public void test105_removeOnTypeWithAttribute_medium_OK() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+
+		// when
+		car.simpleRemove();
+
+		// then
+		assert vehicle.isAlive();
+		assert !car.isAlive();
+
+		List<Vertex> engineDependencies = engine.computeAllDependencies().stream().collect(Collectors.toList());
+		assert engineDependencies.size() == 2;
+		assert engine.getAllInstances().count() == 1;
+
+		assert findElement("Engine", engineDependencies) != null;
+		assert findElement("Vehicle", engineDependencies) != null;
+	}
+
+	@Test(enabled = false)
+	public void test106_removeOnTypeWithAttribute_AttributeUp_medium_OK() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = vehicle.addInstance("Car");
+		Vertex options = engine.addInstance(vehicle, "Options");
+
+		// when
+		vehicle.simpleRemove();
+
+		// then
+		assert !vehicle.isAlive();
+		assert !options.isAlive();
+		assert !car.isAlive();
+
+		List<Vertex> engineDependencies = engine.computeAllDependencies().stream().collect(Collectors.toList());
+		assert engineDependencies.size() == 3;
+		assert engine.getAllInstances().count() == 2;
+
+		Vertex newOptions = findElement("Options", engineDependencies);
+		assert newOptions != null;
+		assert newOptions.getSupersStream().count() == 1;
+		assert "Car".equals(newOptions.getSupersStream().collect(Collectors.toList()).get(0).getValue());
+
+		Vertex newCar = findElement("Car", engineDependencies);
+		assert newCar != null;
+		assert newCar.getAllInheritings().count() == 1;
+		assert "Options".equals(newCar.getAllInheritings().collect(Collectors.toList()).get(0));
 	}
 
 	/**
@@ -318,95 +382,118 @@ public class VertexRestructurationTest {
 		return null;
 	}
 
-	public void test101_removeOnType_easy_OK() {
-		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-
-		// when
-		Vertex newVehicle = vehicle.remove();
-
-		// then
-		assert newVehicle == null;
-		assert !vehicle.isAlive();
-		assert engine.computeAllDependencies().stream().count() == 1;
-		assert engine.computeAllDependencies().contains(engine);
-	}
-
-	public void test102_removeOnTypeWithSubType_medium_OK() {
-		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = vehicle.addInstance("Car");
-		printAll(vehicle);
-
-		// when
-		Vertex newVehicle = vehicle.remove();
-		printAll(engine);
-
-		// then
-		assert newVehicle == null;
-		assert !vehicle.isAlive();
-		assert !car.isAlive();
-
-		List<Vertex> engineDependencies = engine.computeAllDependencies().stream().collect(Collectors.toList());
-		assert engineDependencies.size() == 2;
-		Vertex newCar = findElement("Car", engineDependencies);
-		printAll(newCar);
-		assert newCar.isAlive();
-		assert "Car".equals(newCar.getValue());
-		assert newCar.computeAllDependencies().isEmpty();
-	}
-
 	@SuppressWarnings("unused")
 	@Deprecated
-	private void printAll(Vertex vertex) {
-		System.out.println("\\\\\\\\\\\\\\\\\\\\ Toutes les infos sur le vertex" + vertex.info() + "//////////");
-		printComponents(vertex);
-		printDependencies(vertex);
-		printInheritings(vertex);
-		printInstances(vertex);
-		printSupers(vertex);
+	private String printAll(Vertex vertex) {
+		StringBuffer print = new StringBuffer();
+		print.append("\\\\ Toutes les infos sur le vertex");
+		print.append(vertex.info());
+		print.append(" //\n");
+		print.append("- isAlive :");
+		print.append(vertex.isAlive());
+		print.append(" / meta :");
+		print.append(vertex.getMeta());
+		print.append(" / meta isAlive:");
+		print.append(vertex.getMeta().isAlive());
+
+		addComponents(vertex, print);
+		addDependencies(vertex, print);
+		addInheritings(vertex, print);
+		addInstances(vertex, print);
+		addSupers(vertex, print);
+		print.append("\n");
+		return print.toString();
 	}
 
 	@Deprecated
-	private void printInstances(Vertex vertex) {
-		System.out.println("instances:-------------------" + vertex.info() + "---------------------");
-		for (Vertex vertexInstance : vertex.getInstances())
-			System.out.println(vertexInstance.info() + " - alive : " + vertexInstance.isAlive() + " - meta : " + vertexInstance.getMeta().info() + "meta alive : " + vertexInstance.getMeta().isAlive());
-		System.out.println("----------------------------------------");
+	private StringBuffer printInstances(Vertex vertex) {
+		StringBuffer add = new StringBuffer();
+		addInstances(vertex, add);
+		return add;
 	}
 
 	@Deprecated
-	private void printDependencies(Vertex vertex) {
-		System.out.println("dependencies:-------------------" + vertex.info() + "---------------------");
-		for (Vertex vertexDependency : vertex.computeAllDependencies())
-			System.out.println(vertexDependency.info() + " - alive : " + vertexDependency.isAlive() + " - meta : " + vertexDependency.getMeta().info() + "meta alive : " + vertexDependency.getMeta().isAlive());
-		System.out.println("----------------------------------------");
+	private void addInstances(Vertex vertex, StringBuffer stringBuffer) {
+		addLib("instances of", vertex, stringBuffer);
+		addVertexList(vertex.getInstances().stream().collect(Collectors.toList()), stringBuffer);
+		stringBuffer.append("\n");
 	}
 
 	@Deprecated
-	private void printInheritings(Vertex vertex) {
-		System.out.println("inheritings:-------------------" + vertex.info() + "---------------------");
-		for (Vertex vertexInheriting : vertex.getInheritings())
-			System.out.println(vertexInheriting.info() + " - alive : " + vertexInheriting.isAlive() + " - meta : " + vertexInheriting.getMeta().info() + "meta alive : " + vertexInheriting.getMeta().isAlive());
-		System.out.println("----------------------------------------");
+	private void addVertexList(List<Vertex> vertexList, StringBuffer stringBuffer) {
+		for (Vertex vertexInstance : vertexList) {
+			stringBuffer.append(vertexInstance.info());
+			stringBuffer.append(" - alive : ");
+			stringBuffer.append(vertexInstance.isAlive());
+			stringBuffer.append(" / meta : ");
+			stringBuffer.append(vertexInstance.getMeta().info());
+			stringBuffer.append(" - meta alive : ");
+			stringBuffer.append(vertexInstance.getMeta().isAlive());
+			stringBuffer.append("\n");
+		}
 	}
 
 	@Deprecated
-	private void printSupers(Vertex vertex) {
-		System.out.println("supers:-------------------" + vertex.info() + "---------------------");
-		for (Vertex vertexSuper : vertex.getSupersStream().collect(Collectors.toList()))
-			System.out.println(vertexSuper.info() + " - alive : " + vertexSuper.isAlive() + " - meta : " + vertexSuper.getMeta().info() + "meta alive : " + vertexSuper.getMeta().isAlive());
-		System.out.println("----------------------------------------");
+	private void addLib(String lib, Vertex vertex, StringBuffer stringBuffer) {
+		stringBuffer.append(lib);
+		stringBuffer.append(" :-------------------");
+		stringBuffer.append(vertex.info());
+		stringBuffer.append("---------------------\n");
 	}
 
 	@Deprecated
-	private void printComponents(Vertex vertex) {
-		System.out.println("components:-------------------" + vertex.info() + "---------------------");
-		for (Vertex vertexComponent : vertex.getComponents())
-			System.out.println(vertexComponent.info() + " - alive : " + vertexComponent.isAlive() + " - meta : " + vertexComponent.getMeta().info() + "meta alive : " + vertexComponent.getMeta().isAlive());
-		System.out.println("----------------------------------------");
+	private StringBuffer printDependencies(Vertex vertex) {
+		StringBuffer add = new StringBuffer();
+		addDependencies(vertex, add);
+		return add;
 	}
 
+	@Deprecated
+	private void addDependencies(Vertex vertex, StringBuffer add) {
+		addLib("dependencies of", vertex, add);
+		addVertexList(vertex.computeAllDependencies().stream().collect(Collectors.toList()), add);
+		add.append("\n");
+	}
+
+	@Deprecated
+	private StringBuffer printInheritings(Vertex vertex) {
+		StringBuffer add = new StringBuffer();
+		addInheritings(vertex, add);
+		return add;
+	}
+
+	@Deprecated
+	private void addInheritings(Vertex vertex, StringBuffer add) {
+		addLib("inheritings of", vertex, add);
+		addVertexList(vertex.getInheritings().stream().collect(Collectors.toList()), add);
+		add.append("\n");
+	}
+
+	@Deprecated
+	private StringBuffer printSupers(Vertex vertex) {
+		StringBuffer add = new StringBuffer();
+		addSupers(vertex, add);
+		return add;
+	}
+
+	@Deprecated
+	private void addSupers(Vertex vertex, StringBuffer add) {
+		addLib("supers of", vertex, add);
+		addVertexList(vertex.getSupersStream().collect(Collectors.toList()), add);
+		add.append("\n");
+	}
+
+	@Deprecated
+	private StringBuffer printComponents(Vertex vertex) {
+		StringBuffer add = new StringBuffer();
+		addComponents(vertex, add);
+		return add;
+	}
+
+	@Deprecated
+	private void addComponents(Vertex vertex, StringBuffer add) {
+		addLib("components of", vertex, add);
+		addVertexList(vertex.getComponents(), add);
+		add.append("\n");
+	}
 }
