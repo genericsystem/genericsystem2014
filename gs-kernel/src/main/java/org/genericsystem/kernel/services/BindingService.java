@@ -31,9 +31,9 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 
 	@SuppressWarnings("unchecked")
 	default T addInstance(List<T> overrides, Serializable value, T... components) {
-		T nearestMeta = computeNearestMeta(Collections.EMPTY_LIST, value, Arrays.asList(components));
-		if (nearestMeta != null)
-			return nearestMeta.addInstance(Collections.EMPTY_LIST, value, components);
+		T nearestMeta = computeNearestMeta(Collections.emptyList(), value, Arrays.asList(components));
+		if (nearestMeta != this)
+			return nearestMeta.addInstance(Collections.emptyList(), value, components);
 		T instance = getInstance(overrides, value, components);
 		if (instance != null)
 			rollbackAndThrowException(new ExistsException(instance.info()));
@@ -48,7 +48,7 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 					firstDirectInheriting = directInheriting;
 				else
 					rollbackAndThrowException(new AmbiguousSelectionException("Ambigous selection : " + firstDirectInheriting.info() + directInheriting.info()));
-		return firstDirectInheriting;
+		return firstDirectInheriting == null ? (T) this : firstDirectInheriting;
 	}
 
 	default T setInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {

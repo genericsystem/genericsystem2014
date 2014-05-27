@@ -1,7 +1,9 @@
 package org.genericsystem.kernel;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import org.genericsystem.kernel.exceptions.RollbackException;
@@ -13,32 +15,14 @@ public class Root extends Vertex {
 		// valueCache = new ValueCache();
 	}
 
-
 	Vertex setMetaAttribute(Vertex... components) {
-
-		Vertex allComponents[] = unionOf(this, components);
-		SupersComputer<Vertex> superComputer = new SupersComputer(0, meta, Collections.EMPTY_LIST, Statics.ENGINE_VALUE, Arrays.asList(allComponents));
-		Vertex supers[] = superComputer.toArray(new Vertex[0]);
-		Vertex instance = getInstance(Arrays.asList(supers), Statics.ENGINE_VALUE, allComponents);
+		Vertex allComponents[] = Statics.insertIntoArray(this, components, 0);
+		Vertex instance = getInstance(Statics.ENGINE_VALUE, allComponents);
 		if (instance != null)
 			return instance;
-
-		Vertex nearestMeta = computeNearestMeta(Collections.EMPTY_LIST, value, Arrays.asList(components));
-		if (nearestMeta != null)
-			return nearestMeta.buildInstance().init(0, nearestMeta, Arrays.asList(supers), Statics.ENGINE_VALUE, Arrays.asList(allComponents)).plug();
-
-		return buildInstance().init(0, this, Arrays.asList(supers), Statics.ENGINE_VALUE, Arrays.asList(allComponents)).plug();
-	}
-	
-	private static Vertex[] unionOf(Vertex v1, Vertex[] v2) {
-		Vertex result[] = new Vertex[v2.length + 1];
-		result[0] = v1;
-		int currentIdx = 1;
-		for (Vertex component : v2) {
-			result[currentIdx] = component;
-			currentIdx++;
-		}
-		return result;
+		List<Vertex> supersList = new ArrayList<>(new SupersComputer<>(0, meta, Collections.emptyList(), Statics.ENGINE_VALUE, Arrays.asList(allComponents)));
+		Vertex meta = computeNearestMeta(Collections.emptyList(), value, Arrays.asList(components));
+		return meta.buildInstance().init(0, meta, supersList, Statics.ENGINE_VALUE, Arrays.asList(allComponents)).plug();
 	}
 
 	@Override
