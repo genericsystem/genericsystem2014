@@ -1,5 +1,6 @@
 package org.genericsystem.impl;
 
+import java.io.Serializable;
 import java.util.Collections;
 
 import org.genericsystem.kernel.Root;
@@ -8,10 +9,15 @@ import org.genericsystem.kernel.Vertex;
 
 public class Engine extends Generic implements EngineService<Generic> {
 
-	private final Root root = buildRoot();
+	private final Root root;
 
 	public Engine() {
-		init(0, null, Collections.emptyList(), Statics.ENGINE_VALUE, Collections.emptyList());
+		this(Statics.ENGINE_VALUE, Statics.ENGINE_VALUE);
+	}
+
+	public Engine(Serializable rootValue, Serializable engineValue) {
+		root = buildRoot(rootValue);
+		init(0, null, Collections.emptyList(), engineValue, Collections.emptyList());
 	}
 
 	@Override
