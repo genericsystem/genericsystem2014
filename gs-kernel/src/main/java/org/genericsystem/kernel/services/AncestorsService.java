@@ -24,7 +24,7 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 
 	default int getLevel() {
 		return 0;
-	};
+	}
 
 	default boolean isRoot() {
 		return false;
