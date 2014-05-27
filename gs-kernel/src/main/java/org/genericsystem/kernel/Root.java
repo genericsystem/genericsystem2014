@@ -10,19 +10,21 @@ import org.genericsystem.kernel.exceptions.RollbackException;
 import org.genericsystem.kernel.services.AncestorsService;
 
 public class Root extends Vertex {
-	public Root() {
-		init(0, null, Collections.emptyList(), Statics.ENGINE_VALUE, Collections.emptyList());
+	public Root(String... value) {
+		String rootValue = value.length == 0 ? Statics.ENGINE_VALUE : value[0];
+		init(0, null, Collections.emptyList(), rootValue, Collections.emptyList());
 		// valueCache = new ValueCache();
 	}
 
 	Vertex setMetaAttribute(Vertex... components) {
+		checkSameEngine(components);
 		Vertex allComponents[] = Statics.insertIntoArray(this, components, 0);
-		Vertex instance = getInstance(Statics.ENGINE_VALUE, allComponents);
+		Vertex instance = getInstance(getRoot().getValue(), allComponents);
 		if (instance != null)
 			return instance;
-		List<Vertex> supersList = new ArrayList<>(new SupersComputer<>(0, meta, Collections.emptyList(), Statics.ENGINE_VALUE, Arrays.asList(allComponents)));
+		List<Vertex> supersList = new ArrayList<>(new SupersComputer<>(0, meta, Collections.emptyList(), getRoot().getValue(), Arrays.asList(allComponents)));
 		Vertex meta = computeNearestMeta(Collections.emptyList(), value, Arrays.asList(components));
-		return meta.buildInstance().init(0, meta, supersList, Statics.ENGINE_VALUE, Arrays.asList(allComponents)).plug();
+		return meta.buildInstance().init(0, meta, supersList, getRoot().getValue(), Arrays.asList(allComponents)).plug();
 	}
 
 	@Override

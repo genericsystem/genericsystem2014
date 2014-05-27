@@ -14,6 +14,7 @@ import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.exceptions.AmbiguousSelectionException;
+import org.genericsystem.kernel.exceptions.CrossEnginesAssignementsException;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 
@@ -21,7 +22,13 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 
 	@SuppressWarnings("unchecked")
 	default T addInstance(Serializable value, T... components) {
+		checkSameEngine(components);
 		return addInstance(Collections.emptyList(), value, components);
+	}
+
+	default void checkSameEngine(T... components) {
+		if (Stream.of(components).anyMatch(component -> !component.getRoot().equals(getRoot())))
+			rollbackAndThrowException(new CrossEnginesAssignementsException());
 	}
 
 	@SuppressWarnings("unchecked")
