@@ -1,5 +1,6 @@
 package org.genericsystem.kernel;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,10 +11,12 @@ import org.genericsystem.kernel.exceptions.RollbackException;
 import org.genericsystem.kernel.services.AncestorsService;
 
 public class Root extends Vertex {
-	public Root(String... value) {
-		String rootValue = value.length == 0 ? Statics.ENGINE_VALUE : value[0];
-		init(0, null, Collections.emptyList(), rootValue, Collections.emptyList());
-		// valueCache = new ValueCache();
+	public Root() {
+		this(Statics.ENGINE_VALUE);
+	}
+
+	public Root(Serializable value) {
+		init(0, null, Collections.emptyList(), value, Collections.emptyList());
 	}
 
 	Vertex setMetaAttribute(Vertex... components) {
@@ -59,7 +62,7 @@ public class Root extends Vertex {
 
 	/*
 	 * public static class ValueCache extends HashMap<Serializable, Serializable> { private static final long serialVersionUID = 8474952153415905986L;
-	 * 
+	 *
 	 * @Override public Serializable get(Object key) { Serializable result = super.get(key); if (result == null) put(result = (Serializable) key, result); return result; } }
 	 */
 	@Override
