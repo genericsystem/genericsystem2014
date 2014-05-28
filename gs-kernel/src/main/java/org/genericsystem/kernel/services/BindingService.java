@@ -13,6 +13,8 @@ import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.exceptions.AmbiguousSelectionException;
+import org.genericsystem.kernel.exceptions.CrossEnginesAssignementsException;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 
@@ -30,13 +32,31 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 
 	@SuppressWarnings("unchecked")
 	default T addInstance(List<T> overrides, Serializable value, T... components) {
-		for (T directInheriting : getInheritings())
-			if (directInheriting.isMetaOf(directInheriting, overrides, value, Arrays.asList(components)))
-				return directInheriting.addInstance(overrides, value, components);
+		checkSameEngine(Arrays.asList(components));
+		checkSameEngine(overrides);
+		T nearestMeta = computeNearestMeta(Collections.emptyList(), value, Arrays.asList(components));
+		if (nearestMeta != this)
+			return nearestMeta.addInstance(Collections.emptyList(), value, components);
 		T instance = getInstance(overrides, value, components);
 		if (instance != null)
 			rollbackAndThrowException(new ExistsException(instance.info()));
 		return buildInstance(overrides, value, Arrays.asList(components)).plug();
+	}
+
+	default void checkSameEngine(List<T> components) {
+		if (Stream.of(components.toArray()).anyMatch(component -> !((T) component).getRoot().equals(getRoot())))
+			rollbackAndThrowException(new CrossEnginesAssignementsException());
+	}
+
+	default T computeNearestMeta(List<T> overrides, Serializable subValue, List<T> subComponents) {
+		T firstDirectInheriting = null;
+		for (T directInheriting : getInheritings())
+			if (directInheriting.isMetaOf(directInheriting, overrides, subValue, subComponents))
+				if (firstDirectInheriting == null)
+					firstDirectInheriting = directInheriting;
+				else
+					rollbackAndThrowException(new AmbiguousSelectionException("Ambigous selection : " + firstDirectInheriting.info() + directInheriting.info()));
+		return firstDirectInheriting == null ? (T) this : firstDirectInheriting;
 	}
 
 	default T setInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {

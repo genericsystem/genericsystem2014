@@ -30,6 +30,16 @@ public class Statics {
 		// return stream.<Stream<Vertex>> map(mappers).reduce(Stream.empty(), Stream::concat)
 	}
 
+	public static Vertex[] insertIntoArray(Vertex generic, Vertex[] targets, int basePos) {
+		if (basePos < 0 || basePos > targets.length)
+			throw new IllegalStateException("Unable to find a valid base position");
+		Vertex[] result = new Vertex[targets.length + 1];
+		System.arraycopy(targets, 0, result, 0, basePos);
+		result[basePos] = generic;
+		System.arraycopy(targets, basePos, result, basePos + 1, result.length - basePos - 1);
+		return result;
+	}
+
 	public static void debugCurrentThread() {
 		threadDebugged.set(System.currentTimeMillis());
 	}

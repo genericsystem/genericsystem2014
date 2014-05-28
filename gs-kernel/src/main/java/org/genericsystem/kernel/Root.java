@@ -1,6 +1,10 @@
 package org.genericsystem.kernel;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import org.genericsystem.kernel.exceptions.RollbackException;
@@ -8,18 +12,23 @@ import org.genericsystem.kernel.services.AncestorsService;
 
 public class Root extends Vertex {
 	public Root() {
-		init(0, null, Collections.emptyList(), Statics.ENGINE_VALUE, Collections.emptyList());
-		// valueCache = new ValueCache();
+		this(Statics.ENGINE_VALUE);
 	}
 
-	Vertex setMetaAttribut() {
-		Vertex instance = getInstance(Collections.singletonList(this), Statics.ENGINE_VALUE, new Vertex[] { this });
+	public Root(Serializable value) {
+		init(0, null, Collections.emptyList(), value, Collections.emptyList());
+	}
+
+	Vertex setMetaAttribute(Vertex... components) {
+		checkSameEngine(Arrays.asList(components));
+		Vertex allComponents[] = Statics.insertIntoArray(this, components, 0);
+		Vertex instance = getInstance(getRoot().getValue(), allComponents);
 		if (instance != null)
 			return instance;
-		return buildInstance().init(0, this, Collections.singletonList(this), Statics.ENGINE_VALUE, Collections.singletonList(this)).plug();
+		List<Vertex> supersList = new ArrayList<>(new SupersComputer<>(0, meta, Collections.emptyList(), getRoot().getValue(), Arrays.asList(allComponents)));
+		Vertex meta = computeNearestMeta(Collections.emptyList(), value, Arrays.asList(components));
+		return meta.buildInstance().init(0, meta, supersList, getRoot().getValue(), Arrays.asList(allComponents)).plug();
 	}
-
-	// ValueCache valueCache;
 
 	@Override
 	public boolean isRoot() {

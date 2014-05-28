@@ -2,7 +2,6 @@ package org.genericsystem.cache;
 
 import java.util.stream.Collectors;
 
-import org.genericsystem.impl.GenericService;
 import org.genericsystem.kernel.Vertex;
 
 public class Transaction<T extends GenericService<T>> extends AbstractContext<T> {

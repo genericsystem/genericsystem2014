@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import org.genericsystem.impl.GenericService;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
@@ -56,7 +55,7 @@ public class Cache<T extends GenericService<T>> extends AbstractContext<T> {
 	}
 
 	public Cache<T> mountNewCache() {
-		return ((EngineService) getEngine()).buildCache(this).start();
+		return ((EngineService<T>) getEngine()).buildCache(this).start();
 	}
 
 	public Cache<T> flushAndUnmount() {
@@ -70,11 +69,11 @@ public class Cache<T extends GenericService<T>> extends AbstractContext<T> {
 	}
 
 	public Cache<T> start() {
-		return ((EngineService) getEngine()).start(this);
+		return ((EngineService<T>) getEngine()).start(this);
 	}
 
 	public void stop() {
-		((EngineService) getEngine()).stop(this);
+		((EngineService<T>) getEngine()).stop(this);
 	}
 
 	T insert(T generic) throws RollbackException {
@@ -150,14 +149,14 @@ public class Cache<T extends GenericService<T>> extends AbstractContext<T> {
 		return getCompositesDependencies(generic, superCompositesDependenciesMap, () -> iteratorFromAliveComposite(generic, x -> x.getSuperComposites()));
 	}
 
-	private Dependencies<T> getDependencies(T generic, Map<T, Dependencies<T>> dependenciesMap, Supplier<Iterator<T>> iteratorSupplier) {
+	protected Dependencies<T> getDependencies(T generic, Map<T, Dependencies<T>> dependenciesMap, Supplier<Iterator<T>> iteratorSupplier) {
 		Dependencies<T> dependencies = dependenciesMap.get(generic);
 		if (dependencies == null)
 			dependenciesMap.put(generic, dependencies = new CacheDependencies<T>(iteratorSupplier));
 		return dependencies;
 	}
 
-	private CompositesDependencies<T> getCompositesDependencies(T generic, Map<T, CompositesDependencies<T>> dependenciesMap, Supplier<Iterator<DependenciesEntry<T>>> iteratorSupplier) {
+	protected CompositesDependencies<T> getCompositesDependencies(T generic, Map<T, CompositesDependencies<T>> dependenciesMap, Supplier<Iterator<DependenciesEntry<T>>> iteratorSupplier) {
 		CompositesDependencies<T> dependencies = dependenciesMap.get(generic);
 		if (dependencies == null)
 			dependenciesMap.put(generic, dependencies = new CacheCompositesDependencies<T>(iteratorSupplier) {
