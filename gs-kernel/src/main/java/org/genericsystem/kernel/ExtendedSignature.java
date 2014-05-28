@@ -14,7 +14,7 @@ public abstract class ExtendedSignature<T extends ExtendedSignature<T>> extends 
 		super.init(level, meta, value, components);
 		this.supers = supers;
 		checkSupers(supers);
-		checkOverridesAreReached(supers);
+		// checkOverridesAreReached(supers);
 		checkDependsSuperComponents(supers);
 		return (T) this;
 	}
@@ -29,10 +29,10 @@ public abstract class ExtendedSignature<T extends ExtendedSignature<T>> extends 
 			rollbackAndThrowException(new IllegalStateException("Supers loop detected : " + info()));
 	}
 
-	private void checkOverridesAreReached(List<T> supers) {
-		if (!supers.stream().allMatch(override -> supers.stream().anyMatch(superVertex -> superVertex.inheritsFrom(override))))
-			rollbackAndThrowException(new IllegalStateException("Unable to reach overrides : " + supers + " for : " + info()));
-	}
+	// private void checkOverridesAreReached(List<T> supers) {
+	// if (!supers.stream().allMatch(override -> supers.stream().anyMatch(superVertex -> superVertex.inheritsFrom(override))))
+	// rollbackAndThrowException(new IllegalStateException("Unable to reach overrides : " + supers + " for : " + info()));
+	// }
 
 	private void checkDependsSuperComponents(List<T> supers) {
 		getSupersStream().forEach(superVertex -> {
