@@ -5,16 +5,16 @@ import org.testng.annotations.Test;
 @Test
 public class MetaRelationTest extends AbstractTest {
 
-	public void testMetaRelation() {
+	public void test001_setMetaAttribute_engineEngine() {
 
 		Root engine = new Root();
 		Vertex metaAttribute = engine.setMetaAttribute();
 		Vertex metaRelation = engine.setMetaAttribute(engine);
-		assert metaRelation.getMeta().equals(metaAttribute);
+		assert metaRelation.getMeta() == metaAttribute;
 		assert metaRelation.inheritsFrom(metaAttribute);
 	}
 
-	public void testInstantiationOfMetaRelation() {
+	public void test002_setMetaAttribute_relation() {
 
 		Root engine = new Root();
 		Vertex metaAttribute = engine.setMetaAttribute();
