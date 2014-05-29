@@ -10,7 +10,7 @@ import org.testng.annotations.Test;
 @Test
 public class InstanciationTest extends AbstractTest {
 
-	public void testRootInstanciation() {
+	public void test001_Root_constructor() {
 		Root root = new Root();
 		assert root.getMeta().equals(root);
 		assert root.getSupersStream().count() == 0;
@@ -20,13 +20,9 @@ public class InstanciationTest extends AbstractTest {
 		assert root.isMeta();
 	}
 
-	public void testTypeInstanciation() {
+	public void test002_addInstance_root() {
 		Root root = new Root();
 		Vertex car = root.addInstance("Car");
-
-		// log.info(root.info());
-		// log.info(car.info());
-
 		assert car.getMeta().equals(root);
 		assert car.getSupersStream().count() == 0;
 		assert car.getComponentsStream().count() == 0;
@@ -37,15 +33,10 @@ public class InstanciationTest extends AbstractTest {
 		assert !car.inheritsFrom(root);
 	}
 
-	public void testTwoTypeInstanciationDifferentNames() {
+	public void test003_addInstance_2instances() {
 		Root root = new Root();
 		Vertex car = root.addInstance("Car");
 		Vertex robot = root.addInstance("Robot");
-
-		// log.info(root.info());
-		// log.info(car.info());
-		// log.info(robot.info());
-
 		assert car.getMeta().equals(root);
 		assert car.getSupersStream().count() == 0;
 		assert car.getComponentsStream().count() == 0;
@@ -54,7 +45,6 @@ public class InstanciationTest extends AbstractTest {
 		assert car.isStructural();
 		assert car.isInstanceOf(root);
 		assert !car.inheritsFrom(root);
-
 		assert robot.getMeta().equals(root);
 		assert robot.getSupersStream().count() == 0;
 		assert robot.getComponentsStream().count() == 0;
@@ -65,13 +55,9 @@ public class InstanciationTest extends AbstractTest {
 		assert !robot.inheritsFrom(root);
 	}
 
-	public void testTwoTypeInstanciationSameNamesAddInstance() {
+	public void test004_addInstance_sameValueParameter() {
 		Root root = new Root();
 		Vertex car = root.addInstance("Car");
-
-		// log.info(root.info());
-		// log.info(car.info());
-
 		new RollbackCatcher() {
 
 			@Override
@@ -81,15 +67,10 @@ public class InstanciationTest extends AbstractTest {
 		}.assertIsCausedBy(ExistsException.class);
 	}
 
-	public void testTwoTypeInstanciationSameNamesSetInstance() {
+	public void test005_setInstance_exisitingInstance() {
 		Root root = new Root();
 		Vertex car = root.addInstance("Car");
 		Vertex car2 = root.setInstance("Car");
-
-		// log.info(root.info());
-		// log.info(car.info());
-		// log.info(car2.info());
-
 		assert car == car2;
 		assert car.getMeta().equals(root);
 		assert car.getSupersStream().count() == 0;
@@ -99,42 +80,30 @@ public class InstanciationTest extends AbstractTest {
 		assert car.isStructural();
 		assert car.isInstanceOf(root);
 		assert !car.inheritsFrom(root);
-
 	}
 
-	public void testTwoTypeInstanciationWithInheritance() {
+	public void test006_addInstance_override() {
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
 		Vertex car = root.addInstance(Arrays.asList(vehicle), "Car");
-		// log.info(root.info());
-		// log.info(vehicle.info());
-		// log.info(car.info());
-
 		assert vehicle.getMeta().equals(root);
 		assert car.getMeta().equals(root);
-
 		assert root.getSupersStream().count() == 0;
 		assert vehicle.getSupersStream().count() == 0;
 		assert car.getSupersStream().count() == 1;
-
 		assert car.isInstanceOf(root);
 		assert !car.inheritsFrom(root);
-
 		assert car.inheritsFrom(vehicle);
 		assert !car.isInstanceOf(vehicle);
 		assert !vehicle.isInstanceOf(car);
-
-		// isAlive test
 		assert root.isAlive();
 		assert vehicle.isAlive();
 		assert car.isAlive();
-
 	}
 
-	public void testTypeInstanciationWithSelfInheritance() {
+	public void test007_addInstance_selfInheriting() {
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
-		// log.info(vehicle.info());
 		new RollbackCatcher() {
 
 			@Override
@@ -145,32 +114,23 @@ public class InstanciationTest extends AbstractTest {
 		}.assertIsCausedBy(ExistsException.class);
 	}
 
-	public void test3TypeInstanciationWithMultipleInheritence() {
+	public void test008_addInstance_multipleOverrides() {
 		Root root = new Root();
 		Vertex car = root.addInstance("Car");
 		Vertex robot = root.addInstance("Robot");
 		Vertex transformer = root.addInstance(Arrays.asList(car, robot), "Transformer");
-
-		// log.info(car.info());
-		// log.info(robot.info());
-		// log.info(transformer.info());
-
 		assert car.getMeta().equals(root);
 		assert robot.getMeta().equals(root);
 		assert transformer.getMeta().equals(root);
-
 		assert root.getSupersStream().count() == 0;
 		assert car.getSupersStream().count() == 0;
 		assert robot.getSupersStream().count() == 0;
 		assert transformer.getSupersStream().count() == 2;
-
 		assert transformer.getSupersStream().anyMatch(car::equals); // isAlive test
 		assert transformer.getSupersStream().anyMatch(robot::equals);
-		//
 		assert car.getComponentsStream().count() == 0;
 		assert robot.getComponentsStream().count() == 0;
 		assert transformer.getComponentsStream().count() == 0;
-		//
 		assert root.isAlive();
 		assert car.isAlive();
 		assert robot.isAlive();
@@ -178,47 +138,34 @@ public class InstanciationTest extends AbstractTest {
 
 	}
 
-	public void test5TypeInstanciationWithMultipleInheritence() {
+	public void test009_addInstance_multipleOverrides() {
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
 		Vertex car = root.addInstance(Arrays.asList(vehicle), "Car");
 		Vertex device = root.addInstance("Device");
 		Vertex robot = root.addInstance(Arrays.asList(device), "Robot");
 		Vertex transformer = root.addInstance(Arrays.asList(car, robot), "Transformer");
-
-		// log.info(vehicle.info());
-		// log.info(car.info());
-		// log.info(device.info());
-		// log.info(robot.info());
-		// log.info(transformer.info());
-
 		assert car.getMeta().equals(root);
 		assert vehicle.getMeta().equals(root);
 		assert device.getMeta().equals(root);
 		assert robot.getMeta().equals(root);
 		assert transformer.getMeta().equals(root);
-
 		assert root.getSupersStream().count() == 0;
 		assert vehicle.getSupersStream().count() == 0;
 		assert car.getSupersStream().count() == 1;
 		assert device.getSupersStream().count() == 0;
 		assert robot.getSupersStream().count() == 1;
 		assert transformer.getSupersStream().count() == 2;
-
 		assert transformer.getSupersStream().anyMatch(car::equals);
 		assert transformer.getSupersStream().anyMatch(robot::equals);
-
 		car.getSupersStream().anyMatch(vehicle::equals);
 		robot.getSupersStream().anyMatch(device::equals);
 		Stream<Vertex> allSupers = Statics.concat(transformer.getSupersStream(), superVertex -> Stream.concat(Stream.of(superVertex), superVertex.getSupersStream()));
-
 		final Predicate<Vertex> condition = x -> Statics.concat(transformer.getSupersStream(), superVertex -> Stream.concat(Stream.of(superVertex), superVertex.getSupersStream())).anyMatch(x::equals);
-
 		assert condition.test(vehicle);
 		assert condition.test(car);
 		assert condition.test(robot);
 		assert condition.test(device);
-
 		assert root.isAlive();
 		assert vehicle.isAlive();
 		assert car.isAlive();
@@ -227,7 +174,7 @@ public class InstanciationTest extends AbstractTest {
 		assert transformer.isAlive();
 	}
 
-	public void test6TypeInstanciationWithMultipleInheritence() {
+	public void test010_addInstance_multipleOverrides() {
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
 		Vertex car = root.addInstance(Arrays.asList(vehicle), "Car");
@@ -235,41 +182,28 @@ public class InstanciationTest extends AbstractTest {
 		Vertex robot = root.addInstance(Arrays.asList(device), "Robot");
 		Vertex transformer = root.addInstance(Arrays.asList(car, robot), "Transformer");
 		Vertex transformer2 = root.addInstance(Arrays.asList(transformer), "Transformer2");
-
-		// log.info(vehicle.info());
-		// log.info(car.info());
-		// log.info(device.info());
-		// log.info(robot.info());
-		// log.info(transformer.info());
-
 		assert car.getMeta().equals(root);
 		assert vehicle.getMeta().equals(root);
 		assert device.getMeta().equals(root);
 		assert robot.getMeta().equals(root);
 		assert transformer.getMeta().equals(root);
 		assert transformer2.getMeta().equals(root);
-
 		assert root.getSupersStream().count() == 0;
 		assert vehicle.getSupersStream().count() == 0;
 		assert car.getSupersStream().count() == 1;
 		assert device.getSupersStream().count() == 0;
 		assert robot.getSupersStream().count() == 1;
 		assert transformer.getSupersStream().count() == 2;
-
 		assert transformer.getSupersStream().anyMatch(car::equals);
 		assert transformer.getSupersStream().anyMatch(robot::equals);
-
 		car.getSupersStream().anyMatch(vehicle::equals);
 		robot.getSupersStream().anyMatch(device::equals);
 		Stream<Vertex> allSupers = Statics.concat(transformer.getSupersStream(), superVertex -> Stream.concat(Stream.of(superVertex), superVertex.getSupersStream()));
-
 		final Predicate<Vertex> condition = x -> Statics.concat(transformer.getSupersStream(), superVertex -> Stream.concat(Stream.of(superVertex), superVertex.getSupersStream())).anyMatch(x::equals);
-
 		assert condition.test(vehicle);
 		assert condition.test(car);
 		assert condition.test(robot);
 		assert condition.test(device);
-
 		assert root.isAlive();
 		assert vehicle.isAlive();
 		assert car.isAlive();
