@@ -25,7 +25,6 @@ public interface RestructuratorService<T extends RestructuratorService<T>> exten
 		}.rebuildAll((T) RestructuratorService.this, computeAllDependencies());
 	}
 
-	@SuppressWarnings("unchecked")
 	default void simpleRemove() {
 		new RemoveRestructurator<T>((Vertex) RestructuratorService.this) {
 			private static final long serialVersionUID = 6513791665544090616L;
@@ -38,6 +37,7 @@ public interface RestructuratorService<T extends RestructuratorService<T>> exten
 			private final Set<T> alreadyVisited = new HashSet<>();
 
 			public DirectDependencies() {
+				// TODO nico pourquoi meta et pas this
 				visit(getMeta());
 			}
 

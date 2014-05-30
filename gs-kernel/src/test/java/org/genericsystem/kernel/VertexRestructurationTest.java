@@ -315,29 +315,7 @@ public class VertexRestructurationTest extends AbstractTest {
 		assert newAutomatic.getSupersStream().collect(Collectors.toList()).contains(newCar);
 	}
 
-	public void test105_removeOnTypeWithAttribute_medium_OK() {
-		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = engine.addInstance(vehicle, "Car");
-
-		// when
-		car.simpleRemove();
-
-		// then
-		assert vehicle.isAlive();
-		assert !car.isAlive();
-
-		List<Vertex> engineDependencies = engine.computeAllDependencies().stream().collect(Collectors.toList());
-		assert engineDependencies.size() == 2;
-		assert engine.getAllInstances().count() == 1;
-
-		assert findElement("Engine", engineDependencies) != null;
-		assert findElement("Vehicle", engineDependencies) != null;
-	}
-
-	@Test(enabled = false)
-	public void test106_removeOnTypeWithAttribute_AttributeUp_medium_OK() {
+	public void test105_remove_TypeWithAttribute() {
 		// given
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
@@ -356,15 +334,16 @@ public class VertexRestructurationTest extends AbstractTest {
 		assert engineDependencies.size() == 3;
 		assert engine.getAllInstances().count() == 2;
 
+		Vertex newCar = findElement("Car", engineDependencies);
 		Vertex newOptions = findElement("Options", engineDependencies);
+		assert newCar != null;
+		assert newCar.getInheritings().stream().count() == 1;
+		assert newOptions.equals(newCar.getInheritings().stream().collect(Collectors.toList()).get(0));
+
 		assert newOptions != null;
 		assert newOptions.getSupersStream().count() == 1;
-		assert "Car".equals(newOptions.getSupersStream().collect(Collectors.toList()).get(0).getValue());
+		assert newCar.equals(newOptions.getSupersStream().collect(Collectors.toList()).get(0));
 
-		Vertex newCar = findElement("Car", engineDependencies);
-		assert newCar != null;
-		assert newCar.getAllInheritings().count() == 1;
-		assert "Options".equals(newCar.getAllInheritings().collect(Collectors.toList()).get(0));
 	}
 
 	/**
@@ -385,8 +364,10 @@ public class VertexRestructurationTest extends AbstractTest {
 	@SuppressWarnings("unused")
 	@Deprecated
 	private String printAll(Vertex vertex) {
+		if (vertex == null)
+			return "";
 		StringBuffer print = new StringBuffer();
-		print.append("\\\\ Toutes les infos sur le vertex");
+		print.append("\\\\ Informations on vertex");
 		print.append(vertex.info());
 		print.append(" //\n");
 		print.append("- isAlive :");
@@ -395,6 +376,7 @@ public class VertexRestructurationTest extends AbstractTest {
 		print.append(vertex.getMeta());
 		print.append(" / meta isAlive:");
 		print.append(vertex.getMeta().isAlive());
+		print.append("\n");
 
 		addComponents(vertex, print);
 		addDependencies(vertex, print);

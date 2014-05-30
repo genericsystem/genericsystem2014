@@ -22,9 +22,10 @@ public abstract class Restructurator<T extends RestructuratorService<T>> extends
 		if (vertex.isAlive())
 			return vertex;
 		T newDependency = get(vertex);
-		if (newDependency == null)
+		if (newDependency == null) {
 			newDependency = build(vertex);
-		put(vertex, newDependency);
+			put(vertex, newDependency);
+		}
 		return newDependency;
 	}
 

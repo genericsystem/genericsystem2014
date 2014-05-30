@@ -1,5 +1,6 @@
 package org.genericsystem.kernel;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -12,56 +13,71 @@ import org.genericsystem.kernel.services.RestructuratorService;
 public abstract class RemoveRestructurator<T extends RestructuratorService<T>> extends HashMap<T, T> {
 	private static final long serialVersionUID = -3498885981892406254L;
 
-	private Vertex vertexRemoved;
+	private Vertex vertexToRemove;
 
-	public Vertex getVertexRemoved() {
-		return vertexRemoved;
+	private List<Vertex> instancesOfVertexToRemove;
+
+	private void setVertexToRemove(Vertex vertexToRemove) {
+		this.vertexToRemove = vertexToRemove;
+		instancesOfVertexToRemove = new ArrayList<Vertex>();
+		for (Vertex v : vertexToRemove.getInstances().stream().collect(Collectors.toList()))
+			instancesOfVertexToRemove.add(v);
 	}
 
-	private void setVertexRemoved(Vertex vertexRemoved) {
-		this.vertexRemoved = vertexRemoved;
-	}
-
-	public RemoveRestructurator(Vertex vertexRemoved) {
-		setVertexRemoved(vertexRemoved);
+	public RemoveRestructurator(Vertex vertexToRemove) {
+		assert vertexToRemove != null;
+		setVertexToRemove(vertexToRemove);
 	}
 
 	public void rebuildAll() {
-		assert getVertexRemoved() != null;
-		LinkedHashSet<Vertex> dependenciesToRebuild = getVertexRemoved().computeAllDependencies();
-		dependenciesToRebuild.forEach(RestructuratorService::unplug);
-		dependenciesToRebuild.remove(getVertexRemoved());
-		for (Vertex dependency : dependenciesToRebuild)
+		LinkedHashSet<Vertex> oldDependenciesUnpluged = vertexToRemove.computeAllDependencies();
+		oldDependenciesUnpluged.forEach(RestructuratorService::unplug);
+		oldDependenciesUnpluged.remove(vertexToRemove);
+		put((T) vertexToRemove, (T) vertexToRemove.getMeta());// FIXME made to fix meta's management on buildDependency(T)
+		for (Vertex dependency : oldDependenciesUnpluged)
 			getOrBuild((T) dependency);
 	}
 
-	private T getOrBuild(T oldDependency) {
-		if (oldDependency.isAlive())
-			return oldDependency;
-		if (oldDependency.equals(getVertexRemoved()))
-			return (T) getVertexRemoved().getMeta();
-		T newDependency = get(oldDependency);
-		if (newDependency == null) {
-			T meta = (oldDependency == oldDependency.getMeta()) ? (T) oldDependency : getOrBuild((T) oldDependency.getMeta());
-			List<Vertex> supers = new ArrayList<Vertex>();
-			oldDependency.getSupersStream().forEach(x -> addSupers((Vertex) x, supers));
-			List<T> components = oldDependency.getComponentsStream().map(x -> x.equals(oldDependency) ? null : getOrBuild(x)).collect(Collectors.toList());
-			newDependency = meta.buildInstance((List<T>) supers, oldDependency.getValue(), components).plug();
-		}
-		put(oldDependency, newDependency);
-		return newDependency;
+	private T getOrBuild(T oldVertex) {
+		if (oldVertex.isAlive())
+			return oldVertex;
+		T newVertex = get(oldVertex);
+		if (newVertex != null)
+			return newVertex;
+		return buildDependency(oldVertex);
 	}
 
-	private boolean addSupers(Vertex candidate, List<Vertex> target) {
-		if (target.contains(candidate))
-			return false;
-		if (get(candidate) != null)
-			return addSupers((Vertex) get(candidate), target);
-		if (candidate.equals(getVertexRemoved())) {
-			if (getVertexRemoved().getSupersStream().count() == 0)
-				return target.add(getVertexRemoved().getMeta());
-			getVertexRemoved().getSupersStream().forEach(x -> addSupers(x, target));
+	private T buildDependency(T oldDependency) {
+		T meta = getOrBuild((T) oldDependency.getMeta());
+		Serializable value = oldDependency.getValue();
+
+		List<Vertex> supers = new ArrayList<>();
+		for (T v : oldDependency.getSupersStream().collect(Collectors.toList())) {
+			if (v.equals(vertexToRemove))
+				for (Vertex instance : instancesOfVertexToRemove)
+					addThinly((Vertex) getOrBuild((T) instance), supers);
+			else
+				addThinly((Vertex) getOrBuild((T) v), supers);
 		}
+
+		List<Vertex> components = (List<Vertex>) oldDependency.getComponentsStream().collect(Collectors.toList());
+		if (components.isEmpty()) {
+			T newDependency = meta.buildInstance((List<T>) supers, value, (List<T>) components).plug();
+			put(oldDependency, newDependency);
+			return newDependency;
+		}
+
+		components.remove(vertexToRemove);
+		for (Vertex component : vertexToRemove.getInheritings()) {
+			components.add(component);
+			T newDependency = meta.buildInstance((List<T>) supers, value, (List<T>) components).plug();
+			components.remove(component);
+			// FIXME put and return
+		}
+		return null;
+	}
+
+	private boolean addThinly(Vertex candidate, List<Vertex> target) {
 		for (Vertex vertex : target)
 			if (vertex.inheritsFrom(candidate))
 				return false;
@@ -71,4 +87,5 @@ public abstract class RemoveRestructurator<T extends RestructuratorService<T>> e
 				it.remove();
 		return target.add(candidate);
 	}
+
 }
