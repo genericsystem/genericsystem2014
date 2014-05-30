@@ -35,7 +35,6 @@ public class AttributesTest extends AbstractTest {
 		Vertex vehicle = root.addInstance("Vehicle");
 		Vertex car = root.addInstance(vehicle, "Car");
 		Vertex power = root.addInstance("Power", car);
-
 		log.info(root.info());
 		log.info(vehicle.info());
 		log.info(car.info());
@@ -44,7 +43,6 @@ public class AttributesTest extends AbstractTest {
 		assert vehicle.getLevel() == 1;
 		assert car.getLevel() == 1;
 		assert power.getLevel() == 1;
-
 		assert vehicle.getAttributes(root).size() == 0;
 		assert car.getAttributes(root).size() == 1;
 		assert car.getAttributes(root).contains(power);
@@ -89,12 +87,7 @@ public class AttributesTest extends AbstractTest {
 		assert microcar.getAttributes(root).contains(power);
 	}
 
-	/*
-	 * public void testSimple1MetaAttribut() { Root root = new Root(); Vertex car = root.addInstance("Car"); Vertex power = root.addInstance("Power", car); assert power.getComponentsStream().count() == 1; assert car.equals(power.getComponents()[0]); assert
-	 * power.isAlive(); }
-	 */
 	public void test2Attributs() {
-
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
 		Vertex power = root.addInstance("Power", vehicle);
@@ -135,7 +128,6 @@ public class AttributesTest extends AbstractTest {
 	}
 
 	public void test2AttributsWith2LevelsInheritance1AttributOnParentAnd1AttributOnFistChild() {
-
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
 		Vertex power = root.addInstance("Power", vehicle);
@@ -289,7 +281,6 @@ public class AttributesTest extends AbstractTest {
 		Vertex vehicle = root.addInstance(object, "Vehicle");
 		Vertex robot = root.addInstance(object, "Robot");
 		Vertex transformer = root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
-
 		assert object.getAttributes(root).size() == 1;
 		assert object.getAttributes(root).contains(power);
 		assert vehicle.getAttributes(root).size() == 1;
@@ -307,7 +298,6 @@ public class AttributesTest extends AbstractTest {
 		Vertex power = root.addInstance("Power", vehicle);
 		Vertex robot = root.addInstance(object, "Robot");
 		Vertex transformer = root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
-
 		assert object.getAttributes(root).size() == 0;
 		assert vehicle.getAttributes(root).size() == 1;
 		assert vehicle.getAttributes(root).contains(power);
@@ -323,7 +313,6 @@ public class AttributesTest extends AbstractTest {
 		Vertex robot = root.addInstance(object, "Robot");
 		Vertex power = root.addInstance("Power", vehicle);
 		Vertex transformer = root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
-
 		assert object.getAttributes(root).size() == 0;
 		assert vehicle.getAttributes(root).size() == 1;
 		assert vehicle.getAttributes(root).contains(power);
@@ -351,11 +340,9 @@ public class AttributesTest extends AbstractTest {
 		Vertex object = root.addInstance("Object");
 		Vertex power = root.addInstance("Power", object);
 		Vertex airconditioner = root.addInstance("AirConditioner", object);
-
 		Vertex vehicle = root.addInstance(object, "Vehicle");
 		Vertex robot = root.addInstance(object, "Robot");
 		Vertex transformer = root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
-
 		assert object.getAttributes(root).size() == 2 : object.getAttributes(root);
 		assert object.getAttributes(root).contains(power);
 		assert object.getAttributes(root).contains(airconditioner);
@@ -378,7 +365,6 @@ public class AttributesTest extends AbstractTest {
 		Vertex airconditioner = root.addInstance("AirConditioner", vehicle);
 		Vertex robot = root.addInstance(object, "Robot");
 		Vertex transformer = root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
-
 		assert object.getAttributes(root).size() == 0;
 		assert vehicle.getAttributes(root).size() == 2;
 		assert vehicle.getAttributes(root).contains(power);
@@ -397,7 +383,6 @@ public class AttributesTest extends AbstractTest {
 		Vertex power = root.addInstance("Power", robot);
 		Vertex airconditioner = root.addInstance("AirConditioner", robot);
 		Vertex transformer = root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
-
 		assert object.getAttributes(root).size() == 0;
 		assert vehicle.getAttributes(root).size() == 0;
 		assert robot.getAttributes(root).size() == 2;
