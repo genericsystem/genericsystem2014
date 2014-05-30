@@ -109,9 +109,9 @@ public class InstanciationTest extends AbstractTest {
 			@Override
 			public void intercept() {
 				Vertex vehicle2 = root.addInstance(Arrays.asList(vehicle), "Vehicle");
-
+			
 			}
-		}.assertIsCausedBy(ExistsException.class);
+		}.assertIsCausedBy(IllegalStateException.class);
 	}
 
 	public void test008_addInstance_multipleOverrides() {
