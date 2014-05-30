@@ -37,10 +37,11 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 		T nearestMeta = computeNearestMeta(overrides, value, Arrays.asList(components));
 		if (!equals(nearestMeta))
 			return nearestMeta.addInstance(overrides, value, components);
-		T instance = getInstance(overrides, value, components);
+		T instanceTmp = buildInstance(overrides, value, Arrays.asList(components));
+		T instance = instanceTmp.getAlive();// getInstance(overrides, value, components);
 		if (instance != null)
 			rollbackAndThrowException(new ExistsException(instance.info()));
-		return buildInstance(overrides, value, Arrays.asList(components)).plug();
+		return instanceTmp.plug();
 	}
 
 	default void checkSameEngine(List<T> components) {
