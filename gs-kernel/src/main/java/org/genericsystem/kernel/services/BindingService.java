@@ -70,6 +70,8 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 
 	@SuppressWarnings("unchecked")
 	default T setInstance(List<T> overrides, Serializable value, T... components) {
+		checkSameEngine(Arrays.asList(components));
+		checkSameEngine(overrides);
 		T instance = getInstance(overrides, value, components);
 		if (instance != null)
 			return instance;
