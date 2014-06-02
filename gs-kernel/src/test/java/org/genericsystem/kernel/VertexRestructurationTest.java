@@ -5,6 +5,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.genericsystem.kernel.exceptions.ConstraintViolationException;
+import org.genericsystem.kernel.exceptions.ReferentialIntegrityConstraintViolationException;
+import org.genericsystem.kernel.exceptions.StructuralConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test
@@ -212,13 +215,117 @@ public class VertexRestructurationTest extends AbstractTest {
 		assert newCar.getInheritings().size() == 0;
 	}
 
-	public void test101_remove_Type() {
+	public void test101_remove_instance_NormalStrategy() throws ConstraintViolationException {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex myVehicule = engine.addInstance("MyVehicule");
+
+		// when
+		myVehicule.remove(RemoveStrategy.NORMAL);
+
+		// then
+		assert vehicle.isAlive();
+		assert !myVehicule.isAlive();
+		assert engine.computeAllDependencies().stream().count() == 2;
+		assert engine.computeAllDependencies().contains(engine);
+		assert engine.computeAllDependencies().contains(vehicle);
+		assert vehicle.computeAllDependencies().stream().count() == 1;
+		assert vehicle.computeAllDependencies().contains(vehicle);
+	}
+
+	public void test102_remove_instance_NormalStrategy() throws ConstraintViolationException {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex myVehicule1 = vehicle.addInstance("MyVehicule1");
+		Vertex myVehicule2 = vehicle.addInstance("MyVehicule2");
+		Vertex myVehicule3 = vehicle.addInstance("MyVehicule3");
+
+		// when
+		myVehicule2.remove(RemoveStrategy.NORMAL);
+		myVehicule1.remove(RemoveStrategy.NORMAL);
+
+		// then
+		assert vehicle.isAlive();
+		assert !myVehicule1.isAlive();
+		assert !myVehicule2.isAlive();
+		assert myVehicule3.isAlive();
+		assert engine.computeAllDependencies().stream().count() == 3;
+		assert engine.computeAllDependencies().contains(engine);
+		assert engine.computeAllDependencies().contains(vehicle);
+		assert vehicle.computeAllDependencies().stream().count() == 2;
+		assert vehicle.computeAllDependencies().contains(vehicle);
+		assert vehicle.computeAllDependencies().contains(myVehicule3);
+		assert myVehicule3.computeAllDependencies().stream().count() == 1;
+		assert myVehicule3.computeAllDependencies().contains(myVehicule3);
+	}
+
+	@Test(enabled = false)
+	public void test103_remove_instance_KO_ReferentialIntegrity_NormalStrategy() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex myVehicle = engine.addInstance("MyVehicule");
+
+		boolean referentialIntegrityConstraintViolationExceptionHasBeenTriggered = false;
+		// when
+		try {
+			vehicle.remove(RemoveStrategy.NORMAL);
+		} catch (ConstraintViolationException e) {
+			if (e.getCause() instanceof ReferentialIntegrityConstraintViolationException)
+				referentialIntegrityConstraintViolationExceptionHasBeenTriggered = true;
+		} finally {
+			// then
+			assert referentialIntegrityConstraintViolationExceptionHasBeenTriggered;
+			assert vehicle.isAlive();
+			assert myVehicle.isAlive();
+			assert engine.computeAllDependencies().stream().count() == 3;
+			assert engine.computeAllDependencies().contains(engine);
+			assert engine.computeAllDependencies().contains(vehicle);
+			assert engine.computeAllDependencies().contains(myVehicle);
+			assert vehicle.computeAllDependencies().stream().count() == 2;
+			assert vehicle.computeAllDependencies().contains(vehicle);
+			assert vehicle.computeAllDependencies().contains(myVehicle);
+		}
+	}
+
+	@Test(enabled = false)
+	public void test104_remove_instance_KO_StructuralConstraint_NormalStrategy() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+
+		boolean structuralConstraintViolationExceptionHasBeenTriggered = false;
+		// when
+		try {
+			car.remove(RemoveStrategy.NORMAL);
+		} catch (ConstraintViolationException e) {
+			if (e.getCause() instanceof StructuralConstraintViolationException)
+				structuralConstraintViolationExceptionHasBeenTriggered = true;
+		} finally {
+			// then
+			assert structuralConstraintViolationExceptionHasBeenTriggered;
+			assert vehicle.isAlive();
+			assert car.isAlive();
+			assert engine.computeAllDependencies().stream().count() == 3;
+			assert engine.computeAllDependencies().contains(engine);
+			assert engine.computeAllDependencies().contains(vehicle);
+			assert engine.computeAllDependencies().contains(car);
+			assert vehicle.computeAllDependencies().stream().count() == 2;
+			assert vehicle.computeAllDependencies().contains(vehicle);
+			assert vehicle.computeAllDependencies().contains(car);
+		}
+	}
+
+	public void test131_remove_Type_ConserveStrategy() throws ConstraintViolationException {
 		// given
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 
 		// when
-		vehicle.simpleRemove();
+		vehicle.remove(RemoveStrategy.CONSERVE);
 
 		// then
 		assert !vehicle.isAlive();
@@ -226,14 +333,14 @@ public class VertexRestructurationTest extends AbstractTest {
 		assert engine.computeAllDependencies().contains(engine);
 	}
 
-	public void test102_remove_SubType() {
+	public void test132_remove_SubType_ConserveStrategy() throws ConstraintViolationException {
 		// given
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex car = vehicle.addInstance("Car");
 
 		// when
-		vehicle.simpleRemove();
+		vehicle.remove(RemoveStrategy.CONSERVE);
 
 		// then
 		assert !vehicle.isAlive();
@@ -248,7 +355,7 @@ public class VertexRestructurationTest extends AbstractTest {
 		assert newCar.computeAllDependencies().contains(newCar);
 	}
 
-	public void test103_remove_with2SubTypes() {
+	public void test133_remove_with2SubTypes_ConserveStrategy() throws ConstraintViolationException {
 		// given
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
@@ -256,7 +363,7 @@ public class VertexRestructurationTest extends AbstractTest {
 		Vertex automatic = engine.addInstance(vehicle, "Automatic");
 
 		// when
-		vehicle.simpleRemove();
+		vehicle.remove(RemoveStrategy.CONSERVE);
 
 		// then
 		assert !vehicle.isAlive();
@@ -282,7 +389,7 @@ public class VertexRestructurationTest extends AbstractTest {
 		assert newAutomatic.computeAllDependencies().contains(newAutomatic);
 	}
 
-	public void test104_remove_SubSubTypes() {
+	public void test134_remove_SubSubTypes_ConserveStrategy() throws ConstraintViolationException {
 		// given
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
@@ -290,7 +397,7 @@ public class VertexRestructurationTest extends AbstractTest {
 		Vertex automatic = engine.addInstance(car, "Automatic");
 
 		// when
-		vehicle.simpleRemove();
+		vehicle.remove(RemoveStrategy.CONSERVE);
 
 		// then
 		assert !vehicle.isAlive();
@@ -315,7 +422,7 @@ public class VertexRestructurationTest extends AbstractTest {
 		assert newAutomatic.getSupersStream().collect(Collectors.toList()).contains(newCar);
 	}
 
-	public void test105_remove_TypeWithAttribute() {
+	public void test135_remove_TypeWithAttribute_ConserveStrategy() throws ConstraintViolationException {
 		// given
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
@@ -323,7 +430,7 @@ public class VertexRestructurationTest extends AbstractTest {
 		Vertex options = engine.addInstance(vehicle, "Options");
 
 		// when
-		vehicle.simpleRemove();
+		vehicle.remove(RemoveStrategy.CONSERVE);
 
 		// then
 		assert !vehicle.isAlive();

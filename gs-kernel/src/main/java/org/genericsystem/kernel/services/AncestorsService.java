@@ -10,7 +10,7 @@ import org.genericsystem.kernel.Vertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public interface AncestorsService<T extends AncestorsService<T>> {
+public interface AncestorsService<T extends AncestorsService<T>> extends Comparable<AncestorsService<T>> {
 
 	static Logger log = LoggerFactory.getLogger(AncestorsService.class);
 

@@ -64,4 +64,13 @@ public class Vertex extends ExtendedSignature<Vertex> implements AncestorsServic
 	public void rollback() {
 		getRoot().rollback();
 	}
+
+	@Override
+	public int compareTo(AncestorsService<Vertex> service) {
+		// FIXME
+		if (this.equiv(service))
+			return 0;
+		return -1;
+	}
+
 }
