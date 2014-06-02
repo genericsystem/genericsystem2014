@@ -3,7 +3,6 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
-
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.BindingService;
@@ -19,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Vertex extends ExtendedSignature<Vertex> implements AncestorsService<Vertex>, DependenciesService<Vertex>, InheritanceService<Vertex>, BindingService<Vertex>, CompositesInheritanceService<Vertex>, FactoryService<Vertex>,
-		DisplayService<Vertex>, SystemPropertiesService, ExceptionAdviserService<Vertex>, RestructuratorService<Vertex> {
+DisplayService<Vertex>, SystemPropertiesService<Vertex>, ExceptionAdviserService<Vertex>, RestructuratorService<Vertex> {
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 
 	private final Dependencies<Vertex> instances = buildDependencies();
@@ -46,8 +45,7 @@ public class Vertex extends ExtendedSignature<Vertex> implements AncestorsServic
 	// equiv need only AncestorService as parameter
 	@Override
 	public Vertex getInstance(Serializable value, Vertex... components) {
-		Vertex instanceTmp = buildInstance(Collections.emptyList(), value, Arrays.asList(components));
-		return instanceTmp.getAlive();
+		return buildInstance(Collections.emptyList(), value, Arrays.asList(components)).getAlive();
 	}
 
 	@Override

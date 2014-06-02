@@ -1,10 +1,48 @@
 package org.genericsystem.kernel.services;
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.function.BiPredicate;
 import org.genericsystem.kernel.Statics;
 
-public interface SystemPropertiesService {
+public interface SystemPropertiesService<T extends SystemPropertiesService<T>> extends AncestorsService<T> {
+
+	default boolean isSingularConstraintEnabled(int pos) {
+		return isEnabled(SingularConstraint.class, pos);
+	}
+
+	default boolean isPropertyConstraintEnabled() {
+		return isEnabled(PropertyConstraint.class);
+	}
+
+	default boolean isMapConstraintEnabled() {
+		return isEnabled(PropertyConstraint.class);
+	}
+
+	default boolean isRequiredConstraintEnabled(int pos) {
+		return isEnabled(PropertyConstraint.class, pos);
+	}
+
+	default boolean isReferentialIntegrityConstraintEnabled(int pos) {
+		return pos != Statics.BASE_POSITION;
+		// return isEnabled(ReferentialIntegrityConstraint.class);
+	}
+
+	default boolean isEnabled(Class<? extends Constraint> clazz) {
+		return isEnabled(clazz, Statics.NO_POSITION);
+	}
+
+	default boolean isEnabled(Class<?> clazz, int pos) {
+		return false;
+	}
 
 	public static interface Constraint {
+
+	}
+
+	public static class ReferentialIntegrityConstraint implements Constraint {
 
 	}
 
@@ -16,27 +54,57 @@ public interface SystemPropertiesService {
 
 	}
 
-	default boolean isSingularConstraintEnabled(int pos) {
-		return isEnabled(SingularConstraint.class, pos);
+	public static class MapConstraint implements Constraint {
+
 	}
 
-	default boolean isPropertyConstraintEnabled() {
-		return isEnabled(PropertyConstraint.class);
+	public static class RequiredConstraint implements Constraint {
+
 	}
 
-	default boolean isEnabled(Class<? extends Constraint> clazz) {
-		return isEnabled(clazz, Statics.NO_POSITION);
-	}
+	public static BiPredicate<Serializable, Serializable> VALUE_EQUALS = (X, Y) -> Objects.equals(X, Y);
+	public static BiPredicate<Serializable, Serializable> VALUE_IGNORED = (X, Y) -> true;
+	public static BiPredicate<Serializable, Serializable> KEY_EQUALS = (X, Y) -> (X instanceof Entry) && (Y instanceof Entry) && Objects.equals(((Entry<?, ?>) X).getKey(), ((Entry<?, ?>) Y).getKey());
 
-	default boolean isEnabled(Class<?> clazz, int pos) {
-		return false;
-	}
+	// @Override
+	// default BiPredicate<Serializable, Serializable> getValuesBiPredicate() {
+	// if (isPropertyConstraintEnabled())
+	// return VALUE_IGNORED;
+	// if (isMapConstraintEnabled())
+	// return KEY_EQUALS;
+	// return VALUE_EQUALS;
+	// }
 
-	default boolean isReferentialIntegrity(int pos) {
-		return pos != Statics.BASE_POSITION;
-	}
+	public static BiPredicate<List<? extends AncestorsService<?>>, List<? extends AncestorsService<?>>> SIZE_EQUALS = (X, Y) -> {
+		return X.size() == Y.size();
+	};
 
-	default boolean isReferentialIntegrity() {
-		return isEnabled(PropertyConstraint.class);
-	}
+	// public static BiPredicate<List<? extends AncestorsService<?>>, List<? extends AncestorsService<?>>> WEAK_EQUIV = (X, Y) -> {
+	// if (!SIZE_EQUALS.test(X, Y))
+	// return false;
+	// Iterator<? extends AncestorsService<?>> otherComponentsIt = X.iterator();
+	// return X.stream().allMatch(x -> x.weakEquiv(otherComponentsIt.next()));
+	// };
+
+	// public static BiPredicate<List<? extends AncestorsService<?>>, List<? extends AncestorsService<?>>> SINGULAR_EQUIV = (X, Y) -> {
+	// return WEAK_EQUIV.test(X, Y) || (/* il existe au moins un axe commun ou il y a une singular + un equals && */
+	// !componentsDepends(X, Y) && !componentsDepends(Y, X));
+
+	// SingularsLazyCache singulars;
+	// int minSize = X.size() >= Y.size() ? X.size() : Y.size();
+	// for (int i = 0; i < minSize; i++) {
+	// if (X.get(i).weakEquiv(Y.get(i))) {
+	// if (singulars.geclipseet(i))
+	// if (!componentsDepends(X, Y) && !componentsDepends(Y, X))
+	// return true;
+	// }
+	// }
+	// return false;
+	// };
+
+	// @Override
+	// default BiPredicate<List<? extends AncestorsService<?>>, List<? extends AncestorsService<?>>> getComponentsBiPredicate() {
+	// return WEAK_EQUIV;
+	// }
+
 }
