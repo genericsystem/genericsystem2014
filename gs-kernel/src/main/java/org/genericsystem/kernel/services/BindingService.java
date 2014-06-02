@@ -8,7 +8,6 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
@@ -34,14 +33,13 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 	default T addInstance(List<T> overrides, Serializable value, T... components) {
 		checkSameEngine(Arrays.asList(components));
 		checkSameEngine(overrides);
-		T nearestMeta = computeNearestMeta(overrides, value, Arrays.asList(components));
-		if (!equals(nearestMeta))
-			return nearestMeta.addInstance(overrides, value, components);
-		T instanceTmp = buildInstance(overrides, value, Arrays.asList(components));
-		T instance = instanceTmp.getAlive();// getInstance(overrides, value, components);
+		T nearestMeta = computeNearestMeta(Collections.emptyList(), value, Arrays.asList(components));
+		if (nearestMeta != this)
+			return nearestMeta.addInstance(Collections.emptyList(), value, components);
+		T instance = getInstance(overrides, value, components);
 		if (instance != null)
 			rollbackAndThrowException(new ExistsException(instance.info()));
-		return instanceTmp.plug();
+		return buildInstance(overrides, value, Arrays.asList(components)).plug();
 	}
 
 	default void checkSameEngine(List<T> components) {
