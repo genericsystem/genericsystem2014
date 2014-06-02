@@ -5,9 +5,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 import org.genericsystem.kernel.exceptions.ReferentialIntegrityConstraintViolationException;
-import org.genericsystem.kernel.exceptions.StructuralConstraintViolationException;
+import org.genericsystem.kernel.exceptions.RollbackException;
 import org.testng.annotations.Test;
 
 @Test
@@ -215,7 +214,7 @@ public class VertexRestructurationTest extends AbstractTest {
 		assert newCar.getInheritings().size() == 0;
 	}
 
-	public void test101_remove_instance_NormalStrategy() throws ConstraintViolationException {
+	public void test100_remove_instance_NormalStrategy() {
 		// given
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
@@ -234,7 +233,7 @@ public class VertexRestructurationTest extends AbstractTest {
 		assert vehicle.computeAllDependencies().contains(vehicle);
 	}
 
-	public void test102_remove_instance_NormalStrategy() throws ConstraintViolationException {
+	public void test101_remove_instance_NormalStrategy() {
 		// given
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
@@ -261,18 +260,18 @@ public class VertexRestructurationTest extends AbstractTest {
 		assert myVehicule3.computeAllDependencies().contains(myVehicule3);
 	}
 
-	@Test(enabled = false)
-	public void test103_remove_instance_KO_ReferentialIntegrity_NormalStrategy() {
+	public void test102_remove_typeWithInstance() {
 		// given
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex myVehicle = engine.addInstance("MyVehicule");
+		Vertex myVehicle = vehicle.addInstance("MyVehicule");
 
 		boolean referentialIntegrityConstraintViolationExceptionHasBeenTriggered = false;
+
 		// when
 		try {
 			vehicle.remove(RemoveStrategy.NORMAL);
-		} catch (ConstraintViolationException e) {
+		} catch (RollbackException e) {
 			if (e.getCause() instanceof ReferentialIntegrityConstraintViolationException)
 				referentialIntegrityConstraintViolationExceptionHasBeenTriggered = true;
 		} finally {
@@ -280,46 +279,276 @@ public class VertexRestructurationTest extends AbstractTest {
 			assert referentialIntegrityConstraintViolationExceptionHasBeenTriggered;
 			assert vehicle.isAlive();
 			assert myVehicle.isAlive();
-			assert engine.computeAllDependencies().stream().count() == 3;
-			assert engine.computeAllDependencies().contains(engine);
-			assert engine.computeAllDependencies().contains(vehicle);
-			assert engine.computeAllDependencies().contains(myVehicle);
-			assert vehicle.computeAllDependencies().stream().count() == 2;
-			assert vehicle.computeAllDependencies().contains(vehicle);
-			assert vehicle.computeAllDependencies().contains(myVehicle);
 		}
 	}
 
-	@Test(enabled = false)
-	public void test104_remove_instance_KO_StructuralConstraint_NormalStrategy() {
+	public void test103_remove_SubType() {
 		// given
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex car = engine.addInstance(vehicle, "Car");
 
-		boolean structuralConstraintViolationExceptionHasBeenTriggered = false;
+		// when
+		car.remove(RemoveStrategy.NORMAL);
+
+		// then
+		assert vehicle.isAlive();
+		assert !car.isAlive();
+		assert engine.computeAllDependencies().stream().count() == 2;
+		assert engine.computeAllDependencies().contains(engine);
+		assert engine.computeAllDependencies().contains(vehicle);
+		assert vehicle.computeAllDependencies().stream().count() == 1;
+		assert vehicle.computeAllDependencies().contains(vehicle);
+	}
+
+	public void test104_remove_attribute() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex power = engine.addInstance("Power", vehicle);
+
+		// when
+		vehicle.remove(RemoveStrategy.NORMAL);
+		// then
+		assert engine.isAlive();
+		assert !vehicle.isAlive();
+		assert !power.isAlive();
+	}
+
+	public void test105_remove_attribute_withInstance_KO() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex power = engine.addInstance("Power", vehicle);
+		Vertex car = vehicle.addInstance("Car");
+
+		boolean referentialIntegrityConstraintViolationExceptionHasBeenTriggered = false;
+
 		// when
 		try {
-			car.remove(RemoveStrategy.NORMAL);
-		} catch (ConstraintViolationException e) {
-			if (e.getCause() instanceof StructuralConstraintViolationException)
-				structuralConstraintViolationExceptionHasBeenTriggered = true;
+			vehicle.remove(RemoveStrategy.NORMAL);
+		} catch (RollbackException e) {
+			if (e.getCause() instanceof ReferentialIntegrityConstraintViolationException)
+				referentialIntegrityConstraintViolationExceptionHasBeenTriggered = true;
 		} finally {
 			// then
-			assert structuralConstraintViolationExceptionHasBeenTriggered;
+			assert referentialIntegrityConstraintViolationExceptionHasBeenTriggered;
+			assert engine.isAlive();
 			assert vehicle.isAlive();
+			assert power.isAlive();
 			assert car.isAlive();
-			assert engine.computeAllDependencies().stream().count() == 3;
-			assert engine.computeAllDependencies().contains(engine);
-			assert engine.computeAllDependencies().contains(vehicle);
-			assert engine.computeAllDependencies().contains(car);
-			assert vehicle.computeAllDependencies().stream().count() == 2;
-			assert vehicle.computeAllDependencies().contains(vehicle);
-			assert vehicle.computeAllDependencies().contains(car);
 		}
 	}
 
-	public void test131_remove_Type_ConserveStrategy() throws ConstraintViolationException {
+	public void test106_remove_TypeWithSubType_KO() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+
+		boolean referentialIntegrityConstraintViolationExceptionHasBeenTriggered = false;
+
+		// when
+		try {
+			vehicle.remove(RemoveStrategy.NORMAL);
+		} catch (RollbackException e) {
+			if (e.getCause() instanceof ReferentialIntegrityConstraintViolationException)
+				referentialIntegrityConstraintViolationExceptionHasBeenTriggered = true;
+		} finally {
+			// then
+			assert referentialIntegrityConstraintViolationExceptionHasBeenTriggered;
+			assert engine.isAlive();
+			assert vehicle.isAlive();
+			assert car.isAlive();
+		}
+	}
+
+	public void test107_remove_relation_KO() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex color = engine.addInstance("Color");
+		Vertex red = color.addInstance("red");
+		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Vertex carRed = vehicleColor.addInstance("CarRed", car, red);
+
+		boolean referentialIntegrityConstraintViolationExceptionHasBeenTriggered = false;
+
+		try {
+			// when
+			vehicleColor.remove(RemoveStrategy.NORMAL);
+		} catch (RollbackException e) {
+			if (e.getCause() instanceof ReferentialIntegrityConstraintViolationException)
+				referentialIntegrityConstraintViolationExceptionHasBeenTriggered = true;
+		} finally {
+			// then
+			assert referentialIntegrityConstraintViolationExceptionHasBeenTriggered;
+			assert engine.isAlive();
+			assert vehicle.isAlive();
+			assert car.isAlive();
+			assert color.isAlive();
+			assert red.isAlive();
+			assert vehicleColor.isAlive();
+			assert carRed.isAlive();
+		}
+	}
+
+	public void test108_remove_relationFromTarget() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex color = engine.addInstance("Color");
+		Vertex red = color.addInstance("red");
+		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Vertex carRed = vehicleColor.addInstance("CarRed", car, red);
+
+		// when
+		red.remove(RemoveStrategy.NORMAL);
+
+		// then
+		assert engine.isAlive();
+		assert vehicle.isAlive();
+		assert car.isAlive();
+		assert color.isAlive();
+		assert !red.isAlive();
+		assert vehicleColor.isAlive();
+		assert !carRed.isAlive();
+	}
+
+	public void test109_remove_link() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex color = engine.addInstance("Color");
+		Vertex red = color.addInstance("red");
+		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Vertex carRed = vehicleColor.addInstance("CarRed", car, red);
+
+		// when
+		carRed.remove(RemoveStrategy.NORMAL);
+
+		// then
+		assert engine.isAlive();
+		assert vehicle.isAlive();
+		assert car.isAlive();
+		assert color.isAlive();
+		assert red.isAlive();
+		assert vehicleColor.isAlive();
+		assert !carRed.isAlive();
+	}
+
+	public void test110_remove_Type_ForceStrategy() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+
+		// when
+		vehicle.remove(RemoveStrategy.FORCE);
+
+		// then
+		assert !vehicle.isAlive();
+		assert engine.computeAllDependencies().stream().count() == 1;
+		assert engine.computeAllDependencies().contains(engine);
+	}
+
+	public void test111_remove_typeWithInstance_ForceStrategy() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex myVehicle = vehicle.addInstance("MyVehicule");
+
+		// when
+		vehicle.remove(RemoveStrategy.FORCE);
+		// then
+		assert !vehicle.isAlive();
+		assert !myVehicle.isAlive();
+		assert engine.computeAllDependencies().stream().count() == 1;
+		assert engine.computeAllDependencies().contains(engine);
+	}
+
+	public void test112_remove_TypeWithSubType_ForceStrategy() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+
+		// when
+		vehicle.remove(RemoveStrategy.FORCE);
+
+		// then
+		assert !vehicle.isAlive();
+		assert !car.isAlive();
+		assert engine.computeAllDependencies().stream().count() == 1;
+		assert engine.computeAllDependencies().contains(engine);
+	}
+
+	public void test113_remove_attribute_ForceStrategy() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex power = engine.addInstance("Power", vehicle);
+
+		// when
+		vehicle.remove(RemoveStrategy.FORCE);
+
+		// then
+		assert engine.isAlive();
+		assert !vehicle.isAlive();
+		assert !power.isAlive();
+		assert engine.computeAllDependencies().stream().count() == 1;
+		assert engine.computeAllDependencies().contains(engine);
+	}
+
+	public void test114_remove_relation_ForceStrategy() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex color = engine.addInstance("Color");
+		Vertex red = color.addInstance("red");
+		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Vertex carRed = vehicleColor.addInstance("CarRed", car, red);
+
+		// when
+		vehicleColor.remove(RemoveStrategy.FORCE);
+
+		// then
+		assert engine.isAlive();
+		assert vehicle.isAlive();
+		assert car.isAlive();
+		assert color.isAlive();
+		assert red.isAlive();
+		assert !vehicleColor.isAlive();
+		assert !carRed.isAlive();
+	}
+
+	public void test115_remove_instanceBaseOfRelation_ForceStrategy() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex color = engine.addInstance("Color");
+		Vertex red = color.addInstance("red");
+		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Vertex carRed = vehicleColor.addInstance("CarRed", car, red);
+
+		// when
+		car.remove(RemoveStrategy.FORCE);
+
+		// then
+		assert engine.isAlive();
+		assert vehicle.isAlive();
+		assert !car.isAlive();
+		assert color.isAlive();
+		assert red.isAlive();
+		assert vehicleColor.isAlive();
+		assert !carRed.isAlive();
+	}
+
+	public void test120_remove_Type_ConserveStrategy() {
 		// given
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
@@ -333,7 +562,7 @@ public class VertexRestructurationTest extends AbstractTest {
 		assert engine.computeAllDependencies().contains(engine);
 	}
 
-	public void test132_remove_SubType_ConserveStrategy() throws ConstraintViolationException {
+	public void test121_remove_SubType_ConserveStrategy() {
 		// given
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
@@ -355,7 +584,7 @@ public class VertexRestructurationTest extends AbstractTest {
 		assert newCar.computeAllDependencies().contains(newCar);
 	}
 
-	public void test133_remove_with2SubTypes_ConserveStrategy() throws ConstraintViolationException {
+	public void test122_remove_with2SubTypes_ConserveStrategy() {
 		// given
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
@@ -389,7 +618,7 @@ public class VertexRestructurationTest extends AbstractTest {
 		assert newAutomatic.computeAllDependencies().contains(newAutomatic);
 	}
 
-	public void test134_remove_SubSubTypes_ConserveStrategy() throws ConstraintViolationException {
+	public void test123_remove_SubSubTypes_ConserveStrategy() {
 		// given
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
@@ -422,7 +651,7 @@ public class VertexRestructurationTest extends AbstractTest {
 		assert newAutomatic.getSupersStream().collect(Collectors.toList()).contains(newCar);
 	}
 
-	public void test135_remove_TypeWithAttribute_ConserveStrategy() throws ConstraintViolationException {
+	public void test124_remove_TypeWithAttribute_ConserveStrategy() {
 		// given
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
@@ -490,6 +719,7 @@ public class VertexRestructurationTest extends AbstractTest {
 		addInheritings(vertex, print);
 		addInstances(vertex, print);
 		addSupers(vertex, print);
+		addComposites(vertex, print);
 		print.append("\n");
 		return print.toString();
 	}
@@ -584,5 +814,18 @@ public class VertexRestructurationTest extends AbstractTest {
 		addLib("components of", vertex, add);
 		addVertexList(vertex.getComponents(), add);
 		add.append("\n");
+	}
+
+	@Deprecated
+	private StringBuffer printComposites(Vertex vertex) {
+		StringBuffer add = new StringBuffer();
+		addComposites(vertex, add);
+		return add;
+	}
+
+	private void addComposites(Vertex vertex, StringBuffer stringBuffer) {
+		addLib("composites of", vertex, stringBuffer);
+		addVertexList(vertex.getComposites().stream().collect(Collectors.toList()), stringBuffer);
+		stringBuffer.append("\n");
 	}
 }

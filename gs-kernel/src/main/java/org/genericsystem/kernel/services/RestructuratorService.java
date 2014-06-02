@@ -3,9 +3,7 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.NavigableSet;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.genericsystem.kernel.RemoveRestructurator;
@@ -31,16 +29,13 @@ public interface RestructuratorService<T extends RestructuratorService<T>> exten
 		}.rebuildAll((T) RestructuratorService.this, computeAllDependencies());
 	}
 
-	default void remove(RemoveStrategy removeStrategy) throws ConstraintViolationException {
+	default void remove(RemoveStrategy removeStrategy) {
 		switch (removeStrategy) {
 		case NORMAL:
-			removeInstance((Vertex) RestructuratorService.this);
-			break;
-		case STRUCTURAL:
-			removeStructural((Vertex) RestructuratorService.this);
+			removeInstance((T) RestructuratorService.this);
 			break;
 		case FORCE:
-			removeCascade((Vertex) RestructuratorService.this);
+			removeCascade((T) RestructuratorService.this);
 			break;
 		case CONSERVE:
 			new RemoveRestructurator<Vertex>((Vertex) RestructuratorService.this) {
@@ -50,9 +45,9 @@ public interface RestructuratorService<T extends RestructuratorService<T>> exten
 		}
 	}
 
-	default void removeInstance(Vertex old) throws ConstraintViolationException {
+	default void removeInstance(T old) {
 		try {
-			for (Vertex vertex : getOrderedDependenciesToRemove(old).descendingSet())
+			for (T vertex : getOrderedDependenciesToRemove(old))
 				simpleRemove(vertex);
 		} catch (ConstraintViolationException e) {
 			rollbackAndThrowException(e);
@@ -60,41 +55,42 @@ public interface RestructuratorService<T extends RestructuratorService<T>> exten
 	}
 
 	// FIXME ReferentialIntegrityConstraintViolationException
-	default <T extends Vertex> NavigableSet<Vertex> getOrderedDependenciesToRemove(Vertex vertex) throws ConstraintViolationException {
-		return new TreeSet<Vertex>() {
+	default LinkedHashSet<T> getOrderedDependenciesToRemove(T vertex) throws ConstraintViolationException {
+		return new LinkedHashSet<T>() {
 			// FIXME generated value
 			private static final long serialVersionUID = 1L;
 			{
-				getOrderedDependenciesToRemoveByBrowsingThrough(vertex);
+				addDependencies(vertex);
 			}
 
-			@SuppressWarnings("unchecked")
-			public void getOrderedDependenciesToRemoveByBrowsingThrough(Vertex vertex) throws ConstraintViolationException {
-				for (Vertex inheritingDependency : vertex.getAllInheritings().collect(Collectors.toList()))
-					if (add(vertex)) {// protect from loop
-						// if (((Vertex) inheritingDependency).isAutomatic())
-						getOrderedDependenciesToRemoveByBrowsingThrough(inheritingDependency);
-						if (!contains(inheritingDependency))
-							throw new ReferentialIntegrityConstraintViolationException(inheritingDependency + " is an inheritance dependency for ancestor " + vertex);
-						for (Vertex compositeDependency : vertex.<T> getComposites())
-							if (!vertex.equals(compositeDependency)) {
-								for (int componentPos = 0; componentPos < ((Vertex) compositeDependency).getComponents().size(); componentPos++)
-									// TODO put .getComponents().get(componentPos) in Vertex/Signature or somewhere else but should be exposed
-									if (/* !((Vertex) compositeDependency).isAutomatic() && */((Vertex) compositeDependency).getComponents().get(componentPos).equals(vertex) && !contains(compositeDependency)
-											&& compositeDependency.isReferentialIntegrity(componentPos))
-										throw new ReferentialIntegrityConstraintViolationException(compositeDependency + " is Referential Integrity for ancestor " + vertex + " by component position : " + componentPos);
-								getOrderedDependenciesToRemoveByBrowsingThrough(compositeDependency);
-							}
-						for (int axe = 0; axe < vertex.getComponents().size(); axe++)
-							// FIXME : add system property cascadeRemoveEnabled
-							/* if (((Vertex) vertex).isCascadeRemove(axe)) */
-							getOrderedDependenciesToRemoveByBrowsingThrough(((Vertex) vertex).getComponents().get(axe));
-					}
+			public void addDependencies(T generic) throws ReferentialIntegrityConstraintViolationException {
+				if (super.add((T) generic)) {// protect from loop
+					for (T inheriting : generic.getInheritings())
+						// if (((GenericImpl) inheritingDependency).isAutomatic())
+						// addDependencies(inheritingDependency);
+						if (!contains(inheriting))
+							throw new ReferentialIntegrityConstraintViolationException(inheriting + " is an inheritance dependency for ancestor " + generic);
+					for (T instance : generic.getInstances())
+						if (!contains(instance))
+							throw new ReferentialIntegrityConstraintViolationException(instance + " is an instance dependency for ancestor " + generic);
+					for (T composite : generic.<T> getComposites())
+						if (!generic.equals(composite)) {
+							for (int componentPos = 0; componentPos < composite.getComponents().size(); componentPos++)
+								if (!/* compositeDependency.isAutomatic() && */composite.getComponents().get(componentPos).equals(generic) && !contains(composite)
+										&& composite.isReferentialIntegrityConstraintEnabled(componentPos))
+									throw new ReferentialIntegrityConstraintViolationException(composite + " is Referential Integrity for ancestor " + generic + " by component position : " + componentPos);
+							addDependencies(composite);
+						}
+					for (int axe = 0; axe < generic.getComponents().size(); axe++)
+						if (generic.isCascadeRemove(axe))
+							addDependencies(generic.getComponents().get(axe));
+				}
 			}
+
 		};
 	}
 
-	default void simpleRemove(Vertex vertex) throws AliveConstraintViolationException {
+	default void simpleRemove(T vertex) throws AliveConstraintViolationException {
 		if (!vertex.isAlive())
 			rollbackAndThrowException(new AliveConstraintViolationException(vertex.info() + " is not alive"));
 		/*
@@ -103,18 +99,9 @@ public interface RestructuratorService<T extends RestructuratorService<T>> exten
 		vertex.unplug();
 	}
 
-	// FIXME : does it have any logic ?
-	@Deprecated
-	default void removeStructural(Vertex vertex) {
-		if (vertex.computeAllDependencies().size() > 1)
-			rollback();
-		vertex.unplug();
-	}
-
-	// TODO
-	@Deprecated
-	default void removeCascade(Vertex vertex) {
-		rollback();
+	default void removeCascade(T old) {
+		for (T dependency : old.computeAllDependencies())
+			dependency.unplug();
 	}
 
 	default LinkedHashSet<T> computeAllDependencies() {

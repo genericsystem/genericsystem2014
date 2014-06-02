@@ -3,6 +3,7 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
+
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.BindingService;
@@ -18,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Vertex extends ExtendedSignature<Vertex> implements AncestorsService<Vertex>, DependenciesService<Vertex>, InheritanceService<Vertex>, BindingService<Vertex>, CompositesInheritanceService<Vertex>, FactoryService<Vertex>,
-DisplayService<Vertex>, SystemPropertiesService<Vertex>, ExceptionAdviserService<Vertex>, RestructuratorService<Vertex> {
+		DisplayService<Vertex>, SystemPropertiesService<Vertex>, ExceptionAdviserService<Vertex>, RestructuratorService<Vertex> {
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 
 	private final Dependencies<Vertex> instances = buildDependencies();
@@ -61,14 +62,6 @@ DisplayService<Vertex>, SystemPropertiesService<Vertex>, ExceptionAdviserService
 	@Override
 	public void rollback() {
 		getRoot().rollback();
-	}
-
-	@Override
-	public int compareTo(AncestorsService<Vertex> service) {
-		// FIXME
-		if (this.equiv(service))
-			return 0;
-		return -1;
 	}
 
 }
