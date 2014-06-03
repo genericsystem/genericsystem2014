@@ -4,9 +4,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
+import java.util.function.Supplier;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
+import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.DependenciesImpl;
 import org.genericsystem.kernel.ExtendedSignature;
 import org.genericsystem.kernel.Signature;
@@ -33,14 +34,14 @@ public interface FactoryService<T extends FactoryService<T>> extends ExceptionAd
 
 	T init(int level, T meta, List<T> overrides, Serializable value, List<T> components);
 
-	default Dependencies<T> buildDependencies() {
+	default Dependencies<T> buildDependencies(Supplier<Iterator<T>> subDependenciesSupplier) {
 		return new DependenciesImpl<T>();
 	}
 
-	default CompositesDependencies<T> buildCompositeDependencies() {
+	default CompositesDependencies<T> buildCompositeDependencies(Supplier<Iterator<DependenciesEntry<T>>> subDependenciesSupplier) {
 		class CompositesDependenciesImpl<E> implements CompositesDependencies<E> {
 			@SuppressWarnings("unchecked")
-			private Dependencies<DependenciesEntry<E>> delegate = (Dependencies<DependenciesEntry<E>>) buildDependencies();
+			private Dependencies<DependenciesEntry<E>> delegate = (Dependencies<DependenciesEntry<E>>) buildDependencies((Supplier) subDependenciesSupplier);
 
 			@Override
 			public boolean remove(DependenciesEntry<E> vertex) {
@@ -59,8 +60,8 @@ public interface FactoryService<T extends FactoryService<T>> extends ExceptionAd
 
 			@SuppressWarnings("unchecked")
 			@Override
-			public Dependencies<E> buildDependencies() {
-				return (Dependencies<E>) FactoryService.this.buildDependencies();
+			public Dependencies<E> buildDependencies(Supplier<Iterator<E>> supplier) {
+				return (Dependencies<E>) FactoryService.this.buildDependencies((Supplier) supplier);
 			}
 		}
 		return new CompositesDependenciesImpl<T>();

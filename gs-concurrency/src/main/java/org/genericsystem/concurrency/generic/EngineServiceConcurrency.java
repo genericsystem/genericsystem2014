@@ -2,19 +2,23 @@ package org.genericsystem.concurrency.generic;
 
 import java.io.Serializable;
 import java.util.Objects;
-
 import org.genericsystem.cache.AbstractContext;
 import org.genericsystem.cache.Cache;
+import org.genericsystem.cache.EngineService;
+import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.services.AncestorsService;
 
-public interface EngineServiceConcurrency<U, T extends GenericServiceConcurrency<T>> extends GenericServiceConcurrency<T> {
+public interface EngineServiceConcurrency<T extends GenericServiceConcurrency<T>> extends EngineService<T> {
 
+	@Override
 	default Cache<T> buildCache(AbstractContext<T> subContext) {
 		return new Cache<T>(subContext);
 	}
 
+	@Override
 	Cache<T> start(Cache<T> cache);
 
+	@Override
 	void stop(Cache<T> cache);
 
 	@Override
@@ -22,9 +26,11 @@ public interface EngineServiceConcurrency<U, T extends GenericServiceConcurrency
 		return 0;
 	}
 
-	U buildRoot();
+	@Override
+	Root buildRoot();
 
-	U buildRoot(Serializable value);
+	@Override
+	Root buildRoot(Serializable value);
 
 	@Override
 	default boolean isRoot() {

@@ -8,11 +8,9 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
-import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
@@ -54,7 +52,7 @@ public class Cache<T extends GenericService<T>> extends AbstractContext<T> {
 	}
 
 	public Cache<T> mountNewCache() {
-		return ((EngineService<Root, T>) getEngine()).buildCache(this).start();
+		return getEngine().buildCache(this).start();
 	}
 
 	public Cache<T> flushAndUnmount() {
@@ -68,17 +66,17 @@ public class Cache<T extends GenericService<T>> extends AbstractContext<T> {
 	}
 
 	public Cache<T> start() {
-		return ((EngineService<Root, T>) getEngine()).start(this);
+		return getEngine().start(this);
 	}
 
 	public void stop() {
-		((EngineService<Root, T>) getEngine()).stop(this);
+		getEngine().stop(this);
 	}
 
 	public T insert(T generic) throws RollbackException {
 		try {
 			add(generic);
-			return (T) generic;
+			return generic;
 		} catch (ConstraintViolationException e) {
 			rollback(e);
 		}
@@ -155,19 +153,14 @@ public class Cache<T extends GenericService<T>> extends AbstractContext<T> {
 	protected Dependencies<T> getDependencies(T generic, Map<T, Dependencies<T>> dependenciesMap, Supplier<Iterator<T>> iteratorSupplier) {
 		Dependencies<T> dependencies = dependenciesMap.get(generic);
 		if (dependencies == null)
-			dependenciesMap.put(generic, dependencies = new CacheDependencies<T>(iteratorSupplier));
+			dependenciesMap.put(generic, dependencies = generic.buildDependencies(iteratorSupplier));
 		return dependencies;
 	}
 
 	protected CompositesDependencies<T> getCompositesDependencies(T generic, Map<T, CompositesDependencies<T>> dependenciesMap, Supplier<Iterator<DependenciesEntry<T>>> iteratorSupplier) {
 		CompositesDependencies<T> dependencies = dependenciesMap.get(generic);
 		if (dependencies == null)
-			dependenciesMap.put(generic, dependencies = new CacheCompositesDependencies<T>(iteratorSupplier) {
-				@Override
-				public Dependencies<T> buildDependencies() {
-					return generic.buildDependencies();
-				}
-			});
+			dependenciesMap.put(generic, dependencies = generic.buildCompositeDependencies(iteratorSupplier));
 		return dependencies;
 	}
 
@@ -180,7 +173,7 @@ public class Cache<T extends GenericService<T>> extends AbstractContext<T> {
 	}
 
 	@Override
-	public T getEngine() {
+	public Engine getEngine() {
 		return subContext.getEngine();
 	}
 

@@ -9,6 +9,5 @@ public interface ExceptionAdviserService<T extends ExceptionAdviserService<T>> e
 		throw new RollbackException(exception);
 	}
 
-	// TODO KK
-	void rollback();
+	default void rollback() {}
 }

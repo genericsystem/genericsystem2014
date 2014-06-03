@@ -3,7 +3,6 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
-
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.services.RestructuratorService;
 import org.slf4j.Logger;
@@ -12,10 +11,10 @@ import org.slf4j.LoggerFactory;
 public class Vertex extends ExtendedSignature<Vertex> implements RestructuratorService<Vertex> {
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 
-	private final Dependencies<Vertex> instances = buildDependencies();
-	private final Dependencies<Vertex> inheritings = buildDependencies();
-	private final CompositesDependencies<Vertex> superComposites = buildCompositeDependencies();
-	private final CompositesDependencies<Vertex> metaComposites = buildCompositeDependencies();
+	private final Dependencies<Vertex> instances = buildDependencies(null);
+	private final Dependencies<Vertex> inheritings = buildDependencies(null);
+	private final CompositesDependencies<Vertex> superComposites = buildCompositeDependencies(null);
+	private final CompositesDependencies<Vertex> metaComposites = buildCompositeDependencies(null);
 
 	@Override
 	public Vertex buildInstance() {
