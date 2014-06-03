@@ -1,5 +1,6 @@
 package org.genericsystem.kernel;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,8 +29,23 @@ public abstract class AbstractTest {
 		public abstract void intercept();
 	}
 
+	/**
+	 * @param value
+	 *            the value of the vertex expected
+	 * @param vertexList
+	 *            the list of vertex in which we find the value
+	 * @return first vertex with the expected value, null otherwise
+	 */
+	protected Vertex findElement(Serializable value, List<Vertex> vertexList) {
+		assert value != null;
+		for (Vertex element : vertexList)
+			if (value.equals(element.getValue()))
+				return element;
+		return null;
+	}
+
 	@Deprecated
-	private String printAll(Vertex vertex) {
+	protected String printAll(Vertex vertex) {
 		if (vertex == null)
 			return "";
 		StringBuffer print = new StringBuffer();
@@ -55,7 +71,7 @@ public abstract class AbstractTest {
 	}
 
 	@Deprecated
-	private StringBuffer printInstances(Vertex vertex) {
+	protected StringBuffer printInstances(Vertex vertex) {
 		StringBuffer add = new StringBuffer();
 		addInstances(vertex, add);
 		return add;
@@ -91,7 +107,7 @@ public abstract class AbstractTest {
 	}
 
 	@Deprecated
-	private StringBuffer printDependencies(Vertex vertex) {
+	protected StringBuffer printDependencies(Vertex vertex) {
 		StringBuffer add = new StringBuffer();
 		addDependencies(vertex, add);
 		return add;
@@ -105,7 +121,7 @@ public abstract class AbstractTest {
 	}
 
 	@Deprecated
-	private StringBuffer printInheritings(Vertex vertex) {
+	protected StringBuffer printInheritings(Vertex vertex) {
 		StringBuffer add = new StringBuffer();
 		addInheritings(vertex, add);
 		return add;
@@ -119,7 +135,7 @@ public abstract class AbstractTest {
 	}
 
 	@Deprecated
-	private StringBuffer printSupers(Vertex vertex) {
+	protected StringBuffer printSupers(Vertex vertex) {
 		StringBuffer add = new StringBuffer();
 		addSupers(vertex, add);
 		return add;
@@ -133,7 +149,7 @@ public abstract class AbstractTest {
 	}
 
 	@Deprecated
-	private StringBuffer printComponents(Vertex vertex) {
+	protected StringBuffer printComponents(Vertex vertex) {
 		StringBuffer add = new StringBuffer();
 		addComponents(vertex, add);
 		return add;
@@ -147,7 +163,7 @@ public abstract class AbstractTest {
 	}
 
 	@Deprecated
-	private StringBuffer printComposites(Vertex vertex) {
+	protected StringBuffer printComposites(Vertex vertex) {
 		StringBuffer add = new StringBuffer();
 		addComposites(vertex, add);
 		return add;
