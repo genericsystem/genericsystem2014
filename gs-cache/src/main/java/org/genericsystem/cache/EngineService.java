@@ -1,10 +1,9 @@
 package org.genericsystem.cache;
 
 import java.util.Objects;
-
 import org.genericsystem.kernel.services.AncestorsService;
 
-public interface EngineService<U, T extends GenericService<T>> extends org.genericsystem.impl.EngineService<U, T>, GenericService<T> {
+public interface EngineService<T extends GenericService<T>> extends org.genericsystem.impl.EngineService<T>, GenericService<T> {
 
 	default Cache<T> buildCache(AbstractContext<T> subContext) {
 		return new Cache<T>(subContext);

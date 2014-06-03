@@ -8,7 +8,7 @@ import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 
 public abstract class AbstractContext<T extends GenericService<T>> {
 
-	abstract T getEngine();
+	abstract Engine getEngine();
 
 	public abstract boolean isAlive(T generic);
 

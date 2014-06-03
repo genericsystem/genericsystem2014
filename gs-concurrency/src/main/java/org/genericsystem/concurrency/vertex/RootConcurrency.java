@@ -4,12 +4,13 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
-
+import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.exceptions.RollbackException;
 import org.genericsystem.kernel.services.AncestorsService;
 
-public class RootConcurrency extends VertexConcurrency {
+public class RootConcurrency extends Root {
 
 	private final TsGenerator generator = new TsGenerator();
 
@@ -44,7 +45,7 @@ public class RootConcurrency extends VertexConcurrency {
 	}
 
 	@Override
-	public VertexConcurrency getMeta() {
+	public Vertex getMeta() {
 		return this;
 	}
 
@@ -69,8 +70,7 @@ public class RootConcurrency extends VertexConcurrency {
 	 * @Override public Serializable get(Object key) { Serializable result = super.get(key); if (result == null) put(result = (Serializable) key, result); return result; } }
 	 */
 	@Override
-	public VertexConcurrency getAlive() {
-		// TODO is enough ?
+	public Vertex getAlive() {
 		return this;
 	}
 

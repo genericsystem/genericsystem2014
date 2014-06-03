@@ -11,7 +11,6 @@ import java.util.function.Supplier;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
-import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
@@ -53,7 +52,7 @@ public class Cache<T extends GenericService<T>> extends AbstractContext<T> {
 	}
 
 	public Cache<T> mountNewCache() {
-		return ((EngineService<Root, T>) getEngine()).buildCache(this).start();
+		return getEngine().buildCache(this).start();
 	}
 
 	public Cache<T> flushAndUnmount() {
@@ -67,11 +66,11 @@ public class Cache<T extends GenericService<T>> extends AbstractContext<T> {
 	}
 
 	public Cache<T> start() {
-		return ((EngineService<Root, T>) getEngine()).start(this);
+		return getEngine().start(this);
 	}
 
 	public void stop() {
-		((EngineService<Root, T>) getEngine()).stop(this);
+		getEngine().stop(this);
 	}
 
 	public T insert(T generic) throws RollbackException {
@@ -174,7 +173,7 @@ public class Cache<T extends GenericService<T>> extends AbstractContext<T> {
 	}
 
 	@Override
-	public T getEngine() {
+	public Engine getEngine() {
 		return subContext.getEngine();
 	}
 

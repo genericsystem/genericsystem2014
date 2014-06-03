@@ -2,14 +2,20 @@ package org.genericsystem.concurrency.generic;
 
 import java.io.Serializable;
 import java.util.List;
-
 import org.genericsystem.cache.Cache;
 import org.genericsystem.cache.GenericService;
+import org.genericsystem.concurrency.vertex.VertexConcurrency;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 
 public interface GenericServiceConcurrency<T extends GenericServiceConcurrency<T>> extends GenericService<T> {
 
+	@Override
+	default VertexConcurrency unwrap() {
+		return (VertexConcurrency) GenericService.super.unwrap();
+	}
+
+	@Override
 	default Cache<T> getCurrentCache() {
 		return getMeta().getCurrentCache();
 	}

@@ -2,10 +2,10 @@ package org.genericsystem.impl;
 
 import java.io.Serializable;
 import java.util.Objects;
-
+import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.services.AncestorsService;
 
-public interface EngineService<U, T extends GenericService<T>> extends GenericService<T> {
+public interface EngineService<T extends GenericService<T>> extends GenericService<T> {
 
 	@Override
 	default int getLevel() {
@@ -13,7 +13,7 @@ public interface EngineService<U, T extends GenericService<T>> extends GenericSe
 	}
 
 	//
-	U buildRoot();
+	Root buildRoot();
 
 	// {
 	// return buildRoot(Statics.ENGINE_VALUE);
@@ -21,7 +21,7 @@ public interface EngineService<U, T extends GenericService<T>> extends GenericSe
 	//
 	// @SuppressWarnings("unchecked")
 	// default
-	U buildRoot(Serializable value);
+	Root buildRoot(Serializable value);
 
 	// return (T) new Root(value);
 	// }
