@@ -2,24 +2,29 @@ package org.genericsystem.impl;
 
 import java.io.Serializable;
 import java.util.Objects;
-import org.genericsystem.kernel.Root;
-import org.genericsystem.kernel.Statics;
+
 import org.genericsystem.kernel.services.AncestorsService;
 
-public interface EngineService<T extends GenericService<T>> extends GenericService<T> {
+public interface EngineService<U, T extends GenericService<T>> extends GenericService<T> {
 
 	@Override
 	default int getLevel() {
 		return 0;
 	}
 
-	default Root buildRoot() {
-		return buildRoot(Statics.ENGINE_VALUE);
-	}
+	//
+	U buildRoot();
 
-	default Root buildRoot(Serializable value) {
-		return new Root(value);
-	}
+	// {
+	// return buildRoot(Statics.ENGINE_VALUE);
+	// }
+	//
+	// @SuppressWarnings("unchecked")
+	// default
+	U buildRoot(Serializable value);
+
+	// return (T) new Root(value);
+	// }
 
 	@Override
 	default boolean isRoot() {

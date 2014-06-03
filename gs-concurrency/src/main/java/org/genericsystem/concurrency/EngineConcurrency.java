@@ -1,33 +1,32 @@
 package org.genericsystem.concurrency;
 
-import java.util.concurrent.atomic.AtomicLong;
+import java.io.Serializable;
+import java.util.Collections;
 
 import org.genericsystem.cache.Cache;
 import org.genericsystem.kernel.Statics;
 
-public class EngineConcurrency extends GenericConcurrency implements EngineServiceConcurrency<GenericConcurrency> {
+public class EngineConcurrency extends GenericConcurrency implements EngineServiceConcurrency<RootConcurrency, GenericConcurrency> {
 
-	private final TsGenerator generator = new TsGenerator();
+	private final RootConcurrency root;
 
-	public long pickNewTs() {
-		return generator.pickNewTs();
+	public EngineConcurrency() {
+		this(Statics.ENGINE_VALUE, Statics.ENGINE_VALUE);
 	}
 
-	static class TsGenerator {
-		private final long startTime = System.currentTimeMillis() * Statics.MILLI_TO_NANOSECONDS - System.nanoTime();
-		private final AtomicLong lastTime = new AtomicLong(0L);
+	public EngineConcurrency(Serializable rootValue, Serializable engineValue) {
+		root = buildRoot(rootValue);
+		init(0, null, Collections.emptyList(), engineValue, Collections.emptyList());
+	}
 
-		long pickNewTs() {
-			long nanoTs;
-			long current;
-			for (;;) {
-				nanoTs = startTime + System.nanoTime();
-				current = lastTime.get();
-				if (nanoTs > current)
-					if (lastTime.compareAndSet(current, nanoTs))
-						return nanoTs;
-			}
-		}
+	@Override
+	public RootConcurrency buildRoot() {
+		return buildRoot(Statics.ENGINE_VALUE);
+	}
+
+	@Override
+	public RootConcurrency buildRoot(Serializable value) {
+		return new RootConcurrency(value);
 	}
 
 	@Override
@@ -40,5 +39,25 @@ public class EngineConcurrency extends GenericConcurrency implements EngineServi
 	public void stop(Cache<GenericConcurrency> cache) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public EngineConcurrency getAlive() {
+		return this;
+	}
+
+	@Override
+	public VertexConcurrency getVertexConcurrency() {
+		return root;
+	}
+
+	@Override
+	public EngineConcurrency getRoot() {
+		return this;
+	}
+
+	@Override
+	public void rollback() {
+		root.rollback();
 	}
 }

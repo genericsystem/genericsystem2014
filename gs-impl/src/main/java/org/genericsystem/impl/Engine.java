@@ -7,7 +7,7 @@ import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
 
-public class Engine extends Generic implements EngineService<Generic> {
+public class Engine extends Generic implements EngineService<Root, Generic> {
 
 	private final Root root;
 
@@ -18,6 +18,16 @@ public class Engine extends Generic implements EngineService<Generic> {
 	public Engine(Serializable rootValue, Serializable engineValue) {
 		root = buildRoot(rootValue);
 		init(0, null, Collections.emptyList(), engineValue, Collections.emptyList());
+	}
+
+	@Override
+	public Root buildRoot() {
+		return buildRoot(Statics.ENGINE_VALUE);
+	}
+
+	@Override
+	public Root buildRoot(Serializable value) {
+		return new Root(value);
 	}
 
 	@Override

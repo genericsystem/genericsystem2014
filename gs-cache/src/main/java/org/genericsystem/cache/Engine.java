@@ -1,12 +1,13 @@
 package org.genericsystem.cache;
 
+import java.io.Serializable;
 import java.util.Collections;
 
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
 
-public class Engine extends Generic implements EngineService<Generic> {
+public class Engine extends Generic implements EngineService<Root, Generic> {
 
 	private final Root root = buildRoot();
 
@@ -15,6 +16,16 @@ public class Engine extends Generic implements EngineService<Generic> {
 	public Engine() {
 		cacheLocal.set(buildCache(new Transaction<>(this)));
 		init(0, null, Collections.emptyList(), Statics.ENGINE_VALUE, Collections.emptyList());
+	}
+
+	@Override
+	public Root buildRoot() {
+		return buildRoot(Statics.ENGINE_VALUE);
+	}
+
+	@Override
+	public Root buildRoot(Serializable value) {
+		return new Root(value);
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.genericsystem.kernel.Dependencies;
+import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.DependenciesImpl;
 import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.OptimisticLockConstraintViolationException;
@@ -19,13 +20,20 @@ public class LifeManager {
 	private long deathTs;
 	private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	final Dependencies<GenericConcurrency> engineInheritings = new DependenciesImpl<>();
-	final Dependencies<GenericConcurrency> engineComposites = new DependenciesImpl<>();
+	final Dependencies<GenericConcurrency> engineInstances = new DependenciesImpl<>();
+	final CompositesDependencies<GenericConcurrency> engineMetaComposites = buildCompositeDependencies();
+	final CompositesDependencies<GenericConcurrency> engineSuperComposites = buildCompositeDependencies();
 
 	public LifeManager(long designTs, long birthTs, long lastReadTs, long deathTs) {
 		this.designTs = designTs;
 		this.birthTs = birthTs;
 		this.lastReadTs = new AtomicLong(lastReadTs);
 		this.deathTs = deathTs;
+	}
+
+	private CompositesDependencies<GenericConcurrency> buildCompositeDependencies() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	public void beginLife(long birthTs) {
