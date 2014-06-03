@@ -12,7 +12,7 @@ import org.genericsystem.kernel.Statics;
 public interface SystemPropertiesService<T extends SystemPropertiesService<T>> extends AncestorsService<T> {
 
 	default boolean isSingularConstraintEnabled(int pos) {
-		return isEnabled(SingularConstraint.class, pos);
+		return pos == Statics.BASE_POSITION;
 	}
 
 	default boolean isPropertyConstraintEnabled() {

@@ -18,7 +18,7 @@ import org.genericsystem.kernel.exceptions.CrossEnginesAssignementsException;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 
-public interface BindingService<T extends BindingService<T>> extends AncestorsService<T>, DependenciesService<T>, FactoryService<T>, CompositesInheritanceService<T>, InheritanceService<T>, ExceptionAdviserService<T>, DisplayService<T> {
+public interface BindingService<T extends BindingService<T>> extends DependenciesService<T>, FactoryService<T>, CompositesInheritanceService<T>, InheritanceService<T>, ExceptionAdviserService<T>, DisplayService<T> {
 
 	@SuppressWarnings("unchecked")
 	default T addInstance(Serializable value, T... components) {
@@ -81,10 +81,10 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 	T getInstance(Serializable value, T... components);
 
 	@Override
-	public Dependencies<T> getInstances();
+	Dependencies<T> getInstances();
 
 	@Override
-	public Dependencies<T> getInheritings();
+	Dependencies<T> getInheritings();
 
 	CompositesDependencies<T> getMetaComposites();
 

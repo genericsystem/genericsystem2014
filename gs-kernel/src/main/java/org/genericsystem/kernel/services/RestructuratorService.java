@@ -100,15 +100,12 @@ public interface RestructuratorService<T extends RestructuratorService<T>> exten
 			rollbackAndThrowException(new AliveConstraintViolationException(vertex.info() + " is not alive"));
 		if (!vertex.getInstances().isEmpty() || !vertex.getInheritings().isEmpty() || !vertex.getComposites().isEmpty())
 			rollbackAndThrowException(new IllegalStateException(vertex.info() + " has dependencies"));
-		/*
-		 * if (!(automatics.remove(vertex) || adds.remove(vertex))) removes.add(vertex);
-		 */
+		/* if (!(automatics.remove(vertex) || adds.remove(vertex))) removes.add(vertex); */
 		vertex.unplug();
 	}
 
 	default void removeCascade() {
-		for (T dependency : computeAllDependencies())
-			dependency.unplug();
+		computeAllDependencies().forEach(x -> x.unplug());
 	}
 
 	default LinkedHashSet<T> computeAllDependencies() {
