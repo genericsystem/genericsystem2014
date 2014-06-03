@@ -3,12 +3,14 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
+
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
-import org.genericsystem.kernel.services.RestructuratorService;
+import org.genericsystem.kernel.services.Removable;
+import org.genericsystem.kernel.services.Updatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Vertex extends ExtendedSignature<Vertex> implements RestructuratorService<Vertex> {
+public class Vertex extends ExtendedSignature<Vertex> implements Removable<Vertex>, Updatable<Vertex> {
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 
 	private final Dependencies<Vertex> instances = buildDependencies(null);
