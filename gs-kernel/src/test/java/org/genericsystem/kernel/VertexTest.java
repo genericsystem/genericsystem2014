@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.Arrays;
 import java.util.Collections;
+
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.testng.annotations.Test;
 
@@ -27,7 +28,6 @@ public class VertexTest extends AbstractTest {
 		Vertex yellow = color.addInstance("yellow");
 		assert !yellow.getSupersStream().anyMatch(red::equals);
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		log.info("" + car.info() + power.info() + myBmw.info() + v233.info() + yellow.info());
 		assert engine.getInstances().containsAll(Arrays.asList(vehicle, car));
 		assert car.getInstances().contains(myBmw) : car.getInstances() + car.info();
 		assert power.getInstances().contains(v233);
@@ -53,19 +53,16 @@ public class VertexTest extends AbstractTest {
 		assert carRed.isSuperOf(vehicleColor, Arrays.asList(carRed), "myBmwRed", Arrays.asList(myBmw, red));
 		assert !carRed.isSuperOf(vehicleColor, Collections.emptyList(), "myBmwRed", Arrays.asList(myBmw, red));
 		assert carRed.isSuperOf(vehicleColor, Collections.singletonList(carRed), "CarRed", Arrays.asList(myBmw, red));
-		log.info("**************************************************************" + carGreen.info());
 		assert carGreen.isInstanceOf(vehicleColor);
 		assert vehicleColor.getInstances().contains(carGreen);
 
 		Vertex myBmwYellow = vehicleColor.addInstance(carGreen, "CarRed", myBmw, yellow);
 		assert carGreen.isSuperOf(vehicleColor, Collections.singletonList(carGreen), "CarRed", Arrays.asList(myBmw, yellow));
 		assert myBmwYellow.inheritsFrom(carGreen);
-		// log.info(myBmwYellow.info());
 
 		assert carRed.isSuperOf(vehicleColor, Collections.singletonList(carGreen), "CarRed", Arrays.asList(myBmw, red));
 		Vertex myBmwRed = vehicleColor.addInstance(carRed, "myBmwRed", myBmw, red);
 		assert myBmwRed.inheritsFrom(carRed);
-		log.info(myBmwRed.info());
 		assert !yellow.inheritsFrom(red);
 		assert !yellow.isInstanceOf(red);
 		assert myBmwRed == vehicleColor.setInstance("myBmwRed", myBmw, red);
@@ -83,7 +80,6 @@ public class VertexTest extends AbstractTest {
 		assert myBmw.getHolders(power).size() == 1 : myBmw.getHolders(power);
 		assert myBmw.getValues(power).contains(233);
 		assert engine.isAttributeOf(myBmw);
-		log.info("----------------------------------");
 
 		assert car.getAttributes(engine).equals(myBmw.getAttributes(engine)) : car.getAttributes(engine) + " " + myBmw.getAttributes(engine);
 	}

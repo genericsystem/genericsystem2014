@@ -8,6 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.RemoveRestructurator;
 import org.genericsystem.kernel.RemoveStrategy;
 import org.genericsystem.kernel.Restructurator;
@@ -34,14 +35,13 @@ public interface RestructuratorService<T extends RestructuratorService<T>> exten
 		}.rebuildAll((T) RestructuratorService.this, computeAllDependencies());
 	}
 
-	@SuppressWarnings("unchecked")
 	default void remove(RemoveStrategy removeStrategy) {
 		switch (removeStrategy) {
 		case NORMAL:
-			removeInstance((T) RestructuratorService.this);
+			removeInstance();
 			break;
 		case FORCE:
-			removeCascade((T) RestructuratorService.this);
+			removeCascade();
 			break;
 		case CONSERVE:
 			new RemoveRestructurator<T>((Vertex) RestructuratorService.this) {
@@ -51,26 +51,32 @@ public interface RestructuratorService<T extends RestructuratorService<T>> exten
 		}
 	}
 
-	default void removeInstance(T old) {
+	default void removeInstance() {
 		try {
-			for (T vertex : getOrderedDependenciesToRemove(old)) {
-				log.info("ZZZ Will remove : " + vertex + " isAlive : " + vertex.isAlive());
+			for (T vertex : getOrderedDependenciesToRemove())
 				simpleRemove(vertex);
-			}
 		} catch (ConstraintViolationException e) {
 			rollbackAndThrowException(e);
 		}
 	}
 
-	default Iterable<T> getOrderedDependenciesToRemove(T vertex) throws ConstraintViolationException {
-		List<T> dependencies = new ArrayList<T>(new LinkedHashSet<T>() {
-			private static final long serialVersionUID = 1L;
+	default Iterable<T> getOrderedDependenciesToRemove() throws ConstraintViolationException {
+		List<T> dependencies = new ArrayList<T>(buildOrderedDependenciesToRemove());
+		Collections.reverse(dependencies);
+		return dependencies;
+	}
+
+	default LinkedHashSet<T> buildOrderedDependenciesToRemove() throws ReferentialIntegrityConstraintViolationException {
+		@SuppressWarnings("unchecked")
+		T restructoratorService = (T) this;
+		return new LinkedHashSet<T>() {
+			private static final long serialVersionUID = -3610035019789480505L;
 			{
-				visit(vertex);
+				visit(restructoratorService);
 			}
 
 			public void visit(T generic) throws ReferentialIntegrityConstraintViolationException {
-				if (super.add(generic)) {// protect from loop
+				if (add(generic)) {// protect from loop
 					if (!generic.getInheritings().isEmpty() || !generic.getInstances().isEmpty())
 						throw new ReferentialIntegrityConstraintViolationException("Ancestor : " + generic + " has an inheritance or instance dependency");
 
@@ -86,9 +92,7 @@ public interface RestructuratorService<T extends RestructuratorService<T>> exten
 							visit(generic.getComponents().get(axe));
 				}
 			}
-		});
-		Collections.reverse(dependencies);
-		return dependencies;
+		};
 	}
 
 	default void simpleRemove(T vertex) throws AliveConstraintViolationException {
@@ -102,8 +106,8 @@ public interface RestructuratorService<T extends RestructuratorService<T>> exten
 		vertex.unplug();
 	}
 
-	default void removeCascade(T old) {
-		for (T dependency : old.computeAllDependencies())
+	default void removeCascade() {
+		for (T dependency : computeAllDependencies())
 			dependency.unplug();
 	}
 
