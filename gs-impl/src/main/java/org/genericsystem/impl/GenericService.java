@@ -89,10 +89,4 @@ public interface GenericService<T extends GenericService<T>> extends AncestorsSe
 	default Snapshot<T> getSuperComposites(T superVertex) {
 		return getVertex().getSuperComposites(superVertex.getVertex()).project(this::wrap);
 	}
-
-	@Override
-	default void rollback() {
-		getRoot().rollback();
-	}
-
 }

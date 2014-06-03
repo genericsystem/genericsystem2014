@@ -4,21 +4,10 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
-import org.genericsystem.kernel.services.AncestorsService;
-import org.genericsystem.kernel.services.BindingService;
-import org.genericsystem.kernel.services.CompositesInheritanceService;
-import org.genericsystem.kernel.services.DependenciesService;
-import org.genericsystem.kernel.services.DisplayService;
-import org.genericsystem.kernel.services.ExceptionAdviserService;
-import org.genericsystem.kernel.services.FactoryService;
-import org.genericsystem.kernel.services.InheritanceService;
-import org.genericsystem.kernel.services.RestructuratorService;
-import org.genericsystem.kernel.services.SystemPropertiesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Vertex extends ExtendedSignature<Vertex> implements AncestorsService<Vertex>, DependenciesService<Vertex>, InheritanceService<Vertex>, BindingService<Vertex>, CompositesInheritanceService<Vertex>, FactoryService<Vertex>,
-		DisplayService<Vertex>, SystemPropertiesService<Vertex>, ExceptionAdviserService<Vertex>, RestructuratorService<Vertex> {
+public class Vertex extends ExtendedSignature<Vertex> implements VertexService<Vertex> {
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 
 	private final Dependencies<Vertex> instances = buildDependencies(null);
@@ -57,10 +46,4 @@ public class Vertex extends ExtendedSignature<Vertex> implements AncestorsServic
 	public CompositesDependencies<Vertex> getSuperComposites() {
 		return superComposites;
 	}
-
-	@Override
-	public void rollback() {
-		getRoot().rollback();
-	}
-
 }

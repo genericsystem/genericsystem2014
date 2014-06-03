@@ -20,39 +20,12 @@ public class Engine extends Generic implements EngineService<Generic> {
 	}
 
 	@Override
-	public Root buildRoot() {
-		return buildRoot(Statics.ENGINE_VALUE);
-	}
-
-	@Override
 	public Root buildRoot(Serializable value) {
 		return new Root(value);
-	}
-
-	@Override
-	public Engine getAlive() {
-		return this;
 	}
 
 	@Override
 	public Vertex getVertex() {
 		return root;
 	}
-
-	@Override
-	public Engine getRoot() {
-		return (Engine) EngineService.super.getRoot();
-		// return super.getRoot();
-	}
-
-	@Override
-	public void rollback() {
-		root.rollback();
-	}
-
-	// @Override
-	// public boolean isRoot() {
-	// return EngineService.super.isRoot();
-	// // return super.isRoot();
-	// }
 }

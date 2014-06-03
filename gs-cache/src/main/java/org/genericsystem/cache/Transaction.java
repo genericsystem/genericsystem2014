@@ -1,16 +1,15 @@
 package org.genericsystem.cache;
 
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Vertex;
 
 public class Transaction<T extends GenericService<T>> extends AbstractContext<T> {
 
-	private transient final T engine;
+	private transient final EngineService<T> engine;
 
-	public Transaction(T engine) {
+	public Transaction(EngineService<T> engine) {
 		this.engine = engine;
 	}
 
@@ -31,7 +30,7 @@ public class Transaction<T extends GenericService<T>> extends AbstractContext<T>
 	}
 
 	@Override
-	public T getEngine() {
+	public EngineService<T> getEngine() {
 		return engine;
 	}
 
