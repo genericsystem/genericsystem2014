@@ -3,7 +3,7 @@ package org.genericsystem.kernel;
 import java.util.AbstractMap;
 import java.util.Iterator;
 import java.util.function.Function;
-
+import java.util.function.Supplier;
 import org.genericsystem.kernel.iterator.AbstractProjectionIterator;
 
 public interface Dependencies<T> extends Snapshot<T> {
@@ -58,7 +58,7 @@ public interface Dependencies<T> extends Snapshot<T> {
 		return new DependenciesImpl();
 	}
 
-	static class DependenciesEntry<T> extends AbstractMap.SimpleImmutableEntry<T, Dependencies<T>> {
+	public static class DependenciesEntry<T> extends AbstractMap.SimpleImmutableEntry<T, Dependencies<T>> {
 
 		private static final long serialVersionUID = -1887797796331264050L;
 
@@ -87,7 +87,7 @@ public interface Dependencies<T> extends Snapshot<T> {
 		default T setByIndex(T index, T vertex) {
 			Dependencies<T> result = internalGetByIndex(index);
 			if (result == null) {
-				result = buildDependencies();
+				result = buildDependencies(null);
 				set(new DependenciesEntry<T>(index, result));
 			}
 			return result.set(vertex);
@@ -100,7 +100,7 @@ public interface Dependencies<T> extends Snapshot<T> {
 			return dependencies.remove(vertex);
 		}
 
-		Dependencies<T> buildDependencies();
+		Dependencies<T> buildDependencies(Supplier<Iterator<T>> supplier);
 
 		default public <E> CompositesDependencies<E> projectComposites(Function<T, E> wrapper, Function<E, T> unWrapper) {
 			class CompositesDependenciesImpl implements CompositesDependencies<E> {
@@ -127,8 +127,8 @@ public interface Dependencies<T> extends Snapshot<T> {
 
 				@SuppressWarnings("unchecked")
 				@Override
-				public Dependencies<E> buildDependencies() {
-					return (Dependencies<E>) CompositesDependencies.this.buildDependencies();
+				public Dependencies<E> buildDependencies(Supplier<Iterator<E>> supplier) {
+					return (Dependencies<E>) CompositesDependencies.this.buildDependencies((Supplier) supplier);
 				}
 
 			}

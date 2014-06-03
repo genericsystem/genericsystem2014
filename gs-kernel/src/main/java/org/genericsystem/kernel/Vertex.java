@@ -3,7 +3,6 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
-
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.BindingService;
@@ -22,10 +21,10 @@ public class Vertex extends ExtendedSignature<Vertex> implements AncestorsServic
 		DisplayService<Vertex>, SystemPropertiesService<Vertex>, ExceptionAdviserService<Vertex>, RestructuratorService<Vertex> {
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 
-	private final Dependencies<Vertex> instances = buildDependencies();
-	private final Dependencies<Vertex> inheritings = buildDependencies();
-	private final CompositesDependencies<Vertex> superComposites = buildCompositeDependencies();
-	private final CompositesDependencies<Vertex> metaComposites = buildCompositeDependencies();
+	private final Dependencies<Vertex> instances = buildDependencies(null);
+	private final Dependencies<Vertex> inheritings = buildDependencies(null);
+	private final CompositesDependencies<Vertex> superComposites = buildCompositeDependencies(null);
+	private final CompositesDependencies<Vertex> metaComposites = buildCompositeDependencies(null);
 
 	@Override
 	public Vertex buildInstance() {
