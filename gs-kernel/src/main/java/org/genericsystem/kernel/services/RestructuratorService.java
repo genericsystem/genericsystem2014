@@ -1,11 +1,13 @@
 package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.RemoveRestructurator;
 import org.genericsystem.kernel.RemoveStrategy;
 import org.genericsystem.kernel.Restructurator;
@@ -13,8 +15,11 @@ import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.exceptions.AliveConstraintViolationException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 import org.genericsystem.kernel.exceptions.ReferentialIntegrityConstraintViolationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public interface RestructuratorService<T extends RestructuratorService<T>> extends BindingService<T> {
+	static Logger log = LoggerFactory.getLogger(RestructuratorService.class);
 
 	@SuppressWarnings("unchecked")
 	default T setValue(Serializable value) {
@@ -29,65 +34,61 @@ public interface RestructuratorService<T extends RestructuratorService<T>> exten
 		}.rebuildAll((T) RestructuratorService.this, computeAllDependencies());
 	}
 
+	@SuppressWarnings("unchecked")
 	default void remove(RemoveStrategy removeStrategy) {
 		switch (removeStrategy) {
 		case NORMAL:
 			removeInstance((T) RestructuratorService.this);
-			break;
+		break;
 		case FORCE:
 			removeCascade((T) RestructuratorService.this);
-			break;
+		break;
 		case CONSERVE:
-			new RemoveRestructurator<Vertex>((Vertex) RestructuratorService.this) {
+			new RemoveRestructurator<T>((Vertex) RestructuratorService.this) {
 				private static final long serialVersionUID = 6513791665544090616L;
 			}.rebuildAll();
-			break;
+		break;
 		}
 	}
 
 	default void removeInstance(T old) {
 		try {
-			for (T vertex : getOrderedDependenciesToRemove(old))
+			for (T vertex : getOrderedDependenciesToRemove(old)) {
+				log.info("ZZZ Will remove : " + vertex + " isAlive : " + vertex.isAlive());
 				simpleRemove(vertex);
+			}
 		} catch (ConstraintViolationException e) {
 			rollbackAndThrowException(e);
 		}
 	}
 
-	// FIXME ReferentialIntegrityConstraintViolationException
-	default LinkedHashSet<T> getOrderedDependenciesToRemove(T vertex) throws ConstraintViolationException {
-		return new LinkedHashSet<T>() {
-			// FIXME generated value
+	default Iterable<T> getOrderedDependenciesToRemove(T vertex) throws ConstraintViolationException {
+		List<T> dependencies = new ArrayList<T>(new LinkedHashSet<T>() {
 			private static final long serialVersionUID = 1L;
 			{
-				addDependencies(vertex);
+				visit(vertex);
 			}
 
-			public void addDependencies(T generic) throws ReferentialIntegrityConstraintViolationException {
-				if (super.add((T) generic)) {// protect from loop
-					for (T inheriting : generic.getInheritings())
-						// if (((GenericImpl) inheritingDependency).isAutomatic())
-						// addDependencies(inheritingDependency);
-						if (!contains(inheriting))
-							throw new ReferentialIntegrityConstraintViolationException(inheriting + " is an inheritance dependency for ancestor " + generic);
-					for (T instance : generic.getInstances())
-						if (!contains(instance))
-							throw new ReferentialIntegrityConstraintViolationException(instance + " is an instance dependency for ancestor " + generic);
-					for (T composite : generic.<T> getComposites())
+			public void visit(T generic) throws ReferentialIntegrityConstraintViolationException {
+				if (super.add(generic)) {// protect from loop
+					if (!generic.getInheritings().isEmpty() || !generic.getInstances().isEmpty())
+						throw new ReferentialIntegrityConstraintViolationException("Ancestor : " + generic + " has an inheritance or instance dependency");
+
+					for (T composite : generic.getComposites())
 						if (!generic.equals(composite)) {
 							for (int componentPos = 0; componentPos < composite.getComponents().size(); componentPos++)
-								if (!/* compositeDependency.isAutomatic() && */composite.getComponents().get(componentPos).equals(generic) && !contains(composite)
-										&& composite.isReferentialIntegrityConstraintEnabled(componentPos))
+								if (!/* compositeDependency.isAutomatic() && */composite.getComponents().get(componentPos).equals(generic) && !contains(composite) && composite.isReferentialIntegrityConstraintEnabled(componentPos))
 									throw new ReferentialIntegrityConstraintViolationException(composite + " is Referential Integrity for ancestor " + generic + " by component position : " + componentPos);
-							addDependencies(composite);
+							visit(composite);
 						}
 					for (int axe = 0; axe < generic.getComponents().size(); axe++)
 						if (generic.isCascadeRemove(axe))
-							addDependencies(generic.getComponents().get(axe));
+							visit(generic.getComponents().get(axe));
 				}
 			}
-
-		};
+		});
+		Collections.reverse(dependencies);
+		return dependencies;
 	}
 
 	default void simpleRemove(T vertex) throws AliveConstraintViolationException {
