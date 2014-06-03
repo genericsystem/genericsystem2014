@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.exceptions.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.kernel.exceptions.RollbackException;
 import org.testng.annotations.Test;
@@ -338,6 +337,22 @@ public class VertexRestructurationTest extends AbstractTest {
 			assert power.isAlive();
 			assert car.isAlive();
 		}
+	}
+
+	public void test105_remove_attribute_attribute_KO() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex power = engine.addInstance("Power", vehicle);
+		Vertex unit = engine.addInstance("Unit", power);
+
+		assert vehicle.isAlive();
+		assert power.isAlive();
+		assert unit.isAlive();
+		vehicle.remove(RemoveStrategy.NORMAL);
+		assert !vehicle.isAlive();
+		assert !power.isAlive();
+		assert !unit.isAlive();
 	}
 
 	public void test106_remove_TypeWithSubType_KO() {

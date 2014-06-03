@@ -135,7 +135,7 @@ public class InstanciationTest extends AbstractTest {
 				engine.addInstance(Arrays.asList(vehicle), "Vehicle");
 
 			}
-		}.assertIsCausedBy(IllegalStateException.class);
+		}.assertIsCausedBy(ExistsException.class);
 	}
 
 	public void test3TypeInstanciationWithMultipleInheritence() {

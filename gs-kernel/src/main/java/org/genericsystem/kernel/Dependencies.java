@@ -67,7 +67,7 @@ public interface Dependencies<T> extends Snapshot<T> {
 		}
 	}
 
-	static interface CompositesDependencies<T> extends Dependencies<DependenciesEntry<T>> {
+	public static interface CompositesDependencies<T> extends Dependencies<DependenciesEntry<T>> {
 
 		default Dependencies<T> internalGetByIndex(T index) {
 			Iterator<DependenciesEntry<T>> it = iterator();

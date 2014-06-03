@@ -1,7 +1,8 @@
-package org.genericsystem.concurrency;
+package org.genericsystem.concurrency.generic;
 
 import java.io.Serializable;
 
+import org.genericsystem.concurrency.vertex.VertexConcurrency;
 import org.genericsystem.impl.GenericSignature;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
@@ -10,10 +11,8 @@ import org.genericsystem.kernel.Vertex;
 
 public class GenericConcurrency extends GenericSignature<GenericConcurrency> implements GenericServiceConcurrency<GenericConcurrency> {
 
-	private LifeManager lifeManager;
-
 	public boolean isAlive(long ts) {
-		return lifeManager.isAlive(ts);
+		return unwrap().isAlive(ts);
 	}
 
 	@Override
@@ -23,7 +22,7 @@ public class GenericConcurrency extends GenericSignature<GenericConcurrency> imp
 	}
 
 	@Override
-	public Vertex unwrap() {
+	public VertexConcurrency unwrap() {
 		// TODO Auto-generated method stub
 		return null;
 	}
