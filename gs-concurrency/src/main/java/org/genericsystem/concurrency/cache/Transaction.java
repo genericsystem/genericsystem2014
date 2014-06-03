@@ -1,5 +1,6 @@
 package org.genericsystem.concurrency.cache;
 
+import org.genericsystem.concurrency.generic.EngineServiceConcurrency;
 import org.genericsystem.concurrency.generic.GenericConcurrency;
 import org.genericsystem.concurrency.generic.GenericServiceConcurrency;
 import org.genericsystem.concurrency.vertex.RootConcurrency;
@@ -10,11 +11,11 @@ public class Transaction<T extends GenericServiceConcurrency<T>> extends org.gen
 
 	private transient long ts;
 
-	public Transaction(T engine) {
+	public Transaction(EngineServiceConcurrency<T> engine) {
 		this(((RootConcurrency) engine.getRoot()).pickNewTs(), engine);
 	}
 
-	public Transaction(long ts, T engine) {
+	public Transaction(long ts, EngineServiceConcurrency<T> engine) {
 		super(engine);
 		this.ts = ts;
 	}
@@ -25,7 +26,7 @@ public class Transaction<T extends GenericServiceConcurrency<T>> extends org.gen
 
 	@Override
 	public boolean isAlive(T generic) {
-		return ((GenericConcurrency) generic).isAlive(getTs());
+		return generic.isAlive(getTs());
 	}
 
 	@SuppressWarnings("unchecked")
