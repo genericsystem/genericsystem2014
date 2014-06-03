@@ -39,15 +39,15 @@ public interface RestructuratorService<T extends RestructuratorService<T>> exten
 		switch (removeStrategy) {
 		case NORMAL:
 			removeInstance((T) RestructuratorService.this);
-		break;
+			break;
 		case FORCE:
 			removeCascade((T) RestructuratorService.this);
-		break;
+			break;
 		case CONSERVE:
 			new RemoveRestructurator<T>((Vertex) RestructuratorService.this) {
 				private static final long serialVersionUID = 6513791665544090616L;
 			}.rebuildAll();
-		break;
+			break;
 		}
 	}
 
@@ -94,6 +94,8 @@ public interface RestructuratorService<T extends RestructuratorService<T>> exten
 	default void simpleRemove(T vertex) throws AliveConstraintViolationException {
 		if (!vertex.isAlive())
 			rollbackAndThrowException(new AliveConstraintViolationException(vertex.info() + " is not alive"));
+		if (!vertex.getInstances().isEmpty() || !vertex.getInheritings().isEmpty() || !vertex.getComposites().isEmpty())
+			rollbackAndThrowException(new IllegalStateException(vertex.info() + " has dependencies"));
 		/*
 		 * if (!(automatics.remove(vertex) || adds.remove(vertex))) removes.add(vertex);
 		 */
