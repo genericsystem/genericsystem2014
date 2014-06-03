@@ -1,13 +1,14 @@
-package org.genericsystem.concurrency;
+package org.genericsystem.concurrency.vertex;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 
+import org.genericsystem.concurrency.AncestorsConcurrencyService;
+import org.genericsystem.concurrency.FactoryConcurrencyService;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.ExtendedSignature;
-import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.services.BindingService;
 import org.genericsystem.kernel.services.CompositesInheritanceService;
 import org.genericsystem.kernel.services.DependenciesService;
@@ -23,7 +24,7 @@ public class VertexConcurrency extends ExtendedSignature<VertexConcurrency> impl
 		CompositesInheritanceService<VertexConcurrency>, FactoryConcurrencyService<VertexConcurrency>, DisplayService<VertexConcurrency>, SystemPropertiesService<VertexConcurrency>, ExceptionAdviserService<VertexConcurrency>,
 		RestructuratorService<VertexConcurrency> {
 
-	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
+	protected static Logger log = LoggerFactory.getLogger(VertexConcurrency.class);
 
 	private LifeManager lifeManager;
 

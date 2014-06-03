@@ -7,7 +7,7 @@ import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
 
-public class Engine extends Generic implements EngineService<Root, Generic> {
+public class Engine extends Generic implements EngineService<Vertex, Generic> {
 
 	private final Root root;
 

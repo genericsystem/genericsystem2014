@@ -1,4 +1,4 @@
-package org.genericsystem.concurrency;
+package org.genericsystem.concurrency.generic;
 
 import java.io.Serializable;
 import java.util.List;

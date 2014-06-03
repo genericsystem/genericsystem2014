@@ -2,6 +2,7 @@ package org.genericsystem.concurrency;
 
 import java.util.Iterator;
 
+import org.genericsystem.concurrency.vertex.VertexConcurrency;
 import org.genericsystem.kernel.services.AncestorsService;
 
 public interface AncestorsConcurrencyService<T extends AncestorsService<T>> {

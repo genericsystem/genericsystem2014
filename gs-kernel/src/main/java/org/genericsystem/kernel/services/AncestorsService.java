@@ -5,7 +5,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Vertex;
+import org.genericsystem.kernel.services.SystemPropertiesService.QuadriPredicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +73,7 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		T pluggedMeta = getMeta().getAlive();
 		if (pluggedMeta == null)
 			return null;
-		Iterator<T> it = ((DependenciesService<T>) pluggedMeta).getInstances().iterator();
+		Iterator<T> it = ((DependenciesService) pluggedMeta).getInstances().iterator();
 		while (it.hasNext()) {
 			T next = it.next();
 			if (equiv(next))
@@ -108,21 +110,19 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		return components.stream().allMatch(x -> x.equiv(otherComponentsIt.next()));
 	}
 
-	// default boolean weakEquiv(AncestorsService<? extends AncestorsService<?>> service) {
-	// return service == null ? false : service == this ? true : weakEquiv(service.getMeta(), service.getValue(), service.getComponents());
-	// }
+	default boolean weakEquiv(AncestorsService<? extends AncestorsService<?>> service) {
+		return service == null ? false : service == this ? true : weakEquiv(service.getMeta(), service.getValue(), service.getComponents());
+	}
+
 	//
-	// BiPredicate<Serializable, Serializable> getValuesBiPredicate();
+	QuadriPredicate getQuadriPredicate();
+
 	//
 	// BiPredicate<List<? extends AncestorsService<?>>, List<? extends AncestorsService<?>>> getComponentsBiPredicate();
 	//
-	// default boolean weakEquiv(AncestorsService<?> meta, Serializable value, List<? extends AncestorsService<?>> components) {
-	// return this.getMeta().weakEquiv(meta) && getMeta().getValuesBiPredicate().test(getValue(), value) && getMeta().getComponentsBiPredicate().test(getComponents(), components);
-	// }
+	default boolean weakEquiv(AncestorsService<?> meta, Serializable value, List<? extends AncestorsService<?>> components) {
+		return this.getMeta().weakEquiv(meta) && getMeta().getQuadriPredicate().test(getValue(), getComponents(), value, components);
+	}
 	//
-	// @FunctionalInterface
-	// public interface QuadriPredicate {
-	// boolean test(Serializable value, List<? extends AncestorsService<?>> components, Serializable otherValue, List<? extends AncestorsService<?>> otherComponents);
-	// }
 
 }

@@ -1,7 +1,8 @@
-package org.genericsystem.concurrency;
+package org.genericsystem.concurrency.generic;
 
 import java.io.Serializable;
 
+import org.genericsystem.concurrency.vertex.VertexConcurrency;
 import org.genericsystem.impl.GenericSignature;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;

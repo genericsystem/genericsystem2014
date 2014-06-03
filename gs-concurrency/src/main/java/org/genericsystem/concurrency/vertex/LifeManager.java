@@ -1,8 +1,9 @@
-package org.genericsystem.concurrency;
+package org.genericsystem.concurrency.vertex;
 
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.genericsystem.concurrency.generic.GenericConcurrency;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.DependenciesImpl;

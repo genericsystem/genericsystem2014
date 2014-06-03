@@ -1,12 +1,15 @@
-package org.genericsystem.concurrency;
+package org.genericsystem.concurrency.generic;
 
 import java.io.Serializable;
 import java.util.Collections;
 
 import org.genericsystem.cache.Cache;
+import org.genericsystem.concurrency.vertex.RootConcurrency;
+import org.genericsystem.concurrency.vertex.VertexConcurrency;
 import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.Vertex;
 
-public class EngineConcurrency extends GenericConcurrency implements EngineServiceConcurrency<RootConcurrency, GenericConcurrency> {
+public class EngineConcurrency extends GenericConcurrency implements EngineServiceConcurrency<VertexConcurrency, GenericConcurrency> {
 
 	private final RootConcurrency root;
 
@@ -47,7 +50,7 @@ public class EngineConcurrency extends GenericConcurrency implements EngineServi
 	}
 
 	@Override
-	public VertexConcurrency getVertexConcurrency() {
+	public Vertex getVertex() {
 		return root;
 	}
 

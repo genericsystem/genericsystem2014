@@ -1,4 +1,4 @@
-package org.genericsystem.concurrency;
+package org.genericsystem.concurrency.cache;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 
 import org.genericsystem.cache.AbstractContext;
 import org.genericsystem.cache.Cache;
+import org.genericsystem.concurrency.generic.GenericServiceConcurrency;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;

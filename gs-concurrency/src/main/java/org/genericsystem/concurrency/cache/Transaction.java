@@ -1,5 +1,8 @@
-package org.genericsystem.concurrency;
+package org.genericsystem.concurrency.cache;
 
+import org.genericsystem.concurrency.generic.GenericConcurrency;
+import org.genericsystem.concurrency.generic.GenericServiceConcurrency;
+import org.genericsystem.concurrency.vertex.RootConcurrency;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 

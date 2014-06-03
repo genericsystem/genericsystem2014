@@ -1,4 +1,4 @@
-package org.genericsystem.concurrency;
+package org.genericsystem.concurrency.cache;
 
 import java.util.Iterator;
 import java.util.function.Supplier;

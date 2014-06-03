@@ -1,10 +1,12 @@
 package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.BiPredicate;
+
 import org.genericsystem.kernel.Statics;
 
 public interface SystemPropertiesService<T extends SystemPropertiesService<T>> extends AncestorsService<T> {
@@ -32,6 +34,10 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 
 	default boolean isEnabled(Class<? extends Constraint> clazz) {
 		return isEnabled(clazz, Statics.NO_POSITION);
+	}
+
+	default boolean isCascadeRemove(int pos) {
+		return isEnabled(SingularConstraint.class, pos);
 	}
 
 	default boolean isEnabled(Class<?> clazz, int pos) {
@@ -62,34 +68,50 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 
 	}
 
+	public static class CascadeRemoveConstraint implements Constraint {
+
+	}
+
 	public static BiPredicate<Serializable, Serializable> VALUE_EQUALS = (X, Y) -> Objects.equals(X, Y);
 	public static BiPredicate<Serializable, Serializable> VALUE_IGNORED = (X, Y) -> true;
 	public static BiPredicate<Serializable, Serializable> KEY_EQUALS = (X, Y) -> (X instanceof Entry) && (Y instanceof Entry) && Objects.equals(((Entry<?, ?>) X).getKey(), ((Entry<?, ?>) Y).getKey());
 
 	// @Override
-	// default BiPredicate<Serializable, Serializable> getValuesBiPredicate() {
-	// if (isPropertyConstraintEnabled())
-	// return VALUE_IGNORED;
-	// if (isMapConstraintEnabled())
-	// return KEY_EQUALS;
-	// return VALUE_EQUALS;
-	// }
+	default BiPredicate<Serializable, Serializable> getValuesBiPredicate() {
+		if (isPropertyConstraintEnabled())
+			return VALUE_IGNORED;
+		if (isMapConstraintEnabled())
+			return KEY_EQUALS;
+		return VALUE_EQUALS;
+	}
 
 	public static BiPredicate<List<? extends AncestorsService<?>>, List<? extends AncestorsService<?>>> SIZE_EQUALS = (X, Y) -> {
 		return X.size() == Y.size();
 	};
 
-	// public static BiPredicate<List<? extends AncestorsService<?>>, List<? extends AncestorsService<?>>> WEAK_EQUIV = (X, Y) -> {
-	// if (!SIZE_EQUALS.test(X, Y))
-	// return false;
-	// Iterator<? extends AncestorsService<?>> otherComponentsIt = X.iterator();
-	// return X.stream().allMatch(x -> x.weakEquiv(otherComponentsIt.next()));
-	// };
+	public static BiPredicate<List<? extends AncestorsService<?>>, List<? extends AncestorsService<?>>> WEAK_EQUIV = (X, Y) -> {
+		if (!SIZE_EQUALS.test(X, Y))
+			return false;
+		Iterator<? extends AncestorsService<?>> otherComponentsIt = X.iterator();
+		return X.stream().allMatch(x -> x.weakEquiv(otherComponentsIt.next()));
+	};
+
+	@FunctionalInterface
+	public interface QuadriPredicate {
+		boolean test(Serializable value, List<? extends AncestorsService<?>> components, Serializable otherValue, List<? extends AncestorsService<?>> otherComponents);
+	}
+
+	@Override
+	default QuadriPredicate getQuadriPredicate() {
+		return (value, components, otherValue, otherComponents) -> {
+			return getValuesBiPredicate().test(value, otherValue) && WEAK_EQUIV.test(components, otherComponents);
+		};
+	}
 
 	// public static BiPredicate<List<? extends AncestorsService<?>>, List<? extends AncestorsService<?>>> SINGULAR_EQUIV = (X, Y) -> {
 	// return WEAK_EQUIV.test(X, Y) || (/* il existe au moins un axe commun ou il y a une singular + un equals && */
 	// !componentsDepends(X, Y) && !componentsDepends(Y, X));
-
+	//
 	// SingularsLazyCache singulars;
 	// int minSize = X.size() >= Y.size() ? X.size() : Y.size();
 	// for (int i = 0; i < minSize; i++) {
