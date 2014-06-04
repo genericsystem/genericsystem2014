@@ -2,41 +2,43 @@ package org.genericsystem.kernel;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.genericsystem.kernel.services.UpdatableService;
 
-public abstract class UpdateRestructurator<T extends UpdatableService<T>> extends HashMap<T, T> {
-	private static final long serialVersionUID = -3498885981892406254L;
+@FunctionalInterface
+public interface UpdateRestructurator<T extends UpdatableService<T>> {
 
-	public T rebuildAll(T old, boolean rebuildThis) {
+	default T rebuildAll(T old, boolean rebuildThis) {
+		Map<T, T> convertMap = new HashMap<T, T>();
 		LinkedHashSet<T> dependenciesToRebuild = old.computeAllDependencies();
 		dependenciesToRebuild.forEach(UpdatableService::unplug);
 		T build = rebuild();
 		if (rebuildThis)
 			dependenciesToRebuild.remove(old);
-		put(old, build);
-		dependenciesToRebuild.forEach(this::getOrBuild);
+		convertMap.put(old, build);
+		dependenciesToRebuild.forEach(x -> getOrBuild(x, convertMap));
 		return build;
 	}
 
-	private T getOrBuild(T vertex) {
+	default T getOrBuild(T vertex, Map<T, T> convertMap) {
 		if (vertex.isAlive())
 			return vertex;
-		T newDependency = get(vertex);
+		T newDependency = convertMap.get(vertex);
 		if (newDependency == null) {
-			newDependency = build(vertex);
-			put(vertex, newDependency);
+			newDependency = build(vertex, convertMap);
+			convertMap.put(vertex, newDependency);
 		}
 		return newDependency;
 	}
 
-	private T build(T oldDependency) {
-		T meta = (oldDependency == oldDependency.getMeta()) ? oldDependency : getOrBuild(oldDependency.getMeta());
-		return meta.buildInstance(oldDependency.getSupersStream().map(this::getOrBuild).collect(Collectors.toList()), oldDependency.getValue(),
-				oldDependency.getComponentsStream().map(x -> x.equals(oldDependency) ? null : getOrBuild(x)).collect(Collectors.toList())).plug();
+	default T build(T oldDependency, Map<T, T> convertMap) {
+		T meta = (oldDependency == oldDependency.getMeta()) ? oldDependency : getOrBuild(oldDependency.getMeta(), convertMap);
+		return meta.buildInstance(oldDependency.getSupersStream().map(x -> getOrBuild(x, convertMap)).collect(Collectors.toList()), oldDependency.getValue(),
+				oldDependency.getComponentsStream().map(x -> x.equals(oldDependency) ? null : getOrBuild(x, convertMap)).collect(Collectors.toList())).plug();
 	}
 
-	protected abstract T rebuild();
+	T rebuild();
 
 }
