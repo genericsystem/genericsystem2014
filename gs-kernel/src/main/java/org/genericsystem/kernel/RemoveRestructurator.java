@@ -71,13 +71,13 @@ public abstract class RemoveRestructurator<T extends RemovableService<T>> extend
 
 		if (components.remove(vertexToRemove))
 			for (T component : vertexToRemove.getInheritings()) {
-				components.add(component);// FIXME chaine de valeurs CAD par ex valeur par defaut
-				T newDependency = meta.buildInstance(supers, value, components).plug();
+				components.add(component);
+				meta.buildInstance(supers, value, components).plug();
 				components.remove(component);
 				// FIXME put and return
 			}
 		else
-			// construction noeud
+			// node construction
 			return null;
 		return null;
 	}

@@ -13,7 +13,6 @@ import org.genericsystem.kernel.statics.RemoveStrategy;
 
 public interface RemovableService<T extends RemovableService<T>> extends BindingService<T> {
 
-	@SuppressWarnings("unchecked")
 	default void remove(RemoveStrategy removeStrategy) {
 		switch (removeStrategy) {
 		case NORMAL:
@@ -23,9 +22,7 @@ public interface RemovableService<T extends RemovableService<T>> extends Binding
 			removeForce();
 			break;
 		case CONSERVE:
-			new RemoveRestructurator<T>((T) RemovableService.this) {
-				private static final long serialVersionUID = 6513791665544090616L;
-			}.rebuildAll();
+			removeConserve();
 			break;
 		}
 	}
@@ -89,6 +86,13 @@ public interface RemovableService<T extends RemovableService<T>> extends Binding
 
 	default void removeForce() {
 		computeAllDependencies().forEach(x -> simpleRemove(x));
+	}
+
+	@SuppressWarnings("unchecked")
+	default void removeConserve() {
+		new RemoveRestructurator<T>((T) RemovableService.this) {
+			private static final long serialVersionUID = 6513791665544090616L;
+		}.rebuildAll();
 	}
 
 }
