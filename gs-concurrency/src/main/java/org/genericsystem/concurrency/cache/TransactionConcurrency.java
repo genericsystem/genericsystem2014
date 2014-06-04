@@ -95,7 +95,7 @@ public class TransactionConcurrency<T extends GenericServiceConcurrency<T>> exte
 				return new AbstractFilterIterator<org.genericsystem.kernel.Dependencies.DependenciesEntry<VertexConcurrency>>(dependencies.iterator()) {
 					@Override
 					public boolean isSelected() {
-						return next.getValue().iterator().getVisAlive(ts);
+						return next.getKey().isAlive(ts);
 					}
 				};
 			}
