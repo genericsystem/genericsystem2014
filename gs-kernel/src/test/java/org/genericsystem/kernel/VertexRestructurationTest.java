@@ -14,6 +14,7 @@ public class VertexRestructurationTest extends AbstractTest {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex vehicle2 = vehicle.setValue("Vehicle2");
+		assert !vehicle.isAlive();
 		assert "Vehicle2".equals(vehicle2.getValue());
 		assert vehicle2.isAlive();
 	}
