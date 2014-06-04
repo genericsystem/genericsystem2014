@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import org.testng.annotations.Test;
 
 @Test
-public class SetValueTest extends AbstractTest {
+public class UpdatableServiceTest extends AbstractTest {
 
 	public void test001_setValue_Type() {
 		Vertex engine = new Root();
@@ -209,6 +209,69 @@ public class SetValueTest extends AbstractTest {
 		assert newCar.computeAllDependencies().size() == 1;
 		assert newCar.getInstances().size() == 0;
 		assert newCar.getInheritings().size() == 0;
+	}
+
+	public void test100_addSuper_Type() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance("Car");
+
+		// when
+		car.addSuper(vehicle);
+
+		// then
+		assert engine.isAlive();
+		assert vehicle.isAlive();
+		assert !car.isAlive();
+
+		LinkedHashSet<Vertex> engineDependencies = engine.computeAllDependencies();
+		assert engineDependencies.size() == 3;
+		assert engine.getAllInstances().count() == 2;
+
+		Vertex newVehicle = findElement("Vehicle", engineDependencies.stream().collect(Collectors.toList()));
+		LinkedHashSet<Vertex> newVehicleDependencies = newVehicle.computeAllDependencies();
+		assert newVehicleDependencies.size() == 2;
+		assert newVehicle.getInheritings().size() == 1;
+
+		Vertex newCar = findElement("Car", newVehicleDependencies.stream().collect(Collectors.toList()));
+		assert newCar.computeAllDependencies().size() == 1;
+		assert newCar.getSupersStream().count() == 1;
+	}
+
+	public void test101_addSuper_TypeBetweenTwoTypes() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex fourWheels = engine.addInstance(vehicle, "FourWheels");
+
+		// when
+		car.addSuper(fourWheels);
+
+		// then
+		assert engine.isAlive();
+		assert vehicle.isAlive();
+		assert !car.isAlive();
+
+		LinkedHashSet<Vertex> engineDependencies = engine.computeAllDependencies();
+		assert engineDependencies.size() == 4;
+		assert engine.getAllInstances().count() == 3;
+
+		Vertex newVehicle = findElement("Vehicle", engineDependencies.stream().collect(Collectors.toList()));
+		LinkedHashSet<Vertex> newVehicleDependencies = newVehicle.computeAllDependencies();
+		assert newVehicleDependencies.size() == 3;
+		assert newVehicle.getInheritings().size() == 1;
+
+		Vertex newFourWheels = findElement("FourWheels", engineDependencies.stream().collect(Collectors.toList()));
+		LinkedHashSet<Vertex> newFourWheelsDependencies = newFourWheels.computeAllDependencies();
+		assert newFourWheelsDependencies.size() == 2;
+		assert newFourWheels.getInheritings().size() == 1;
+		assert newFourWheels.getSupersStream().count() == 1;
+
+		Vertex newCar = findElement("Car", newVehicleDependencies.stream().collect(Collectors.toList()));
+		assert newCar.computeAllDependencies().size() == 1;
+		assert newCar.getSupersStream().count() == 1;
 	}
 
 }

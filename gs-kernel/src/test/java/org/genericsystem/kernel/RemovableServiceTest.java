@@ -8,7 +8,7 @@ import org.genericsystem.kernel.statics.RemoveStrategy;
 import org.testng.annotations.Test;
 
 @Test
-public class RemoveTest extends AbstractTest {
+public class RemovableServiceTest extends AbstractTest {
 
 	public void test100_remove_instance_NormalStrategy() {
 		// given
