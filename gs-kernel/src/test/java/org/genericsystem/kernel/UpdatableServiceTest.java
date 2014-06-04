@@ -124,7 +124,7 @@ public class UpdatableServiceTest extends AbstractTest {
 			newOptions = newVehicle.computeAllDependencies().stream().collect(Collectors.toList()).get(1);
 		assert engine.equals(newOptions.getMeta());
 		assert options.getValue().equals(newOptions.getValue());
-		List<Vertex> newOptionsSupers = newOptions.getSupersStream().collect(Collectors.toList());
+		List<Vertex> newOptionsSupers = newOptions.getSupers();
 		assert newOptionsSupers.size() == 1;
 		Vertex newVehicleFromNewOptions = newOptionsSupers.get(0);
 		assert newValue.equals(newVehicleFromNewOptions.getValue());

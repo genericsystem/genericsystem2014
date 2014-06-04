@@ -490,7 +490,7 @@ public class RemovableServiceTest extends AbstractTest {
 		assert "Automatic".equals(newAutomatic.getValue());
 		assert newAutomatic.computeAllDependencies().size() == 1;
 		assert newAutomatic.getSupersStream().count() == 1;
-		assert newAutomatic.getSupersStream().collect(Collectors.toList()).contains(newCar);
+		assert newAutomatic.getSupers().contains(newCar);
 	}
 
 	public void test134_remove_TypeWithAttribute_ConserveStrategy() {
@@ -520,8 +520,7 @@ public class RemovableServiceTest extends AbstractTest {
 
 		assert newOptions != null;
 		assert newOptions.getSupersStream().count() == 1;
-		assert newCar.equals(newOptions.getSupersStream().collect(Collectors.toList()).get(0));
+		assert newCar.equals(newOptions.getSupers().get(0));
 
 	}
-
 }

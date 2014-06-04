@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.services.SystemPropertiesService.QuadriPredicate;
 import org.slf4j.Logger;
@@ -43,6 +44,8 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 	default boolean isFactual() {
 		return getLevel() == 2;
 	}
+
+	List<T> getSupers();
 
 	Stream<T> getSupersStream();
 

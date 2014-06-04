@@ -144,7 +144,6 @@ public abstract class AbstractTest {
 	@Deprecated
 	private void addSupers(Vertex vertex, StringBuffer add) {
 		addLib("supers of", vertex, add);
-		addVertexList(vertex.getSupersStream().collect(Collectors.toList()), add);
 		add.append("\n");
 	}
 

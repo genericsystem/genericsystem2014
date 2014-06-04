@@ -54,7 +54,7 @@ public abstract class RemoveRestructurator<T extends RemovableService<T>> extend
 		Serializable value = oldDependency.getValue();
 
 		List<T> supers = new ArrayList<T>();
-		for (T v : oldDependency.getSupersStream().collect(Collectors.toList())) {
+		for (T v : oldDependency.getSupers()) {
 			if (v.equals(vertexToRemove))
 				for (T instance : instancesOfVertexToRemove)
 					addThinly(getOrBuild(instance), supers);
