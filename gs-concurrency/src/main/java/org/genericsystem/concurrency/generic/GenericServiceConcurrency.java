@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.genericsystem.cache.GenericService;
+import org.genericsystem.concurrency.cache.CacheConcurrency;
 import org.genericsystem.concurrency.vertex.LifeManager;
 import org.genericsystem.concurrency.vertex.VertexConcurrency;
 
@@ -12,6 +13,11 @@ public interface GenericServiceConcurrency<T extends GenericServiceConcurrency<T
 	@Override
 	default VertexConcurrency unwrap() {
 		return (VertexConcurrency) GenericService.super.unwrap();
+	}
+
+	@Override
+	default CacheConcurrency<T> getCurrentCache() {
+		return getMeta().getCurrentCache();
 	}
 
 	default LifeManager getLifeManager() {

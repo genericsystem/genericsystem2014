@@ -2,9 +2,10 @@ package org.genericsystem.concurrency.generic;
 
 import java.util.Objects;
 
-import org.genericsystem.cache.AbstractContext;
 import org.genericsystem.cache.Cache;
+import org.genericsystem.cache.Context;
 import org.genericsystem.concurrency.cache.CacheConcurrency;
+import org.genericsystem.concurrency.cache.ContextConcurrency;
 import org.genericsystem.kernel.services.AncestorsService;
 
 public interface EngineServiceConcurrency<T extends GenericServiceConcurrency<T>> extends org.genericsystem.cache.EngineService<T>, GenericServiceConcurrency<T> {
@@ -17,8 +18,8 @@ public interface EngineServiceConcurrency<T extends GenericServiceConcurrency<T>
 	}
 
 	@Override
-	default CacheConcurrency<T> buildCache(AbstractContext<T> subContext) {
-		return new CacheConcurrency<T>(subContext);
+	default CacheConcurrency<T> buildCache(Context<T> subContext) {
+		return new CacheConcurrency<T>((ContextConcurrency<T>) subContext);
 	}
 
 	@Override
