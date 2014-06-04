@@ -5,20 +5,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Vertex;
-import org.genericsystem.kernel.services.AncestorsService;
-import org.genericsystem.kernel.services.BindingService;
-import org.genericsystem.kernel.services.CompositesInheritanceService;
-import org.genericsystem.kernel.services.DependenciesService;
-import org.genericsystem.kernel.services.DisplayService;
-import org.genericsystem.kernel.services.FactoryService;
-import org.genericsystem.kernel.services.InheritanceService;
-import org.genericsystem.kernel.services.RestructuratorService;
+import org.genericsystem.kernel.VertexService;
 
-public interface GenericService<T extends GenericService<T>> extends AncestorsService<T>, DependenciesService<T>, InheritanceService<T>, BindingService<T>, CompositesInheritanceService<T>, FactoryService<T>, DisplayService<T>, RestructuratorService<T> {
+public interface GenericService<T extends GenericService<T>> extends VertexService<T> {
 
 	default List<T> wrap(Stream<Vertex> stream) {
 		return stream.map(this::wrap).collect(Collectors.toList());

@@ -150,4 +150,20 @@ public class LifeManager {
 		return deathTs != Long.MAX_VALUE;
 	}
 
+	public Dependencies<GenericConcurrency> getEngineInheritings() {
+		return engineInheritings;
+	}
+
+	public Dependencies<GenericConcurrency> getEngineInstances() {
+		return engineInstances;
+	}
+
+	public CompositesDependencies<GenericConcurrency> getEngineMetaComposites() {
+		return engineMetaComposites;
+	}
+
+	public CompositesDependencies<GenericConcurrency> getEngineSuperComposites() {
+		return engineSuperComposites;
+	}
+
 }

@@ -81,7 +81,9 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 	}
 
 	@SuppressWarnings("unchecked")
-	T getInstance(Serializable value, T... components);
+	default T getInstance(Serializable value, T... components) {
+		return buildInstance(Collections.emptyList(), value, Arrays.asList(components)).getAlive();
+	}
 
 	@Override
 	Dependencies<T> getInstances();
