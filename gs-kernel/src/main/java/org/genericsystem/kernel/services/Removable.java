@@ -40,9 +40,7 @@ public interface Removable<T extends Removable<T>> extends BindingService<T> {
 	}
 
 	default Iterable<T> getOrderedDependenciesToRemove() throws ConstraintViolationException {
-		List<T> dependencies = new ArrayList<T>(buildOrderedDependenciesToRemove());
-		Collections.reverse(dependencies);
-		return dependencies;
+		return reverseLinkedHashSet(buildOrderedDependenciesToRemove());
 	}
 
 	default LinkedHashSet<T> buildOrderedDependenciesToRemove() throws ReferentialIntegrityConstraintViolationException {
@@ -74,7 +72,13 @@ public interface Removable<T extends Removable<T>> extends BindingService<T> {
 		};
 	}
 
-	default void simpleRemove(T vertex) throws AliveConstraintViolationException {
+	default Iterable<T> reverseLinkedHashSet(LinkedHashSet<T> linkedHashSet) {
+		List<T> dependencies = new ArrayList<T>(linkedHashSet);
+		Collections.reverse(dependencies);
+		return dependencies;
+	}
+
+	default void simpleRemove(T vertex) {
 		if (!vertex.isAlive())
 			rollbackAndThrowException(new AliveConstraintViolationException(vertex.info() + " is not alive"));
 		if (!vertex.getInstances().isEmpty() || !vertex.getInheritings().isEmpty() || !vertex.getComposites().isEmpty())
@@ -84,7 +88,7 @@ public interface Removable<T extends Removable<T>> extends BindingService<T> {
 	}
 
 	default void removeCascade() {
-		computeAllDependencies().forEach(x -> x.unplug());
+		reverseLinkedHashSet(computeAllDependencies()).forEach(x -> simpleRemove(x));
 	}
 
 }
