@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.genericsystem.kernel.exceptions.ReferentialIntegrityConstraintViolationException;
+import org.genericsystem.kernel.statics.RemoveStrategy;
 import org.testng.annotations.Test;
 
 @Test
@@ -327,6 +328,66 @@ public class RemoveTest extends AbstractTest {
 		assert red.isAlive();
 		assert vehicleColor.isAlive();
 		assert !carRed.isAlive();
+	}
+
+	public void test126_remove_instanceBaseOfRelation_ForceStrategy() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex color = engine.addInstance("Color");
+		Vertex red = color.addInstance("red");
+		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Vertex carRed = vehicleColor.addInstance("CarRed", car, red);
+
+		// when
+		red.remove(RemoveStrategy.FORCE);
+
+		// then
+		assert engine.isAlive();
+		assert vehicle.isAlive();
+		assert car.isAlive();
+		assert color.isAlive();
+		assert !red.isAlive();
+		assert vehicleColor.isAlive();
+		assert !carRed.isAlive();
+	}
+
+	public void test127_remove_typeWithlinks_ForceStrategy() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex animals = engine.addInstance("Animals");
+		Vertex myVehicle = vehicle.addInstance("MyVehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex power = engine.addInstance("Power", car);
+		Vertex myCar = car.addInstance("MyCar");
+		Vertex color = engine.addInstance("Color");
+		Vertex red = color.addInstance("Red");
+		Vertex green = color.addInstance("Green");
+		Vertex blue = color.addInstance("Blue");
+		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Vertex myCarRed = vehicleColor.addInstance("myCarRed", myCar, red);
+		Vertex myVehicleGreen = vehicleColor.addInstance("myCarRed", myVehicle, green);
+
+		// when
+		vehicle.remove(RemoveStrategy.FORCE);
+
+		// then
+		assert engine.isAlive();
+		assert !vehicle.isAlive();
+		assert animals.isAlive();
+		assert !myVehicle.isAlive();
+		assert !car.isAlive();
+		assert !power.isAlive();
+		assert !myCar.isAlive();
+		assert color.isAlive();
+		assert red.isAlive();
+		assert green.isAlive();
+		assert blue.isAlive();
+		assert !vehicleColor.isAlive();
+		assert !myCarRed.isAlive();
+		assert !myVehicleGreen.isAlive();
 	}
 
 	public void test130_remove_Type_ConserveStrategy() {

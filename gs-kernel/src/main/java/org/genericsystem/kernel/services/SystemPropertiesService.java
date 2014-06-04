@@ -12,6 +12,7 @@ import org.genericsystem.kernel.Statics;
 public interface SystemPropertiesService<T extends SystemPropertiesService<T>> extends AncestorsService<T> {
 
 	default boolean isSingularConstraintEnabled(int pos) {
+		// return pos == Statics.BASE_POSITION;
 		return isEnabled(SingularConstraint.class, pos);
 	}
 

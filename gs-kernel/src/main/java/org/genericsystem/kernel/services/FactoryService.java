@@ -13,7 +13,7 @@ import org.genericsystem.kernel.ExtendedSignature;
 import org.genericsystem.kernel.Signature;
 import org.genericsystem.kernel.SupersComputer;
 
-public interface FactoryService<T extends FactoryService<T>> extends AncestorsService<T>, ExceptionAdviserService<T> {
+public interface FactoryService<T extends FactoryService<T>> extends ExceptionAdviserService<T> {
 
 	T buildInstance();
 

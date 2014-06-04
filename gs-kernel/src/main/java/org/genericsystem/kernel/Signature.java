@@ -35,10 +35,13 @@ public abstract class Signature<T extends Signature<T>> implements DisplayServic
 			if (component != null) {
 				component.checkIsAlive();
 				this.components.set(i, component);
-			} else
+			}
+			// FIXME : why doing next iteration?
+			else
 				this.components.set(i, (T) this);
 		}
 		this.level = level;
+		// FIXME : what happen if meta == null => components should be equals to this: hmmmm...
 		checkDependsMetaComponents();
 		return (T) this;
 	}

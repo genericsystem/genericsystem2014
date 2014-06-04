@@ -2,15 +2,10 @@ package org.genericsystem.kernel.services;
 
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public interface DisplayService<T extends DisplayService<T>> extends AncestorsService<T> {
-	static Logger log = LoggerFactory.getLogger(DisplayService.class);
 
 	default String info() {
-		return "(" + getMeta().getValue() + System.identityHashCode(getMeta()) + "){" + this + System.identityHashCode(this) + "}" + getSupersStream().map(x -> x.toString() + System.identityHashCode(x)).collect(Collectors.toList())
-				+ getComponentsStream().map(x -> x.toString() + System.identityHashCode(x)).collect(Collectors.toList()) + " ";
+		return "(" + getMeta().getValue() + "){" + this + "}" + getSupersStream().map(x -> x.toString()).collect(Collectors.toList()) + getComponentsStream().map(x -> x.toString()).collect(Collectors.toList()) + " ";
 	}
 
 	default String inheritingsInfo() {

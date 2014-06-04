@@ -4,13 +4,13 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 
-import org.genericsystem.kernel.services.RestructuratorService;
+import org.genericsystem.kernel.services.UpdatableService;
 
-public abstract class Restructurator<T extends RestructuratorService<T>> extends HashMap<T, T> {
+public abstract class Restructurator<T extends UpdatableService<T>> extends HashMap<T, T> {
 	private static final long serialVersionUID = -3498885981892406254L;
 
 	public T rebuildAll(T old, LinkedHashSet<T> dependenciesToRebuild) {
-		dependenciesToRebuild.forEach(RestructuratorService::unplug);
+		dependenciesToRebuild.forEach(UpdatableService::unplug);
 		T build = rebuild();
 		dependenciesToRebuild.remove(old);
 		put(old, build);

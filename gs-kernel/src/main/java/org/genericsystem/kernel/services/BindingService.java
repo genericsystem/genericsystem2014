@@ -3,8 +3,11 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -18,7 +21,7 @@ import org.genericsystem.kernel.exceptions.CrossEnginesAssignementsException;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 
-public interface BindingService<T extends BindingService<T>> extends AncestorsService<T>, DependenciesService<T>, FactoryService<T>, CompositesInheritanceService<T>, InheritanceService<T>, ExceptionAdviserService<T>, DisplayService<T> {
+public interface BindingService<T extends BindingService<T>> extends DependenciesService<T>, FactoryService<T>, CompositesInheritanceService<T>, InheritanceService<T>, ExceptionAdviserService<T>, DisplayService<T> {
 
 	@SuppressWarnings("unchecked")
 	default T addInstance(Serializable value, T... components) {
@@ -83,10 +86,10 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 	}
 
 	@Override
-	public Dependencies<T> getInstances();
+	Dependencies<T> getInstances();
 
 	@Override
-	public Dependencies<T> getInheritings();
+	Dependencies<T> getInheritings();
 
 	CompositesDependencies<T> getMetaComposites();
 
@@ -226,6 +229,38 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 				|| inheritsFrom(dependency.getMeta(), dependency.getValue(), dependency.getComponents(), getMeta(), getValue(), getComponents());
 	}
 
+	default LinkedHashSet<T> computeAllDependencies() {
+		class DirectDependencies extends LinkedHashSet<T> {
+			private static final long serialVersionUID = -5970021419012502402L;
+			private final Set<T> alreadyVisited = new HashSet<>();
+
+			public DirectDependencies() {
+				visit(getMeta());
+			}
+
+			public void visit(T node) {
+				if (!alreadyVisited.contains(node))
+					if (!isAncestorOf(node)) {
+						alreadyVisited.add(node);
+						node.getComposites().forEach(this::visit);
+						node.getInheritings().forEach(this::visit);
+						node.getInstances().forEach(this::visit);
+					} else
+						addDependency(node);
+			}
+
+			public void addDependency(T node) {
+				if (!alreadyVisited.contains(node)) {
+					alreadyVisited.add(node);
+					node.getComposites().forEach(this::addDependency);
+					node.getInheritings().forEach(this::addDependency);
+					node.getInstances().forEach(this::addDependency);
+					super.add(node);
+				}
+			}
+		}
+		return new DirectDependencies();
+	}
 	// default boolean isExtention(T candidate) {
 	// if (isFactual() && candidate.getMeta().equals((getMeta()))) {
 	// if (getMeta().isPropertyConstraintEnabled())

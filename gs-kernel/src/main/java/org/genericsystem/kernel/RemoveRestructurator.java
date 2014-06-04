@@ -8,36 +8,36 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.genericsystem.kernel.services.RestructuratorService;
+import org.genericsystem.kernel.services.RemovableService;
 
-public abstract class RemoveRestructurator<T extends RestructuratorService<T>> extends HashMap<T, T> {
+public abstract class RemoveRestructurator<T extends RemovableService<T>> extends HashMap<T, T> {
 	private static final long serialVersionUID = -3498885981892406254L;
 
-	private Vertex vertexToRemove;
+	private T vertexToRemove;
 
-	private List<Vertex> instancesOfVertexToRemove;
+	private List<T> instancesOfVertexToRemove;
 
-	private void setVertexToRemove(Vertex vertexToRemove) {
+	private void setVertexToRemove(T vertexToRemove) {
 		this.vertexToRemove = vertexToRemove;
-		instancesOfVertexToRemove = new ArrayList<Vertex>();
-		for (Vertex v : vertexToRemove.getInstances().stream().collect(Collectors.toList()))
+		instancesOfVertexToRemove = new ArrayList<T>();
+		for (T v : vertexToRemove.getInstances().stream().collect(Collectors.toList()))
 			instancesOfVertexToRemove.add(v);
 	}
 
 	// FIXME
 	@Deprecated
-	public RemoveRestructurator(Vertex vertexToRemove) {
+	public RemoveRestructurator(T vertexToRemove) {
 		assert vertexToRemove != null;
 		setVertexToRemove(vertexToRemove);
 	}
 
 	public void rebuildAll() {
-		LinkedHashSet<Vertex> oldDependenciesUnpluged = vertexToRemove.computeAllDependencies();
-		oldDependenciesUnpluged.forEach(RestructuratorService::unplug);
+		LinkedHashSet<T> oldDependenciesUnpluged = vertexToRemove.computeAllDependencies();
+		oldDependenciesUnpluged.forEach(RemovableService::unplug);
 		oldDependenciesUnpluged.remove(vertexToRemove);
-		put((T) vertexToRemove, (T) vertexToRemove.getMeta());// FIXME made to fix meta's management on buildDependency(T)
-		for (Vertex dependency : oldDependenciesUnpluged)
-			getOrBuild((T) dependency);
+		put(vertexToRemove, vertexToRemove.getMeta());// FIXME made to fix meta's management on buildDependency(T)
+		for (T dependency : oldDependenciesUnpluged)
+			getOrBuild(dependency);
 	}
 
 	private T getOrBuild(T oldVertex) {
@@ -50,19 +50,19 @@ public abstract class RemoveRestructurator<T extends RestructuratorService<T>> e
 	}
 
 	private T buildDependency(T oldDependency) {
-		T meta = getOrBuild((T) oldDependency.getMeta());
+		T meta = getOrBuild(oldDependency.getMeta());
 		Serializable value = oldDependency.getValue();
 
-		List<Vertex> supers = new ArrayList<>();
+		List<T> supers = new ArrayList<T>();
 		for (T v : oldDependency.getSupersStream().collect(Collectors.toList())) {
 			if (v.equals(vertexToRemove))
-				for (Vertex instance : instancesOfVertexToRemove)
-					addThinly((Vertex) getOrBuild((T) instance), supers);
+				for (T instance : instancesOfVertexToRemove)
+					addThinly(getOrBuild(instance), supers);
 			else
-				addThinly((Vertex) getOrBuild((T) v), supers);
+				addThinly(getOrBuild(v), supers);
 		}
 
-		List<Vertex> components = (List<Vertex>) oldDependency.getComponentsStream().collect(Collectors.toList());
+		List<T> components = (List<T>) oldDependency.getComponentsStream().collect(Collectors.toList());
 		if (components.isEmpty()) {
 			T newDependency = meta.buildInstance((List<T>) supers, value, (List<T>) components).plug();
 			put(oldDependency, newDependency);
@@ -70,23 +70,23 @@ public abstract class RemoveRestructurator<T extends RestructuratorService<T>> e
 		}
 
 		if (components.remove(vertexToRemove))
-			for (Vertex component : vertexToRemove.getInheritings()) {
-				components.add(component);// FIXME chaine de valeurs CAD par ex valeur par defaut
-				T newDependency = meta.buildInstance((List<T>) supers, value, (List<T>) components).plug();
+			for (T component : vertexToRemove.getInheritings()) {
+				components.add(component);
+				meta.buildInstance(supers, value, components).plug();
 				components.remove(component);
 				// FIXME put and return
 			}
 		else
-			// construction noeud
+			// node construction
 			return null;
 		return null;
 	}
 
-	private boolean addThinly(Vertex candidate, List<Vertex> target) {
-		for (Vertex vertex : target)
+	private boolean addThinly(T candidate, List<T> target) {
+		for (T vertex : target)
 			if (vertex.inheritsFrom(candidate))
 				return false;
-		Iterator<Vertex> it = target.iterator();
+		Iterator<T> it = target.iterator();
 		while (it.hasNext())
 			if (candidate.inheritsFrom(it.next()))
 				it.remove();
