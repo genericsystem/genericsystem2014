@@ -22,8 +22,6 @@ public class AttributesTest extends AbstractTest {
 		Vertex vehicle = root.addInstance("Vehicle");
 		Vertex power = root.addInstance("Power", vehicle);
 		Vertex car = root.addInstance(vehicle, "Car");
-		log.info(vehicle.info());
-		log.info(power.info());
 		assert vehicle.getAttributes(root).size() == 1 : vehicle.getAttributes(root);
 		assert vehicle.getAttributes(root).contains(power);
 		assert car.getAttributes(root).size() == 1;
@@ -35,10 +33,6 @@ public class AttributesTest extends AbstractTest {
 		Vertex vehicle = root.addInstance("Vehicle");
 		Vertex car = root.addInstance(vehicle, "Car");
 		Vertex power = root.addInstance("Power", car);
-		log.info(root.info());
-		log.info(vehicle.info());
-		log.info(car.info());
-		log.info(power.info());
 		assert root.getLevel() == 0;
 		assert vehicle.getLevel() == 1;
 		assert car.getLevel() == 1;

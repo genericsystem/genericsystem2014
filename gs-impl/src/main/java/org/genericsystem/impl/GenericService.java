@@ -2,7 +2,9 @@ package org.genericsystem.impl;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
@@ -18,9 +20,29 @@ import org.genericsystem.kernel.services.RestructuratorService;
 
 public interface GenericService<T extends GenericService<T>> extends AncestorsService<T>, DependenciesService<T>, InheritanceService<T>, BindingService<T>, CompositesInheritanceService<T>, FactoryService<T>, DisplayService<T>, RestructuratorService<T> {
 
-	T wrap(Vertex vertex);
+	default List<T> wrap(Stream<Vertex> stream) {
+		return stream.map(this::wrap).collect(Collectors.toList());
+	}
 
-	Vertex unwrap();
+	static List<Vertex> unwrap(Stream<? extends GenericService<?>> stream) {
+		return stream.map(GenericService::unwrap).collect(Collectors.toList());
+	}
+
+	default T wrap(Vertex vertex) {
+		if (vertex.isRoot())
+			return getRoot();
+		Vertex alive = vertex.getAlive();
+		T meta = wrap(alive.getMeta());
+		return meta.buildInstance().init(meta.getLevel() + 1, meta, wrap(alive.getSupersStream()), alive.getValue(), wrap(alive.getComponentsStream()));
+	}
+
+	default Vertex unwrap() {
+		Vertex alive = getVertex();
+		if (alive != null)
+			return alive;
+		alive = getMeta().unwrap();
+		return alive.buildInstance(unwrap(getSupersStream()), getValue(), unwrap(getComponentsStream()));
+	}
 
 	@Override
 	default Dependencies<T> getInstances() {
@@ -67,5 +89,4 @@ public interface GenericService<T extends GenericService<T>> extends AncestorsSe
 	default Snapshot<T> getSuperComposites(T superVertex) {
 		return getVertex().getSuperComposites(superVertex.getVertex()).project(this::wrap);
 	}
-
 }

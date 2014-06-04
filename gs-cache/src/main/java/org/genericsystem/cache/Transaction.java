@@ -1,14 +1,15 @@
 package org.genericsystem.cache;
 
 import java.util.stream.Collectors;
-
+import org.genericsystem.kernel.Dependencies;
+import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Vertex;
 
 public class Transaction<T extends GenericService<T>> extends AbstractContext<T> {
 
-	private transient final T engine;
+	private transient final EngineService<T> engine;
 
-	public Transaction(T engine) {
+	public Transaction(EngineService<T> engine) {
 		this.engine = engine;
 	}
 
@@ -29,8 +30,28 @@ public class Transaction<T extends GenericService<T>> extends AbstractContext<T>
 	}
 
 	@Override
-	public T getEngine() {
+	public EngineService<T> getEngine() {
 		return engine;
+	}
+
+	@Override
+	public Dependencies<T> getInheritings(T generic) {
+		return generic.unwrap().getInheritings().project(generic::wrap, org.genericsystem.impl.GenericService::unwrap);
+	}
+
+	@Override
+	public Dependencies<T> getInstances(T generic) {
+		return generic.unwrap().getInstances().project(generic::wrap, org.genericsystem.impl.GenericService::unwrap);
+	}
+
+	@Override
+	public CompositesDependencies<T> getMetaComposites(T generic) {
+		return generic.unwrap().getMetaComposites().projectComposites(generic::wrap, org.genericsystem.impl.GenericService::unwrap);
+	}
+
+	@Override
+	public CompositesDependencies<T> getSuperComposites(T generic) {
+		return generic.unwrap().getSuperComposites().projectComposites(generic::wrap, org.genericsystem.impl.GenericService::unwrap);
 	}
 
 }

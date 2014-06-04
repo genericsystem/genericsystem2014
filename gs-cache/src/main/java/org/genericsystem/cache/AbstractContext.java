@@ -1,12 +1,13 @@
 package org.genericsystem.cache;
 
-import org.genericsystem.impl.GenericService;
+import org.genericsystem.kernel.Dependencies;
+import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 
 public abstract class AbstractContext<T extends GenericService<T>> {
 
-	abstract T getEngine();
+	abstract EngineService<T> getEngine();
 
 	public abstract boolean isAlive(T generic);
 
@@ -28,5 +29,13 @@ public abstract class AbstractContext<T extends GenericService<T>> {
 	abstract void simpleAdd(T generic);
 
 	abstract void simpleRemove(T generic);
+
+	public abstract Dependencies<T> getInheritings(T generic);
+
+	public abstract Dependencies<T> getInstances(T generic);
+
+	public abstract CompositesDependencies<T> getMetaComposites(T generic);
+
+	public abstract CompositesDependencies<T> getSuperComposites(T generic);
 
 }

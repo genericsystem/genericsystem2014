@@ -2,7 +2,6 @@ package org.genericsystem.impl;
 
 import java.io.Serializable;
 import java.util.Collections;
-
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
@@ -21,29 +20,12 @@ public class Engine extends Generic implements EngineService<Generic> {
 	}
 
 	@Override
-	public Engine getAlive() {
-		return this;
+	public Root buildRoot(Serializable value) {
+		return new Root(value);
 	}
 
 	@Override
 	public Vertex getVertex() {
 		return root;
 	}
-
-	@Override
-	public Engine getRoot() {
-		return (Engine) EngineService.super.getRoot();
-		// return super.getRoot();
-	}
-
-	@Override
-	public void rollback() {
-		root.rollback();
-	}
-
-	// @Override
-	// public boolean isRoot() {
-	// return EngineService.super.isRoot();
-	// // return super.isRoot();
-	// }
 }

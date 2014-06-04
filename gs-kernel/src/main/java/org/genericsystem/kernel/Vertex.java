@@ -3,29 +3,17 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
-
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
-import org.genericsystem.kernel.services.AncestorsService;
-import org.genericsystem.kernel.services.BindingService;
-import org.genericsystem.kernel.services.CompositesInheritanceService;
-import org.genericsystem.kernel.services.DependenciesService;
-import org.genericsystem.kernel.services.DisplayService;
-import org.genericsystem.kernel.services.ExceptionAdviserService;
-import org.genericsystem.kernel.services.FactoryService;
-import org.genericsystem.kernel.services.InheritanceService;
-import org.genericsystem.kernel.services.RestructuratorService;
-import org.genericsystem.kernel.services.SystemPropertiesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Vertex extends ExtendedSignature<Vertex> implements AncestorsService<Vertex>, DependenciesService<Vertex>, InheritanceService<Vertex>, BindingService<Vertex>, CompositesInheritanceService<Vertex>, FactoryService<Vertex>,
-		DisplayService<Vertex>, SystemPropertiesService, ExceptionAdviserService<Vertex>, RestructuratorService<Vertex> {
+public class Vertex extends ExtendedSignature<Vertex> implements VertexService<Vertex> {
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 
-	private final Dependencies<Vertex> instances = buildDependencies();
-	private final Dependencies<Vertex> inheritings = buildDependencies();
-	private final CompositesDependencies<Vertex> superComposites = buildCompositeDependencies();
-	private final CompositesDependencies<Vertex> metaComposites = buildCompositeDependencies();
+	private final Dependencies<Vertex> instances = buildDependencies(null);
+	private final Dependencies<Vertex> inheritings = buildDependencies(null);
+	private final CompositesDependencies<Vertex> superComposites = buildCompositeDependencies(null);
+	private final CompositesDependencies<Vertex> metaComposites = buildCompositeDependencies(null);
 
 	@Override
 	public Vertex buildInstance() {
@@ -46,8 +34,7 @@ public class Vertex extends ExtendedSignature<Vertex> implements AncestorsServic
 	// equiv need only AncestorService as parameter
 	@Override
 	public Vertex getInstance(Serializable value, Vertex... components) {
-		Vertex instanceTmp = buildInstance(Collections.emptyList(), value, Arrays.asList(components));
-		return instanceTmp.getAlive();
+		return buildInstance(Collections.emptyList(), value, Arrays.asList(components)).getAlive();
 	}
 
 	@Override
@@ -58,10 +45,5 @@ public class Vertex extends ExtendedSignature<Vertex> implements AncestorsServic
 	@Override
 	public CompositesDependencies<Vertex> getSuperComposites() {
 		return superComposites;
-	}
-
-	@Override
-	public void rollback() {
-		getRoot().rollback();
 	}
 }

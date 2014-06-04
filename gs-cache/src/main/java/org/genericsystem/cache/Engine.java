@@ -1,7 +1,7 @@
 package org.genericsystem.cache;
 
+import java.io.Serializable;
 import java.util.Collections;
-
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
@@ -15,6 +15,16 @@ public class Engine extends Generic implements EngineService<Generic> {
 	public Engine() {
 		cacheLocal.set(buildCache(new Transaction<>(this)));
 		init(0, null, Collections.emptyList(), Statics.ENGINE_VALUE, Collections.emptyList());
+	}
+
+	@Override
+	public Root buildRoot() {
+		return buildRoot(Statics.ENGINE_VALUE);
+	}
+
+	@Override
+	public Root buildRoot(Serializable value) {
+		return new Root(value);
 	}
 
 	@Override
@@ -39,10 +49,10 @@ public class Engine extends Generic implements EngineService<Generic> {
 		return currentCache;
 	}
 
-	@Override
-	public Engine getAlive() {
-		return this;
-	}
+	// @Override
+	// public Engine getAlive() {
+	// return this;
+	// }
 
 	@Override
 	public Vertex getVertex() {
@@ -50,14 +60,14 @@ public class Engine extends Generic implements EngineService<Generic> {
 	}
 
 	// Why is this necessary ??? what does maven do here ?
-	@Override
-	public Engine getRoot() {
-		return (Engine) EngineService.super.getRoot();
-	}
-
-	@Override
-	public void rollback() {
-		root.rollback();
-	}
+	// @Override
+	// public Engine getRoot() {
+	// return (Engine) EngineService.super.getRoot();
+	// }
+	//
+	// @Override
+	// public void rollback() {
+	// root.rollback();
+	// }
 
 }

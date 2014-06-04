@@ -5,8 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Vertex;
+import org.genericsystem.kernel.services.SystemPropertiesService.QuadriPredicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,9 +22,7 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 
 	abstract Serializable getValue();
 
-	default int getLevel() {
-		return 0;
-	}
+	int getLevel();
 
 	default boolean isRoot() {
 		return false;
@@ -64,21 +62,6 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		return isRoot() || getComponentsStream().anyMatch(component -> vertex.inheritsFrom(component) || vertex.isInstanceOf(component));
 	}
 
-	default boolean equiv(AncestorsService<? extends AncestorsService<?>> service) {
-		return service == null ? false : equiv(service.getMeta(), service.getValue(), service.getComponents());
-	}
-
-	default boolean equiv(AncestorsService<?> ancestorsService, Serializable value, List<? extends AncestorsService<?>> components) {
-		return this.getMeta().equiv(ancestorsService) && Objects.equals(getValue(), value) && equivComponents(components);
-	}
-
-	default boolean equivComponents(List<? extends AncestorsService<?>> components) {
-		if (getComponentsStream().count() != components.size())
-			return false;
-		Iterator<? extends AncestorsService<?>> otherComponents = components.iterator();
-		return getComponentsStream().allMatch(x -> x.equiv(otherComponents.next()));
-	}
-
 	default boolean isAlive() {
 		return equals(getAlive());
 	}
@@ -87,7 +70,7 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		T pluggedMeta = getMeta().getAlive();
 		if (pluggedMeta == null)
 			return null;
-		Iterator<T> it = ((DependenciesService<T>) pluggedMeta).getInstances().iterator();
+		Iterator<T> it = ((DependenciesService) pluggedMeta).getInstances().iterator();
 		while (it.hasNext()) {
 			T next = it.next();
 			if (equiv(next))
@@ -108,4 +91,35 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		}
 		return null;
 	}
+
+	default boolean equiv(AncestorsService<? extends AncestorsService<?>> service) {
+		return service == null ? false : equiv(service.getMeta(), service.getValue(), service.getComponents());
+	}
+
+	default boolean equiv(AncestorsService<?> meta, Serializable value, List<? extends AncestorsService<?>> components) {
+		return this.getMeta().equiv(meta) && Objects.equals(getValue(), value) && equivComponents(getComponents(), components);
+	}
+
+	static boolean equivComponents(List<? extends AncestorsService<?>> components, List<? extends AncestorsService<?>> otherComponents) {
+		if (otherComponents.size() != components.size())
+			return false;
+		Iterator<? extends AncestorsService<?>> otherComponentsIt = otherComponents.iterator();
+		return components.stream().allMatch(x -> x.equiv(otherComponentsIt.next()));
+	}
+
+	default boolean weakEquiv(AncestorsService<? extends AncestorsService<?>> service) {
+		return service == null ? false : service == this ? true : weakEquiv(service.getMeta(), service.getValue(), service.getComponents());
+	}
+
+	//
+	QuadriPredicate getQuadriPredicate();
+
+	//
+	// BiPredicate<List<? extends AncestorsService<?>>, List<? extends AncestorsService<?>>> getComponentsBiPredicate();
+	//
+	default boolean weakEquiv(AncestorsService<?> meta, Serializable value, List<? extends AncestorsService<?>> components) {
+		return this.getMeta().weakEquiv(meta) && getMeta().getQuadriPredicate().test(getValue(), getComponents(), value, components);
+	}
+	//
+
 }

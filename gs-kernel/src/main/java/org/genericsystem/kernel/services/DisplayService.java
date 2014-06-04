@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public interface DisplayService<T extends AncestorsService<T>> extends AncestorsService<T> {
+public interface DisplayService<T extends DisplayService<T>> extends AncestorsService<T> {
 	static Logger log = LoggerFactory.getLogger(DisplayService.class);
 
 	default String info() {

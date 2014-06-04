@@ -4,10 +4,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Snapshot;
 
-public interface InheritanceService<T extends InheritanceService<T>> extends DependenciesService<T>, SystemPropertiesService, ExceptionAdviserService<T> {
+public interface InheritanceService<T extends InheritanceService<T>> extends DependenciesService<T>, SystemPropertiesService<T>, ExceptionAdviserService<T> {
 
 	@SuppressWarnings("unchecked")
 	default boolean isSuperOf(T subMeta, List<T> overrides, Serializable subValue, List<T> subComponents) {
@@ -60,6 +59,7 @@ public interface InheritanceService<T extends InheritanceService<T>> extends Dep
 	}
 
 	// TODO Remove this
+	@Override
 	List<T> getComponents();
 
 	default boolean isSpecializationOf(T supra) {

@@ -24,6 +24,8 @@ public abstract class RemoveRestructurator<T extends RestructuratorService<T>> e
 			instancesOfVertexToRemove.add(v);
 	}
 
+	// FIXME
+	@Deprecated
 	public RemoveRestructurator(Vertex vertexToRemove) {
 		assert vertexToRemove != null;
 		setVertexToRemove(vertexToRemove);
@@ -67,13 +69,16 @@ public abstract class RemoveRestructurator<T extends RestructuratorService<T>> e
 			return newDependency;
 		}
 
-		components.remove(vertexToRemove);
-		for (Vertex component : vertexToRemove.getInheritings()) {
-			components.add(component);
-			T newDependency = meta.buildInstance((List<T>) supers, value, (List<T>) components).plug();
-			components.remove(component);
-			// FIXME put and return
-		}
+		if (components.remove(vertexToRemove))
+			for (Vertex component : vertexToRemove.getInheritings()) {
+				components.add(component);// FIXME chaine de valeurs CAD par ex valeur par defaut
+				T newDependency = meta.buildInstance((List<T>) supers, value, (List<T>) components).plug();
+				components.remove(component);
+				// FIXME put and return
+			}
+		else
+			// construction noeud
+			return null;
 		return null;
 	}
 
