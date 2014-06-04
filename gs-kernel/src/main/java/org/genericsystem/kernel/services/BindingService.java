@@ -78,7 +78,9 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 	}
 
 	@SuppressWarnings("unchecked")
-	T getInstance(Serializable value, T... components);
+	default T getInstance(Serializable value, T... components) {
+		return buildInstance(Collections.emptyList(), value, Arrays.asList(components)).getAlive();
+	}
 
 	@Override
 	public Dependencies<T> getInstances();

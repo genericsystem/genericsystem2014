@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class Root extends Vertex implements RootService<Vertex> {
+
 	public Root() {
 		this(Statics.ENGINE_VALUE);
 	}
@@ -26,15 +27,4 @@ public class Root extends Vertex implements RootService<Vertex> {
 		Vertex meta = computeNearestMeta(Collections.emptyList(), value, Arrays.asList(components));
 		return meta.buildInstance().init(0, meta, supersList, getRoot().getValue(), Arrays.asList(allComponents)).plug();
 	}
-
-	// public Serializable getCachedValue(Serializable value) {
-	// return valueCache.get(value);
-	// }
-
-	/*
-	 * public static class ValueCache extends HashMap<Serializable, Serializable> { private static final long serialVersionUID = 8474952153415905986L;
-	 *
-	 * @Override public Serializable get(Object key) { Serializable result = super.get(key); if (result == null) put(result = (Serializable) key, result); return result; } }
-	 */
-
 }

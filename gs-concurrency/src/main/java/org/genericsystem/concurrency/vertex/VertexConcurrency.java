@@ -25,9 +25,4 @@ public class VertexConcurrency extends Vertex {
 	public boolean isAlive(long ts) {
 		return lifeManager.isAlive(ts);
 	}
-
-	@Override
-	public void rollback() {
-		getRoot().rollback();
-	}
 }

@@ -2,29 +2,35 @@ package org.genericsystem.cache;
 
 import java.io.Serializable;
 import java.util.Collections;
+
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
 
 public class Engine extends Generic implements EngineService<Generic> {
 
-	private final Root root = buildRoot();
-
 	private final ThreadLocal<Cache<Generic>> cacheLocal = new ThreadLocal<>();
 
+	private final Root root;
+
 	public Engine() {
-		cacheLocal.set(buildCache(new Transaction<>(this)));
-		init(0, null, Collections.emptyList(), Statics.ENGINE_VALUE, Collections.emptyList());
+		this(Statics.ENGINE_VALUE, Statics.ENGINE_VALUE);
 	}
 
-	@Override
-	public Root buildRoot() {
-		return buildRoot(Statics.ENGINE_VALUE);
+	public Engine(Serializable rootValue, Serializable engineValue) {
+		root = buildRoot(rootValue);
+		init(0, null, Collections.emptyList(), Statics.ENGINE_VALUE, Collections.emptyList());
+		cacheLocal.set(buildCache(new Transaction<>(this)));
 	}
 
 	@Override
 	public Root buildRoot(Serializable value) {
 		return new Root(value);
+	}
+
+	@Override
+	public Vertex getVertex() {
+		return root;
 	}
 
 	@Override
@@ -48,26 +54,5 @@ public class Engine extends Generic implements EngineService<Generic> {
 			throw new IllegalStateException();
 		return currentCache;
 	}
-
-	// @Override
-	// public Engine getAlive() {
-	// return this;
-	// }
-
-	@Override
-	public Vertex getVertex() {
-		return root;
-	}
-
-	// Why is this necessary ??? what does maven do here ?
-	// @Override
-	// public Engine getRoot() {
-	// return (Engine) EngineService.super.getRoot();
-	// }
-	//
-	// @Override
-	// public void rollback() {
-	// root.rollback();
-	// }
 
 }
