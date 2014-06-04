@@ -1,8 +1,8 @@
 package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,11 +21,11 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 	@SuppressWarnings("unchecked")
 	default T addSuper(T superToAdd) {
 		T old = (T) this;
-		UpdateRestructurator<T> ur = () -> old.getMeta().buildInstance(new OrderedSupers<T>((Stream<T>) old.getSupersStream(), superToAdd).toList(), old.getValue(), old.getComponentsStream().collect(Collectors.toList())).plug();
+		UpdateRestructurator<T> ur = () -> old.getMeta().buildInstance(new OrderedSupers<T>((Stream<T>) old.getSupersStream(), superToAdd), old.getValue(), old.getComponentsStream().collect(Collectors.toList())).plug();
 		return ur.rebuildAll(old, true);
 	}
 
-	public static class OrderedSupers<T extends UpdatableService<T>> extends LinkedHashSet<T> {
+	public static class OrderedSupers<T extends UpdatableService<T>> extends ArrayList<T> {
 		private static final long serialVersionUID = 6163099887384346235L;
 
 		public OrderedSupers(Stream<T> adds) {
