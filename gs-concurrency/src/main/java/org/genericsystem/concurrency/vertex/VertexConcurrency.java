@@ -22,13 +22,14 @@ public class VertexConcurrency extends Vertex {
 		return new VertexConcurrency();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Dependencies<Vertex> buildDependencies(Supplier<Iterator<Vertex>> subDependenciesSupplier) {
-		return new AbstractDependenciesConcurrency<Vertex>(lifeManager) {
+	public <U extends Vertex> Dependencies<U> buildDependencies(Supplier<Iterator<Vertex>> subDependenciesSupplier) {
+		return (Dependencies<U>) new AbstractDependenciesConcurrency() {
 
 			@Override
-			public long getTs() {
-				return 0;
+			public LifeManager getLifeManager() {
+				return lifeManager;
 			}
 		};
 	}
@@ -39,11 +40,5 @@ public class VertexConcurrency extends Vertex {
 
 	public boolean isAlive(long ts) {
 		return lifeManager.isAlive(ts);
-	}
-
-	@Override
-	public Dependencies<Vertex> getInheritings() {
-		// TODO Auto-generated method stub
-		return super.getInheritings();
 	}
 }

@@ -7,22 +7,24 @@ import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Snapshot.AbstractSnapshot;
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
-public abstract class AbstractDependenciesConcurrency<T> extends AbstractSnapshot<T> implements Dependencies<T> {
+public abstract class AbstractDependenciesConcurrency extends AbstractSnapshot<VertexConcurrency> implements Dependencies<VertexConcurrency> {
 
-	private final LifeManager lifeManager;
+	// private final LifeManager lifeManager;
 
-	private Node<T> head = null;
-	private Node<T> tail = null;
+	private Node<VertexConcurrency> head = null;
+	private Node<VertexConcurrency> tail = null;
 
-	public AbstractDependenciesConcurrency(LifeManager lifeManager) {
-		this.lifeManager = lifeManager;
-	}
+	// public DependenciesConcurrency(LifeManager lifeManager) {
+	// this.lifeManager = lifeManager;
+	// }
+
+	public abstract LifeManager getLifeManager();
 
 	@Override
-	public void add(T element) {
+	public void add(VertexConcurrency element) {
 		assert !this.contains(element);
 		assert element != null;
-		Node<T> newNode = new Node<T>(element);
+		Node<VertexConcurrency> newNode = new Node<>(element);
 		if (head == null)
 			head = newNode;
 		else
@@ -31,23 +33,23 @@ public abstract class AbstractDependenciesConcurrency<T> extends AbstractSnapsho
 	}
 
 	@Override
-	public boolean remove(T generic) {
+	public boolean remove(VertexConcurrency generic) {
 		assert generic != null : "generic is null";
 		assert head != null : "head is null";
 
-		Node<T> currentNode = head;
+		Node<VertexConcurrency> currentNode = head;
 
-		T currentContent = currentNode.content;
+		VertexConcurrency currentContent = currentNode.content;
 		if (generic.equals(currentContent)) {
-			Node<T> next = currentNode.next;
+			Node<VertexConcurrency> next = currentNode.next;
 			head = next != null ? next : null;
 			return true;
 		}
 
-		Node<T> nextNode = currentNode.next;
+		Node<VertexConcurrency> nextNode = currentNode.next;
 		while (nextNode != null) {
-			T nextGeneric = nextNode.content;
-			Node<T> nextNextNode = nextNode.next;
+			VertexConcurrency nextGeneric = nextNode.content;
+			Node<VertexConcurrency> nextNextNode = nextNode.next;
 			if (generic.equals(nextGeneric)) {
 				nextNode.content = null;
 				if (nextNextNode == null)
@@ -62,13 +64,15 @@ public abstract class AbstractDependenciesConcurrency<T> extends AbstractSnapsho
 	}
 
 	@Override
-	public Iterator<T> iterator() {
-		return new InternalIterator(getTs());
+	public Iterator<VertexConcurrency> iterator() {
+		throw new UnsupportedOperationException();
 	}
 
-	public abstract long getTs();
+	public Iterator<VertexConcurrency> iterator(long ts) {
+		return new InternalIterator(ts);
+	}
 
-	private class InternalIterator extends AbstractGeneralAwareIterator<Node<T>, T> {
+	private class InternalIterator extends AbstractGeneralAwareIterator<Node<VertexConcurrency>, VertexConcurrency> {
 
 		private long ts;
 
@@ -79,8 +83,9 @@ public abstract class AbstractDependenciesConcurrency<T> extends AbstractSnapsho
 		@Override
 		protected void advance() {
 			do {
-				Node<T> nextNode = (next == null) ? head : next.next;
+				Node<VertexConcurrency> nextNode = (next == null) ? head : next.next;
 				if (nextNode == null) {
+					LifeManager lifeManager = getLifeManager();
 					lifeManager.readLock();
 					try {
 						nextNode = (next == null) ? head : next.next;
@@ -98,7 +103,7 @@ public abstract class AbstractDependenciesConcurrency<T> extends AbstractSnapsho
 		}
 
 		@Override
-		protected T project() {
+		protected VertexConcurrency project() {
 			return next.content;
 		}
 	}
