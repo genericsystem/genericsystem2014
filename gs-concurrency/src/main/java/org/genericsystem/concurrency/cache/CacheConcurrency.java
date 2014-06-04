@@ -1,18 +1,27 @@
 package org.genericsystem.concurrency.cache;
 
-import org.genericsystem.cache.AbstractContext;
 import org.genericsystem.cache.Cache;
 import org.genericsystem.concurrency.generic.EngineServiceConcurrency;
 import org.genericsystem.concurrency.generic.GenericServiceConcurrency;
 
-public class CacheConcurrency<T extends GenericServiceConcurrency<T>> extends Cache<T> {
+public class CacheConcurrency<T extends GenericServiceConcurrency<T>> extends Cache<T> implements ContextConcurrency<T> {
 
 	public CacheConcurrency(EngineServiceConcurrency<T> engine) {
 		this(new TransactionConcurrency<T>(engine));
 	}
 
-	public CacheConcurrency(AbstractContext<T> subContext) {
+	public CacheConcurrency(ContextConcurrency<T> subContext) {
 		super(subContext);
+	}
+
+	@Override
+	public long getTs() {
+		return getSubContext().getTs();
+	}
+
+	@Override
+	public ContextConcurrency<T> getSubContext() {
+		return (ContextConcurrency<T>) super.getSubContext();
 	}
 
 }

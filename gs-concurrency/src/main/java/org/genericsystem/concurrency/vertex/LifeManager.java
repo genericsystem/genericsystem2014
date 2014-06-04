@@ -3,10 +3,6 @@ package org.genericsystem.concurrency.vertex;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.genericsystem.concurrency.generic.GenericConcurrency;
-import org.genericsystem.kernel.Dependencies;
-import org.genericsystem.kernel.Dependencies.CompositesDependencies;
-import org.genericsystem.kernel.DependenciesImpl;
 import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.OptimisticLockConstraintViolationException;
 import org.slf4j.Logger;
@@ -20,10 +16,6 @@ public class LifeManager {
 	private AtomicLong lastReadTs;
 	private long deathTs;
 	private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-	final Dependencies<GenericConcurrency> engineInheritings = new DependenciesImpl<>();
-	final Dependencies<GenericConcurrency> engineInstances = new DependenciesImpl<>();
-	final CompositesDependencies<GenericConcurrency> engineMetaComposites = buildCompositeDependencies();
-	final CompositesDependencies<GenericConcurrency> engineSuperComposites = buildCompositeDependencies();
 
 	public LifeManager(long designTs, long birthTs, long lastReadTs, long deathTs) {
 		this.designTs = designTs;
@@ -32,20 +24,11 @@ public class LifeManager {
 		this.deathTs = deathTs;
 	}
 
-	private CompositesDependencies<GenericConcurrency> buildCompositeDependencies() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public void beginLife(long birthTs) {
 		assert isWriteLockedByCurrentThread();
 		assert this.birthTs == Long.MAX_VALUE : "Generic is already born";
 		this.birthTs = birthTs;
 	}
-
-	// public void notConcurrentBeginLife(long birthTs) {
-	// this.birthTs = birthTs;
-	// }
 
 	void cancelBeginLife() {
 		assert isWriteLockedByCurrentThread();
@@ -53,8 +36,7 @@ public class LifeManager {
 	}
 
 	public boolean isAlive(long contextTs) {
-		// NotThreadSafe at all
-		if (contextTs < birthTs)// Pas de reference à deathTs ici
+		if (contextTs < birthTs)
 			return false;
 		readLock();
 		try {
@@ -111,13 +93,6 @@ public class LifeManager {
 
 	void writeLock() {
 		lock.writeLock().lock();
-		// try {
-		// if (!lock.writeLock().tryLock(Statics.TIMEOUT,
-		// TimeUnit.MILLISECONDS))
-		// throw new IllegalStateException("Can't acquire a write lock");
-		// } catch (InterruptedException e) {
-		// throw new IllegalStateException("Can't acquire a write lock");
-		// }
 	}
 
 	public void writeUnlock() {
@@ -126,12 +101,6 @@ public class LifeManager {
 
 	public void readLock() {
 		lock.readLock().lock();
-		// try {
-		// if (!lock.readLock().tryLock(Statics.TIMEOUT, TimeUnit.MILLISECONDS))
-		// throw new IllegalStateException("Can't acquire a read lock");
-		// } catch (InterruptedException e) {
-		// throw new IllegalStateException("Can't acquire a read lock");
-		// }
 	}
 
 	public void readUnlock() {
@@ -148,22 +117,6 @@ public class LifeManager {
 
 	public boolean willDie() {
 		return deathTs != Long.MAX_VALUE;
-	}
-
-	public Dependencies<GenericConcurrency> getEngineInheritings() {
-		return engineInheritings;
-	}
-
-	public Dependencies<GenericConcurrency> getEngineInstances() {
-		return engineInstances;
-	}
-
-	public CompositesDependencies<GenericConcurrency> getEngineMetaComposites() {
-		return engineMetaComposites;
-	}
-
-	public CompositesDependencies<GenericConcurrency> getEngineSuperComposites() {
-		return engineSuperComposites;
 	}
 
 }

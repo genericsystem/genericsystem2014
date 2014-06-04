@@ -13,7 +13,7 @@ public interface EngineService<T extends GenericService<T>> extends org.generics
 		return Objects.equals(getValue(), service.getValue()) && AncestorsService.equivComponents(getComponents(), service.getComponents());
 	}
 
-	default Cache<T> buildCache(AbstractContext<T> subContext) {
+	default Cache<T> buildCache(Context<T> subContext) {
 		return new Cache<T>(subContext);
 	}
 
