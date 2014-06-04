@@ -37,7 +37,7 @@ public class Cache<T extends GenericService<T>> extends AbstractContext<T> {
 		removes = new LinkedHashSet<>();
 	}
 
-	public Cache(T engine) {
+	public Cache(EngineService<T> engine) {
 		this(new Transaction<T>(engine));
 	}
 
@@ -173,7 +173,7 @@ public class Cache<T extends GenericService<T>> extends AbstractContext<T> {
 	}
 
 	@Override
-	public Engine getEngine() {
+	public EngineService<T> getEngine() {
 		return subContext.getEngine();
 	}
 

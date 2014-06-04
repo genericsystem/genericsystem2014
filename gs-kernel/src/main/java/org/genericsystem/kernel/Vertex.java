@@ -5,12 +5,10 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
-import org.genericsystem.kernel.services.Removable;
-import org.genericsystem.kernel.services.Updatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Vertex extends ExtendedSignature<Vertex> implements Removable<Vertex>, Updatable<Vertex> {
+public class Vertex extends ExtendedSignature<Vertex> implements VertexService<Vertex> {
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 
 	private final Dependencies<Vertex> instances = buildDependencies(null);
@@ -49,10 +47,4 @@ public class Vertex extends ExtendedSignature<Vertex> implements Removable<Verte
 	public CompositesDependencies<Vertex> getSuperComposites() {
 		return superComposites;
 	}
-
-	@Override
-	public void rollback() {
-		getRoot().rollback();
-	}
-
 }

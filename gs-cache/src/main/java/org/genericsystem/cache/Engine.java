@@ -49,10 +49,10 @@ public class Engine extends Generic implements EngineService<Generic> {
 		return currentCache;
 	}
 
-	@Override
-	public Engine getAlive() {
-		return this;
-	}
+	// @Override
+	// public Engine getAlive() {
+	// return this;
+	// }
 
 	@Override
 	public Vertex getVertex() {
@@ -60,14 +60,14 @@ public class Engine extends Generic implements EngineService<Generic> {
 	}
 
 	// Why is this necessary ??? what does maven do here ?
-	@Override
-	public Engine getRoot() {
-		return (Engine) EngineService.super.getRoot();
-	}
-
-	@Override
-	public void rollback() {
-		root.rollback();
-	}
+	// @Override
+	// public Engine getRoot() {
+	// return (Engine) EngineService.super.getRoot();
+	// }
+	//
+	// @Override
+	// public void rollback() {
+	// root.rollback();
+	// }
 
 }

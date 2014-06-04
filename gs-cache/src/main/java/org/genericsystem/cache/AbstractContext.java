@@ -1,6 +1,5 @@
 package org.genericsystem.cache;
 
-import org.genericsystem.impl.GenericService;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
@@ -8,7 +7,7 @@ import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 
 public abstract class AbstractContext<T extends GenericService<T>> {
 
-	abstract Engine getEngine();
+	abstract EngineService<T> getEngine();
 
 	public abstract boolean isAlive(T generic);
 
