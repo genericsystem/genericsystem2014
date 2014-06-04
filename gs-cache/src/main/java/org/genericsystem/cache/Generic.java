@@ -12,9 +12,10 @@ public class Generic extends GenericSignature<Generic> implements GenericService
 		return new Generic();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public CacheDependencies<Generic> buildDependencies(Supplier<Iterator<Generic>> subDependenciesSupplier) {
-		return new CacheDependencies<Generic>(subDependenciesSupplier);
+	public <U extends Generic> CacheDependencies<U> buildDependencies(Supplier<Iterator<Generic>> subDependenciesSupplier) {
+		return (CacheDependencies<U>) new CacheDependencies<Generic>(subDependenciesSupplier);
 	}
 
 }

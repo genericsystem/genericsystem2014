@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Supplier;
+
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
@@ -34,8 +35,8 @@ public interface FactoryService<T extends FactoryService<T>> extends ExceptionAd
 
 	T init(int level, T meta, List<T> overrides, Serializable value, List<T> components);
 
-	default Dependencies<T> buildDependencies(Supplier<Iterator<T>> subDependenciesSupplier) {
-		return new DependenciesImpl<T>();
+	default <U extends T> Dependencies<U> buildDependencies(Supplier<Iterator<T>> subDependenciesSupplier) {
+		return new DependenciesImpl<U>();
 	}
 
 	default CompositesDependencies<T> buildCompositeDependencies(Supplier<Iterator<DependenciesEntry<T>>> subDependenciesSupplier) {

@@ -13,8 +13,9 @@ public class GenericConcurrency extends GenericSignature<GenericConcurrency> imp
 		return new GenericConcurrency();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public CacheDependencies<GenericConcurrency> buildDependencies(Supplier<Iterator<GenericConcurrency>> subDependenciesSupplier) {
-		return new CacheDependencies<GenericConcurrency>(subDependenciesSupplier);
+	public <U extends GenericConcurrency> CacheDependencies<U> buildDependencies(Supplier<Iterator<GenericConcurrency>> subDependenciesSupplier) {
+		return (CacheDependencies<U>) new CacheDependencies<GenericConcurrency>(subDependenciesSupplier);
 	}
 }
