@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 import org.genericsystem.kernel.Restructurator;
 
-public interface Updatable<T extends Updatable<T>> extends BindingService<T> {
+public interface UpdatableService<T extends UpdatableService<T>> extends BindingService<T> {
 
 	@SuppressWarnings("unchecked")
 	default T setValue(Serializable value) {
@@ -17,7 +17,7 @@ public interface Updatable<T extends Updatable<T>> extends BindingService<T> {
 				T meta = getMeta();
 				return buildInstance().init(meta.getLevel() + 1, meta, getSupersStream().collect(Collectors.toList()), value, getComponents()).plug();
 			}
-		}.rebuildAll((T) Updatable.this, computeAllDependencies());
+		}.rebuildAll((T) UpdatableService.this, computeAllDependencies());
 	}
 
 }

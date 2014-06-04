@@ -8,9 +8,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.genericsystem.kernel.services.Removable;
+import org.genericsystem.kernel.services.RemovableService;
 
-public abstract class RemoveRestructurator<T extends Removable<T>> extends HashMap<T, T> {
+public abstract class RemoveRestructurator<T extends RemovableService<T>> extends HashMap<T, T> {
 	private static final long serialVersionUID = -3498885981892406254L;
 
 	private T vertexToRemove;
@@ -33,7 +33,7 @@ public abstract class RemoveRestructurator<T extends Removable<T>> extends HashM
 
 	public void rebuildAll() {
 		LinkedHashSet<T> oldDependenciesUnpluged = vertexToRemove.computeAllDependencies();
-		oldDependenciesUnpluged.forEach(Removable::unplug);
+		oldDependenciesUnpluged.forEach(RemovableService::unplug);
 		oldDependenciesUnpluged.remove(vertexToRemove);
 		put(vertexToRemove, vertexToRemove.getMeta());// FIXME made to fix meta's management on buildDependency(T)
 		for (T dependency : oldDependenciesUnpluged)

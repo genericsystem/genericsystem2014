@@ -11,7 +11,7 @@ import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 import org.genericsystem.kernel.exceptions.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.kernel.statics.RemoveStrategy;
 
-public interface Removable<T extends Removable<T>> extends BindingService<T> {
+public interface RemovableService<T extends RemovableService<T>> extends BindingService<T> {
 
 	@SuppressWarnings("unchecked")
 	default void remove(RemoveStrategy removeStrategy) {
@@ -20,10 +20,10 @@ public interface Removable<T extends Removable<T>> extends BindingService<T> {
 			removeInstance();
 			break;
 		case FORCE:
-			removeCascade();
+			removeForce();
 			break;
 		case CONSERVE:
-			new RemoveRestructurator<T>((T) Removable.this) {
+			new RemoveRestructurator<T>((T) RemovableService.this) {
 				private static final long serialVersionUID = 6513791665544090616L;
 			}.rebuildAll();
 			break;
@@ -87,8 +87,8 @@ public interface Removable<T extends Removable<T>> extends BindingService<T> {
 		vertex.unplug();
 	}
 
-	default void removeCascade() {
-		reverseLinkedHashSet(computeAllDependencies()).forEach(x -> simpleRemove(x));
+	default void removeForce() {
+		computeAllDependencies().forEach(x -> simpleRemove(x));
 	}
 
 }

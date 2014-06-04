@@ -8,11 +8,11 @@ import org.genericsystem.kernel.services.DisplayService;
 import org.genericsystem.kernel.services.ExceptionAdviserService;
 import org.genericsystem.kernel.services.FactoryService;
 import org.genericsystem.kernel.services.InheritanceService;
-import org.genericsystem.kernel.services.Removable;
+import org.genericsystem.kernel.services.RemovableService;
 import org.genericsystem.kernel.services.SystemPropertiesService;
-import org.genericsystem.kernel.services.Updatable;
+import org.genericsystem.kernel.services.UpdatableService;
 
 public interface VertexService<T extends VertexService<T>> extends AncestorsService<T>, DependenciesService<T>, InheritanceService<T>, BindingService<T>, CompositesInheritanceService<T>, FactoryService<T>, DisplayService<T>, SystemPropertiesService<T>,
-		ExceptionAdviserService<T>, Removable<T>, Updatable<T> {
+		ExceptionAdviserService<T>, RemovableService<T>, UpdatableService<T> {
 
 }

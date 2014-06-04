@@ -240,28 +240,25 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 				if (!alreadyVisited.contains(node))
 					if (!isAncestorOf(node)) {
 						alreadyVisited.add(node);
+						node.getComposites().forEach(this::visit);
 						node.getInheritings().forEach(this::visit);
 						node.getInstances().forEach(this::visit);
-						node.getComposites().forEach(this::visit);
 					} else
-						add(node);
+						addDependency(node);
 			}
 
-			@Override
-			public boolean add(T node) {
+			public void addDependency(T node) {
 				if (!alreadyVisited.contains(node)) {
-					super.add(node);
 					alreadyVisited.add(node);
-					node.getInheritings().forEach(this::add);
-					node.getInstances().forEach(this::add);
-					node.getComposites().forEach(this::add);
+					node.getComposites().forEach(this::addDependency);
+					node.getInheritings().forEach(this::addDependency);
+					node.getInstances().forEach(this::addDependency);
+					super.add(node);
 				}
-				return true;
 			}
 		}
 		return new DirectDependencies();
 	}
-
 	// default boolean isExtention(T candidate) {
 	// if (isFactual() && candidate.getMeta().equals((getMeta()))) {
 	// if (getMeta().isPropertyConstraintEnabled())
