@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 import org.genericsystem.kernel.UpdateRestructurator;
 import org.genericsystem.kernel.exceptions.NotFoundException;
+import org.genericsystem.kernel.exceptions.RollbackException;
 
 public interface UpdatableService<T extends UpdatableService<T>> extends BindingService<T> {
 
@@ -30,8 +31,10 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 		return ((UpdateRestructurator<T>) (() -> getMeta().buildInstance(getSupers(), getValue(), findNewComponentList(source, target)).plug())).rebuildAll((T) this);
 	}
 
+	@SuppressWarnings("unchecked")
 	default T replaceComponentWithValueModification(T source, T target, Serializable value) {
-		return replaceComponent(source, target).setValue(value);
+		T meta = getMeta();
+		return ((UpdateRestructurator<T>) (() -> buildInstance().init(meta.getLevel() + 1, meta, getSupers(), value, findNewComponentList(source, target)).plug())).rebuildAll((T) this);
 	}
 
 	default List<T> findNewComponentList(T source, T target) {
@@ -76,7 +79,7 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 			return this.stream().collect(Collectors.toList());
 		}
 	}
-	
+
 	default T setInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
 		return setInstance(Collections.emptyList(), value, components);
 	}
@@ -110,6 +113,8 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 			// instance;
 		}
 		int nbComponents = this.getComponents().size();
+		if (nbComponents != instance.getComponents().size())
+			new RollbackException();
 		Iterator componentsIterator = Arrays.asList(components).iterator();
 		Iterator instanceComponentsIterator = Arrays.asList(instance.getComponents()).iterator();
 		// while (componentsIterator.hasNext()) {

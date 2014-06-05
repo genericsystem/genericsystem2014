@@ -4,6 +4,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.genericsystem.kernel.exceptions.NotFoundException;
 import org.testng.annotations.Test;
 
 @Test
@@ -272,6 +273,221 @@ public class UpdatableServiceTest extends AbstractTest {
 		Vertex newCar = findElement("Car", newVehicleDependencies.stream().collect(Collectors.toList()));
 		assert newCar.computeAllDependencies().size() == 1;
 		assert newCar.getSupersStream().count() == 1;
+	}
+
+	public void test102_addSuper_AlreadySuper() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+
+		// when
+		car.addSuper(vehicle);
+
+		// then
+		assert engine.isAlive();
+		assert vehicle.isAlive();
+		assert !car.isAlive();
+
+		LinkedHashSet<Vertex> engineDependencies = engine.computeAllDependencies();
+		assert engineDependencies.size() == 3;
+		assert engine.getAllInstances().count() == 2;
+
+		Vertex newVehicle = findElement("Vehicle", engineDependencies.stream().collect(Collectors.toList()));
+		LinkedHashSet<Vertex> newVehicleDependencies = newVehicle.computeAllDependencies();
+		assert newVehicleDependencies.size() == 2;
+		assert newVehicle.getInheritings().size() == 1;
+
+		Vertex newCar = findElement("Car", engineDependencies.stream().collect(Collectors.toList()));
+		assert newCar.computeAllDependencies().size() == 1;
+		assert newCar.getSupersStream().count() == 1;
+	}
+
+	public void test103_addSuper_NoRegressionOnDataModel() {
+		// given
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex animals = engine.addInstance("Animals");
+		Vertex myVehicle = vehicle.addInstance("MyVehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex power = engine.addInstance("Power", car);
+		Vertex myCar = car.addInstance("MyCar");
+		Vertex color = engine.addInstance("Color");
+		Vertex red = color.addInstance("Red");
+		Vertex green = color.addInstance("Green");
+		Vertex blue = color.addInstance("Blue");
+		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Vertex myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
+		Vertex myVehicleGreen = vehicleColor.addInstance("MyVehicleGreen", myVehicle, green);
+
+		// when
+		Vertex fourWheels = engine.addInstance(vehicle, "FourWheels");
+		car.addSuper(fourWheels);
+
+		// then
+		assert engine.isAlive();
+		assert vehicle.isAlive();
+		assert animals.isAlive();
+		assert myVehicle.isAlive();
+		assert !car.isAlive();
+		assert !power.isAlive();
+		assert !myCar.isAlive();
+		assert color.isAlive();
+		assert red.isAlive();
+		assert green.isAlive();
+		assert blue.isAlive();
+		assert vehicleColor.isAlive();
+		assert !myCarRed.isAlive();
+		assert myVehicleGreen.isAlive();
+		assert fourWheels.isAlive();
+
+		LinkedHashSet<Vertex> engineDependencies = engine.computeAllDependencies();
+		assert engineDependencies.size() == 15;
+		assert engine.getAllInstances().count() == 7;
+
+		Vertex newVehicle = findElement("Vehicle", engineDependencies.stream().collect(Collectors.toList()));
+		LinkedHashSet<Vertex> newVehicleDependencies = newVehicle.computeAllDependencies();
+		assert newVehicleDependencies.size() == 9;
+		assert newVehicle.getInheritings().size() == 1;
+
+		Vertex newFourWheels = findElement("FourWheels", engineDependencies.stream().collect(Collectors.toList()));
+		assert newFourWheels.computeAllDependencies().size() == 5;
+		assert newFourWheels.getInheritings().size() == 1;
+		assert newFourWheels.getSupersStream().count() == 1;
+
+		Vertex newCar = findElement("Car", engineDependencies.stream().collect(Collectors.toList()));
+		assert newCar.computeAllDependencies().size() == 4;
+		assert newCar.getSupersStream().count() == 1;
+	}
+
+	public void test200_replaceComponent() {
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex myVehicle = vehicle.addInstance("MyVehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex power = engine.addInstance("Power", car);
+		Vertex myCar = car.addInstance("MyCar");
+		Vertex color = engine.addInstance("Color");
+		Vertex red = color.addInstance("Red");
+		Vertex green = color.addInstance("Green");
+		Vertex blue = color.addInstance("Blue");
+		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Vertex myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
+		Vertex myVehicleGreen = vehicleColor.addInstance("MyVehicleGreen", myVehicle, green);
+
+		// when
+		myCarRed.replaceComponent(red, blue);
+
+		// then
+		assert engine.isAlive();
+		assert vehicle.isAlive();
+		assert myVehicle.isAlive();
+		assert car.isAlive();
+		assert power.isAlive();
+		assert myCar.isAlive();
+		assert color.isAlive();
+		assert red.isAlive();
+		assert green.isAlive();
+		assert blue.isAlive();
+		assert vehicleColor.isAlive();
+		assert !myCarRed.isAlive();
+		assert myVehicleGreen.isAlive();
+
+		LinkedHashSet<Vertex> engineDependencies = engine.computeAllDependencies();
+		assert engineDependencies.size() == 13;
+		assert engine.getAllInstances().count() == 5;
+
+		Vertex newCarBlue = findElement("MyCarRed", engineDependencies.stream().collect(Collectors.toList()));
+		assert newCarBlue.computeAllDependencies().size() == 1;
+		List<Vertex> newCarBlueComponents = newCarBlue.getComponents();
+		assert newCarBlueComponents.size() == 2;
+
+		Vertex blueFromNewCarBlueComponent = findElement("Blue", newCarBlueComponents.stream().collect(Collectors.toList()));
+		assert blueFromNewCarBlueComponent != null;
+
+		Vertex myCarFromNewCarBlueComponent = findElement("MyCar", newCarBlueComponents.stream().collect(Collectors.toList()));
+		assert myCarFromNewCarBlueComponent != null;
+	}
+
+	public void test201_replaceComponent_KO() {
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex myCar = car.addInstance("MyCar");
+		Vertex color = engine.addInstance("Color");
+		Vertex red = color.addInstance("Red");
+		Vertex green = color.addInstance("Green");
+		Vertex blue = color.addInstance("Blue");
+		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Vertex myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
+
+		new RollbackCatcher() {
+			@Override
+			public void intercept() {
+				// when
+				myCarRed.replaceComponent(green, blue);
+			}
+			// then
+		}.assertIsCausedBy(NotFoundException.class);
+	}
+
+	public void test300_replaceComponentWithValueModification() {
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex myCar = car.addInstance("MyCar");
+		Vertex color = engine.addInstance("Color");
+		Vertex red = color.addInstance("Red");
+		Vertex blue = color.addInstance("Blue");
+		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Vertex myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
+
+		// when
+		myCarRed.replaceComponentWithValueModification(red, blue, "MyCarBlue");
+
+		// then
+		LinkedHashSet<Vertex> engineDependencies = engine.computeAllDependencies();
+		assert engineDependencies.size() == 9;
+		assert engine.getAllInstances().count() == 4;
+
+		Vertex newCarRed = findElement("MyCarRed", engineDependencies.stream().collect(Collectors.toList()));
+		assert newCarRed == null;
+
+		Vertex newCarBlue = findElement("MyCarBlue", engineDependencies.stream().collect(Collectors.toList()));
+		assert newCarBlue.computeAllDependencies().size() == 1;
+		List<Vertex> newCarBlueComponents = newCarBlue.getComponents();
+		assert newCarBlueComponents.size() == 2;
+
+		Vertex redFromNewCarBlueComponent = findElement("Red", newCarBlueComponents.stream().collect(Collectors.toList()));
+		assert redFromNewCarBlueComponent == null;
+
+		Vertex blueFromNewCarBlueComponent = findElement("Blue", newCarBlueComponents.stream().collect(Collectors.toList()));
+		assert blueFromNewCarBlueComponent != null;
+
+		Vertex myCarFromNewCarBlueComponent = findElement("MyCar", newCarBlueComponents.stream().collect(Collectors.toList()));
+		assert myCarFromNewCarBlueComponent != null;
+	}
+
+	public void test301_replaceComponentWithValueModification_KO() {
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex myCar = car.addInstance("MyCar");
+		Vertex color = engine.addInstance("Color");
+		Vertex red = color.addInstance("Red");
+		Vertex green = color.addInstance("Green");
+		Vertex blue = color.addInstance("Blue");
+		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Vertex myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
+
+		new RollbackCatcher() {
+			@Override
+			public void intercept() {
+				// when
+				myCarRed.replaceComponentWithValueModification(green, blue, "MyCarBlue");
+			}
+			// then
+		}.assertIsCausedBy(NotFoundException.class);
 	}
 
 }

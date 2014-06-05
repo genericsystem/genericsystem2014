@@ -10,7 +10,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.genericsystem.kernel.Dependencies;
@@ -60,46 +59,6 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 				else
 					rollbackAndThrowException(new AmbiguousSelectionException("Ambigous selection : " + firstDirectInheriting.info() + directInheriting.info()));
 		return firstDirectInheriting == null ? (T) this : firstDirectInheriting;
-	}
-
-	default T setInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
-		return setInstance(Collections.emptyList(), value, components);
-	}
-
-	default T setInstance(T superGeneric, Serializable value, @SuppressWarnings("unchecked") T... components) {
-		return setInstance(Collections.singletonList(superGeneric), value, components);
-	}
-
-	@SuppressWarnings("unchecked")
-	default T setInstance(List<T> overrides, Serializable value, T... components) {
-		checkSameEngine(Arrays.asList(components));
-		checkSameEngine(overrides);
-		T instance = getWeakInstance(value, components);
-		if (instance == null)
-			return buildInstance(overrides, value, Arrays.asList(components)).plug();
-		return updateInstance(instance, overrides, value, components);
-	}
-
-	default T updateInstance(T instance, List<T> overrides, Serializable value, T... components) {
-
-		if (!areOverridesReached(overrides, instance.getSupersStream().collect(Collectors.toList())))
-			// TODO : call restructurator to modify supers;
-			return null;
-		boolean singularPropertyIsEnabled = false;
-		int nbComponents = getComponents().size();
-		for (int currentPos = 0; currentPos < nbComponents; ++currentPos) {
-			if (isSingularConstraintEnabled(currentPos)) {
-				singularPropertyIsEnabled = true;
-			}
-		}
-		// check components
-
-		if (!singularPropertyIsEnabled) {
-			if (!value.equals(instance.getValue()))
-				// TODO Call restructurator.updateValue();
-				return null;
-		}
-		return instance;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -157,6 +116,9 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 
 	@SuppressWarnings("unchecked")
 	default T getInstance(List<T> supers, Serializable value, T... components) {
+		T nearestMeta = computeNearestMeta(supers, value, Arrays.asList(components));
+		if (nearestMeta != this)
+			return nearestMeta.getInstance(supers, value, components);
 		T result = getInstance(value, components);
 		if (result != null && supers.stream().allMatch(superT -> result.inheritsFrom(superT)))
 			return result;

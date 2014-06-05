@@ -28,8 +28,12 @@ public interface FactoryService<T extends FactoryService<T>> extends ExceptionAd
 		return (T) ((ExtendedSignature) buildInstance().init(level, (T) this, supers, value, components));
 	}
 
+	default boolean allOverridesAreReached(List<T> overrides, List<T> supers) {
+		return overrides.stream().allMatch(override -> supers.stream().anyMatch(superVertex -> superVertex.inheritsFrom(override)));
+	}
+
 	default void checkOverridesAreReached(List<T> overrides, List<T> supers) {
-		if (!overrides.stream().allMatch(override -> supers.stream().anyMatch(superVertex -> superVertex.inheritsFrom(override))))
+		if (!allOverridesAreReached(overrides, supers))
 			rollbackAndThrowException(new IllegalStateException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
 	}
 
@@ -42,7 +46,7 @@ public interface FactoryService<T extends FactoryService<T>> extends ExceptionAd
 	default CompositesDependencies<T> buildCompositeDependencies(Supplier<Iterator<DependenciesEntry<T>>> subDependenciesSupplier) {
 		class CompositesDependenciesImpl<E> implements CompositesDependencies<E> {
 			@SuppressWarnings("unchecked")
-			private Dependencies<DependenciesEntry<E>> delegate = (Dependencies<DependenciesEntry<E>>) buildDependencies((Supplier) subDependenciesSupplier);
+			private final Dependencies<DependenciesEntry<E>> delegate = (Dependencies<DependenciesEntry<E>>) buildDependencies((Supplier) subDependenciesSupplier);
 
 			@Override
 			public boolean remove(DependenciesEntry<E> vertex) {
