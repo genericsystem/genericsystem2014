@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.genericsystem.kernel.Dependencies;
@@ -34,12 +35,11 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 	default T addInstance(List<T> overrides, Serializable value, T... components) {
 		checkSameEngine(Arrays.asList(components));
 		checkSameEngine(overrides);
-		T nearestMeta = computeNearestMeta(Collections.emptyList(), value, Arrays.asList(components));
+		T nearestMeta = computeNearestMeta(overrides, value, Arrays.asList(components));
 		if (nearestMeta != this)
-			return nearestMeta.addInstance(Collections.emptyList(), value, components);
-		T instance = getInstance(overrides, value, components);
-		if (instance != null)
-			rollbackAndThrowException(new ExistsException(instance.info()));
+			return nearestMeta.addInstance(overrides, value, components);
+		if (instanceAlreadyExists(value, components))
+			rollbackAndThrowException(new ExistsException("value = " + value));
 		return buildInstance(overrides, value, Arrays.asList(components)).plug();
 	}
 
@@ -71,14 +71,39 @@ public interface BindingService<T extends BindingService<T>> extends AncestorsSe
 	default T setInstance(List<T> overrides, Serializable value, T... components) {
 		checkSameEngine(Arrays.asList(components));
 		checkSameEngine(overrides);
-		T instance = getInstance(overrides, value, components);
-		if (instance != null)
-			return instance;
-		return buildInstance(overrides, value, Arrays.asList(components)).plug();
+		T instance = getWeakInstance(value, components);
+		if (instance == null)
+			return buildInstance(overrides, value, Arrays.asList(components)).plug();
+		return updateInstance(instance, overrides, value, components);
+	}
+
+	default T updateInstance(T instance, List<T> overrides, Serializable value, T... components) {
+
+		if (!areOverridesReached(overrides, instance.getSupersStream().collect(Collectors.toList())))
+			// TODO : call restructurator to modify supers;
+			return null;
+		boolean singularPropertyIsEnabled = false;
+		int nbComponents = getComponents().size();
+		for (int currentPos = 0; currentPos < nbComponents; ++currentPos) {
+			if (isSingularConstraintEnabled(currentPos)) {
+				singularPropertyIsEnabled = true;
+			}
+		}
+		// check components
+
+		if (!singularPropertyIsEnabled) {
+			if (!value.equals(instance.getValue()))
+				// TODO Call restructurator.updateValue();
+				return null;
+		}
+		return instance;
 	}
 
 	@SuppressWarnings("unchecked")
 	T getInstance(Serializable value, T... components);
+
+	@SuppressWarnings("unchecked")
+	T getWeakInstance(Serializable value, T... components);
 
 	@Override
 	public Dependencies<T> getInstances();

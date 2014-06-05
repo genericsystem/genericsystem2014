@@ -32,4 +32,16 @@ public class MetaAttributeTest extends AbstractTest {
 		assert power.getMeta() == metaAttribute;
 		assert power.isInstanceOf(metaAttribute) : power.info();
 	}
+
+	public void test004_setMetaAttribute_override() {
+		Root engine = new Root();
+		Vertex metaAttribute = engine.setMetaAttribute();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex power = engine.addInstance("Power", vehicle);
+		Vertex power2 = engine.addInstance(power, "Power2", vehicle);
+
+		assert power2.getMeta() == metaAttribute;
+		assert power2.isInstanceOf(metaAttribute) : power2.info();
+		assert power2.getSupersStream().anyMatch(superVertex -> superVertex.equals(power)) : power2.info();
+	}
 }

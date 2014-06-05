@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.services.SystemPropertiesService.QuadriPredicate;
 import org.slf4j.Logger;
@@ -44,6 +45,8 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		return getLevel() == 2;
 	}
 
+	List<T> getSupers();
+	
 	Stream<T> getSupersStream();
 
 	default boolean inheritsFrom(T superVertex) {
@@ -79,15 +82,26 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		return null;
 	}
 
+	default T getWeakAlive(Serializable value, List<T> components) {
+		T pluggedMeta = this.getAlive();
+		if (pluggedMeta == null)
+			return null;
+		Iterator<T> it = ((DependenciesService) pluggedMeta).getInstances().iterator();
+		while (it.hasNext()) {
+			T next = it.next();
+			if (next.weakEquiv(this, value, components))
+				return next;
+		}
+		return null;
+	}
+
 	default Vertex getVertex() {
 		Vertex pluggedMeta = getMeta().getVertex();
 		if (pluggedMeta == null)
 			return null;
-		Iterator<Vertex> it = pluggedMeta.getInstances().iterator();
-		while (it.hasNext()) {
-			Vertex next = it.next();
-			if (equiv(next))
-				return next;
+		for (Vertex currentVertex : pluggedMeta.getInstances()) {
+			if (equiv(currentVertex))
+				return currentVertex;
 		}
 		return null;
 	}
@@ -108,7 +122,14 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 	}
 
 	default boolean weakEquiv(AncestorsService<? extends AncestorsService<?>> service) {
-		return service == null ? false : service == this ? true : weakEquiv(service.getMeta(), service.getValue(), service.getComponents());
+		if (service == null)
+			return false;
+		else {
+			if (service == this)
+				return true;
+			else
+				return weakEquiv(service.getMeta(), service.getValue(), service.getComponents());
+		}
 	}
 
 	//

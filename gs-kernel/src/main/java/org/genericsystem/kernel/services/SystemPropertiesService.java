@@ -12,6 +12,7 @@ import org.genericsystem.kernel.Statics;
 public interface SystemPropertiesService<T extends SystemPropertiesService<T>> extends AncestorsService<T> {
 
 	default boolean isSingularConstraintEnabled(int pos) {
+		// return pos == Statics.BASE_POSITION;
 		return isEnabled(SingularConstraint.class, pos);
 	}
 
@@ -104,10 +105,27 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 	@Override
 	default QuadriPredicate getQuadriPredicate() {
 		return (value, components, otherValue, otherComponents) -> {
-			return getValuesBiPredicate().test(value, otherValue) && WEAK_EQUIV.test(components, otherComponents);
+
+			boolean singularPropertyIsEnabled = false;
+			int nbComponents = components.size();
+			if (otherComponents.size() == nbComponents) {
+				for (int currentPos = 0; currentPos < nbComponents; ++currentPos) {
+					if (isSingularConstraintEnabled(currentPos)) {
+						singularPropertyIsEnabled = true;
+						if (!components.get(currentPos).weakEquiv(otherComponents.get(currentPos)))
+							return false;
+					}
+				}
+				if (singularPropertyIsEnabled) {
+					return WEAK_EQUIV.test(components, otherComponents);
+				} else {
+					return getValuesBiPredicate().test(value, otherValue) && WEAK_EQUIV.test(components, otherComponents);
+				}
+			} else {
+				return false;
+			}
 		};
 	}
-
 	// public static BiPredicate<List<? extends AncestorsService<?>>, List<? extends AncestorsService<?>>> SINGULAR_EQUIV = (X, Y) -> {
 	// return WEAK_EQUIV.test(X, Y) || (/* il existe au moins un axe commun ou il y a une singular + un equals && */
 	// !componentsDepends(X, Y) && !componentsDepends(Y, X));
