@@ -10,13 +10,12 @@ import org.genericsystem.kernel.services.UpdatableService;
 @FunctionalInterface
 public interface UpdateRestructurator<T extends UpdatableService<T>> {
 
-	default T rebuildAll(T old, boolean rebuildThis) {
+	default T rebuildAll(T old) {
 		Map<T, T> convertMap = new HashMap<T, T>();
 		LinkedHashSet<T> dependenciesToRebuild = old.computeAllDependencies();
 		dependenciesToRebuild.forEach(UpdatableService::unplug);
 		T build = rebuild();
-		if (rebuildThis)
-			dependenciesToRebuild.remove(old);
+		dependenciesToRebuild.remove(old);
 		convertMap.put(old, build);
 		dependenciesToRebuild.forEach(x -> getOrBuild(x, convertMap));
 		return build;

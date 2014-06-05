@@ -14,12 +14,12 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 	@SuppressWarnings("unchecked")
 	default T setValue(Serializable value) {
 		T meta = getMeta();
-		return ((UpdateRestructurator<T>) (() -> buildInstance().init(meta.getLevel() + 1, meta, getSupers(), value, getComponents()).plug())).rebuildAll((T) this, false);
+		return ((UpdateRestructurator<T>) (() -> buildInstance().init(meta.getLevel() + 1, meta, getSupers(), value, getComponents()).plug())).rebuildAll((T) this);
 	}
 
 	@SuppressWarnings("unchecked")
 	default T addSuper(T superToAdd) {
-		return ((UpdateRestructurator<T>) (() -> getMeta().buildInstance(new OrderedSupers<T>(getSupersStream(), superToAdd), getValue(), getComponents()).plug())).rebuildAll((T) this, true);
+		return ((UpdateRestructurator<T>) (() -> getMeta().buildInstance(new OrderedSupers<T>(getSupersStream(), superToAdd), getValue(), getComponents()).plug())).rebuildAll((T) this);
 	}
 
 	public static class OrderedSupers<T extends UpdatableService<T>> extends ArrayList<T> {
