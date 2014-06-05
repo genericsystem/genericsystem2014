@@ -4,6 +4,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.genericsystem.kernel.exceptions.NotFoundException;
 import org.testng.annotations.Test;
 
 @Test
@@ -407,4 +408,25 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert myCarFromNewCarBlueComponent != null;
 	}
 
+	public void test200_replaceComponent_KO() {
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex myCar = car.addInstance("MyCar");
+		Vertex color = engine.addInstance("Color");
+		Vertex red = color.addInstance("Red");
+		Vertex green = color.addInstance("Green");
+		Vertex blue = color.addInstance("Blue");
+		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Vertex myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
+
+		new RollbackCatcher() {
+			@Override
+			public void intercept() {
+				// when
+				myCarRed.replaceComponent(green, blue);
+			}
+			// then
+		}.assertIsCausedBy(NotFoundException.class);
+	}
 }
