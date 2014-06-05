@@ -1,5 +1,9 @@
 package org.genericsystem.concurrency.vertex;
 
+import java.util.Iterator;
+import java.util.function.Supplier;
+
+import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Vertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,16 +22,23 @@ public class VertexConcurrency extends Vertex {
 		return new VertexConcurrency();
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public <U extends Vertex> Dependencies<U> buildDependencies(Supplier<Iterator<Vertex>> subDependenciesSupplier) {
+		return (Dependencies<U>) new AbstractDependenciesConcurrency() {
+
+			@Override
+			public LifeManager getLifeManager() {
+				return lifeManager;
+			}
+		};
+	}
+
 	public LifeManager getLifeManager() {
 		return lifeManager;
 	}
 
 	public boolean isAlive(long ts) {
 		return lifeManager.isAlive(ts);
-	}
-
-	@Override
-	public void rollback() {
-		getRoot().rollback();
 	}
 }

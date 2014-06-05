@@ -1,9 +1,15 @@
 package org.genericsystem.kernel;
 
 import java.util.Objects;
+
 import org.genericsystem.kernel.services.AncestorsService;
 
 public interface RootService<T extends VertexService<T>> extends VertexService<T> {
+
+	@Override
+	default int getLevel() {
+		return 0;
+	}
 
 	@Override
 	default boolean isRoot() {

@@ -31,13 +31,6 @@ public class Vertex extends ExtendedSignature<Vertex> implements VertexService<V
 		return inheritings;
 	}
 
-	// TODO what a pity to build a total Vertex with its dependencies only to call equiv in getAlive()
-	// equiv need only AncestorService as parameter
-	@Override
-	public Vertex getInstance(Serializable value, Vertex... components) {
-		return buildInstance(Collections.emptyList(), value, Arrays.asList(components)).getAlive();
-	}
-
 	@Override
 	public Vertex getWeakInstance(Serializable value, Vertex... components) {
 		return getWeakAlive(value, Arrays.asList(components));

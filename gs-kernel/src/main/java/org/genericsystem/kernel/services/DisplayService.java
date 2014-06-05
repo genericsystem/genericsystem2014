@@ -2,42 +2,49 @@ package org.genericsystem.kernel.services;
 
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.genericsystem.kernel.Statics;
 
 public interface DisplayService<T extends DisplayService<T>> extends AncestorsService<T> {
-	static Logger log = LoggerFactory.getLogger(DisplayService.class);
+
+	default String detailedInfo() {
+		String s = "\n******************************" + System.identityHashCode(this) + "******************************\n";
+		s += " Name        : " + toString() + "\n";
+		s += " Value       : " + getValue() + "\n";
+		s += " Meta        : " + getMeta() + " (" + System.identityHashCode(getMeta()) + ")\n";
+		s += " MetaLevel   : " + Statics.getMetaLevelString(getLevel()) + "\n";
+		s += " Category    : " + Statics.getCategoryString(getLevel(), getComponents().size()) + "\n";
+		s += " Class       : " + getClass().getSimpleName() + "\n";
+		s += "**********************************************************************\n";
+		for (T superGeneric : getSupers())
+			s += " Super       : " + superGeneric + " (" + System.identityHashCode(superGeneric) + ")\n";
+		for (T component : getComponents())
+			s += " Component   : " + component + " (" + System.identityHashCode(component) + ")\n";
+		s += "**********************************************************************\n";
+
+		// for (Attribute attribute : getAttributes())
+		// if (!(attribute.getValue() instanceof Class) /* || !Constraint.class.isAssignableFrom((Class<?>) attribute.getValue()) */) {
+		// s += ((GenericImpl) attribute).getCategoryString() + "   : " + attribute + " (" + System.identityHashCode(attribute) + ")\n";
+		// for (Holder holder : getHolders(attribute))
+		// s += "                          ----------> " + ((GenericImpl) holder).getCategoryString() + " : " + holder + "\n";
+		// }
+		// s += "**********************************************************************\n";
+		// s += "design date : " + new SimpleDateFormat(Statics.LOG_PATTERN).format(new Date(getDesignTs() / Statics.MILLI_TO_NANOSECONDS)) + "\n";
+		// s += "birth date  : " + new SimpleDateFormat(Statics.LOG_PATTERN).format(new Date(getBirthTs() / Statics.MILLI_TO_NANOSECONDS)) + "\n";
+		// s += "death date  : " + new SimpleDateFormat(Statics.LOG_PATTERN).format(new Date(getDeathTs() / Statics.MILLI_TO_NANOSECONDS)) + "\n";
+		// s += "**********************************************************************\n";
+
+		return s;
+	}
 
 	default String info() {
-		return "(" + getMeta().getValue() + System.identityHashCode(getMeta()) + "){" + this + System.identityHashCode(this) + "}" + getSupersStream().map(x -> x.toString() + System.identityHashCode(x)).collect(Collectors.toList())
-				+ getComponentsStream().map(x -> x.toString() + System.identityHashCode(x)).collect(Collectors.toList()) + " ";
-	}
-
-	default String inheritingsInfo() {
-		return "{" + this + System.identityHashCode(this) + "}" + " Inheritings :" + ((InheritanceService) this).getInheritings().stream().map(x -> x.toString() + System.identityHashCode(x)).collect(Collectors.toList());
-	}
-
-	default String specializationsInfo() {
-		return "{" + this + System.identityHashCode(this) + "}" + " Specialization :" + ((InheritanceService) this).getSpecializations().stream().map(x -> x.toString() + System.identityHashCode(x)).collect(Collectors.toList());
-	}
-
-	default String instancesInfo() {
-		return "{" + this + System.identityHashCode(this) + "}" + " Instances :" + ((InheritanceService) this).getInstances().stream().map(x -> x.toString() + System.identityHashCode(x)).collect(Collectors.toList());
-	}
-
-	default String suprasInfo() {
-		return "{" + this + System.identityHashCode(this) + "}" + " Supras :" + ((InheritanceService) this).getSupras().map(x -> x.toString() + System.identityHashCode(x)).collect(Collectors.toList());
-	}
-
-	default String allInfo() {
-		return info() + "\n" + instancesInfo() + "\n" + inheritingsInfo() + "\n" + specializationsInfo() + "\n" + suprasInfo();
+		return "(" + getMeta().getValue() + "){" + this + "}" + getSupersStream().map(x -> x.toString()).collect(Collectors.toList()) + getComponentsStream().map(x -> x.toString()).collect(Collectors.toList()) + " ";
 	}
 
 	default void log() {
-		log.info(info());
+		log.info(detailedInfo());
 	}
 
 	default void log(String prefix) {
-		log.info(prefix + info());
+		log.info(prefix + detailedInfo());
 	}
 }

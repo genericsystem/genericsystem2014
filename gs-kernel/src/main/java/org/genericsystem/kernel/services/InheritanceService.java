@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Snapshot;
 
 public interface InheritanceService<T extends InheritanceService<T>> extends DependenciesService<T>, SystemPropertiesService<T>, ExceptionAdviserService<T> {

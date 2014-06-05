@@ -22,9 +22,9 @@ public abstract class ExtendedSignature<T extends ExtendedSignature<T>> extends 
 	private void checkSupers(List<T> supers) {
 		supers.forEach(Signature::checkIsAlive);
 		if (!supers.stream().allMatch(superVertex -> superVertex.getLevel() == getLevel()))
-			rollbackAndThrowException(new IllegalStateException("Inconsistant supers : " + getSupersStream().collect(Collectors.toList())));
+			rollbackAndThrowException(new IllegalStateException("Inconsistant supers : " + getSupers()));
 		if (!supers.stream().allMatch(superVertex -> getMeta().inheritsFrom(superVertex.getMeta())))
-			rollbackAndThrowException(new IllegalStateException("Inconsistant supers : " + getSupersStream().collect(Collectors.toList())));
+			rollbackAndThrowException(new IllegalStateException("Inconsistant supers : " + getSupers()));
 		if (!supers.stream().noneMatch(this::equals))
 			rollbackAndThrowException(new IllegalStateException("Supers loop detected : " + info()));
 	}
@@ -39,6 +39,11 @@ public abstract class ExtendedSignature<T extends ExtendedSignature<T>> extends 
 	@Override
 	public Stream<T> getSupersStream() {
 		return supers.stream();
+	}
+
+	@Override
+	public List<T> getSupers() {
+		return supers;
 	}
 
 }

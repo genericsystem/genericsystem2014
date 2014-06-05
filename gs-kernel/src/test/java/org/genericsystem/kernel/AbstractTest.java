@@ -52,12 +52,10 @@ public abstract class AbstractTest {
 		print.append("\\\\ Informations on vertex");
 		print.append(vertex.info());
 		print.append(" //\n");
+		print.append("value :");
+		print.append(vertex.getValue().toString());
 		print.append("- isAlive :");
 		print.append(vertex.isAlive());
-		print.append(" / meta :");
-		print.append(vertex.getMeta());
-		print.append(" / meta isAlive:");
-		print.append(vertex.getMeta().isAlive());
 		print.append("\n");
 
 		addComponents(vertex, print);
@@ -87,6 +85,8 @@ public abstract class AbstractTest {
 	@Deprecated
 	private void addVertexList(List<Vertex> vertexList, StringBuffer stringBuffer) {
 		for (Vertex vertexInstance : vertexList) {
+			stringBuffer.append(vertexInstance.getValue().toString());
+			stringBuffer.append(" - info : ");
 			stringBuffer.append(vertexInstance.info());
 			stringBuffer.append(" - alive : ");
 			stringBuffer.append(vertexInstance.isAlive());
@@ -144,7 +144,6 @@ public abstract class AbstractTest {
 	@Deprecated
 	private void addSupers(Vertex vertex, StringBuffer add) {
 		addLib("supers of", vertex, add);
-		addVertexList(vertex.getSupersStream().collect(Collectors.toList()), add);
 		add.append("\n");
 	}
 

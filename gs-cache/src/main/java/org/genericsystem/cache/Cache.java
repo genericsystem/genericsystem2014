@@ -8,6 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
+
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
@@ -16,9 +17,9 @@ import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 import org.genericsystem.kernel.exceptions.RollbackException;
 
-public class Cache<T extends GenericService<T>> extends AbstractContext<T> {
+public class Cache<T extends GenericService<T>> implements Context<T> {
 
-	protected AbstractContext<T> subContext;
+	protected Context<T> subContext;
 
 	private transient Map<T, Dependencies<T>> inheritingDependenciesMap = new HashMap<>();
 	private transient Map<T, Dependencies<T>> instancesDependenciesMap = new HashMap<>();
@@ -41,7 +42,7 @@ public class Cache<T extends GenericService<T>> extends AbstractContext<T> {
 		this(new Transaction<T>(engine));
 	}
 
-	public Cache(AbstractContext<T> subContext) {
+	public Cache(Context<T> subContext) {
 		this.subContext = subContext;
 		clear();
 	}
@@ -112,13 +113,13 @@ public class Cache<T extends GenericService<T>> extends AbstractContext<T> {
 	}
 
 	@Override
-	void simpleAdd(T generic) {
+	public void simpleAdd(T generic) {
 		if (!removes.remove(generic))
 			adds.add(generic);
 	}
 
 	@Override
-	void simpleRemove(T generic) {
+	public void simpleRemove(T generic) {
 		if (!isAlive(generic))
 			rollback(new NotActiveException(generic + " is not alive"));
 		if (!adds.remove(generic))
@@ -177,7 +178,7 @@ public class Cache<T extends GenericService<T>> extends AbstractContext<T> {
 		return subContext.getEngine();
 	}
 
-	public AbstractContext<T> getSubContext() {
+	public Context<T> getSubContext() {
 		return subContext;
 	}
 
