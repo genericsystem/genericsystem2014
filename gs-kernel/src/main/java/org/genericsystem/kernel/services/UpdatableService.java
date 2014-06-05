@@ -28,6 +28,10 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 		return ((UpdateRestructurator<T>) (() -> getMeta().buildInstance(getSupers(), getValue(), findNewComponentList(source, target)).plug())).rebuildAll((T) this);
 	}
 
+	default T replaceComponentWithValueModification(T source, T target, Serializable value) {
+		return replaceComponent(source, target).setValue(value);
+	}
+
 	default List<T> findNewComponentList(T source, T target) {
 		List<T> newComponents = getComponents();
 		boolean hasBeenModified = false;
