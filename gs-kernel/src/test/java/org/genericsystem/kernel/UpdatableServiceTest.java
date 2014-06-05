@@ -357,6 +357,54 @@ public class UpdatableServiceTest extends AbstractTest {
 		Vertex newCar = findElement("Car", engineDependencies.stream().collect(Collectors.toList()));
 		assert newCar.computeAllDependencies().size() == 4;
 		assert newCar.getSupersStream().count() == 1;
-
 	}
+
+	public void test200_replaceComponent() {
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex myVehicle = vehicle.addInstance("MyVehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex power = engine.addInstance("Power", car);
+		Vertex myCar = car.addInstance("MyCar");
+		Vertex color = engine.addInstance("Color");
+		Vertex red = color.addInstance("Red");
+		Vertex green = color.addInstance("Green");
+		Vertex blue = color.addInstance("Blue");
+		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Vertex myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
+		Vertex myVehicleGreen = vehicleColor.addInstance("MyVehicleGreen", myVehicle, green);
+
+		// when
+		myCarRed.replaceComponent(red, blue);
+
+		// then
+		assert engine.isAlive();
+		assert vehicle.isAlive();
+		assert myVehicle.isAlive();
+		assert car.isAlive();
+		assert power.isAlive();
+		assert myCar.isAlive();
+		assert color.isAlive();
+		assert red.isAlive();
+		assert green.isAlive();
+		assert blue.isAlive();
+		assert vehicleColor.isAlive();
+		assert !myCarRed.isAlive();
+		assert myVehicleGreen.isAlive();
+
+		LinkedHashSet<Vertex> engineDependencies = engine.computeAllDependencies();
+		assert engineDependencies.size() == 13;
+		assert engine.getAllInstances().count() == 5;
+
+		Vertex newCarBlue = findElement("MyCarRed", engineDependencies.stream().collect(Collectors.toList()));
+		assert newCarBlue.computeAllDependencies().size() == 1;
+		assert newCarBlue.getComponents().size() == 2;
+
+		Vertex blueFromNewCarBlueComponent = findElement("Blue", engineDependencies.stream().collect(Collectors.toList()));
+		assert blueFromNewCarBlueComponent != null;
+
+		Vertex myCarFromNewCarBlueComponent = findElement("MyCar", engineDependencies.stream().collect(Collectors.toList()));
+		assert myCarFromNewCarBlueComponent != null;
+	}
+
 }

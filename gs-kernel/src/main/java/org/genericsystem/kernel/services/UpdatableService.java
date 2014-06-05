@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.genericsystem.kernel.UpdateRestructurator;
+import org.genericsystem.kernel.exceptions.NotFoundException;
 
 public interface UpdatableService<T extends UpdatableService<T>> extends BindingService<T> {
 
@@ -20,6 +21,24 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 	@SuppressWarnings("unchecked")
 	default T addSuper(T superToAdd) {
 		return ((UpdateRestructurator<T>) (() -> getMeta().buildInstance(new OrderedSupers<T>(getSupersStream(), superToAdd), getValue(), getComponents()).plug())).rebuildAll((T) this);
+	}
+
+	@SuppressWarnings("unchecked")
+	default T replaceComponent(T source, T target) {
+		return ((UpdateRestructurator<T>) (() -> getMeta().buildInstance(getSupers(), getValue(), findNewComponentList(source, target)).plug())).rebuildAll((T) this);
+	}
+
+	default List<T> findNewComponentList(T source, T target) {
+		List<T> newComponents = getComponents();
+		boolean hasBeenModified = false;
+		for (int i = 0; i < newComponents.size(); i++)
+			if (source.equiv(newComponents.get(i))) {
+				newComponents.set(i, target);
+				hasBeenModified = true;
+			}
+		if (!hasBeenModified)
+			rollbackAndThrowException(new NotFoundException("Component : " + source.info() + " not found in component list : " + newComponents.toString() + " for " + this.info() + "when modifying componentList."));
+		return newComponents;
 	}
 
 	public static class OrderedSupers<T extends UpdatableService<T>> extends ArrayList<T> {

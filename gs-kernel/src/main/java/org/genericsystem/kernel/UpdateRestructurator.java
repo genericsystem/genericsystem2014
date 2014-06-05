@@ -15,7 +15,6 @@ public interface UpdateRestructurator<T extends UpdatableService<T>> {
 		LinkedHashSet<T> dependenciesToRebuild = old.computeAllDependencies();
 		dependenciesToRebuild.forEach(UpdatableService::unplug);
 		T build = rebuild();
-		dependenciesToRebuild.remove(old);
 		convertMap.put(old, build);
 		dependenciesToRebuild.forEach(x -> getOrBuild(x, convertMap));
 		return build;
