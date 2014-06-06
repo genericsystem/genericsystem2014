@@ -47,6 +47,7 @@
 		<module>gs-impl</module>
 		<module>gs-cache</module>	
 		<module>gs-concurrency</module>
+		<module>gs-cdi</module>
 	</modules>
 
 	<distributionManagement>
