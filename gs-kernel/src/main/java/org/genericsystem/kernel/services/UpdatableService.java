@@ -2,12 +2,15 @@ package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.exceptions.NotFoundException;
 
 public interface UpdatableService<T extends UpdatableService<T>> extends BindingService<T> {
@@ -27,7 +30,7 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 
 	default T update(List<T> supers, Serializable newValue, List<T> newComponents) {
 		T meta = getMeta();
-		return rebuildAll(() -> buildInstance().init(meta.getLevel() + 1, meta, new Supers<T>(getSupers(), supers), newValue, newComponents).plug());
+		return rebuildAll(() -> buildInstance().init(meta.getLevel() + 1, meta, supers, newValue, newComponents).plug());
 	}
 
 	@FunctionalInterface
@@ -76,6 +79,48 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 		if (!hasBeenModified)
 			rollbackAndThrowException(new NotFoundException("Component : " + source.info() + " not found in component list : " + newComponents.toString() + " for " + this.info() + "when modifying componentList."));
 		return newComponents;
+	}
+
+	default T setInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
+		return setInstance(Collections.emptyList(), value, Arrays.asList(components));
+	}
+
+	default T setInstance(T superGeneric, Serializable value, @SuppressWarnings("unchecked") T... components) {
+		return setInstance(Collections.singletonList(superGeneric), value, Arrays.asList(components));
+	}
+
+	@SuppressWarnings("unchecked")
+	default T setInstance(List<T> overrides, Serializable value, List<T> components) {
+		checkSameEngine(components);
+		checkSameEngine(overrides);
+		T nearestMeta = computeNearestMeta(overrides, value, components);
+		if (nearestMeta != this)
+			return nearestMeta.setInstance(overrides, value, components);
+		T instance = getWeakInstance(value, components);
+		if (instance == null)
+			return buildInstance(overrides, value, components).plug();
+		return updateInstance(instance, overrides, value, components);
+	}
+
+	default T updateInstance(T instance, List<T> overrides, Serializable value, List<T> components) {
+		if (components.size() != instance.getComponents().size())
+			rollbackAndThrowException(new IllegalArgumentException());
+		boolean needToUpdateSupers = !allOverridesAreReached(overrides, instance.getSupers());
+		if (instance.equiv(instance.getMeta(), value, components) && !needToUpdateSupers)
+			return instance;
+		List<T> supers = needToUpdateSupers ? new Supers<T>(instance.getSupers(), getUnreachedSupers(instance, overrides)) : instance.getSupers();
+		return instance.update(supers, value, instance.findNewComponentsList(components));
+	}
+
+	default List<T> findNewComponentsList(List<T> target) {
+		List<T> newComponents = getComponents();
+		for (int i = 0; i < newComponents.size(); i++)
+			newComponents.set(i, target.get(i));
+		return newComponents;
+	}
+
+	default List<T> getUnreachedSupers(T instance, List<T> overrides) {
+		return overrides.stream().filter(override -> instance.getSupers().stream().allMatch(superVertex -> !superVertex.inheritsFrom(override))).collect(Collectors.toList());
 	}
 
 	public static class Supers<T extends UpdatableService<T>> extends ArrayList<T> {
