@@ -1,9 +1,10 @@
 package org.genericsystem.kernel;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.exceptions.NotFoundException;
 import org.testng.annotations.Test;
 
@@ -443,7 +444,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		Vertex myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
 
 		// when
-		myCarRed.replaceComponentWithValueModification(red, blue, "MyCarBlue");
+		myCarRed.update(Collections.emptyList(), "MyCarBlue", Arrays.asList(myCar, red));
 
 		// then
 		LinkedHashSet<Vertex> engineDependencies = engine.computeAllDependencies();
