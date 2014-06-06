@@ -46,7 +46,7 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T setInstance(List<T> overrides, Serializable value, T... components) {
+	default T setInstance(List<T> overrides, Serializable value, List<T> components) {
 		return getCurrentCache().insert(org.genericsystem.impl.GenericService.super.setInstance(overrides, value, components));
 	}
 

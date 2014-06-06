@@ -12,10 +12,6 @@ public interface DependenciesService<T extends DependenciesService<T>> extends A
 	Snapshot<T> getInheritings();
 
 	default boolean instanceAlreadyExists(Serializable value, T... components) {
-		for (T currentVertex : this.getInstances()) {
-			if (currentVertex.equiv(this, value, Arrays.asList(components)))
-				return true;
-		}
-		return false;
+		return this.getInstances().stream().anyMatch(currentVertex -> currentVertex.equiv(this, value, Arrays.asList(components)));
 	}
 }

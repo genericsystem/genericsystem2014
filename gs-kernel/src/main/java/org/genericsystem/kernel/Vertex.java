@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.slf4j.Logger;
@@ -30,7 +31,7 @@ public class Vertex extends ExtendedSignature<Vertex> implements VertexService<V
 	}
 
 	@Override
-	public Vertex getWeakInstance(Serializable value, Vertex... components) {
+	public Vertex getWeakInstance(Serializable value, List<Vertex> components) {
 		return getWeakInstanceAlive(value, components);
 	}
 

@@ -70,11 +70,11 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 	}
 
 	@Override
-	default T getWeakInstance(Serializable value, T... components) {
+	default T getWeakInstance(Serializable value, List<T> components) {
 		Vertex vertex = getVertex();
 		if (vertex == null)
 			return null;
-		vertex = vertex.getWeakInstance(value, Arrays.stream(components).map(GenericService::unwrap).collect(Collectors.toList()).toArray(new Vertex[components.length]));
+		vertex = vertex.getWeakInstance(value, components.stream().map(GenericService::unwrap).collect(Collectors.toList()));
 		if (vertex == null)
 			return null;
 		return wrap(vertex);

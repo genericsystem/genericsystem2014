@@ -66,8 +66,7 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 		return buildInstance(Collections.emptyList(), value, Arrays.asList(components)).getAlive();
 	}
 
-	@SuppressWarnings("unchecked")
-	T getWeakInstance(Serializable value, T... components);
+	T getWeakInstance(Serializable value, List<T> components);
 
 	@Override
 	Dependencies<T> getInstances();

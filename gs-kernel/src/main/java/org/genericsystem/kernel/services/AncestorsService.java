@@ -1,7 +1,6 @@
 package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -83,14 +82,14 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		return null;
 	}
 
-	default T getWeakInstanceAlive(Serializable value, Vertex... components) {
+	default T getWeakInstanceAlive(Serializable value, List<Vertex> components) {
 		T pluggedMeta = getAlive();
 		if (pluggedMeta == null)
 			return null;
 		Iterator<T> it = ((DependenciesService) pluggedMeta).getInstances().iterator();
 		while (it.hasNext()) {
 			T next = it.next();
-			if (next.weakEquiv(pluggedMeta, value, Arrays.asList(components)))
+			if (next.weakEquiv(pluggedMeta, value, components))
 				return next;
 		}
 		return null;
