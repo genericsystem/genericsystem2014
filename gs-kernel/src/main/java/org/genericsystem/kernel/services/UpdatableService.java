@@ -8,8 +8,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.genericsystem.kernel.exceptions.NotFoundException;
 
 public interface UpdatableService<T extends UpdatableService<T>> extends BindingService<T> {
@@ -20,16 +18,16 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 	}
 
 	default T addSuper(T superToAdd) {
-		return rebuildAll(() -> getMeta().buildInstance(new OrderedSupers<T>(getSupersStream(), superToAdd), getValue(), getComponents()).plug());
+		return rebuildAll(() -> getMeta().buildInstance(new Supers<T>(getSupers(), superToAdd), getValue(), getComponents()).plug());
 	}
 
 	default T replaceComponent(T source, T target) {
-		return rebuildAll(() -> getMeta().buildInstance(getSupers(), getValue(), findNewComponentList(source, target)).plug());
+		return rebuildAll(() -> getMeta().buildInstance(getSupers(), getValue(), replaceInComponents(source, target)).plug());
 	}
 
-	default T replaceComponentWithValueModification(T source, T target, Serializable value) {
+	default T update(List<T> supers, Serializable newValue, List<T> newComponents) {
 		T meta = getMeta();
-		return rebuildAll(() -> buildInstance().init(meta.getLevel() + 1, meta, getSupers(), value, findNewComponentList(source, target)).plug());
+		return rebuildAll(() -> buildInstance().init(meta.getLevel() + 1, meta, new Supers<T>(getSupers(), supers), newValue, newComponents).plug());
 	}
 
 	@FunctionalInterface
@@ -37,6 +35,7 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 		T rebuild();
 	}
 
+	@SuppressWarnings("unchecked")
 	default T rebuildAll(Rebuilder<T> rebuilder) {
 		Map<T, T> convertMap = new HashMap<T, T>();
 		LinkedHashSet<T> dependenciesToRebuild = this.computeAllDependencies();
@@ -50,23 +49,23 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 		return build;
 	}
 
+	@SuppressWarnings("unchecked")
 	default T getOrBuild(Map<T, T> convertMap) {
 		if (this.isAlive())
 			return (T) this;
 		T newDependency = convertMap.get(this);
-		if (newDependency == null) {
-			newDependency = this.build(convertMap);
-			convertMap.put((T) this, newDependency);
-		}
+		if (newDependency == null)
+			convertMap.put((T) this, newDependency = this.build(convertMap));
 		return newDependency;
 	}
 
+	@SuppressWarnings("unchecked")
 	default T build(Map<T, T> convertMap) {
 		T meta = (this == getMeta()) ? (T) this : getMeta().getOrBuild(convertMap);
 		return meta.buildInstance(getSupersStream().map(x -> x.getOrBuild(convertMap)).collect(Collectors.toList()), getValue(), getComponentsStream().map(x -> x.equals(this) ? null : x.getOrBuild(convertMap)).collect(Collectors.toList())).plug();
 	}
 
-	default List<T> findNewComponentList(T source, T target) {
+	default List<T> replaceInComponents(T source, T target) {
 		List<T> newComponents = getComponents();
 		boolean hasBeenModified = false;
 		for (int i = 0; i < newComponents.size(); i++)
@@ -79,17 +78,22 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 		return newComponents;
 	}
 
-	public static class OrderedSupers<T extends UpdatableService<T>> extends ArrayList<T> {
+	public static class Supers<T extends UpdatableService<T>> extends ArrayList<T> {
 		private static final long serialVersionUID = 6163099887384346235L;
 
-		public OrderedSupers(Stream<T> adds) {
-			for (T add : adds.collect(Collectors.toList()))
+		public Supers(List<T> adds) {
+			for (T add : adds)
 				add(add);
 		}
 
-		public OrderedSupers(Stream<T> adds, T lastAdd) {
+		public Supers(List<T> adds, T lastAdd) {
 			this(adds);
 			add(lastAdd);
+		}
+
+		public Supers(List<T> adds, List<T> lastAdds) {
+			this(adds);
+			lastAdds.forEach(this::add);
 		}
 
 		@Override
@@ -102,10 +106,6 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 				if (candidate.inheritsFrom(it.next()))
 					it.remove();
 			return super.add(candidate);
-		}
-
-		public List<T> toList() {
-			return this.stream().collect(Collectors.toList());
 		}
 	}
 
