@@ -10,7 +10,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.exceptions.NotFoundException;
 
 public interface UpdatableService<T extends UpdatableService<T>> extends BindingService<T> {
@@ -26,6 +25,10 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 
 	default T replaceComponent(T source, T target) {
 		return rebuildAll(() -> getMeta().buildInstance(getSupers(), getValue(), replaceInComponents(source, target)).plug());
+	}
+
+	default T update(Serializable newValue, T... newComponents) {
+		return update(getSupers(), newValue, Arrays.asList(newComponents));
 	}
 
 	default T update(List<T> supers, Serializable newValue, List<T> newComponents) {
