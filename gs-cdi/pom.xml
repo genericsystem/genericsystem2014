@@ -11,11 +11,29 @@
 	<name>Generic System Cdi</name>
 	<packaging>jar</packaging>
 	
+	<properties>
+		<maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
+		<maven-eclipse-plugin.version>2.9</maven-eclipse-plugin.version>
+		
+		<cargo-maven2-plugin.version>1.2.1</cargo-maven2-plugin.version>
+		<wildfly-maven-plugin.version>1.0.1.Final</wildfly-maven-plugin.version>
+		<maven-surefire-plugin.version>2.9</maven-surefire-plugin.version>
+		<jsf.version>2.1.19</jsf.version>
+		<jstl.version>1.2</jstl.version>
+		<org.richfaces.bom.version>4.3.2.Final</org.richfaces.bom.version>
+		<weld.core.version>2.1.2.Final</weld.core.version>
+		<arquillian.version>1.1.4.Final</arquillian.version>
+		<seam.version>3.1.0.Final</seam.version>
+		<juel.version>2.2.5</juel.version>
+		<deltaspike.version>0.6</deltaspike.version>
+		<jboss-ejb3-api.version>3.1.0</jboss-ejb3-api.version>
+	</properties>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.genericsystem</groupId>
 			<artifactId>gs-impl</artifactId>
-			<version>2.0-SNAPSHOT</version>
+			<version>3.0-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
