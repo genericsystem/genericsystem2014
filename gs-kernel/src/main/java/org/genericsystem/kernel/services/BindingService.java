@@ -37,12 +37,11 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 	default T addInstance(List<T> overrides, Serializable value, T... components) {
 		checkSameEngine(Arrays.asList(components));
 		checkSameEngine(overrides);
-		T nearestMeta = computeNearestMeta(Collections.emptyList(), value, Arrays.asList(components));
+		T nearestMeta = computeNearestMeta(overrides, value, Arrays.asList(components));
 		if (nearestMeta != this)
-			return nearestMeta.addInstance(Collections.emptyList(), value, components);
-		T instance = getInstance(overrides, value, components);
-		if (instance != null)
-			rollbackAndThrowException(new ExistsException(instance.info()));
+			return nearestMeta.addInstance(overrides, value, components);
+		if (instanceAlreadyExists(value, components))
+			rollbackAndThrowException(new ExistsException("value = " + value));
 		return buildInstance(overrides, value, Arrays.asList(components)).plug();
 	}
 
@@ -62,28 +61,12 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 		return firstDirectInheriting == null ? (T) this : firstDirectInheriting;
 	}
 
-	default T setInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
-		return setInstance(Collections.emptyList(), value, components);
-	}
-
-	default T setInstance(T superGeneric, Serializable value, @SuppressWarnings("unchecked") T... components) {
-		return setInstance(Collections.singletonList(superGeneric), value, components);
-	}
-
-	@SuppressWarnings("unchecked")
-	default T setInstance(List<T> overrides, Serializable value, T... components) {
-		checkSameEngine(Arrays.asList(components));
-		checkSameEngine(overrides);
-		T instance = getInstance(overrides, value, components);
-		if (instance != null)
-			return instance;
-		return buildInstance(overrides, value, Arrays.asList(components)).plug();
-	}
-
 	@SuppressWarnings("unchecked")
 	default T getInstance(Serializable value, T... components) {
 		return buildInstance(Collections.emptyList(), value, Arrays.asList(components)).getAlive();
 	}
+
+	T getWeakInstance(Serializable value, List<T> components);
 
 	@Override
 	Dependencies<T> getInstances();
@@ -132,6 +115,9 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 
 	@SuppressWarnings("unchecked")
 	default T getInstance(List<T> supers, Serializable value, T... components) {
+		T nearestMeta = computeNearestMeta(supers, value, Arrays.asList(components));
+		if (nearestMeta != this)
+			return nearestMeta.getInstance(supers, value, components);
 		T result = getInstance(value, components);
 		if (result != null && supers.stream().allMatch(superT -> result.inheritsFrom(superT)))
 			return result;

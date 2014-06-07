@@ -105,10 +105,25 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 	@Override
 	default QuadriPredicate getQuadriPredicate() {
 		return (value, components, otherValue, otherComponents) -> {
-			return getValuesBiPredicate().test(value, otherValue) && WEAK_EQUIV.test(components, otherComponents);
+			int nbComponents = components.size();
+			if (otherComponents.size() == nbComponents) {
+				boolean singularPropertyIsEnabled = false;
+				for (int currentPos = 0; currentPos < nbComponents; ++currentPos) {
+					if (isSingularConstraintEnabled(currentPos)) {
+						singularPropertyIsEnabled = true;
+						if (!components.get(currentPos).weakEquiv(otherComponents.get(currentPos)))
+							return false;
+					}
+				}
+				if (singularPropertyIsEnabled) {
+					return WEAK_EQUIV.test(components, otherComponents);
+				} else {
+					return getValuesBiPredicate().test(value, otherValue) && WEAK_EQUIV.test(components, otherComponents);
+				}
+			}
+			return false;
 		};
 	}
-
 	// public static BiPredicate<List<? extends AncestorsService<?>>, List<? extends AncestorsService<?>>> SINGULAR_EQUIV = (X, Y) -> {
 	// return WEAK_EQUIV.test(X, Y) || (/* il existe au moins un axe commun ou il y a une singular + un equals && */
 	// !componentsDepends(X, Y) && !componentsDepends(Y, X));

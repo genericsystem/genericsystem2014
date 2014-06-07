@@ -2,39 +2,73 @@ package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.genericsystem.kernel.UpdateRestructurator;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 
 public interface UpdatableService<T extends UpdatableService<T>> extends BindingService<T> {
 
-	@SuppressWarnings("unchecked")
 	default T setValue(Serializable value) {
 		T meta = getMeta();
-		return ((UpdateRestructurator<T>) (() -> buildInstance().init(meta.getLevel() + 1, meta, getSupers(), value, getComponents()).plug())).rebuildAll((T) this);
+		return rebuildAll(() -> buildInstance().init(meta.getLevel() + 1, meta, getSupers(), value, getComponents()).plug());
 	}
 
-	@SuppressWarnings("unchecked")
 	default T addSuper(T superToAdd) {
-		return ((UpdateRestructurator<T>) (() -> getMeta().buildInstance(new OrderedSupers<T>(getSupersStream(), superToAdd), getValue(), getComponents()).plug())).rebuildAll((T) this);
+		return rebuildAll(() -> getMeta().buildInstance(new Supers<T>(getSupers(), superToAdd), getValue(), getComponents()).plug());
 	}
 
-	@SuppressWarnings("unchecked")
 	default T replaceComponent(T source, T target) {
-		return ((UpdateRestructurator<T>) (() -> getMeta().buildInstance(getSupers(), getValue(), findNewComponentList(source, target)).plug())).rebuildAll((T) this);
+		return rebuildAll(() -> getMeta().buildInstance(getSupers(), getValue(), replaceInComponents(source, target)).plug());
+	}
+
+	default T update(List<T> supers, Serializable newValue, List<T> newComponents) {
+		T meta = getMeta();
+		return rebuildAll(() -> buildInstance().init(meta.getLevel() + 1, meta, supers, newValue, newComponents).plug());
+	}
+
+	@FunctionalInterface
+	interface Rebuilder<T> {
+		T rebuild();
 	}
 
 	@SuppressWarnings("unchecked")
-	default T replaceComponentWithValueModification(T source, T target, Serializable value) {
-		T meta = getMeta();
-		return ((UpdateRestructurator<T>) (() -> buildInstance().init(meta.getLevel() + 1, meta, getSupers(), value, findNewComponentList(source, target)).plug())).rebuildAll((T) this);
+	default T rebuildAll(Rebuilder<T> rebuilder) {
+		Map<T, T> convertMap = new HashMap<T, T>();
+		LinkedHashSet<T> dependenciesToRebuild = this.computeAllDependencies();
+		dependenciesToRebuild.forEach(UpdatableService::unplug);
+
+		T build = rebuilder.rebuild();
+		dependenciesToRebuild.remove(this);
+		convertMap.put((T) this, build);
+
+		dependenciesToRebuild.forEach(x -> x.getOrBuild(convertMap));
+		return build;
 	}
 
-	default List<T> findNewComponentList(T source, T target) {
+	@SuppressWarnings("unchecked")
+	default T getOrBuild(Map<T, T> convertMap) {
+		if (this.isAlive())
+			return (T) this;
+		T newDependency = convertMap.get(this);
+		if (newDependency == null)
+			convertMap.put((T) this, newDependency = this.build(convertMap));
+		return newDependency;
+	}
+
+	@SuppressWarnings("unchecked")
+	default T build(Map<T, T> convertMap) {
+		T meta = (this == getMeta()) ? (T) this : getMeta().getOrBuild(convertMap);
+		return meta.buildInstance(getSupersStream().map(x -> x.getOrBuild(convertMap)).collect(Collectors.toList()), getValue(), getComponentsStream().map(x -> x.equals(this) ? null : x.getOrBuild(convertMap)).collect(Collectors.toList())).plug();
+	}
+
+	default List<T> replaceInComponents(T source, T target) {
 		List<T> newComponents = getComponents();
 		boolean hasBeenModified = false;
 		for (int i = 0; i < newComponents.size(); i++)
@@ -47,17 +81,64 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 		return newComponents;
 	}
 
-	public static class OrderedSupers<T extends UpdatableService<T>> extends ArrayList<T> {
+	default T setInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
+		return setInstance(Collections.emptyList(), value, Arrays.asList(components));
+	}
+
+	default T setInstance(T superGeneric, Serializable value, @SuppressWarnings("unchecked") T... components) {
+		return setInstance(Collections.singletonList(superGeneric), value, Arrays.asList(components));
+	}
+
+	@SuppressWarnings("unchecked")
+	default T setInstance(List<T> overrides, Serializable value, List<T> components) {
+		checkSameEngine(components);
+		checkSameEngine(overrides);
+		T nearestMeta = computeNearestMeta(overrides, value, components);
+		if (nearestMeta != this)
+			return nearestMeta.setInstance(overrides, value, components);
+		T instance = getWeakInstance(value, components);
+		if (instance == null)
+			return buildInstance(overrides, value, components).plug();
+		return updateInstance(instance, overrides, value, components);
+	}
+
+	default T updateInstance(T instance, List<T> overrides, Serializable value, List<T> components) {
+		if (components.size() != instance.getComponents().size())
+			rollbackAndThrowException(new IllegalArgumentException());
+		boolean needToUpdateSupers = !allOverridesAreReached(overrides, instance.getSupers());
+		if (instance.equiv(instance.getMeta(), value, components) && !needToUpdateSupers)
+			return instance;
+		List<T> supers = needToUpdateSupers ? new Supers<T>(instance.getSupers(), getUnreachedSupers(instance, overrides)) : instance.getSupers();
+		return instance.update(supers, value, instance.findNewComponentsList(components));
+	}
+
+	default List<T> findNewComponentsList(List<T> target) {
+		List<T> newComponents = getComponents();
+		for (int i = 0; i < newComponents.size(); i++)
+			newComponents.set(i, target.get(i));
+		return newComponents;
+	}
+
+	default List<T> getUnreachedSupers(T instance, List<T> overrides) {
+		return overrides.stream().filter(override -> instance.getSupers().stream().allMatch(superVertex -> !superVertex.inheritsFrom(override))).collect(Collectors.toList());
+	}
+
+	public static class Supers<T extends UpdatableService<T>> extends ArrayList<T> {
 		private static final long serialVersionUID = 6163099887384346235L;
 
-		public OrderedSupers(Stream<T> adds) {
-			for (T add : adds.collect(Collectors.toList()))
+		public Supers(List<T> adds) {
+			for (T add : adds)
 				add(add);
 		}
 
-		public OrderedSupers(Stream<T> adds, T lastAdd) {
+		public Supers(List<T> adds, T lastAdd) {
 			this(adds);
 			add(lastAdd);
+		}
+
+		public Supers(List<T> adds, List<T> lastAdds) {
+			this(adds);
+			lastAdds.forEach(this::add);
 		}
 
 		@Override
@@ -70,10 +151,6 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 				if (candidate.inheritsFrom(it.next()))
 					it.remove();
 			return super.add(candidate);
-		}
-
-		public List<T> toList() {
-			return this.stream().collect(Collectors.toList());
 		}
 	}
 
