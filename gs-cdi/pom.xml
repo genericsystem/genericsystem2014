@@ -1,0 +1,135 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>genericsystem2014</artifactId>
+		<groupId>org.genericsystem</groupId>
+		<version>3.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>gs-cdi</artifactId>
+	<name>Generic System Cdi</name>
+	<packaging>jar</packaging>
+	
+	<properties>
+		<maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
+		<maven-eclipse-plugin.version>2.9</maven-eclipse-plugin.version>
+		
+		<cargo-maven2-plugin.version>1.2.1</cargo-maven2-plugin.version>
+		<wildfly-maven-plugin.version>1.0.1.Final</wildfly-maven-plugin.version>
+		<maven-surefire-plugin.version>2.9</maven-surefire-plugin.version>
+		<jsf.version>2.1.19</jsf.version>
+		<jstl.version>1.2</jstl.version>
+		<org.richfaces.bom.version>4.3.2.Final</org.richfaces.bom.version>
+		<weld.core.version>2.1.2.Final</weld.core.version>
+		<arquillian.version>1.1.4.Final</arquillian.version>
+		<seam.version>3.1.0.Final</seam.version>
+		<juel.version>2.2.5</juel.version>
+		<deltaspike.version>0.6</deltaspike.version>
+		<jboss-ejb3-api.version>3.1.0</jboss-ejb3-api.version>
+	</properties>
+	
+	<dependencies>
+		<dependency>
+			<groupId>org.genericsystem</groupId>
+			<artifactId>gs-impl</artifactId>
+			<version>3.0-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.enterprise</groupId>
+			<artifactId>cdi-api</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>de.odysseus.juel</groupId>
+			<artifactId>juel-impl</artifactId>
+			<version>${juel.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>de.odysseus.juel</groupId>
+			<artifactId>juel-spi</artifactId>
+			<version>${juel.version}</version>
+		</dependency>
+
+		<!-- tests -->
+
+		<dependency>
+			<groupId>org.jboss.weld</groupId>
+			<artifactId>weld-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.arquillian.testng</groupId>
+			<artifactId>arquillian-testng-container</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.arquillian.container</groupId>
+			<artifactId>arquillian-weld-ee-embedded-1.1</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss.arquillian.container</groupId>
+			<artifactId>arquillian-container-spi</artifactId>
+			<version>${arquillian.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.arquillian.container</groupId>
+			<artifactId>arquillian-container-test-impl-base</artifactId>
+			<version>${arquillian.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.ejb3</groupId>
+			<artifactId>jboss-ejb3-api</artifactId>
+			<version>${jboss-ejb3-api.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.jboss.weld</groupId>
+				<artifactId>weld-core-bom</artifactId>
+				<version>${weld.core.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.arquillian</groupId>
+				<artifactId>arquillian-bom</artifactId>
+				<version>${arquillian.version}</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	<build>
+		<finalName>${project.artifactId}</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${maven-surefire-plugin.version}</version>
+				<configuration>
+					<reportsDirectory>target/surefire-reports/</reportsDirectory>
+					<argLine>-Xmx512m</argLine>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
