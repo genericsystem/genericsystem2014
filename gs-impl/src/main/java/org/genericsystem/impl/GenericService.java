@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
@@ -68,17 +67,6 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 			return null;
 		return wrap(vertex);
 	}
-
-	@Override
-	default T getWeakInstance(Serializable value, List<T> components) {
-		Vertex vertex = getVertex();
-		if (vertex == null)
-			return null;
-		vertex = vertex.getWeakInstance(value, components.stream().map(GenericService::unwrap).collect(Collectors.toList()));
-		if (vertex == null)
-			return null;
-		return wrap(vertex);
-	};
 
 	@Override
 	default Snapshot<T> getInheritings(T origin, int level) {

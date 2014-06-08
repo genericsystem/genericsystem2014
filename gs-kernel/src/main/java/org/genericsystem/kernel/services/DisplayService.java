@@ -1,7 +1,5 @@
 package org.genericsystem.kernel.services;
 
-import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.Statics;
 
 public interface DisplayService<T extends DisplayService<T>> extends AncestorsService<T> {
@@ -37,7 +35,7 @@ public interface DisplayService<T extends DisplayService<T>> extends AncestorsSe
 	}
 
 	default String info() {
-		return "(" + getMeta().getValue() + "){" + this + "}" + getSupersStream().map(x -> x.toString()).collect(Collectors.toList()) + getComponentsStream().map(x -> x.toString()).collect(Collectors.toList()) + " ";
+		return "(" + getMeta().getValue() + ")" + getSupers() + "{" + this + "}" + getComponents() + " ";
 	}
 
 	default void log() {

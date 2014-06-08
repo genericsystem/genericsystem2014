@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
-
+import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.services.SystemPropertiesService.QuadriPredicate;
 import org.slf4j.Logger;
@@ -69,42 +69,36 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		return equals(getAlive());
 	}
 
+	@SuppressWarnings("unchecked")
 	default T getAlive() {
 		T pluggedMeta = getMeta().getAlive();
 		if (pluggedMeta == null)
 			return null;
-		Iterator<T> it = ((DependenciesService) pluggedMeta).getInstances().iterator();
-		while (it.hasNext()) {
-			T next = it.next();
-			if (equiv(next))
-				return next;
-		}
+		for (T instance : (Snapshot<T>) (((DependenciesService<?>) pluggedMeta).getInstances()))
+			if (equiv(instance))
+				return instance;
 		return null;
 	}
 
-	default T getWeakInstanceAlive(Serializable value, List<Vertex> components) {
-		T pluggedMeta = getAlive();
+	@SuppressWarnings("unchecked")
+	default T getWeakAlive() {
+		T pluggedMeta = getMeta().getAlive();
 		if (pluggedMeta == null)
 			return null;
-		Iterator<T> it = ((DependenciesService) pluggedMeta).getInstances().iterator();
-		while (it.hasNext()) {
-			T next = it.next();
-			if (next.weakEquiv(pluggedMeta, value, components))
-				return next;
-		}
+		for (T instance : (Snapshot<T>) (((DependenciesService<?>) pluggedMeta).getInstances()))
+			if (weakEquiv(instance))
+				return instance;
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	default Vertex getVertex() {
 		Vertex pluggedMeta = getMeta().getVertex();
 		if (pluggedMeta == null)
 			return null;
-		Iterator<Vertex> it = pluggedMeta.getInstances().iterator();
-		while (it.hasNext()) {
-			Vertex next = it.next();
-			if (equiv(next))
-				return next;
-		}
+		for (Vertex instance : (Snapshot<Vertex>) (((DependenciesService<?>) pluggedMeta).getInstances()))
+			if (weakEquiv(instance))
+				return instance;
 		return null;
 	}
 
@@ -123,19 +117,19 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		return components.stream().allMatch(x -> x.equiv(otherComponentsIt.next()));
 	}
 
+	// TODO Why null check here ?
 	default boolean weakEquiv(AncestorsService<? extends AncestorsService<?>> service) {
+		log.info("UUUUUUUU" + this + " " + service);
+		assert service != null;
+		if (service != null && service != this)
+			log.info("ZZZZZZZ : " + ((DisplayService<?>) this).info() + " " + (weakEquiv(service.getMeta(), service.getValue(), service.getComponents())) + " " + ((DisplayService<?>) service).info());
 		return service == null ? false : service == this ? true : weakEquiv(service.getMeta(), service.getValue(), service.getComponents());
 	}
 
-	//
 	QuadriPredicate getQuadriPredicate();
 
-	//
-	// BiPredicate<List<? extends AncestorsService<?>>, List<? extends AncestorsService<?>>> getComponentsBiPredicate();
-	//
 	default boolean weakEquiv(AncestorsService<?> meta, Serializable value, List<? extends AncestorsService<?>> components) {
 		return this.getMeta().weakEquiv(meta) && getMeta().getQuadriPredicate().test(getValue(), getComponents(), value, components);
 	}
-	//
 
 }
