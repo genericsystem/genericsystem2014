@@ -97,7 +97,7 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		if (pluggedMeta == null)
 			return null;
 		for (Vertex instance : (Snapshot<Vertex>) (((DependenciesService<?>) pluggedMeta).getInstances()))
-			if (weakEquiv(instance))
+			if (equiv(instance))
 				return instance;
 		return null;
 	}

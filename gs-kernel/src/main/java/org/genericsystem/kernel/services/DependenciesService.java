@@ -6,7 +6,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Stream;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
@@ -118,12 +117,12 @@ public interface DependenciesService<T extends DependenciesService<T>> extends A
 		return getLevel() == supra.getLevel() ? inheritsFrom(supra) : (getLevel() > supra.getLevel() && getMeta().isSpecializationOf(supra));
 	}
 
-	default Stream<T> getSupras() {
-		return Stream.concat(Stream.of(getMeta()), getSupersStream());
-	}
+	// default Stream<T> getSupras() {
+	// return Stream.concat(Stream.of(getMeta()), getSupersStream());
+	// }
 
-	default Snapshot<T> getSpecializations() {
-		return () -> Stream.concat(getInheritings().stream(), getInstances().stream()).iterator();
-	}
+	// default Snapshot<T> getSpecializations() {
+	// return () -> Stream.concat(getInheritings().stream(), getInstances().stream()).iterator();
+	// }
 
 }
