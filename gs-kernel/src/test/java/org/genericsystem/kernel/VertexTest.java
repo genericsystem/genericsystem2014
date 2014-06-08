@@ -3,6 +3,7 @@ package org.genericsystem.kernel;
 import java.util.Arrays;
 import java.util.Collections;
 import org.genericsystem.kernel.exceptions.NotAliveException;
+import org.genericsystem.kernel.services.RemovableService.RemoveStrategy;
 import org.testng.annotations.Test;
 
 @Test
@@ -174,7 +175,7 @@ public class VertexTest extends AbstractTest {
 	public void test10() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
-		engine.removeInstance("Vehicle");
+		vehicle.remove(RemoveStrategy.NORMAL);
 		new RollbackCatcher() {
 			@Override
 			public void intercept() {
@@ -186,7 +187,7 @@ public class VertexTest extends AbstractTest {
 	public void test11() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
-		engine.removeInstance("Vehicle");
+		vehicle.remove(RemoveStrategy.NORMAL);
 		new RollbackCatcher() {
 			@Override
 			public void intercept() {

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 import org.genericsystem.kernel.Snapshot;
-import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.services.SystemPropertiesService.QuadriPredicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,17 +86,6 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 			return null;
 		for (T instance : (Snapshot<T>) (((DependenciesService<?>) pluggedMeta).getInstances()))
 			if (weakEquiv(instance))
-				return instance;
-		return null;
-	}
-
-	@SuppressWarnings("unchecked")
-	default Vertex getVertex() {
-		Vertex pluggedMeta = getMeta().getVertex();
-		if (pluggedMeta == null)
-			return null;
-		for (Vertex instance : (Snapshot<Vertex>) (((DependenciesService<?>) pluggedMeta).getInstances()))
-			if (equiv(instance))
 				return instance;
 		return null;
 	}

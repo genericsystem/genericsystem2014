@@ -87,7 +87,7 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 	default T setInstance(List<T> overrides, Serializable value, T... components) {
 		checkSameEngine(Arrays.asList(components));
 		checkSameEngine(overrides);
-		T nearestMeta = computeNearestMeta(overrides, value, Arrays.asList(components));
+		T nearestMeta = adjustMeta(overrides, value, Arrays.asList(components));
 		if (nearestMeta != this)
 			return nearestMeta.setInstance(overrides, value, components);
 		T weakInstance = getWeakInstance(value, components);

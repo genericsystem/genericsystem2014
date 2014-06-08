@@ -29,6 +29,16 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 		return meta.buildInstance().init(meta.getLevel() + 1, meta, wrap(alive.getSupersStream()), alive.getValue(), wrap(alive.getComponentsStream()));
 	}
 
+	default Vertex getVertex() {
+		Vertex pluggedMeta = getMeta().getVertex();
+		if (pluggedMeta == null)
+			return null;
+		for (Vertex instance : pluggedMeta.getInstances())
+			if (equiv(instance))
+				return instance;
+		return null;
+	}
+
 	default Vertex unwrap() {
 		Vertex alive = getVertex();
 		if (alive != null)
@@ -82,4 +92,5 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 	default Snapshot<T> getSuperComposites(T superVertex) {
 		return getVertex().getSuperComposites(superVertex.getVertex()).project(this::wrap);
 	}
+
 }
