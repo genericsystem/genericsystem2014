@@ -117,13 +117,8 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		return components.stream().allMatch(x -> x.equiv(otherComponentsIt.next()));
 	}
 
-	// TODO Why null check here ?
 	default boolean weakEquiv(AncestorsService<? extends AncestorsService<?>> service) {
-		log.info("UUUUUUUU" + this + " " + service);
-		assert service != null;
-		if (service != null && service != this)
-			log.info("ZZZZZZZ : " + ((DisplayService<?>) this).info() + " " + (weakEquiv(service.getMeta(), service.getValue(), service.getComponents())) + " " + ((DisplayService<?>) service).info());
-		return service == null ? false : service == this ? true : weakEquiv(service.getMeta(), service.getValue(), service.getComponents());
+		return service == this ? true : weakEquiv(service.getMeta(), service.getValue(), service.getComponents());
 	}
 
 	QuadriPredicate getQuadriPredicate();
