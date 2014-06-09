@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Supplier;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
@@ -44,31 +43,30 @@ public interface FactoryService<T extends FactoryService<T>> extends Dependencie
 	}
 
 	default CompositesDependencies<T> buildCompositeDependencies(Supplier<Iterator<DependenciesEntry<T>>> subDependenciesSupplier) {
-		class CompositesDependenciesImpl<E> implements CompositesDependencies<E> {
-			@SuppressWarnings({ "unchecked", "rawtypes" })
-			private final Dependencies<DependenciesEntry<E>> delegate = (Dependencies<DependenciesEntry<E>>) buildDependencies((Supplier) subDependenciesSupplier);
+		class CompositesDependenciesImpl implements CompositesDependencies<T> {
+			@SuppressWarnings("unchecked")
+			private final Dependencies<DependenciesEntry<T>> delegate = (Dependencies<DependenciesEntry<T>>) buildDependencies((Supplier) subDependenciesSupplier);
 
 			@Override
-			public boolean remove(DependenciesEntry<E> vertex) {
+			public boolean remove(DependenciesEntry<T> vertex) {
 				return delegate.remove(vertex);
 			}
 
 			@Override
-			public void add(DependenciesEntry<E> vertex) {
+			public void add(DependenciesEntry<T> vertex) {
 				delegate.add(vertex);
 			}
 
 			@Override
-			public Iterator<DependenciesEntry<E>> iterator() {
+			public Iterator<DependenciesEntry<T>> iterator() {
 				return delegate.iterator();
 			}
 
-			@SuppressWarnings({ "unchecked", "rawtypes" })
 			@Override
-			public Dependencies<E> buildDependencies(Supplier<Iterator<E>> supplier) {
-				return (Dependencies<E>) FactoryService.this.buildDependencies((Supplier) supplier);
+			public Dependencies<T> buildDependencies(Supplier<Iterator<T>> supplier) {
+				return FactoryService.this.buildDependencies(supplier);
 			}
 		}
-		return new CompositesDependenciesImpl<T>();
+		return new CompositesDependenciesImpl();
 	}
 }
