@@ -2,13 +2,13 @@ package org.genercisystem.impl;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
-
 import org.genericsystem.impl.Engine;
 import org.genericsystem.impl.Generic;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotAliveException;
+import org.genericsystem.kernel.services.RemovableService.RemoveStrategy;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 
@@ -151,7 +151,7 @@ public class GenericTest extends AbstractTest {
 	public void testRemove() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
-		engine.removeInstance("Vehicle");
+		vehicle.remove(RemoveStrategy.NORMAL);
 		new RollbackCatcher() {
 			@Override
 			public void intercept() {

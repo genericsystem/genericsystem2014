@@ -5,10 +5,9 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import org.genericsystem.kernel.services.DependenciesService;
 
-import org.genericsystem.kernel.services.InheritanceService;
-
-public class SupersComputer<T extends InheritanceService<T>> extends LinkedHashSet<T> {
+public class SupersComputer<T extends DependenciesService<T>> extends LinkedHashSet<T> {
 
 	private static final long serialVersionUID = -1078004898524170057L;
 
@@ -34,7 +33,7 @@ public class SupersComputer<T extends InheritanceService<T>> extends LinkedHashS
 		if (result != null)
 			return result;
 		boolean isMeta = meta.isSpecializationOf(candidate);
-		boolean isSuper = !isMeta && ((InheritanceService<T>) candidate).isSuperOf(meta, overrides, value, components);
+		boolean isSuper = !isMeta && candidate.isSuperOf(meta, overrides, value, components);
 		if (!isMeta && !isSuper) {
 			alreadyComputed.put(candidate, false);
 			return false;

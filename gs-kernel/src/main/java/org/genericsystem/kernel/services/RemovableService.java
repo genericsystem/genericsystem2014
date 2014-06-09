@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
-
 import org.genericsystem.kernel.RemoveRestructurator;
 import org.genericsystem.kernel.exceptions.AliveConstraintViolationException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 import org.genericsystem.kernel.exceptions.ReferentialIntegrityConstraintViolationException;
-import org.genericsystem.kernel.statics.RemoveStrategy;
 
 public interface RemovableService<T extends RemovableService<T>> extends BindingService<T> {
 
@@ -17,13 +15,13 @@ public interface RemovableService<T extends RemovableService<T>> extends Binding
 		switch (removeStrategy) {
 		case NORMAL:
 			removeInstance();
-			break;
+		break;
 		case FORCE:
 			removeForce();
-			break;
+		break;
 		case CONSERVE:
 			removeConserve();
-			break;
+		break;
 		}
 	}
 
@@ -93,6 +91,10 @@ public interface RemovableService<T extends RemovableService<T>> extends Binding
 		new RemoveRestructurator<T>((T) RemovableService.this) {
 			private static final long serialVersionUID = 6513791665544090616L;
 		}.rebuildAll();
+	}
+
+	public enum RemoveStrategy {
+		NORMAL, FORCE, CONSERVE;
 	}
 
 }

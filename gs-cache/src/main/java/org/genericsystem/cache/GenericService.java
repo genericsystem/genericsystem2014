@@ -2,7 +2,6 @@ package org.genericsystem.cache;
 
 import java.io.Serializable;
 import java.util.List;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 
@@ -46,7 +45,7 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T setInstance(List<T> overrides, Serializable value, List<T> components) {
+	default T setInstance(List<T> overrides, Serializable value, T... components) {
 		return getCurrentCache().insert(org.genericsystem.impl.GenericService.super.setInstance(overrides, value, components));
 	}
 

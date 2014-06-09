@@ -24,7 +24,7 @@ public class Root extends Vertex implements RootService<Vertex> {
 		if (instance != null)
 			return instance;
 		List<Vertex> supersList = new ArrayList<>(new SupersComputer<>(0, meta, Collections.emptyList(), getRoot().getValue(), Arrays.asList(allComponents)));
-		Vertex meta = computeNearestMeta(Collections.emptyList(), value, Arrays.asList(components));
+		Vertex meta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
 		return meta.buildInstance().init(0, meta, supersList, getRoot().getValue(), Arrays.asList(allComponents)).plug();
 	}
 }

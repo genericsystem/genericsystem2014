@@ -2,9 +2,8 @@ package org.genericsystem.kernel;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.exceptions.ReferentialIntegrityConstraintViolationException;
-import org.genericsystem.kernel.statics.RemoveStrategy;
+import org.genericsystem.kernel.services.RemovableService.RemoveStrategy;
 import org.testng.annotations.Test;
 
 @Test

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.BiPredicate;
-
 import org.genericsystem.kernel.Statics;
 
 public interface SystemPropertiesService<T extends SystemPropertiesService<T>> extends AncestorsService<T> {
@@ -91,10 +90,14 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 	};
 
 	public static BiPredicate<List<? extends AncestorsService<?>>, List<? extends AncestorsService<?>>> WEAK_EQUIV = (X, Y) -> {
+		// log.info("AAA" + X + Y);
 		if (!SIZE_EQUALS.test(X, Y))
 			return false;
-		Iterator<? extends AncestorsService<?>> otherComponentsIt = X.iterator();
-		return X.stream().allMatch(x -> x.weakEquiv(otherComponentsIt.next()));
+		// log.info("BBB" + X + Y);
+		Iterator<? extends AncestorsService<?>> otherComponentsIt = Y.iterator();
+		boolean result = X.stream().allMatch(x -> x.weakEquiv(otherComponentsIt.next()));
+		// log.info("CCC" + X + Y + result);
+		return result;
 	};
 
 	@FunctionalInterface
@@ -105,25 +108,34 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 	@Override
 	default QuadriPredicate getQuadriPredicate() {
 		return (value, components, otherValue, otherComponents) -> {
-			int nbComponents = components.size();
-			if (otherComponents.size() == nbComponents) {
-				boolean singularPropertyIsEnabled = false;
-				for (int currentPos = 0; currentPos < nbComponents; ++currentPos) {
-					if (isSingularConstraintEnabled(currentPos)) {
-						singularPropertyIsEnabled = true;
-						if (!components.get(currentPos).weakEquiv(otherComponents.get(currentPos)))
-							return false;
-					}
-				}
-				if (singularPropertyIsEnabled) {
-					return WEAK_EQUIV.test(components, otherComponents);
-				} else {
-					return getValuesBiPredicate().test(value, otherValue) && WEAK_EQUIV.test(components, otherComponents);
-				}
-			}
-			return false;
+			if (!WEAK_EQUIV.test(components, otherComponents))
+				return false;
+			return getValuesBiPredicate().test(value, otherValue);
 		};
 	}
+
+	// @Override
+	// default QuadriPredicate getQuadriPredicate2() {
+	// return (value, components, otherValue, otherComponents) -> {
+	// int nbComponents = components.size();
+	// if (otherComponents.size() == nbComponents) {
+	// boolean singularPropertyIsEnabled = false;
+	// for (int currentPos = 0; currentPos < nbComponents; ++currentPos) {
+	// if (isSingularConstraintEnabled(currentPos)) {
+	// singularPropertyIsEnabled = true;
+	// if (!components.get(currentPos).weakEquiv(otherComponents.get(currentPos)))
+	// return false;
+	// }
+	// }
+	// if (singularPropertyIsEnabled) {
+	// return WEAK_EQUIV.test(components, otherComponents);
+	// } else {
+	// return getValuesBiPredicate().test(value, otherValue) && WEAK_EQUIV.test(components, otherComponents);
+	// }
+	// }
+	// return false;
+	// };
+	// }
 	// public static BiPredicate<List<? extends AncestorsService<?>>, List<? extends AncestorsService<?>>> SINGULAR_EQUIV = (X, Y) -> {
 	// return WEAK_EQUIV.test(X, Y) || (/* il existe au moins un axe commun ou il y a une singular + un equals && */
 	// !componentsDepends(X, Y) && !componentsDepends(Y, X));

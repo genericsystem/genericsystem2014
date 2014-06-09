@@ -9,45 +9,40 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import org.genericsystem.kernel.exceptions.NotFoundException;
 
-public interface UpdatableService<T extends UpdatableService<T>> extends BindingService<T> {
+public interface UpdatableService<T extends UpdatableService<T>> extends BindingService<T>, FactoryService<T> {
 
-	default T setValue(Serializable value) {
-		T meta = getMeta();
-		return rebuildAll(() -> buildInstance().init(meta.getLevel() + 1, meta, getSupers(), value, getComponents()).plug());
+	default T updateValue(Serializable newValue) {
+		return update(getSupers(), newValue, getComponents());
 	}
 
-	default T addSuper(T superToAdd) {
-		return rebuildAll(() -> getMeta().buildInstance(new Supers<T>(getSupers(), superToAdd), getValue(), getComponents()).plug());
+	default T updateSupers(T... supersToAdd) {
+		return update(Arrays.asList(supersToAdd), getValue(), getComponents());
 	}
 
-	default T replaceComponent(T source, T target) {
-		return rebuildAll(() -> getMeta().buildInstance(getSupers(), getValue(), replaceInComponents(source, target)).plug());
+	default T updateComponents(T... newComponents) {
+		return update(getSupers(), getValue(), newComponents);
 	}
 
-	default T update(Serializable newValue, T... newComponents) {
-		return update(getSupers(), newValue, Arrays.asList(newComponents));
+	default T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
+		if (newComponents.size() != getComponents().size())
+			rollbackAndThrowException(new IllegalArgumentException());
+		return rebuildAll(() -> buildInstance().init(getLevel(), getMeta(), new Supers<T>(getSupers(), supersToAdd), newValue, newComponents).plug());
 	}
 
-	default T update(List<T> supers, Serializable newValue, List<T> newComponents) {
-		T meta = getMeta();
-		return rebuildAll(() -> buildInstance().init(meta.getLevel() + 1, meta, supers, newValue, newComponents).plug());
-	}
-
-	@FunctionalInterface
-	interface Rebuilder<T> {
-		T rebuild();
+	default T update(List<T> supersToAdd, Serializable newValue, T... newComponents) {
+		return update(supersToAdd, newValue, Arrays.asList(newComponents));
 	}
 
 	@SuppressWarnings("unchecked")
-	default T rebuildAll(Rebuilder<T> rebuilder) {
+	default T rebuildAll(Supplier<T> rebuilder) {
 		Map<T, T> convertMap = new HashMap<T, T>();
 		LinkedHashSet<T> dependenciesToRebuild = this.computeAllDependencies();
 		dependenciesToRebuild.forEach(UpdatableService::unplug);
 
-		T build = rebuilder.rebuild();
+		T build = rebuilder.get();
 		dependenciesToRebuild.remove(this);
 		convertMap.put((T) this, build);
 
@@ -71,56 +66,55 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 		return meta.buildInstance(getSupersStream().map(x -> x.getOrBuild(convertMap)).collect(Collectors.toList()), getValue(), getComponentsStream().map(x -> x.equals(this) ? null : x.getOrBuild(convertMap)).collect(Collectors.toList())).plug();
 	}
 
-	default List<T> replaceInComponents(T source, T target) {
-		List<T> newComponents = getComponents();
-		boolean hasBeenModified = false;
-		for (int i = 0; i < newComponents.size(); i++)
-			if (source.equiv(newComponents.get(i))) {
-				newComponents.set(i, target);
-				hasBeenModified = true;
-			}
-		if (!hasBeenModified)
-			rollbackAndThrowException(new NotFoundException("Component : " + source.info() + " not found in component list : " + newComponents.toString() + " for " + this.info() + "when modifying componentList."));
-		return newComponents;
-	}
+	// default List<T> replaceInComponents(T source, T target) {
+	// List<T> newComponents = getComponents();
+	// boolean hasBeenModified = false;
+	// for (int i = 0; i < newComponents.size(); i++)
+	// if (source.equiv(newComponents.get(i))) {
+	// newComponents.set(i, target);
+	// hasBeenModified = true;
+	// }
+	// if (!hasBeenModified)
+	// rollbackAndThrowException(new NotFoundException("Component : " + source.info() + " not found in component list : " + newComponents.toString() + " for " + this.info() + "when modifying componentList."));
+	// return newComponents;
+	// }
 
 	default T setInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
-		return setInstance(Collections.emptyList(), value, Arrays.asList(components));
-	}
-
-	default T setInstance(T superGeneric, Serializable value, @SuppressWarnings("unchecked") T... components) {
-		return setInstance(Collections.singletonList(superGeneric), value, Arrays.asList(components));
+		return setInstance(Collections.emptyList(), value, components);
 	}
 
 	@SuppressWarnings("unchecked")
-	default T setInstance(List<T> overrides, Serializable value, List<T> components) {
-		checkSameEngine(components);
+	default T setInstance(List<T> overrides, Serializable value, T... components) {
+		checkSameEngine(Arrays.asList(components));
 		checkSameEngine(overrides);
-		T nearestMeta = computeNearestMeta(overrides, value, components);
+		T nearestMeta = adjustMeta(overrides, value, Arrays.asList(components));
 		if (nearestMeta != this)
 			return nearestMeta.setInstance(overrides, value, components);
-		T instance = getWeakInstance(value, components);
-		if (instance == null)
-			return buildInstance(overrides, value, components).plug();
-		return updateInstance(instance, overrides, value, components);
+		T weakInstance = getWeakInstance(value, components);
+		if (weakInstance != null) {
+			if (weakInstance.equiv(this, value, Arrays.asList(components)))
+				return weakInstance;
+			return weakInstance.update(overrides, value, components);
+		}
+		return buildInstance(overrides, value, Arrays.asList(components)).plug();
 	}
 
-	default T updateInstance(T instance, List<T> overrides, Serializable value, List<T> components) {
-		if (components.size() != instance.getComponents().size())
-			rollbackAndThrowException(new IllegalArgumentException());
-		boolean needToUpdateSupers = !allOverridesAreReached(overrides, instance.getSupers());
-		if (instance.equiv(instance.getMeta(), value, components) && !needToUpdateSupers)
-			return instance;
-		List<T> supers = needToUpdateSupers ? new Supers<T>(instance.getSupers(), getUnreachedSupers(instance, overrides)) : instance.getSupers();
-		return instance.update(supers, value, instance.findNewComponentsList(components));
-	}
+	// default T updateInstance(T instance, List<T> overrides, Serializable value, List<T> components) {
+	// if (components.size() != instance.getComponents().size())
+	// rollbackAndThrowException(new IllegalArgumentException());
+	// boolean needToUpdateSupers = !allOverridesAreReached(overrides, instance.getSupers());
+	// if (instance.equiv(instance.getMeta(), value, components) && !needToUpdateSupers)
+	// return instance;
+	// List<T> supers = needToUpdateSupers ? new Supers<T>(instance.getSupers(), getUnreachedSupers(instance, overrides)) : instance.getSupers();
+	// return instance.update(supers, value, instance.findNewComponentsList(components));
+	// }
 
-	default List<T> findNewComponentsList(List<T> target) {
-		List<T> newComponents = getComponents();
-		for (int i = 0; i < newComponents.size(); i++)
-			newComponents.set(i, target.get(i));
-		return newComponents;
-	}
+	// default List<T> findNewComponentsList(List<T> target) {
+	// List<T> newComponents = getComponents();
+	// for (int i = 0; i < newComponents.size(); i++)
+	// newComponents.set(i, target.get(i));
+	// return newComponents;
+	// }
 
 	default List<T> getUnreachedSupers(T instance, List<T> overrides) {
 		return overrides.stream().filter(override -> instance.getSupers().stream().allMatch(superVertex -> !superVertex.inheritsFrom(override))).collect(Collectors.toList());
@@ -130,8 +124,7 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 		private static final long serialVersionUID = 6163099887384346235L;
 
 		public Supers(List<T> adds) {
-			for (T add : adds)
-				add(add);
+			adds.forEach(this::add);
 		}
 
 		public Supers(List<T> adds, T lastAdd) {
@@ -139,9 +132,9 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 			add(lastAdd);
 		}
 
-		public Supers(List<T> adds, List<T> lastAdds) {
+		public Supers(List<T> adds, List<T> otherAdds) {
 			this(adds);
-			lastAdds.forEach(this::add);
+			otherAdds.forEach(this::add);
 		}
 
 		@Override
