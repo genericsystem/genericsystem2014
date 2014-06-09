@@ -56,9 +56,9 @@ public class TransactionConcurrency<T extends GenericServiceConcurrency<T>> exte
 		return aliveAdapter(generic.unwrap().getSuperComposites().projectComposites(generic::wrap, org.genericsystem.impl.GenericService::unwrap));
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private Dependencies<T> aliveAdapter(Dependencies<T> dependenciesToFilter) {
-		return (Dependencies<T>) new Dependencies<VertexConcurrency>() {
+		return (Dependencies) new Dependencies<VertexConcurrency>() {
 
 			private AbstractDependenciesConcurrency dependencies = (AbstractDependenciesConcurrency) dependenciesToFilter;
 
@@ -84,11 +84,11 @@ public class TransactionConcurrency<T extends GenericServiceConcurrency<T>> exte
 		};
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private CompositesDependencies<T> aliveAdapter(CompositesDependencies<T> dependenciesToFilter) {
-		return (CompositesDependencies<T>) new CompositesDependencies<VertexConcurrency>() {
+		return (CompositesDependencies) new CompositesDependencies<VertexConcurrency>() {
 
-			private CompositesDependencies<VertexConcurrency> dependencies = (org.genericsystem.kernel.Dependencies.CompositesDependencies<VertexConcurrency>) dependenciesToFilter;
+			private CompositesDependencies dependencies = (org.genericsystem.kernel.Dependencies.CompositesDependencies) dependenciesToFilter;
 
 			@Override
 			public Iterator<org.genericsystem.kernel.Dependencies.DependenciesEntry<VertexConcurrency>> iterator() {
