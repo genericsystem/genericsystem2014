@@ -27,4 +27,15 @@ public class Root extends Vertex implements RootService<Vertex> {
 		Vertex meta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
 		return meta.buildInstance().init(0, meta, supersList, getRoot().getValue(), Arrays.asList(allComponents)).plug();
 	}
+
+	@Override
+	public Vertex getRoot() {
+		return this;
+	}
+
+	@Override
+	public Vertex getAlive() {
+		return  this;
+	}
+
 }

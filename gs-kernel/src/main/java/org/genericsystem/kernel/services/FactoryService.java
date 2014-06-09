@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Supplier;
+
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
@@ -44,7 +45,7 @@ public interface FactoryService<T extends FactoryService<T>> extends Dependencie
 
 	default CompositesDependencies<T> buildCompositeDependencies(Supplier<Iterator<DependenciesEntry<T>>> subDependenciesSupplier) {
 		class CompositesDependenciesImpl<E> implements CompositesDependencies<E> {
-			@SuppressWarnings("unchecked")
+			@SuppressWarnings({ "unchecked", "rawtypes" })
 			private final Dependencies<DependenciesEntry<E>> delegate = (Dependencies<DependenciesEntry<E>>) buildDependencies((Supplier) subDependenciesSupplier);
 
 			@Override
@@ -62,10 +63,10 @@ public interface FactoryService<T extends FactoryService<T>> extends Dependencie
 				return delegate.iterator();
 			}
 
-			@SuppressWarnings("unchecked")
+			@SuppressWarnings({ "unchecked", "rawtypes" })
 			@Override
 			public Dependencies<E> buildDependencies(Supplier<Iterator<E>> supplier) {
-				return FactoryService.this.buildDependencies((Supplier) supplier);
+				return (Dependencies<E>) FactoryService.this.buildDependencies((Supplier) supplier);
 			}
 		}
 		return new CompositesDependenciesImpl<T>();
