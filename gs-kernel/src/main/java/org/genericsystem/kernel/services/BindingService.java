@@ -3,25 +3,16 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
-import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.exceptions.AmbiguousSelectionException;
 import org.genericsystem.kernel.exceptions.CrossEnginesAssignementsException;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 
-public interface BindingService<T extends BindingService<T>> extends DependenciesService<T>, FactoryService<T>, CompositesInheritanceService<T>, InheritanceService<T>, ExceptionAdviserService<T>, DisplayService<T> {
+public interface BindingService<T extends BindingService<T>> extends DependenciesService<T>, FactoryService<T>, CompositesInheritanceService<T>, ExceptionAdviserService<T>, DisplayService<T> {
 
 	@SuppressWarnings("unchecked")
 	default T addInstance(Serializable value, T... components) {
@@ -37,28 +28,32 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 	default T addInstance(List<T> overrides, Serializable value, T... components) {
 		checkSameEngine(Arrays.asList(components));
 		checkSameEngine(overrides);
-		T nearestMeta = computeNearestMeta(overrides, value, Arrays.asList(components));
+
+		T nearestMeta = adjustMeta(overrides, value, Arrays.asList(components));
 		if (nearestMeta != this)
 			return nearestMeta.addInstance(overrides, value, components);
-		if (instanceAlreadyExists(value, components))
-			rollbackAndThrowException(new ExistsException("value = " + value));
+		T weakInstance = getWeakInstance(value, components);
+		if (weakInstance != null)
+			rollbackAndThrowException(new ExistsException(weakInstance.info()));
 		return buildInstance(overrides, value, Arrays.asList(components)).plug();
 	}
 
 	default void checkSameEngine(List<T> components) {
-		if (Stream.of(components.toArray()).anyMatch(component -> !((T) component).getRoot().equals(getRoot())))
+		if (components.stream().anyMatch(component -> !component.getRoot().equals(getRoot())))
 			rollbackAndThrowException(new CrossEnginesAssignementsException());
 	}
 
-	default T computeNearestMeta(List<T> overrides, Serializable subValue, List<T> subComponents) {
-		T firstDirectInheriting = null;
+	// TODO we have to compute super of "this" if necessary here
+	@SuppressWarnings("unchecked")
+	default T adjustMeta(List<T> overrides, Serializable subValue, List<T> subComponents) {
+		T result = null;
 		for (T directInheriting : getInheritings())
-			if (directInheriting.isMetaOf(directInheriting, overrides, subValue, subComponents))
-				if (firstDirectInheriting == null)
-					firstDirectInheriting = directInheriting;
+			if (directInheriting.isMetaOf(overrides, subValue, subComponents))
+				if (result == null)
+					result = directInheriting;
 				else
-					rollbackAndThrowException(new AmbiguousSelectionException("Ambigous selection : " + firstDirectInheriting.info() + directInheriting.info()));
-		return firstDirectInheriting == null ? (T) this : firstDirectInheriting;
+					rollbackAndThrowException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
+		return result == null ? (T) this : result;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -66,7 +61,21 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 		return buildInstance(Collections.emptyList(), value, Arrays.asList(components)).getAlive();
 	}
 
-	T getWeakInstance(Serializable value, List<T> components);
+	@SuppressWarnings("unchecked")
+	default T getInstance(List<T> supers, Serializable value, T... components) {
+		T nearestMeta = adjustMeta(supers, value, Arrays.asList(components));
+		if (nearestMeta != this)
+			return nearestMeta.getInstance(supers, value, components);
+		T result = getInstance(value, components);
+		if (result != null && supers.stream().allMatch(superT -> result.inheritsFrom(superT)))
+			return result;
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	default T getWeakInstance(Serializable value, T... components) {
+		return buildInstance(Collections.emptyList(), value, Arrays.asList(components)).getWeakAlive();
+	}
 
 	@Override
 	Dependencies<T> getInstances();
@@ -74,8 +83,10 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 	@Override
 	Dependencies<T> getInheritings();
 
+	@Override
 	CompositesDependencies<T> getMetaComposites();
 
+	@Override
 	CompositesDependencies<T> getSuperComposites();
 
 	@Override
@@ -113,153 +124,11 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
-	default T getInstance(List<T> supers, Serializable value, T... components) {
-		T nearestMeta = computeNearestMeta(supers, value, Arrays.asList(components));
-		if (nearestMeta != this)
-			return nearestMeta.getInstance(supers, value, components);
-		T result = getInstance(value, components);
-		if (result != null && supers.stream().allMatch(superT -> result.inheritsFrom(superT)))
-			return result;
-		return null;
-	}
-
-	@SuppressWarnings("unchecked")
-	default void removeInstance(Serializable value, T... components) {
-		T t = getInstance(value, components);
-		if (t == null)
-			rollbackAndThrowException(new NotFoundException(((DisplayService<T>) this).info()));
-		((BindingService<T>) t).unplug();
-	}
-
-	@SuppressWarnings("unchecked")
-	default Stream<T> select() {
-		return Stream.of((T) this);
-	}
-
-	default Stream<T> concat(Stream<T> stream, Function<T, Stream<T>> mappers) {
-		return stream.<Stream<T>> map(mappers).flatMap(x -> x);
-	}
-
-	default Stream<T> getAllInheritings() {
-		return Stream.concat(select(), concat(getInheritings().stream(), inheriting -> ((BindingService<T>) inheriting).getAllInheritings()).distinct());
-	}
-
-	default Stream<T> getAllInstances() {
-		return getAllInheritings().map(inheriting -> ((DependenciesService<T>) inheriting).getInstances().stream()).flatMap(x -> x);// .reduce(Stream.empty(), Stream::concat);
-	}
-
-	default Stream<T> selectInstances(Predicate<T> valuePredicate) {
-		return getAllInstances().filter(valuePredicate);
-	}
-
-	default Stream<T> selectInstances(Serializable value) {
-		return selectInstances(instance -> Objects.equals(value, instance.getValue()));
-	}
-
-	default Stream<T> selectInstances(Serializable value, T[] components) {
-		return selectInstances(value, instance -> componentsDepends(Arrays.asList(components), ((InheritanceService<T>) instance).getComponents()));
-	}
-
-	default Stream<T> selectInstances(Serializable value, Predicate<T> componentsPredicate) {
-		return selectInstances(value).filter(componentsPredicate);
-	}
-
-	@SuppressWarnings("unchecked")
-	default Stream<T> selectInstances(Predicate<T> valuePredicate, T... components) {
-		return selectInstances(valuePredicate, instance -> componentsDepends(Arrays.asList(components), ((InheritanceService<T>) instance).getComponents()));
-	}
-
-	default Stream<T> selectInstances(Predicate<T> valuePredicate, Predicate<T> componentsPredicate) {
-		return selectInstances(valuePredicate).filter(componentsPredicate);
-	}
-
-	@SuppressWarnings("unchecked")
-	default Stream<T> selectInstances(Predicate<T> supersPredicate, Serializable value, T... components) {
-		return selectInstances(value, components).filter(supersPredicate);
-	}
-
-	default Stream<T> selectInstances(Predicate<T> supersPredicate, Serializable value, Predicate<T> componentsPredicate) {
-		return selectInstances(value, componentsPredicate).filter(supersPredicate);
-	}
-
-	@SuppressWarnings("unchecked")
-	default Stream<T> selectInstances(Predicate<T> supersPredicate, Predicate<T> valuePredicate, T... components) {
-		return selectInstances(valuePredicate, components).filter(supersPredicate);
-	}
-
-	default Stream<T> selectInstances(Predicate<T> supersPredicate, Predicate<T> valuePredicate, Predicate<T> componentsPredicate) {
-		return selectInstances(valuePredicate, componentsPredicate).filter(supersPredicate);
-	}
-
-	default Stream<T> selectInstances(Stream<T> supers, Serializable value, Predicate<T> componentsPredicate) {
-		return selectInstances(instance -> supers.allMatch(superT -> instance.inheritsFrom(superT)), value, componentsPredicate);
-	}
-
-	@SuppressWarnings("unchecked")
-	default Stream<T> selectInstances(Stream<T> supers, Predicate<T> valuePredicate, T... components) {
-		return selectInstances((Predicate<T>) (instance -> supers.allMatch(superT -> instance.inheritsFrom(superT))), valuePredicate, components);
-	}
-
-	default Stream<T> selectInstances(Stream<T> supers, Predicate<T> valuePredicate, Predicate<T> componentsPredicate) {
-		return selectInstances((Predicate<T>) (instance -> supers.allMatch(superT -> instance.inheritsFrom(superT))), valuePredicate, componentsPredicate);
-	}
-
-	default Snapshot<T> getComposites() {
-		return () -> Statics.concat(getMetaComposites().stream(), entry -> entry.getValue().stream()).iterator();
-	}
-
-	default boolean isAncestorOf(final T dependency) {
-		return equiv(dependency) || (!dependency.equals(dependency.getMeta()) && isAncestorOf(dependency.getMeta())) || dependency.getSupersStream().anyMatch(component -> this.isAncestorOf(component))
-				|| dependency.getComponentsStream().filter(component -> !dependency.equals(component)).anyMatch(component -> this.isAncestorOf(component))
-				|| inheritsFrom(dependency.getMeta(), dependency.getValue(), dependency.getComponents(), getMeta(), getValue(), getComponents());
-	}
-
-	default LinkedHashSet<T> computeAllDependencies() {
-		class DirectDependencies extends LinkedHashSet<T> {
-			private static final long serialVersionUID = -5970021419012502402L;
-			private final Set<T> alreadyVisited = new HashSet<>();
-
-			public DirectDependencies() {
-				visit(getMeta());
-			}
-
-			public void visit(T node) {
-				if (!alreadyVisited.contains(node))
-					if (!isAncestorOf(node)) {
-						alreadyVisited.add(node);
-						node.getComposites().forEach(this::visit);
-						node.getInheritings().forEach(this::visit);
-						node.getInstances().forEach(this::visit);
-					} else
-						addDependency(node);
-			}
-
-			public void addDependency(T node) {
-				if (!alreadyVisited.contains(node)) {
-					alreadyVisited.add(node);
-					node.getComposites().forEach(this::addDependency);
-					node.getInheritings().forEach(this::addDependency);
-					node.getInstances().forEach(this::addDependency);
-					super.add(node);
-				}
-			}
-		}
-		return new DirectDependencies();
-	}
-	// default boolean isExtention(T candidate) {
-	// if (isFactual() && candidate.getMeta().equals((getMeta()))) {
-	// if (getMeta().isPropertyConstraintEnabled())
-	// if (InheritanceService.componentsDepends(candidate.getMeta(), candidate.getComponents(), getComponents()))
-	// return true;
-	// for (int pos = 0; pos < candidate.getComponents().size(); pos++)
-	// if (getMeta().isSingularConstraintEnabled(pos) && !getMeta().isReferentialIntegrity(pos))
-	// if (candidate.getComponents().get(pos).equals(getComponents().get(pos)))
-	// if (!this.inheritsFrom(candidate))
-	// return true;
+	// @SuppressWarnings("unchecked")
+	// default void removeInstance(Serializable value, T... components) {
+	// T t = getInstance(value, components);
+	// if (t == null)
+	// rollbackAndThrowException(new NotFoundException(((DisplayService<T>) this).info()));
+	// ((BindingService<T>) t).unplug();
 	// }
-	// return false;
-	//
-	// }
-
 }

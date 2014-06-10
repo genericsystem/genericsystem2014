@@ -7,12 +7,11 @@ import org.genericsystem.kernel.services.DependenciesService;
 import org.genericsystem.kernel.services.DisplayService;
 import org.genericsystem.kernel.services.ExceptionAdviserService;
 import org.genericsystem.kernel.services.FactoryService;
-import org.genericsystem.kernel.services.InheritanceService;
 import org.genericsystem.kernel.services.RemovableService;
 import org.genericsystem.kernel.services.SystemPropertiesService;
 import org.genericsystem.kernel.services.UpdatableService;
 
-public interface VertexService<T extends VertexService<T>> extends AncestorsService<T>, DependenciesService<T>, InheritanceService<T>, BindingService<T>, CompositesInheritanceService<T>, FactoryService<T>, DisplayService<T>, SystemPropertiesService<T>,
-		ExceptionAdviserService<T>, RemovableService<T>, UpdatableService<T> {
+public interface VertexService<T extends VertexService<T>> extends AncestorsService<T>, DependenciesService<T>, BindingService<T>, CompositesInheritanceService<T>, FactoryService<T>, DisplayService<T>, SystemPropertiesService<T>,
+ExceptionAdviserService<T>, RemovableService<T>, UpdatableService<T> {
 
 }

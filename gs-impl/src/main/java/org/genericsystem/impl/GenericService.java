@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
@@ -28,6 +27,16 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 		Vertex alive = vertex.getAlive();
 		T meta = wrap(alive.getMeta());
 		return meta.buildInstance().init(meta.getLevel() + 1, meta, wrap(alive.getSupersStream()), alive.getValue(), wrap(alive.getComponentsStream()));
+	}
+
+	default Vertex getVertex() {
+		Vertex pluggedMeta = getMeta().getVertex();
+		if (pluggedMeta == null)
+			return null;
+		for (Vertex instance : pluggedMeta.getInstances())
+			if (equiv(instance))
+				return instance;
+		return null;
 	}
 
 	default Vertex unwrap() {
@@ -70,17 +79,6 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 	}
 
 	@Override
-	default T getWeakInstance(Serializable value, List<T> components) {
-		Vertex vertex = getVertex();
-		if (vertex == null)
-			return null;
-		vertex = vertex.getWeakInstance(value, components.stream().map(GenericService::unwrap).collect(Collectors.toList()));
-		if (vertex == null)
-			return null;
-		return wrap(vertex);
-	};
-
-	@Override
 	default Snapshot<T> getInheritings(T origin, int level) {
 		return getVertex().getInheritings(origin.getVertex(), level).project(this::wrap);
 	}
@@ -94,4 +92,5 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 	default Snapshot<T> getSuperComposites(T superVertex) {
 		return getVertex().getSuperComposites(superVertex.getVertex()).project(this::wrap);
 	}
+
 }

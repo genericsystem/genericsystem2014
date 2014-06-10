@@ -9,14 +9,13 @@ import org.genericsystem.kernel.RemoveRestructurator;
 import org.genericsystem.kernel.exceptions.AliveConstraintViolationException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 import org.genericsystem.kernel.exceptions.ReferentialIntegrityConstraintViolationException;
-import org.genericsystem.kernel.statics.RemoveStrategy;
 
 public interface RemovableService<T extends RemovableService<T>> extends BindingService<T> {
 
 	default void remove(RemoveStrategy removeStrategy) {
 		switch (removeStrategy) {
 		case NORMAL:
-			removeInstance();
+			remove();
 			break;
 		case FORCE:
 			removeForce();
@@ -27,10 +26,9 @@ public interface RemovableService<T extends RemovableService<T>> extends Binding
 		}
 	}
 
-	default void removeInstance() {
+	default void remove() {
 		try {
-			for (T vertex : getOrderedDependenciesToRemove())
-				simpleRemove(vertex);
+			getOrderedDependenciesToRemove().forEach(this::simpleRemove);
 		} catch (ConstraintViolationException e) {
 			rollbackAndThrowException(e);
 		}
@@ -93,6 +91,10 @@ public interface RemovableService<T extends RemovableService<T>> extends Binding
 		new RemoveRestructurator<T>((T) RemovableService.this) {
 			private static final long serialVersionUID = 6513791665544090616L;
 		}.rebuildAll();
+	}
+
+	public enum RemoveStrategy {
+		NORMAL, FORCE, CONSERVE;
 	}
 
 }
