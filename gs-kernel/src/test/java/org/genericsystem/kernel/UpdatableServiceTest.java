@@ -1,12 +1,9 @@
 package org.genericsystem.kernel;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.genericsystem.kernel.exceptions.NotFoundException;
 import org.testng.annotations.Test;
 
 @Test
@@ -15,7 +12,7 @@ public class UpdatableServiceTest extends AbstractTest {
 	public void test001_setValue_Type() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex vehicle2 = vehicle.setValue("Vehicle2");
+		Vertex vehicle2 = vehicle.updateValue("Vehicle2");
 		assert "Vehicle2".equals(vehicle2.getValue());
 		assert vehicle2.isAlive();
 	}
@@ -26,7 +23,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		String valueCar = "Car";
 		Vertex car = vehicle.addInstance(valueCar);
 		String newValue = "elciheV";
-		Vertex newVehicle = vehicle.setValue(newValue);
+		Vertex newVehicle = vehicle.updateValue(newValue);
 		assert newValue.equals(newVehicle.getValue());
 		assert valueCar.equals(car.getValue());
 		assert engine == newVehicle.getMeta();
@@ -41,7 +38,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		vehicle.addInstance("Car");
 		String caveValue = "Cave";
 		Vertex cave = engine.addInstance(caveValue);
-		vehicle.setValue("elciheV");
+		vehicle.updateValue("elciheV");
 		assert caveValue.equals(cave.getValue());
 		assert engine == cave.getMeta();
 		assert cave.getInstances().size() == 0;
@@ -57,7 +54,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		Vertex newBeetle = car.addInstance(valueNewBeetle);
 		String newValue = "elciheV";
 
-		Vertex newVehicle = vehicle.setValue(newValue);
+		Vertex newVehicle = vehicle.updateValue(newValue);
 
 		LinkedHashSet<Vertex> engineAliveDependencies = newVehicle.computeAllDependencies();
 		assert engineAliveDependencies.size() == 3;
@@ -87,7 +84,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		Vertex newBeetle = car.addInstance(valueNewBeetle);
 		String newValue = "raC";
 
-		Vertex newCar = car.setValue(newValue);
+		Vertex newCar = car.updateValue(newValue);
 
 		LinkedHashSet<Vertex> engineAliveDependencies = newCar.computeAllDependencies();
 		assert engineAliveDependencies.size() == 2;
@@ -110,7 +107,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		Vertex options = engine.addInstance(vehicle, valueOptions);
 		String newValue = "elciheV";
 
-		Vertex newVehicle = vehicle.setValue(newValue);
+		Vertex newVehicle = vehicle.updateValue(newValue);
 
 		assert newVehicle.isAlive();
 		assert !vehicle.isAlive();
@@ -140,7 +137,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		Vertex power = engine.addInstance(valuePower, vehicle);
 		String newValue = "elciheV";
 
-		Vertex newVehicle = vehicle.setValue(newValue);
+		Vertex newVehicle = vehicle.updateValue(newValue);
 
 		assert newValue.equals(newVehicle.getValue());
 		assert !power.isAlive();
@@ -162,7 +159,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		Vertex car = vehicle.addInstance("Car");
 		String newValue = "enihcaM";
 
-		Vertex newMachine = machine.setValue(newValue);
+		Vertex newMachine = machine.updateValue(newValue);
 
 		assert engine.isAlive();
 		assert !machine.isAlive();
@@ -221,7 +218,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		Vertex car = engine.addInstance("Car");
 
 		// when
-		car.addSuper(vehicle);
+		car.updateSupers(vehicle);
 
 		// then
 		assert engine.isAlive();
@@ -250,7 +247,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		Vertex fourWheels = engine.addInstance(vehicle, "FourWheels");
 
 		// when
-		car.addSuper(fourWheels);
+		car.updateSupers(fourWheels);
 
 		// then
 		assert engine.isAlive();
@@ -284,7 +281,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		Vertex car = engine.addInstance(vehicle, "Car");
 
 		// when
-		car.addSuper(vehicle);
+		car.updateSupers(vehicle);
 
 		// then
 		assert engine.isAlive();
@@ -324,7 +321,7 @@ public class UpdatableServiceTest extends AbstractTest {
 
 		// when
 		Vertex fourWheels = engine.addInstance(vehicle, "FourWheels");
-		car.addSuper(fourWheels);
+		car.updateSupers(fourWheels);
 
 		// then
 		assert engine.isAlive();
@@ -378,7 +375,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		Vertex myVehicleGreen = vehicleColor.addInstance("MyVehicleGreen", myVehicle, green);
 
 		// when
-		myCarRed.replaceComponent(red, blue);
+		myCarRed.updateComponents(myCar, blue);
 
 		// then
 		assert engine.isAlive();
@@ -427,10 +424,10 @@ public class UpdatableServiceTest extends AbstractTest {
 			@Override
 			public void intercept() {
 				// when
-				myCarRed.replaceComponent(green, blue);
+				myCarRed.updateComponents(blue);
 			}
 			// then
-		}.assertIsCausedBy(NotFoundException.class);
+		}.assertIsCausedBy(IllegalArgumentException.class);
 	}
 
 	public void test300_replaceComponentWithValueModification() {
@@ -445,7 +442,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		Vertex myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
 
 		// when
-		myCarRed.update(Collections.emptyList(), "MyCarBlue", Arrays.asList(myCar, red));
+		myCarRed.update(Collections.emptyList(), "MyCarBlue", myCar, blue);
 
 		// then
 		LinkedHashSet<Vertex> engineDependencies = engine.computeAllDependencies();
