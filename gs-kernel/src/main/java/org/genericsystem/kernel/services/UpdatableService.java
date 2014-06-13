@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public interface UpdatableService<T extends UpdatableService<T>> extends BindingService<T>, FactoryService<T> {
+public interface UpdatableService<T extends UpdatableService<T>> extends BindingService<T> {
 
 	default T updateValue(Serializable newValue) {
 		return update(getSupers(), newValue, getComponents());

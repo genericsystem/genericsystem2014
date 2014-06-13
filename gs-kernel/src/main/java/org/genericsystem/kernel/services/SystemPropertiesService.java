@@ -10,8 +10,38 @@ import org.genericsystem.kernel.Statics;
 
 public interface SystemPropertiesService<T extends SystemPropertiesService<T>> extends AncestorsService<T> {
 
+	class AxedConstraint {
+
+		private Class<? extends Constraint> clazz;
+		private int axe;
+
+		public AxedConstraint(Class<? extends Constraint> clazz, int axe) {
+			this.clazz = clazz;
+			this.axe = axe;
+		}
+
+		public Class<? extends Constraint> getConstraintClass() {
+			return clazz;
+		}
+
+		public int getAxe() {
+			return axe;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (!(obj instanceof AxedConstraint))
+				return false;
+			return getConstraintClass().equals(((AxedConstraint) obj).getConstraintClass()) && getAxe() == ((AxedConstraint) obj).getAxe();
+		}
+
+		@Override
+		public int hashCode() {
+			return getConstraintClass().hashCode();
+		}
+	}
+
 	default boolean isSingularConstraintEnabled(int pos) {
-		// return pos == Statics.BASE_POSITION;
 		return isEnabled(SingularConstraint.class, pos);
 	}
 
@@ -23,25 +53,14 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 		return isEnabled(PropertyConstraint.class);
 	}
 
-	default boolean isRequiredConstraintEnabled(int pos) {
-		return isEnabled(PropertyConstraint.class, pos);
-	}
-
-	default boolean isReferentialIntegrityConstraintEnabled(int pos) {
-		return pos != Statics.BASE_POSITION;
-		// return isEnabled(ReferentialIntegrityConstraint.class);
-	}
-
 	default boolean isEnabled(Class<? extends Constraint> clazz) {
 		return isEnabled(clazz, Statics.NO_POSITION);
 	}
 
-	default boolean isCascadeRemove(int pos) {
-		return isEnabled(SingularConstraint.class, pos);
-	}
-
-	default boolean isEnabled(Class<?> clazz, int pos) {
+	default boolean isEnabled(Class<? extends Constraint> clazz, int pos) {
 		return false;
+		// Boolean isEnabled = get(new AxedConstraint(clazz, pos));
+		// return isEnabled != null ? isEnabled : getSuprasStream().anyMatch(x -> x.isEnabled(clazz, pos));
 	}
 
 	public static interface Constraint {
@@ -72,11 +91,23 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 
 	}
 
+	default boolean isRequiredConstraintEnabled(int pos) {
+		return isEnabled(PropertyConstraint.class, pos);
+	}
+
+	default boolean isReferentialIntegrityConstraintEnabled(int pos) {
+		return pos != Statics.BASE_POSITION;
+		// return isEnabled(ReferentialIntegrityConstraint.class);
+	}
+
+	default boolean isCascadeRemove(int pos) {
+		return isEnabled(SingularConstraint.class, pos);
+	}
+
 	public static BiPredicate<Serializable, Serializable> VALUE_EQUALS = (X, Y) -> Objects.equals(X, Y);
 	public static BiPredicate<Serializable, Serializable> VALUE_IGNORED = (X, Y) -> true;
 	public static BiPredicate<Serializable, Serializable> KEY_EQUALS = (X, Y) -> (X instanceof Entry) && (Y instanceof Entry) && Objects.equals(((Entry<?, ?>) X).getKey(), ((Entry<?, ?>) Y).getKey());
 
-	// @Override
 	default BiPredicate<Serializable, Serializable> getValuesBiPredicate() {
 		if (isPropertyConstraintEnabled())
 			return VALUE_IGNORED;
@@ -90,71 +121,21 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 	};
 
 	public static BiPredicate<List<? extends AncestorsService<?>>, List<? extends AncestorsService<?>>> WEAK_EQUIV = (X, Y) -> {
-		// log.info("AAA" + X + Y);
 		if (!SIZE_EQUALS.test(X, Y))
 			return false;
-		// log.info("BBB" + X + Y);
 		Iterator<? extends AncestorsService<?>> otherComponentsIt = Y.iterator();
 		boolean result = X.stream().allMatch(x -> x.weakEquiv(otherComponentsIt.next()));
-		// log.info("CCC" + X + Y + result);
 		return result;
 	};
 
 	@FunctionalInterface
-	public interface QuadriPredicate {
+	public interface WeakPredicate {
 		boolean test(Serializable value, List<? extends AncestorsService<?>> components, Serializable otherValue, List<? extends AncestorsService<?>> otherComponents);
 	}
 
+	// @Override
 	@Override
-	default QuadriPredicate getQuadriPredicate() {
-		return (value, components, otherValue, otherComponents) -> {
-			if (!WEAK_EQUIV.test(components, otherComponents))
-				return false;
-			return getValuesBiPredicate().test(value, otherValue);
-		};
+	default WeakPredicate getWeakPredicate() {
+		return (value, components, otherValue, otherComponents) -> WEAK_EQUIV.test(components, otherComponents) && getValuesBiPredicate().test(value, otherValue);
 	}
-
-	// @Override
-	// default QuadriPredicate getQuadriPredicate2() {
-	// return (value, components, otherValue, otherComponents) -> {
-	// int nbComponents = components.size();
-	// if (otherComponents.size() == nbComponents) {
-	// boolean singularPropertyIsEnabled = false;
-	// for (int currentPos = 0; currentPos < nbComponents; ++currentPos) {
-	// if (isSingularConstraintEnabled(currentPos)) {
-	// singularPropertyIsEnabled = true;
-	// if (!components.get(currentPos).weakEquiv(otherComponents.get(currentPos)))
-	// return false;
-	// }
-	// }
-	// if (singularPropertyIsEnabled) {
-	// return WEAK_EQUIV.test(components, otherComponents);
-	// } else {
-	// return getValuesBiPredicate().test(value, otherValue) && WEAK_EQUIV.test(components, otherComponents);
-	// }
-	// }
-	// return false;
-	// };
-	// }
-	// public static BiPredicate<List<? extends AncestorsService<?>>, List<? extends AncestorsService<?>>> SINGULAR_EQUIV = (X, Y) -> {
-	// return WEAK_EQUIV.test(X, Y) || (/* il existe au moins un axe commun ou il y a une singular + un equals && */
-	// !componentsDepends(X, Y) && !componentsDepends(Y, X));
-	//
-	// SingularsLazyCache singulars;
-	// int minSize = X.size() >= Y.size() ? X.size() : Y.size();
-	// for (int i = 0; i < minSize; i++) {
-	// if (X.get(i).weakEquiv(Y.get(i))) {
-	// if (singulars.geclipseet(i))
-	// if (!componentsDepends(X, Y) && !componentsDepends(Y, X))
-	// return true;
-	// }
-	// }
-	// return false;
-	// };
-
-	// @Override
-	// default BiPredicate<List<? extends AncestorsService<?>>, List<? extends AncestorsService<?>>> getComponentsBiPredicate() {
-	// return WEAK_EQUIV;
-	// }
-
 }

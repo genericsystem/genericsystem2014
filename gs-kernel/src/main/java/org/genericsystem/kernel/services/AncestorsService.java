@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 import org.genericsystem.kernel.Snapshot;
-import org.genericsystem.kernel.services.SystemPropertiesService.QuadriPredicate;
+import org.genericsystem.kernel.services.SystemPropertiesService.WeakPredicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +48,14 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 	List<T> getSupers();
 
 	Stream<T> getSupersStream();
+
+	default boolean hasSuperSameMeta() {
+		return getSupersStream().anyMatch(x -> getMeta().equals(x.getMeta()));
+	};
+
+	default Stream<T> getSuprasStream() {
+		return isRoot() || hasSuperSameMeta() ? getSupersStream() : Stream.concat(Stream.of(getMeta()), getSupersStream());
+	}
 
 	default boolean inheritsFrom(T superVertex) {
 		if (this == superVertex || equals(superVertex))
@@ -110,10 +118,10 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		return service == this ? true : weakEquiv(service.getMeta(), service.getValue(), service.getComponents());
 	}
 
-	QuadriPredicate getQuadriPredicate();
+	WeakPredicate getWeakPredicate();
 
 	default boolean weakEquiv(AncestorsService<?> meta, Serializable value, List<? extends AncestorsService<?>> components) {
-		return this.getMeta().weakEquiv(meta) && getMeta().getQuadriPredicate().test(getValue(), getComponents(), value, components);
+		return this.getMeta().weakEquiv(meta) && getMeta().getWeakPredicate().test(getValue(), getComponents(), value, components);
 	}
 
 }

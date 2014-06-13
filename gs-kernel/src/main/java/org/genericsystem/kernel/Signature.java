@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -11,8 +12,9 @@ import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.genericsystem.kernel.services.BindingService;
 import org.genericsystem.kernel.services.DisplayService;
 import org.genericsystem.kernel.services.ExceptionAdviserService;
+import org.genericsystem.kernel.services.SystemPropertiesService.AxedConstraint;
 
-public abstract class Signature<T extends Signature<T>> implements DisplayService<T>, ExceptionAdviserService<T>, BindingService<T> {
+public abstract class Signature<T extends Signature<T>>  implements DisplayService<T>, ExceptionAdviserService<T>, BindingService<T> {
 	protected T meta;
 	protected List<T> components;
 	protected Serializable value;

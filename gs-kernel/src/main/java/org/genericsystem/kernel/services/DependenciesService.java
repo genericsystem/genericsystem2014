@@ -13,7 +13,7 @@ import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
 
-public interface DependenciesService<T extends DependenciesService<T>> extends AncestorsService<T>, SystemPropertiesService<T>, ExceptionAdviserService<T> {
+public interface DependenciesService<T extends DependenciesService<T>> extends AncestorsService<T>, ExceptionAdviserService<T>, SystemPropertiesService<T> {
 
 	Snapshot<T> getInstances();
 
@@ -81,7 +81,7 @@ public interface DependenciesService<T extends DependenciesService<T>> extends A
 			return false;
 		if (!subMeta.componentsDepends(subComponents, superComponents))
 			return false;
-		return subMeta.isPropertyConstraintEnabled() || Objects.equals(subValue, superValue);
+		return subMeta.getValuesBiPredicate().test(subValue, superValue);
 	}
 
 	static interface SingularsLazyCache {

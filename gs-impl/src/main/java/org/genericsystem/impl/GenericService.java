@@ -78,10 +78,10 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 		return wrap(vertex);
 	}
 
-	@Override
-	default Snapshot<T> getInheritings(T origin, int level) {
-		return getVertex().getInheritings(origin.getVertex(), level).project(this::wrap);
-	}
+	// @Override
+	// default Snapshot<T> getInheritings(T origin, int level) {
+	// return getVertex().getInheritings(origin.getVertex(), level).project(this::wrap);
+	// }
 
 	@Override
 	default Snapshot<T> getMetaComposites(T meta) {

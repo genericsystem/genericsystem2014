@@ -12,7 +12,7 @@ import org.genericsystem.kernel.exceptions.CrossEnginesAssignementsException;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 
-public interface BindingService<T extends BindingService<T>> extends DependenciesService<T>, FactoryService<T>, CompositesInheritanceService<T>, ExceptionAdviserService<T>, DisplayService<T> {
+public interface BindingService<T extends BindingService<T>> extends DependenciesService<T>, FactoryService<T>, ExceptionAdviserService<T>, DisplayService<T> {
 
 	@SuppressWarnings("unchecked")
 	default T addInstance(Serializable value, T... components) {
@@ -89,12 +89,10 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 	@Override
 	CompositesDependencies<T> getSuperComposites();
 
-	@Override
 	default Snapshot<T> getMetaComposites(T meta) {
 		return getMetaComposites().getByIndex(meta);
 	}
 
-	@Override
 	default Snapshot<T> getSuperComposites(T superVertex) {
 		return getSuperComposites().getByIndex(superVertex);
 	}
@@ -123,7 +121,7 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> component.getSuperComposites().removeByIndex(superGeneric, (T) this)));
 		return result;
 	}
-
+	//
 	// @SuppressWarnings("unchecked")
 	// default void removeInstance(Serializable value, T... components) {
 	// T t = getInstance(value, components);
@@ -131,4 +129,5 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 	// rollbackAndThrowException(new NotFoundException(((DisplayService<T>) this).info()));
 	// ((BindingService<T>) t).unplug();
 	// }
+
 }

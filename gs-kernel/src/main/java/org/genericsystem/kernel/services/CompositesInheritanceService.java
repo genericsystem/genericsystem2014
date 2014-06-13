@@ -8,12 +8,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Snapshot.AbstractSnapshot;
 import org.genericsystem.kernel.Statics;
 
-public interface CompositesInheritanceService<T extends CompositesInheritanceService<T>> extends AncestorsService<T> {
+public interface CompositesInheritanceService<T extends CompositesInheritanceService<T>> extends BindingService<T> {
 
 	default Snapshot<T> getMetaAttributes(T attribute) {
 		return getInheritings(attribute, 0);
@@ -39,10 +38,6 @@ public interface CompositesInheritanceService<T extends CompositesInheritanceSer
 			}
 		};
 	}
-
-	Snapshot<T> getMetaComposites(T meta);
-
-	Snapshot<T> getSuperComposites(T superVertex);
 
 	default Iterator<T> inheritingsIterator(final T origin, final int level) {
 		class Forbidden extends HashSet<T> {
