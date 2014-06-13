@@ -5,7 +5,7 @@ import org.testng.annotations.Test;
 @Test
 public class CacheTest extends AbstractTest {
 
-	public void getInheritings() {
+	public void test001_getInheritings() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		assert vehicle.isAlive();
@@ -15,7 +15,7 @@ public class CacheTest extends AbstractTest {
 		assert vehicle.getInheritings().stream().anyMatch(car::equals);
 	}
 
-	public void getInstances() {
+	public void test001_getInstances() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		assert vehicle.isAlive();
@@ -23,7 +23,17 @@ public class CacheTest extends AbstractTest {
 		assert engine.getInstances().stream().anyMatch(g -> g.equals(vehicle));
 	}
 
-	public void flush() {
+	public void test001_getMetaComposites() {
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic powerVehicle = engine.addInstance("power", vehicle);
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic myVehicle123 = powerVehicle.addInstance("myVehicle123", myVehicle);
+
+		assert myVehicle.getMetaComposites(powerVehicle).stream().anyMatch(g -> g.equals(myVehicle123));
+	}
+
+	public void test002_flush() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic car = engine.addInstance(vehicle, "Car");
@@ -37,14 +47,14 @@ public class CacheTest extends AbstractTest {
 		assert vehicle.getVertex().getInheritings().stream().anyMatch(car.getVertex()::equals);
 	}
 
-	public void testNoFlush() {
+	public void test002_clear() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		engine.getCurrentCache().clear();
 		assert !engine.getInstances().stream().anyMatch(g -> g.equals(vehicle));
 	}
 
-	public void testMount() {
+	public void test003_mountNewCache() {
 		Engine engine = new Engine();
 		Cache<Generic> currentCache = engine.getCurrentCache();
 		Cache<Generic> mountNewCache = currentCache.mountNewCache();
