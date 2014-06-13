@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.services.RemovableService;
 
 public abstract class RemoveRestructurator<T extends RemovableService<T>> extends HashMap<T, T> {
