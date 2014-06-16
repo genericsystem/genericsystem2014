@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.services.SystemPropertiesService.WeakPredicate;
 import org.slf4j.Logger;
@@ -99,12 +100,14 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		return null;
 	}
 
+	WeakPredicate getWeakPredicate();
+
 	default boolean equiv(AncestorsService<? extends AncestorsService<?>> service) {
 		return service == null ? false : equiv(service.getMeta(), service.getValue(), service.getComponents());
 	}
 
 	default boolean equiv(AncestorsService<?> meta, Serializable value, List<? extends AncestorsService<?>> components) {
-		return this.getMeta().equiv(meta) && Objects.equals(getValue(), value) && equivComponents(getComponents(), components);
+		return getMeta().equiv(meta) && Objects.equals(getValue(), value) && equivComponents(getComponents(), components);
 	}
 
 	static boolean equivComponents(List<? extends AncestorsService<?>> components, List<? extends AncestorsService<?>> otherComponents) {
@@ -118,10 +121,8 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		return service == this ? true : weakEquiv(service.getMeta(), service.getValue(), service.getComponents());
 	}
 
-	WeakPredicate getWeakPredicate();
-
 	default boolean weakEquiv(AncestorsService<?> meta, Serializable value, List<? extends AncestorsService<?>> components) {
-		return this.getMeta().weakEquiv(meta) && getMeta().getWeakPredicate().test(getValue(), getComponents(), value, components);
+		return getMeta().weakEquiv(meta) && getMeta().getWeakPredicate().test(getValue(), getComponents(), value, components);
 	}
 
 }

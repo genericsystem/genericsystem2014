@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.BiPredicate;
+
 import org.genericsystem.kernel.Statics;
 
 public interface SystemPropertiesService<T extends SystemPropertiesService<T>> extends AncestorsService<T> {
@@ -20,9 +21,14 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 		// return value != null && !Boolean.FALSE.equals(value);
 	}
 
+	default boolean isReferentialIntegrityConstraintEnabled(int pos) {
+		return pos != Statics.BASE_POSITION;
+		// return isSystemPropertyEnabled(ReferentialIntegrityConstraint.class);
+	}
+
 	default boolean isSingularConstraintEnabled(int pos) {
-		return false;
 		// return isConstraintEnabled(SingularConstraint.class, pos);
+		return false;
 	}
 
 	default boolean isPropertyConstraintEnabled() {
@@ -30,27 +36,54 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 		// return isConstraintEnabled(PropertyConstraint.class);
 	}
 
-	default boolean isMapConstraintEnabled() {
-		return false;
-		// return isConstraintEnabled(PropertyConstraint.class);
-	}
-
-	default boolean isConstraintEnabled(Class<? extends Constraint> clazz) {
-		return false;
-		// return isConstraintEnabled(clazz, Statics.NO_POSITION);
-	}
+	// default boolean isMapConstraintEnabled() {
+	// return false;
+	// // return isConstraintEnabled(PropertyConstraint.class);
+	// }
 
 	default boolean isRequiredConstraintEnabled(int pos) {
 		return isSystemPropertyEnabled(PropertyConstraint.class, pos);
 	}
 
-	default boolean isReferentialIntegrityConstraintEnabled(int pos) {
-		return pos != Statics.BASE_POSITION;
-		// return isSystemPropertyEnabled(ReferentialIntegrityConstraint.class);
-	}
-
 	default boolean isCascadeRemove(int pos) {
 		return isSystemPropertyEnabled(CascadeRemoveProperty.class, pos);
+	}
+
+	default boolean isConstraintEnabled(Class<? extends Constraint> clazz) {
+		// return isConstraintEnabled(clazz, Statics.NO_POSITION);
+		return false;
+	}
+
+	public static interface SystemProperty {
+
+	}
+
+	public static interface Constraint extends SystemProperty {
+
+	}
+
+	public static class ReferentialIntegrityConstraint implements Constraint {
+
+	}
+
+	public static class SingularConstraint implements Constraint {
+
+	}
+
+	public static class PropertyConstraint implements Constraint {
+
+	}
+
+	// public static class MapConstraint implements Constraint {
+	//
+	// }
+
+	public static class RequiredConstraint implements Constraint {
+
+	}
+
+	public static class CascadeRemoveProperty implements SystemProperty {
+
 	}
 
 	public static BiPredicate<Serializable, Serializable> VALUE_EQUALS = (X, Y) -> Objects.equals(X, Y);
@@ -60,9 +93,9 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 	default BiPredicate<Serializable, Serializable> getValuesBiPredicate() {
 		if (isPropertyConstraintEnabled())
 			return VALUE_IGNORED;
-		if (isMapConstraintEnabled())
-			return KEY_EQUALS;
-		return VALUE_EQUALS;
+		// if (isMapConstraintEnabled())
+		// return KEY_EQUALS;
+		return VALUE_EQUALS.or(KEY_EQUALS);
 	}
 
 	public static BiPredicate<List<? extends AncestorsService<?>>, List<? extends AncestorsService<?>>> SIZE_EQUALS = (X, Y) -> {
@@ -82,7 +115,6 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 		boolean test(Serializable value, List<? extends AncestorsService<?>> components, Serializable otherValue, List<? extends AncestorsService<?>> otherComponents);
 	}
 
-	// @Override
 	@Override
 	default WeakPredicate getWeakPredicate() {
 		return (value, components, otherValue, otherComponents) -> WEAK_EQUIV.test(components, otherComponents) && getValuesBiPredicate().test(value, otherValue);
@@ -127,35 +159,4 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 		}
 	}
 
-	public static interface SystemProperty {
-
-	}
-
-	public static interface Constraint extends SystemProperty {
-
-	}
-
-	public static class ReferentialIntegrityConstraint implements Constraint {
-
-	}
-
-	public static class SingularConstraint implements Constraint {
-
-	}
-
-	public static class PropertyConstraint implements Constraint {
-
-	}
-
-	public static class MapConstraint implements Constraint {
-
-	}
-
-	public static class RequiredConstraint implements Constraint {
-
-	}
-
-	public static class CascadeRemoveProperty implements SystemProperty {
-
-	}
 }
