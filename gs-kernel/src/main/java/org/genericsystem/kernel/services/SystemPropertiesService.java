@@ -15,25 +15,57 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 
 	void setSystemPropertyValue(Class<T> propertyClass, int pos, Serializable value);
 
+	@SuppressWarnings("unchecked")
+	default T enableSystemProperty(Class<?> propertyClass, int pos) {
+		setSystemPropertyValue((Class<T>) propertyClass, pos, Boolean.TRUE);
+		return (T) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	default T disableSystemProperty(Class<?> propertyClass, int pos) {
+		setSystemPropertyValue((Class<T>) propertyClass, pos, Boolean.FALSE);
+		return (T) this;
+	}
+
 	default boolean isSystemPropertyEnabled(Class<?> propertyClass, int pos) {
-		return false;
-		// Serializable value = getSystemPropertyValue(propertyClass, pos);
-		// return value != null && !Boolean.FALSE.equals(value);
+		Serializable value = getSystemPropertyValue(propertyClass, pos);
+		return value != null && !Boolean.FALSE.equals(value);
+	}
+
+	default T enableReferentialIntegrity(int pos) {
+		return enableSystemProperty(ReferentialIntegrityConstraint.class, pos);
+	}
+
+	default T disableReferentialIntegrity(int pos) {
+		return disableSystemProperty(ReferentialIntegrityConstraint.class, pos);
 	}
 
 	default boolean isReferentialIntegrityConstraintEnabled(int pos) {
-		return pos != Statics.BASE_POSITION;
-		// return isSystemPropertyEnabled(ReferentialIntegrityConstraint.class);
+		return isSystemPropertyEnabled(ReferentialIntegrityConstraint.class, pos);
+	}
+
+	default T enableSingularConstraint(int pos) {
+		return enableSystemProperty(SingularConstraint.class, pos);
+	}
+
+	default T disableSingularConstraint(int pos) {
+		return disableSystemProperty(SingularConstraint.class, pos);
 	}
 
 	default boolean isSingularConstraintEnabled(int pos) {
-		// return isConstraintEnabled(SingularConstraint.class, pos);
-		return false;
+		return isSystemPropertyEnabled(SingularConstraint.class, pos);
+	}
+
+	default T enablePropertyConstraint() {
+		return enableSystemProperty(PropertyConstraint.class, Statics.NO_POSITION);
+	}
+
+	default T disablePropertyConstraint() {
+		return disableSystemProperty(PropertyConstraint.class, Statics.NO_POSITION);
 	}
 
 	default boolean isPropertyConstraintEnabled() {
-		return false;
-		// return isConstraintEnabled(PropertyConstraint.class);
+		return isSystemPropertyEnabled(PropertyConstraint.class, Statics.NO_POSITION);
 	}
 
 	// default boolean isMapConstraintEnabled() {
@@ -41,17 +73,28 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 	// // return isConstraintEnabled(PropertyConstraint.class);
 	// }
 
+	default T enableRequiredConstraint(int pos) {
+		return enableSystemProperty(RequiredConstraint.class, pos);
+	}
+
+	default T disableRequiredConstraint(int pos) {
+		return disableSystemProperty(RequiredConstraint.class, pos);
+	}
+
 	default boolean isRequiredConstraintEnabled(int pos) {
-		return isSystemPropertyEnabled(PropertyConstraint.class, pos);
+		return isSystemPropertyEnabled(RequiredConstraint.class, pos);
+	}
+
+	default T enableCascadeRemove(int pos) {
+		return enableSystemProperty(CascadeRemoveProperty.class, pos);
+	}
+
+	default T disableCascadeRemove(int pos) {
+		return disableSystemProperty(CascadeRemoveProperty.class, pos);
 	}
 
 	default boolean isCascadeRemove(int pos) {
 		return isSystemPropertyEnabled(CascadeRemoveProperty.class, pos);
-	}
-
-	default boolean isConstraintEnabled(Class<? extends Constraint> clazz) {
-		// return isConstraintEnabled(clazz, Statics.NO_POSITION);
-		return false;
 	}
 
 	public static interface SystemProperty {

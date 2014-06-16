@@ -35,7 +35,7 @@ public class Root extends Vertex implements RootService<Vertex> {
 
 	@Override
 	public Vertex getAlive() {
-		return  this;
+		return this;
 	}
 
 }
