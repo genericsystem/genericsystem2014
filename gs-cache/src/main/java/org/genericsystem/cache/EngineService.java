@@ -10,7 +10,7 @@ public interface EngineService<T extends GenericService<T>> extends org.generics
 	default boolean equiv(AncestorsService<?> service) {
 		if (this == service)
 			return true;
-		return Objects.equals(getValue(), service.getValue()) && AncestorsService.equivComponents(getComponents(), service.getComponents());
+		return Objects.hashCode(getValue()) == Objects.hashCode(service.getValue()) && Objects.equals(getValue(), service.getValue()) && AncestorsService.equivComponents(getComponents(), service.getComponents());
 	}
 
 	default Cache<T> buildCache(Context<T> subContext) {
