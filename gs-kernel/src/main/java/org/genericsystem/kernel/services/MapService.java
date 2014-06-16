@@ -4,9 +4,7 @@ import java.io.Serializable;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public interface MapService<T extends MapService<T>> extends CompositesInheritanceService<T>, UpdatableService<T> {
-
-	// T setInstance(Serializable value, @SuppressWarnings("unchecked") T... components);
+public interface MapService<T extends MapService<T>> extends SystemPropertiesService<T>, CompositesInheritanceService<T>, UpdatableService<T> { // extends CompositesInheritanceService<T>, UpdatableService<T> {
 
 	@Override
 	default Serializable getSystemPropertyValue(Class<?> propertyClass, int pos) {
