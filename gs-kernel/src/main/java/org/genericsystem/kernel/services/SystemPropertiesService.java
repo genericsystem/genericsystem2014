@@ -30,10 +30,10 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 		// return isConstraintEnabled(PropertyConstraint.class);
 	}
 
-	default boolean isMapConstraintEnabled() {
-		return false;
-		// return isConstraintEnabled(PropertyConstraint.class);
-	}
+	// default boolean isMapConstraintEnabled() {
+	// return false;
+	// // return isConstraintEnabled(PropertyConstraint.class);
+	// }
 
 	default boolean isConstraintEnabled(Class<? extends Constraint> clazz) {
 		return false;
@@ -60,9 +60,9 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 	default BiPredicate<Serializable, Serializable> getValuesBiPredicate() {
 		if (isPropertyConstraintEnabled())
 			return VALUE_IGNORED;
-		if (isMapConstraintEnabled())
-			return KEY_EQUALS;
-		return VALUE_EQUALS;
+		// if (isMapConstraintEnabled())
+		// return KEY_EQUALS;
+		return VALUE_EQUALS.or(KEY_EQUALS);
 	}
 
 	public static BiPredicate<List<? extends AncestorsService<?>>, List<? extends AncestorsService<?>>> SIZE_EQUALS = (X, Y) -> {
