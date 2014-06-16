@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
@@ -76,6 +77,12 @@ public interface DependenciesService<T extends DependenciesService<T>> extends A
 		return /* !subComponents.equals(getComponents()) && */(componentsDepends(subComponents, getComponents()));
 	}
 
+	// default boolean isSupraOf(T subVertex) {
+	// // return subVertex.getSuprasStream().anyMatch(supraVertex -> supraVertex.equals(this));
+	// return subVertex.isSpecializationOf((T) this);
+	// // return subVertex.inheritsFrom((T) this) || subVertex.isInstanceOf((T) this) || getInstances().stream().anyMatch(instance -> instance.isSupraOf(subVertex));
+	// }
+
 	default boolean inheritsFrom(T subMeta, Serializable subValue, List<T> subComponents, T superMeta, Serializable superValue, List<T> superComponents) {
 		if (!subMeta.inheritsFrom(superMeta))
 			return false;
@@ -105,7 +112,7 @@ public interface DependenciesService<T extends DependenciesService<T>> extends A
 		loop: for (T superComponent : superComponents) {
 			for (; subIndex < subComponents.size(); subIndex++) {
 				T subComponent = subComponents.get(subIndex);
-				if (subComponent.inheritsFrom(superComponent) || subComponent.isInstanceOf(superComponent)) {
+				if (subComponent.isSpecializationOf(superComponent)) {
 					if (singulars.get(subIndex))
 						return true;
 					subIndex++;
