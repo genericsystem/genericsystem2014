@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.services.SystemPropertiesService.WeakPredicate;
 import org.slf4j.Logger;
@@ -50,13 +49,13 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 
 	Stream<T> getSupersStream();
 
-	default boolean hasSuperSameMeta() {
-		return getSupersStream().anyMatch(x -> getMeta().equals(x.getMeta()));
-	};
+	// default boolean hasSuperSameMeta() {
+	// return getSupersStream().anyMatch(x -> getMeta().equals(x.getMeta()));
+	// };
 
-	default Stream<T> getSuprasStream() {
-		return isRoot() || hasSuperSameMeta() ? getSupersStream() : Stream.concat(Stream.of(getMeta()), getSupersStream());
-	}
+	// default Stream<T> getSuprasStream() {
+	// return isRoot() || hasSuperSameMeta() ? getSupersStream() : Stream.concat(Stream.of(getMeta()), getSupersStream());
+	// }
 
 	default boolean inheritsFrom(T superVertex) {
 		if (this == superVertex || equals(superVertex))
