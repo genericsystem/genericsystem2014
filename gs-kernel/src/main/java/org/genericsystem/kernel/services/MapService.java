@@ -39,22 +39,14 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 		return map == null ? Stream.empty() : getAttributes(map).stream();
 	}
 
-	default Stream<T> setKeys() {
-		return getAttributes(setMap()).stream();
-	}
-
 	default Optional<T> getKey(AxedPropertyClass property) {
 		return getKeys().filter(x -> x.getValue().equals(property)).findFirst();
 	}
 
 	@SuppressWarnings("unchecked")
 	default T setKey(AxedPropertyClass property) {
-		Optional<T> key = setKeys().filter(x -> x.getValue().equals(property)).findFirst();
-		if (key.isPresent())
-			return key.get();
-		// TODO check if all is ok for create an attribute for this key class
 		T root = getRoot();
-		return root.setInstance(getMap(), (Serializable) property, root);
+		return root.setInstance(setMap(), (Serializable) property, root);
 	}
 
 	public static class Map {

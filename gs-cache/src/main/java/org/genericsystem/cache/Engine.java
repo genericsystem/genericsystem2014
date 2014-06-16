@@ -2,7 +2,6 @@ package org.genericsystem.cache;
 
 import java.io.Serializable;
 import java.util.Collections;
-
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
