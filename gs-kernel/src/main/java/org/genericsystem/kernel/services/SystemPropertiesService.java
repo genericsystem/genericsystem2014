@@ -10,98 +10,47 @@ import org.genericsystem.kernel.Statics;
 
 public interface SystemPropertiesService<T extends SystemPropertiesService<T>> extends AncestorsService<T> {
 
-	class AxedConstraint {
+	Serializable getSystemPropertyValue(Class<?> propertyClass, int pos);
 
-		private Class<? extends Constraint> clazz;
-		private int axe;
+	void setSystemPropertyValue(Class<T> propertyClass, int pos, Serializable value);
 
-		public AxedConstraint(Class<? extends Constraint> clazz, int axe) {
-			this.clazz = clazz;
-			this.axe = axe;
-		}
-
-		public Class<? extends Constraint> getConstraintClass() {
-			return clazz;
-		}
-
-		public int getAxe() {
-			return axe;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (!(obj instanceof AxedConstraint))
-				return false;
-			return getConstraintClass().equals(((AxedConstraint) obj).getConstraintClass()) && getAxe() == ((AxedConstraint) obj).getAxe();
-		}
-
-		@Override
-		public int hashCode() {
-			return getConstraintClass().hashCode();
-		}
+	default boolean isSystemPropertyEnabled(Class<?> propertyClass, int pos) {
+		return false;
+		// Serializable value = getSystemPropertyValue(propertyClass, pos);
+		// return value != null && !Boolean.FALSE.equals(value);
 	}
 
 	default boolean isSingularConstraintEnabled(int pos) {
-		return isEnabled(SingularConstraint.class, pos);
+		return false;
+		// return isConstraintEnabled(SingularConstraint.class, pos);
 	}
 
 	default boolean isPropertyConstraintEnabled() {
-		return isEnabled(PropertyConstraint.class);
+		return false;
+		// return isConstraintEnabled(PropertyConstraint.class);
 	}
 
 	default boolean isMapConstraintEnabled() {
-		return isEnabled(PropertyConstraint.class);
-	}
-
-	default boolean isEnabled(Class<? extends Constraint> clazz) {
-		return isEnabled(clazz, Statics.NO_POSITION);
-	}
-
-	default boolean isEnabled(Class<? extends Constraint> clazz, int pos) {
 		return false;
-		// Boolean isEnabled = get(new AxedConstraint(clazz, pos));
-		// return isEnabled != null ? isEnabled : getSuprasStream().anyMatch(x -> x.isEnabled(clazz, pos));
+		// return isConstraintEnabled(PropertyConstraint.class);
 	}
 
-	public static interface Constraint {
-
-	}
-
-	public static class ReferentialIntegrityConstraint implements Constraint {
-
-	}
-
-	public static class SingularConstraint implements Constraint {
-
-	}
-
-	public static class PropertyConstraint implements Constraint {
-
-	}
-
-	public static class MapConstraint implements Constraint {
-
-	}
-
-	public static class RequiredConstraint implements Constraint {
-
-	}
-
-	public static class CascadeRemoveConstraint implements Constraint {
-
+	default boolean isConstraintEnabled(Class<? extends Constraint> clazz) {
+		return false;
+		// return isConstraintEnabled(clazz, Statics.NO_POSITION);
 	}
 
 	default boolean isRequiredConstraintEnabled(int pos) {
-		return isEnabled(PropertyConstraint.class, pos);
+		return isSystemPropertyEnabled(PropertyConstraint.class, pos);
 	}
 
 	default boolean isReferentialIntegrityConstraintEnabled(int pos) {
 		return pos != Statics.BASE_POSITION;
-		// return isEnabled(ReferentialIntegrityConstraint.class);
+		// return isSystemPropertyEnabled(ReferentialIntegrityConstraint.class);
 	}
 
 	default boolean isCascadeRemove(int pos) {
-		return isEnabled(SingularConstraint.class, pos);
+		return isSystemPropertyEnabled(CascadeRemoveProperty.class, pos);
 	}
 
 	public static BiPredicate<Serializable, Serializable> VALUE_EQUALS = (X, Y) -> Objects.equals(X, Y);
@@ -137,5 +86,76 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 	@Override
 	default WeakPredicate getWeakPredicate() {
 		return (value, components, otherValue, otherComponents) -> WEAK_EQUIV.test(components, otherComponents) && getValuesBiPredicate().test(value, otherValue);
+	}
+
+	static class AxedPropertyClass implements Serializable {
+
+		private static final long serialVersionUID = -2631066712866842794L;
+
+		private final Class<?> clazz;
+		private final int axe;
+
+		public AxedPropertyClass(Class<?> clazz, int axe) {
+			this.clazz = clazz;
+			this.axe = axe;
+		}
+
+		public Class<?> getClazz() {
+			return clazz;
+		}
+
+		public int getAxe() {
+			return axe;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (!(obj instanceof AxedPropertyClass))
+				return false;
+			AxedPropertyClass compare = (AxedPropertyClass) obj;
+			return clazz.equals(compare.getClazz()) && axe == compare.axe;
+		}
+
+		@Override
+		public int hashCode() {
+			return clazz.hashCode();
+		}
+
+		@Override
+		public String toString() {
+			return "{class : " + clazz.getSimpleName() + ", axe : " + axe + "}";
+		}
+	}
+
+	public static interface SystemProperty {
+
+	}
+
+	public static interface Constraint extends SystemProperty {
+
+	}
+
+	public static class ReferentialIntegrityConstraint implements Constraint {
+
+	}
+
+	public static class SingularConstraint implements Constraint {
+
+	}
+
+	public static class PropertyConstraint implements Constraint {
+
+	}
+
+	public static class MapConstraint implements Constraint {
+
+	}
+
+	public static class RequiredConstraint implements Constraint {
+
+	}
+
+	public static class CascadeRemoveProperty implements SystemProperty {
+
 	}
 }

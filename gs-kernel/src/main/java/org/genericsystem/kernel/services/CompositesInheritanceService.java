@@ -92,7 +92,7 @@ public interface CompositesInheritanceService<T extends CompositesInheritanceSer
 					Stream<T> supersStream = supersStream();
 					if (!supersStream().iterator().hasNext())
 						return (base.isRoot() || !origin.isAttributeOf(base.getMeta())) ? Stream.of(origin) : getInheringsStream(base.getMeta());
-					return Statics.concat(supersStream, superVertex -> getInheringsStream(superVertex)).distinct();
+						return Statics.concat(supersStream, superVertex -> getInheringsStream(superVertex)).distinct();
 				}
 
 				protected Stream<T> projectStream(Stream<T> streamToProject) {
