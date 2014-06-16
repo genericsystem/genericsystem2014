@@ -36,11 +36,4 @@ public class Vertex extends ExtendedSignature<Vertex> implements VertexService<V
 	public CompositesDependencies<Vertex> getSuperComposites() {
 		return superComposites;
 	}
-
-	@Override
-	public Vertex getMapType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

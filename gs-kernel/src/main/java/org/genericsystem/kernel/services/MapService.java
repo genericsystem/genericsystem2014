@@ -6,7 +6,10 @@ import java.util.stream.Stream;
 
 public interface MapService<T extends MapService<T>> extends CompositesInheritanceService<T> {
 
-	T getMapType();
+	default T getMapType() {
+		// TODO
+		return null;
+	}
 
 	T setInstance(Serializable value, T... components);
 
@@ -40,6 +43,7 @@ public interface MapService<T extends MapService<T>> extends CompositesInheritan
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default void setSystemPropertyValue(Class<T> propertyClass, int pos, Serializable value) {
 		T ketType = setKeyType(new AxedPropertyClass(propertyClass, pos));
