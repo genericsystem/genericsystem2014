@@ -18,4 +18,8 @@ public class Generic extends GenericSignature<Generic> implements GenericService
 		return (CacheDependencies<U>) new CacheDependencies<Generic>(subDependenciesSupplier);
 	}
 
+	@Override
+	public boolean isAlive() {
+		return getCurrentCache().isAlive(this);
+	}
 }

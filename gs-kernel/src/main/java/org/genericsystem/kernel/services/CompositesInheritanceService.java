@@ -8,12 +8,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Snapshot.AbstractSnapshot;
 import org.genericsystem.kernel.Statics;
 
-public interface CompositesInheritanceService<T extends CompositesInheritanceService<T>> extends AncestorsService<T> {
+public interface CompositesInheritanceService<T extends CompositesInheritanceService<T>> extends BindingService<T> {
 
 	default Snapshot<T> getMetaAttributes(T attribute) {
 		return getInheritings(attribute, 0);
@@ -39,10 +38,6 @@ public interface CompositesInheritanceService<T extends CompositesInheritanceSer
 			}
 		};
 	}
-
-	Snapshot<T> getMetaComposites(T meta);
-
-	Snapshot<T> getSuperComposites(T superVertex);
 
 	default Iterator<T> inheritingsIterator(final T origin, final int level) {
 		class Forbidden extends HashSet<T> {
@@ -97,7 +92,7 @@ public interface CompositesInheritanceService<T extends CompositesInheritanceSer
 					Stream<T> supersStream = supersStream();
 					if (!supersStream().iterator().hasNext())
 						return (base.isRoot() || !origin.isAttributeOf(base.getMeta())) ? Stream.of(origin) : getInheringsStream(base.getMeta());
-					return Statics.concat(supersStream, superVertex -> getInheringsStream(superVertex)).distinct();
+						return Statics.concat(supersStream, superVertex -> getInheringsStream(superVertex)).distinct();
 				}
 
 				protected Stream<T> projectStream(Stream<T> streamToProject) {

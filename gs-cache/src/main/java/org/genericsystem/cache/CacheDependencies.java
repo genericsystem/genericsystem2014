@@ -12,7 +12,7 @@ public class CacheDependencies<T> implements Dependencies<T> {
 
 	private final Dependencies<T> inserts = new DependenciesImpl<T>();
 	private final Dependencies<T> deletes = new DependenciesImpl<T>();
-	private Supplier<Iterator<T>> iteratorSupplier;
+	private final Supplier<Iterator<T>> iteratorSupplier;
 
 	public CacheDependencies(Supplier<Iterator<T>> iteratorSupplier) {
 		this.iteratorSupplier = iteratorSupplier;

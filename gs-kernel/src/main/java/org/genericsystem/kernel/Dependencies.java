@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.util.AbstractMap;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -87,7 +88,7 @@ public interface Dependencies<T> extends Snapshot<T> {
 		default T setByIndex(T index, T vertex) {
 			Dependencies<T> result = internalGetByIndex(index);
 			if (result == null)
-				set(buildEntry(index, result = buildDependencies(null)));
+				set(buildEntry(index, result = buildDependencies(() -> Collections.emptyIterator())));
 			return result.set(vertex);
 		}
 
