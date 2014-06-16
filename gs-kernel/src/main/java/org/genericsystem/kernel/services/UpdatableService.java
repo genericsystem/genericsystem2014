@@ -26,14 +26,14 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 		return update(getSupers(), getValue(), newComponents);
 	}
 
+	default T update(List<T> supersToAdd, Serializable newValue, T... newComponents) {
+		return update(supersToAdd, newValue, Arrays.asList(newComponents));
+	}
+
 	default T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
 		if (newComponents.size() != getComponents().size())
 			rollbackAndThrowException(new IllegalArgumentException());
 		return rebuildAll(() -> buildInstance().init(getLevel(), getMeta(), new Supers<T>(getSupers(), supersToAdd), newValue, newComponents).plug());
-	}
-
-	default T update(List<T> supersToAdd, Serializable newValue, T... newComponents) {
-		return update(supersToAdd, newValue, Arrays.asList(newComponents));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -81,6 +81,11 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 
 	default T setInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
 		return setInstance(Collections.emptyList(), value, components);
+	}
+
+	@SuppressWarnings("unchecked")
+	default T setInstance(T override, Serializable value, T... components) {
+		return setInstance(Collections.singletonList(override), value, components);
 	}
 
 	@SuppressWarnings("unchecked")

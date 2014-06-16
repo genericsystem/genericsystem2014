@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
@@ -57,11 +59,6 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 	}
 
 	@SuppressWarnings("unchecked")
-	default T getInstance(Serializable value, T... components) {
-		return buildInstance(Collections.emptyList(), value, Arrays.asList(components)).getAlive();
-	}
-
-	@SuppressWarnings("unchecked")
 	default T getInstance(List<T> supers, Serializable value, T... components) {
 		T nearestMeta = adjustMeta(supers, value, Arrays.asList(components));
 		if (nearestMeta != this)
@@ -73,8 +70,95 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 	}
 
 	@SuppressWarnings("unchecked")
+	default T getInstance(Serializable value, T... components) {
+		return new AncestorsService<T>() {
+
+			@Override
+			public T getMeta() {
+				return (T) BindingService.this;
+			}
+
+			@Override
+			public List<T> getComponents() {
+				return Arrays.asList(components);
+			}
+
+			@Override
+			public Stream<T> getComponentsStream() {
+				return Arrays.stream(components);
+			}
+
+			@Override
+			public Serializable getValue() {
+				return value;
+			}
+
+			@Override
+			public int getLevel() {
+				return getMeta().getLevel() + 1;
+			}
+
+			@Override
+			public List<T> getSupers() {
+				return Collections.emptyList();
+			}
+
+			@Override
+			public Stream<T> getSupersStream() {
+				return getSupers().stream();
+			}
+
+			@Override
+			public org.genericsystem.kernel.services.SystemPropertiesService.WeakPredicate getWeakPredicate() {
+				throw new UnsupportedOperationException();
+			}
+		}.getAlive();
+	}
+
+	@SuppressWarnings("unchecked")
 	default T getWeakInstance(Serializable value, T... components) {
-		return buildInstance(Collections.emptyList(), value, Arrays.asList(components)).getWeakAlive();
+		return new AncestorsService<T>() {
+
+			@Override
+			public T getMeta() {
+				return (T) BindingService.this;
+			}
+
+			@Override
+			public List<T> getComponents() {
+				return Arrays.asList(components);
+			}
+
+			@Override
+			public Stream<T> getComponentsStream() {
+				return Arrays.stream(components);
+			}
+
+			@Override
+			public Serializable getValue() {
+				return value;
+			}
+
+			@Override
+			public int getLevel() {
+				return getMeta().getLevel() + 1;
+			}
+
+			@Override
+			public List<T> getSupers() {
+				return Collections.emptyList();
+			}
+
+			@Override
+			public Stream<T> getSupersStream() {
+				return getSupers().stream();
+			}
+
+			@Override
+			public org.genericsystem.kernel.services.SystemPropertiesService.WeakPredicate getWeakPredicate() {
+				throw new UnsupportedOperationException();
+			}
+		}.getWeakAlive();
 	}
 
 	@Override
