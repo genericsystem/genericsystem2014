@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.BiPredicate;
+
 import org.genericsystem.kernel.Statics;
 
 public interface SystemPropertiesService<T extends SystemPropertiesService<T>> extends AncestorsService<T> {
@@ -21,8 +22,7 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 	}
 
 	default boolean isSingularConstraintEnabled(int pos) {
-		return false;
-		// return isConstraintEnabled(SingularConstraint.class, pos);
+		return isConstraintEnabled(SingularConstraint.class, pos);
 	}
 
 	default boolean isPropertyConstraintEnabled() {
@@ -36,8 +36,7 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 	}
 
 	default boolean isConstraintEnabled(Class<? extends Constraint> clazz) {
-		return false;
-		// return isConstraintEnabled(clazz, Statics.NO_POSITION);
+		return isConstraintEnabled(clazz, Statics.NO_POSITION);
 	}
 
 	default boolean isRequiredConstraintEnabled(int pos) {
@@ -82,7 +81,6 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 		boolean test(Serializable value, List<? extends AncestorsService<?>> components, Serializable otherValue, List<? extends AncestorsService<?>> otherComponents);
 	}
 
-	// @Override
 	@Override
 	default WeakPredicate getWeakPredicate() {
 		return (value, components, otherValue, otherComponents) -> WEAK_EQUIV.test(components, otherComponents) && getValuesBiPredicate().test(value, otherValue);
