@@ -95,7 +95,7 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 		T nearestMeta = adjustMeta(overrides, value, Arrays.asList(components));
 		if (nearestMeta != this)
 			return nearestMeta.setInstance(overrides, value, components);
-		T weakInstance = getWeakInstance(value, components);
+		T weakInstance = getWeakInstance(value, Arrays.asList(components));
 		if (weakInstance != null) {
 			if (weakInstance.equiv(this, value, Arrays.asList(components)))
 				return weakInstance;

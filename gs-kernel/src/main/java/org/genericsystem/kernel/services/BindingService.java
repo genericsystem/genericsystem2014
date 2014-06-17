@@ -18,13 +18,40 @@ import org.genericsystem.kernel.exceptions.NotFoundException;
 
 public interface BindingService<T extends BindingService<T>> extends DependenciesService<T>, FactoryService<T>, ExceptionAdviserService<T>, DisplayService<T> {
 
-	// TODO KK
+	@SuppressWarnings("unchecked")
+	default T addInstance(Serializable value, T... components) {
+		return addInstance(Collections.emptyList(), value, components);
+	}
+
+	@SuppressWarnings("unchecked")
+	default T addInstance(T superGeneric, Serializable value, T... components) {
+		return addInstance(Collections.singletonList(superGeneric), value, components);
+	}
+
+	@SuppressWarnings("unchecked")
+	default T addInstance(List<T> overrides, Serializable value, T... components) {
+		checkSameEngine(Arrays.asList(components));
+		checkSameEngine(overrides);
+		setMetaAttributs(components.length);
+		T nearestMeta = adjustMeta(overrides, value, Arrays.asList(components));
+		if (nearestMeta != this)
+			return nearestMeta.addInstance(overrides, value, components);
+		T weakInstance = getWeakInstance(value, Arrays.asList(components));
+		if (weakInstance != null)
+			rollbackAndThrowException(new ExistsException(weakInstance.info()));
+		return buildInstance(overrides, value, Arrays.asList(components)).plug();
+	}
+
 	default T setMetaAttribute() {
 		return setMetaAttribute(Collections.emptyList());
 	}
 
 	default T setMetaAttribute(T component) {
 		return setMetaAttribute(Collections.singletonList(component));
+	}
+
+	default void setMetaAttributs(int nbComponents) {
+		getRoot().setMetaAttribute(nbComponents);
 	}
 
 	default T setMetaAttribute(int nbComponents) {
@@ -48,31 +75,6 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 		List<T> supersList = new ArrayList<>(new SupersComputer<>(0, getMeta(), Collections.emptyList(), getRoot().getValue(), allComponents));
 		T meta = adjustMeta(Collections.emptyList(), getValue(), allComponents);
 		return meta.buildInstance().init(0, meta, supersList, getRoot().getValue(), allComponents).plug();
-	}
-
-	@SuppressWarnings("unchecked")
-	default T addInstance(Serializable value, T... components) {
-		return addInstance(Collections.emptyList(), value, components);
-	}
-
-	@SuppressWarnings("unchecked")
-	default T addInstance(T superGeneric, Serializable value, T... components) {
-		return addInstance(Collections.singletonList(superGeneric), value, components);
-	}
-
-	@SuppressWarnings("unchecked")
-	default T addInstance(List<T> overrides, Serializable value, T... components) {
-		checkSameEngine(Arrays.asList(components));
-		checkSameEngine(overrides);
-		getRoot().setMetaAttribute(components.length);
-		T nearestMeta = adjustMeta(overrides, value, Arrays.asList(components));
-
-		if (nearestMeta != this)
-			return nearestMeta.addInstance(overrides, value, components);
-		T weakInstance = getWeakInstance(value, components);
-		if (weakInstance != null)
-			rollbackAndThrowException(new ExistsException(weakInstance.info()));
-		return buildInstance(overrides, value, Arrays.asList(components)).plug();
 	}
 
 	default void checkSameEngine(List<T> components) {
@@ -105,19 +107,17 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 	}
 
 	@SuppressWarnings("unchecked")
-
-	default T getInstance(List<T> supers, Serializable value, T... components) {
-		T nearestMeta = adjustMeta(supers, value, Arrays.asList(components));
-		if (nearestMeta != this)
-			return nearestMeta.getInstance(supers, value, components);
-		T result = getInstance(value, components);
-		if (result != null && supers.stream().allMatch(superT -> result.inheritsFrom(superT)))
-			return result;
-		return null;
+	default T getInstance(Serializable value) {
+		return getInstance(value, Collections.emptyList());
 	}
 
 	@SuppressWarnings("unchecked")
-	default T getInstance(Serializable value, T... components) {
+	default T getInstance(Serializable value, T component) {
+		return getInstance(value, Collections.singletonList(component));
+	}
+
+	@SuppressWarnings("unchecked")
+	default T getInstance(Serializable value, List<T> components) {
 		return new AncestorsService<T>() {
 
 			@Override
@@ -127,12 +127,12 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 
 			@Override
 			public List<T> getComponents() {
-				return Arrays.asList(components);
+				return components;
 			}
 
 			@Override
 			public Stream<T> getComponentsStream() {
-				return Arrays.stream(components);
+				return components.stream();
 			}
 
 			@Override
@@ -163,7 +163,43 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 	}
 
 	@SuppressWarnings("unchecked")
-	default T getWeakInstance(Serializable value, T... components) {
+	default T getInstance(T superVertex, Serializable value) {
+		return getInstance(Collections.singletonList(superVertex), value, Collections.emptyList());
+	}
+
+	@SuppressWarnings("unchecked")
+	default T getInstance(List<T> supers, Serializable value) {
+		return getInstance(supers, value, Collections.emptyList());
+	}
+
+	@SuppressWarnings("unchecked")
+	default T getInstance(List<T> supers, Serializable value, T component) {
+		return getInstance(supers, value, Collections.singletonList(component));
+	}
+
+	@SuppressWarnings("unchecked")
+	default T getInstance(T supers, Serializable value, List<T> components) {
+		return getInstance(Collections.singletonList(supers), value, components);
+	}
+
+	@SuppressWarnings("unchecked")
+	default T getInstance(T superVertex, Serializable value, T component) {
+		return getInstance(Collections.singletonList(superVertex), value, Collections.singletonList(component));
+	}
+
+	@SuppressWarnings("unchecked")
+	default T getInstance(List<T> supers, Serializable value, List<T> components) {
+		T nearestMeta = adjustMeta(supers, value, components);
+		if (nearestMeta != this)
+			return nearestMeta.getInstance(supers, value, components);
+		T result = getInstance(value, components);
+		if (result != null && supers.stream().allMatch(superT -> result.inheritsFrom(superT)))
+			return result;
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	default T getWeakInstance(Serializable value, List<T> components) {
 		return new AncestorsService<T>() {
 
 			@Override
@@ -173,12 +209,12 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 
 			@Override
 			public List<T> getComponents() {
-				return Arrays.asList(components);
+				return components;
 			}
 
 			@Override
 			public Stream<T> getComponentsStream() {
-				return Arrays.stream(components);
+				return components.stream();
 			}
 
 			@Override
