@@ -1,10 +1,13 @@
-package org.genericsystem.impl;
+package org.genercisystem.impl;
 
 import java.io.Serializable;
 import java.util.Collections;
+
+import org.genericsystem.impl.EngineService;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
+import org.genericsystem.kernel.services.AncestorsService;
 
 public class Engine extends Generic implements EngineService<Generic> {
 
@@ -37,5 +40,10 @@ public class Engine extends Generic implements EngineService<Generic> {
 	@Override
 	public Generic getAlive() {
 		return this;
+	}
+
+	@Override
+	public boolean equiv(AncestorsService<? extends AncestorsService<?>> service) {
+		return EngineService.super.equiv(service);
 	}
 }
