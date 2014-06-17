@@ -22,4 +22,9 @@ public class Generic extends GenericSignature<Generic> implements GenericService
 	public boolean isAlive() {
 		return getCurrentCache().isAlive(this);
 	}
+
+	@Override
+	public Generic getMap() {
+		return getRoot().getInstance(Map.class, getRoot());
+	}
 }

@@ -36,4 +36,5 @@ public class Vertex extends ExtendedSignature<Vertex> implements VertexService<V
 	public CompositesDependencies<Vertex> getSuperComposites() {
 		return superComposites;
 	}
+
 }

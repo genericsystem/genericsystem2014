@@ -105,48 +105,9 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 	}
 
 	@SuppressWarnings("unchecked")
-	default T getInstance(Serializable value) {
-		return getInstance(value, Collections.emptyList());
-	}
 
-	@SuppressWarnings("unchecked")
-	default T getInstance(Serializable value, T component) {
-		return getInstance(value, Collections.singletonList(component));
-	}
-
-	@SuppressWarnings("unchecked")
-	default T getInstance(Serializable value, List<T> components) {
-		return buildInstance(Collections.emptyList(), value, components).getAlive();
-	}
-
-	@SuppressWarnings("unchecked")
-	default T getInstance(T superVertex, Serializable value) {
-		return getInstance(Collections.singletonList(superVertex), value, Collections.emptyList());
-	}
-
-	@SuppressWarnings("unchecked")
-	default T getInstance(List<T> supers, Serializable value) {
-		return getInstance(supers, value, Collections.emptyList());
-	}
-
-	@SuppressWarnings("unchecked")
-	default T getInstance(List<T> supers, Serializable value, T component) {
-		return getInstance(supers, value, Collections.singletonList(component));
-	}
-
-	@SuppressWarnings("unchecked")
-	default T getInstance(T supers, Serializable value, List<T> components) {
-		return getInstance(Collections.singletonList(supers), value, components);
-	}
-
-	@SuppressWarnings("unchecked")
-	default T getInstance(T superVertex, Serializable value, T component) {
-		return getInstance(Collections.singletonList(superVertex), value, Collections.singletonList(component));
-	}
-
-	@SuppressWarnings("unchecked")
-	default T getInstance(List<T> supers, Serializable value, List<T> components) {
-		T nearestMeta = adjustMeta(supers, value, components);
+	default T getInstance(List<T> supers, Serializable value, T... components) {
+		T nearestMeta = adjustMeta(supers, value, Arrays.asList(components));
 		if (nearestMeta != this)
 			return nearestMeta.getInstance(supers, value, components);
 		T result = getInstance(value, components);
@@ -203,7 +164,48 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 
 	@SuppressWarnings("unchecked")
 	default T getWeakInstance(Serializable value, T... components) {
-		return buildInstance(Collections.emptyList(), value, Arrays.asList(components)).getWeakAlive();
+		return new AncestorsService<T>() {
+
+			@Override
+			public T getMeta() {
+				return (T) BindingService.this;
+			}
+
+			@Override
+			public List<T> getComponents() {
+				return Arrays.asList(components);
+			}
+
+			@Override
+			public Stream<T> getComponentsStream() {
+				return Arrays.stream(components);
+			}
+
+			@Override
+			public Serializable getValue() {
+				return value;
+			}
+
+			@Override
+			public int getLevel() {
+				return getMeta().getLevel() + 1;
+			}
+
+			@Override
+			public List<T> getSupers() {
+				return Collections.emptyList();
+			}
+
+			@Override
+			public Stream<T> getSupersStream() {
+				return getSupers().stream();
+			}
+
+			@Override
+			public org.genericsystem.kernel.services.SystemPropertiesService.WeakPredicate getWeakPredicate() {
+				throw new UnsupportedOperationException();
+			}
+		}.getWeakAlive();
 	}
 
 	@Override

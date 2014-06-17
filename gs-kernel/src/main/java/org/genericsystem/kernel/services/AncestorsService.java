@@ -30,7 +30,6 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 	}
 
 	default T getRoot() {
-		log.info("" + this + getClass());
 		return getMeta().getRoot();
 	}
 

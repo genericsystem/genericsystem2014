@@ -5,7 +5,7 @@ import java.util.Objects;
 import org.genericsystem.kernel.ExtendedSignature;
 import org.genericsystem.kernel.services.AncestorsService;
 
-public abstract class GenericSignature<T extends ExtendedSignature<T>> extends ExtendedSignature<T> implements AncestorsService<T> {
+public abstract class GenericSignature<T extends ExtendedSignature<T>> extends ExtendedSignature<T> {
 
 	@Override
 	public boolean equals(Object obj) {
