@@ -40,14 +40,14 @@
 
 	<modules>
 		<module>gs-kernel</module>
-		<module>gs-api</module>
+<!-- 		<module>gs-api</module> -->
 		<module>gs-impl</module>
 		<module>gs-cache</module>	
 		<module>gs-concurrency</module>
 		<module>gs-cdi</module>
-		<module>gs-tracker</module>
-		<module>gs-framework</module>
-		<module>gs-security</module>
+<!-- 		<module>gs-tracker</module> -->
+<!-- 		<module>gs-framework</module> -->
+<!-- 		<module>gs-security</module> -->
 	</modules>
 
 	<distributionManagement>
