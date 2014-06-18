@@ -34,7 +34,7 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T getInstance(Serializable value, List<T> components) {
+	default T getInstance(Serializable value, T... components) {
 		return null;// TODO
 	}
 

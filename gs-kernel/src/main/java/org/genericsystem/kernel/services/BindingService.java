@@ -32,7 +32,7 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 	default T addInstance(List<T> overrides, Serializable value, T... components) {
 		checkSameEngine(Arrays.asList(components));
 		checkSameEngine(overrides);
-		setMetaAttributs(components.length);
+		setMetaAttributes(components.length);
 		T nearestMeta = adjustMeta(overrides, value, Arrays.asList(components));
 		if (nearestMeta != this)
 			return nearestMeta.addInstance(overrides, value, components);
@@ -50,17 +50,17 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 		return setMetaAttribute(Collections.singletonList(component));
 	}
 
-	default void setMetaAttributs(int nbComponents) {
+	default void setMetaAttributes(int nbComponents) {
 		getRoot().setMetaAttribute(nbComponents);
 	}
 
 	default T setMetaAttribute(int nbComponents) {
 		if (nbComponents == 0)
 			return (T) this;
-		List<T> metaAttributes = new ArrayList<T>();
-		for (int i = 0; i < nbComponents - 1; ++i)
-			metaAttributes.add((T) this);
-		return setMetaAttribute(metaAttributes);
+		List<T> components = new ArrayList<T>();
+		for (int i = 0; i < nbComponents - 1; i++)
+			components.add((T) this);
+		return setMetaAttribute(components);
 
 	}
 
@@ -106,18 +106,18 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 		return result == null ? (T) this : result.adjustMeta(overrides, subValue, subComponents);
 	}
 
-	@SuppressWarnings("unchecked")
-	default T getInstance(Serializable value) {
-		return getInstance(value, Collections.emptyList());
-	}
+	// @SuppressWarnings("unchecked")
+	// default T getInstance(Serializable value) {
+	// return getInstance(value, Collections.emptyList());
+	// }
+	//
+	// @SuppressWarnings("unchecked")
+	// default T getInstance(Serializable value, T component) {
+	// return getInstance(value, Collections.singletonList(component));
+	// }
 
 	@SuppressWarnings("unchecked")
-	default T getInstance(Serializable value, T component) {
-		return getInstance(value, Collections.singletonList(component));
-	}
-
-	@SuppressWarnings("unchecked")
-	default T getInstance(Serializable value, List<T> components) {
+	default T getInstance(Serializable value, T... components) {
 		return new AncestorsService<T>() {
 
 			@Override
@@ -127,12 +127,12 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 
 			@Override
 			public List<T> getComponents() {
-				return components;
+				return Arrays.asList(components);
 			}
 
 			@Override
 			public Stream<T> getComponentsStream() {
-				return components.stream();
+				return Arrays.asList(components).stream();
 			}
 
 			@Override
@@ -162,34 +162,34 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 		}.getAlive();
 	}
 
-	@SuppressWarnings("unchecked")
-	default T getInstance(T superVertex, Serializable value) {
-		return getInstance(Collections.singletonList(superVertex), value, Collections.emptyList());
-	}
+	// @SuppressWarnings("unchecked")
+	// default T getInstance(T superVertex, Serializable value) {
+	// return getInstance(Collections.singletonList(superVertex), value, Collections.emptyList());
+	// }
+	//
+	// @SuppressWarnings("unchecked")
+	// default T getInstance(List<T> supers, Serializable value) {
+	// return getInstance(supers, value, Collections.emptyList());
+	// }
+	//
+	// @SuppressWarnings("unchecked")
+	// default T getInstance(List<T> supers, Serializable value, T component) {
+	// return getInstance(supers, value, Collections.singletonList(component));
+	// }
+	//
+	// @SuppressWarnings("unchecked")
+	// default T getInstance(T supers, Serializable value, List<T> components) {
+	// return getInstance(Collections.singletonList(supers), value, components);
+	// }
+	//
+	// @SuppressWarnings("unchecked")
+	// default T getInstance(T superVertex, Serializable value, T component) {
+	// return getInstance(Collections.singletonList(superVertex), value, Collections.singletonList(component));
+	// }
 
 	@SuppressWarnings("unchecked")
-	default T getInstance(List<T> supers, Serializable value) {
-		return getInstance(supers, value, Collections.emptyList());
-	}
-
-	@SuppressWarnings("unchecked")
-	default T getInstance(List<T> supers, Serializable value, T component) {
-		return getInstance(supers, value, Collections.singletonList(component));
-	}
-
-	@SuppressWarnings("unchecked")
-	default T getInstance(T supers, Serializable value, List<T> components) {
-		return getInstance(Collections.singletonList(supers), value, components);
-	}
-
-	@SuppressWarnings("unchecked")
-	default T getInstance(T superVertex, Serializable value, T component) {
-		return getInstance(Collections.singletonList(superVertex), value, Collections.singletonList(component));
-	}
-
-	@SuppressWarnings("unchecked")
-	default T getInstance(List<T> supers, Serializable value, List<T> components) {
-		T nearestMeta = adjustMeta(supers, value, components);
+	default T getInstance(List<T> supers, Serializable value, T... components) {
+		T nearestMeta = adjustMeta(supers, value, Arrays.asList(components));
 		if (nearestMeta != this)
 			return nearestMeta.getInstance(supers, value, components);
 		T result = getInstance(value, components);
