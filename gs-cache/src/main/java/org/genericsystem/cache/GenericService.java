@@ -34,7 +34,7 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T getInstance(Serializable value, T... components) {
+	default T getInstance(Serializable value, List<T> components) {
 		return null;// TODO
 	}
 
@@ -43,6 +43,11 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 	default T addInstance(List<T> overrides, Serializable value, T... components) {
 		return getCurrentCache().insert(org.genericsystem.impl.GenericService.super.addInstance(overrides, value, components));
 	}
+
+	@Override
+	default T setMetaAttribute(List<T> components) {
+		return getCurrentCache().insert(org.genericsystem.impl.GenericService.super.setMetaAttribute(components));
+	};
 
 	@Override
 	@SuppressWarnings("unchecked")

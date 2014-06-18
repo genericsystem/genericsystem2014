@@ -35,7 +35,7 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 		if (alive != null)
 			return alive;
 		alive = getMeta().unwrap();
-		return alive.buildInstance(unwrap(getSupersStream()), getValue(), unwrap(getComponentsStream()));
+		return alive.buildInstance().init(getLevel(), alive, unwrap(getSupersStream()), getValue(), unwrap(getComponentsStream()));
 	}
 
 	default Vertex getVertex() {

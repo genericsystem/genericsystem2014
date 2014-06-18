@@ -1,6 +1,7 @@
 package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.stream.Stream;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
+import org.genericsystem.kernel.SupersComputer;
 import org.genericsystem.kernel.exceptions.AmbiguousSelectionException;
 import org.genericsystem.kernel.exceptions.CrossEnginesAssignementsException;
 import org.genericsystem.kernel.exceptions.ExistsException;
@@ -30,14 +32,49 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 	default T addInstance(List<T> overrides, Serializable value, T... components) {
 		checkSameEngine(Arrays.asList(components));
 		checkSameEngine(overrides);
-
+		setMetaAttributs(components.length);
 		T nearestMeta = adjustMeta(overrides, value, Arrays.asList(components));
 		if (nearestMeta != this)
 			return nearestMeta.addInstance(overrides, value, components);
-		T weakInstance = getWeakInstance(value, components);
+		T weakInstance = getWeakInstance(value, Arrays.asList(components));
 		if (weakInstance != null)
 			rollbackAndThrowException(new ExistsException(weakInstance.info()));
 		return buildInstance(overrides, value, Arrays.asList(components)).plug();
+	}
+
+	default T setMetaAttribute() {
+		return setMetaAttribute(Collections.emptyList());
+	}
+
+	default T setMetaAttribute(T component) {
+		return setMetaAttribute(Collections.singletonList(component));
+	}
+
+	default void setMetaAttributs(int nbComponents) {
+		getRoot().setMetaAttribute(nbComponents);
+	}
+
+	default T setMetaAttribute(int nbComponents) {
+		if (nbComponents == 0)
+			return (T) this;
+		List<T> metaAttributes = new ArrayList<T>();
+		for (int i = 0; i < nbComponents - 1; ++i)
+			metaAttributes.add((T) this);
+		return setMetaAttribute(metaAttributes);
+
+	}
+
+	default T setMetaAttribute(List<T> components) {
+		checkSameEngine(components);
+		T metaOfmeta = adjustMeta(Collections.emptyList(), getValue(), components);
+		List<T> allComponents = new ArrayList<T>(components);
+		allComponents.add(0, (T) this);
+		T instance = buildInstance().init(0, metaOfmeta, Collections.emptyList(), getRoot().getValue(), allComponents).getAlive();// getInstance(getRoot().getValue(), allComponents);
+		if (instance != null)
+			return instance;
+		List<T> supersList = new ArrayList<>(new SupersComputer<>(0, getMeta(), Collections.emptyList(), getRoot().getValue(), allComponents));
+		T meta = adjustMeta(Collections.emptyList(), getValue(), allComponents);
+		return meta.buildInstance().init(0, meta, supersList, getRoot().getValue(), allComponents).plug();
 	}
 
 	default void checkSameEngine(List<T> components) {
@@ -46,6 +83,17 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 	}
 
 	// TODO we have to compute super of "this" if necessary here
+
+	@SuppressWarnings("unchecked")
+	default T adjustMeta(List<T> overrides, Serializable subValue) {
+		return adjustMeta(overrides, subValue, Collections.emptyList());
+	}
+
+	@SuppressWarnings("unchecked")
+	default T adjustMeta(List<T> overrides, Serializable subValue, T subComponent) {
+		return adjustMeta(overrides, subValue, Collections.singletonList(subComponent));
+	}
+
 	@SuppressWarnings("unchecked")
 	default T adjustMeta(List<T> overrides, Serializable subValue, List<T> subComponents) {
 		T result = null;
@@ -55,22 +103,21 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 					result = directInheriting;
 				else
 					rollbackAndThrowException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
-		return result == null ? (T) this : result;
+		return result == null ? (T) this : result.adjustMeta(overrides, subValue, subComponents);
 	}
 
 	@SuppressWarnings("unchecked")
-	default T getInstance(List<T> supers, Serializable value, T... components) {
-		T nearestMeta = adjustMeta(supers, value, Arrays.asList(components));
-		if (nearestMeta != this)
-			return nearestMeta.getInstance(supers, value, components);
-		T result = getInstance(value, components);
-		if (result != null && supers.stream().allMatch(superT -> result.inheritsFrom(superT)))
-			return result;
-		return null;
+	default T getInstance(Serializable value) {
+		return getInstance(value, Collections.emptyList());
 	}
 
 	@SuppressWarnings("unchecked")
-	default T getInstance(Serializable value, T... components) {
+	default T getInstance(Serializable value, T component) {
+		return getInstance(value, Collections.singletonList(component));
+	}
+
+	@SuppressWarnings("unchecked")
+	default T getInstance(Serializable value, List<T> components) {
 		return new AncestorsService<T>() {
 
 			@Override
@@ -80,12 +127,12 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 
 			@Override
 			public List<T> getComponents() {
-				return Arrays.asList(components);
+				return components;
 			}
 
 			@Override
 			public Stream<T> getComponentsStream() {
-				return Arrays.stream(components);
+				return components.stream();
 			}
 
 			@Override
@@ -116,7 +163,43 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 	}
 
 	@SuppressWarnings("unchecked")
-	default T getWeakInstance(Serializable value, T... components) {
+	default T getInstance(T superVertex, Serializable value) {
+		return getInstance(Collections.singletonList(superVertex), value, Collections.emptyList());
+	}
+
+	@SuppressWarnings("unchecked")
+	default T getInstance(List<T> supers, Serializable value) {
+		return getInstance(supers, value, Collections.emptyList());
+	}
+
+	@SuppressWarnings("unchecked")
+	default T getInstance(List<T> supers, Serializable value, T component) {
+		return getInstance(supers, value, Collections.singletonList(component));
+	}
+
+	@SuppressWarnings("unchecked")
+	default T getInstance(T supers, Serializable value, List<T> components) {
+		return getInstance(Collections.singletonList(supers), value, components);
+	}
+
+	@SuppressWarnings("unchecked")
+	default T getInstance(T superVertex, Serializable value, T component) {
+		return getInstance(Collections.singletonList(superVertex), value, Collections.singletonList(component));
+	}
+
+	@SuppressWarnings("unchecked")
+	default T getInstance(List<T> supers, Serializable value, List<T> components) {
+		T nearestMeta = adjustMeta(supers, value, components);
+		if (nearestMeta != this)
+			return nearestMeta.getInstance(supers, value, components);
+		T result = getInstance(value, components);
+		if (result != null && supers.stream().allMatch(superT -> result.inheritsFrom(superT)))
+			return result;
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	default T getWeakInstance(Serializable value, List<T> components) {
 		return new AncestorsService<T>() {
 
 			@Override
@@ -126,12 +209,12 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 
 			@Override
 			public List<T> getComponents() {
-				return Arrays.asList(components);
+				return components;
 			}
 
 			@Override
 			public Stream<T> getComponentsStream() {
-				return Arrays.stream(components);
+				return components.stream();
 			}
 
 			@Override
