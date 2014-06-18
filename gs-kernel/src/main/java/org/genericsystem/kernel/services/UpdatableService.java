@@ -30,6 +30,10 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 		return update(supersToAdd, newValue, Arrays.asList(newComponents));
 	}
 
+	default T update(Serializable newValue, T... newComponents) {
+		return update(Collections.emptyList(), newValue, Arrays.asList(newComponents));
+	}
+
 	default T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
 		if (newComponents.size() != getComponents().size())
 			rollbackAndThrowException(new IllegalArgumentException());
