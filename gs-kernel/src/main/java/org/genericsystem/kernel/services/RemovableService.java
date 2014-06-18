@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+
 import org.genericsystem.kernel.RemoveRestructurator;
 import org.genericsystem.kernel.exceptions.AliveConstraintViolationException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
@@ -15,13 +16,13 @@ public interface RemovableService<T extends RemovableService<T>> extends Binding
 		switch (removeStrategy) {
 		case NORMAL:
 			remove();
-		break;
+			break;
 		case FORCE:
 			removeForce();
-		break;
+			break;
 		case CONSERVE:
 			removeConserve();
-		break;
+			break;
 		}
 	}
 

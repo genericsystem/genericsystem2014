@@ -13,14 +13,14 @@ public class Root extends Vertex implements RootService<Vertex> {
 		init(0, null, Collections.emptyList(), value, Collections.emptyList());
 	}
 
-	@Override
-	public Vertex getRoot() {
-		return this;
-	}
-
-	@Override
-	public Vertex getAlive() {
-		return this;
-	}
+	// @Override
+	// public Vertex getRoot() {
+	// return this;
+	// }
+	//
+	// @Override
+	// public Vertex getAlive() {
+	// return this;
+	// }
 
 }
