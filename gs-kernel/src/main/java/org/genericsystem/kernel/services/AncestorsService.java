@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.services.SystemPropertiesService.WeakPredicate;
 
@@ -37,7 +36,9 @@ public interface AncestorsService<T extends AncestorsService<T>> extends Signatu
 
 	List<T> getSupers();
 
-	Stream<T> getSupersStream();
+	default Stream<T> getSupersStream() {
+		return getSupers().stream();
+	}
 
 	default boolean hasSuperSameMeta() {
 		return getSupersStream().anyMatch(x -> getMeta().equals(x.getMeta()));

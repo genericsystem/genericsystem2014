@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
@@ -73,11 +72,6 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 			}
 
 			@Override
-			public Stream<T> getComponentsStream() {
-				return Arrays.asList(components).stream();
-			}
-
-			@Override
 			public Serializable getValue() {
 				return value;
 			}
@@ -90,11 +84,6 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 			@Override
 			public List<T> getSupers() {
 				return Collections.emptyList();
-			}
-
-			@Override
-			public Stream<T> getSupersStream() {
-				return getSupers().stream();
 			}
 
 			@Override
@@ -142,11 +131,6 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 			@Override
 			public List<T> getSupers() {
 				return Collections.emptyList();
-			}
-
-			@Override
-			public Stream<T> getSupersStream() {
-				return getSupers().stream();
 			}
 
 			@Override
