@@ -2,7 +2,6 @@ package org.genericsystem.cache;
 
 import java.io.Serializable;
 import java.util.List;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 
@@ -38,10 +37,10 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 		return getCurrentCache().insert(org.genericsystem.impl.GenericService.super.addInstance(overrides, value, components));
 	}
 
-	@Override
-	default T setMetaAttribute(List<T> components) {
-		return getCurrentCache().insert(org.genericsystem.impl.GenericService.super.setMetaAttribute(components));
-	}
+	// @Override
+	// default T setMetaAttribute(List<T> components) {
+	// return getCurrentCache().insert(org.genericsystem.impl.GenericService.super.setMetaAttribute(components));
+	// }
 
 	@Override
 	@SuppressWarnings("unchecked")

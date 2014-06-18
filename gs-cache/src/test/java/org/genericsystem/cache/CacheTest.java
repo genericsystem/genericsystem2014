@@ -23,12 +23,12 @@ public class CacheTest extends AbstractTest {
 		assert engine.getInstances().stream().anyMatch(g -> g.equals(vehicle));
 	}
 
-	public void test002_getMetaComposites() {
-		Engine engine = new Engine();
-
-		assert engine.setMetaAttribute().isAlive();
-
-	}
+	// public void test002_getMetaComposites() {
+	// Engine engine = new Engine();
+	//
+	// assert engine.setMetaAttribute().isAlive();
+	//
+	// }
 
 	public void test001_getMetaComposites() {
 		Engine engine = new Engine();
