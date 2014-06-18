@@ -56,6 +56,6 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 	}
 
 	default Cache<T> getCurrentCache() {
-		return getMeta().getCurrentCache();
+		return getRoot().getCurrentCache();
 	}
 }

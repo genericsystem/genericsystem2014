@@ -7,7 +7,7 @@ import org.genericsystem.kernel.services.AncestorsService;
 public interface EngineService<T extends GenericService<T>> extends org.genericsystem.impl.EngineService<T>, GenericService<T> {
 
 	@Override
-	default boolean equiv(AncestorsService<?> service) {
+	default boolean equiv(AncestorsService<? extends AncestorsService<?>> service) {
 		if (this == service)
 			return true;
 		return Objects.hashCode(getValue()) == Objects.hashCode(service.getValue()) && Objects.equals(getValue(), service.getValue()) && AncestorsService.equivComponents(getComponents(), service.getComponents());

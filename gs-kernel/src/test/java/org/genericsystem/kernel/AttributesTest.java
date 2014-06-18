@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.util.Arrays;
+
 import org.testng.annotations.Test;
 
 @Test
@@ -11,6 +12,9 @@ public class AttributesTest extends AbstractTest {
 		Vertex vehicle = root.addInstance("Vehicle");
 		assert vehicle.getLevel() == 1 : vehicle.getLevel();
 		Vertex power = root.addInstance("Power", vehicle);
+		power.log();
+		power.getMeta().log();
+		assert root.getInstance("power") == power;
 		assert power.getComponentsStream().count() == 1;
 		assert vehicle.equals(power.getComponents().get(0));
 		assert power.isAlive();

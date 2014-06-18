@@ -107,15 +107,15 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 	}
 
 	// @SuppressWarnings("unchecked")
-		// default T getInstance(Serializable value) {
-		// return getInstance(value, Collections.emptyList());
-		// }
-		//
-		// @SuppressWarnings("unchecked")
-		// default T getInstance(Serializable value, T component) {
-		// return getInstance(value, Collections.singletonList(component));
-		// }
-	
+	// default T getInstance(Serializable value) {
+	// return getInstance(value, Collections.emptyList());
+	// }
+	//
+	// @SuppressWarnings("unchecked")
+	// default T getInstance(Serializable value, T component) {
+	// return getInstance(value, Collections.singletonList(component));
+	// }
+
 	@SuppressWarnings("unchecked")
 	default T getInstance(Serializable value, T... components) {
 		return new AncestorsService<T>() {

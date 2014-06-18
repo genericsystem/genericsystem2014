@@ -1,6 +1,7 @@
 package org.genericsystem.impl;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -34,6 +35,8 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 		if (alive != null)
 			return alive;
 		alive = getMeta().unwrap();
+		if (!alive.isAlive())
+			throw new IllegalStateException("Not Alive" + alive.info() + alive.getMeta().getInstances());
 		return alive.buildInstance().init(getLevel(), alive, unwrap(getSupersStream()), getValue(), unwrap(getComponentsStream()));
 	}
 
@@ -68,11 +71,11 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 	}
 
 	@Override
-	default T getInstance(Serializable value, @SuppressWarnings("unchecked") List<T> components) {
+	default T getInstance(Serializable value, T... components) {
 		Vertex vertex = getVertex();
 		if (vertex == null)
 			return null;
-		vertex = vertex.getInstance(value, components.stream().map(GenericService::unwrap).collect(Collectors.toList()));
+		vertex = vertex.getInstance(value, Arrays.asList(components).stream().map(GenericService::unwrap).collect(Collectors.toList()).toArray(new Vertex[components.length]));
 		if (vertex == null)
 			return null;
 		return wrap(vertex);

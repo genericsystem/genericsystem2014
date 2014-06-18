@@ -51,11 +51,11 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 
 	default boolean hasSuperSameMeta() {
 		return getSupersStream().anyMatch(x -> getMeta().equals(x.getMeta()));
-	};
+	}
 
-//	default Stream<T> getSuprasStream() {
-//		return isRoot() || hasSuperSameMeta() ? getSupersStream() : Stream.concat(Stream.of(getMeta()), getSupersStream());
-//	}
+	// default Stream<T> getSuprasStream() {
+	// return isRoot() || hasSuperSameMeta() ? getSupersStream() : Stream.concat(Stream.of(getMeta()), getSupersStream());
+	// }
 
 	default boolean inheritsFrom(T superVertex) {
 		if (this == superVertex || equals(superVertex))
