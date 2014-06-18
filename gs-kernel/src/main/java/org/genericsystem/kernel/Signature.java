@@ -47,6 +47,7 @@ public abstract class Signature<T extends Signature<T>> implements DisplayServic
 	}
 
 	private void checkDependsMetaComponents() {
+		assert getMeta().getComponents() != null;
 		if (!(componentsDepends(getComponents(), getMeta().getComponents())))
 			rollbackAndThrowException(new IllegalStateException("Inconsistant components : " + getComponents() + " " + getMeta().getComponents()));
 	}
