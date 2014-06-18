@@ -1,7 +1,6 @@
 package org.genericsystem.kernel;
 
 import java.util.Arrays;
-
 import org.genericsystem.kernel.exceptions.CrossEnginesAssignementsException;
 import org.testng.annotations.Test;
 
@@ -66,29 +65,29 @@ public class MultipleRootsTest extends AbstractTest {
 		}.assertIsCausedBy(CrossEnginesAssignementsException.class);
 	}
 
-	public void test005_setMetaAttribute_attribute() {
-		Root engine1 = new Root();
-		Root engine2 = new Root("SecondEngine");
-		Vertex metaAttribute = engine2.setMetaAttribute();
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				Vertex metaRelation = engine2.setMetaAttribute(engine1);
-			}
-		}.assertIsCausedBy(CrossEnginesAssignementsException.class);
-	}
+	// public void test005_setMetaAttribute_attribute() {
+	// Root engine1 = new Root();
+	// Root engine2 = new Root("SecondEngine");
+	// Vertex metaAttribute = engine2.setMetaAttribute();
+	// new RollbackCatcher() {
+	// @Override
+	// public void intercept() {
+	// Vertex metaRelation = engine2.setMetaAttribute(engine1);
+	// }
+	// }.assertIsCausedBy(CrossEnginesAssignementsException.class);
+	// }
 
-	public void test006_setMetaAttribute_attribute() {
-		Root engine1 = new Root();
-		Root engine2 = new Root("SecondEngine");
-		Vertex metaAttribute = engine2.setMetaAttribute();
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				Vertex metaRelation = engine2.setMetaAttribute(engine1);
-			}
-		}.assertIsCausedBy(CrossEnginesAssignementsException.class);
-	}
+	// public void test006_setMetaAttribute_attribute() {
+	// Root engine1 = new Root();
+	// Root engine2 = new Root("SecondEngine");
+	// Vertex metaAttribute = engine2.setMetaAttribute();
+	// new RollbackCatcher() {
+	// @Override
+	// public void intercept() {
+	// Vertex metaRelation = engine2.setMetaAttribute(engine1);
+	// }
+	// }.assertIsCausedBy(CrossEnginesAssignementsException.class);
+	// }
 
 	public void test007_addInstance_overrides() {
 		Root engine1 = new Root();

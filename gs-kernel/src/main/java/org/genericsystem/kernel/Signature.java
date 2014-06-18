@@ -4,9 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.genericsystem.kernel.services.BindingService;
 import org.genericsystem.kernel.services.DisplayService;
@@ -34,13 +32,11 @@ public abstract class Signature<T extends Signature<T>> implements DisplayServic
 			if (component != null) {
 				component.checkIsAlive();
 				this.components.set(i, component);
-			}
-			// FIXME : why doing next iteration?
-			else
+			} else
 				this.components.set(i, (T) this);
 		}
 		this.level = level;
-		// FIXME : what happen if meta == null => components should be equals to this: hmmmm...
+
 		checkDependsMetaComponents();
 		return (T) this;
 	}
@@ -52,7 +48,7 @@ public abstract class Signature<T extends Signature<T>> implements DisplayServic
 
 	private void checkDependsMetaComponents() {
 		if (!(componentsDepends(getComponents(), getMeta().getComponents())))
-			rollbackAndThrowException(new IllegalStateException("Inconsistant components : " + getComponentsStream().collect(Collectors.toList())));
+			rollbackAndThrowException(new IllegalStateException("Inconsistant components : " + getComponents() + " " + getMeta().getComponents()));
 	}
 
 	@Override

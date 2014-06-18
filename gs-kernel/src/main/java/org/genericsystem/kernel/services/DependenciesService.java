@@ -9,7 +9,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
@@ -71,17 +70,6 @@ public interface DependenciesService<T extends DependenciesService<T>> extends A
 	default boolean isSuperOf(T subMeta, List<T> overrides, Serializable subValue, List<T> subComponents) {
 		return overrides.stream().anyMatch(override -> override.inheritsFrom((T) this)) || inheritsFrom(subMeta, subValue, subComponents, getMeta(), getValue(), getComponents());
 	}
-
-	// TODO KK parameters overrides and subValue are never used...a level control is missing
-	default boolean isMetaOf(List<T> overrides, Serializable subValue, List<T> subComponents) {
-		return /* !subComponents.equals(getComponents()) && */(componentsDepends(subComponents, getComponents()));
-	}
-
-	// default boolean isSupraOf(T subVertex) {
-	// // return subVertex.getSuprasStream().anyMatch(supraVertex -> supraVertex.equals(this));
-	// return subVertex.isSpecializationOf((T) this);
-	// // return subVertex.inheritsFrom((T) this) || subVertex.isInstanceOf((T) this) || getInstances().stream().anyMatch(instance -> instance.isSupraOf(subVertex));
-	// }
 
 	default boolean inheritsFrom(T subMeta, Serializable subValue, List<T> subComponents, T superMeta, Serializable superValue, List<T> superComponents) {
 		if (!subMeta.inheritsFrom(superMeta))
