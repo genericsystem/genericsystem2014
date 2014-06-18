@@ -3,9 +3,7 @@ package org.genericsystem.cache;
 import java.util.Iterator;
 import java.util.function.Supplier;
 
-import org.genericsystem.impl.GenericSignature;
-
-public class Generic extends GenericSignature<Generic> implements GenericService<Generic> {
+public class Generic extends org.genericsystem.impl.GenericSignature<Generic> implements GenericService<Generic> {
 
 	@Override
 	public Generic buildInstance() {
