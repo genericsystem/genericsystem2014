@@ -280,7 +280,7 @@ public class RemovableServiceTest extends AbstractTest {
 		assert engine.isAlive();
 		assert !vehicle.isAlive();
 		assert !power.isAlive();
-		assert engine.computeAllDependencies().stream().count() == 2;
+		assert engine.computeAllDependencies().stream().count() == 1;
 		assert engine.computeAllDependencies().contains(engine);
 		assert !engine.computeAllDependencies().contains(vehicle);
 		assert !engine.computeAllDependencies().contains(power);
@@ -421,7 +421,7 @@ public class RemovableServiceTest extends AbstractTest {
 
 		List<Vertex> engineDependencies = engine.computeAllDependencies().stream().collect(Collectors.toList());
 		assert engineDependencies.size() == 2;
-		Vertex newCar = findElement("Car", engineDependencies);
+		Vertex newCar = engine.getInstance("Car");
 		assert newCar.isAlive();
 		assert "Car".equals(newCar.getValue());
 		assert newCar.computeAllDependencies().size() == 1;
@@ -447,14 +447,14 @@ public class RemovableServiceTest extends AbstractTest {
 		assert engineDependencies.size() == 3;
 		assert engine.getAllInstances().count() == 2;
 
-		Vertex newCar = findElement("Car", engineDependencies);
+		Vertex newCar = engine.getInstance("Car");
 		assert newCar.isAlive();
 		assert "Car".equals(newCar.getValue());
 		assert newCar.computeAllDependencies().size() == 1;
 		assert newCar.getAllInstances().count() == 0;
 		assert newCar.computeAllDependencies().contains(newCar);
 
-		Vertex newAutomatic = findElement("Automatic", engineDependencies);
+		Vertex newAutomatic = engine.getInstance("Automatic");
 		assert newAutomatic.isAlive();
 		assert "Automatic".equals(newAutomatic.getValue());
 		assert newAutomatic.computeAllDependencies().size() == 1;
@@ -481,13 +481,13 @@ public class RemovableServiceTest extends AbstractTest {
 		assert engineDependencies.size() == 3;
 		assert engine.getAllInstances().count() == 2;
 
-		Vertex newCar = findElement("Car", engineDependencies);
+		Vertex newCar = engine.getInstance("Car");
 		assert newCar.isAlive();
 		assert "Car".equals(newCar.getValue());
 		assert newCar.computeAllDependencies().size() == 2;
 		assert newCar.getSupersStream().count() == 0;
 
-		Vertex newAutomatic = findElement("Automatic", newCar.computeAllDependencies().stream().collect(Collectors.toList()));
+		Vertex newAutomatic = engine.getInstance("Automatic");
 		assert newAutomatic.isAlive();
 		assert "Automatic".equals(newAutomatic.getValue());
 		assert newAutomatic.computeAllDependencies().size() == 1;
@@ -514,8 +514,8 @@ public class RemovableServiceTest extends AbstractTest {
 		assert engineDependencies.size() == 3;
 		assert engine.getAllInstances().count() == 2;
 
-		Vertex newCar = findElement("Car", engineDependencies);
-		Vertex newOptions = findElement("Options", engineDependencies);
+		Vertex newCar = engine.getInstance("Car");
+		Vertex newOptions = engine.getInstance("Options");
 		assert newCar != null;
 		assert newCar.getInheritings().stream().count() == 1;
 		assert newOptions.equals(newCar.getInheritings().stream().collect(Collectors.toList()).get(0));
