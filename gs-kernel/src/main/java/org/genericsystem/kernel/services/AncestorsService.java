@@ -8,22 +8,12 @@ import java.util.stream.Stream;
 
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.services.SystemPropertiesService.WeakPredicate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public interface AncestorsService<T extends AncestorsService<T>> {
+public interface AncestorsService<T extends AncestorsService<T>> extends SignatureService<T> {
 
-	static Logger log = LoggerFactory.getLogger(AncestorsService.class);
-
-	T getMeta();
-
-	List<T> getComponents();
-
-	Stream<T> getComponentsStream();
-
-	abstract Serializable getValue();
-
-	int getLevel();
+	default int getLevel() {
+		return getMeta().getLevel() + 1;
+	}
 
 	default boolean isRoot() {
 		return false;
@@ -77,6 +67,7 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 		return equals(getAlive());
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	default T getAlive() {
 		T pluggedMeta = getMeta().getAlive();
@@ -102,6 +93,11 @@ public interface AncestorsService<T extends AncestorsService<T>> {
 	WeakPredicate getWeakPredicate();
 
 	default boolean equiv(AncestorsService<? extends AncestorsService<?>> service) {
+		if (isRoot()) {
+			if (this == service)
+				return true;
+			return Objects.equals(getValue(), service.getValue()) && AncestorsService.equivComponents(getComponents(), service.getComponents());
+		}
 		return service == null ? false : equiv(service.getMeta(), service.getValue(), service.getComponents());
 	}
 

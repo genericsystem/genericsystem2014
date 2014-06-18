@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.services.RemovableService;
 
 public abstract class RemoveRestructurator<T extends RemovableService<T>> extends HashMap<T, T> {
@@ -61,9 +62,9 @@ public abstract class RemoveRestructurator<T extends RemovableService<T>> extend
 				addThinly(getOrBuild(v), supers);
 		}
 
-		List<T> components = (List<T>) oldDependency.getComponentsStream().collect(Collectors.toList());
+		List<T> components = oldDependency.getComponentsStream().collect(Collectors.toList());
 		if (components.isEmpty()) {
-			T newDependency = meta.buildInstance((List<T>) supers, value, (List<T>) components).plug();
+			T newDependency = meta.buildInstance(supers, value, components).plug();
 			put(oldDependency, newDependency);
 			return newDependency;
 		}
