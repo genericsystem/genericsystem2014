@@ -23,10 +23,20 @@ public class CacheTest extends AbstractTest {
 		assert engine.getInstances().stream().anyMatch(g -> g.equals(vehicle));
 	}
 
+	// public void test002_getMetaComposites() {
+	// Engine engine = new Engine();
+	//
+	// assert engine.setMetaAttribute().isAlive();
+	//
+	// }
+
 	public void test001_getMetaComposites() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
+		assert engine.getInstances().contains(vehicle);
 		Generic powerVehicle = engine.addInstance("power", vehicle);
+		assert engine.getInstances().contains(vehicle);
+		assert engine.getInstances().size() == 2;
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		Generic myVehicle123 = powerVehicle.addInstance("myVehicle123", myVehicle);
 

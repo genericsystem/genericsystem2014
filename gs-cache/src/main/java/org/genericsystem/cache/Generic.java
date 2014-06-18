@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.function.Supplier;
 
 import org.genericsystem.impl.GenericSignature;
+import org.genericsystem.kernel.Dependencies;
+import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 
 public class Generic extends GenericSignature<Generic> implements GenericService<Generic> {
 
@@ -26,5 +28,25 @@ public class Generic extends GenericSignature<Generic> implements GenericService
 	@Override
 	public Generic getMap() {
 		return getRoot().getInstance(Map.class, getRoot());
+	}
+
+	@Override
+	public Dependencies<Generic> getInheritings() {
+		return getCurrentCache().getInheritings(this);
+	}
+
+	@Override
+	public Dependencies<Generic> getInstances() {
+		return getCurrentCache().getInstances(this);
+	}
+
+	@Override
+	public CompositesDependencies<Generic> getMetaComposites() {
+		return getCurrentCache().getMetaComposites(this);
+	}
+
+	@Override
+	public CompositesDependencies<Generic> getSuperComposites() {
+		return getCurrentCache().getSuperComposites(this);
 	}
 }

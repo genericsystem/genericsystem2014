@@ -1,16 +1,35 @@
 package org.genericsystem.kernel;
 
 import java.util.Arrays;
+
 import org.testng.annotations.Test;
 
 @Test
 public class AttributesTest extends AbstractTest {
 
-	public void test1Attribut() {
+	public void test001_getInstance() {
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
 		assert vehicle.getLevel() == 1 : vehicle.getLevel();
 		Vertex power = root.addInstance("Power", vehicle);
+		assert root.getInstance("Power", vehicle) == power;
+		assert root.selectInstances("Power").count() == 1;
+		assert root.selectInstances("Power").anyMatch(x -> x.equals(power));
+		assert power.getComponentsStream().count() == 1;
+		assert vehicle.equals(power.getComponents().get(0));
+		assert power.isAlive();
+	}
+
+	public void test002_getInstance() {
+		Root root = new Root();
+		Vertex vehicle = root.addInstance("Vehicle");
+		assert vehicle.getLevel() == 1 : vehicle.getLevel();
+		Vertex powerType = root.addInstance("Power");
+		Vertex power = root.addInstance("Power", vehicle);
+		assert root.getInstance("Power", vehicle) == power;
+		assert root.selectInstances("Power").count() == 2;
+		assert root.selectInstances("Power").anyMatch(x -> x.equals(powerType));
+		assert root.selectInstances("Power").anyMatch(x -> x.equals(power));
 		assert power.getComponentsStream().count() == 1;
 		assert vehicle.equals(power.getComponents().get(0));
 		assert power.isAlive();
