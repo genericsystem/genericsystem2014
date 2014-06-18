@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.Arrays;
 import java.util.Collections;
+
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.genericsystem.kernel.services.RemovableService.RemoveStrategy;
 import org.testng.annotations.Test;
@@ -67,8 +68,7 @@ public class VertexTest extends AbstractTest {
 		assert !yellow.inheritsFrom(red);
 		assert !yellow.isInstanceOf(red);
 		assert myBmwRed == vehicleColor.setInstance("myBmwRed", myBmw, red);
-		assert myBmwRed == vehicleColor.getInstance("myBmwRed", myBmw, red) : vehicleColor.getInstance("myBmwRed", myBmw, red).info();
-
+		assert myBmwRed == vehicleColor.getInstance("myBmwRed", Arrays.asList(myBmw, red)) : vehicleColor.getInstance("myBmwRed", Arrays.asList(myBmw, red)).info();
 		assert myBmwRed.inheritsFrom(carRed);
 		assert car.getAttributes(engine).contains(power) : car.getAttributes(engine);
 		assert car.getAttributes(engine).contains(vehicleColor) : car.getAttributes(engine);

@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.exceptions.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.kernel.services.RemovableService.RemoveStrategy;
 import org.testng.annotations.Test;
@@ -279,8 +280,10 @@ public class RemovableServiceTest extends AbstractTest {
 		assert engine.isAlive();
 		assert !vehicle.isAlive();
 		assert !power.isAlive();
-		assert engine.computeAllDependencies().stream().count() == 1;
+		assert engine.computeAllDependencies().stream().count() == 2;
 		assert engine.computeAllDependencies().contains(engine);
+		assert !engine.computeAllDependencies().contains(vehicle);
+		assert !engine.computeAllDependencies().contains(power);
 	}
 
 	public void test124_remove_relation_ForceStrategy() {
