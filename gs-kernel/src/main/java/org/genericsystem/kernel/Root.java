@@ -11,8 +11,6 @@ public class Root extends Vertex implements RootService<Vertex> {
 
 	public Root(Serializable value) {
 		init(0, null, Collections.emptyList(), value, Collections.emptyList());
-
-		// buildInstance(Collections.emptyList(), value, Arrays.asList(this)).plug();
 	}
 
 	@Override

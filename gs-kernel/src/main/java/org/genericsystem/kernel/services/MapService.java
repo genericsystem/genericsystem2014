@@ -31,9 +31,8 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 	default T setMap() {
 		T map = getMap();
 		if (map == null) {
-			map = getRoot().setInstance(Map.class, getRoot());// .enablePropertyConstraint();
-			log.info(map.info() + " / " + getMap());
-			assert map == getMap();// getMap is unable to find map cause of meta attribute creation !!!
+			map = getRoot().setInstance(Map.class, getRoot()).enablePropertyConstraint();
+			assert map == getMap();
 		}
 		return map;
 	}
@@ -49,9 +48,9 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 
 	@SuppressWarnings("unchecked")
 	default T setKey(AxedPropertyClass property) {
-		Optional<T> key = getKey(property);
-		if (key.isPresent())
-			return key.get();
+		// Optional<T> key = getKey(property);
+		// if (key.isPresent())
+		// return key.get();
 		T root = getRoot();
 		return root.setInstance(setMap(), (Serializable) property, root);
 	}
