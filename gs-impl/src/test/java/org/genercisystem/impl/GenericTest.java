@@ -2,10 +2,8 @@ package org.genercisystem.impl;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
-import org.genericsystem.impl.Engine;
-import org.genericsystem.impl.Generic;
+
 import org.genericsystem.kernel.Statics;
-import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.genericsystem.kernel.services.RemovableService.RemoveStrategy;
@@ -34,12 +32,13 @@ public class GenericTest extends AbstractTest {
 	public void testGetInstances() {
 		Engine engine = new Engine();
 		assert engine.getInstances().isEmpty();
-		Vertex vehicleVertex = engine.getVertex().addInstance("Vehicle");
-		Vertex powerVehicleVertex = engine.getVertex().addInstance("Power", vehicleVertex);
+		Generic vehicleVertex = engine.addInstance("Vehicle");
+		Generic powerVehicleVertex = engine.addInstance("Power", vehicleVertex);
 		Generic vehicle = engine.getInstances().filter(g -> g.getValue().equals("Vehicle")).stream().findFirst().get();
-		Generic powerVehicle = engine.getInstances().filter(g -> g.getValue().equals("Power")).stream().findFirst().get();
+		Generic metaAttribut = engine.getInstances().filter(g -> g.getValue().equals("Engine") && g.getComponentsStream().count() == 1).stream().findFirst().get();
+		Generic powerVehicle = metaAttribut.getInstances().filter(g -> g.getValue().equals("Power")).stream().findFirst().get();
 		assert vehicle.getAlive().equiv(vehicleVertex) : engine.getInstances();
-		assert powerVehicle.getAlive().equiv(powerVehicleVertex) : engine.getInstances();
+		assert powerVehicle.getAlive().equiv(powerVehicleVertex) : metaAttribut.getInstances();
 	}
 
 	public void testAddInstance() {

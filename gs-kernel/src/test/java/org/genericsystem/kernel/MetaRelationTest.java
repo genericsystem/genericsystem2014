@@ -1,5 +1,7 @@
 package org.genericsystem.kernel;
 
+import java.util.Collections;
+
 import org.testng.annotations.Test;
 
 @Test
@@ -9,7 +11,7 @@ public class MetaRelationTest extends AbstractTest {
 
 		Root engine = new Root();
 		Vertex metaAttribute = engine.setMetaAttribute();
-		Vertex metaRelation = engine.setMetaAttribute(engine);
+		Vertex metaRelation = engine.setMetaAttribute(Collections.singletonList(engine));
 		assert metaRelation.getMeta() == metaAttribute;
 		assert metaRelation.inheritsFrom(metaAttribute);
 	}
@@ -18,7 +20,7 @@ public class MetaRelationTest extends AbstractTest {
 
 		Root engine = new Root();
 		Vertex metaAttribute = engine.setMetaAttribute();
-		Vertex metaRelation = engine.setMetaAttribute(engine);
+		Vertex metaRelation = engine.setMetaAttribute(Collections.singletonList(engine));
 		Vertex car = engine.addInstance("Car");
 		Vertex power = engine.addInstance("Power", car);
 		Vertex color = engine.addInstance("Color");
