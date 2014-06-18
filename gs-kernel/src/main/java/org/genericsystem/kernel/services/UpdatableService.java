@@ -101,7 +101,9 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 				return weakInstance;
 			return weakInstance.update(overrides, value, components);
 		}
-		return buildInstance(overrides, value, Arrays.asList(components)).plug();
+		T result = buildInstance(overrides, value, Arrays.asList(components)).plug();
+		// assert result.isAlive();
+		return result;
 	}
 
 	// default T updateInstance(T instance, List<T> overrides, Serializable value, List<T> components) {
