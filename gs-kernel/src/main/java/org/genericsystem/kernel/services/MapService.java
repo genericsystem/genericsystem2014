@@ -32,9 +32,9 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 	default T setMap() {
 		T map = getMap();
 		if (map == null) {
-			map = getRoot().setInstance(Map.class, getRoot());
+			map = getRoot().setInstance(Map.class, getRoot());// .enablePropertyConstraint();
+//			log.info(map.info() + " / " + getMap());
 			assert map == getMap();// getMap is unable to find map cause of meta attribute creation !!!
-			map.enablePropertyConstraint();
 		}
 		return map;
 	}
