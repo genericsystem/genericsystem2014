@@ -6,15 +6,15 @@ import org.genericsystem.cache.Cache;
 import org.genericsystem.cache.Context;
 import org.genericsystem.concurrency.cache.CacheConcurrency;
 import org.genericsystem.concurrency.cache.ContextConcurrency;
-import org.genericsystem.kernel.services.AncestorsService;
+import org.genericsystem.kernel.services.SignatureService;
 
 public interface EngineServiceConcurrency<T extends GenericServiceConcurrency<T>> extends org.genericsystem.cache.EngineService<T>, GenericServiceConcurrency<T> {
 
 	@Override
-	default boolean equiv(AncestorsService<?> service) {
+	default boolean equiv(SignatureService<?> service) {
 		if (this == service)
 			return true;
-		return Objects.equals(getValue(), service.getValue()) && AncestorsService.equivComponents(getComponents(), service.getComponents());
+		return Objects.equals(getValue(), service.getValue()) && SignatureService.equivComponents(getComponents(), service.getComponents());
 	}
 
 	@Override
