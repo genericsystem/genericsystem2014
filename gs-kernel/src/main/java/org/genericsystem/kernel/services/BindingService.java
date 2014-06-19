@@ -74,7 +74,6 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 		T nearestMeta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
 		if (nearestMeta != this)
 			return nearestMeta.getInstance(value, components);
-
 		T alive = getAlive();
 		if (alive == null)
 			return null;

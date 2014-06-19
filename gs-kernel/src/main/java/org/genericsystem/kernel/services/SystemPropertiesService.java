@@ -1,15 +1,20 @@
 package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.function.BiPredicate;
 
 import org.genericsystem.kernel.Statics;
 
 public interface SystemPropertiesService<T extends SystemPropertiesService<T>> extends AncestorsService<T> {
+
+	@Override
+	default BiPredicate<Serializable, Serializable> getValuesBiPredicate() {
+		if (isPropertyConstraintEnabled())
+			return VALUE_IGNORED;
+		// if (isMapConstraintEnabled())
+		// return KEY_EQUALS;
+		return VALUE_EQUALS.or(KEY_EQUALS);
+	}
 
 	Serializable getSystemPropertyValue(Class<?> propertyClass, int pos);
 
@@ -127,40 +132,6 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 
 	public static class CascadeRemoveProperty implements SystemProperty {
 
-	}
-
-	public static BiPredicate<Serializable, Serializable> VALUE_EQUALS = (X, Y) -> Objects.equals(X, Y);
-	public static BiPredicate<Serializable, Serializable> VALUE_IGNORED = (X, Y) -> true;
-	public static BiPredicate<Serializable, Serializable> KEY_EQUALS = (X, Y) -> (X instanceof Entry) && (Y instanceof Entry) && Objects.equals(((Entry<?, ?>) X).getKey(), ((Entry<?, ?>) Y).getKey());
-
-	default BiPredicate<Serializable, Serializable> getValuesBiPredicate() {
-		if (isPropertyConstraintEnabled())
-			return VALUE_IGNORED;
-		// if (isMapConstraintEnabled())
-		// return KEY_EQUALS;
-		return VALUE_EQUALS.or(KEY_EQUALS);
-	}
-
-	public static BiPredicate<List<? extends AncestorsService<?>>, List<? extends AncestorsService<?>>> SIZE_EQUALS = (X, Y) -> {
-		return X.size() == Y.size();
-	};
-
-	public static BiPredicate<List<? extends AncestorsService<?>>, List<? extends AncestorsService<?>>> WEAK_EQUIV = (X, Y) -> {
-		if (!SIZE_EQUALS.test(X, Y))
-			return false;
-		Iterator<? extends AncestorsService<?>> otherComponentsIt = Y.iterator();
-		boolean result = X.stream().allMatch(x -> x.weakEquiv(otherComponentsIt.next()));
-		return result;
-	};
-
-	@FunctionalInterface
-	public interface WeakPredicate {
-		boolean test(Serializable value, List<? extends AncestorsService<?>> components, Serializable otherValue, List<? extends AncestorsService<?>> otherComponents);
-	}
-
-	@Override
-	default WeakPredicate getWeakPredicate() {
-		return (value, components, otherValue, otherComponents) -> WEAK_EQUIV.test(components, otherComponents) && getValuesBiPredicate().test(value, otherValue);
 	}
 
 	static class AxedPropertyClass implements Serializable {

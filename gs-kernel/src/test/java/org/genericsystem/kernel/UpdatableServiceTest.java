@@ -1,6 +1,5 @@
 package org.genericsystem.kernel;
 
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -63,15 +62,15 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert !engineAliveDependencies.contains(car);
 		assert !engineAliveDependencies.contains(newBeetle);
 
-		Vertex vertex1asNewVehicle = findElement(newValue, engineAliveDependencies.stream().collect(Collectors.toList()));
+		Vertex vertex1asNewVehicle = engine.getInstance(newValue);
 		assert vertex1asNewVehicle != null;
 		assert engine.equals(vertex1asNewVehicle.getMeta());
 
-		Vertex vertex2asNewCar = findElement(valueCar, engineAliveDependencies.stream().collect(Collectors.toList()));
+		Vertex vertex2asNewCar = vertex1asNewVehicle.getInstance(valueCar);
 		assert vertex2asNewCar != null;
 		assert vertex1asNewVehicle.equals(vertex2asNewCar.getMeta());
 
-		Vertex vertex3asNewNewBeetle = findElement(valueNewBeetle, engineAliveDependencies.stream().collect(Collectors.toList()));
+		Vertex vertex3asNewNewBeetle = vertex2asNewCar.getInstance(valueNewBeetle);
 		assert vertex3asNewNewBeetle != null;
 		assert vertex2asNewCar.equals(vertex3asNewNewBeetle.getMeta());
 	}
@@ -92,11 +91,11 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert !engineAliveDependencies.contains(car);
 		assert !engineAliveDependencies.contains(newBeetle);
 
-		Vertex vertex1asNewCar = findElement(newValue, engineAliveDependencies.stream().collect(Collectors.toList()));
+		Vertex vertex1asNewCar = vehicle.getInstance(newValue);
 		assert vertex1asNewCar != null;
 		assert vehicle.equals(vertex1asNewCar.getMeta());
 
-		Vertex vertex2asNewNewBeetle = findElement(valueNewBeetle, engineAliveDependencies.stream().collect(Collectors.toList()));
+		Vertex vertex2asNewNewBeetle = vertex1asNewCar.getInstance(valueNewBeetle);
 		assert vertex2asNewNewBeetle != null;
 		assert vertex1asNewCar.equals(vertex2asNewNewBeetle.getMeta());
 	}
@@ -144,7 +143,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert !power.isAlive();
 		assert engine.equals(newVehicle.getMeta());
 		assert engine.computeAllDependencies().contains(newVehicle);
-		Vertex newPower = findElement("Power", engine.computeAllDependencies().stream().collect(Collectors.toList()));
+		Vertex newPower = engine.getInstance("Power", newVehicle);
 		assert newPower.getComponentsStream().count() == 1;
 		Vertex componentOfPower = newPower.getComponents().get(0);
 		assert newVehicle.getValue().equals(componentOfPower.getValue());
@@ -171,43 +170,33 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert engine.equals(engine.getMeta());
 		assert engine.equals(machine.getMeta());
 		assert engine.equals(vehicle.getMeta());
-		assert !engine.equals(power.getMeta());
+		assert engine.equals(power.getMeta());
 		assert vehicle.equals(car.getMeta());
 
 		assert newValue.equals(newMachine.getValue());
 		assert newMachine.getComponents().size() == 0;
 		assert newMachine.getSupersStream().count() == 0;
-		assert newMachine.computeAllDependencies().size() == 4;
 		assert newMachine.getInstances().size() == 0;
 		assert newMachine.getInheritings().size() == 1;
 
-		assert engine.getComponents().size() == 0;
-		assert engine.getSupersStream().count() == 0;
-		assert engine.computeAllDependencies().size() == 6;
-		assert engine.getInstances().size() == 3 : engine.getInstances().size();
-		assert engine.getInheritings().size() == 1 : engine.getInheritings().size();
-
-		Vertex newVehicle = findElement("Vehicle", newMachine.computeAllDependencies().stream().collect(Collectors.toList()));
+		Vertex newVehicle = engine.getInstance("Vehicle");
 		assert newVehicle != null;
 		assert newVehicle.getComponents().size() == 0;
 		assert newVehicle.getSupersStream().count() == 1;
-		assert newVehicle.computeAllDependencies().size() == 3;
 		assert newVehicle.getInstances().size() == 1;
 		assert newVehicle.getInheritings().size() == 0;
 
-		Vertex newPower = findElement("Power", newMachine.computeAllDependencies().stream().collect(Collectors.toList()));
+		Vertex newPower = engine.getInstance("Power", newVehicle);
 		assert newPower != null;
 		assert newPower.getComponents().size() == 1;
 		assert newPower.getSupersStream().count() == 0;
-		assert newPower.computeAllDependencies().size() == 1;
 		assert newPower.getInstances().size() == 0;
 		assert newPower.getInheritings().size() == 0;
 
-		Vertex newCar = findElement("Car", newMachine.computeAllDependencies().stream().collect(Collectors.toList()));
+		Vertex newCar = newVehicle.getInstance("Car");
 		assert newCar != null;
 		assert newCar.getComponents().size() == 0;
 		assert newCar.getSupersStream().count() == 0;
-		assert newCar.computeAllDependencies().size() == 1;
 		assert newCar.getInstances().size() == 0;
 		assert newCar.getInheritings().size() == 0;
 	}
@@ -226,18 +215,11 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert vehicle.isAlive();
 		assert !car.isAlive();
 
-		LinkedHashSet<Vertex> engineDependencies = engine.computeAllDependencies();
-		assert engineDependencies.size() == 3;
 		assert engine.getAllInstances().count() == 2;
 
-		Vertex newVehicle = findElement("Vehicle", engineDependencies.stream().collect(Collectors.toList()));
-		LinkedHashSet<Vertex> newVehicleDependencies = newVehicle.computeAllDependencies();
-		assert newVehicleDependencies.size() == 2;
+		Vertex newVehicle = engine.getInstance("Vehicle");
 		assert newVehicle.getInheritings().size() == 1;
-
-		Vertex newCar = findElement("Car", newVehicleDependencies.stream().collect(Collectors.toList()));
-		assert newCar.computeAllDependencies().size() == 1;
-		assert newCar.getSupersStream().count() == 1;
+		assert engine.getInstance("Car").getSupersStream().count() == 1;
 	}
 
 	public void test101_addSuper_TypeBetweenTwoTypes() {
@@ -259,18 +241,18 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert engineDependencies.size() == 4;
 		assert engine.getAllInstances().count() == 3;
 
-		Vertex newVehicle = findElement("Vehicle", engineDependencies.stream().collect(Collectors.toList()));
+		Vertex newVehicle = engine.getInstance("Vehicle");
 		LinkedHashSet<Vertex> newVehicleDependencies = newVehicle.computeAllDependencies();
 		assert newVehicleDependencies.size() == 3;
 		assert newVehicle.getInheritings().size() == 1;
 
-		Vertex newFourWheels = findElement("FourWheels", engineDependencies.stream().collect(Collectors.toList()));
+		Vertex newFourWheels = engine.getInstance("FourWheels");
 		LinkedHashSet<Vertex> newFourWheelsDependencies = newFourWheels.computeAllDependencies();
 		assert newFourWheelsDependencies.size() == 2;
 		assert newFourWheels.getInheritings().size() == 1;
 		assert newFourWheels.getSupersStream().count() == 1;
 
-		Vertex newCar = findElement("Car", newVehicleDependencies.stream().collect(Collectors.toList()));
+		Vertex newCar = engine.getInstance("Car");
 		assert newCar.computeAllDependencies().size() == 1;
 		assert newCar.getSupersStream().count() == 1;
 	}
@@ -293,12 +275,12 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert engineDependencies.size() == 3;
 		assert engine.getAllInstances().count() == 2;
 
-		Vertex newVehicle = findElement("Vehicle", engineDependencies.stream().collect(Collectors.toList()));
+		Vertex newVehicle = engine.getInstance("Vehicle");
 		LinkedHashSet<Vertex> newVehicleDependencies = newVehicle.computeAllDependencies();
 		assert newVehicleDependencies.size() == 2;
 		assert newVehicle.getInheritings().size() == 1;
 
-		Vertex newCar = findElement("Car", engineDependencies.stream().collect(Collectors.toList()));
+		Vertex newCar = engine.getInstance("Car");
 		assert newCar.computeAllDependencies().size() == 1;
 		assert newCar.getSupersStream().count() == 1;
 	}
@@ -341,21 +323,17 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert myVehicleGreen.isAlive();
 		assert fourWheels.isAlive();
 
-		LinkedHashSet<Vertex> engineDependencies = engine.computeAllDependencies();
-		assert engineDependencies.size() == 17 : engineDependencies.size();
-		assert engine.getAllInstances().count() == 9 : engine.getAllInstances().count();
-
-		Vertex newVehicle = findElement("Vehicle", engineDependencies.stream().collect(Collectors.toList()));
+		Vertex newVehicle = engine.getInstance("Vehicle");
 		LinkedHashSet<Vertex> newVehicleDependencies = newVehicle.computeAllDependencies();
 		assert newVehicleDependencies.size() == 9;
 		assert newVehicle.getInheritings().size() == 1;
 
-		Vertex newFourWheels = findElement("FourWheels", engineDependencies.stream().collect(Collectors.toList()));
+		Vertex newFourWheels = engine.getInstance("FourWheels");
 		assert newFourWheels.computeAllDependencies().size() == 5;
 		assert newFourWheels.getInheritings().size() == 1;
 		assert newFourWheels.getSupersStream().count() == 1;
 
-		Vertex newCar = findElement("Car", engineDependencies.stream().collect(Collectors.toList()));
+		Vertex newCar = engine.getInstance("Car");
 		assert newCar.computeAllDependencies().size() == 4;
 		assert newCar.getSupersStream().count() == 1;
 	}
@@ -393,20 +371,9 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert !myCarRed.isAlive();
 		assert myVehicleGreen.isAlive();
 
-		LinkedHashSet<Vertex> engineDependencies = engine.computeAllDependencies();
-		assert engineDependencies.size() == 15 : engineDependencies.size();
-		assert engine.getAllInstances().count() == 7 : engine.getAllInstances().count();
-
-		Vertex newCarBlue = findElement("MyCarRed", engineDependencies.stream().collect(Collectors.toList()));
-		assert newCarBlue.computeAllDependencies().size() == 1;
+		Vertex newCarBlue = vehicleColor.getInstance("MyCarRed", myCar, blue);
 		List<Vertex> newCarBlueComponents = newCarBlue.getComponents();
 		assert newCarBlueComponents.size() == 2;
-
-		Vertex blueFromNewCarBlueComponent = findElement("Blue", newCarBlueComponents.stream().collect(Collectors.toList()));
-		assert blueFromNewCarBlueComponent != null;
-
-		Vertex myCarFromNewCarBlueComponent = findElement("MyCar", newCarBlueComponents.stream().collect(Collectors.toList()));
-		assert myCarFromNewCarBlueComponent != null;
 	}
 
 	public void test201_replaceComponent_KO() {
@@ -416,7 +383,6 @@ public class UpdatableServiceTest extends AbstractTest {
 		Vertex myCar = car.addInstance("MyCar");
 		Vertex color = engine.addInstance("Color");
 		Vertex red = color.addInstance("Red");
-		Vertex green = color.addInstance("Green");
 		Vertex blue = color.addInstance("Blue");
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Vertex myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
@@ -443,51 +409,39 @@ public class UpdatableServiceTest extends AbstractTest {
 		Vertex myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
 
 		// when
-		myCarRed.update(Collections.emptyList(), "MyCarBlue", myCar, blue);
+		myCarRed.update("MyCarBlue", myCar, blue);
 
 		// then
-		LinkedHashSet<Vertex> engineDependencies = engine.computeAllDependencies();
-		assert engineDependencies.size() == 10 : engineDependencies.size();
-		assert engine.getAllInstances().count() == 5 : engine.getAllInstances().count();
+		assert vehicleColor.getInstance("MyCarRed", myCar, blue) == null;
+		assert vehicleColor.getInstance("MyCarRed", myCar, red) == null;
+		assert vehicleColor.getInstance("MyCarBlue", myCar, red) == null;
 
-		Vertex newCarRed = findElement("MyCarRed", engineDependencies.stream().collect(Collectors.toList()));
-		assert newCarRed == null;
-
-		Vertex newCarBlue = findElement("MyCarBlue", engineDependencies.stream().collect(Collectors.toList()));
+		Vertex newCarBlue = vehicleColor.getInstance("MyCarBlue", myCar, blue);
 		assert newCarBlue.computeAllDependencies().size() == 1;
 		List<Vertex> newCarBlueComponents = newCarBlue.getComponents();
 		assert newCarBlueComponents.size() == 2;
-
-		Vertex redFromNewCarBlueComponent = findElement("Red", newCarBlueComponents.stream().collect(Collectors.toList()));
-		assert redFromNewCarBlueComponent == null;
-
-		Vertex blueFromNewCarBlueComponent = findElement("Blue", newCarBlueComponents.stream().collect(Collectors.toList()));
-		assert blueFromNewCarBlueComponent != null;
-
-		Vertex myCarFromNewCarBlueComponent = findElement("MyCar", newCarBlueComponents.stream().collect(Collectors.toList()));
-		assert myCarFromNewCarBlueComponent != null;
 	}
 
-	// public void test301_replaceComponentWithValueModification_KO() {
-	// Vertex engine = new Root();
-	// Vertex vehicle = engine.addInstance("Vehicle");
-	// Vertex car = engine.addInstance(vehicle, "Car");
-	// Vertex myCar = car.addInstance("MyCar");
-	// Vertex color = engine.addInstance("Color");
-	// Vertex red = color.addInstance("Red");
-	// Vertex green = color.addInstance("Green");
-	// Vertex blue = color.addInstance("Blue");
-	// Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-	// Vertex myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
-	//
-	// new RollbackCatcher() {
-	// @Override
-	// public void intercept() {
-	// // when
-	// myCarRed.replaceComponentWithValueModification(green, blue, "MyCarBlue");
-	// }
-	// // then
-	// }.assertIsCausedBy(NotFoundException.class);
-	// }
+	public void test301_replaceComponentWithValueModification_InsistentExceptionKO() {
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex myCar = car.addInstance("MyCar");
+		Vertex color = engine.addInstance("Color");
+		Vertex red = color.addInstance("Red");
+		Vertex green = color.addInstance("Green");
+		Vertex blue = color.addInstance("Blue");
+		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Vertex myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
+
+		new RollbackCatcher() {
+			@Override
+			public void intercept() {
+				// when
+				myCarRed.update("MyCarBlue", green, blue);
+			}
+			// then
+		}.assertIsCausedBy(IllegalStateException.class);
+	}
 
 }

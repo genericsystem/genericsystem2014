@@ -1,4 +1,5 @@
-//package org.genericsystem.api;
+package org.genericsystem.api;
+
 //
 //import java.io.Serializable;
 //import java.util.Arrays;

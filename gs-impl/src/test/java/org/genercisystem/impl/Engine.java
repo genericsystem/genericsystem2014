@@ -45,9 +45,7 @@ public class Engine extends Generic implements EngineService<Generic> {
 
 	@Override
 	public boolean equiv(SignatureService<?> service) {
-		if (this == service)
-			return true;
-		return Objects.equals(getValue(), service.getValue()) && SignatureService.equivComponents(getComponents(), service.getComponents());
+		return EngineService.super.equiv(service);
 	}
 
 }
