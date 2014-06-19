@@ -133,22 +133,22 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 
 	@Override
 	public Dependencies<T> getInheritings(T generic) {
-		return getDependencies(generic, inheritingDependenciesMap, () -> iteratorFromAlive(generic, subContext.getInheritings(generic)));
+		return getDependencies(generic, inheritingDependenciesMap, () -> inheritingsIteratorFromAlive(generic));
 	}
 
 	@Override
 	public Dependencies<T> getInstances(T generic) {
-		return getDependencies(generic, instancesDependenciesMap, () -> iteratorFromAlive(generic, subContext.getInstances(generic)));
+		return getDependencies(generic, instancesDependenciesMap, () -> instancesIteratorFromAlive(generic));
 	}
 
 	@Override
 	public CompositesDependencies<T> getMetaComposites(T generic) {
-		return getCompositesDependencies(generic, metaCompositesDependenciesMap, () -> iteratorFromAliveComposite(generic, subContext.getMetaComposites(generic)));
+		return getCompositesDependencies(generic, metaCompositesDependenciesMap, () -> metaCompositeIteratorFromAlive(generic));
 	}
 
 	@Override
 	public CompositesDependencies<T> getSuperComposites(T generic) {
-		return getCompositesDependencies(generic, superCompositesDependenciesMap, () -> iteratorFromAliveComposite(generic, subContext.getSuperComposites(generic)));
+		return getCompositesDependencies(generic, superCompositesDependenciesMap, () -> superCompositeIteratorFromAlive(generic));
 	}
 
 	protected Dependencies<T> getDependencies(T generic, Map<T, Dependencies<T>> dependenciesMap, Supplier<Iterator<T>> iteratorSupplier) {
@@ -165,12 +165,22 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 		return dependencies;
 	}
 
-	private Iterator<T> iteratorFromAlive(T generic, Dependencies<T> dependencies) {
-		return generic.getVertex() == null ? Collections.emptyIterator() : dependencies.iterator();
+	// static <U extends GenericService<U>> Iterator<U> iteratorFromAlive(U generic) {
+
+	private Iterator<T> inheritingsIteratorFromAlive(T generic) {
+		return generic.getVertex() == null ? Collections.emptyIterator() : subContext.getInheritings(generic).iterator();
 	}
 
-	private Iterator<DependenciesEntry<T>> iteratorFromAliveComposite(T generic, CompositesDependencies<T> dependencies) {
-		return generic.getVertex() == null ? Collections.emptyIterator() : dependencies.iterator();
+	private Iterator<T> instancesIteratorFromAlive(T generic) {
+		return generic.getVertex() == null ? Collections.emptyIterator() : subContext.getInstances(generic).iterator();
+	}
+
+	private Iterator<DependenciesEntry<T>> metaCompositeIteratorFromAlive(T generic) {
+		return generic.getVertex() == null ? Collections.emptyIterator() : subContext.getMetaComposites(generic).iterator();
+	}
+
+	private Iterator<DependenciesEntry<T>> superCompositeIteratorFromAlive(T generic) {
+		return generic.getVertex() == null ? Collections.emptyIterator() : subContext.getSuperComposites(generic).iterator();
 	}
 
 	@Override

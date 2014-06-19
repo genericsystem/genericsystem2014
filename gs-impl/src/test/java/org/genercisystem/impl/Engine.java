@@ -2,11 +2,13 @@ package org.genercisystem.impl;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.Objects;
+
 import org.genericsystem.impl.EngineService;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
-import org.genericsystem.kernel.services.AncestorsService;
+import org.genericsystem.kernel.services.SignatureService;
 
 public class Engine extends Generic implements EngineService<Generic> {
 
@@ -42,7 +44,8 @@ public class Engine extends Generic implements EngineService<Generic> {
 	}
 
 	@Override
-	public boolean equiv(AncestorsService<? extends AncestorsService<?>> service) {
+	public boolean equiv(SignatureService<?> service) {
 		return EngineService.super.equiv(service);
 	}
+
 }

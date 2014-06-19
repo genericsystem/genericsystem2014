@@ -30,6 +30,14 @@ public class CacheTest extends AbstractTest {
 	//
 	// }
 
+	public void test001_3LevelsOfInstanciation() {
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = vehicle.addInstance("Car");
+		Generic myCar = car.addInstance("myCar");
+		Generic powerVehicle = engine.addInstance("power", vehicle);
+	}
+
 	public void test001_getMetaComposites() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
@@ -40,7 +48,7 @@ public class CacheTest extends AbstractTest {
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		Generic myVehicle123 = powerVehicle.addInstance("myVehicle123", myVehicle);
 
-		assert myVehicle.getMetaComposites(powerVehicle).stream().anyMatch(g -> g.equals(myVehicle123));
+		assert myVehicle.getMetaComposites().getByIndex(powerVehicle).stream().anyMatch(g -> g.equals(myVehicle123));
 	}
 
 	public void test002_flush() {
