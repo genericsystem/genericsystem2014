@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
@@ -67,13 +68,12 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 				return instance;
 		return null;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	default T getWeakInstance(Serializable value, T... components) {
 		T nearestMeta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
 		if (nearestMeta != this)
 			return nearestMeta.getInstance(value, components);
-
 		T alive = getAlive();
 		if (alive == null)
 			return null;

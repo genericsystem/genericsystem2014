@@ -3,7 +3,6 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public abstract class ExtendedSignature<T extends ExtendedSignature<T>> extends Signature<T> {
 
@@ -34,11 +33,6 @@ public abstract class ExtendedSignature<T extends ExtendedSignature<T>> extends 
 			if (!superVertex.isSuperOf(getMeta(), supers, getValue(), getComponents()))
 				rollbackAndThrowException(new IllegalStateException("Inconsistant components : " + getComponentsStream().collect(Collectors.toList())));
 		});
-	}
-
-	@Override
-	public Stream<T> getSupersStream() {
-		return supers.stream();
 	}
 
 	@Override
