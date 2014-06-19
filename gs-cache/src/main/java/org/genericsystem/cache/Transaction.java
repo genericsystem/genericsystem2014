@@ -36,22 +36,16 @@ public class Transaction<T extends GenericService<T>> implements Context<T> {
 
 	@Override
 	public Dependencies<T> getInheritings(T generic) {
-		if (generic.getVertex() == null)
-			return null;
 		return generic.unwrap().getInheritings().project(generic::wrap, org.genericsystem.impl.GenericService::unwrap);
 	}
 
 	@Override
 	public Dependencies<T> getInstances(T generic) {
-		if (generic.getVertex() == null)
-			return null;
 		return generic.unwrap().getInstances().project(generic::wrap, org.genericsystem.impl.GenericService::unwrap);
 	}
 
 	@Override
 	public CompositesDependencies<T> getMetaComposites(T generic) {
-		if (generic.getVertex() == null)
-			return null;
 		return generic.unwrap().getMetaComposites().projectComposites(generic::wrap, org.genericsystem.impl.GenericService::unwrap);
 	}
 
