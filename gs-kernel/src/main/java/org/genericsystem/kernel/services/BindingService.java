@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
@@ -59,38 +60,28 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 		T nearestMeta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
 		if (nearestMeta != this)
 			return nearestMeta.getInstance(value, components);
-		return new AncestorsService<T>() {
+		T pluggedMeta = getAlive();
+		if (pluggedMeta == null)
+			return null;
+		for (T instance : (Snapshot<T>) (((DependenciesService<?>) pluggedMeta).getInstances()))
+			if (instance.equiv(pluggedMeta, value, Arrays.asList(components)))
+				return instance;
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	default T getWeakInstance(Serializable value, T... components) {
+		T nearestMeta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
+		if (nearestMeta != this)
+			return nearestMeta.getInstance(value, components);
 
-			@Override
-			public T getMeta() {
-				return (T) BindingService.this;
-			}
-
-			@Override
-			public List<T> getComponents() {
-				return Arrays.asList(components);
-			}
-
-			@Override
-			public Serializable getValue() {
-				return value;
-			}
-
-			@Override
-			public int getLevel() {
-				return getMeta().getLevel() + 1;
-			}
-
-			@Override
-			public List<T> getSupers() {
-				return Collections.emptyList();
-			}
-
-			@Override
-			public WeakPredicate getWeakPredicate() {
-				throw new UnsupportedOperationException();
-			}
-		}.getAlive();
+		T alive = getAlive();
+		if (alive == null)
+			return null;
+		for (T instance : (Snapshot<T>) (((DependenciesService<?>) alive).getInstances()))
+			if (instance.weakEquiv(alive, value, Arrays.asList(components)))
+				return instance;
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -99,45 +90,6 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 		if (result != null && supers.stream().allMatch(superT -> result.inheritsFrom(superT)))
 			return result;
 		return null;
-	}
-
-	@SuppressWarnings("unchecked")
-	default T getWeakInstance(Serializable value, T... components) {
-		T nearestMeta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
-		if (nearestMeta != this)
-			return nearestMeta.getInstance(value, components);
-		return new AncestorsService<T>() {
-
-			@Override
-			public T getMeta() {
-				return (T) BindingService.this;
-			}
-
-			@Override
-			public List<T> getComponents() {
-				return Arrays.asList(components);
-			}
-
-			@Override
-			public Serializable getValue() {
-				return value;
-			}
-
-			@Override
-			public int getLevel() {
-				return getMeta().getLevel() + 1;
-			}
-
-			@Override
-			public List<T> getSupers() {
-				return Collections.emptyList();
-			}
-
-			@Override
-			public WeakPredicate getWeakPredicate() {
-				throw new UnsupportedOperationException();
-			}
-		}.getWeakAlive();
 	}
 
 	@Override
