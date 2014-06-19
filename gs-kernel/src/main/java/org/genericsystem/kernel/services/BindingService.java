@@ -59,11 +59,11 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 		T nearestMeta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
 		if (nearestMeta != this)
 			return nearestMeta.getInstance(value, components);
-		T alive = getAlive();
-		if (alive == null)
+		T pluggedMeta = getAlive();
+		if (pluggedMeta == null)
 			return null;
-		for (T instance : (Snapshot<T>) (((DependenciesService<?>) alive).getInstances()))
-			if (instance.equiv(alive, value, Arrays.asList(components)))
+		for (T instance : (Snapshot<T>) (((DependenciesService<?>) pluggedMeta).getInstances()))
+			if (instance.equiv(pluggedMeta, value, Arrays.asList(components)))
 				return instance;
 		return null;
 	}

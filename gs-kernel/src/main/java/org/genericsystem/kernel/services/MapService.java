@@ -23,6 +23,7 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 		setKey(new AxedPropertyClass(propertyClass, pos)).setInstance(value, (T) this);
 	}
 
+	@SuppressWarnings("unchecked")
 	default T getMap() {
 		return getRoot().getInstance(Map.class, getRoot());
 	}
