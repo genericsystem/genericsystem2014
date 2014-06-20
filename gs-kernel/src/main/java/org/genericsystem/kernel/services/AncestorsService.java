@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 public interface AncestorsService<T extends AncestorsService<T>> extends SignatureService<T> {
 
 	default int getLevel() {
-		return getMeta().getLevel() + 1;
+		return isRoot() || getValue().equals(getRoot().getValue()) || getComponentsStream().allMatch(c -> c.isRoot()) ? 0 : getMeta().getLevel() + 1;
 	}
 
 	default T getRoot() {

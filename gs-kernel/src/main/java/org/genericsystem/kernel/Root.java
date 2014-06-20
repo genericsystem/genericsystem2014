@@ -10,7 +10,7 @@ public class Root extends Vertex implements RootService<Vertex> {
 	}
 
 	public Root(Serializable value) {
-		init(0, null, Collections.emptyList(), value, Collections.emptyList());
+		init(null, Collections.emptyList(), value, Collections.emptyList());
 	}
 
 	@Override

@@ -19,7 +19,7 @@ public class Engine extends Generic implements EngineService<Generic> {
 
 	public Engine(Serializable engineValue) {
 		root = buildRoot(engineValue);
-		init(0, null, Collections.emptyList(), engineValue, Collections.emptyList());
+		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
 	}
 
 	@Override

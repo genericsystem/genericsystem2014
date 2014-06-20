@@ -37,7 +37,7 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 	default T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
 		if (newComponents.size() != getComponents().size())
 			rollbackAndThrowException(new IllegalArgumentException());
-		return rebuildAll(() -> buildInstance().init(getLevel(), getMeta(), new Supers<T>(getSupers(), supersToAdd), newValue, newComponents).plug());
+		return rebuildAll(() -> buildInstance().init(getMeta(), new Supers<T>(getSupers(), supersToAdd), newValue, newComponents).plug());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -105,7 +105,7 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 				return weakInstance;
 			return weakInstance.update(overrides, value, components);
 		}
-		return buildInstance(overrides, value, Arrays.asList(components)).plug();
+		return addInstance(overrides, value, components);
 	}
 
 	// default T updateInstance(T instance, List<T> overrides, Serializable value, List<T> components) {

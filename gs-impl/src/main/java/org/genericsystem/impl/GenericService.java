@@ -27,7 +27,7 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 			return getRoot();
 		Vertex alive = vertex.getAlive();
 		T meta = wrap(alive.getMeta());
-		return meta.buildInstance().init(alive.getLevel(), meta, wrap(alive.getSupersStream()), alive.getValue(), wrap(alive.getComponentsStream()));
+		return meta.buildInstance().init(meta, wrap(alive.getSupersStream()), alive.getValue(), wrap(alive.getComponentsStream()));
 	}
 
 	default Vertex unwrap() {
@@ -37,7 +37,7 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 		alive = getMeta().unwrap();
 		if (!alive.isAlive())
 			throw new IllegalStateException("Not Alive" + alive.info() + alive.getMeta().getInstances());
-		return alive.buildInstance().init(getLevel(), alive, unwrap(getSupersStream()), getValue(), unwrap(getComponentsStream()));
+		return alive.buildInstance().init(alive, unwrap(getSupersStream()), getValue(), unwrap(getComponentsStream()));
 	}
 
 	default Vertex getVertex() {
