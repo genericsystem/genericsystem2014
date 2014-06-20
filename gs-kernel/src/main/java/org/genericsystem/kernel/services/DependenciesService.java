@@ -112,10 +112,6 @@ public interface DependenciesService<T extends DependenciesService<T>> extends A
 		return true;
 	}
 
-	default boolean isSpecializationOf(T supra) {
-		return getLevel() == supra.getLevel() ? inheritsFrom(supra) : (getLevel() > supra.getLevel() && getMeta().isSpecializationOf(supra));
-	}
-
 	@SuppressWarnings("unchecked")
 	default Stream<T> select() {
 		return Stream.of((T) this);

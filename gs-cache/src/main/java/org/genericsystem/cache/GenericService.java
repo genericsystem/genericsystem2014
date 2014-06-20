@@ -19,6 +19,11 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 		return getCurrentCache().getInheritings((T) this);
 	}
 
+	// @Override
+	// default Snapshot<T> getInheritings(T origin, int level) {
+	// return getCurrentCache().getInheritings(this, origin, level).project(this::wrap);
+	// }
+
 	@SuppressWarnings("unchecked")
 	@Override
 	default CompositesDependencies<T> getMetaComposites() {

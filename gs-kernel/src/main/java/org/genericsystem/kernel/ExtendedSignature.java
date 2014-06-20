@@ -11,8 +11,8 @@ public abstract class ExtendedSignature<T extends ExtendedSignature<T>> extends 
 	@Override
 	@SuppressWarnings("unchecked")
 	public T init(int level, T meta, List<T> supers, Serializable value, List<T> components) {
-		super.init(level, meta, value, components);
 		this.supers = supers;
+		super.init(level, meta, value, components);
 		checkSupers(supers);
 		checkDependsSuperComponents(supers);
 		return (T) this;
