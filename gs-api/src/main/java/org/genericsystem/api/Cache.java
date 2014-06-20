@@ -4,52 +4,46 @@ import java.io.Serializable;
 
 /**
  * <p>
- * <tt>Cache</tt> stores modifications before they are applied to <tt>Engine</tt>. Using caches assure concurrency and data integrity.
+ * <tt>Cache</tt> stores modifications before being to <tt>Engine</tt>. It provides concurrency and data integrity.
  * </p>
  * 
  * <p>
- * All modifications pass by cache before been persisted into <tt>Engine</tt>. Modifications in the cache can be persisted into <tt>Engine</tt> or abandoned. In the first case, data in Generic System change and changes become visible to all users. In the
- * second case all modifications in the cache are lost and user return to sub cache version.
+ * Modifications in the cache can be persisted into <tt>Engine</tt> or abandoned. When persisted, all the modifications in the cache become visible to all users. When abandoned, the modifications are lost and the user go back to a sub cache version.
  * </p>
  * 
  * <p>
- * <tt>Cache</tt> makes automatic rollback if an error occurred during the work. Rollback cancel all modifications previously bring to the cache.
+ * <tt>Cache</tt> has an automatic rollback mechanism when an error occurred.
  * </p>
  * 
  * <p>
- * It is possible to mount one cache on another and so on. To use "supercaches" helps to avoid the loss of the work because of unexpected rollback.
+ * Mounting cache on others and using "supercaches" ensures data integrity and avoid the loss of work because of unexpected rollback.
  * </p>
  * 
  * <p>
- * The <tt>Cache</tt> is mount on <tt>Transaction</tt>. <tt>Transaction</tt> is unique for every user of the system.
+ * The <tt>Cache</tt> is mounted on <tt>Transaction</tt>, which is not exposed to the user interface. A <tt>Transaction</tt> is unique for every user of the system.
  * </p>
  * 
  * <p>
- * <tt>Cache</tt> is not treadsafe.
+ * <tt>Cache</tt> is not threadsafe.
  * </p>
- * 
- * <p>
- * This interface is a part of <tt>Generic System Core</tt>.
- * </p>
- * 
  */
 public interface Cache {
 
 	/**
 	 * Starts the execution of this cache.
 	 * 
-	 * @return this cache.
+	 * @return this cache. This interface is a part of <tt>Generic System Core</tt>.
 	 */
 	Cache start();
 
 	/**
-	 * Stop the execution of this cache.
+	 * Stops the execution of this cache.
 	 * 
 	 */
 	void stop();
 
 	/**
-	 * Flush the content of current cache into it's subcache or into current user's transaction. If cache flush it's data into transaction modifications become available to other users.
+	 * Flushes the content of current cache into it's subcache or into current user's transaction. If cache flush it's data into transaction modifications become available to other users.
 	 * 
 	 * @throws RollbackException
 	 *             rollback
@@ -57,7 +51,7 @@ public interface Cache {
 	void flush() /* throws RollbackException */;
 
 	/**
-	 * Clear the cache without flushing.
+	 * Clears the cache without flushing.
 	 */
 	void clear();
 
