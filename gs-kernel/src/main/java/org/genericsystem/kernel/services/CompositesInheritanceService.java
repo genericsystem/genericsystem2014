@@ -83,15 +83,16 @@ public interface CompositesInheritanceService<T extends CompositesInheritanceSer
 					return projectStream(fromAboveStream());
 				}
 
-				private Stream<T> supersStream() {
-					return base.getSupersStream().filter(next -> base.getMeta().equals(next.getMeta()) && origin.isAttributeOf(next));
+				private Stream<T> baseSupersStream() {
+					assert base.getSupers() != null : base.info();
+					return base.getSupersStream().filter(next -> /* base.getMeta().equals(next.getMeta()) && */origin.isAttributeOf(next));
 				}
 
 				private Stream<T> fromAboveStream() {
 					if (!origin.isAttributeOf(base))
 						return Stream.empty();
-					Stream<T> supersStream = supersStream();
-					if (!supersStream().iterator().hasNext())
+					Stream<T> supersStream = baseSupersStream();
+					if (!baseSupersStream().iterator().hasNext())
 						return (base.isRoot() || !origin.isAttributeOf(base.getMeta())) ? Stream.of(origin) : getInheringsStream(base.getMeta());
 					return Statics.concat(supersStream, superVertex -> getInheringsStream(superVertex)).distinct();
 				}

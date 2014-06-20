@@ -2,15 +2,15 @@ package org.genericsystem.cache;
 
 import java.util.Objects;
 
-import org.genericsystem.kernel.services.AncestorsService;
+import org.genericsystem.kernel.services.SignatureService;
 
 public interface EngineService<T extends GenericService<T>> extends org.genericsystem.impl.EngineService<T>, GenericService<T> {
 
 	@Override
-	default boolean equiv(AncestorsService<? extends AncestorsService<?>> service) {
+	default boolean equiv(SignatureService<?> service) {
 		if (this == service)
 			return true;
-		return Objects.hashCode(getValue()) == Objects.hashCode(service.getValue()) && Objects.equals(getValue(), service.getValue()) && AncestorsService.equivComponents(getComponents(), service.getComponents());
+		return Objects.equals(getValue(), service.getValue()) && SignatureService.equivComponents(getComponents(), service.getComponents());
 	}
 
 	default Cache<T> buildCache(Context<T> subContext) {
