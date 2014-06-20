@@ -1,4 +1,4 @@
-package org.genericsystem.core;
+package org.genericsystem.statics;
 
 public enum RemoveStrategy {
 
