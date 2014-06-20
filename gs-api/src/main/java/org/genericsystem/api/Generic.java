@@ -12,20 +12,6 @@ import org.genericsystem.statics.RemoveStrategy;
  * <p>
  * When creating a Generic, a unique value must be specified.
  * </p>
- * <p>
- * Every entity held by <tt>Engine</tt> implements this interface.
- * </p>
- * A <tt>Generic</tt> has four categories of related nodes:
- * <dl>
- * <dt>Supers</dt>
- * <dd>Nodes that this <tt>Generic</tt> inherits from. Opposite of Inheritings.</dd>
- * <dt>Inheretings</dt>
- * <dd>Nodes inherited by this <tt>Generic</tt>. Opposite of Supers.</dd>
- * <dt>Components</dt>
- * <dd>Nodes contained by this <tt>Generic</tt>. Opposite of Composites.</dd>
- * <dt>Composites</dt>
- * <dd>Nodes that contains this <tt>Generic</tt>. Opposite of Components.</dd>
- * </dl>
  * 
  * @see Engine
  */
@@ -51,11 +37,11 @@ public interface Generic extends Serializable {
 	Generic add(Generic... elements);
 
 	/**
-	 * Takes off elements to this
+	 * Takes off elements to this.
 	 *
 	 * @param elements
-	 *            the elements to take off
-	 * @return this with the elements taken off
+	 *            the elements to take off.
+	 * @return this with the elements taken off.
 	 */
 	// TODO : throws noSuchElement
 	Generic takeOff(Generic... elements);
@@ -75,7 +61,7 @@ public interface Generic extends Serializable {
 	 * Creates and returns a new property with the value specified.
 	 * 
 	 * @param value
-	 *            the value of the instance
+	 *            the value of the instance.
 	 * @param targets
 	 *            targets where the property is positioned. If none specified, is positioned to the generic calling this method.
 	 * @return a new property with the value specified.
@@ -86,7 +72,7 @@ public interface Generic extends Serializable {
 	 * Creates and returns a relation between the bounds specified with the value specified.
 	 * 
 	 * @param value
-	 *            the value of the instance
+	 *            the value of the instance.
 	 * @param bounds
 	 *            the bounds to connect. Should have at least two bounds.
 	 * @return a new relation with the value specified, the relation if it already existed.

@@ -1,15 +1,25 @@
 package org.genericsystem.api;
 
 /**
- * Engine is the initial point of access, where is instantiated the model and then the data. Engine is as much a service than a data. It is represented by a Generic and an interface. </br>
+ * <tt>Engine</tt> is the initial point of access, where is instantiated the model and then the data. Engine is as much a service than a data. It is represented by a Generic and an interface. </br>
  * 
- * Engine has two modes :
+ * <tt>Engine</tt> has two modes :
  * <ul>
  * <li>persistent : runs the system by registering physically the information,</li>
  * <li>in-memory : runs the system memory without a persistence mechanism.</li>
  * </ul>
- * To start the engine in a persistent mode, the directory where you would like to store and retrieve your model and data must be specified.</br>
+ * To start <tt>Engine</tt> in a persistent mode, the directory used to store and retrieve your information must be specified.</br>
  * 
+ * <p>
+ * When creating a new <tt>Engine</tt>, a <tt>Cache</tt> is started.
+ * </p>
+ * 
+ * <p>
+ * Every entity held by <tt>Engine</tt> implements <tt>Generic</tt>.
+ * </p>
+ * 
+ * @see Cache
+ * @see Generic
  */
 public interface Engine extends Generic {
 
@@ -47,11 +57,8 @@ public interface Engine extends Generic {
 	Engine setDirectoryPath(String directoryPath);
 
 	// close => detail
-	// + see snapshot todo
 	/**
-	 * Closes engine and does a last snapshot if persistent.
-	 * 
-	 * @see Snapshot
+	 * Closes engine and does a last commit if engine is run as persistent.
 	 */
 	void close();
 

@@ -7,8 +7,7 @@ import java.util.Spliterators;
 
 /**
  * Represents a part (or the whole) data and model at a given time. Enables to manipulate several Generic and to do filtering and mapping operations.<br/>
- * Concretely, Snapshot is an aware iterable of a graph.
- *
+ * Concretely, Snapshot is an aware Iterable of a graph.
  */
 public interface Snapshot<T extends Generic> extends List<T>, Set<T> {
 
@@ -18,10 +17,10 @@ public interface Snapshot<T extends Generic> extends List<T>, Set<T> {
 	};
 
 	/**
-	 * Filters the Snapshot
+	 * Filters the Snapshot.
 	 *
 	 * @param filter
-	 *            the filter to apply
+	 *            the filter to apply.
 	 * @return Returns a snapshot comprised of the elements non filtered.
 	 * @see Filter
 	 * @see Snapshot
@@ -29,10 +28,10 @@ public interface Snapshot<T extends Generic> extends List<T>, Set<T> {
 	Snapshot<T> filter(Filter<T> filter);
 
 	/**
-	 * Maps the Snapshot with the Mapper specified
+	 * Maps the Snapshot with the Mapper specified.
 	 *
 	 * @param mapper
-	 *            the mapper containing the elements and the function to apply
+	 *            the mapper containing the elements and the function to apply.
 	 * @return a snapshot of Generic after applying the mapping to the elements of the Mapper.
 	 * @see Mapper
 	 * @see Snapshot
@@ -50,14 +49,14 @@ public interface Snapshot<T extends Generic> extends List<T>, Set<T> {
 		 * Returns true if the element is selected (this means the element is not filtered).
 		 *
 		 * @param element
-		 *            element to which we apply the filtering
+		 *            element to which we apply the filtering.
 		 * @return true if the element is selected, false if it is filtered.
 		 */
 		boolean isSelected(T element);
 	}
 
 	/**
-	 * Contains the elements to map with the function to apply.
+	 * Selects the elements in Snapshot with the function to apply.
 	 */
 	@FunctionalInterface
 	static interface Mapper<T, E> {
@@ -65,14 +64,14 @@ public interface Snapshot<T extends Generic> extends List<T>, Set<T> {
 		 * Maps elements with the function to apply.
 		 *
 		 * @param element
-		 *            element to which we apply the mapping
-		 * @return the result of the element after mapping it
+		 *            element to which we apply the mapping.
+		 * @return the result of the element after mapping it.
 		 */
 		T map(E element);
 	}
 
 	/**
-	 * 
+	 * log the snapshot.
 	 */
 	void log();
 }
