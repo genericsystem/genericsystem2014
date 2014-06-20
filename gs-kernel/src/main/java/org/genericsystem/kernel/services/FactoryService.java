@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import org.genericsystem.kernel.Dependencies;
@@ -22,7 +23,7 @@ public interface FactoryService<T extends FactoryService<T>> extends Dependencie
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	default T buildInstance(List<T> overrides, Serializable value, List<T> components) {
-		int level = getLevel() == 0 && getValue() == getRoot().getValue() && getComponentsStream().allMatch(c -> c.isRoot()) && value == getRoot().getValue() && components.stream().allMatch(c -> c.isRoot()) ? 0 : getLevel() + 1;
+		int level = getLevel() == 0 && Objects.equals(getValue(), getRoot().getValue()) && getComponentsStream().allMatch(c -> c.isRoot()) && Objects.equals(value, getRoot().getValue()) && components.stream().allMatch(c -> c.isRoot()) ? 0 : getLevel() + 1;
 		overrides.forEach(x -> ((Signature) x).checkIsAlive());
 		components.forEach(x -> ((Signature) x).checkIsAlive());
 		List<T> supers = new ArrayList<T>(new SupersComputer(level, this, overrides, value, components));

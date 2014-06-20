@@ -75,6 +75,6 @@ public abstract class Signature<T extends Signature<T>> implements DisplayServic
 
 	@Override
 	public int getLevel() {
-		return (isRoot() || components.stream().allMatch(c -> c.isRoot()) && getValue().equals(getRoot().getValue())) ? 0 : meta.getLevel() + 1;
+		return (isRoot() || components.stream().allMatch(c -> c.isRoot()) && Objects.equals(getValue(), getRoot().getValue())) ? 0 : meta.getLevel() + 1;
 	}
 }
