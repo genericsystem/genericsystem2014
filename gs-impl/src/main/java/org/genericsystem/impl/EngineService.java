@@ -44,7 +44,7 @@ public interface EngineService<T extends GenericService<T>> extends GenericServi
 	}
 
 	@Override
-	default boolean equiv(SignatureService<?> service) {
+	default boolean equiv(SignatureService<? extends SignatureService<?>> service) {
 		if (this == service)
 			return true;
 		return Objects.equals(getValue(), service.getValue()) && SignatureService.equivComponents(getComponents(), service.getComponents());

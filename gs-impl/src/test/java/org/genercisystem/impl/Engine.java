@@ -2,7 +2,6 @@ package org.genercisystem.impl;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.Objects;
 
 import org.genericsystem.impl.EngineService;
 import org.genericsystem.kernel.Root;
@@ -15,11 +14,11 @@ public class Engine extends Generic implements EngineService<Generic> {
 	private final Root root;
 
 	public Engine() {
-		this(Statics.ENGINE_VALUE, Statics.ENGINE_VALUE);
+		this(Statics.ENGINE_VALUE);
 	}
 
-	public Engine(Serializable rootValue, Serializable engineValue) {
-		root = buildRoot(rootValue);
+	public Engine(Serializable engineValue) {
+		root = buildRoot(engineValue);
 		init(0, null, Collections.emptyList(), engineValue, Collections.emptyList());
 	}
 
@@ -44,7 +43,7 @@ public class Engine extends Generic implements EngineService<Generic> {
 	}
 
 	@Override
-	public boolean equiv(SignatureService<?> service) {
+	public boolean equiv(SignatureService<? extends SignatureService<?>> service) {
 		return EngineService.super.equiv(service);
 	}
 
