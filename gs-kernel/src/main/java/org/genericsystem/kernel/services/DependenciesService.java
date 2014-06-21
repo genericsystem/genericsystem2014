@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
@@ -110,10 +111,6 @@ public interface DependenciesService<T extends DependenciesService<T>> extends A
 			return false;
 		}
 		return true;
-	}
-
-	default boolean isSpecializationOf(T supra) {
-		return getLevel() == supra.getLevel() ? inheritsFrom(supra) : (getLevel() > supra.getLevel() && getMeta().isSpecializationOf(supra));
 	}
 
 	@SuppressWarnings("unchecked")

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.genericsystem.kernel.services.BindingService;
 import org.genericsystem.kernel.services.DisplayService;
@@ -15,11 +16,8 @@ public abstract class Signature<T extends Signature<T>> implements DisplayServic
 	protected List<T> components;
 	protected Serializable value;
 
-	// TODO : change scope to final
-	protected int level = 0;
-
 	@SuppressWarnings("unchecked")
-	protected T init(int level, T meta, Serializable value, List<T> components) {
+	protected T init(T meta, Serializable value, List<T> components) {
 		if (meta != null) {
 			meta.checkIsAlive();
 			this.meta = meta;
@@ -35,8 +33,6 @@ public abstract class Signature<T extends Signature<T>> implements DisplayServic
 			} else
 				this.components.set(i, (T) this);
 		}
-		this.level = level;
-
 		checkDependsMetaComponents();
 		return (T) this;
 	}
@@ -79,6 +75,6 @@ public abstract class Signature<T extends Signature<T>> implements DisplayServic
 
 	@Override
 	public int getLevel() {
-		return level;
+		return (isRoot() || components.stream().allMatch(c -> c.isRoot()) && Objects.equals(getValue(), getRoot().getValue())) ? 0 : meta.getLevel() + 1;
 	}
 }

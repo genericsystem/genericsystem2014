@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 public interface AncestorsService<T extends AncestorsService<T>> extends SignatureService<T> {
 
 	default int getLevel() {
-		return getMeta().getLevel() + 1;
+		return isRoot() || getValue().equals(getRoot().getValue()) || getComponentsStream().allMatch(c -> c.isRoot()) ? 0 : getMeta().getLevel() + 1;
 	}
 
 	default T getRoot() {
@@ -51,8 +51,11 @@ public interface AncestorsService<T extends AncestorsService<T>> extends Signatu
 		return getMeta().inheritsFrom(metaVertex);
 	}
 
-	default boolean isAttributeOf(T vertex) {
-		return isRoot() || getComponentsStream().anyMatch(component -> vertex.inheritsFrom(component) || vertex.isInstanceOf(component));
+	default boolean isSpecializationOf(T supra) {
+		return getLevel() == supra.getLevel() ? inheritsFrom(supra) : (getLevel() > supra.getLevel() && getMeta().isSpecializationOf(supra));
 	}
 
+	default boolean isAttributeOf(T vertex) {
+		return isRoot() || getComponentsStream().anyMatch(component -> vertex.isSpecializationOf(component));
+	}
 }

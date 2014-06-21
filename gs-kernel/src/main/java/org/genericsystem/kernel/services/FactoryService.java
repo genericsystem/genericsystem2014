@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import org.genericsystem.kernel.Dependencies;
@@ -18,14 +19,16 @@ public interface FactoryService<T extends FactoryService<T>> extends Dependencie
 
 	T buildInstance();
 
+	// TODO : add a convenience method isMetaAttribut.
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	default T buildInstance(List<T> overrides, Serializable value, List<T> components) {
-		int level = getLevel() + 1;
+		int level = getLevel() == 0 && Objects.equals(getValue(), getRoot().getValue()) && getComponentsStream().allMatch(c -> c.isRoot()) && Objects.equals(value, getRoot().getValue()) && components.stream().allMatch(c -> c.isRoot()) ? 0 : getLevel() + 1;
 		overrides.forEach(x -> ((Signature) x).checkIsAlive());
 		components.forEach(x -> ((Signature) x).checkIsAlive());
 		List<T> supers = new ArrayList<T>(new SupersComputer(level, this, overrides, value, components));
 		checkOverridesAreReached(overrides, supers);
-		return (T) ((ExtendedSignature) buildInstance().init(level, (T) this, supers, value, components));
+		return (T) ((ExtendedSignature) buildInstance().init((T) this, supers, value, components));
 	}
 
 	default boolean allOverridesAreReached(List<T> overrides, List<T> supers) {
@@ -37,7 +40,7 @@ public interface FactoryService<T extends FactoryService<T>> extends Dependencie
 			rollbackAndThrowException(new IllegalStateException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
 	}
 
-	T init(int level, T meta, List<T> overrides, Serializable value, List<T> components);
+	T init(T meta, List<T> overrides, Serializable value, List<T> components);
 
 	default <U extends T> Dependencies<U> buildDependencies(Supplier<Iterator<T>> subDependenciesSupplier) {
 		return new DependenciesImpl<U>();
