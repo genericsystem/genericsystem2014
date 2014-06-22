@@ -1,21 +1,15 @@
 package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
-import java.util.function.BiPredicate;
 import org.genericsystem.kernel.Statics;
 
-public interface SystemPropertiesService<T extends SystemPropertiesService<T>> extends AncestorsService<T> {
-
-	@Override
-	default BiPredicate<Serializable, Serializable> getValuesBiPredicate() {
-		return isPropertyConstraintEnabled() ? VALUE_IGNORED : VALUE_EQUALS.or(KEY_EQUALS);
-	}
+public interface SystemPropertiesService<T extends SystemPropertiesService<T>> extends RemovableService<T> {
 
 	Serializable getSystemPropertyValue(Class<?> propertyClass, int pos);
 
 	void setSystemPropertyValue(Class<T> propertyClass, int pos, Serializable value);
 
-	// We have to introduce removeSystemPropertyValue to disable from inheritance
+	// We have to introduce the method restoreInheritancePropertyValue
 
 	@SuppressWarnings("unchecked")
 	default T enableSystemProperty(Class<?> propertyClass, int pos) {
@@ -44,6 +38,7 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 		return disableSystemProperty(ReferentialIntegrityConstraint.class, pos);
 	}
 
+	@Override
 	default boolean isReferentialIntegrityConstraintEnabled(int pos) {
 		return isSystemPropertyEnabled(ReferentialIntegrityConstraint.class, pos);
 	}
@@ -56,6 +51,7 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 		return disableSystemProperty(SingularConstraint.class, pos);
 	}
 
+	@Override
 	default boolean isSingularConstraintEnabled(int pos) {
 		return isSystemPropertyEnabled(SingularConstraint.class, pos);
 	}
@@ -68,6 +64,7 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 		return disableSystemProperty(PropertyConstraint.class, Statics.NO_POSITION);
 	}
 
+	@Override
 	default boolean isPropertyConstraintEnabled() {
 		return isSystemPropertyEnabled(PropertyConstraint.class, Statics.NO_POSITION);
 	}
@@ -92,6 +89,7 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 		return disableSystemProperty(CascadeRemoveProperty.class, pos);
 	}
 
+	@Override
 	default boolean isCascadeRemove(int pos) {
 		return isSystemPropertyEnabled(CascadeRemoveProperty.class, pos);
 	}

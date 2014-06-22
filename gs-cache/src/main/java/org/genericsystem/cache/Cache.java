@@ -8,7 +8,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
@@ -133,22 +132,22 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 
 	@Override
 	public Dependencies<T> getInheritings(T generic) {
-		return getDependencies(generic, inheritingDependenciesMap, () -> iteratorFromAlive(generic, () -> subContext.getInheritings(generic)));
+		return getDependencies(generic, inheritingDependenciesMap, () -> iteratorFromAlive(generic, () -> subContext.getInheritings(generic).iterator()));
 	}
 
 	@Override
 	public Dependencies<T> getInstances(T generic) {
-		return getDependencies(generic, instancesDependenciesMap, () -> iteratorFromAlive(generic, () -> subContext.getInstances(generic)));
+		return getDependencies(generic, instancesDependenciesMap, () -> iteratorFromAlive(generic, () -> subContext.getInstances(generic).iterator()));
 	}
 
 	@Override
 	public CompositesDependencies<T> getMetaComposites(T generic) {
-		return getCompositesDependencies(generic, metaCompositesDependenciesMap, () -> iteratorFromAlivecomposite(generic, () -> subContext.getMetaComposites(generic)));
+		return getCompositesDependencies(generic, metaCompositesDependenciesMap, () -> iteratorFromAlivecomposite(generic, () -> subContext.getMetaComposites(generic).iterator()));
 	}
 
 	@Override
 	public CompositesDependencies<T> getSuperComposites(T generic) {
-		return getCompositesDependencies(generic, superCompositesDependenciesMap, () -> iteratorFromAlivecomposite(generic, () -> subContext.getSuperComposites(generic)));
+		return getCompositesDependencies(generic, superCompositesDependenciesMap, () -> iteratorFromAlivecomposite(generic, () -> subContext.getSuperComposites(generic).iterator()));
 	}
 
 	protected Dependencies<T> getDependencies(T generic, Map<T, Dependencies<T>> dependenciesMap, Supplier<Iterator<T>> iteratorSupplier) {

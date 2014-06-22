@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
-
 import org.genericsystem.kernel.RemoveRestructurator;
 import org.genericsystem.kernel.exceptions.AliveConstraintViolationException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 import org.genericsystem.kernel.exceptions.ReferentialIntegrityConstraintViolationException;
 
 public interface RemovableService<T extends RemovableService<T>> extends BindingService<T> {
+
+	boolean isCascadeRemove(int pos);
+
+	boolean isReferentialIntegrityConstraintEnabled(int pos);
 
 	default void remove(RemoveStrategy removeStrategy) {
 		switch (removeStrategy) {

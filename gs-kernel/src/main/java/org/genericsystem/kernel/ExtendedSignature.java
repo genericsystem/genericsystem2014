@@ -11,11 +11,18 @@ public abstract class ExtendedSignature<T extends ExtendedSignature<T>> extends 
 	@Override
 	@SuppressWarnings("unchecked")
 	public T init(T meta, List<T> supers, Serializable value, List<T> components) {
-		this.supers = supers;
 		super.init(meta, value, components);
+		this.supers = supers;
+		checkDependsMetaComponents();
 		checkSupers(supers);
 		checkDependsSuperComponents(supers);
 		return (T) this;
+	}
+
+	private void checkDependsMetaComponents() {
+		assert getMeta().getComponents() != null;
+		if (!(componentsDepends(getComponents(), getMeta().getComponents())))
+			rollbackAndThrowException(new IllegalStateException("Inconsistant components : " + getComponents() + " " + getMeta().getComponents()));
 	}
 
 	private void checkSupers(List<T> supers) {

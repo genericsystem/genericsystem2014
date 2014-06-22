@@ -100,8 +100,10 @@ public interface SignatureService<T extends SignatureService<T>> {
 		return result;
 	};
 
+	boolean isPropertyConstraintEnabled();
+
 	default BiPredicate<Serializable, Serializable> getValuesBiPredicate() {
-		return VALUE_EQUALS;
+		return isPropertyConstraintEnabled() ? VALUE_IGNORED : VALUE_EQUALS.or(KEY_EQUALS);
 	}
 
 	@FunctionalInterface

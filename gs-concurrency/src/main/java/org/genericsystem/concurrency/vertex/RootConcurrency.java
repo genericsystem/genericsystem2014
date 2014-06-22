@@ -3,7 +3,6 @@ package org.genericsystem.concurrency.vertex;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
-
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 
@@ -16,7 +15,7 @@ public class RootConcurrency extends Root {
 	}
 
 	public RootConcurrency(Serializable value) {
-		init(0, null, Collections.emptyList(), value, Collections.emptyList());
+		init(null, Collections.emptyList(), value, Collections.emptyList());
 	}
 
 	// TODO KK
