@@ -2,32 +2,31 @@ package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
 import java.util.function.BiPredicate;
-
 import org.genericsystem.kernel.Statics;
 
 public interface SystemPropertiesService<T extends SystemPropertiesService<T>> extends AncestorsService<T> {
 
 	@Override
 	default BiPredicate<Serializable, Serializable> getValuesBiPredicate() {
-		if (isPropertyConstraintEnabled())
-			return VALUE_IGNORED;
-		// if (isMapConstraintEnabled())
-		// return KEY_EQUALS;
-		return VALUE_EQUALS.or(KEY_EQUALS);
+		return isPropertyConstraintEnabled() ? VALUE_IGNORED : VALUE_EQUALS.or(KEY_EQUALS);
 	}
 
 	Serializable getSystemPropertyValue(Class<?> propertyClass, int pos);
 
 	void setSystemPropertyValue(Class<T> propertyClass, int pos, Serializable value);
 
+	// We have to introduce removeSystemPropertyValue to disable from inheritance
+
 	@SuppressWarnings("unchecked")
 	default T enableSystemProperty(Class<?> propertyClass, int pos) {
+		assert isStructural();
 		setSystemPropertyValue((Class<T>) propertyClass, pos, Boolean.TRUE);
 		return (T) this;
 	}
 
 	@SuppressWarnings("unchecked")
 	default T disableSystemProperty(Class<?> propertyClass, int pos) {
+		assert isStructural();
 		setSystemPropertyValue((Class<T>) propertyClass, pos, Boolean.FALSE);
 		return (T) this;
 	}
@@ -73,11 +72,6 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 		return isSystemPropertyEnabled(PropertyConstraint.class, Statics.NO_POSITION);
 	}
 
-	// default boolean isMapConstraintEnabled() {
-	// return false;
-	// // return isConstraintEnabled(PropertyConstraint.class);
-	// }
-
 	default T enableRequiredConstraint(int pos) {
 		return enableSystemProperty(RequiredConstraint.class, pos);
 	}
@@ -121,10 +115,6 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 	public static class PropertyConstraint implements Constraint {
 
 	}
-
-	// public static class MapConstraint implements Constraint {
-	//
-	// }
 
 	public static class RequiredConstraint implements Constraint {
 
