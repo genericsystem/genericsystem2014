@@ -12,7 +12,7 @@ public class Generic extends GenericSignature<Generic> implements GenericService
 
 	@Override
 	public Generic getMap() {
-		return getRoot().getInstance(Map.class, getRoot());
+		return getRoot().getInstance(SystemMap.class, getRoot());
 	}
 
 }

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.genericsystem.kernel.services.BindingService;
 import org.genericsystem.kernel.services.DisplayService;
@@ -33,19 +32,12 @@ public abstract class Signature<T extends Signature<T>> implements DisplayServic
 			} else
 				this.components.set(i, (T) this);
 		}
-		checkDependsMetaComponents();
 		return (T) this;
 	}
 
 	public void checkIsAlive() {
 		if (!isAlive())
 			rollbackAndThrowException(new NotAliveException(info()));
-	}
-
-	private void checkDependsMetaComponents() {
-		assert getMeta().getComponents() != null;
-		if (!(componentsDepends(getComponents(), getMeta().getComponents())))
-			rollbackAndThrowException(new IllegalStateException("Inconsistant components : " + getComponents() + " " + getMeta().getComponents()));
 	}
 
 	@Override

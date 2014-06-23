@@ -7,7 +7,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Snapshot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,13 +93,17 @@ public interface SignatureService<T extends SignatureService<T>> {
 	public static BiPredicate<List<? extends SignatureService<?>>, List<? extends SignatureService<?>>> WEAK_EQUIV = (X, Y) -> {
 		if (!SIZE_EQUALS.test(X, Y))
 			return false;
+		// KK no singular constraint tested here ? and referencialIntegrity ?
+		// no componendsDepends call ??
 		Iterator<? extends SignatureService<?>> otherComponentsIt = Y.iterator();
 		boolean result = X.stream().allMatch(x -> x.weakEquiv(otherComponentsIt.next()));
 		return result;
 	};
 
+	boolean isPropertyConstraintEnabled();
+
 	default BiPredicate<Serializable, Serializable> getValuesBiPredicate() {
-		return VALUE_EQUALS;
+		return isPropertyConstraintEnabled() ? VALUE_IGNORED : VALUE_EQUALS.or(KEY_EQUALS);
 	}
 
 	@FunctionalInterface
