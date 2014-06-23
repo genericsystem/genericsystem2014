@@ -9,13 +9,8 @@ package org.genericsystem.api;
  * <li>in-memory : runs the system memory without a persistence mechanism.</li>
  * </ul>
  * To start <tt>Engine</tt> in a persistent mode, the directory used to store and retrieve your information must be specified.
- * 
  * <p>
  * When creating a new <tt>Engine</tt>, a <tt>Cache</tt> is started.
- * </p>
- * 
- * <p>
- * Every entity held by <tt>Engine</tt> implements <tt>Generic</tt>.
  * </p>
  * 
  * @see Cache
