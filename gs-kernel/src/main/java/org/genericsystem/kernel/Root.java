@@ -11,6 +11,7 @@ import java.util.Map;
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Extends;
 import org.genericsystem.kernel.annotations.Meta;
+import org.genericsystem.kernel.annotations.SystemGeneric;
 import org.genericsystem.kernel.annotations.value.AxedConstraintValue;
 import org.genericsystem.kernel.annotations.value.BooleanValue;
 import org.genericsystem.kernel.annotations.value.IntValue;
@@ -77,14 +78,20 @@ public class Root extends Vertex implements RootService<Vertex> {
 		}
 
 		List<Vertex> findOverrides() {
+			List<Vertex> overridesVertices = new ArrayList<Vertex>();
 			Extends overrides = clazz.getAnnotation(Extends.class);
-			if (overrides == null)
-				return Collections.emptyList();
-			List<Class<?>> overridesLst = Arrays.asList(overrides.value());
-			List<Vertex> overridesVertices = new ArrayList<Vertex>(overridesLst.size());
-			for (Class<?> clazz : overridesLst) {
-				overridesVertices.add(new ClassFinder(clazz).find());
+			if (overrides != null) {
+				List<Class<?>> overridesLst = Arrays.asList(overrides.value());
+				overridesVertices = new ArrayList<Vertex>(overridesLst.size() + 1);
+				for (Class<?> clazz : overridesLst) {
+					overridesVertices.add(new ClassFinder(clazz).find());
+				}
 			}
+			Class<?> javaSuperclass = clazz.getSuperclass();
+			if (Object.class.equals(javaSuperclass) || clazz.getAnnotation(SystemGeneric.class) == null)
+				return overridesVertices;
+			ClassFinder classFinder = new ClassFinder(javaSuperclass);
+			overridesVertices.add(classFinder.find());
 			return overridesVertices;
 		}
 
