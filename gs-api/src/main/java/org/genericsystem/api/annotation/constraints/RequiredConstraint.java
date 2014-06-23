@@ -5,20 +5,26 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.genericsystem.api.exception.RequiredConstraintViolationException;
+
 /**
- * The System Property to mandatory attribute.
+ * <p>
+ * Interface used to require the element(s) targeted when instantiating the source of RequiredConstraint.
+ * </p>
+ * <p>
+ * Throws a <tt>RequiredConstraintViolationException</tt> the source of RequiredConstraint is instantiated without the element(s) targeted.
+ * </p>
  * 
- * @author Nicolas Feybesse
- * @author Michael Ory
+ * @see RequiredConstraintViolationException
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
 public @interface RequiredConstraint {
 
 	/**
-	 * Returns the positions of the components.
+	 * Returns the positions of the generics which should be linked when instantiating the source of RequiredConstraint.
 	 * 
-	 * @return An array of component position.
+	 * @return the positions of the generics which should be linked when instantiating the source of RequiredConstraint.
 	 */
 	int[] value() default {};
 }

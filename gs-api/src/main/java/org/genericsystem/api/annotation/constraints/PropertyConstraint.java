@@ -5,11 +5,20 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.genericsystem.api.exception.PropertyConstraintViolationException;
+
 /**
- * The System Property to allows a single value for the same components.
+ * <p>
+ * Interface used to propagate a value to all the components on the same "axis".
+ * </p>
+ * <p>
+ * GenericSystem could be represented as a graph. When instantiating a new node, an axis is created. All the dependencies of this node will be on the same axis.
+ * </p>
+ * <p>
+ * Throws a PropertyConstraintViolationException when trying to instantiate a new relation with a different value on the bound where PropertyConstraint is positioned.
+ * </p>
  * 
- * @author Nicolas Feybesse
- * @author Michael Ory
+ * @see PropertyConstraintViolationException
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })

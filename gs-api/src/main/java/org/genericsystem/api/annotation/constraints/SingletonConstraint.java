@@ -5,11 +5,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.genericsystem.api.exception.SingletonConstraintViolationException;
+
 /**
- * This constraint represent the singleton notion.
+ * <p>
+ * Interface used to feature the concept of Singleton. Restricts the instantiation of a class to one object.
+ * </p>
+ * <p>
+ * Throws a SingletonConstraintViolationException when trying to instantiate a SingularConstraint element which has already been instantiated.
+ * </p>
  * 
- * @author Nicolas Feybesse
- * @author Michael Ory
+ * @see SingletonConstraintViolationException
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })

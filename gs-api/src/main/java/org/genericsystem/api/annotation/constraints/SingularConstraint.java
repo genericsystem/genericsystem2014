@@ -5,20 +5,33 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.genericsystem.api.exception.SingularConstraintViolationException;
+
 /**
- * Interface used to allow a single value.
+ * <p>
+ * Interface used to propagate a value to all the components on the same "axis".
+ * </p>
+ * <p>
+ * GenericSystem could be represented as a graph. When instantiating a new node, an axis is created. All the dependencies of this node will be on the same axis.
+ * </p>
+ * <p>
+ * For example, two <tt>Generic</tt> are instantiated: Vehicle and Color. Then is instantiated a relation between vehicle and color. A SingularConstraint positioned on Color would mean every Vehicle would be of the same color : the one instantiated on the
+ * relation.
+ * </p>
+ * <p>
+ * Throws a SingularConstraintViolationException when trying to instantiate a new relation with a different value on the bound where SingularConstraint is positioned.
+ * </p>
  * 
- * @author Nicolas Feybesse
- * @author Michael Ory
+ * @see SingularConstraintViolationException
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
 public @interface SingularConstraint {
 
 	/**
-	 * Returns the positions of the components.
+	 * Returns the axis number where the components will be restrained by the SingularConstraint.
 	 * 
-	 * @return An array of component position.
+	 * @return the axis number where the components will be restrained by the SingularConstraint.
 	 */
 	int[] value() default { 0 };
 
