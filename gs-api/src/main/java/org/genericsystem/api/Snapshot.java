@@ -7,6 +7,8 @@ import java.util.Spliterators;
 
 /**
  * Represents a part (or the whole) data and model at a given time. Enables to manipulate several Generic and to do filtering and mapping operations. Concretely, Snapshot is an aware Iterable of a graph.
+ * 
+ * @see Generic
  */
 public interface Snapshot<T extends Generic> extends List<T>, Set<T> {
 
