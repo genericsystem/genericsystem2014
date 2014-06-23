@@ -2,7 +2,7 @@ package org.genericsystem.api;
 
 import java.io.Serializable;
 
-import org.genericsystem.statics.RemoveStrategy;
+import org.genericsystem.api.statics.RemoveStrategy;
 
 /**
  * <p>
@@ -16,7 +16,6 @@ import org.genericsystem.statics.RemoveStrategy;
  * @see Engine
  */
 public interface Generic extends Serializable {
-
 	/**
 	 * Creates and returns a new instance of Generic with the value specified.
 	 * 
