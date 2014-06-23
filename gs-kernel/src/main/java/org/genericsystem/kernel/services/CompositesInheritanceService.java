@@ -19,6 +19,14 @@ public interface CompositesInheritanceService<T extends CompositesInheritanceSer
 		return getInheritings(attribute, 0);
 	}
 
+	default Snapshot<T> getRelations() {
+		return getRelations(getRoot());
+	}
+
+	default Snapshot<T> getRelations(T origin) {
+		return getAttributes(origin).filter(attribute -> attribute.getComponents().size() > 1);
+	}
+
 	default Snapshot<T> getAttributes(T attribute) {
 		return getInheritings(attribute, 1);
 	}
@@ -94,7 +102,7 @@ public interface CompositesInheritanceService<T extends CompositesInheritanceSer
 					Stream<T> supersStream = baseSupersStream();
 					if (!baseSupersStream().iterator().hasNext())
 						return (base.isRoot() || !origin.isAttributeOf(base.getMeta())) ? Stream.of(origin) : getInheringsStream(base.getMeta());
-					return Statics.concat(supersStream, superVertex -> getInheringsStream(superVertex)).distinct();
+						return Statics.concat(supersStream, superVertex -> getInheringsStream(superVertex)).distinct();
 				}
 
 				protected Stream<T> projectStream(Stream<T> streamToProject) {

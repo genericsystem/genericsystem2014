@@ -15,15 +15,20 @@ import org.genericsystem.kernel.annotations.value.AxedConstraintValue;
 import org.genericsystem.kernel.annotations.value.BooleanValue;
 import org.genericsystem.kernel.annotations.value.IntValue;
 import org.genericsystem.kernel.annotations.value.StringValue;
+import org.genericsystem.kernel.exceptions.RollbackException;
 
 public class Root extends Vertex implements RootService<Vertex> {
 
-	public Root() {
-		this(Statics.ENGINE_VALUE);
+	private final Map<Class<?>, Vertex> systemCache = new HashMap<Class<?>, Vertex>();
+
+	public Root(Class<?>... userClasses) {
+		this(Statics.ENGINE_VALUE, userClasses);
 	}
 
-	public Root(Serializable value) {
+	public Root(Serializable value, Class<?>... userClasses) {
 		init(null, Collections.emptyList(), value, Collections.emptyList());
+		for (Class<?> clazz : userClasses)
+			find(clazz, false);
 	}
 
 	@Override
@@ -36,11 +41,15 @@ public class Root extends Vertex implements RootService<Vertex> {
 		return this;
 	}
 
-	private final Map<Class<?>, Vertex> systemCache = new HashMap<Class<?>, Vertex>();
-
 	public Vertex find(Class<?> clazz) {
+		return find(clazz, true);
+	}
+
+	Vertex find(Class<?> clazz, boolean throwExceptionOnUnfoundClass) throws IllegalStateException {
 		Vertex result = systemCache.get(clazz);
-		if (result == null) {
+		if (result == null && throwExceptionOnUnfoundClass)
+			throw new RollbackException(new IllegalStateException());
+		else {
 			ClassFinder classFinder = new ClassFinder(clazz);
 			result = classFinder.find();
 			systemCache.put(clazz, result);
@@ -48,7 +57,7 @@ public class Root extends Vertex implements RootService<Vertex> {
 		return result;
 	}
 
-	private class ClassFinder {
+	class ClassFinder {
 
 		private final Class<?> clazz;
 
@@ -62,11 +71,15 @@ public class Root extends Vertex implements RootService<Vertex> {
 
 		Vertex findMeta() {
 			Meta meta = clazz.getAnnotation(Meta.class);
+			if (meta == null)
+				return getRoot();
 			return (new ClassFinder(meta.value())).find();
 		}
 
 		List<Vertex> findOverrides() {
 			Extends overrides = clazz.getAnnotation(Extends.class);
+			if (overrides == null)
+				return Collections.emptyList();
 			List<Class<?>> overridesLst = Arrays.asList(overrides.value());
 			List<Vertex> overridesVertices = new ArrayList<Vertex>(overridesLst.size());
 			for (Class<?> clazz : overridesLst) {
