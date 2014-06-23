@@ -7,10 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Used to declare the dependencies of generic.
- * 
- * @author Nicolas Feybesse
- * @author Michael Ory
+ * Interface used to manage generic dependency.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
@@ -18,9 +15,9 @@ import java.lang.annotation.Target;
 public @interface Dependencies {
 
 	/**
-	 * Returns the class of the dependencies.
+	 * Returns the classes of all the dependencies of generic.
 	 * 
-	 * @return An array of class of the dependencies.
+	 * @return the classes of all the dependencies of generic.
 	 */
 	Class<?>[] value();
 }

@@ -6,19 +6,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The components of a generic.
- * 
- * @author Nicolas Feybesse
- * @author Michael Ory
+ * Interface used to manage generic components.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
 public @interface Components {
 
 	/**
-	 * Returns the class of the components.
+	 * Returns the classes of all the components of generic.
 	 * 
-	 * @return An array of class of the components.
+	 * @return the classes of all the components of generic.
 	 */
 	Class<?>[] value();
 }

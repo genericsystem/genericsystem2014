@@ -6,19 +6,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Used to declare the Extends of generic. A generic inherits directly of the supers.
- * 
- * @author Nicolas Feybesse
- * @author Michael Ory
+ * Interface used to manage generic inheritance.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
 public @interface Extends {
 
 	/**
-	 * Returns the supers classes.
+	 * Returns the classes of all the supers of generic.
 	 * 
-	 * @return An array of supers classes.
+	 * @return the classes of all the supers of generic.
 	 */
 	Class<?>[] value() default {};
 }
