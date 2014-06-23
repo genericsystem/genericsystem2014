@@ -114,17 +114,20 @@ public class AnnotationTest extends AbstractTest {
 		Vertex selectable = engine.find(Selectable.class);
 		Vertex selectableWindow = engine.find(SelectableWindow.class);
 
-		assert graphicComponent.getSupers().size() == 2 : graphicComponent.getSupers();
-		assert graphicComponent.getSupers().contains(selectable);
-		assert graphicComponent.getSupers().contains(window) : graphicComponent.getSupers();
+		assert selectableWindow.getSupers().size() == 2 : selectableWindow.getSupers();
+		assert selectableWindow.getSupers().contains(selectable) : selectableWindow.getSupers();
+		assert selectableWindow.getSupers().contains(window) : selectableWindow.getSupers();
 
 		assert window.getSupers().size() == 1 : window.getSupers();
-		assert window.getSupers().contains(selectableWindow) : window.getSupers();
+		assert window.getSupers().contains(graphicComponent) : window.getSupers();
 
 		assert selectable.getSupers().size() == 1 : selectable.getSupers();
-		assert selectable.getSupers().contains(selectableWindow) : selectable.getSupers();
+		assert selectable.getSupers().contains(graphicComponent) : selectable.getSupers();
 
-		assert selectableWindow.getSupers().size() == 0;
+		assert selectableWindow.getSupers().size() == 2;
+		assert selectableWindow.getSupers().contains(selectable);
+		assert selectableWindow.getSupers().contains(window);
+
 		assert selectableWindow.inheritsFrom(selectable);
 		assert selectableWindow.inheritsFrom(window);
 		assert selectableWindow.inheritsFrom(graphicComponent);
@@ -136,16 +139,16 @@ public class AnnotationTest extends AbstractTest {
 		Vertex size = engine.find(Size.class);
 		Vertex selectedSelectable = engine.find(Selected.class);
 		Vertex mySelectableWindow = engine.find(MySelectableWindow.class);
-		assert mySelectableWindow.inheritsFrom(selectableWindow) : mySelectableWindow.info() + selectableWindow.info();
+		assert mySelectableWindow.isInstanceOf(selectableWindow) : mySelectableWindow.info() + selectableWindow.info();
 
-		assert mySelectableWindow.inheritsFrom(engine.find(Selectable.class));
-		Vertex vTrue = selectedSelectable.updateValue(true);
-		Vertex v12 = size.updateValue(12);
+		assert engine.find(Selectable.class).isAncestorOf(mySelectableWindow);
+		Vertex vTrue = selectedSelectable.addInstance(true, selectedSelectable.getComponents().toArray(new Vertex[1]));
+		Vertex v12 = size.addInstance(12, size.getComponents().toArray(new Vertex[1]));
 
 		assert selectableWindow.getInstances().size() == 1 : selectableWindow.getInstances();
 		assert selectableWindow.getInstances().contains(mySelectableWindow);
 		assert mySelectableWindow.getHolders(size).size() == 1 : mySelectableWindow.getHolders(size);
-		assert mySelectableWindow.getHolders(size).contains(v12);
+		assert mySelectableWindow.getHolders(size).contains(v12) : mySelectableWindow.getHolders(size);
 		assert mySelectableWindow.getHolders(selectedSelectable).size() == 1;
 		assert mySelectableWindow.getHolders(selectedSelectable).contains(vTrue);
 	}
@@ -195,7 +198,7 @@ public class AnnotationTest extends AbstractTest {
 		Vertex transformerChildrenGames = engine.find(TransformerChildrenGames.class);
 		Vertex myTransformerChildrenGames = engine.find(MyTransformerChildrenGames.class);
 
-		assert myTransformerChildrenGames.inheritsFrom(transformerChildrenGames) : myTransformerChildrenGames.info() + transformerChildrenGames.info();
+		assert myTransformerChildrenGames.isInstanceOf(transformerChildrenGames) : myTransformerChildrenGames.info() + transformerChildrenGames.info();
 
 		assert !myTransformerChildrenGames.inheritsFrom(myGames);
 		assert !myTransformerChildrenGames.inheritsFrom(myChildren);
@@ -203,29 +206,41 @@ public class AnnotationTest extends AbstractTest {
 		assert !myTransformerChildrenGames.inheritsFrom(myck);
 		assert !myTransformerChildrenGames.inheritsFrom(myChildrenGames);
 		assert !myTransformerChildrenGames.inheritsFrom(myTransformer);
-		assert myTransformerChildrenGames.getSupers().contains(transformerChildrenGames);
+		assert myTransformerChildrenGames.getSupers().size() == 0;
 		assert myTransformerChildrenGames.getInheritings().size() == 0;
 		assert myTransformerChildrenGames.getComposites().size() == 0;
 
-		assert transformerChildrenGames.getInheritings().contains(myTransformerChildrenGames);
+		assert transformer.getSupers().size() == 2;
+		assert transformer.getSupers().contains(engine.find(Human.class));
+		assert transformer.getSupers().contains(engine.find(Vehicle.class));
+
+		assert transformerChildrenGames.getInstances().contains(myTransformerChildrenGames);
 		assert myTransformerChildrenGames.isInstanceOf(transformerChildrenGames);
+
+		assert transformerChildrenGames.getSupers().size() == 2;
+		assert transformerChildrenGames.getSupers().contains(transformer);
+		assert transformerChildrenGames.getSupers().contains(childrenGames);
 
 		assert !myChildrenGames.inheritsFrom(myGames);
 		assert !myChildrenGames.inheritsFrom(myChildren);
-		assert myChildrenGames.getSupers().contains(childrenGames);
+		assert myChildrenGames.getSupers().size() == 0;// .contains(childrenGames);
 		assert myChildrenGames.getInheritings().size() == 0;
 		assert myChildrenGames.getComposites().size() == 0;
 
-		assert childrenGames.getInheritings().contains(myChildrenGames);
+		assert childrenGames.getSupers().size() == 2;
+		assert childrenGames.getSupers().contains(engine.find(Games.class));
+		assert childrenGames.getSupers().contains(engine.find(Children.class));
+
+		assert childrenGames.getInstances().contains(myChildrenGames);
 		assert myChildrenGames.isInstanceOf(childrenGames);
 
 		assert !myTransformer.inheritsFrom(myVehicle);
 		assert !myTransformer.inheritsFrom(myck);
-		assert myTransformer.getSupers().contains(transformer);
+		assert myTransformer.getSupers().size() == 0;// .contains(transformer);
 		assert myTransformer.getInheritings().size() == 0;
 		assert myTransformer.getComposites().size() == 0;
 
-		assert transformer.getInheritings().contains(myTransformer);
+		assert transformer.getInstances().contains(myTransformer);
 		assert myTransformer.isInstanceOf(transformer);
 	}
 
