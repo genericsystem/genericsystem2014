@@ -44,9 +44,6 @@ public interface Cache {
 
 	/**
 	 * Flushes the content of current cache into it's subcache or into current user's transaction. If cache flush it's data into transaction modifications become available to other users.
-	 * 
-	 * @throws RollbackException
-	 *             rollback
 	 */
 	void flush() /* throws RollbackException */;
 
@@ -56,23 +53,11 @@ public interface Cache {
 	void clear();
 
 	/**
-	 * Returns the generic found by it's class. This generic must to be created in startup. To create a startup built generic it's class must to be annotated @SystemGeneric.
-	 * 
-	 * @param clazz
-	 *            the class annotated @SystemGeneric.
-	 * 
-	 * @return the generic defined by it's class.
-	 * 
-	 * @see SystemGeneric
-	 */
-	<T extends Generic> T find(Class<?> clazz);
-
-	/**
 	 * Returns the Engine of this cache.
 	 * 
 	 * @return the engine.
 	 */
-	<T extends Engine> T getEngine();
+	Engine getEngine();
 
 	/**
 	 * Returns the Generic. A Generic is identified by value, meta and components.
@@ -86,125 +71,7 @@ public interface Cache {
 	 * 
 	 * @return the Generic.
 	 */
-	<T extends Generic> T getGeneric(Serializable value, Generic meta, Generic... components);
-
-	/**
-	 * Returns all Types existing in current cache.
-	 * 
-	 * @return collection of Type.
-	 * @see Type
-	 */
-	<T extends Generic> Snapshot<T> getAllTypes();
-
-	/**
-	 * Returns the meta Attribute.
-	 * 
-	 * @return the meta attribute.
-	 */
-	<T extends Generic> T getMetaAttribute();
-
-	/**
-	 * Returns the meta Relation.
-	 * 
-	 * @return the meta Relation.
-	 */
-	<T extends Generic> T getMetaRelation();
-
-	/**
-	 * Creates a new type. Throws an exception if the type with the same name already exists.
-	 * 
-	 * @param name
-	 *            the type's name.
-	 * 
-	 * @return the Type.
-	 * @see Type
-	 */
-	<T extends Generic> T addType(Serializable name);
-
-	/**
-	 * Creates a new type. Throws an exception if the type with the same name already exists.
-	 * 
-	 * @param name
-	 *            the type's name.
-	 * @param components
-	 *            the array of components.
-	 * 
-	 * @return the Type.
-	 * @see Type
-	 */
-	<T extends Generic> T addType(Serializable name, Generic[] components);
-
-	/**
-	 * Returns the type. If the type with given name does not exists method creates it.
-	 * 
-	 * @param name
-	 *            the type's name.
-	 * 
-	 * @return the Type.
-	 * @see Type
-	 */
-	<T extends Generic> T setType(Serializable name);
-
-	/**
-	 * Returns the type. If the type with given name does not exists method creates it.
-	 * 
-	 * @param name
-	 *            the type's name.
-	 * @param components
-	 *            the array of components.
-	 * 
-	 * @return the Type.
-	 * @see Type
-	 */
-	<T extends Generic> T setType(Serializable name, Generic[] components);
-
-	/**
-	 * Creates a new Tree. Throws an exception if the tree with the same name already exists.
-	 * 
-	 * @param name
-	 *            the tree's name.
-	 * 
-	 * @return the Tree.
-	 * @see Tree
-	 */
-	<T extends Generic> T addTree(Serializable name);
-
-	/**
-	 * Creates a new Tree. Throws an exception if the tree with the same name already exists.
-	 * 
-	 * @param name
-	 *            the tree's name.
-	 * @param dimension
-	 *            the dimension of the tree.
-	 * 
-	 * @return the Tree.
-	 * @see Tree
-	 */
-	<T extends Generic> T addTree(Serializable name, int dimension);
-
-	/**
-	 * Returns the existing Tree or creates a new one if it not yet exists.
-	 * 
-	 * @param name
-	 *            the tree's name.
-	 * 
-	 * @return the Tree.
-	 * @see Tree
-	 */
-	<T extends Generic> T setTree(Serializable name);
-
-	/**
-	 * Returns the existing Tree or creates a new one if it not yet exists.
-	 * 
-	 * @param name
-	 *            the tree's name.
-	 * @param dimension
-	 *            the dimension of the tree.
-	 * 
-	 * @return the Tree.
-	 * @see Tree
-	 */
-	<T extends Generic> T setTree(Serializable name, int dimension);
+	Generic getGeneric(Serializable value, Generic meta, Generic... components);
 
 	/**
 	 * Returns true if the generic was not removed from this cache or from any of it's sub caches.

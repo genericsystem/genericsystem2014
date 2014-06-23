@@ -6,8 +6,7 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 
 /**
- * Represents a part (or the whole) data and model at a given time. Enables to manipulate several Generic and to do filtering and mapping operations.<br/>
- * Concretely, Snapshot is an aware Iterable of a graph.
+ * Represents a part (or the whole) data and model at a given time. Enables to manipulate several Generic and to do filtering and mapping operations. Concretely, Snapshot is an aware Iterable of a graph.
  */
 public interface Snapshot<T extends Generic> extends List<T>, Set<T> {
 
@@ -32,11 +31,13 @@ public interface Snapshot<T extends Generic> extends List<T>, Set<T> {
 	 *
 	 * @param mapper
 	 *            the mapper containing the elements and the function to apply.
+	 * @param <E>
+	 *            generic's result after being mapped
 	 * @return a snapshot of Generic after applying the mapping to the elements of the <tt>Mapper</tt>.
 	 * @see Mapper
 	 * @see Snapshot
 	 */
-	<E extends Generic> Snapshot<E> map(Mapper<E, T> mapper);
+	<E extends Generic> Snapshot<E> map(Mapper<T, E> mapper);
 
 	/**
 	 * Selects the elements in Snapshot with the filter specified.
@@ -57,6 +58,11 @@ public interface Snapshot<T extends Generic> extends List<T>, Set<T> {
 
 	/**
 	 * Selects the elements in Snapshot with the function to apply.
+	 * 
+	 * @param <T>
+	 *            Generic key
+	 * @param <E>
+	 *            generic's result after being mapped
 	 */
 	@FunctionalInterface
 	static interface Mapper<T, E> {
