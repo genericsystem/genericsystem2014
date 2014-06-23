@@ -6,9 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The System Property to disallow inheritance.
- * 
- * @author Nicolas Feybesse
+ * Property interface used to disallow inheritance. An instance of NoInheritance will not be able to have inheritance.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })

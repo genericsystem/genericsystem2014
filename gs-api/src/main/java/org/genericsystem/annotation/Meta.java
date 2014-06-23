@@ -8,19 +8,22 @@ import java.lang.annotation.Target;
 import org.genericsystem.api.Engine;
 
 /**
- * Used to declare the Extends of generic. A generic inherits directly of the supers.
+ * Interface used to declare the meta of generic(s).
  * 
- * @author Nicolas Feybesse
- * @author Michael Ory
+ * A meta instance is associated with an information context and is considered the root of it. The meta is <tt>Engine</tt> by default.
+ * 
+ * @see Engine
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
 public @interface Meta {
 
 	/**
-	 * The meta class
+	 * The meta class, Engine by default.
 	 * 
-	 * @return meta class
+	 * @return the meta class, Engine by default.
+	 * 
+	 * @see Engine
 	 */
 	Class<?> value() default Engine.class;
 }
