@@ -1,14 +1,14 @@
 package org.genericsystem.api;
 
 /**
- * <tt>Engine</tt> is the initial point of access, where is instantiated the model and then the data. Engine is as much a service than a data. It is represented by a Generic and an interface. </br>
+ * <tt>Engine</tt> is the initial point of access, where is instantiated the model and then the data. Engine is as much a service than a data. It is represented by a Generic and an interface.
  * 
  * <tt>Engine</tt> has two modes :
  * <ul>
  * <li>persistent : runs the system by registering physically the information,</li>
  * <li>in-memory : runs the system memory without a persistence mechanism.</li>
  * </ul>
- * To start <tt>Engine</tt> in a persistent mode, the directory used to store and retrieve your information must be specified.</br>
+ * To start <tt>Engine</tt> in a persistent mode, the directory used to store and retrieve your information must be specified.
  * 
  * <p>
  * When creating a new <tt>Engine</tt>, a <tt>Cache</tt> is started.
@@ -73,9 +73,8 @@ public interface Engine extends Generic {
 	 * Get the current cache.
 	 * 
 	 * @return the current cache.
-	 * @throws CacheAwareException
-	 *             if no current cache.
 	 */
+	// @throws CacheAwareException if no current cache.
 	Cache getCurrentCache() /* throws CacheAwareException */;
 
 	// FIXME : switchCache ?
