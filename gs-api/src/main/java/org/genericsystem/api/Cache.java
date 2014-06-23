@@ -4,28 +4,22 @@ import java.io.Serializable;
 
 /**
  * <p>
- * <tt>Cache</tt> stores modifications before being to <tt>Engine</tt>. It provides concurrency and data integrity.
+ * <tt>Cache</tt> stores modifications before being flushed to its context <tt>Engine</tt>. It provides concurrency and data integrity.
  * </p>
- * 
  * <p>
- * Modifications in the cache can be persisted into <tt>Engine</tt> or abandoned. When persisted, all the modifications in the cache become visible to all users. When abandoned, the modifications are lost and the user go back to a sub cache version.
+ * Modifications in the cache can be persisted or dropped. When persisted, all the modifications in the cache become visible to all users. When dropped, the modifications are lost and the user go back to a subcache version.
  * </p>
- * 
  * <p>
- * <tt>Cache</tt> has an automatic rollback mechanism when an error occurred.
+ * Mounting cache on others and using "subcaches" ensures data integrity and avoid the loss of work when unexpected rollback occurs.
  * </p>
- * 
  * <p>
- * Mounting cache on others and using "supercaches" ensures data integrity and avoid the loss of work because of unexpected rollback.
+ * The <tt>Cache</tt> is mounted on a <tt>Transaction</tt>. A <tt>Transaction</tt> is unique for every user of the system.
  * </p>
- * 
- * <p>
- * The <tt>Cache</tt> is mounted on <tt>Transaction</tt>, which is not exposed to the user interface. A <tt>Transaction</tt> is unique for every user of the system.
- * </p>
- * 
  * <p>
  * <tt>Cache</tt> is not threadsafe.
  * </p>
+ * 
+ * @see Engine
  */
 public interface Cache {
 
@@ -43,7 +37,7 @@ public interface Cache {
 	void stop();
 
 	/**
-	 * Flushes the content of current cache into it's subcache or into current user's transaction. If cache flush it's data into transaction modifications become available to other users.
+	 * Flushes the content of current cache into its subcache or into the current user's transaction. If Cache flushes its data within a transaction, all modifications in the current cache becomes available to other users.
 	 */
 	void flush() /* throws RollbackException */;
 
@@ -55,12 +49,12 @@ public interface Cache {
 	/**
 	 * Returns the Engine of this cache.
 	 * 
-	 * @return the engine.
+	 * @return the engine of this cache.
 	 */
 	Engine getEngine();
 
 	/**
-	 * Returns the Generic. A Generic is identified by value, meta and components.
+	 * Finds the Generic by value, meta and components. Null if not found.
 	 * 
 	 * @param value
 	 *            value of Generic
@@ -74,50 +68,50 @@ public interface Cache {
 	Generic getGeneric(Serializable value, Generic meta, Generic... components);
 
 	/**
-	 * Returns true if the generic was not removed from this cache or from any of it's sub caches.
+	 * Returns true if the generic has not been removed in this cache and all its subcaches, false otherwise. Returns false if generic is not found.
 	 * 
 	 * @param generic
 	 *            the generic to check.
 	 * 
-	 * @return true if the generic still present in any of caches in the current cache stack.
+	 * @return true if the generic has not been removed in this cache and all its subcaches, false otherwise. Returns false if generic is not found.
 	 */
 	boolean isAlive(Generic generic);
 
 	/**
-	 * Returns true if the generic is removable.
+	 * Returns true if the generic is alive and has no constraint which could prevent the remove of the generic specified. False otherwise. Returns false if generic is not found.
 	 * 
 	 * @param generic
-	 *            the generic.
+	 *            the generic to check.
 	 * 
-	 * @return true if the generic is removable.
+	 * @return Returns true if the generic is alive and has no constraint which could prevent the remove of the generic specified. Returns false if generic is not found.
 	 */
 	boolean isRemovable(Generic generic);
 
 	/**
-	 * Mounts and starts the new cache on this cache.
+	 * Mounts and starts a new cache (a subcache) on this cache.
 	 * 
-	 * @return the new super cache.
+	 * @return a new cache.
 	 */
 	Cache mountNewCache();
 
 	/**
-	 * Flushes this cache into it's sub cache. Returns it's sub cache after the flush. If this is the cache of the first level (cache mount directly on current transaction) function returns the same cache.
+	 * Flushes Cache into its subcache. Returns its deepest subcache after the flush. Returns the same cache If this is the cache of the first level (cache mounted directly on current transaction).
 	 * 
-	 * @return the sub cache.
+	 * @return the deepest subcache after the flush. Returns the same cache If this is the cache of the first level (cache mounted directly on current transaction).
 	 */
 	Cache flushAndUnmount();
 
 	/**
-	 * Discards changes in this cache and returns the sub cache. If this is the cache of the first level (cache mount directly on current transaction) function returns the same cache.
+	 * Discards modifications in this cache. Returns the deepest sub cache. Returns the same cache If this is the cache of the first level (cache mounted directly on current transaction).
 	 * 
-	 * @return the sub cache.
+	 * @return Returns the deepest sub cache. Returns the same cache If this is the cache of the first level (cache mounted directly on current transaction).
 	 */
 	Cache discardAndUnmount();
 
 	/**
-	 * Returns the level of this cache. Level 1 is equivalent to the cache of first level (cache mount directly on current transaction).
+	 * Returns the level of the cache. First level is number 1 : it is the cache mounted directly on the current transaction. A cache mounted on a cache "level 1" is level 2, and so on.
 	 * 
-	 * @return the level of this cache.
+	 * @return the level of the cache. First level is number 1 : it is the cache mounted directly on the current transaction. A cache mounted on a cache "level 1" is level 2, and so on.
 	 */
 	int getLevel();
 
