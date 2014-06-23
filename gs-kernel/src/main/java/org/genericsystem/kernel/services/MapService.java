@@ -25,14 +25,14 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 
 	@SuppressWarnings("unchecked")
 	default T getMap() {
-		return getRoot().getInstance(Map.class, getRoot());
+		return getRoot().getInstance(SystemMap.class, getRoot());
 	}
 
 	@SuppressWarnings("unchecked")
 	default T setMap() {
 		T map = getMap();
 		if (map == null) {
-			map = getRoot().setInstance(Map.class, getRoot()).enablePropertyConstraint();
+			map = getRoot().setInstance(SystemMap.class, getRoot()).enablePropertyConstraint();
 			assert map == getMap();
 		}
 		return map;
@@ -53,7 +53,7 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 		return root.setInstance(setMap(), (Serializable) property, root);
 	}
 
-	public static class Map {
+	public static class SystemMap {
 
 	}
 }
