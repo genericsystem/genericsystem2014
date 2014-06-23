@@ -12,7 +12,7 @@ import org.genericsystem.api.exception.SingletonConstraintViolationException;
  * Interface used to feature the concept of Singleton. Restricts the instantiation of a class to one object.
  * </p>
  * <p>
- * Throws a SingletonConstraintViolationException when trying to instantiate a SingularConstraint element which has already been instantiated.
+ * Throws a <tt>SingletonConstraintViolationException</tt> when trying to instantiate a <tt>SingularConstraint</tt> element which has already been instantiated.
  * </p>
  * 
  * @see SingletonConstraintViolationException

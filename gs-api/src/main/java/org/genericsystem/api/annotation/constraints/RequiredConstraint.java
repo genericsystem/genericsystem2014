@@ -9,10 +9,10 @@ import org.genericsystem.api.exception.RequiredConstraintViolationException;
 
 /**
  * <p>
- * Interface used to require the element(s) targeted when instantiating the source of RequiredConstraint.
+ * Interface used to require the element(s) targeted when instantiating the source of <tt>RequiredConstraint</tt>.
  * </p>
  * <p>
- * Throws a <tt>RequiredConstraintViolationException</tt> the source of RequiredConstraint is instantiated without the element(s) targeted.
+ * Throws a <tt>RequiredConstraintViolationException</tt> the source of <tt>RequiredConstraint</tt> is instantiated without the element(s) targeted.
  * </p>
  * 
  * @see RequiredConstraintViolationException

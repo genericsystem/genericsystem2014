@@ -8,11 +8,15 @@ import java.lang.annotation.Target;
 import org.genericsystem.api.exception.VirtualConstraintException;
 
 /**
+ * <p>
  * Interface used to feature the concept of abstraction.
- * 
- * VirtualConstraint should be implemented to be instantiated.
- * 
- * When trying to instantiate a VirtualConstraint element, a <tt>VirtualConstraintException</tt> is thrown.
+ * </p>
+ * <p>
+ * <tt>VirtualConstraint</tt> should be implemented to be instantiated.
+ * </p>
+ * <p>
+ * Throws a <tt>VirtualConstraintException</tt> when trying to instantiate a <tt>VirtualConstraint</tt> element.
+ * </p>
  * 
  * @see VirtualConstraintException
  */

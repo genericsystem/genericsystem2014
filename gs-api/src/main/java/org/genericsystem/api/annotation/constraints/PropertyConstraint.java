@@ -15,7 +15,7 @@ import org.genericsystem.api.exception.PropertyConstraintViolationException;
  * GenericSystem could be represented as a graph. When instantiating a new node, an axis is created. All the dependencies of this node will be on the same axis.
  * </p>
  * <p>
- * Throws a PropertyConstraintViolationException when trying to instantiate a new relation with a different value on the bound where PropertyConstraint is positioned.
+ * Throws a <tt>PropertyConstraintViolationException</tt> when trying to instantiate a new relation with a different value on the bound where <tt>PropertyConstraint</tt> is positioned.
  * </p>
  * 
  * @see PropertyConstraintViolationException

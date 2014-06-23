@@ -8,9 +8,12 @@ import java.lang.annotation.Target;
 import org.genericsystem.api.exception.SizeConstraintViolationException;
 
 /**
+ * <p>
  * Interface used to control the maximum number of components allowed.
- * 
+ * </p>
+ * <p>
  * Throws a <tt>SizeConstraintViolationException</tt> when the bound is reached.
+ * </p>
  * 
  * @see SizeConstraintViolationException
  */

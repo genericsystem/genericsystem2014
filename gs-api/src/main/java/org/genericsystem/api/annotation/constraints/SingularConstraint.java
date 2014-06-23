@@ -15,11 +15,11 @@ import org.genericsystem.api.exception.SingularConstraintViolationException;
  * GenericSystem could be represented as a graph. When instantiating a new node, an axis is created. All the dependencies of this node will be on the same axis.
  * </p>
  * <p>
- * For example, two <tt>Generic</tt> are instantiated: Vehicle and Color. Then is instantiated a relation between vehicle and color. A SingularConstraint positioned on Color would mean every Vehicle would be of the same color : the one instantiated on the
- * relation.
+ * For example, two <tt>Generic</tt> are instantiated: Vehicle and Color. Then is instantiated a relation between vehicle and color. A <tt>SingularConstraint</tt> positioned on Color would mean every Vehicle would be of the same color : the one
+ * instantiated on the relation.
  * </p>
  * <p>
- * Throws a SingularConstraintViolationException when trying to instantiate a new relation with a different value on the bound where SingularConstraint is positioned.
+ * Throws a <tt>SingularConstraintViolationException</tt> when trying to instantiate a new relation with a different value on the bound where <tt>SingularConstraint</tt> is positioned.
  * </p>
  * 
  * @see SingularConstraintViolationException

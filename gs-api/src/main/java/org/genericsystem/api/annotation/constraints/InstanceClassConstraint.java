@@ -13,7 +13,7 @@ import org.genericsystem.api.exception.InstanceClassConstraintViolationException
  * Interface used to restrain the element to a class specified.
  * </p>
  * <p>
- * Throws a InstanceClassConstraintViolationException when trying to instantiate a InstanceClassConstraint element with an implementation which doesn't extends or implements the class specified.
+ * Throws a <tt>InstanceClassConstraintViolationException</tt> when trying to instantiate a <tt>InstanceClassConstraint</tt> element with an implementation which doesn't extends or implements the class specified.
  * </p>
  * 
  * @see InstanceClassConstraintViolationException
