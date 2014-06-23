@@ -39,10 +39,10 @@ public interface Engine extends Generic {
 	Engine newInMemoryEngine();
 
 	/**
-	 * This method can be used to a :
+	 * This method can be used to :
 	 * <ul>
-	 * <li>in-memory engine to make it persistent,</li>
-	 * <li>engine already persistent to modify the directory path.</li>
+	 * <li>an in-memory engine to make it persistent,</li>
+	 * <li>an engine already persistent to move the directory path.</li>
 	 * </ul>
 	 * 
 	 * @param directoryPath

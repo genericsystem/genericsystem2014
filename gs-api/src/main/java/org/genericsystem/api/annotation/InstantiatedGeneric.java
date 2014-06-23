@@ -8,13 +8,17 @@ import java.lang.annotation.Target;
 import org.genericsystem.api.Generic;
 
 /**
+ * <p>
  * Interface used to declare generic instances.
+ * </p>
  * 
+ * <p>
  * Only basic operations can be done on instances such as reading it, updating the value or removing the instance. A generic instance cannot instantiate another generic or be used as an attribute or relation.
+ * </p>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
-public @interface InstanciatedGeneric {
+public @interface InstantiatedGeneric {
 
 	/**
 	 * Defines the class of the instance. Should extends Generic.

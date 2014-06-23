@@ -5,8 +5,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.genericsystem.api.exception.ConcreteInheritanceConstraintViolationException;
+
 /**
- * Property interface used to disallow inheritance. An instance of NoInheritance will not be able to have inheritance.
+ * <p>
+ * Interface used to disallow inheritance. An instance of <tt>NoInheritance<tt> will not be able to have inheritance.
+ * </p>
+ * <p>
+ * Throws a <tt>ConcreteInheritanceConstraintViolationException</tt> when trying to add a super to a <tt>NoInheritance</tt> element.
+ * </p>
+ * 
+ * @see ConcreteInheritanceConstraintViolationException
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
