@@ -9,7 +9,7 @@ import org.genericsystem.api.exception.ConcreteInheritanceConstraintViolationExc
 
 /**
  * <p>
- * Interface used to disallow inheritance. An instance of <tt>NoInheritance<tt> will not be able to have inheritance.
+ * Interface used to disallow inheritance. An instance of <tt>NoInheritance</tt> will not be able to have inheritance.
  * </p>
  * <p>
  * Throws a <tt>ConcreteInheritanceConstraintViolationException</tt> when trying to add a super to a <tt>NoInheritance</tt> element.

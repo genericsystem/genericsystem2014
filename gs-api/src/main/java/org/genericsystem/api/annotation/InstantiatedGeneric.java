@@ -21,9 +21,9 @@ import org.genericsystem.api.Generic;
 public @interface InstantiatedGeneric {
 
 	/**
-	 * Defines the class of the instance. Should extends Generic.
+	 * Defines the class of the element. Should extends Generic.
 	 * 
-	 * @return the class of the instance.
+	 * @return the class of the element.
 	 */
 	Class<? extends Generic> value();
 }
