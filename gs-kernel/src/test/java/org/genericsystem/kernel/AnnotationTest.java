@@ -31,8 +31,8 @@ public class AnnotationTest extends AbstractTest {
 		assert vehicle.getSupers().size() == 0 : vehicle.getSupers();
 		assert car.getSupers().size() == 1 : car.getSupers();
 		assert car.getSupers().contains(vehicle);
-		assert myCar.getSupers().size() == 1 : myCar.getSupers();
-		assert myCar.getSupers().contains(car);
+		assert myCar.getSupers().size() == 0 : myCar.getSupers();
+		assert myCar.getMeta() == car;
 	}
 
 	public void test003_Attribute() {
@@ -117,11 +117,6 @@ public class AnnotationTest extends AbstractTest {
 		assert graphicComponent.getSupers().size() == 2 : graphicComponent.getSupers();
 		assert graphicComponent.getSupers().contains(selectable);
 		assert graphicComponent.getSupers().contains(window) : graphicComponent.getSupers();
-
-		// assert graphicComponent.getAllSubVertexs().size() == 3 : graphicComponent.getAllSubVertexs();
-		// assert graphicComponent.getAllSubVertexs().contains(selectable);
-		// assert graphicComponent.getAllSubVertexs().contains(window);
-		// assert graphicComponent.getAllSubVertexs().contains(selectableWindow);
 
 		assert window.getSupers().size() == 1 : window.getSupers();
 		assert window.getSupers().contains(selectableWindow) : window.getSupers();
@@ -241,6 +236,11 @@ public class AnnotationTest extends AbstractTest {
 	@SystemGeneric
 	@Meta(Games.class)
 	public static class MyGames {
+	}
+
+	@SystemGeneric
+	@Meta(Games.class)
+	public static class MyGames2 extends Vertex {
 	}
 
 	@SystemGeneric
