@@ -50,7 +50,7 @@ public class Root extends Vertex implements RootService<Vertex> {
 
 	private class ClassFinder {
 
-		private Class<?> clazz;
+		private final Class<?> clazz;
 
 		public ClassFinder(Class<?> clazz) {
 			this.clazz = clazz;
@@ -76,37 +76,37 @@ public class Root extends Vertex implements RootService<Vertex> {
 		}
 
 		Serializable findValue() {
-			Serializable result = null;
 			AxedConstraintValue axedConstraintValue = clazz.getAnnotation(AxedConstraintValue.class);
 			if (axedConstraintValue != null) {
 				Class<?> constraintClazz = axedConstraintValue.value();
-				// Vertex constraint = new ClassFinder(constraintClazz).find();
 				int axe = axedConstraintValue.axe();
-				result = "Constraint = " + constraintClazz + ", Axe = " + axe;
+				return "Constraint = " + constraintClazz + ", Axe = " + axe;
 			}
 
 			BooleanValue booleanValue = clazz.getAnnotation(BooleanValue.class);
 			if (booleanValue != null) {
 				boolean boolVal = booleanValue.value();
-				result = boolVal;
+				return boolVal;
 			}
 
 			IntValue intValue = clazz.getAnnotation(IntValue.class);
 			if (intValue != null) {
 				int intVal = intValue.value();
-				result = intVal;
+				return intVal;
 			}
 
 			StringValue stringValue = clazz.getAnnotation(StringValue.class);
 			if (stringValue != null) {
 				String stringVal = stringValue.value();
-				result = stringVal;
+				return stringVal;
 			}
-			return result;
+			return clazz;
 		}
 
 		Vertex[] findComponents() {
 			Components components = clazz.getAnnotation(Components.class);
+			if (components == null)
+				return new Vertex[0];
 			Class<?> componentsLst[] = components.value();
 			Vertex componentsVertices[] = new Vertex[componentsLst.length];
 			int index = 0;
@@ -115,14 +115,6 @@ public class Root extends Vertex implements RootService<Vertex> {
 				++index;
 			}
 			return componentsVertices;
-		}
-
-		public Class<?> getClazz() {
-			return clazz;
-		}
-
-		public void setClazz(Class<?> clazz) {
-			this.clazz = clazz;
 		}
 	}
 
