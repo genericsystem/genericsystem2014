@@ -6,11 +6,11 @@ import org.genericsystem.statics.RemoveStrategy;
 
 /**
  * <p>
- * <tt>Generic System</tt> could be represented as a graph. The entity <tt>Engine</tt> would be its root and <tt>Generic</tt> would be its nodes. By extension, <tt>Generic</tt> interface for handling information on the model as much as the data and it is
- * connected to its environment and aware of it.
+ * <tt>Generic System</tt> could be represented as a graph. The entity <tt>Engine</tt> would be its root and <tt>Generic</tt> would be its nodes. By extension, <tt>Generic</tt> is the interface for handling information on the model as much as the data.
+ * <tt>Generic</tt> is connected to its environment and aware of it.
  * </p>
  * <p>
- * When creating a Generic, a unique value must be specified.
+ * When creating a <tt>Generic</tt>, a unique value must be specified.
  * </p>
  * 
  * @see Engine
@@ -37,13 +37,15 @@ public interface Generic extends Serializable {
 	Generic add(Generic... elements);
 
 	/**
-	 * Takes off elements to this.
+	 * Takes off elements to this. This is an equivalent to {@link #remove(RemoveStrategy, Generic...)} with default RemoveStrategy.
 	 *
 	 * @param elements
-	 *            the elements to take off.
+	 *            the element(s) to take off.
 	 * @return this with the elements taken off.
 	 */
-	// TODO : throws noSuchElement
+	// TODO @throws noSuchElement
+	// TODO @throws referentialIntegrity
+	// TODO @throws atLeastOneElementExpected
 	Generic takeOff(Generic... elements);
 
 	/**
@@ -81,7 +83,7 @@ public interface Generic extends Serializable {
 	Generic createRelation(Serializable value, Generic... bounds);
 
 	/**
-	 * Updates and returns the value of the generic.
+	 * Updates the value of the generic. Returns the generic updated. Do nothing if the value is already the one of the generic.
 	 * 
 	 * @param value
 	 *            the new value.
@@ -114,10 +116,10 @@ public interface Generic extends Serializable {
 	Generic getRelation(Serializable value, Generic... bounds);
 
 	/**
-	 * Find a relation by its bounds. Filters by type Relation. Returns null if not found.
+	 * Find a relation by its bounds. All bounds should be specified (if one is missing, returns null). Returns null if not found.
 	 * 
 	 * @param bounds
-	 *            optional, targets on bounds we look for the relation. Should have at least two bounds.
+	 *            optional, targets on bounds we look for the relation. Should have at least two bounds and all bounds of the relation.
 	 * @return the relation with the value specified, null if not found.
 	 * @see #getGeneric(Serializable, Generic...)
 	 */
@@ -175,7 +177,7 @@ public interface Generic extends Serializable {
 	Snapshot<Generic> getSupers();
 
 	/**
-	 * Removes the Generic with the default removeStrategy if possible. Do nothing if the generic has already been removed.
+	 * Removes the Generic using the default removeStrategy. Do nothing if the Generic has already been removed.
 	 * 
 	 * @see RemoveStrategy
 	 */
@@ -184,7 +186,7 @@ public interface Generic extends Serializable {
 	void remove();
 
 	/**
-	 * Removes the Generic with the removeStrategy specified if possible. Do nothing if the generic has already been removed.
+	 * Removes the Generic using the removeStrategy specified. Do nothing if the generic has already been removed.
 	 * 
 	 * @param removeStrategy
 	 *            the removeStrategy to apply when removing the generic
@@ -192,11 +194,11 @@ public interface Generic extends Serializable {
 	 */
 	// TODO @throws referentialIntegrity
 	// TODO @throws dependencyInconsistence
-	// TODO @throws specifics constraints of removeStrategy
+	// TODO @throws specific constraints of removeStrategy
 	void remove(RemoveStrategy removeStrategy);
 
 	/**
-	 * Removes the Generics with the removeStrategy if possible.
+	 * Removes the Generics specified using the removeStrategy.
 	 * 
 	 * @param removeStrategy
 	 *            the removeStrategy to apply when removing the generics specified
@@ -206,7 +208,7 @@ public interface Generic extends Serializable {
 	// TODO @throws referentialIntegrity
 	// TODO @throws noSuchElement
 	// TODO @throws dependencyInconsistence
-	// TODO @throws specifics constraints of removeStrategy
+	// TODO @throws specific constraints of removeStrategy
 	void remove(RemoveStrategy removeStrategy, Generic... toRemove);
 
 }

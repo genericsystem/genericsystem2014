@@ -17,22 +17,22 @@ public interface Snapshot<T extends Generic> extends List<T>, Set<T> {
 	};
 
 	/**
-	 * Filters the Snapshot.
+	 * Filters the Snapshot with the <tt>Filter</tt> specified.
 	 *
 	 * @param filter
 	 *            the filter to apply.
-	 * @return Returns a snapshot comprised of the elements non filtered.
+	 * @return Returns a snapshot of the elements non filtered.
 	 * @see Filter
 	 * @see Snapshot
 	 */
 	Snapshot<T> filter(Filter<T> filter);
 
 	/**
-	 * Maps the Snapshot with the Mapper specified.
+	 * Maps the Snapshot with the <tt>Mapper</tt> specified.
 	 *
 	 * @param mapper
 	 *            the mapper containing the elements and the function to apply.
-	 * @return a snapshot of Generic after applying the mapping to the elements of the Mapper.
+	 * @return a snapshot of Generic after applying the mapping to the elements of the <tt>Mapper</tt>.
 	 * @see Mapper
 	 * @see Snapshot
 	 */

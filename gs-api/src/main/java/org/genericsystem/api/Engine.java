@@ -78,5 +78,5 @@ public interface Engine extends Generic {
 	 */
 	Cache getCurrentCache() /* throws CacheAwareException */;
 
-	// switchCache
+	// FIXME : switchCache ?
 }
