@@ -9,12 +9,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
 
-public interface DependenciesService<T extends DependenciesService<T>> extends AncestorsService<T>, ExceptionAdviserService<T>, SystemPropertiesService<T> {
+public interface DependenciesService<T extends DependenciesService<T>> extends AncestorsService<T>, ExceptionAdviserService<T> {
 
 	Snapshot<T> getInstances();
 
@@ -95,6 +94,8 @@ public interface DependenciesService<T extends DependenciesService<T>> extends A
 		}
 		return componentsDepends(new SingularsLazyCacheImpl(), subComponents, superComponents);
 	}
+
+	boolean isSingularConstraintEnabled(int pos);
 
 	default boolean componentsDepends(SingularsLazyCache singulars, List<T> subComponents, List<T> superComponents) {
 		int subIndex = 0;
