@@ -4,7 +4,10 @@ import java.io.Serializable;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public interface MapService<T extends MapService<T>> extends SystemPropertiesService<T>, CompositesInheritanceService<T>, UpdatableService<T> { // extends CompositesInheritanceService<T>, UpdatableService<T> {
+import org.genericsystem.kernel.VertexService;
+import org.genericsystem.kernel.annotations.SystemGeneric;
+
+public interface MapService<T extends VertexService<T>> extends SystemPropertiesService<T>, CompositesInheritanceService<T>, UpdatableService<T> { // extends CompositesInheritanceService<T>, UpdatableService<T> {
 
 	@Override
 	default Serializable getSystemPropertyValue(Class<?> propertyClass, int pos) {
@@ -25,18 +28,18 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 
 	@SuppressWarnings("unchecked")
 	default T getMap() {
-		return getRoot().getInstance(SystemMap.class, getRoot());
+		return (T) ((VertexService) getRoot()).find(SystemMap.class);
 	}
 
-	@SuppressWarnings("unchecked")
-	default T setMap() {
-		T map = getMap();
-		if (map == null) {
-			map = getRoot().setInstance(SystemMap.class, getRoot()).enablePropertyConstraint();
-			assert map == getMap();
-		}
-		return map;
-	}
+	// @SuppressWarnings("unchecked")
+	// default T setMap() {
+	// T map = getMap();
+	// if (map == null) {
+	// map = getRoot().setInstance(SystemMap.class, getRoot()).enablePropertyConstraint();
+	// assert map == getMap();
+	// }
+	// return map;
+	// }
 
 	default Stream<T> getKeys() {
 		T map = getMap();
@@ -50,9 +53,10 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 	@SuppressWarnings("unchecked")
 	default T setKey(AxedPropertyClass property) {
 		T root = getRoot();
-		return root.setInstance(setMap(), (Serializable) property, root);
+		return root.setInstance(getMap(), (Serializable) property, root);
 	}
 
+	@SystemGeneric
 	public static class SystemMap {
 
 	}

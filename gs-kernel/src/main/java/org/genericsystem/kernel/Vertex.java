@@ -5,12 +5,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Vertex extends ExtendedSignature<Vertex> implements VertexService<Vertex> {
+
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 
 	private final Dependencies<Vertex> instances = buildDependencies(null);
 	private final Dependencies<Vertex> inheritings = buildDependencies(null);
 	private final CompositesDependencies<Vertex> superComposites = buildCompositeDependencies(null);
 	private final CompositesDependencies<Vertex> metaComposites = buildCompositeDependencies(null);
+
+	@Override
+	public Vertex find(Class<?> clazz) {
+		return getRoot().find(clazz);
+	}
 
 	@Override
 	public Vertex buildInstance() {

@@ -1,7 +1,7 @@
 package org.genericsystem.kernel;
 
 import org.genericsystem.kernel.annotations.Components;
-import org.genericsystem.kernel.annotations.Extends;
+import org.genericsystem.kernel.annotations.Supers;
 import org.genericsystem.kernel.annotations.Meta;
 import org.genericsystem.kernel.annotations.SystemGeneric;
 import org.genericsystem.kernel.annotations.value.IntValue;
@@ -268,7 +268,7 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	@Extends({ Games.class, Children.class })
+	@Supers({ Games.class, Children.class })
 	public static class ChildrenGames {
 	}
 
@@ -278,7 +278,7 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	@Extends({ Human.class, Vehicle.class })
+	@Supers({ Human.class, Vehicle.class })
 	public static class Transformer {
 	}
 
@@ -288,7 +288,7 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	@Extends({ Transformer.class, ChildrenGames.class })
+	@Supers({ Transformer.class, ChildrenGames.class })
 	public static class TransformerChildrenGames {
 	}
 
@@ -314,7 +314,7 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	@Extends(GraphicComponent.class)
+	@Supers(GraphicComponent.class)
 	public static class Selectable {
 
 	}
@@ -326,7 +326,7 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	@Extends({ Selectable.class, Window.class })
+	@Supers({ Selectable.class, Window.class })
 	public static class SelectableWindow {
 
 	}
