@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Meta;
 import org.genericsystem.kernel.annotations.SystemGeneric;
@@ -26,7 +27,6 @@ public class Root extends Vertex implements RootService<Vertex> {
 
 	public Root(Serializable value, Class<?>... userClasses) {
 		init(null, Collections.emptyList(), value, Collections.emptyList());
-		// find(SystemMap.class, false);
 		initSystemMap();
 		for (Class<?> clazz : userClasses)
 			find(clazz, false);
@@ -35,6 +35,7 @@ public class Root extends Vertex implements RootService<Vertex> {
 	public <T extends Vertex> T initSystemMap() {
 		T mapVertex = (T) buildInstance(Collections.emptyList(), SystemMap.class, Collections.singletonList(this)).plug();
 		systemCache.put(SystemMap.class, mapVertex);
+		mapVertex.enablePropertyConstraint();
 		return mapVertex;
 	}
 
@@ -48,12 +49,15 @@ public class Root extends Vertex implements RootService<Vertex> {
 		return this;
 	}
 
+	@Override
 	public Vertex find(Class<?> clazz) {
 		return find(clazz, true);
 	}
 
 	Vertex find(Class<?> clazz, boolean throwExceptionOnUnfoundClass) throws IllegalStateException {
 		Vertex result = systemCache.get(clazz);
+		if (result != null)
+			return result;
 		if (result == null && throwExceptionOnUnfoundClass)
 			throw new RollbackException(new IllegalStateException());
 		else {
