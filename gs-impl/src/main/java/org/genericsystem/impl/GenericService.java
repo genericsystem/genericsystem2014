@@ -76,7 +76,7 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 	}
 
 	@Override
-	default T getInstance(Serializable value, T... components) {
+	default T getInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
 		Vertex vertex = getVertex();
 		if (vertex == null)
 			return null;
@@ -88,12 +88,22 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 
 	@Override
 	default Snapshot<T> getMetaComposites(T meta) {
-		return getVertex().getMetaComposites(meta.getVertex()).project(this::wrap);
+		// return getVertex().getMetaComposites(meta.getVertex()).project(this::wrap);
+
+		Vertex vertex = getVertex();
+		if (vertex == null)
+			return null;
+		return vertex.getMetaComposites(meta.getVertex()).project(this::wrap);
 	}
 
 	@Override
 	default Snapshot<T> getSuperComposites(T superVertex) {
-		return getVertex().getSuperComposites(superVertex.getVertex()).project(this::wrap);
+		// return getVertex().getSuperComposites(superVertex.getVertex()).project(this::wrap);
+
+		Vertex vertex = getVertex();
+		if (vertex == null)
+			return null;
+		return vertex.getMetaComposites(superVertex.getVertex()).project(this::wrap);
 	}
 
 }
