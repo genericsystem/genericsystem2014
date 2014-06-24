@@ -6,7 +6,7 @@ import org.genericsystem.api.statics.RemoveStrategy;
 
 /**
  * <p>
- * <tt>Generic System</tt> could be represented as a graph. The entity <tt>Engine</tt> would be its root and <tt>Generic</tt> would be its nodes. By extension, <tt>Generic</tt> is the interface for handling information on the model as much as the data.
+ * <tt>Generic System</tt> could be represented as a graph. The entity <tt>Engine</tt> would be its root and <tt>Generic</tt>s would be its nodes. By extension, <tt>Generic</tt> is the interface for handling information on the model as much as the data.
  * <tt>Generic</tt> is connected to its environment and aware of it.
  * </p>
  * <p>
@@ -16,6 +16,7 @@ import org.genericsystem.api.statics.RemoveStrategy;
  * @see Engine
  */
 public interface Generic extends Serializable {
+
 	/**
 	 * Creates and returns a new instance of Generic with the value specified.
 	 * 
@@ -188,7 +189,7 @@ public interface Generic extends Serializable {
 	 * Removes the Generic using the removeStrategy specified. Do nothing if the generic has already been removed.
 	 * 
 	 * @param removeStrategy
-	 *            the removeStrategy to apply when removing the generic
+	 *            the removeStrategy to apply when removing the generic.
 	 * @see RemoveStrategy
 	 */
 	// TODO @throws referentialIntegrity
@@ -197,10 +198,10 @@ public interface Generic extends Serializable {
 	void remove(RemoveStrategy removeStrategy);
 
 	/**
-	 * Removes the Generics specified using the removeStrategy.
+	 * Removes the generic(s) specified using the removeStrategy. The generic(s) to remove must be in the same context as the element making the call. Do nothing if the generic(s) has already been removed.
 	 * 
 	 * @param removeStrategy
-	 *            the removeStrategy to apply when removing the generics specified
+	 *            the removeStrategy to apply when removing the generic(s) specified.
 	 * @param toRemove
 	 *            elements to remove
 	 */
