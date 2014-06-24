@@ -37,7 +37,7 @@ public interface Cache {
 	void stop();
 
 	/**
-	 * Flushes the content of current cache into its subcache or into the current user's transaction. If Cache flushes its data within a transaction, all modifications in the current cache becomes available to other users.
+	 * Flushes the content of current cache into its subcache(s) or into the current user's transaction. If Cache flushes its data within a transaction, all modifications in the current cache becomes available to other users.
 	 */
 	void flush() /* throws RollbackException */;
 
