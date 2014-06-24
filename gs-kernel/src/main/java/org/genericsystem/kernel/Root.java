@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Meta;
 import org.genericsystem.kernel.annotations.SystemGeneric;
@@ -27,16 +26,16 @@ public class Root extends Vertex implements RootService<Vertex> {
 
 	public Root(Serializable value, Class<?>... userClasses) {
 		init(null, Collections.emptyList(), value, Collections.emptyList());
+		systemCache.put(Root.class, this);
 		initSystemMap();
 		for (Class<?> clazz : userClasses)
 			find(clazz, false);
 	}
 
-	public <T extends Vertex> T initSystemMap() {
-		T mapVertex = (T) buildInstance(Collections.emptyList(), SystemMap.class, Collections.singletonList(this)).plug();
-		systemCache.put(SystemMap.class, mapVertex);
-		mapVertex.enablePropertyConstraint();
-		return mapVertex;
+	public void initSystemMap() {
+		Vertex map = buildInstance(Collections.emptyList(), SystemMap.class, Collections.singletonList(this)).plug();
+		systemCache.put(SystemMap.class, map);
+		map.enablePropertyConstraint();
 	}
 
 	@Override
@@ -60,11 +59,7 @@ public class Root extends Vertex implements RootService<Vertex> {
 			return result;
 		if (result == null && throwExceptionOnUnfoundClass)
 			throw new RollbackException(new IllegalStateException());
-		else {
-			ClassFinder classFinder = new ClassFinder(clazz);
-			result = classFinder.find();
-		}
-		return result;
+		return new ClassFinder(clazz).find();
 	}
 
 	class ClassFinder {
@@ -74,20 +69,17 @@ public class Root extends Vertex implements RootService<Vertex> {
 			this.clazz = clazz;
 		}
 
+		@SuppressWarnings("unchecked")
 		public <T extends Vertex> T find() {
-			T result = (T) Root.this.systemCache.get(clazz);
-			if (result != null)
-				return result;
-			result = (T) findMeta().setInstance(findOverrides(), findValue(), findComponents());
-			Root.this.systemCache.put(clazz, result);
-			return result;
+			Vertex result = systemCache.get(clazz);
+			if (result == null)
+				systemCache.put(clazz, result = findMeta().setInstance(findOverrides(), findValue(), findComponents()));
+			return (T) result;
 		}
 
 		Vertex findMeta() {
 			Meta meta = clazz.getAnnotation(Meta.class);
-			if (meta == null || meta.value() == Root.class)
-				return getRoot();
-			return (new ClassFinder(meta.value())).find();
+			return meta == null ? getRoot() : new ClassFinder(meta.value()).find();
 		}
 
 		List<Vertex> findOverrides() {

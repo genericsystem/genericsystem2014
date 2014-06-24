@@ -3,11 +3,10 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.Optional;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.VertexService;
 import org.genericsystem.kernel.annotations.SystemGeneric;
 
-public interface MapService<T extends VertexService<T>> extends SystemPropertiesService<T>, CompositesInheritanceService<T>, UpdatableService<T> { // extends CompositesInheritanceService<T>, UpdatableService<T> {
+public interface MapService<T extends VertexService<T>> extends SystemPropertiesService<T>, CompositesInheritanceService<T>, UpdatableService<T> {
 
 	@Override
 	default Serializable getSystemPropertyValue(Class<?> propertyClass, int pos) {
@@ -26,24 +25,12 @@ public interface MapService<T extends VertexService<T>> extends SystemProperties
 		setKey(new AxedPropertyClass(propertyClass, pos)).setInstance(value, (T) this);
 	}
 
-	@SuppressWarnings("unchecked")
 	default T getMap() {
-		return (T) ((VertexService) getRoot()).find(SystemMap.class);
+		return getRoot().find(SystemMap.class);
 	}
 
-	// @SuppressWarnings("unchecked")
-	// default T setMap() {
-	// T map = getMap();
-	// if (map == null) {
-	// map = getRoot().setInstance(SystemMap.class, getRoot()).enablePropertyConstraint();
-	// assert map == getMap();
-	// }
-	// return map;
-	// }
-
 	default Stream<T> getKeys() {
-		T map = getMap();
-		return map == null ? Stream.empty() : getAttributes(map).stream();
+		return getAttributes(getMap()).stream();
 	}
 
 	default Optional<T> getKey(AxedPropertyClass property) {
