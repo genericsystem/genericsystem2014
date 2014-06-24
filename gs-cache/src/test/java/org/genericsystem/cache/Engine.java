@@ -2,9 +2,12 @@ package org.genericsystem.cache;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.Objects;
+
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
+import org.genericsystem.kernel.services.SignatureService;
 
 public class Engine extends Generic implements EngineService<Generic> {
 
@@ -62,6 +65,13 @@ public class Engine extends Generic implements EngineService<Generic> {
 		if (currentCache == null)
 			throw new IllegalStateException();
 		return currentCache;
+	}
+
+	@Override
+	public boolean equiv(SignatureService<?> service) {
+		if (this == service)
+			return true;
+		return Objects.equals(getValue(), service.getValue()) && SignatureService.equivComponents(getComponents(), service.getComponents());
 	}
 
 }

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
+import org.genericsystem.kernel.Snapshot;
 
 public interface GenericService<T extends GenericService<T>> extends org.genericsystem.impl.GenericService<T> {
 
@@ -41,6 +42,22 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 	default CompositesDependencies<T> getSuperComposites() {
 		return getCurrentCache().getSuperComposites((T) this);
 	}
+
+	@Override
+	default Snapshot<T> getMetaComposites(T meta) {
+		return getCurrentCache().getMetaComposites((T) this).getByIndex(meta);
+	}
+
+	@Override
+	default Snapshot<T> getSuperComposites(T superVertex) {
+		return getCurrentCache().getSuperComposites((T) this).getByIndex(superVertex);
+	}
+
+	// @Override
+	// default T getInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
+	// return getCurrentCache().getInstances((T) this)!= null ? getCurrentCache().getInstances((T) this).filter(instance-> Objects.equals(getValue(), instance.getValue())): null;
+	// //vertex = vertex.getInstance(value, Arrays.asList(components).stream().map(GenericService::unwrap).collect(Collectors.toList()).toArray(new Vertex[components.length]));
+	// }
 
 	@Override
 	@SuppressWarnings("unchecked")
