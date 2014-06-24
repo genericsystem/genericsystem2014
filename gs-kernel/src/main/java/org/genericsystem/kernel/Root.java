@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.genericsystem.kernel.annotations.Components;
-import org.genericsystem.kernel.annotations.Extends;
 import org.genericsystem.kernel.annotations.Meta;
 import org.genericsystem.kernel.annotations.SystemGeneric;
 import org.genericsystem.kernel.annotations.value.AxedConstraintValue;
@@ -20,7 +19,7 @@ import org.genericsystem.kernel.exceptions.RollbackException;
 
 public class Root extends Vertex implements RootService<Vertex> {
 
-	private final Map<Class<?>, Vertex> systemCache = new HashMap<Class<?>, Vertex>();
+	final Map<Class<?>, Vertex> systemCache = new HashMap<Class<?>, Vertex>();
 
 	public Root(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
@@ -42,6 +41,7 @@ public class Root extends Vertex implements RootService<Vertex> {
 		return this;
 	}
 
+	@Override
 	public Vertex find(Class<?> clazz) {
 		return find(clazz, true);
 	}
@@ -51,7 +51,7 @@ public class Root extends Vertex implements RootService<Vertex> {
 		if (result == null && throwExceptionOnUnfoundClass)
 			throw new RollbackException(new IllegalStateException());
 		else {
-			ClassFinder classFinder = new ClassFinder(systemCache, clazz);
+			ClassFinder classFinder = new ClassFinder(clazz);
 			result = classFinder.find();
 		}
 		return result;
@@ -60,16 +60,17 @@ public class Root extends Vertex implements RootService<Vertex> {
 	class ClassFinder {
 
 		private final Class<?> clazz;
-		private final Map<Class<?>, Vertex> systemCache;
 
-		public ClassFinder(Map<Class<?>, Vertex> systemCache, Class<?> clazz) {
-			this.systemCache = systemCache;
+		// private final Map<Class<?>, Vertex> systemCache;
+
+		public ClassFinder(Class<?> clazz) {
+			// this.systemCache = systemCache;
 			this.clazz = clazz;
 		}
 
-		public Vertex find() {
-			Vertex result = findMeta().setInstance(findOverrides(), findValue(), findComponents());
-			systemCache.put(clazz, result);
+		public <T extends Vertex> T find() {
+			T result = (T) findMeta().setInstance(findOverrides(), findValue(), findComponents());
+			Root.this.systemCache.put(clazz, result);
 			return result;
 		}
 
@@ -77,23 +78,23 @@ public class Root extends Vertex implements RootService<Vertex> {
 			Meta meta = clazz.getAnnotation(Meta.class);
 			if (meta == null || meta.value() == Root.class)
 				return getRoot();
-			return (new ClassFinder(systemCache, meta.value())).find();
+			return (new ClassFinder(meta.value())).find();
 		}
 
 		List<Vertex> findOverrides() {
 			List<Vertex> overridesVertices = new ArrayList<Vertex>();
-			Extends overrides = clazz.getAnnotation(Extends.class);
+			org.genericsystem.kernel.annotations.Supers overrides = clazz.getAnnotation(org.genericsystem.kernel.annotations.Supers.class);
 			if (overrides != null) {
 				List<Class<?>> overridesLst = Arrays.asList(overrides.value());
 				overridesVertices = new ArrayList<Vertex>(overridesLst.size() + 1);
 				for (Class<?> clazz : overridesLst) {
-					overridesVertices.add(new ClassFinder(systemCache, clazz).find());
+					overridesVertices.add(new ClassFinder(clazz).find());
 				}
 			}
 			Class<?> javaSuperclass = clazz.getSuperclass();
 			if (Object.class.equals(javaSuperclass) || clazz.getAnnotation(SystemGeneric.class) == null)
 				return overridesVertices;
-			ClassFinder classFinder = new ClassFinder(systemCache, javaSuperclass);
+			ClassFinder classFinder = new ClassFinder(javaSuperclass);
 			overridesVertices.add(classFinder.find());
 			return overridesVertices;
 		}
@@ -134,7 +135,7 @@ public class Root extends Vertex implements RootService<Vertex> {
 			Vertex componentsVertices[] = new Vertex[componentsLst.length];
 			int index = 0;
 			for (Class<?> clazz : componentsLst) {
-				componentsVertices[index] = new ClassFinder(systemCache, clazz).find();
+				componentsVertices[index] = new ClassFinder(clazz).find();
 				++index;
 			}
 			return componentsVertices;
