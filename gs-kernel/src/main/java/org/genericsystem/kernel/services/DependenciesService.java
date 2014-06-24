@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
@@ -103,6 +104,9 @@ public interface DependenciesService<T extends DependenciesService<T>> extends A
 			for (; subIndex < subComponents.size(); subIndex++) {
 				T subComponent = subComponents.get(subIndex);
 				if (subComponent.isSpecializationOf(superComponent)) {
+					log.info("componentsDepends " + subComponent);
+					log.info("componentsDepends " + superComponent);
+					log.info("componentsDepends " + this);
 					if (singulars.get(subIndex))
 						return true;
 					subIndex++;

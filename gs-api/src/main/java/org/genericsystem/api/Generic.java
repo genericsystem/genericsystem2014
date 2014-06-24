@@ -179,7 +179,7 @@ public interface Generic extends Serializable {
 	/**
 	 * Removes the Generic using the default removeStrategy. Do nothing if the Generic has already been removed.
 	 * 
-	 * @see RemoveStrategy
+	 * @see #remove(RemoveStrategy)
 	 */
 	// TODO @throws referentialIntegrity
 	// TODO @throws dependencyInconsistence
@@ -198,17 +198,34 @@ public interface Generic extends Serializable {
 	void remove(RemoveStrategy removeStrategy);
 
 	/**
+	 * Removes the generic(s) specified using the default removeStrategy. The generic(s) to remove must be in the same context as the element making the call. Do nothing if the generic(s) has already been removed.
+	 * 
+	 * @param toRemove
+	 *            elements to remove
+	 * @return this with the element(s) removed
+	 * 
+	 * @see #remove(RemoveStrategy, Generic...)
+	 */
+	// TODO @throws referentialIntegrity
+	// TODO @throws noSuchElement
+	// TODO @throws dependencyInconsistence
+	Generic remove(Generic... toRemove);
+
+	/**
 	 * Removes the generic(s) specified using the removeStrategy. The generic(s) to remove must be in the same context as the element making the call. Do nothing if the generic(s) has already been removed.
 	 * 
 	 * @param removeStrategy
 	 *            the removeStrategy to apply when removing the generic(s) specified.
 	 * @param toRemove
 	 *            elements to remove
+	 * @return this with the element(s) removed
+	 * 
+	 * @see RemoveStrategy
 	 */
 	// TODO @throws referentialIntegrity
 	// TODO @throws noSuchElement
 	// TODO @throws dependencyInconsistence
 	// TODO @throws specific constraints of removeStrategy
-	void remove(RemoveStrategy removeStrategy, Generic... toRemove);
+	Generic remove(RemoveStrategy removeStrategy, Generic... toRemove);
 
 }

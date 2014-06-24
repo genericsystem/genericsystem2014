@@ -68,7 +68,7 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 				return instance;
 		return null;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	default T getWeakInstance(Serializable value, T... components) {
 		T nearestMeta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
@@ -108,6 +108,7 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 	}
 
 	default Snapshot<T> getSuperComposites(T superVertex) {
+		assert getSuperComposites() != null : this.info();
 		return getSuperComposites().getByIndex(superVertex);
 	}
 

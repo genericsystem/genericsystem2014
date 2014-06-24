@@ -102,7 +102,7 @@ public interface CompositesInheritanceService<T extends CompositesInheritanceSer
 					Stream<T> supersStream = baseSupersStream();
 					if (!baseSupersStream().iterator().hasNext())
 						return (base.isRoot() || !origin.isAttributeOf(base.getMeta())) ? Stream.of(origin) : getInheringsStream(base.getMeta());
-						return Statics.concat(supersStream, superVertex -> getInheringsStream(superVertex)).distinct();
+					return Statics.concat(supersStream, superVertex -> getInheringsStream(superVertex)).distinct();
 				}
 
 				protected Stream<T> projectStream(Stream<T> streamToProject) {
@@ -110,9 +110,18 @@ public interface CompositesInheritanceService<T extends CompositesInheritanceSer
 				}
 
 				protected Stream<T> getStream(final T holder) {
-					if (holder.getLevel() != level || base.getSuperComposites(holder).iterator().hasNext())
+					log.info(CompositesInheritanceService.this.info());
+					log.info(holder.info());
+					log.info(base.info());
+					log.info(origin.info());
+					if (base.getSuperComposites(holder) == null) {
+						log.info(origin.info());
+					}
+					assert base.getSuperComposites(holder) != null : base;
+					if (holder.getLevel() != level || base.getSuperComposites(holder) != null && base.getSuperComposites(holder).iterator().hasNext())
 						add(holder);
-					Stream<T> indexStream = Stream.concat(holder.getLevel() < level ? base.getMetaComposites(holder).stream() : Stream.empty(), base.getSuperComposites(holder).stream());
+					Stream<T> indexStream = Stream.concat(holder.getLevel() < level && base.getMetaComposites(holder) != null ? base.getMetaComposites(holder).stream() : Stream.empty(),
+							base.getSuperComposites(holder) != null ? base.getSuperComposites(holder).stream() : Stream.empty());
 					return Stream.concat(isTerminal() && contains(holder) ? Stream.empty() : Stream.of(holder), projectStream(indexStream));
 				}
 			}
