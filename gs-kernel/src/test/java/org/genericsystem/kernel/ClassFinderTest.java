@@ -8,93 +8,9 @@ import org.genericsystem.kernel.services.RemovableService.RemoveStrategy;
 import org.testng.annotations.Test;
 
 @Test
-public class VertexTest extends AbstractTest {
+public class ClassFinderTest extends AbstractTest {
 
-	public void test() {
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex vehicle2 = engine.addInstance("Vehicle2");
-		assert !vehicle2.inheritsFrom(vehicle);
-		assert vehicle == engine.setInstance("Vehicle");
-		// assert vehicle == engine.setInstance(new Vertex[] { vehicle2 }, "Vehicle");
-		Vertex car = engine.addInstance(Arrays.asList(vehicle), "Car");
-		assert car.inheritsFrom(vehicle);
-		Vertex power = engine.addInstance("Power", car);
-		Vertex myBmw = car.addInstance("myBmw");
-		assert myBmw.isInstanceOf(car);
-		Vertex v233 = power.addInstance(233, myBmw);
-		Vertex color = engine.addInstance("Color");
-		Vertex red = color.addInstance("red");
-		Vertex green = color.addInstance("green");
-		Vertex yellow = color.addInstance("yellow");
-		assert !yellow.getSupersStream().anyMatch(red::equals);
-		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		assert engine.getInstances().containsAll(Arrays.asList(vehicle, car));
-		assert car.getInstances().contains(myBmw) : car.getInstances() + car.info();
-		assert power.getInstances().contains(v233);
-		assert car.getMetaComposites(power.getMeta()).contains(power);
-		assert car.getSupersStream().findFirst().get() == vehicle : car.getSupersStream().findFirst().get().info();
-		assert car.getSupersStream().anyMatch(vehicle::equals);
-		assert vehicle.getInheritings().contains(car);
-		assert myBmw.getMetaComposites(v233.getMeta()).contains(v233);
-		assert myBmw.isInstanceOf(car);
-		assert myBmw.isInstanceOf(vehicle);
-		assert !myBmw.isInstanceOf(engine);
-		assert vehicle.isInstanceOf(engine);
-		assert !vehicle.inheritsFrom(engine) : vehicle.getLevel() + " " + engine.getLevel() + " " + vehicle.equals(engine);
-		assert car.inheritsFrom(vehicle);
-		assert !car.isInstanceOf(vehicle);
-		assert !power.inheritsFrom(engine);
-		assert !v233.inheritsFrom(power);
-		assert v233.isInstanceOf(power);
-		assert engine.getInstance("Car") != null;
-		assert power.getInstance(233, myBmw) != null;
-		Vertex carRed = vehicleColor.addInstance("CarRed", car, red);
-		Vertex carGreen = vehicleColor.addInstance("CarGreen", car, green);
-		assert carRed.isSuperOf(vehicleColor, Arrays.asList(carRed), "myBmwRed", Arrays.asList(myBmw, red));
-		assert !carRed.isSuperOf(vehicleColor, Collections.emptyList(), "myBmwRed", Arrays.asList(myBmw, red));
-		assert carRed.isSuperOf(vehicleColor, Collections.singletonList(carRed), "CarRed", Arrays.asList(myBmw, red));
-		assert carGreen.isInstanceOf(vehicleColor);
-		assert vehicleColor.getInstances().contains(carGreen);
-
-		Vertex myBmwYellow = vehicleColor.addInstance(carGreen, "CarRed", myBmw, yellow);
-		assert carGreen.isSuperOf(vehicleColor, Collections.singletonList(carGreen), "CarRed", Arrays.asList(myBmw, yellow));
-		assert myBmwYellow.inheritsFrom(carGreen);
-
-		assert carRed.isSuperOf(vehicleColor, Collections.singletonList(carGreen), "CarRed", Arrays.asList(myBmw, red));
-		Vertex myBmwRed = vehicleColor.addInstance(carRed, "myBmwRed", myBmw, red);
-		assert vehicleColor.getInstances().contains(myBmwRed);
-		assert myBmwRed.inheritsFrom(carRed);
-		assert !yellow.inheritsFrom(red);
-		assert !yellow.isInstanceOf(red);
-		assert myBmwRed == vehicleColor.setInstance("myBmwRed", myBmw, red);
-		assert myBmwRed == vehicleColor.getInstance("myBmwRed", myBmw, red) : vehicleColor.getInstance("myBmwRed", myBmw, red).info();
-		assert myBmwRed.inheritsFrom(carRed);
-		assert car.getAttributes(engine).contains(power) : car.getAttributes(engine);
-		assert car.getAttributes(engine).contains(vehicleColor) : car.getAttributes(engine);
-		// assert car.getAttributes(engine).size() == 2 : car.getAttributes(engine);
-		assert !myBmwRed.inheritsFrom(power);
-		assert !v233.inheritsFrom(power);
-		assert v233.isInstanceOf(power);
-
-		assert myBmw.getHolders(power).contains(v233) : myBmw.getHolders(power);
-		assert myBmw.getHolders(power).size() == 1 : myBmw.getHolders(power);
-		assert myBmw.getValues(power).contains(233);
-		assert engine.isAttributeOf(myBmw);
-
-		assert car.getAttributes(engine).equals(myBmw.getAttributes(engine)) : car.getAttributes(engine) + " " + myBmw.getAttributes(engine);
-	}
-
-	@Test(enabled = false)
-	public void test2() {
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex vehicle2 = engine.addInstance("Vehicle2");
-		assert vehicle == engine.setInstance("Vehicle");
-		// assert vehicle != engine.setInstance(vehicle2, "Vehicle");
-	}
-
-	public void test3() {
+	public void test1() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex car = engine.addInstance(vehicle, "Car");
@@ -104,7 +20,7 @@ public class VertexTest extends AbstractTest {
 		// assert car.getAttributes(engine).size() == 2;
 	}
 
-	public void test4() {
+	public void test2() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex car = engine.addInstance(vehicle, "Car");
