@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
-public @interface Extends {
+public @interface Supers {
 
 	/**
 	 * Returns the supers classes.
