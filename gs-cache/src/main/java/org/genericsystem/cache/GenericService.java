@@ -2,10 +2,16 @@ package org.genericsystem.cache;
 
 import java.io.Serializable;
 import java.util.List;
+
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 
 public interface GenericService<T extends GenericService<T>> extends org.genericsystem.impl.GenericService<T> {
+
+	@Override
+	default T find(Class<?> clazz) {
+		return wrap(getRoot().getVertex().find(clazz));
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
