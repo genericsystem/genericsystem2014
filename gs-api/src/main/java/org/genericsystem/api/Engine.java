@@ -1,5 +1,7 @@
 package org.genericsystem.api;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * <tt>Engine</tt> is the initial point of access, where is instantiated the model and then the data. Engine is as much a service than a data. It is represented by a Generic and an interface.
  * 
@@ -17,6 +19,42 @@ package org.genericsystem.api;
  * @see Generic
  */
 public interface Engine extends Generic {
+
+	/**
+	 * Creates a root to the graph as a new engine in a persistent mode. Starts a cache.
+	 * 
+	 * @param directoryPath
+	 *            the directoryPath where the model and data will be stored.
+	 * @return a new engine stored on the directory path specified.
+	 * @throws ClassNotFoundException
+	 * @throws SecurityException
+	 * @throws NoSuchMethodException
+	 * @throws InvocationTargetException
+	 * @throws IllegalArgumentException
+	 * 
+	 * @see Cache
+	 */
+	static Engine newRoot(String directoryPath) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
+		return ((Class<Engine>) Class.forName("org.genericsystem.core.EngineImpl")).getConstructor(Class[].class).newInstance().newEngine(directoryPath);
+	}
+
+	/**
+	 * Creates a root to the graph as a new engine in a in-memory mode. Starts a cache.
+	 * 
+	 * @return a new engine used in-memory.
+	 * @throws ClassNotFoundException
+	 * @throws SecurityException
+	 * @throws NoSuchMethodException
+	 * @throws InvocationTargetException
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
+	 * 
+	 * @see Cache
+	 */
+	static Engine newInMemoryRoot() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
+		return ((Class<Engine>) Class.forName("org.genericsystem.core.EngineImpl")).getConstructor(Class[].class).newInstance().newInMemoryEngine();
+	}
 
 	/**
 	 * Creates a new engine in a persistent mode and starts a cache.
