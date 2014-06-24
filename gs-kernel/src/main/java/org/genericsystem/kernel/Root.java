@@ -27,8 +27,16 @@ public class Root extends Vertex implements RootService<Vertex> {
 
 	public Root(Serializable value, Class<?>... userClasses) {
 		init(null, Collections.emptyList(), value, Collections.emptyList());
+		// find(SystemMap.class, false);
+		initSystemMap();
 		for (Class<?> clazz : userClasses)
 			find(clazz, false);
+	}
+
+	public <T extends Vertex> T initSystemMap() {
+		T mapVertex = (T) buildInstance(Collections.emptyList(), SystemMap.class, Collections.singletonList(this)).plug();
+		systemCache.put(SystemMap.class, mapVertex);
+		return mapVertex;
 	}
 
 	@Override
@@ -58,18 +66,17 @@ public class Root extends Vertex implements RootService<Vertex> {
 	}
 
 	class ClassFinder {
-
 		private final Class<?> clazz;
 
-		// private final Map<Class<?>, Vertex> systemCache;
-
 		public ClassFinder(Class<?> clazz) {
-			// this.systemCache = systemCache;
 			this.clazz = clazz;
 		}
 
 		public <T extends Vertex> T find() {
-			T result = (T) findMeta().setInstance(findOverrides(), findValue(), findComponents());
+			T result = (T) Root.this.systemCache.get(clazz);
+			if (result != null)
+				return result;
+			result = (T) findMeta().setInstance(findOverrides(), findValue(), findComponents());
 			Root.this.systemCache.put(clazz, result);
 			return result;
 		}

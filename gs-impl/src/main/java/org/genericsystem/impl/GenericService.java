@@ -14,6 +14,11 @@ import org.genericsystem.kernel.VertexService;
 
 public interface GenericService<T extends GenericService<T>> extends VertexService<T> {
 
+	@Override
+	default T find(Class<?> clazz) {
+		return wrap(getRoot().getVertex().find(clazz));
+	}
+
 	default List<T> wrap(Stream<Vertex> stream) {
 		return stream.map(this::wrap).collect(Collectors.toList());
 	}
