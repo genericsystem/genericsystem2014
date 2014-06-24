@@ -103,7 +103,7 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 		Vertex vertex = getVertex();
 		if (vertex == null)
 			return null;
-		return vertex.getMetaComposites(superVertex.getVertex()).project(this::wrap);
+		return vertex.getSuperComposites(superVertex.getVertex()).project(this::wrap);
 	}
 
 }

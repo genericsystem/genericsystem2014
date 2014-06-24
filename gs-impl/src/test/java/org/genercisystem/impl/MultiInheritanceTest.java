@@ -20,8 +20,8 @@ public class MultiInheritanceTest extends AbstractTest {
 		Generic transformerSizable = engine.addInstance("Sizable", transformer);
 		// assert transformer.getAttributes(engine).size() == 1 : transformer.getAttributes(engine);
 		assert transformer.getAttributes(engine).contains(transformerSizable);
-		assert !transformer.getAttributes(engine).contains(vehicleSizable);
-		assert !transformer.getAttributes(engine).contains(robotSizable);
+		assert !transformer.getAttributes(engine).contains(vehicleSizable) : transformer.getAttributes(engine);
+		assert !transformer.getAttributes(engine).contains(robotSizable) : transformer.getAttributes(engine);
 	}
 
 	public void multiInheritanceWithDiamond() {
