@@ -21,7 +21,7 @@ public abstract class ExtendedSignature<T extends ExtendedSignature<T>> extends 
 
 	private void checkDependsMetaComponents() {
 		assert getMeta().getComponents() != null;
-		if (!(componentsDepends(getComponents(), getMeta().getComponents())))
+		if (!(getMeta().componentsDepends(getComponents(), getMeta().getComponents())))
 			rollbackAndThrowException(new IllegalStateException("Inconsistant components : " + getComponents() + " " + getMeta().getComponents()));
 	}
 
