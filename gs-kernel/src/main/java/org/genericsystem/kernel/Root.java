@@ -27,7 +27,6 @@ public class Root extends Vertex implements RootService<Vertex> {
 
 	public Root(Serializable value, Class<?>... userClasses) {
 		init(null, Collections.emptyList(), value, Collections.emptyList());
-		// find(SystemMap.class, false);
 		initSystemMap();
 		for (Class<?> clazz : userClasses)
 			find(clazz, false);
@@ -36,6 +35,7 @@ public class Root extends Vertex implements RootService<Vertex> {
 	public <T extends Vertex> T initSystemMap() {
 		T mapVertex = (T) buildInstance(Collections.emptyList(), SystemMap.class, Collections.singletonList(this)).plug();
 		systemCache.put(SystemMap.class, mapVertex);
+		mapVertex.enablePropertyConstraint();
 		return mapVertex;
 	}
 
@@ -56,6 +56,8 @@ public class Root extends Vertex implements RootService<Vertex> {
 
 	Vertex find(Class<?> clazz, boolean throwExceptionOnUnfoundClass) throws IllegalStateException {
 		Vertex result = systemCache.get(clazz);
+		if (result != null)
+			return result;
 		if (result == null && throwExceptionOnUnfoundClass)
 			throw new RollbackException(new IllegalStateException());
 		else {
