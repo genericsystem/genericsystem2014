@@ -45,13 +45,11 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 		return getCurrentCache().getSuperComposites((T) this);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getMetaComposites(T meta) {
 		return getCurrentCache().getMetaComposites((T) this).getByIndex(meta);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getSuperComposites(T superVertex) {
 		return getCurrentCache().getSuperComposites((T) this).getByIndex(superVertex);
@@ -92,5 +90,17 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 
 	default Cache<T> getCurrentCache() {
 		return getRoot().getCurrentCache();
+	}
+
+	@Override
+	default T plug() {
+		return getCurrentCache().insert(org.genericsystem.impl.GenericService.super.plug());
+	}
+
+	@Override
+	default boolean unplug() {
+		boolean unplugged = org.genericsystem.impl.GenericService.super.unplug();
+		getCurrentCache().simpleRemove((T) this);
+		return unplugged;
 	}
 }
