@@ -1,7 +1,8 @@
-package org.genericsystem.api;
+package org.genericsystem.api.core;
 
 import java.io.Serializable;
 
+import org.genericsystem.api.model.Snapshot;
 import org.genericsystem.api.statics.RemoveStrategy;
 
 /**
@@ -12,10 +13,70 @@ import org.genericsystem.api.statics.RemoveStrategy;
  * <p>
  * When creating a <tt>Generic</tt>, a unique value must be specified.
  * </p>
+ * <h1>Meta-levels</h1>
+ * <p>
+ * There are three meta-levels of generics:
+ * </p>
+ * <dl>
+ * <dt>Meta
+ * <dd>System Level. In most cases <tt>Engine</tt></dd>
+ * <dt>Structurals
+ * <dd>Model level. User-defined data-models: <tt>Types</tt>, <tt>Attributes</tt> and <tt>Relations</tt></dd>
+ * <dt>Concretes
+ * <dd>Data level. Instances of Structurals. This level defines business-data.</dd>
+ * </dl>
+ * <p>
+ * An instantiation of a Generic is a type, an instance, an attribute or a relation. A link is an instance of a relation. A holder enables to handle a value. A property is an attribute with a singularConstraint.
+ * </p>
  * 
  * @see Engine
  */
 public interface Generic extends Serializable {
+
+	/**
+	 * Returns true if is a Generic handled by the system, false otherwise.
+	 * 
+	 * @return true if is a Generic handled by the system, false otherwise.
+	 */
+	boolean isSystem();
+
+	/**
+	 * Returns true if this generic is an <tt>Instance</tt>, false otherwise.
+	 * 
+	 * @return true if this is an <tt>Instance</tt>, false otherwise.
+	 */
+	boolean isInstance();
+
+	/**
+	 * Returns true if this generic is a <tt>Type</tt>, false otherwise.
+	 * 
+	 * @return true if this is a <tt>Type</tt>, false otherwise.
+	 */
+	boolean isType();
+
+	/**
+	 * Returns true if this generic is an <tt>Attribute</tt> or <tt>Relation</tt>, false otherwise.
+	 * 
+	 * @return true if the generic is an <tt>Attribute</tt> or <tt>Relation</tt>, false otherwise.
+	 */
+	boolean isAttribute();
+
+	/**
+	 * Returns true if this generic has at least two components, false otherwise.
+	 * 
+	 * @return true if this generic has at least two components, false otherwise.
+	 */
+	boolean isRelation();
+
+	/**
+	 * Returns true if this generic is an <tt>Attribute</tt> of the generic specified, false otherwise.
+	 * 
+	 * @param generic
+	 *            the generic checked.
+	 * 
+	 * @return true if this is an <tt>Attribute</tt> of the generic specified, false otherwise.
+	 */
+	boolean isAttributeOf(Generic generic);
 
 	/**
 	 * Creates and returns a new instance of Generic with the value specified.
@@ -24,63 +85,7 @@ public interface Generic extends Serializable {
 	 *            the value of the Generic.
 	 * @return a new instance of Generic with the value specified.
 	 */
-	Generic createGeneric(Serializable value);
-
-	/**
-	 * Adds the elements specified to this.
-	 *
-	 * @param elements
-	 *            the elements to add. Can be attributes, properties or instances.
-	 * @return this with the new elements positioned
-	 */
-	// TODO : throws numberOfBoundRestriction if an element is a relation : cannot add another bound
-	Generic add(Generic... elements);
-
-	/**
-	 * Takes off elements to this. This is an equivalent to {@link #remove(RemoveStrategy, Generic...)} with default RemoveStrategy.
-	 *
-	 * @param elements
-	 *            the element(s) to take off.
-	 * @return this with the elements taken off.
-	 */
-	// TODO @throws noSuchElement
-	// TODO @throws referentialIntegrity
-	// TODO @throws atLeastOneElementExpected
-	Generic takeOff(Generic... elements);
-
-	/**
-	 * Creates and returns a new attribute with the value specified.
-	 * 
-	 * @param value
-	 *            the value of the instance.
-	 * @param targets
-	 *            targets where the attribute is positioned. If none specified, is positioned to the generic calling this method.
-	 * @return a new attribute with the value specified.
-	 */
-	Generic createAttribute(Serializable value, Generic... targets);
-
-	/**
-	 * Creates and returns a new property with the value specified.
-	 * 
-	 * @param value
-	 *            the value of the instance.
-	 * @param targets
-	 *            targets where the property is positioned. If none specified, is positioned to the generic calling this method.
-	 * @return a new property with the value specified.
-	 */
-	Generic createProperty(Serializable value, Generic... targets);
-
-	/**
-	 * Creates and returns a relation between the bounds specified with the value specified.
-	 * 
-	 * @param value
-	 *            the value of the instance.
-	 * @param bounds
-	 *            the bounds to connect. Should have at least two bounds.
-	 * @return a new relation with the value specified, the relation if it already existed.
-	 */
-	// TODO @throws numberOfBounds < 2
-	Generic createRelation(Serializable value, Generic... bounds);
+	Generic addInstance(Serializable value);
 
 	/**
 	 * Updates the value of the generic. Returns the generic updated. Do nothing if the value is already the one of the generic.
@@ -92,39 +97,35 @@ public interface Generic extends Serializable {
 	Generic updateValue(Serializable value);
 
 	/**
-	 * Finds a generic by its value. If no holder specified, get the Generic with the value. If one holder specified, the holder must have the generic with the value specified. If several holders specified, every holder should have the value specified.
-	 * Returns null if not found.
+	 * Returns the value of the generic.
+	 * 
+	 * @return the value of the generic.
+	 */
+	Serializable getValue();
+
+	/**
+	 * Finds an instance by its value looking into the holders. If no holder specified, get the instance with the value specified. If one holder specified, the holder must have the instance with the value specified. If several holders specified, every
+	 * holder should have the instance with the value specified. Returns null if not found.
 	 * 
 	 * @param value
 	 *            value of the generic.
 	 * @param holders
 	 *            optional, holders on which we look for.
-	 * @return the generic with the value specified, null if not found.
+	 * @return the instance with the value specified, null if not found.
 	 */
-	Generic getGeneric(Serializable value, Generic... holders);
+	Generic getInstance(Serializable value, Generic... holders);
 
 	/**
-	 * Find a relation by its value and if specified by the bounds. Filters by type Relation. Returns null if not found.
+	 * Finds a subtype by its value looking into the holders. If no holder specified, get the subtype with the value specified. If one holder specified, the holder must have the subtype with the value specified. If several holders specified, every holder
+	 * should have the subtype with the value specified. Returns null if not found.
 	 * 
 	 * @param value
-	 *            value of the relation.
-	 * @param bounds
-	 *            optional, bounds connected by the relation. Only a part of the bounds may be specified.
-	 * @return the relation with the value specified, null if not found.
-	 * @see #getGeneric(Serializable, Generic...)
+	 *            value of the generic.
+	 * @param holders
+	 *            optional, holders on which we look for.
+	 * @return the subtype with the value specified, null if not found.
 	 */
-	Generic getRelation(Serializable value, Generic... bounds);
-
-	/**
-	 * Find a relation by its bounds. All bounds should be specified (if one is missing, returns null). Returns null if not found.
-	 * 
-	 * @param bounds
-	 *            optional, targets on bounds we look for the relation. Should have at least two bounds and all bounds of the relation.
-	 * @return the relation with the value specified, null if not found.
-	 * @see #getGeneric(Serializable, Generic...)
-	 */
-	// TODO @throws numberOfBounds < 2
-	Generic getRelation(Generic... bounds);
+	Generic getSubType(Serializable value, Generic... holders);
 
 	/**
 	 * Returns the attributes (and by extension the properties) of Generic. Does not return the instances or subtypes. Does not return the attributes of its children. Returns an empty snapshot if none is found.
@@ -175,6 +176,15 @@ public interface Generic extends Serializable {
 	 * @see Snapshot
 	 */
 	Snapshot<Generic> getSupers();
+
+	/**
+	 * Returns true if this generic was not removed from present cache or from any of it's sub caches, false otherwise.
+	 * 
+	 * @return true if this generic was not removed from present cache or from any of it's sub caches, false otherwise.
+	 * 
+	 * @see Cache
+	 */
+	boolean isAlive();
 
 	/**
 	 * Removes the Generic using the default removeStrategy. Do nothing if the Generic has already been removed.

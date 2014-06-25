@@ -1,4 +1,4 @@
-package org.genericsystem.api.annotation.constraints;
+package org.genericsystem.api.annotation.constraint;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;

@@ -1,6 +1,6 @@
 package org.genericsystem.api.exception;
 
-import org.genericsystem.api.Cache;
+import org.genericsystem.api.core.Cache;
 
 /**
  * Is triggered if current thread is not aware of current Cache
