@@ -104,9 +104,6 @@ public interface DependenciesService<T extends DependenciesService<T>> extends A
 			for (; subIndex < subComponents.size(); subIndex++) {
 				T subComponent = subComponents.get(subIndex);
 				if (subComponent.isSpecializationOf(superComponent)) {
-					log.info("componentsDepends " + subComponent);
-					log.info("componentsDepends " + superComponent);
-					log.info("componentsDepends " + this);
 					if (singulars.get(subIndex))
 						return true;
 					subIndex++;

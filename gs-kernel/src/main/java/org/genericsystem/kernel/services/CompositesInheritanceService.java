@@ -110,18 +110,9 @@ public interface CompositesInheritanceService<T extends CompositesInheritanceSer
 				}
 
 				protected Stream<T> getStream(final T holder) {
-					log.info(CompositesInheritanceService.this.info());
-					log.info(holder.info());
-					log.info(base.info());
-					log.info(origin.info());
-					if (base.getSuperComposites(holder) == null) {
-						log.info(origin.info());
-					}
-					assert base.getSuperComposites(holder) != null : base;
-					if (holder.getLevel() != level || base.getSuperComposites(holder) != null && base.getSuperComposites(holder).iterator().hasNext())
+					if (holder.getLevel() != level || base.getSuperComposites(holder).iterator().hasNext())
 						add(holder);
-					Stream<T> indexStream = Stream.concat(holder.getLevel() < level && base.getMetaComposites(holder) != null ? base.getMetaComposites(holder).stream() : Stream.empty(),
-							base.getSuperComposites(holder) != null ? base.getSuperComposites(holder).stream() : Stream.empty());
+					Stream<T> indexStream = Stream.concat(holder.getLevel() < level ? base.getMetaComposites(holder).stream() : Stream.empty(), base.getSuperComposites(holder).stream());
 					return Stream.concat(isTerminal() && contains(holder) ? Stream.empty() : Stream.of(holder), projectStream(indexStream));
 				}
 			}

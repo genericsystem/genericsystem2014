@@ -1,6 +1,7 @@
 package org.genericsystem.cache;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 
 import org.genericsystem.kernel.Dependencies;
@@ -53,11 +54,14 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 		return getCurrentCache().getSuperComposites((T) this).getByIndex(superVertex);
 	}
 
-	// @Override
-	// default T getInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
-	// return getCurrentCache().getInstances((T) this)!= null ? getCurrentCache().getInstances((T) this).filter(instance-> Objects.equals(getValue(), instance.getValue())): null;
-	// //vertex = vertex.getInstance(value, Arrays.asList(components).stream().map(GenericService::unwrap).collect(Collectors.toList()).toArray(new Vertex[components.length]));
-	// }
+	@Override
+	default T getInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
+		for (T instance : getCurrentCache().getInstances((T) this)) {
+			if (instance.equiv(this, value, Arrays.asList(components)))
+				return instance;
+		}
+		return null;
+	}
 
 	@Override
 	@SuppressWarnings("unchecked")
