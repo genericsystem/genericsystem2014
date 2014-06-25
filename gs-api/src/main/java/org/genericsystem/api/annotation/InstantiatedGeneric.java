@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.genericsystem.api.Generic;
+import org.genericsystem.api.core.Generic;
 
 /**
  * <p>
