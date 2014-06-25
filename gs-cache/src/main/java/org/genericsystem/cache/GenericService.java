@@ -2,6 +2,7 @@ package org.genericsystem.cache;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.genericsystem.kernel.Dependencies;
@@ -56,7 +57,8 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 
 	@Override
 	default T getInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
-		for (T instance : getCurrentCache().getInstances((T) this)) {
+		T nearestMeta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
+		for (T instance : getCurrentCache().getInstances(nearestMeta)) {
 			if (instance.equiv(this, value, Arrays.asList(components)))
 				return instance;
 		}
