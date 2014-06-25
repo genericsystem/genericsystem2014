@@ -42,7 +42,6 @@ public interface MapService<T extends VertexService<T>> extends SystemProperties
 	default T setKey(AxedPropertyClass property) {
 		T root = getRoot();
 		T map = getMap();
-		log.info(root + " " + root.getClass() + " / " + map + " " + map.getClass());
 		return root.setInstance(map, (Serializable) property, root);
 	}
 
