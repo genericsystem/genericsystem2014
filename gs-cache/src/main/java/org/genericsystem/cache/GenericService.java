@@ -58,6 +58,8 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 	@Override
 	default T getInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
 		T nearestMeta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
+		if (nearestMeta != this)
+			return nearestMeta.getInstance(value, components);
 		for (T instance : getCurrentCache().getInstances(nearestMeta)) {
 			if (instance.equiv(this, value, Arrays.asList(components)))
 				return instance;

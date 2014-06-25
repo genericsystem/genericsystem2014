@@ -72,6 +72,19 @@ public interface DependenciesService<T extends DependenciesService<T>> extends A
 		return overrides.stream().anyMatch(override -> override.inheritsFrom((T) this)) || inheritsFrom(subMeta, subValue, subComponents, getMeta(), getValue(), getComponents());
 	}
 
+	@SuppressWarnings("unchecked")
+	default boolean isMetaOf(T subMeta, List<T> overrides, List<T> subComponents) {
+		return overrides.stream().anyMatch(override -> override.isInstanceOf((T) this)) || isInstanceOf(subMeta, subComponents, getMeta(), getComponents());
+	}
+
+	default boolean isInstanceOf(T subMeta, List<T> subComponents, T superMeta, List<T> superComponents) {
+		if (!subMeta.isSpecializationOf(superMeta))
+			return false;
+		if (!subMeta.componentsDepends(subComponents, superComponents))
+			return false;
+		return true;
+	}
+
 	default boolean inheritsFrom(T subMeta, Serializable subValue, List<T> subComponents, T superMeta, Serializable superValue, List<T> superComponents) {
 		if (!subMeta.inheritsFrom(superMeta))
 			return false;

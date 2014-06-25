@@ -47,7 +47,7 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 	default T adjustMeta(List<T> overrides, Serializable subValue, List<T> subComponents) {
 		T result = null;
 		for (T directInheriting : getInheritings())
-			if (directInheriting.isSuperOf((T) this, overrides, subValue, subComponents))
+			if (directInheriting.isMetaOf((T) this, overrides, subComponents))
 				if (result == null)
 					result = directInheriting;
 				else

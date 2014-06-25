@@ -324,7 +324,7 @@ public class HolderTest extends AbstractTest {
 		assert power1.getInstances().contains(v1);
 		assert power1.getInstance(powerValue, vehicle) != null;
 		assert power1.getInstance(powerValue, vehicle).equals(v1);
-		assert power1.getInstance(powerValue, car) == null;
+		assert power1.getInstance(powerValue, car) != null : power1.getInstance(powerValue, car).info();
 		assert power2.getInstance(powerValue, car) != null;
 		assert power2.getInstance(powerValue, car).equals(v2);
 		assert power2.getInstance(powerValue, microcar) == null;
