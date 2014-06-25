@@ -25,7 +25,7 @@ public class CacheDependencies<T> implements Dependencies<T> {
 
 	@Override
 	public boolean remove(T generic) {
-		if (!inserts.remove(generic)) {
+		if (inserts.remove(generic)) {
 			deletes.add(generic);
 			return true;
 		}
