@@ -150,17 +150,4 @@ public class GenericTest extends AbstractTest {
 		assert transformer.getAttributes(engine).contains(transformerPower) : transformer.getAttributes(engine);
 		// assert transformer.getAttributes(engine).size() == 1;
 	}
-
-	// TODO : update this test by fixing UpdatableService for Cache layer
-	// public void testRemove() {
-	// Engine engine = new Engine();
-	// Generic vehicle = engine.addInstance("Vehicle");
-	// vehicle.remove(RemoveStrategy.NORMAL);
-	// new RollbackCatcher() {
-	// @Override
-	// public void intercept() {
-	// engine.addInstance(vehicle, "Car");
-	// }
-	// }.assertIsCausedBy(NotAliveException.class);
-	// }
 }
