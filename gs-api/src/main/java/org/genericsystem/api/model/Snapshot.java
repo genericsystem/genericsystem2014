@@ -1,9 +1,11 @@
-package org.genericsystem.api;
+package org.genericsystem.api.model;
 
 import java.util.List;
 import java.util.Set;
 import java.util.Spliterator;
 import java.util.Spliterators;
+
+import org.genericsystem.api.core.Generic;
 
 /**
  * <p>

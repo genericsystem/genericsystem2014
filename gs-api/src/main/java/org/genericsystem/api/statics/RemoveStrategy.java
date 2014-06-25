@@ -1,6 +1,6 @@
 package org.genericsystem.api.statics;
 
-import org.genericsystem.api.Engine;
+import org.genericsystem.api.core.Engine;
 
 /**
  * Strategy used when removing elements of GenericSystem.

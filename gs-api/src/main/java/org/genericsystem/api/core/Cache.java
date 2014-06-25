@@ -1,4 +1,4 @@
-package org.genericsystem.api;
+package org.genericsystem.api.core;
 
 import java.io.Serializable;
 

@@ -1,4 +1,4 @@
-package org.genericsystem.api;
+package org.genericsystem.api.core;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -26,14 +26,25 @@ public interface Engine extends Generic {
 	 * @param directoryPath
 	 *            the directoryPath where the model and data will be stored.
 	 * @return a new engine stored on the directory path specified.
-	 * @throws ClassNotFoundException
-	 * @throws SecurityException
-	 * @throws NoSuchMethodException
-	 * @throws InvocationTargetException
+	 * 
+	 * @throws InstantiationException
+	 *             InstantiationException
+	 * @throws IllegalAccessException
+	 *             IllegalAccessException
 	 * @throws IllegalArgumentException
+	 *             IllegalArgumentException
+	 * @throws InvocationTargetException
+	 *             InvocationTargetException
+	 * @throws NoSuchMethodException
+	 *             NoSuchMethodException
+	 * @throws SecurityException
+	 *             SecurityException
+	 * @throws ClassNotFoundException
+	 *             ClassNotFoundException
 	 * 
 	 * @see Cache
 	 */
+	// FIXME
 	static Engine newRoot(String directoryPath) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		return ((Class<Engine>) Class.forName("org.genericsystem.core.EngineImpl")).getConstructor(Class[].class).newInstance().newEngine(directoryPath);
 	}
@@ -42,16 +53,25 @@ public interface Engine extends Generic {
 	 * Creates a root to the graph as a new engine in a in-memory mode. Starts a cache.
 	 * 
 	 * @return a new engine used in-memory.
-	 * @throws ClassNotFoundException
-	 * @throws SecurityException
-	 * @throws NoSuchMethodException
-	 * @throws InvocationTargetException
-	 * @throws IllegalArgumentException
-	 * @throws IllegalAccessException
+	 * 
 	 * @throws InstantiationException
+	 *             InstantiationException
+	 * @throws IllegalAccessException
+	 *             IllegalAccessException
+	 * @throws IllegalArgumentException
+	 *             IllegalArgumentException
+	 * @throws InvocationTargetException
+	 *             InvocationTargetException
+	 * @throws NoSuchMethodException
+	 *             NoSuchMethodException
+	 * @throws SecurityException
+	 *             SecurityException
+	 * @throws ClassNotFoundException
+	 *             ClassNotFoundException
 	 * 
 	 * @see Cache
 	 */
+	// FIXME
 	static Engine newInMemoryRoot() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
 		return ((Class<Engine>) Class.forName("org.genericsystem.core.EngineImpl")).getConstructor(Class[].class).newInstance().newInMemoryEngine();
 	}
