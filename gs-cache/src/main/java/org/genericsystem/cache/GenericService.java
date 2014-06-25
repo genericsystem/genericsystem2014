@@ -8,6 +8,8 @@ import java.util.List;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
+import org.genericsystem.kernel.exceptions.NotFoundException;
+import org.genericsystem.kernel.services.DisplayService;
 
 public interface GenericService<T extends GenericService<T>> extends org.genericsystem.impl.GenericService<T> {
 
@@ -90,5 +92,35 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 
 	default Cache<T> getCurrentCache() {
 		return getRoot().getCurrentCache();
+	}
+
+	@Override
+	default T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
+		if (newComponents.size() != getComponents().size())
+			rollbackAndThrowException(new IllegalArgumentException());
+		return rebuildAll(() -> getCurrentCache().insert(buildInstance().init(getMeta(), new Supers<T>(getSupers(), supersToAdd), newValue, newComponents).plug()));
+	}
+
+	@Override
+	default boolean unplug() {
+		boolean result = getMeta().getInstances().remove((T) this);
+		if (!result) {
+			rollbackAndThrowException(new NotFoundException(((DisplayService<T>) this).info()));
+		}
+		getSupersStream().forEach(superGeneric -> superGeneric.getInheritings().remove((T) this));
+		getComponentsStream().forEach(component -> component.getMetaComposites().removeByIndex(getMeta(), (T) this));
+		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> component.getSuperComposites().removeByIndex(superGeneric, (T) this)));
+		getCurrentCache().simpleRemove((T) this);
+		return result;
+	}
+
+	@Override
+	default T plug() {
+		T t = getMeta().getInstances().set((T) this);
+		getSupersStream().forEach(superGeneric -> superGeneric.getInheritings().set((T) this));
+		getComponentsStream().forEach(component -> component.getMetaComposites().setByIndex(getMeta(), (T) this));
+		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> component.getSuperComposites().setByIndex(superGeneric, (T) this)));
+		getCurrentCache().insert(t);
+		return t;
 	}
 }
