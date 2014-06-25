@@ -3,6 +3,7 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.Optional;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.VertexService;
 import org.genericsystem.kernel.annotations.SystemGeneric;
 
@@ -40,7 +41,9 @@ public interface MapService<T extends VertexService<T>> extends SystemProperties
 	@SuppressWarnings("unchecked")
 	default T setKey(AxedPropertyClass property) {
 		T root = getRoot();
-		return root.setInstance(getMap(), (Serializable) property, root);
+		T map = getMap();
+		log.info(root + " " + root.getClass() + " / " + map + " " + map.getClass());
+		return root.setInstance(map, (Serializable) property, root);
 	}
 
 	@SystemGeneric

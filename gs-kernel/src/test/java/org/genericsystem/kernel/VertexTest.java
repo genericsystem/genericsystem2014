@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.genericsystem.kernel.services.RemovableService.RemoveStrategy;
@@ -9,6 +10,53 @@ import org.testng.annotations.Test;
 
 @Test
 public class VertexTest extends AbstractTest {
+
+	public void test001_getInheritings() {
+		Root engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+
+		assert vehicle.getInheritings().stream().anyMatch(car::equals);
+	}
+
+	public void test001_getInstances() {
+		Root engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		assert engine.getInstances().stream().anyMatch(g -> g.equals(vehicle));
+	}
+
+	public void test001_getMetaComposites() {
+		Root engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex powerVehicle = engine.addInstance("power", vehicle);
+		Vertex myVehicle = vehicle.addInstance("myVehicle");
+		Vertex myVehicle123 = powerVehicle.addInstance("123", myVehicle);
+
+		assert myVehicle.getMetaComposites().getByIndex(powerVehicle).stream().anyMatch(g -> g.equals(myVehicle123));
+	}
+
+	public void test001_getSuperComposites() {
+		Root engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex powerVehicle = engine.addInstance("power", vehicle);
+		Vertex myVehicle = vehicle.addInstance("myVehicle");
+		Vertex vehicle256 = powerVehicle.addInstance("256", vehicle);
+		Vertex myVehicle123 = powerVehicle.addInstance(vehicle256, "123", myVehicle);
+
+		assert myVehicle.getSuperComposites().getByIndex(vehicle256).contains(myVehicle123) : myVehicle.getSuperComposites().stream().collect(Collectors.toList());
+	}
+
+	public void test002_getSuperComposites() {
+		Root engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex powerVehicle = engine.addInstance("power", vehicle);
+		powerVehicle.enablePropertyConstraint();
+		Vertex myVehicle = vehicle.addInstance("myVehicle");
+		Vertex vehicle256 = powerVehicle.addInstance("256", vehicle);
+		Vertex myVehicle123 = powerVehicle.addInstance("123", myVehicle);
+
+		assert myVehicle.getSuperComposites().getByIndex(vehicle256).contains(myVehicle123) : myVehicle.getSuperComposites().stream().collect(Collectors.toList());
+	}
 
 	public void test() {
 		Vertex engine = new Root();

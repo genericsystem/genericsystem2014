@@ -1,5 +1,7 @@
 package org.genericsystem.cache;
 
+import java.util.stream.Collectors;
+
 import org.testng.annotations.Test;
 
 @Test
@@ -23,31 +25,37 @@ public class CacheTest extends AbstractTest {
 		assert engine.getInstances().stream().anyMatch(g -> g.equals(vehicle));
 	}
 
-	// public void test002_getMetaComposites() {
-	// Engine engine = new Engine();
-	//
-	// assert engine.setMetaAttribute().isAlive();
-	//
-	// }
-
-	public void test001_3LevelsOfInstanciation() {
-		Engine engine = new Engine();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic car = vehicle.addInstance("Car");
-		Generic myCar = car.addInstance("myCar");
-		Generic powerVehicle = engine.addInstance("power", vehicle);
-	}
-
 	public void test001_getMetaComposites() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
-		assert engine.getInstances().contains(vehicle);
 		Generic powerVehicle = engine.addInstance("power", vehicle);
-		assert engine.getInstances().contains(vehicle);
 		Generic myVehicle = vehicle.addInstance("myVehicle");
-		Generic myVehicle123 = powerVehicle.addInstance("myVehicle123", myVehicle);
+		Generic myVehicle123 = powerVehicle.addInstance("123", myVehicle);
 
 		assert myVehicle.getMetaComposites().getByIndex(powerVehicle).stream().anyMatch(g -> g.equals(myVehicle123));
+	}
+
+	public void test001_getSuperComposites() {
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic powerVehicle = engine.addInstance("power", vehicle);
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic vehicle256 = powerVehicle.addInstance("256", vehicle);
+		Generic myVehicle123 = powerVehicle.addInstance(vehicle256, "123", myVehicle);
+
+		assert myVehicle.getSuperComposites().getByIndex(vehicle256).contains(myVehicle123) : myVehicle.getSuperComposites().stream().collect(Collectors.toList());
+	}
+
+	public void test002_getSuperComposites() {
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic powerVehicle = engine.addInstance("power", vehicle);
+		powerVehicle.enablePropertyConstraint();
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic vehicle256 = powerVehicle.addInstance("256", vehicle);
+		Generic myVehicle123 = powerVehicle.addInstance("123", myVehicle);
+
+		assert myVehicle.getSuperComposites().getByIndex(vehicle256).contains(myVehicle123) : myVehicle.getSuperComposites().stream().collect(Collectors.toList());
 	}
 
 	public void test002_flush() {
