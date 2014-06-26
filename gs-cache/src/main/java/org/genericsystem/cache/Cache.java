@@ -1,6 +1,5 @@
 package org.genericsystem.cache;
 
-import java.io.NotActiveException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -120,7 +119,7 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 	@Override
 	public void simpleRemove(T generic) {
 		if (!isAlive(generic))
-			rollback(new NotActiveException(generic + " is not alive"));
+			rollback(new IllegalStateException(generic + " is not alive"));
 		if (!adds.remove(generic))
 			removes.add(generic);
 	}
