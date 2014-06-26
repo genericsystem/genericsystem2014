@@ -10,4 +10,10 @@ public interface EngineService<T extends GenericService<T>> extends org.generics
 
 	void stop(Cache<T> cache);
 
+	@Override
+	// TODO necessary for eclipse ?
+	default T getMap() {
+		return getRoot().find(SystemMap.class);
+	}
+
 }

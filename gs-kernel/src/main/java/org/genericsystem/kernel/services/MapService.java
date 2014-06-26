@@ -39,7 +39,7 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 	@SuppressWarnings("unchecked")
 	default T setKey(AxedPropertyClass property) {
 		T root = (T) getRoot();
-		return root.setInstance(getMap(), (Serializable) property, root);
+		return root.setInstance(getMap(), property, root);
 	}
 
 	@SystemGeneric

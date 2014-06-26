@@ -24,11 +24,6 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 		return getCurrentCache().getInheritings((T) this);
 	}
 
-	// @Override
-	// default Snapshot<T> getInheritings(T origin, int level) {
-	// return getCurrentCache().getInheritings(this, origin, level).project(this::wrap);
-	// }
-
 	@SuppressWarnings("unchecked")
 	@Override
 	default CompositesDependencies<T> getMetaComposites() {
@@ -41,11 +36,13 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 		return getCurrentCache().getSuperComposites((T) this);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getMetaComposites(T meta) {
 		return getCurrentCache().getMetaComposites((T) this).getByIndex(meta);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getSuperComposites(T superVertex) {
 		return getCurrentCache().getSuperComposites((T) this).getByIndex(superVertex);
@@ -69,16 +66,23 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 		return getCurrentCache().insert(org.genericsystem.impl.GenericService.super.addInstance(overrides, value, components));
 	}
 
-	// @Override
-	// default T setMetaAttribute(List<T> components) {
-	// return getCurrentCache().insert(org.genericsystem.impl.GenericService.super.setMetaAttribute(components));
-	// }
-
 	@Override
 	@SuppressWarnings("unchecked")
 	default T setInstance(List<T> overrides, Serializable value, T... components) {
-		log.info("coucou");
 		return getCurrentCache().insert(org.genericsystem.impl.GenericService.super.setInstance(overrides, value, components));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T setKey(AxedPropertyClass property) {
+		T root = (T) getRoot();
+		return root.setInstance(getMap(), property, root);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default void setSystemPropertyValue(Class<T> propertyClass, int pos, Serializable value) {
+		setKey(new AxedPropertyClass(propertyClass, pos)).setInstance(value, (T) this);
 	}
 
 	@Override
@@ -102,6 +106,7 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 		return getCurrentCache().insert(org.genericsystem.impl.GenericService.super.plug());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default boolean unplug() {
 		boolean unplugged = org.genericsystem.impl.GenericService.super.unplug();
