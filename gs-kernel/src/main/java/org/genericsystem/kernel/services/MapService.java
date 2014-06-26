@@ -41,8 +41,7 @@ public interface MapService<T extends VertexService<T>> extends SystemProperties
 	@SuppressWarnings("unchecked")
 	default T setKey(AxedPropertyClass property) {
 		T root = getRoot();
-		T map = getMap();
-		return root.setInstance(map, (Serializable) property, root);
+		return root.setInstance(getMap(), (Serializable) property, root);
 	}
 
 	@SystemGeneric
