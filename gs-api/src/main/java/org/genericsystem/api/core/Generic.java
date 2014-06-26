@@ -1,7 +1,14 @@
 package org.genericsystem.api.core;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
+import org.genericsystem.api.exception.RollbackException;
+import org.genericsystem.api.map.MapProvider;
+import org.genericsystem.api.model.Holder;
+import org.genericsystem.api.model.Link;
+import org.genericsystem.api.model.Relation;
 import org.genericsystem.api.model.Snapshot;
 import org.genericsystem.api.statics.RemoveStrategy;
 
@@ -19,11 +26,11 @@ import org.genericsystem.api.statics.RemoveStrategy;
  * </p>
  * <dl>
  * <dt>Meta
- * <dd>System Level. In most cases <tt>Engine</tt></dd>
+ * <dd>System Level. In most cases <tt>Engine</tt> but could also be MetaAttribute and MetaRelation.</dd>
  * <dt>Structurals
  * <dd>Model level. User-defined data-models: <tt>Types</tt>, <tt>Attributes</tt> and <tt>Relations</tt></dd>
  * <dt>Concretes
- * <dd>Data level. Instances of Structurals. This level defines business-data.</dd>
+ * <dd>Data level. Instances of Structurals (Instances, Holders, Links). This level defines business-data.</dd>
  * </dl>
  * <p>
  * An instantiation of a Generic is a type, an instance, an attribute or a relation. A link is an instance of a relation. A holder enables to handle a value. A property is an attribute with a singularConstraint.
@@ -32,6 +39,13 @@ import org.genericsystem.api.statics.RemoveStrategy;
  * @see Engine
  */
 public interface Generic extends Serializable {
+
+	/**
+	 * Returns the <tt>Engine</tt>.
+	 * 
+	 * @return the <tt>Engine</tt>.
+	 */
+	Engine getEngine();
 
 	/**
 	 * Returns true if is a Generic handled by the system, false otherwise.
@@ -102,6 +116,35 @@ public interface Generic extends Serializable {
 	 * @return the value of the generic.
 	 */
 	Serializable getValue();
+
+	/**
+	 * Returns the value of the holder searched, null if not found.
+	 * 
+	 * @param holder
+	 *            the holder searched.
+	 * 
+	 * @return the value of the holder searched, null if not found.
+	 * 
+	 * @throws RollbackException
+	 *             thrown when returning more than one result. In such cases, targets must be specified. In such cases, getValues(Holder) should be used.
+	 * 
+	 * @see #getValues(Holder)
+	 */
+	<S extends Serializable> S getValue(Holder holder);
+
+	/**
+	 * Returns the value of the holder searched, an empty Snapshot if not found.
+	 * 
+	 * @param <T>
+	 *            value as a Serializable
+	 * @param holder
+	 *            the holder searched.
+	 * 
+	 * @return the value of the holder searched, an empty Snapshot if not found.
+	 * 
+	 * @see Snapshot
+	 */
+	<T extends Serializable> Snapshot<T> getValues(Holder holder);
 
 	/**
 	 * Finds an instance by its value looking into the holders. If no holder specified, get the instance with the value specified. If one holder specified, the holder must have the instance with the value specified. If several holders specified, every
@@ -213,8 +256,6 @@ public interface Generic extends Serializable {
 	 * @param toRemove
 	 *            elements to remove
 	 * @return this with the element(s) removed
-	 * 
-	 * @see #remove(RemoveStrategy, Generic...)
 	 */
 	// TODO @throws referentialIntegrity
 	// TODO @throws noSuchElement
@@ -222,20 +263,856 @@ public interface Generic extends Serializable {
 	Generic remove(Generic... toRemove);
 
 	/**
-	 * Removes the generic(s) specified using the removeStrategy. The generic(s) to remove must be in the same context as the element making the call. Do nothing if the generic(s) has already been removed.
+	 * Get the current cache.
 	 * 
-	 * @param removeStrategy
-	 *            the removeStrategy to apply when removing the generic(s) specified.
-	 * @param toRemove
-	 *            elements to remove
-	 * @return this with the element(s) removed
-	 * 
-	 * @see RemoveStrategy
+	 * @return the current cache.
 	 */
-	// TODO @throws referentialIntegrity
-	// TODO @throws noSuchElement
-	// TODO @throws dependencyInconsistence
-	// TODO @throws specific constraints of removeStrategy
-	Generic remove(RemoveStrategy removeStrategy, Generic... toRemove);
+	// TODO @throws CacheAwareException if no current cache.
+	Cache getCurrentCache() /* throws CacheAwareException */;
+
+	/**
+	 * Returns true if this generic is <tt>Engine</tt>, false otherwise.
+	 * 
+	 * @return true if this is <tt>Engine</tt>, false otherwise.
+	 * 
+	 * @see Engine
+	 */
+	boolean isEngine();
+
+	/**
+	 * Returns true if this generic is an instance of the meta specified, false otherwise.
+	 * 
+	 * @param meta
+	 *            the meta on which the instance is (or not) positioned.
+	 * 
+	 * @return true if this generic is an instance of the meta specified, false otherwise.
+	 */
+	boolean isInstanceOf(Generic meta);
+
+	/**
+	 * Returns the meta level of the generic (Meta / Structural / Concrete).
+	 * 
+	 * @return the meta level of the generic (Meta / Structural / Concrete).
+	 */
+	int getMetaLevel();
+
+	/**
+	 * Returns true if the Generic on which the call is made is an <tt>Attribute</tt> of the generic specified at the position specified, false otherwise.
+	 * 
+	 * @param generic
+	 *            the supposed "type" for the current generic.
+	 * @param basePos
+	 *            position of this generic in the array of components of the "type".
+	 * 
+	 * @return true if this generic is an <tt>Attribute</tt> of the base in specified position, false otherwise.
+	 */
+	boolean isAttributeOf(Generic generic, int basePos);
+
+	/**
+	 * Puts a flag on an instance of the <tt>Attribute</tt>. Returns the new generic with the flag positioned.
+	 * 
+	 * @param <T>
+	 *            holder
+	 * @param attribute
+	 *            the attribute on which a flag is put.
+	 * @param targets
+	 *            the targets of the attribute.
+	 * 
+	 * @return the new generic with the flag positioned.
+	 */
+	<T extends Holder> T flag(Holder attribute, Generic... targets);
+
+	/**
+	 * Binds the source of the call to the targets via the relation specified. Returns the generic resulting of the bind.
+	 * 
+	 * @param <T>
+	 *            link
+	 * @param relation
+	 *            the relation used to connect the source of the call.
+	 * @param targets
+	 *            the targets to connect with.
+	 * 
+	 * @return the generic resulting of the bind.
+	 */
+	<T extends Link> T bind(Link relation, Generic... targets);
+
+	/**
+	 * Finds the instantiation of the relation specified. Returns null if none is found.
+	 * 
+	 * @param <T>
+	 *            link
+	 * @param relation
+	 *            the relation searched.
+	 * @param basePos
+	 *            the axis number of the position to the based generic in relation.
+	 * @param targets
+	 *            optional, the targets of the relation.
+	 * 
+	 * @return the instantiation of the relation specified, null if none is found.
+	 * 
+	 * @throws RollbackException
+	 *             thrown when returning more than one result. In such cases, targets must be specified.
+	 */
+	// FIXME : called relation but Link type
+	<T extends Link> T getLink(Link relation, int basePos, Generic... targets);
+
+	/**
+	 * Finds the instantiation of the relation specified. Returns null if none is found.
+	 * 
+	 * @param <T>
+	 *            link
+	 * @param relation
+	 *            the relation searched.
+	 * @param targets
+	 *            optional, the targets of the relation.
+	 * 
+	 * @return the instantiation of the relation specified, null if none is found.
+	 * 
+	 * @throws RollbackException
+	 *             thrown when returning more than one result. In such cases, either targets must be specified, either getLink(Link, Generic...) must be used, either getLinks must be used.
+	 * 
+	 * @see #getLink(Link, int, Generic...)
+	 * @see #getLinks(Relation, Generic...)
+	 * @see #getLinks(Relation, int, Generic...)
+	 */
+	<T extends Link> T getLink(Link relation, Generic... targets);
+
+	/**
+	 * Finds the instantiation(s) of the relation specified. Returns an empty Snapshot if none is found.
+	 * 
+	 * @param <T>
+	 *            link
+	 * @param relation
+	 *            the relation searched.
+	 * @param basePos
+	 *            the axis number of the position to the based generic in relation.
+	 * @param targets
+	 *            optional, the targets of the relation.
+	 * 
+	 * @return the instantiation(s) of the relation specified, an empty Snapshot if none is found.
+	 * 
+	 * @see Snapshot
+	 */
+	<T extends Link> Snapshot<T> getLinks(Relation relation, int basePos, Generic... targets);
+
+	/**
+	 * Finds the instantiation(s) of the relation specified. Returns an empty Snapshot if none is found.
+	 * 
+	 * @param <T>
+	 *            link
+	 * @param relation
+	 *            the relation searched.
+	 * @param targets
+	 *            optional, the targets of the relation.
+	 * 
+	 * @return the instantiation(s) of the relation specified, an empty Snapshot if none is found.
+	 */
+	<T extends Link> Snapshot<T> getLinks(Relation relation, Generic... targets);
+
+	/**
+	 * Instantiates a relation, connects it to the targets specified and returns the result.
+	 * 
+	 * Enabling the <tt>Singular Constraint</tt> on the relation will only add one link on the targets.
+	 * 
+	 * @param <T>
+	 *            link
+	 * @param relation
+	 *            the type of <tt>Relation</tt> or <tt>Link</tt> instantiated.
+	 * @param value
+	 *            the value of the new link.
+	 * @param targets
+	 *            the targets connected to the new link.
+	 * 
+	 * @return the link added.
+	 * 
+	 * @throws RollbackException
+	 *             thrown when instantiating the same relation between an existing value to the same targets.
+	 */
+	<T extends Link> T addLink(Link relation, Serializable value, Generic... targets);
+
+	/**
+	 * Instantiates a relation, connects it to the targets specified and returns the result.
+	 * 
+	 * Instantiating the same relation between an existing value to the same targets returns it without any modification.
+	 * 
+	 * Enabling the <tt>Singular Constraint</tt> on the relation will only add one link on the targets.
+	 * 
+	 * @param <T>
+	 *            link
+	 * @param relation
+	 *            the type of <tt>Relation</tt> or <tt>Link</tt> instantiated.
+	 * @param value
+	 *            the value of the new link.
+	 * @param targets
+	 *            the targets connected to the new link.
+	 * 
+	 * @return the link set.
+	 */
+	<T extends Link> T setLink(Link relation, Serializable value, Generic... targets);
+
+	/**
+	 * Instantiates a relation at the position specified, connects it to the targets specified and returns the result.
+	 * 
+	 * Instantiating the same relation between an existing value to the same targets returns it without any modification.
+	 * 
+	 * Enabling the <tt>Singular Constraint</tt> on the relation will only add one link on the targets.
+	 * 
+	 * @param <T>
+	 *            link
+	 * @param relation
+	 *            the type of <tt>Relation</tt> or <tt>Link</tt> instantiated.
+	 * @param value
+	 *            the value of the new link.
+	 * @param basePos
+	 *            the axis number of the position to the based generic in relation.
+	 * @param targets
+	 *            the targets connected to the new link.
+	 * 
+	 * @return the link set.
+	 */
+	<T extends Link> T setLink(Link relation, Serializable value, int basePos, Generic... targets);
+
+	/**
+	 * Instantiates a relation with the metaLevel specified at the position specified, connects it to the targets specified and returns the result.
+	 * 
+	 * Instantiating the same relation between an existing value to the same targets returns it without any modification.
+	 * 
+	 * Enabling the <tt>Singular Constraint</tt> on the relation will only add one link on the targets.
+	 * 
+	 * @param <T>
+	 *            link
+	 * @param relation
+	 *            the type of <tt>Relation</tt> or <tt>Link</tt> instantiated.
+	 * @param value
+	 *            the value of the new link.
+	 * @param basePos
+	 *            the axis number of the position to the based generic in relation.
+	 * @param metaLevel
+	 *            the meta level to set.
+	 * @param targets
+	 *            the targets connected to the new link.
+	 * 
+	 * @return the link set.
+	 */
+	<T extends Link> T setLink(Link relation, Serializable value, int basePos, int metaLevel, Generic... targets);
+
+	/**
+	 * Finds the holder of the structural specified. Returns null if none is found.
+	 * 
+	 * @param <T>
+	 *            holder
+	 * @param structural
+	 *            the holder for which the new holder should inherit from.
+	 * @param targets
+	 *            optional, the targets for which the holder searched should be connected to.
+	 * 
+	 * @return the holder, null if none is found.
+	 * 
+	 * @throws RollbackException
+	 *             thrown when returning more than one result. In such cases, either targets must be specified, either getHolder(Holder, int, Generic...) should be used, either getHolders should be used.
+	 * 
+	 * @see #getHolder(Holder, int, Generic...)
+	 * @see #getHolders(Holder, Generic...)
+	 * @see #getHolders(Holder, int, Generic...)
+	 */
+	<T extends Holder> T getHolder(Holder structural, Generic... targets);
+
+	/**
+	 * Finds the holder of the structural specified at the position specified. Returns null if none is found.
+	 * 
+	 * @param <T>
+	 *            holder
+	 * @param structural
+	 *            the holder for which the new holder should inherit from.
+	 * @param basePos
+	 *            the axis number of the position to the based generic in relation.
+	 * @param targets
+	 *            optional, the targets for which the holder searched should be connected to.
+	 * 
+	 * @return the holder, null if none is found.
+	 * 
+	 * @throws RollbackException
+	 *             thrown when returning more than one result. In such cases, either targets must be specified, either getHolder(Holder, int, Generic...) should be used, either getHolders should be used.
+	 * 
+	 * @see #getHolder(Holder, int, Generic...)
+	 * @see #getHolders(Holder, Generic...)
+	 * @see #getHolders(Holder, int, Generic...)
+	 */
+	<T extends Holder> T getHolder(Holder structural, int basePos, Generic... targets);
+
+	/**
+	 * Finds the holder of the structural specified at the position specified with the metaLevel specified. Returns null if none is found.
+	 * 
+	 * @param <T>
+	 *            holder
+	 * @param structural
+	 *            the holder for which the new holder should inherit from.
+	 * @param basePos
+	 *            the axis number of the position to the based generic in relation.
+	 * @param metaLevel
+	 *            the meta level to set.
+	 * @param targets
+	 *            optional, the targets for which the holder searched should be connected to.
+	 * 
+	 * @return the holder, null if none is found.
+	 * 
+	 * @throws RollbackException
+	 *             thrown when returning more than one result. In such cases, either targets must be specified, either getHolder(Holder, int, Generic...) should be used, either getHolders should be used.
+	 * 
+	 * @see #getHolder(Holder, int, Generic...)
+	 * @see #getHolders(Holder, Generic...)
+	 * @see #getHolders(Holder, int, Generic...)
+	 */
+	<T extends Holder> T getHolder(Holder structural, int basePos, int metaLevel, Generic... targets);
+
+	/**
+	 * Creates and returns a new holder.
+	 * 
+	 * Enabling the <tt>Singular Constraint</tt> on the structural will only add one holder on the targets.
+	 * 
+	 * @param <T>
+	 *            holder
+	 * @param structural
+	 *            the model inherited from.
+	 * @param value
+	 *            the value of the holder.
+	 * @param targets
+	 *            optional, the targets to connect the holder to.
+	 * 
+	 * @return the new holder.
+	 * 
+	 * @throws RollbackException
+	 *             thrown when instantiating the same structural with an existing value to the same targets returns.
+	 */
+	<T extends Holder> T addHolder(Holder structural, Serializable value, Generic... targets);
+
+	/**
+	 * Creates and returns a new holder at the position specified.
+	 * 
+	 * Enabling the <tt>Singular Constraint</tt> on the structural will only add one holder on the targets.
+	 * 
+	 * @param <T>
+	 *            holder
+	 * @param structural
+	 *            the model inherited from.
+	 * @param value
+	 *            the value of the holder.
+	 * @param basePos
+	 *            the axis number of the position to the based generic in relation.
+	 * @param targets
+	 *            optional, the targets to connect the holder to.
+	 * 
+	 * @return the new holder.
+	 *
+	 * @throws RollbackException
+	 *             thrown when instantiating the same structural with an existing value to the same targets returns.
+	 */
+	<T extends Holder> T addHolder(Holder structural, int basePos, Serializable value, Generic... targets);
+
+	/**
+	 * Creates and returns a new holder at the position specified with the metaLevel specified.
+	 * 
+	 * Enabling the <tt>Singular Constraint</tt> on the structural will only add one holder on the targets.
+	 * 
+	 * @param <T>
+	 *            holder
+	 * @param structural
+	 *            the model inherited from.
+	 * @param value
+	 *            the value of the holder.
+	 * @param basePos
+	 *            the axis number of the position to the based generic in relation.
+	 * @param metaLevel
+	 *            the meta level to set.
+	 * @param targets
+	 *            optional, the targets to connect the holder to.
+	 * 
+	 * @return the new holder.
+	 * 
+	 * @throws RollbackException
+	 *             thrown when instantiating the same structural with an existing value to the same targets returns.
+	 */
+	<T extends Holder> T addHolder(Holder structural, Serializable value, int basePos, int metaLevel, Generic... targets);
+
+	/**
+	 * Creates and returns a new holder.
+	 * 
+	 * Enabling the <tt>Singular Constraint</tt> on the structural will only add one holder on the targets.
+	 * 
+	 * Instantiating the same structural with an existing value to the same targets returns it without any modification.
+	 * 
+	 * @param <T>
+	 *            holder
+	 * @param structural
+	 *            the model inherited from.
+	 * @param value
+	 *            the value of the holder.
+	 * @param targets
+	 *            optional, the targets to connect the holder to.
+	 * 
+	 * @return the new holder.
+	 */
+	<T extends Holder> T setHolder(Holder structural, Serializable value, Generic... targets);
+
+	/**
+	 * Creates and returns a new holder at the position specified.
+	 * 
+	 * Enabling the <tt>Singular Constraint</tt> on the structural will only add one holder on the targets.
+	 * 
+	 * Instantiating the same structural with an existing value to the same targets returns it without any modification.
+	 * 
+	 * @param <T>
+	 *            holder
+	 * @param structural
+	 *            the model inherited from.
+	 * @param value
+	 *            the value of the holder.
+	 * @param basePos
+	 *            the axis number of the position to the based generic in relation.
+	 * @param targets
+	 *            optional, the targets to connect the holder to.
+	 * 
+	 * @return the new holder.
+	 */
+	<T extends Holder> T setHolder(Holder structural, Serializable value, int basePos, Generic... targets);
+
+	/**
+	 * Creates and returns a new holder at the position specified with the metaLevel specified.
+	 * 
+	 * Enabling the <tt>Singular Constraint</tt> on the structural will only add one holder on the targets.
+	 * 
+	 * Instantiating the same structural with an existing value to the same targets returns it without any modification.
+	 * 
+	 * @param <T>
+	 *            holder
+	 * @param structural
+	 *            the model inherited from.
+	 * @param value
+	 *            the value of the holder.
+	 * @param basePos
+	 *            the axis number of the position to the based generic in relation.
+	 * @param metaLevel
+	 *            the meta level to set.
+	 * @param targets
+	 *            optional, the targets to connect the holder to.
+	 * 
+	 * @return the new holder.
+	 */
+	<T extends Holder> T setHolder(Holder structural, Serializable value, int metaLevel, int basePos, Generic... targets);
+
+	/**
+	 * Returns the holder(s) inheriting from the structural specified. Returns an empty snapshot if none is found.
+	 * 
+	 * @param <T>
+	 *            holder
+	 * @param structural
+	 *            the structural for which the holder searched should inherit from.
+	 * @param targets
+	 *            optional, the targets for which the holder(s) searched should be connected to.
+	 * 
+	 * @return the holders that inherit from attribute, an empty snapshot if non is found.
+	 * 
+	 * @see Snapshot
+	 */
+	<T extends Holder> Snapshot<T> getHolders(Holder structural, Generic... targets);
+
+	/**
+	 * Returns the holder(s) at the position specified inheriting from the structural specified. Returns an empty snapshot if none is found.
+	 * 
+	 * @param <T>
+	 *            holder
+	 * @param structural
+	 *            the structural for which the holder searched should inherit from.
+	 * @param basePos
+	 *            the axis number of the position to the based generic in relation.
+	 * @param targets
+	 *            optional, the targets for which the holder(s) searched should be connected to.
+	 * 
+	 * @return the holders that inherit from attribute, an empty snapshot if non is found.
+	 * 
+	 * @see Snapshot
+	 */
+	<T extends Holder> Snapshot<T> getHolders(Holder structural, int basePos, Generic... targets);
+
+	/**
+	 * Returns the targets (components) of the relation. Returns an empty Snapshot if none is found.
+	 * 
+	 * @param <T>
+	 *            target as a Generic
+	 * @param relation
+	 *            the relation on which the targets are.
+	 * 
+	 * @return the targets (components) of the relation, an empty Snapshot if none is found.
+	 * 
+	 * @see Snapshot
+	 */
+	<T extends Generic> Snapshot<T> getTargets(Relation relation);
+
+	/**
+	 * Returns the targets (components) of the relation, at the position specified with the metaLevel specified. Returns an empty Snapshot if none is found.
+	 * 
+	 * @param <T>
+	 *            target as a Generic
+	 * @param relation
+	 *            the relation on which the targets are.
+	 * @param basePos
+	 *            the axis number of the position to the based generic in relation.
+	 * @param metaLevel
+	 *            the meta level to set.
+	 * 
+	 * @return the targets (components) of the relation at the position specified with the metaLevel specified, an empty Snapshot if none is found.
+	 * 
+	 * @see Snapshot
+	 */
+	<T extends Generic> Snapshot<T> getTargets(Relation relation, int basePos, int metaLevel);
+
+	/**
+	 * Returns true if the source of the call inherits directly or indirectly inherits from the generic specified, false otherwise.
+	 * 
+	 * @param generic
+	 *            the generic for which the source of the call inherits from (or not).
+	 * 
+	 * @return true if the source of the call inherits directly or indirectly inherits from the generic specified, false otherwise.
+	 */
+	boolean inheritsFrom(Generic generic);
+
+	/**
+	 * Returns true if the source of the call inherits directly or indirectly inherits from every generic specified, false otherwise.
+	 * 
+	 * @param generics
+	 *            the generic for which the source of the call inherits from (or not).
+	 * 
+	 * @return true if the source of the call inherits directly or indirectly inherits from every generic specified, false otherwise.
+	 */
+	boolean inheritsFromAll(Generic... generics);
+
+	/**
+	 * Enables referential integrity on the default component's position.
+	 * 
+	 * @param <T>
+	 *            source as a Generic
+	 * 
+	 * @return the generic after the enabling.
+	 */
+	<T extends Generic> T enableReferentialIntegrity();
+
+	/**
+	 * Disables referential integrity on the default component's position.
+	 * 
+	 * @param <T>
+	 *            source as a Generic
+	 * 
+	 * @return the generic after the disabling.
+	 */
+	<T extends Generic> T disableReferentialIntegrity();
+
+	/**
+	 * Enables referential integrity on the component's position specified.
+	 * 
+	 * @param <T>
+	 *            source as a Generic
+	 * @param componentPos
+	 *            the component's position to set.
+	 * 
+	 * @return the generic after the enabling.
+	 */
+	<T extends Generic> T enableReferentialIntegrity(int componentPos);
+
+	/**
+	 * Disables referential integrity on the component's position specified.
+	 * 
+	 * @param <T>
+	 *            source as a Generic
+	 * @param componentPos
+	 *            the component's position implicated by the constraint.
+	 * 
+	 * @return the generic after the disabling.
+	 */
+	<T extends Generic> T disableReferentialIntegrity(int componentPos);
+
+	/**
+	 * Returns true if the referential integrity is enabled for component's base position.
+	 * 
+	 * 
+	 * @return true if the referential integrity is enabled on base position.
+	 */
+	// TODO improve javadoc
+	boolean isReferentialIntegrity();
+
+	/**
+	 * Returns true if the referential integrity is enabled for component's position.
+	 * 
+	 * @param componentPos
+	 *            the component's position implicated by the constraint.
+	 * 
+	 * @return true if the referential integrity is enabled.
+	 */
+	// TODO improve javadoc
+	boolean isReferentialIntegrity(int componentPos);
+
+	/**
+	 * Returns an unmodifiable list of components of this generic.
+	 * 
+	 * @param <T>
+	 *            component as a Generic
+	 * 
+	 * @return the list of components.
+	 * 
+	 * @see Snapshot
+	 */
+	// TODO improve javadoc
+	<T extends Generic> List<T> getComponents();
+
+	/**
+	 * Returns the base position of an attribute.
+	 * 
+	 * @param attribute
+	 *            the attribute.
+	 * 
+	 * @return the base position of the attribute.
+	 */
+	// TODO improve javadoc
+	int getBasePos(Holder attribute);
+
+	/**
+	 * Return the meta.
+	 * 
+	 * @param <T>
+	 *            meta as a Generic
+	 * 
+	 * @return the meta.
+	 */
+	// TODO improve javadoc
+	<T extends Generic> T getMeta();
+
+	/**
+	 * Returns the composites.
+	 * 
+	 * @param <T>
+	 *            composite as a Generic
+	 * 
+	 * @return the collection of composites.
+	 * 
+	 * @see Snapshot
+	 */
+	// TODO improve javadoc
+	<T extends Generic> Snapshot<T> getComposites();
+
+	/**
+	 * Returns true if this generic is a structural.
+	 * 
+	 * @return true if this generic is a structural.
+	 */
+	// TODO improve javadoc
+	boolean isStructural();
+
+	/**
+	 * Returns true if this generic is a concrete.
+	 * 
+	 * @return true if this generic is a concrete.
+	 */
+	// TODO improve javadoc
+	boolean isConcrete();
+
+	/**
+	 * Returns true if this generic is meta.
+	 * 
+	 * @return true if this generic is meta.
+	 */
+	// TODO improve javadoc
+	boolean isMeta();
+
+	/**
+	 * Returns true if this generic is a Map Provider.
+	 * 
+	 * @return true if this generic is a Map Provider.
+	 */
+	// TODO improve javadoc
+	boolean isMapProvider();
+
+	/**
+	 * Returns true if this generic is a tree.
+	 * 
+	 * @return true if this generic is a tree.
+	 */
+	// TODO improve javadoc
+	boolean isTree();
+
+	/**
+	 * Returns true if the generic is a root.
+	 * 
+	 * @return true if the generic is a root.
+	 */
+	// TODO improve javadoc
+	boolean isRoot();
+
+	/**
+	 * Returns true if this generic is removable.
+	 * 
+	 * @return True if this generic is removable.
+	 */
+	// TODO improve javadoc
+	boolean isRemovable();
+
+	/**
+	 * Log the state of this generic with SLF4J.
+	 */
+	// TODO improve javadoc
+	void log();
+
+	/**
+	 * Returns all available information except information about links.
+	 * 
+	 * @return all available information except information about links.
+	 */
+	// TODO improve javadoc
+	String info();
+
+	/**
+	 * Abandons concrete values of the holder setting it to null.
+	 * 
+	 * @param holder
+	 *            the holder.
+	 */
+	// TODO improve javadoc
+	void cancel(Holder holder);
+
+	/**
+	 * Abandons concrete values of the holder setting it to null.
+	 * 
+	 * @param holder
+	 *            the holder.
+	 * @param targets
+	 *            the optional targets for link.
+	 */
+	// TODO improve javadoc
+	void cancelAll(Holder holder, Generic... targets);
+
+	/**
+	 * Removes holder from the graph.
+	 * 
+	 * @param holder
+	 *            the holder.
+	 */
+	// TODO improve javadoc
+	void clear(Holder holder);
+
+	/**
+	 * Removes holder from the graph.
+	 * 
+	 * @param holder
+	 *            the holder.
+	 * @param targets
+	 *            the optional targets for relation.
+	 */
+	// TODO improve javadoc
+	void clearAll(Holder holder, Generic... targets);
+
+	/**
+	 * Returns the map associated with this generic. Map is found by class of Map Provider.
+	 * 
+	 * @param <Key>
+	 *            key as a Serializable
+	 * @param <Value>
+	 *            value linked to the key as a Serializable
+	 * @param mapClass
+	 *            the class of Map Provider.
+	 * 
+	 * @return the map object.
+	 */
+	// TODO improve javadoc
+	<Key extends Serializable, Value extends Serializable> Map<Key, Value> getMap(Class<? extends MapProvider> mapClass);
+
+	/**
+	 * Returns the map of properties associated with this generic.
+	 * 
+	 * @param <Key>
+	 *            key as a Serializable
+	 * @param <Value>
+	 *            value linked to the key as a Serializable
+	 * @return the map with properties.
+	 */
+	// TODO improve javadoc
+	<Key extends Serializable, Value extends Serializable> Map<Key, Value> getPropertiesMap();
+
+	/**
+	 * Adds a new component into defined position in array of generic's components.
+	 * 
+	 * @param <T>
+	 *            source as a Generic
+	 * @param component
+	 *            the component to insert.
+	 * @param pos
+	 *            the position of component in array.
+	 * 
+	 * @return this generic.
+	 */
+	// TODO improve javadoc
+	<T extends Generic> T addComponent(Generic component, int pos);
+
+	/**
+	 * Removes given component in defined position.
+	 * 
+	 * @param <T>
+	 *            source as a Generic
+	 * @param component
+	 *            the component to remove.
+	 * @param pos
+	 *            the position of component in array.
+	 * 
+	 * @return this generic.
+	 */
+	// TODO improve javadoc
+	<T extends Generic> T removeComponent(Generic component, int pos);
+
+	/**
+	 * Adds a new super (generic which this inherits from).
+	 * 
+	 * @param <T>
+	 *            source as a Generic
+	 * @param newSuper
+	 *            the new super generic.
+	 * 
+	 * @return this generic.
+	 */
+	// TODO improve javadoc
+	<T extends Generic> T addSuper(Generic newSuper);
+
+	/**
+	 * Removes the super generic in defined position.
+	 * 
+	 * @param <T>
+	 *            source as a Generic
+	 * @param pos
+	 *            position of super in array of supers.
+	 * 
+	 * @return this generic.
+	 */
+	// TODO improve javadoc
+	<T extends Generic> T removeSuper(int pos);
+
+	/**
+	 * Returns the other component of holder (not this generic and it's inheriting).
+	 *
+	 * @param <T>
+	 *            target as a Generic
+	 * @param holder
+	 *            the holder.
+	 * 
+	 * @return <tt>Snapshot</tt> of components.
+	 */
+	// TODO improve javadoc
+	<T extends Generic> Snapshot<T> getOtherTargets(Holder holder);
+
+	/**
+	 * Returns true if values of this generic and generic supplied in parameters are equal.
+	 * 
+	 * @param generic
+	 *            the generic to compare.
+	 * 
+	 * @return true if values of this generic and generic supplied in parameters are equal.
+	 */
+	// TODO improve javadoc
+	boolean fastValueEquals(Generic generic);
 
 }
