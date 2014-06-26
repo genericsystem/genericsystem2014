@@ -1,8 +1,13 @@
 package org.genericsystem.impl;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
+import org.genericsystem.api.core.Cache;
+import org.genericsystem.api.core.Engine;
 import org.genericsystem.api.core.Generic;
+import org.genericsystem.api.map.MapProvider;
 import org.genericsystem.api.model.Attribute;
 import org.genericsystem.api.model.Holder;
 import org.genericsystem.api.model.Link;
@@ -190,7 +195,6 @@ public class GenericImpl implements Generic, Type, Link, Relation, Holder, Attri
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Generic addSubType(Serializable value) {
 		// FIXME
@@ -232,6 +236,7 @@ public class GenericImpl implements Generic, Type, Link, Relation, Holder, Attri
 		// old
 		// return getCurrentCache().bind(this, value, null, this, Statics.EMPTY_GENERIC_ARRAY, true, components);
 		// TODO Auto-generated method stub
+		// return (T) genericService.addInstance(value, components);
 		return null;
 	}
 
@@ -576,10 +581,7 @@ public class GenericImpl implements Generic, Type, Link, Relation, Holder, Attri
 
 	@Override
 	public boolean isAlive() {
-		// old
-		// return getCurrentCache().isAlive(this);
-		// TODO Auto-generated method stub
-		return false;
+		return getCurrentCache().isAlive(this);
 	}
 
 	@Override
@@ -589,21 +591,400 @@ public class GenericImpl implements Generic, Type, Link, Relation, Holder, Attri
 
 	@Override
 	public void remove(RemoveStrategy removeStrategy) {
-		// old
-		// getCurrentCache().remove(this, removeStrategy);
-		// TODO Auto-generated method stub
+		genericService.remove(Statics.convert(removeStrategy));
 	}
 
 	@Override
 	public Generic remove(Generic... toRemove) {
 		// TODO Auto-generated method stub
+		// update todo here, approximately :
+		// genericService.update(getSupers(), getValue(), getComponents().remove(toRemove);)
 		return null;
 	}
 
 	@Override
-	public Generic remove(RemoveStrategy removeStrategy, Generic... toRemove) {
+	public Cache getCurrentCache() {
+		return getEngine().getCurrentCache();
+	}
+
+	@Override
+	public Engine getEngine() {
+		// old
+		// return (EngineImpl) getSupers().get(0).getEngine();
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public <S extends Serializable> S getValue(Holder holder) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Serializable> Snapshot<T> getValues(Holder holder) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isEngine() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isInstanceOf(Generic meta) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public int getMetaLevel() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean isAttributeOf(Generic generic, int basePos) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public <T extends Holder> T flag(Holder attribute, Generic... targets) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Link> T bind(Link relation, Generic... targets) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Link> T getLink(Link relation, int basePos, Generic... targets) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Link> T getLink(Link relation, Generic... targets) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Link> Snapshot<T> getLinks(Relation relation, int basePos, Generic... targets) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Link> Snapshot<T> getLinks(Relation relation, Generic... targets) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Link> T addLink(Link relation, Serializable value, Generic... targets) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Link> T setLink(Link relation, Serializable value, Generic... targets) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Link> T setLink(Link relation, Serializable value, int basePos, Generic... targets) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Link> T setLink(Link relation, Serializable value, int basePos, int metaLevel, Generic... targets) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Holder> T getHolder(Holder structural, Generic... targets) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Holder> T getHolder(Holder structural, int basePos, Generic... targets) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Holder> T getHolder(Holder structural, int basePos, int metaLevel, Generic... targets) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Holder> T addHolder(Holder structural, Serializable value, Generic... targets) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Holder> T addHolder(Holder attribute, int basePos, Serializable value, Generic... targets) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Holder> T addHolder(Holder attribute, Serializable value, int basePos, int metaLevel, Generic... targets) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Holder> T setHolder(Holder attribute, Serializable value, Generic... targets) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Holder> T setHolder(Holder attribute, Serializable value, int basePos, Generic... targets) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Holder> T setHolder(Holder attribute, Serializable value, int metaLevel, int basePos, Generic... targets) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Holder> Snapshot<T> getHolders(Holder attribute, Generic... targets) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Holder> Snapshot<T> getHolders(Holder structural, int basePos, Generic... targets) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Generic> Snapshot<T> getTargets(Relation relation) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Generic> Snapshot<T> getTargets(Relation relation, int basePos, int targetPos) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean inheritsFrom(Generic generic) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean inheritsFromAll(Generic... generics) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public <T extends Generic> T enableReferentialIntegrity() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Generic> T disableReferentialIntegrity() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Generic> T enableReferentialIntegrity(int componentPos) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Generic> T disableReferentialIntegrity(int componentPos) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isReferentialIntegrity() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isReferentialIntegrity(int componentPos) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public <T extends Generic> List<T> getComponents() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getBasePos(Holder attribute) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public <T extends Generic> T getMeta() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Generic> Snapshot<T> getComposites() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isStructural() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isConcrete() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isMeta() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isMapProvider() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isTree() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isRoot() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isRemovable() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void log() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public String info() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void cancel(Holder holder) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void cancelAll(Holder holder, Generic... targets) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void clear(Holder holder) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void clearAll(Holder holder, Generic... targets) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public <Key extends Serializable, Value extends Serializable> Map<Key, Value> getMap(Class<? extends MapProvider> mapClass) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <Key extends Serializable, Value extends Serializable> Map<Key, Value> getPropertiesMap() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Generic> T addComponent(Generic component, int pos) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Generic> T removeComponent(Generic component, int pos) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Generic> T addSuper(Generic newSuper) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Generic> T removeSuper(int pos) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public <T extends Generic> Snapshot<T> getOtherTargets(Holder holder) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean fastValueEquals(Generic generic) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

@@ -3,7 +3,9 @@ package org.genericsystem.api.model;
 import org.genericsystem.api.core.Generic;
 
 /**
- * The Holder of the value.
+ * <p>
+ * The Holder of a data. Instantiating a Holder enables to save data, it is either an instance either a link.
+ * </p>
  */
 public interface Holder extends Generic {
 

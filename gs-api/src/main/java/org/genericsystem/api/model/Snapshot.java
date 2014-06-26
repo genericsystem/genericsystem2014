@@ -17,7 +17,7 @@ import org.genericsystem.api.core.Generic;
  * 
  * @see Generic
  */
-public interface Snapshot<T extends Generic> extends List<T>, Set<T> {
+public interface Snapshot<T> extends List<T>, Set<T> {
 
 	@Override
 	public default java.util.Spliterator<T> spliterator() {

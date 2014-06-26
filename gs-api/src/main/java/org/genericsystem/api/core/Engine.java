@@ -46,7 +46,7 @@ public interface Engine extends Generic {
 	 */
 	// FIXME
 	static Engine newRoot(String directoryPath) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
-		return ((Class<Engine>) Class.forName("org.genericsystem.core.EngineImpl")).getConstructor(Class[].class).newInstance().newEngine(directoryPath);
+		return ((Class<Engine>) Class.forName("org.genericsystem.impl.EngineImpl")).getConstructor(Class[].class).newInstance().newEngine(directoryPath);
 	}
 
 	/**
@@ -73,7 +73,7 @@ public interface Engine extends Generic {
 	 */
 	// FIXME
 	static Engine newInMemoryRoot() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
-		return ((Class<Engine>) Class.forName("org.genericsystem.core.EngineImpl")).getConstructor(Class[].class).newInstance().newInMemoryEngine();
+		return ((Class<Engine>) Class.forName("org.genericsystem.impl.EngineImpl")).getConstructor(Class[].class).newInstance().newInMemoryEngine();
 	}
 
 	/**
@@ -121,14 +121,6 @@ public interface Engine extends Generic {
 	 * @return a new cache encapsulated on the current cache.
 	 */
 	Cache mountNewCache();
-
-	/**
-	 * Get the current cache.
-	 * 
-	 * @return the current cache.
-	 */
-	// @throws CacheAwareException if no current cache.
-	Cache getCurrentCache() /* throws CacheAwareException */;
 
 	// FIXME : switchCache ?
 }
