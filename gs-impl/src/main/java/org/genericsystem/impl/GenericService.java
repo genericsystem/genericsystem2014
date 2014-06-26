@@ -23,7 +23,7 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 
 	default T wrap(Vertex vertex) {
 		if (vertex.isRoot())
-			return getRoot();
+			return (T) getRoot();
 		Vertex alive = vertex.getAlive();
 		T meta = wrap(alive.getMeta());
 		return meta.buildInstance().init(meta, wrap(alive.getSupersStream()), alive.getValue(), wrap(alive.getComponentsStream()));
@@ -99,5 +99,4 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 			return null;
 		return vertex.getSuperComposites(superVertex.getVertex()).project(this::wrap);
 	}
-
 }

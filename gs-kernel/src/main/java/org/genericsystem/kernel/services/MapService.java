@@ -3,7 +3,6 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.Optional;
 import java.util.stream.Stream;
-import org.genericsystem.kernel.RootService;
 import org.genericsystem.kernel.annotations.SystemGeneric;
 
 public interface MapService<T extends MapService<T>> extends SystemPropertiesService<T>, CompositesInheritanceService<T>, UpdatableService<T> {
@@ -26,7 +25,7 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 	}
 
 	default T getMap() {
-		return (T) ((RootService) getRoot()).find(SystemMap.class);
+		return getRoot().find(SystemMap.class);
 	}
 
 	default Stream<T> getKeys() {
@@ -39,7 +38,7 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 
 	@SuppressWarnings("unchecked")
 	default T setKey(AxedPropertyClass property) {
-		T root = getRoot();
+		T root = (T) getRoot();
 		return root.setInstance(getMap(), (Serializable) property, root);
 	}
 

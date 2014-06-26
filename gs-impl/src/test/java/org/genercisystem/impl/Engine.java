@@ -32,7 +32,7 @@ public class Engine extends Generic implements EngineService<Generic> {
 	}
 
 	@Override
-	public Generic getRoot() {
+	public EngineService<? extends Generic> getRoot() {
 		return this;
 	}
 
@@ -45,6 +45,5 @@ public class Engine extends Generic implements EngineService<Generic> {
 	public boolean equiv(SignatureService<? extends SignatureService<?>> service) {
 		return EngineService.super.equiv(service);
 	}
-
 
 }

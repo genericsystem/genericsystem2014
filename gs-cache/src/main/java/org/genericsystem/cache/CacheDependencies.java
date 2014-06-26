@@ -2,7 +2,6 @@ package org.genericsystem.cache;
 
 import java.util.Iterator;
 import java.util.function.Supplier;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.DependenciesImpl;
 import org.genericsystem.kernel.iterator.AbstractConcateIterator.ConcateIterator;

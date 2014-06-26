@@ -3,7 +3,9 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.function.Supplier;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
@@ -75,6 +77,7 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 	@Override
 	@SuppressWarnings("unchecked")
 	default T setInstance(List<T> overrides, Serializable value, T... components) {
+		log.info("coucou");
 		return getCurrentCache().insert(org.genericsystem.impl.GenericService.super.setInstance(overrides, value, components));
 	}
 
@@ -84,8 +87,14 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 		return getCurrentCache().isAlive((T) this);
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	default <U extends T> CacheDependencies<U> buildDependencies(Supplier<Iterator<T>> subDependenciesSupplier) {
+		return (CacheDependencies<U>) new CacheDependencies<T>(subDependenciesSupplier);
+	}
+
 	default Cache<T> getCurrentCache() {
-		return getRoot().getCurrentCache();
+		return ((T) getRoot()).getCurrentCache();
 	}
 
 	@Override
