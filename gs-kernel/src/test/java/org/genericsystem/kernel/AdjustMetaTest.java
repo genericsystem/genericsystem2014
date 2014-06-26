@@ -243,4 +243,12 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex vehicleVehicle2IntensityUnitWatt = engine.addInstance(vehicleVehicle2, "VehicleVehicle2IntensityUnitWatt", vehicle, vehicle2, intensity, unit, watt);
 		assert vehicleVehicle2IntensityUnitWatt == vehicleVehicle2.adjustMeta(Collections.emptyList(), "carBus", Arrays.asList(car, bus, v110, intensityUnit, kWatt));
 	}
+
+	public void test020_AdjustMeta_TypeLevel_Attribute() {
+		Root engine = new Root();
+		Vertex power = engine.addInstance("Power", engine);
+		Vertex car = engine.addInstance("Car", engine);
+		Vertex carPower = engine.addInstance(power, "carPower", engine);
+		assert carPower.equals(power.adjustMeta(Collections.emptyList(), 235, Collections.singletonList(car)));
+	}
 }
