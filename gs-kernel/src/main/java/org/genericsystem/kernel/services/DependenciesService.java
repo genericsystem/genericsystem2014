@@ -74,13 +74,9 @@ public interface DependenciesService<T extends DependenciesService<T>> extends A
 
 	@SuppressWarnings("unchecked")
 	default boolean isMetaOf(T subMeta, List<T> overrides, List<T> subComponents) {
-		return overrides.stream().anyMatch(override -> override.isInstanceOf((T) this)) || isInstanceOf(subMeta, subComponents, getMeta(), getComponents());
-	}
-
-	default boolean isInstanceOf(T subMeta, List<T> subComponents, T superMeta, List<T> superComponents) {
-		if (!subMeta.isSpecializationOf(superMeta))
+		if (!subMeta.isSpecializationOf(getMeta()))
 			return false;
-		if (!subMeta.componentsDepends(subComponents, superComponents))
+		if (!subMeta.componentsDepends(subComponents, getComponents()))
 			return false;
 		return true;
 	}
