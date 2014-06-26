@@ -55,6 +55,36 @@ public interface Generic extends Serializable {
 	boolean isSystem();
 
 	/**
+	 * Returns true if the generic is a root, false otherwise.
+	 * 
+	 * @return true if the generic is a root, false otherwise.
+	 * 
+	 * @see Engine
+	 */
+	boolean isRoot();
+
+	/**
+	 * Returns true if the source of the call is at a meta level, false otherwise.
+	 * 
+	 * @return true if the source of the call is at a meta level, false otherwise.
+	 */
+	boolean isMeta();
+
+	/**
+	 * Returns true if the source of the call is at a structural level, false otherwise.
+	 * 
+	 * @return true if the source of the call is at a structural level, false otherwise.
+	 */
+	boolean isStructural();
+
+	/**
+	 * Returns true if the source of the call is at a concrete level, false otherwise.
+	 * 
+	 * @return true if the source of the call is at a concrete level, false otherwise.
+	 */
+	boolean isConcrete();
+
+	/**
 	 * Returns true if this generic is an <tt>Instance</tt>, false otherwise.
 	 * 
 	 * @return true if this is an <tt>Instance</tt>, false otherwise.
@@ -81,6 +111,47 @@ public interface Generic extends Serializable {
 	 * @return true if this generic has at least two components, false otherwise.
 	 */
 	boolean isRelation();
+
+	/**
+	 * Returns true if the source of the call is of type MapProvider, false otherwise.
+	 * 
+	 * @return true if the source of the call is of type MapProvider, false otherwise.
+	 * 
+	 * @see org.genericsystem.api.map.MapProvider
+	 */
+	boolean isMapProvider();
+
+	/**
+	 * Returns true if the source of the call is of type Tree, false otherwise.
+	 * 
+	 * @return true if the source of the call is of type Tree, false otherwise.
+	 * 
+	 * @see org.genericsystem.api.tree.Tree
+	 */
+	boolean isTree();
+
+	/**
+	 * Returns true if the source of the call is of type Node, false otherwise.
+	 * 
+	 * @return true if the source of the call is of type Node, false otherwise.
+	 * 
+	 * @see org.genericsystem.api.tree.Node
+	 */
+	boolean isNode();
+
+	/**
+	 * Log informations on the source of the call with SLF4J.
+	 * 
+	 * @see #info()
+	 */
+	void log();
+
+	/**
+	 * Returns informations on the source of the call as a String.
+	 * 
+	 * @return informations on the source of the call as a String
+	 */
+	String info();
 
 	/**
 	 * Returns true if this generic is an <tt>Attribute</tt> of the generic specified, false otherwise.
@@ -120,6 +191,8 @@ public interface Generic extends Serializable {
 	/**
 	 * Returns the value of the holder searched, null if not found.
 	 * 
+	 * @param <T>
+	 *            value as a Serializable
 	 * @param holder
 	 *            the holder searched.
 	 * 
@@ -130,7 +203,7 @@ public interface Generic extends Serializable {
 	 * 
 	 * @see #getValues(Holder)
 	 */
-	<S extends Serializable> S getValue(Holder holder);
+	<T extends Serializable> T getValue(Holder holder);
 
 	/**
 	 * Returns the value of the holder searched, an empty Snapshot if not found.
@@ -228,6 +301,13 @@ public interface Generic extends Serializable {
 	 * @see Cache
 	 */
 	boolean isAlive();
+
+	/**
+	 * Returns true if the source of the call is removable or already removed, false otherwise.
+	 * 
+	 * @return true if the source of the call is removable or already removed, false otherwise.
+	 */
+	boolean isRemovable();
 
 	/**
 	 * Removes the Generic using the default removeStrategy. Do nothing if the Generic has already been removed.
@@ -831,142 +911,65 @@ public interface Generic extends Serializable {
 	<T extends Generic> T disableReferentialIntegrity(int componentPos);
 
 	/**
-	 * Returns true if the referential integrity is enabled for component's base position.
+	 * Returns true if the referential integrity is enabled on the default component's position, false otherwise.
 	 * 
-	 * 
-	 * @return true if the referential integrity is enabled on base position.
+	 * @return true if the referential integrity is enabled on the default component's position, false otherwise.
 	 */
-	// TODO improve javadoc
 	boolean isReferentialIntegrity();
 
 	/**
-	 * Returns true if the referential integrity is enabled for component's position.
+	 * Returns true if the referential integrity is enabled on the component's position specified, false otherwise.
 	 * 
 	 * @param componentPos
-	 *            the component's position implicated by the constraint.
+	 *            the component's position to check.
 	 * 
-	 * @return true if the referential integrity is enabled.
+	 * @return true if the referential integrity is enabled on the component's position specified, false otherwise.
 	 */
-	// TODO improve javadoc
 	boolean isReferentialIntegrity(int componentPos);
 
 	/**
-	 * Returns an unmodifiable list of components of this generic.
+	 * Returns the components of the source of the call, an empty Snapshot if none is found.
 	 * 
 	 * @param <T>
 	 *            component as a Generic
 	 * 
-	 * @return the list of components.
+	 * @return the components of the source of the call, an empty Snapshot if none is found.
 	 * 
 	 * @see Snapshot
 	 */
-	// TODO improve javadoc
 	<T extends Generic> List<T> getComponents();
 
 	/**
-	 * Returns the base position of an attribute.
+	 * Returns the default position of a holder.
 	 * 
-	 * @param attribute
-	 *            the attribute.
+	 * @param holder
+	 *            the holder on which is found the default position.
 	 * 
-	 * @return the base position of the attribute.
+	 * @return the default position of a holder.
 	 */
-	// TODO improve javadoc
-	int getBasePos(Holder attribute);
+	int getBasePos(Holder holder);
 
 	/**
-	 * Return the meta.
+	 * Returns the meta of the source of the call.
 	 * 
 	 * @param <T>
 	 *            meta as a Generic
 	 * 
-	 * @return the meta.
+	 * @return the meta of the source of the call.
 	 */
-	// TODO improve javadoc
 	<T extends Generic> T getMeta();
 
 	/**
-	 * Returns the composites.
+	 * Returns the composites of the source of the call, an empty Snapshot if none is found.
 	 * 
 	 * @param <T>
 	 *            composite as a Generic
 	 * 
-	 * @return the collection of composites.
+	 * @return the composites of the source of the call, an empty Snapshot if none is found.
 	 * 
 	 * @see Snapshot
 	 */
-	// TODO improve javadoc
 	<T extends Generic> Snapshot<T> getComposites();
-
-	/**
-	 * Returns true if this generic is a structural.
-	 * 
-	 * @return true if this generic is a structural.
-	 */
-	// TODO improve javadoc
-	boolean isStructural();
-
-	/**
-	 * Returns true if this generic is a concrete.
-	 * 
-	 * @return true if this generic is a concrete.
-	 */
-	// TODO improve javadoc
-	boolean isConcrete();
-
-	/**
-	 * Returns true if this generic is meta.
-	 * 
-	 * @return true if this generic is meta.
-	 */
-	// TODO improve javadoc
-	boolean isMeta();
-
-	/**
-	 * Returns true if this generic is a Map Provider.
-	 * 
-	 * @return true if this generic is a Map Provider.
-	 */
-	// TODO improve javadoc
-	boolean isMapProvider();
-
-	/**
-	 * Returns true if this generic is a tree.
-	 * 
-	 * @return true if this generic is a tree.
-	 */
-	// TODO improve javadoc
-	boolean isTree();
-
-	/**
-	 * Returns true if the generic is a root.
-	 * 
-	 * @return true if the generic is a root.
-	 */
-	// TODO improve javadoc
-	boolean isRoot();
-
-	/**
-	 * Returns true if this generic is removable.
-	 * 
-	 * @return True if this generic is removable.
-	 */
-	// TODO improve javadoc
-	boolean isRemovable();
-
-	/**
-	 * Log the state of this generic with SLF4J.
-	 */
-	// TODO improve javadoc
-	void log();
-
-	/**
-	 * Returns all available information except information about links.
-	 * 
-	 * @return all available information except information about links.
-	 */
-	// TODO improve javadoc
-	String info();
 
 	/**
 	 * Abandons concrete values of the holder setting it to null.
