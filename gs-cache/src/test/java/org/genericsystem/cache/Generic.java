@@ -1,10 +1,7 @@
 package org.genericsystem.cache;
 
-import java.io.Serializable;
 import java.util.Iterator;
-import java.util.List;
 import java.util.function.Supplier;
-
 import org.genericsystem.impl.GenericSignature;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
@@ -52,8 +49,13 @@ public class Generic extends GenericSignature<Generic> implements GenericService
 		return getCurrentCache().getSuperComposites(this);
 	}
 
-	@Override
-	public Generic setInstance(List<Generic> overrides, Serializable value, Generic... components) {
-		return getCurrentCache().insert(GenericService.super.setInstance(overrides, value, components));
-	}
+	// @Override
+	// public Generic setInstance(Generic override, Serializable value, Generic... components) {
+	// return setInstance(Collections.singletonList(override), value, components);
+	// }
+	//
+	// @Override
+	// public Generic setInstance(List<Generic> overrides, Serializable value, Generic... components) {
+	// return getCurrentCache().insert(GenericService.super.setInstance(overrides, value, components));
+	// }
 }

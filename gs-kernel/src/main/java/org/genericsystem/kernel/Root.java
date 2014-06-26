@@ -25,7 +25,7 @@ public class Root extends Vertex implements RootService<Vertex> {
 		systemCache.put(Root.class, this);
 		initSystemMap();
 		for (Class<?> clazz : userClasses)
-			find(clazz, false);
+			find(clazz);
 	}
 
 	public void initSystemMap() {
@@ -46,15 +46,9 @@ public class Root extends Vertex implements RootService<Vertex> {
 
 	@Override
 	public Vertex find(Class<?> clazz) {
-		return find(clazz, true);
-	}
-
-	Vertex find(Class<?> clazz, boolean throwExceptionOnUnfoundClass) throws IllegalStateException {
 		Vertex result = systemCache.get(clazz);
 		if (result != null)
 			return result;
-		// if (result == null && throwExceptionOnUnfoundClass)
-		// throw new RollbackException(new IllegalStateException());
 		if (result == null)
 			systemCache.put(clazz, result = findMeta(clazz).setInstance(findOverrides(clazz), findValue(clazz), findComponents(clazz)));
 		return result;

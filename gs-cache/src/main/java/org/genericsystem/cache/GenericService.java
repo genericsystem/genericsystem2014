@@ -4,17 +4,11 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
 
 public interface GenericService<T extends GenericService<T>> extends org.genericsystem.impl.GenericService<T> {
-
-	@Override
-	default T find(Class<?> clazz) {
-		return wrap(getRoot().getVertex().find(clazz));
-	}
 
 	@SuppressWarnings("unchecked")
 	@Override

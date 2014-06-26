@@ -14,11 +14,6 @@ public class Vertex extends ExtendedSignature<Vertex> implements VertexService<V
 	private final CompositesDependencies<Vertex> metaComposites = buildCompositeDependencies(null);
 
 	@Override
-	public Vertex find(Class<?> clazz) {
-		return getRoot().find(clazz);
-	}
-
-	@Override
 	public Vertex buildInstance() {
 		return new Vertex();
 	}

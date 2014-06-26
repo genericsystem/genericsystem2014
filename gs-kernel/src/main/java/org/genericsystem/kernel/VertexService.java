@@ -14,7 +14,6 @@ import org.genericsystem.kernel.services.SystemPropertiesService;
 import org.genericsystem.kernel.services.UpdatableService;
 
 public interface VertexService<T extends VertexService<T>> extends AncestorsService<T>, DependenciesService<T>, BindingService<T>, FactoryService<T>, DisplayService<T>, SystemPropertiesService<T>, ExceptionAdviserService<T>,
-CompositesInheritanceService<T>, RemovableService<T>, UpdatableService<T>, MapService<T>, SignatureService<T> {
+		CompositesInheritanceService<T>, RemovableService<T>, UpdatableService<T>, MapService<T>, SignatureService<T> {
 
-	public T find(Class<?> clazz);
 }

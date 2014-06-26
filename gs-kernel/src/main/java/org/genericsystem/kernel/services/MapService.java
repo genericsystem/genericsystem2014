@@ -3,11 +3,10 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.Optional;
 import java.util.stream.Stream;
-
-import org.genericsystem.kernel.VertexService;
+import org.genericsystem.kernel.RootService;
 import org.genericsystem.kernel.annotations.SystemGeneric;
 
-public interface MapService<T extends VertexService<T>> extends SystemPropertiesService<T>, CompositesInheritanceService<T>, UpdatableService<T> {
+public interface MapService<T extends MapService<T>> extends SystemPropertiesService<T>, CompositesInheritanceService<T>, UpdatableService<T> {
 
 	@Override
 	default Serializable getSystemPropertyValue(Class<?> propertyClass, int pos) {
@@ -27,7 +26,7 @@ public interface MapService<T extends VertexService<T>> extends SystemProperties
 	}
 
 	default T getMap() {
-		return getRoot().find(SystemMap.class);
+		return (T) ((RootService) getRoot()).find(SystemMap.class);
 	}
 
 	default Stream<T> getKeys() {
