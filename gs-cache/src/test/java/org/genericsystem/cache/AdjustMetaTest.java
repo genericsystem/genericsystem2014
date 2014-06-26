@@ -3,8 +3,6 @@ package org.genericsystem.cache;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.genercisystem.impl.Engine;
-import org.genercisystem.impl.Generic;
 import org.testng.annotations.Test;
 
 @Test
