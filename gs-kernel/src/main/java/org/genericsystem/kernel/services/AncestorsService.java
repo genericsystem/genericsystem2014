@@ -2,6 +2,7 @@ package org.genericsystem.kernel.services;
 
 import java.util.List;
 import java.util.stream.Stream;
+import org.genericsystem.kernel.RootService;
 
 public interface AncestorsService<T extends AncestorsService<T>> extends SignatureService<T> {
 
@@ -9,7 +10,7 @@ public interface AncestorsService<T extends AncestorsService<T>> extends Signatu
 		return isRoot() || getValue().equals(getRoot().getValue()) || getComponentsStream().allMatch(c -> c.isRoot()) ? 0 : getMeta().getLevel() + 1;
 	}
 
-	default T getRoot() {
+	default RootService<? extends T> getRoot() {
 		return getMeta().getRoot();
 	}
 

@@ -1,7 +1,5 @@
 package org.genericsystem.cache;
 
-import java.util.Iterator;
-import java.util.function.Supplier;
 import org.genericsystem.impl.GenericSignature;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
@@ -13,20 +11,9 @@ public class Generic extends GenericSignature<Generic> implements GenericService
 		return new Generic();
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public <U extends Generic> CacheDependencies<U> buildDependencies(Supplier<Iterator<Generic>> subDependenciesSupplier) {
-		return (CacheDependencies<U>) new CacheDependencies<Generic>(subDependenciesSupplier);
-	}
-
 	@Override
 	public boolean isAlive() {
 		return getCurrentCache().isAlive(this);
-	}
-
-	@Override
-	public Generic getMap() {
-		return getRoot().getInstance(SystemMap.class, getRoot());
 	}
 
 	@Override
@@ -48,14 +35,4 @@ public class Generic extends GenericSignature<Generic> implements GenericService
 	public CompositesDependencies<Generic> getSuperComposites() {
 		return getCurrentCache().getSuperComposites(this);
 	}
-
-	// @Override
-	// public Generic setInstance(Generic override, Serializable value, Generic... components) {
-	// return setInstance(Collections.singletonList(override), value, components);
-	// }
-	//
-	// @Override
-	// public Generic setInstance(List<Generic> overrides, Serializable value, Generic... components) {
-	// return getCurrentCache().insert(GenericService.super.setInstance(overrides, value, components));
-	// }
 }

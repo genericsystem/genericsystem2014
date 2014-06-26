@@ -31,10 +31,9 @@ public interface EngineService<T extends GenericService<T>> extends GenericServi
 		return true;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	default T getRoot() {
-		return (T) this;
+	default EngineService<? extends T> getRoot() {
+		return this;
 	}
 
 	@SuppressWarnings("unchecked")

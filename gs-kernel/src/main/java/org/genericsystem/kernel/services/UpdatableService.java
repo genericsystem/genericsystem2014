@@ -89,9 +89,6 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 
 	@SuppressWarnings("unchecked")
 	default T setInstance(T override, Serializable value, T... components) {
-		log.info("ZZZZZZZZZZZZ " + getClass());
-		for (T g : components)
-			log.info("	YYYYYYYY " + g.getClass());
 		return setInstance(Collections.singletonList(override), value, components);
 	}
 

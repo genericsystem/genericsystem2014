@@ -35,7 +35,7 @@ public class Root extends Vertex implements RootService<Vertex> {
 	}
 
 	@Override
-	public Vertex getRoot() {
+	public RootService<Vertex> getRoot() {
 		return this;
 	}
 
@@ -56,7 +56,7 @@ public class Root extends Vertex implements RootService<Vertex> {
 
 	Vertex findMeta(Class<?> clazz) {
 		Meta meta = clazz.getAnnotation(Meta.class);
-		return meta == null ? getRoot() : find(meta.value());
+		return meta == null ? (Vertex) getRoot() : find(meta.value());
 	}
 
 	List<Vertex> findOverrides(Class<?> clazz) {

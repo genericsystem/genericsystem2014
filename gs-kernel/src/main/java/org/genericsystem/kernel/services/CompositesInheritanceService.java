@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Snapshot.AbstractSnapshot;
 import org.genericsystem.kernel.Statics;
@@ -19,8 +18,9 @@ public interface CompositesInheritanceService<T extends CompositesInheritanceSer
 		return getInheritings(attribute, 0);
 	}
 
+	@SuppressWarnings("unchecked")
 	default Snapshot<T> getRelations() {
-		return getRelations(getRoot());
+		return getRelations((T) getRoot());
 	}
 
 	default Snapshot<T> getRelations(T origin) {

@@ -25,7 +25,7 @@ public class SupersComputer<T extends DependenciesService<T>> extends LinkedHash
 		this.overrides = overrides;
 		this.components = components;
 		this.value = value;
-		visit(meta.getRoot());
+		visit((T) meta.getRoot());
 	}
 
 	private boolean visit(T candidate) {
