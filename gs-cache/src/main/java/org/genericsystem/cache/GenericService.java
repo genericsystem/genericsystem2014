@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 import java.util.function.Supplier;
+
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
@@ -58,18 +58,6 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 				return instance;
 		}
 		return null;
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	default T addInstance(List<T> overrides, Serializable value, T... components) {
-		return getCurrentCache().insert(org.genericsystem.impl.GenericService.super.addInstance(overrides, value, components));
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	default T setInstance(List<T> overrides, Serializable value, T... components) {
-		return getCurrentCache().insert(org.genericsystem.impl.GenericService.super.setInstance(overrides, value, components));
 	}
 
 	@Override
