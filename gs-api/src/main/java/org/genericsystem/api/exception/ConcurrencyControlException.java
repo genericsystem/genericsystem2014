@@ -7,10 +7,10 @@ package org.genericsystem.api.exception;
  */
 public class ConcurrencyControlException extends ConstraintViolationException {
 
+	private static final long serialVersionUID = 7631483467570784262L;
+
 	public ConcurrencyControlException(String string) {
 		super(string);
 	}
-
-	private static final long serialVersionUID = 7631483467570784262L;
 
 }

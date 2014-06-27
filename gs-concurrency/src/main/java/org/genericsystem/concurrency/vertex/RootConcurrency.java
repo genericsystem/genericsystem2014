@@ -3,6 +3,7 @@ package org.genericsystem.concurrency.vertex;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
+
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 
@@ -17,18 +18,6 @@ public class RootConcurrency extends Root {
 	public RootConcurrency(Serializable value) {
 		init(null, Collections.emptyList(), value, Collections.emptyList());
 	}
-
-	// TODO KK
-	// VertexConcurrency setMetaAttribute(VertexConcurrency... components) {
-	// checkSameEngine(Arrays.asList(components));
-	// VertexConcurrency allComponents[] = Statics.insertIntoArray(this, components, 0);
-	// VertexConcurrency instance = getInstance(getRoot().getValue(), allComponents);
-	// if (instance != null)
-	// return instance;
-	// List<VertexConcurrency> supersList = new ArrayList<>(new SupersComputer<>(0, meta, Collections.emptyList(), getRoot().getValue(), Arrays.asList(allComponents)));
-	// VertexConcurrency meta = computeNearestMeta(Collections.emptyList(), value, Arrays.asList(components));
-	// return meta.buildInstance().init(0, meta, supersList, getRoot().getValue(), Arrays.asList(allComponents)).plug();
-	// }
 
 	public long pickNewTs() {
 		return generator.pickNewTs();
