@@ -2,17 +2,17 @@ package org.genericsystem.impl;
 
 import java.io.Serializable;
 import java.util.Objects;
+
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.RootService;
 import org.genericsystem.kernel.Statics;
-import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.services.SignatureService;
 
 public interface EngineService<T extends GenericService<T>> extends GenericService<T>, RootService<T> {
 
 	@Override
 	default T find(Class<?> clazz) {
-		return wrap((Vertex) (((RootService) getVertex()).find(clazz)));
+		return wrap(getVertex().find(clazz));
 	}
 
 	default Root buildRoot() {
@@ -31,9 +31,10 @@ public interface EngineService<T extends GenericService<T>> extends GenericServi
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	default EngineService<? extends T> getRoot() {
-		return this;
+	default T getRoot() {
+		return (T) this;
 	}
 
 	@SuppressWarnings("unchecked")
