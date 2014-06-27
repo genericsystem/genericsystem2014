@@ -5,13 +5,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.function.Supplier;
-
-import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
-import org.genericsystem.kernel.Vertex;
-import org.genericsystem.kernel.exceptions.NotAliveException;
 
 public interface GenericService<T extends GenericService<T>> extends org.genericsystem.impl.GenericService<T> {
 
@@ -63,7 +59,6 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 		return null;
 	}
 
-
 	// @Phantom
 	@SuppressWarnings("unchecked")
 	@Override
@@ -71,12 +66,12 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 		T root = (T) getRoot();
 		root.setInstance(getMap(), new AxedPropertyClass(propertyClass, pos), root).setInstance(value, (T) this);
 	}
+
 	@Override
 	@SuppressWarnings("unchecked")
 	default boolean isAlive() {
 		return getCurrentCache().isAlive((T) this);
 	}
-
 
 	@SuppressWarnings("unchecked")
 	@Override
