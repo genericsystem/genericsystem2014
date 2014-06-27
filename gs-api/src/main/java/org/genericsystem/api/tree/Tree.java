@@ -37,6 +37,29 @@ public interface Tree extends Attribute {
 	<T extends Node> T addRoot(Serializable value, int dim);
 
 	/**
+	 * Returns the root by value or null.
+	 * 
+	 * @param <T>
+	 *            node of the tree
+	 * @param value
+	 *            root name
+	 * 
+	 * @see Snapshot
+	 * @return the root or null.
+	 */
+	<T extends Node> T getRootByValue(Serializable value);
+
+	/**
+	 * Returns the root elements.
+	 * 
+	 * @param <T>
+	 *            node of the tree
+	 * @see Snapshot
+	 * @return the root elements.
+	 */
+	<T extends Node> Snapshot<T> getRoots();
+
+	/**
 	 * Creates a root or returns this root if this root already exists.
 	 * 
 	 * @param <T>
@@ -59,27 +82,4 @@ public interface Tree extends Attribute {
 	 * @return Return the root.
 	 */
 	<T extends Node> T setRoot(Serializable value, int dim);
-
-	/**
-	 * Returns the root elements.
-	 * 
-	 * @param <T>
-	 *            node of the tree
-	 * @see Snapshot
-	 * @return the root elements.
-	 */
-	<T extends Node> Snapshot<T> getRoots();
-
-	/**
-	 * Returns the root by value or null.
-	 * 
-	 * @param <T>
-	 *            node of the tree
-	 * @param value
-	 *            root name
-	 * 
-	 * @see Snapshot
-	 * @return the root or null.
-	 */
-	<T extends Node> T getRootByValue(Serializable value);
 }

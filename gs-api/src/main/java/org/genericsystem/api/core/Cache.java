@@ -24,17 +24,16 @@ import java.io.Serializable;
 public interface Cache {
 
 	/**
-	 * Starts the execution of this cache.
-	 * 
-	 * @return this cache. This interface is a part of <tt>Generic System Core</tt>.
+	 * Clears the cache without flushing.
 	 */
-	Cache start();
+	void clear();
 
 	/**
-	 * Stops the execution of this cache.
+	 * Discards modifications in this cache. Returns the deepest sub cache. Returns the same cache If this is the cache of the first level (cache mounted directly on current transaction).
 	 * 
+	 * @return Returns the deepest sub cache. Returns the same cache If this is the cache of the first level (cache mounted directly on current transaction).
 	 */
-	void stop();
+	Cache discardAndUnmount();
 
 	/**
 	 * Flushes the content of current cache into its subcache(s) or into the current user's transaction. If Cache flushes its data within a transaction, all modifications in the current cache becomes available to other users.
@@ -42,9 +41,11 @@ public interface Cache {
 	void flush() /* throws RollbackException */;
 
 	/**
-	 * Clears the cache without flushing.
+	 * Flushes Cache into its subcache. Returns its deepest subcache after the flush. Returns the same cache If this is the cache of the first level (cache mounted directly on current transaction).
+	 * 
+	 * @return the deepest subcache after the flush. Returns the same cache If this is the cache of the first level (cache mounted directly on current transaction).
 	 */
-	void clear();
+	Cache flushAndUnmount();
 
 	/**
 	 * Returns the Engine of this cache.
@@ -66,6 +67,13 @@ public interface Cache {
 	 * @return the Generic.
 	 */
 	Generic getGeneric(Serializable value, Generic meta, Generic... components);
+
+	/**
+	 * Returns the level of the cache. First level is number 1 : it is the cache mounted directly on the current transaction. A cache mounted on a cache "level 1" is level 2, and so on.
+	 * 
+	 * @return the level of the cache. First level is number 1 : it is the cache mounted directly on the current transaction. A cache mounted on a cache "level 1" is level 2, and so on.
+	 */
+	int getLevel();
 
 	/**
 	 * Returns true if the generic has not been removed in this cache and all its subcaches, false otherwise. Returns false if generic is not found.
@@ -95,24 +103,16 @@ public interface Cache {
 	Cache mountNewCache();
 
 	/**
-	 * Flushes Cache into its subcache. Returns its deepest subcache after the flush. Returns the same cache If this is the cache of the first level (cache mounted directly on current transaction).
+	 * Starts the execution of this cache.
 	 * 
-	 * @return the deepest subcache after the flush. Returns the same cache If this is the cache of the first level (cache mounted directly on current transaction).
+	 * @return this cache. This interface is a part of <tt>Generic System Core</tt>.
 	 */
-	Cache flushAndUnmount();
+	Cache start();
 
 	/**
-	 * Discards modifications in this cache. Returns the deepest sub cache. Returns the same cache If this is the cache of the first level (cache mounted directly on current transaction).
+	 * Stops the execution of this cache.
 	 * 
-	 * @return Returns the deepest sub cache. Returns the same cache If this is the cache of the first level (cache mounted directly on current transaction).
 	 */
-	Cache discardAndUnmount();
-
-	/**
-	 * Returns the level of the cache. First level is number 1 : it is the cache mounted directly on the current transaction. A cache mounted on a cache "level 1" is level 2, and so on.
-	 * 
-	 * @return the level of the cache. First level is number 1 : it is the cache mounted directly on the current transaction. A cache mounted on a cache "level 1" is level 2, and so on.
-	 */
-	int getLevel();
+	void stop();
 
 }

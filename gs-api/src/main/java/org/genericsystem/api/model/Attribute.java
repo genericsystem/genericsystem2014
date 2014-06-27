@@ -13,18 +13,53 @@ import org.genericsystem.api.core.Generic;
 public interface Attribute extends Holder, Type {
 
 	/**
-	 * Enable Size Constraint.
+	 * Disable property constraint.
 	 * 
 	 * @param <T>
-	 *            target of the enabling as a type
-	 * @param basePos
-	 *            The component position implicated by the constraint.
-	 * @param size
-	 *            The size.
+	 *            target of the disabling as a type
+	 * @return Return this
+	 */
+	<T extends Type> T disablePropertyConstraint();
+
+	/**
+	 * Disable required constraint
 	 * 
+	 * @param <T>
+	 *            target of the disabling as a type
+	 * @return this
+	 */
+	<T extends Type> T disableRequiredConstraint();
+
+	/**
+	 * Disable required constraint for the base position.
+	 * 
+	 * @param <T>
+	 *            target of the disabling as a type
+	 * @param componentPos
+	 *            The component position implicated by the constraint.
 	 * @return Return this.
 	 */
-	<T extends Generic> T enableSizeConstraint(int basePos, Integer size);
+	<T extends Type> T disableRequiredConstraint(int componentPos);
+
+	/**
+	 * Disable singular constraint.
+	 * 
+	 * @param <T>
+	 *            target of the disabling as a type
+	 * @return Return this
+	 */
+	<T extends Type> T disableSingularConstraint();
+
+	/**
+	 * Disable singular constraint for the base position.
+	 * 
+	 * @param <T>
+	 *            target of the disabling as a type
+	 * @param componentPos
+	 *            The component position implicated by the constraint.
+	 * @return Return this
+	 */
+	<T extends Type> T disableSingularConstraint(int componentPos);
 
 	/**
 	 * Disable Size Constraint.
@@ -39,44 +74,13 @@ public interface Attribute extends Holder, Type {
 	<T extends Generic> T disableSizeConstraint(int basePos);
 
 	/**
-	 * Enable singular constraint.
+	 * Disable unique value constraint.
 	 * 
 	 * @param <T>
-	 *            target of the enabling as a type
+	 *            target of the disabling as a type
 	 * @return Return this.
 	 */
-	<T extends Type> T enableSingularConstraint();
-
-	/**
-	 * Disable singular constraint.
-	 * 
-	 * @param <T>
-	 *            target of the disabling as a type
-	 * @return Return this
-	 */
-	<T extends Type> T disableSingularConstraint();
-
-	/**
-	 * Enable singular constraint for the base position
-	 * 
-	 * @param <T>
-	 *            target of the enabling as a type
-	 * @param componentPos
-	 *            The component position implicated by the constraint.
-	 * @return this
-	 */
-	<T extends Type> T enableSingularConstraint(int componentPos);
-
-	/**
-	 * Disable singular constraint for the base position.
-	 * 
-	 * @param <T>
-	 *            target of the disabling as a type
-	 * @param componentPos
-	 *            The component position implicated by the constraint.
-	 * @return Return this
-	 */
-	<T extends Type> T disableSingularConstraint(int componentPos);
+	<T extends Type> T disableUniqueValueConstraint();
 
 	/**
 	 * Enable property constraint.
@@ -89,15 +93,6 @@ public interface Attribute extends Holder, Type {
 	<T extends Type> T enablePropertyConstraint();
 
 	/**
-	 * Disable property constraint.
-	 * 
-	 * @param <T>
-	 *            target of the disabling as a type
-	 * @return Return this
-	 */
-	<T extends Type> T disablePropertyConstraint();
-
-	/**
 	 * Enable required constraint.
 	 * 
 	 * @param <T>
@@ -106,15 +101,6 @@ public interface Attribute extends Holder, Type {
 	 * @return Return this.
 	 */
 	<T extends Type> T enableRequiredConstraint();
-
-	/**
-	 * Disable required constraint
-	 * 
-	 * @param <T>
-	 *            target of the disabling as a type
-	 * @return this
-	 */
-	<T extends Type> T disableRequiredConstraint();
 
 	/**
 	 * Enable required constraint for the base position.
@@ -128,15 +114,38 @@ public interface Attribute extends Holder, Type {
 	<T extends Type> T enableRequiredConstraint(int componentPos);
 
 	/**
-	 * Disable required constraint for the base position.
+	 * Enable singular constraint.
 	 * 
 	 * @param <T>
-	 *            target of the disabling as a type
-	 * @param componentPos
-	 *            The component position implicated by the constraint.
+	 *            target of the enabling as a type
 	 * @return Return this.
 	 */
-	<T extends Type> T disableRequiredConstraint(int componentPos);
+	<T extends Type> T enableSingularConstraint();
+
+	/**
+	 * Enable singular constraint for the base position
+	 * 
+	 * @param <T>
+	 *            target of the enabling as a type
+	 * @param componentPos
+	 *            The component position implicated by the constraint.
+	 * @return this
+	 */
+	<T extends Type> T enableSingularConstraint(int componentPos);
+
+	/**
+	 * Enable Size Constraint.
+	 * 
+	 * @param <T>
+	 *            target of the enabling as a type
+	 * @param basePos
+	 *            The component position implicated by the constraint.
+	 * @param size
+	 *            The size.
+	 * 
+	 * @return Return this.
+	 */
+	<T extends Generic> T enableSizeConstraint(int basePos, Integer size);
 
 	/**
 	 * Enable unique value constraint.
@@ -146,14 +155,5 @@ public interface Attribute extends Holder, Type {
 	 * @return Return this.
 	 */
 	<T extends Type> T enableUniqueValueConstraint();
-
-	/**
-	 * Disable unique value constraint.
-	 * 
-	 * @param <T>
-	 *            target of the disabling as a type
-	 * @return Return this.
-	 */
-	<T extends Type> T disableUniqueValueConstraint();
 
 }
