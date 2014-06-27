@@ -1,13 +1,15 @@
 package org.genericsystem.api.exception;
 
+import org.genericsystem.api.annotation.constraint.InstanceClassConstraint;
+
 /**
- * Is triggered if the constraint is positioned and that the generic does not respect the constraint. Checks that the value inherits from the type imposed by the constraint.
+ * Thrown when trying to instantiate a <tt>InstanceClassConstraint</tt> element with an implementation which doesn't extends or implements the class specified.
  * 
- * @author Nicolas Feybessek
+ * @see InstanceClassConstraint
  */
 public class InstanceClassConstraintViolationException extends ConstraintViolationException {
 
-	private static final long serialVersionUID = -3180066263166409718L;
+	private static final long serialVersionUID = 6556574373950907606L;
 
 	public InstanceClassConstraintViolationException(String msg) {
 		super(msg);

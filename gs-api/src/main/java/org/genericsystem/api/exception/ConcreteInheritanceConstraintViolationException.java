@@ -1,10 +1,11 @@
 package org.genericsystem.api.exception;
 
+import org.genericsystem.api.annotation.NoInheritance;
+
 /**
- * Is triggered if the constraint is positioned and that the generic does not respect the constraint. The constraint is active by default. Checks that no instance inherits a other instance.
+ * Thrown when trying to add a super to a <tt>NoInheritance</tt> element.
  * 
- * @author Nicolas Feybesse
- * @author Michael Ory
+ * @see NoInheritance
  */
 public class ConcreteInheritanceConstraintViolationException extends ConstraintViolationException {
 

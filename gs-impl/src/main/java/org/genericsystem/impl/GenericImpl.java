@@ -870,7 +870,7 @@ public class GenericImpl implements Generic, Type, Link, Relation, Holder, Attri
 	public Generic remove(Generic... toRemove) {
 		// TODO Auto-generated method stub
 		// update todo here, approximately :
-		// genericService.update(getSupers(), getValue(), getComponents().remove(toRemove);)
+		// genericService.update(getSupers(), getValue(), getComponents().minus(toRemove);)
 		return null;
 	}
 
