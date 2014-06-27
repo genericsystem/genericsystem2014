@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.function.Supplier;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
@@ -60,17 +59,12 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 		return null;
 	}
 
-	@Override
-	@SuppressWarnings("unchecked")
-	default T setKey(AxedPropertyClass property) {
-		T root = (T) getRoot();
-		return root.setInstance(getMap(), property, root);
-	}
-
+	// @Phantom
 	@SuppressWarnings("unchecked")
 	@Override
 	default void setSystemPropertyValue(Class<T> propertyClass, int pos, Serializable value) {
-		setKey(new AxedPropertyClass(propertyClass, pos)).setInstance(value, (T) this);
+		T root = (T) getRoot();
+		root.setInstance(getMap(), new AxedPropertyClass(propertyClass, pos), root).setInstance(value, (T) this);
 	}
 
 	@Override

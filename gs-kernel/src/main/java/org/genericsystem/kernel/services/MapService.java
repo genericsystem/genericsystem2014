@@ -21,7 +21,8 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 	@SuppressWarnings("unchecked")
 	@Override
 	default void setSystemPropertyValue(Class<T> propertyClass, int pos, Serializable value) {
-		setKey(new AxedPropertyClass(propertyClass, pos)).setInstance(value, (T) this);
+		T root = (T) getRoot();
+		root.setInstance(getMap(), new AxedPropertyClass(propertyClass, pos), root).setInstance(value, (T) this);
 	}
 
 	default T getMap() {
@@ -34,12 +35,6 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 
 	default Optional<T> getKey(AxedPropertyClass property) {
 		return getKeys().filter(x -> x.getValue().equals(property)).findFirst();
-	}
-
-	@SuppressWarnings("unchecked")
-	default T setKey(AxedPropertyClass property) {
-		T root = (T) getRoot();
-		return root.setInstance(getMap(), property, root);
 	}
 
 	@SystemGeneric
