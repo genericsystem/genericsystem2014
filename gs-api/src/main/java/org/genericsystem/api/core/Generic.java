@@ -333,14 +333,14 @@ public interface Generic extends Serializable {
 	/**
 	 * Removes the generic(s) specified using the default removeStrategy. The generic(s) to remove must be in the same context as the element making the call. Do nothing if the generic(s) has already been removed.
 	 * 
-	 * @param toRemove
-	 *            elements to remove
+	 * @param components
+	 *            components of the generic to remove.
 	 * @return this with the element(s) removed
 	 */
 	// TODO @throws referentialIntegrity
 	// TODO @throws noSuchElement
 	// TODO @throws dependencyInconsistence
-	Generic remove(Generic... toRemove);
+	Generic remove(Generic... components);
 
 	/**
 	 * Get the current cache.
@@ -382,7 +382,7 @@ public interface Generic extends Serializable {
 	 * @param generic
 	 *            the supposed "type" for the current generic.
 	 * @param basePos
-	 *            position of this generic in the array of components of the "type".
+	 *            the axis number where the generic specified is searched.
 	 * 
 	 * @return true if this generic is an <tt>Attribute</tt> of the base in specified position, false otherwise.
 	 */
@@ -847,6 +847,18 @@ public interface Generic extends Serializable {
 	<T extends Generic> Snapshot<T> getTargets(Relation relation, int basePos, int metaLevel);
 
 	/**
+	 * Returns the component(s) of the holder specified without the source of the call and its inheriting(s). Returns an empty <tt>Snapshot</tt> if none is found.
+	 *
+	 * @param <T>
+	 *            target as a Generic
+	 * @param holder
+	 *            the holder.
+	 * 
+	 * @return the component(s) of the holder specified without the source of the call and its inheriting(s).
+	 */
+	<T extends Generic> Snapshot<T> getOtherTargets(Holder holder);
+
+	/**
 	 * Returns true if the source of the call inherits directly or indirectly inherits from the generic specified, false otherwise.
 	 * 
 	 * @param generic
@@ -972,150 +984,135 @@ public interface Generic extends Serializable {
 	<T extends Generic> Snapshot<T> getComposites();
 
 	/**
-	 * Abandons concrete values of the holder setting it to null.
+	 * Drops the value of the holder setting it to null.
 	 * 
 	 * @param holder
-	 *            the holder.
+	 *            the targeted holder.
 	 */
-	// TODO improve javadoc
 	void cancel(Holder holder);
 
 	/**
-	 * Abandons concrete values of the holder setting it to null.
+	 * Drops the value of the holder with the components specified setting it to null.
 	 * 
 	 * @param holder
-	 *            the holder.
-	 * @param targets
-	 *            the optional targets for link.
+	 *            the targeted holder.
+	 * @param components
+	 *            optional, the components of the holder if it is a relation.
 	 */
-	// TODO improve javadoc
-	void cancelAll(Holder holder, Generic... targets);
+	void cancelAll(Holder holder, Generic... components);
 
 	/**
-	 * Removes holder from the graph.
+	 * Removes holder from the graph. Do nothing if the generic has already been removed. Equivalent to <tt>holder.remove()</tt>.
 	 * 
 	 * @param holder
-	 *            the holder.
+	 *            the holder to remove.
+	 * 
+	 * @see #remove()
 	 */
-	// TODO improve javadoc
 	void clear(Holder holder);
 
 	/**
-	 * Removes holder from the graph.
+	 * Removes holder from the graph. Do nothing if the generic has already been removed. Equivalent to <tt>holder.remove(components)</tt>.
 	 * 
 	 * @param holder
-	 *            the holder.
-	 * @param targets
-	 *            the optional targets for relation.
+	 *            the holder to remove.
+	 * @param components
+	 *            optional, the components of the holder if it is a relation.
+	 * 
+	 * @see #remove(Generic...)
 	 */
-	// TODO improve javadoc
-	void clearAll(Holder holder, Generic... targets);
+	void clearAll(Holder holder, Generic... components);
 
 	/**
-	 * Returns the map associated with this generic. Map is found by class of Map Provider.
+	 * Returns the map of generics associated with the source of the call. Map is found by class of MapProvider.
 	 * 
 	 * @param <Key>
 	 *            key as a Serializable
 	 * @param <Value>
 	 *            value linked to the key as a Serializable
 	 * @param mapClass
-	 *            the class of Map Provider.
+	 *            the class of MapProvider.
 	 * 
-	 * @return the map object.
+	 * @return the map of generics associated with the source of the call.
 	 */
-	// TODO improve javadoc
 	<Key extends Serializable, Value extends Serializable> Map<Key, Value> getMap(Class<? extends MapProvider> mapClass);
 
 	/**
-	 * Returns the map of properties associated with this generic.
+	 * Returns the map of properties associated with the source of the call. Map is found by class of MapProvider.
 	 * 
 	 * @param <Key>
 	 *            key as a Serializable
 	 * @param <Value>
 	 *            value linked to the key as a Serializable
-	 * @return the map with properties.
+	 * 
+	 * @return the map of properties associated with the source of the call.
 	 */
-	// TODO improve javadoc
 	<Key extends Serializable, Value extends Serializable> Map<Key, Value> getPropertiesMap();
 
 	/**
-	 * Adds a new component into defined position in array of generic's components.
+	 * Adds a new component at the position specified. Change its position if already at another position. Otherwise do nothing.
 	 * 
 	 * @param <T>
 	 *            source as a Generic
 	 * @param component
-	 *            the component to insert.
+	 *            the component to add.
 	 * @param pos
-	 *            the position of component in array.
+	 *            the axis number where the component should be positioned.
 	 * 
-	 * @return this generic.
+	 * @return the source of the call after the add.
 	 */
-	// TODO improve javadoc
 	<T extends Generic> T addComponent(Generic component, int pos);
 
 	/**
-	 * Removes given component in defined position.
+	 * Remove the component at the position specified. Do nothing if the component is already removed.
+	 * 
+	 * @param <T>
+	 *            source as a Generic
+	 * @param component
+	 *            the component to remove.
+	 * 
+	 * @return the source of the call after the remove.
+	 */
+	<T extends Generic> T removeComponent(Generic component);
+
+	/**
+	 * Remove the component at the position specified. Do nothing if the component is already removed or is positioned elsewhere.
 	 * 
 	 * @param <T>
 	 *            source as a Generic
 	 * @param component
 	 *            the component to remove.
 	 * @param pos
-	 *            the position of component in array.
+	 *            the axis number where the component is positioned.
 	 * 
-	 * @return this generic.
+	 * @return the source of the call after the remove.
 	 */
-	// TODO improve javadoc
 	<T extends Generic> T removeComponent(Generic component, int pos);
 
 	/**
-	 * Adds a new super (generic which this inherits from).
+	 * Adds a new super. The source of the call will inherits from the super specified.
 	 * 
 	 * @param <T>
 	 *            source as a Generic
 	 * @param newSuper
 	 *            the new super generic.
 	 * 
-	 * @return this generic.
+	 * @return the source of the call after the add.
 	 */
-	// TODO improve javadoc
+	// TODO : @throws already children of or not in same context
 	<T extends Generic> T addSuper(Generic newSuper);
 
 	/**
-	 * Removes the super generic in defined position.
+	 * Removes the super at the position specified. The result will no longer inherits from the super. Do nothing if already removed.
 	 * 
 	 * @param <T>
 	 *            source as a Generic
 	 * @param pos
-	 *            position of super in array of supers.
+	 *            the position of the super to remove.
 	 * 
-	 * @return this generic.
+	 * @return the source of the call after the remove.
 	 */
-	// TODO improve javadoc
+	// TODO @throws
 	<T extends Generic> T removeSuper(int pos);
-
-	/**
-	 * Returns the other component of holder (not this generic and it's inheriting).
-	 *
-	 * @param <T>
-	 *            target as a Generic
-	 * @param holder
-	 *            the holder.
-	 * 
-	 * @return <tt>Snapshot</tt> of components.
-	 */
-	// TODO improve javadoc
-	<T extends Generic> Snapshot<T> getOtherTargets(Holder holder);
-
-	/**
-	 * Returns true if values of this generic and generic supplied in parameters are equal.
-	 * 
-	 * @param generic
-	 *            the generic to compare.
-	 * 
-	 * @return true if values of this generic and generic supplied in parameters are equal.
-	 */
-	// TODO improve javadoc
-	boolean fastValueEquals(Generic generic);
 
 }
