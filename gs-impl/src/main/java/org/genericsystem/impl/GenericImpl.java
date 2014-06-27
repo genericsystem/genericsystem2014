@@ -892,6 +892,12 @@ public class GenericImpl implements Generic, Type, Link, Relation, Holder, Attri
 	}
 
 	@Override
+	public boolean isNode() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
 	public boolean isRoot() {
 		// TODO Auto-generated method stub
 		return false;
@@ -982,9 +988,9 @@ public class GenericImpl implements Generic, Type, Link, Relation, Holder, Attri
 	}
 
 	@Override
-	public boolean fastValueEquals(Generic generic) {
+	public <T extends Generic> T removeComponent(Generic component) {
 		// TODO Auto-generated method stub
-		return false;
+		return null;
 	}
 
 }

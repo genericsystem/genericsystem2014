@@ -97,10 +97,21 @@ public interface Node extends Holder {
 	 */
 	void traverse(Visitor visitor);
 
+	/**
+	 * Iterator of a node and its children.
+	 * 
+	 * Enables to do actions before and after visiting the node and its children.
+	 */
 	public abstract static class Visitor {
 
 		protected Set<Node> alreadyVisited = new HashSet<>();
 
+		/**
+		 * Iterate the nodes and its children
+		 * 
+		 * @param node
+		 *            the node to visit
+		 */
 		public void traverse(Node node) {
 			if (alreadyVisited.add(node)) {
 				before(node);
@@ -110,10 +121,22 @@ public interface Node extends Holder {
 			}
 		}
 
+		/**
+		 * Action done before visiting the visiting the children.
+		 * 
+		 * @param node
+		 *            the node from which the action is applied
+		 */
 		public void before(Node node) {
 
 		}
 
+		/**
+		 * Action done after visiting the visiting the children.
+		 * 
+		 * @param node
+		 *            the node from which the action is applied
+		 */
 		public void after(Node node) {
 
 		}

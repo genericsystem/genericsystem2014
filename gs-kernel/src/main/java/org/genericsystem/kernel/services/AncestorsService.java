@@ -2,15 +2,18 @@ package org.genericsystem.kernel.services;
 
 import java.util.List;
 import java.util.stream.Stream;
-import org.genericsystem.kernel.RootService;
 
 public interface AncestorsService<T extends AncestorsService<T>> extends SignatureService<T> {
+
+	default T find(Class<?> clazz) {
+		return getRoot().find(clazz);
+	}
 
 	default int getLevel() {
 		return isRoot() || getValue().equals(getRoot().getValue()) || getComponentsStream().allMatch(c -> c.isRoot()) ? 0 : getMeta().getLevel() + 1;
 	}
 
-	default RootService<? extends T> getRoot() {
+	default T getRoot() {
 		return getMeta().getRoot();
 	}
 

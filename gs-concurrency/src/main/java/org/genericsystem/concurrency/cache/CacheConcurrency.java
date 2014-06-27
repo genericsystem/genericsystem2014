@@ -24,4 +24,14 @@ public class CacheConcurrency<T extends GenericServiceConcurrency<T>> extends Ca
 		return (ContextConcurrency<T>) super.getSubContext();
 	}
 
+	@Override
+	public CacheConcurrency<T> mountNewCache() {
+		return (CacheConcurrency<T>) super.mountNewCache();
+	}
+
+	@Override
+	public EngineServiceConcurrency<T> getEngine() {
+		return (EngineServiceConcurrency<T>) subContext.getEngine();
+	}
+
 }

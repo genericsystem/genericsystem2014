@@ -1,7 +1,18 @@
 package org.genericsystem.api.model;
 
 /**
- * A Relation. Connect types.
+ * <p>
+ * A Relation connect <tt>Type</tt>s.
+ * </p>
+ * <p>
+ * A Relation is a structural (model level).
+ * </p>
+ * <p>
+ * An instance of a Relation is a <tt>Link</tt>
+ * </p>
+ *
+ * @see Type
+ * @see Link
  */
 public interface Relation extends Attribute, Link {
 

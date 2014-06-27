@@ -3,7 +3,12 @@ package org.genericsystem.api.model;
 import org.genericsystem.api.core.Generic;
 
 /**
- * An Attribute.
+ * <p>
+ * An Attribute is a component of at least one <tt>Type</tt>.
+ * </p>
+ * <p>
+ * An Attribute is a structural (model level).
+ * </p>
  */
 public interface Attribute extends Holder, Type {
 
