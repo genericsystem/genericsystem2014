@@ -3,8 +3,9 @@ package org.genericsystem.api.model;
 import org.genericsystem.api.core.Generic;
 
 /**
- * A Link <br>
- * Link any the instances of the Types.
+ * Instance of a <tt>Relation</tt>
+ * 
+ * @see Relation
  */
 public interface Link extends Holder {
 
