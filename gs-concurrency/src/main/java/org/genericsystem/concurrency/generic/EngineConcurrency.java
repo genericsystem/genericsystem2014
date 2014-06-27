@@ -2,9 +2,10 @@ package org.genericsystem.concurrency.generic;
 
 import java.io.Serializable;
 import java.util.Collections;
+
 import org.genericsystem.cache.Cache;
-import org.genericsystem.cache.Transaction;
 import org.genericsystem.concurrency.cache.CacheConcurrency;
+import org.genericsystem.concurrency.cache.TransactionConcurrency;
 import org.genericsystem.concurrency.vertex.RootConcurrency;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
@@ -22,7 +23,7 @@ public class EngineConcurrency extends GenericConcurrency implements EngineServi
 	public EngineConcurrency(Serializable rootValue, Serializable engineValue) {
 		root = buildRoot(rootValue);
 		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
-		cacheLocal.set(buildCache(new Transaction<>(this)));
+		cacheLocal.set(buildCache(new TransactionConcurrency<>(this)));
 	}
 
 	@Override

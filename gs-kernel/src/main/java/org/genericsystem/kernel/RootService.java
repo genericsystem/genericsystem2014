@@ -1,11 +1,13 @@
 package org.genericsystem.kernel;
 
 import java.util.Objects;
+
 import org.genericsystem.kernel.services.SignatureService;
 
 public interface RootService<T extends VertexService<T>> extends VertexService<T> {
 
-	public T find(Class<?> clazz);
+	// TODO clean ?
+	// T find(Class<?> clazz);
 
 	@Override
 	default int getLevel() {
@@ -17,10 +19,11 @@ public interface RootService<T extends VertexService<T>> extends VertexService<T
 		return true;
 	}
 
-	@Override
-	default RootService<? extends T> getRoot() {
-		return this;
-	}
+	// TODO clean ?
+	// @Override
+	// default RootService<? extends T> getRoot() {
+	// return this;
+	// }
 
 	@SuppressWarnings("unchecked")
 	@Override

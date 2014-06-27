@@ -10,10 +10,10 @@ import org.genericsystem.concurrency.vertex.VertexConcurrency;
 
 public interface GenericServiceConcurrency<T extends GenericServiceConcurrency<T>> extends GenericService<T> {
 
-	@Override
-	default VertexConcurrency unwrap() {
-		return (VertexConcurrency) GenericService.super.unwrap();
-	}
+	// @Override
+	// default Vertex unwrap() {
+	// return GenericService.super.unwrap();
+	// }
 
 	@Override
 	default CacheConcurrency<T> getCurrentCache() {
@@ -21,13 +21,7 @@ public interface GenericServiceConcurrency<T extends GenericServiceConcurrency<T
 	}
 
 	default LifeManager getLifeManager() {
-		return unwrap().getLifeManager();
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	default T getInstance(Serializable value, T... components) {
-		return null;// TODO
+		return ((VertexConcurrency) unwrap()).getLifeManager();
 	}
 
 	@Override

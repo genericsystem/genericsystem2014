@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Meta;
 import org.genericsystem.kernel.annotations.value.BooleanValue;
@@ -35,7 +36,7 @@ public class Root extends Vertex implements RootService<Vertex> {
 	}
 
 	@Override
-	public RootService<Vertex> getRoot() {
+	public Root getRoot() {
 		return this;
 	}
 

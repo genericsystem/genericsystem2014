@@ -5,7 +5,14 @@ import java.io.Serializable;
 import org.genericsystem.api.core.Generic;
 
 /**
- * A Type.
+ * <p>
+ * A Type is a mix between a class and a tab in a relational database.
+ * </p>
+ * <p>
+ * A Type is a structural (model level).
+ * </p>
+ * 
+ * @see Generic
  */
 public interface Type extends Generic {
 
