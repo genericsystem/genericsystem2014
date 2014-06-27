@@ -1,15 +1,16 @@
 package org.genericsystem.api.exception;
 
 /**
- * Is triggered if the constraint is positioned and that the generic does not respect the constraint. Checks the value can not be used that by a single instance.
- * 
- * Triggered when two or more generics with same values are present in engine
- * 
- * @author Alexei KLENIN - aklenin@middlewarefactory.com
+ * <p>
+ * Thrown when two or more generics with the same value are returned. In most cases this exception should be handled.
+ * </p>
+ * <p>
+ * AmbiguousSelection can not be disabled.
+ * </p>
  */
-public class AmbiguousSelectionException extends ConstraintViolationException {
+public class AmbiguousSelectionException extends RuntimeException {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -28943850612794619L;
 
 	public AmbiguousSelectionException(String message) {
 		super(message);
