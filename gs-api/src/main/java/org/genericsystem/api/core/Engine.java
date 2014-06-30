@@ -21,6 +21,33 @@ import java.lang.reflect.InvocationTargetException;
 public interface Engine extends Generic {
 
 	/**
+	 * Creates a root to the graph as a new engine in a in-memory mode. Starts a cache.
+	 * 
+	 * @return a new engine used in-memory.
+	 * 
+	 * @throws InstantiationException
+	 *             InstantiationException
+	 * @throws IllegalAccessException
+	 *             IllegalAccessException
+	 * @throws IllegalArgumentException
+	 *             IllegalArgumentException
+	 * @throws InvocationTargetException
+	 *             InvocationTargetException
+	 * @throws NoSuchMethodException
+	 *             NoSuchMethodException
+	 * @throws SecurityException
+	 *             SecurityException
+	 * @throws ClassNotFoundException
+	 *             ClassNotFoundException
+	 * 
+	 * @see Cache
+	 */
+	// FIXME
+	static Engine newInMemoryRoot() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
+		return ((Class<Engine>) Class.forName("org.genericsystem.impl.EngineImpl")).getConstructor(Class[].class).newInstance().newInMemoryEngine();
+	}
+
+	/**
 	 * Creates a root to the graph as a new engine in a persistent mode. Starts a cache.
 	 * 
 	 * @param directoryPath
@@ -49,32 +76,18 @@ public interface Engine extends Generic {
 		return ((Class<Engine>) Class.forName("org.genericsystem.impl.EngineImpl")).getConstructor(Class[].class).newInstance().newEngine(directoryPath);
 	}
 
+	// close => detail
 	/**
-	 * Creates a root to the graph as a new engine in a in-memory mode. Starts a cache.
-	 * 
-	 * @return a new engine used in-memory.
-	 * 
-	 * @throws InstantiationException
-	 *             InstantiationException
-	 * @throws IllegalAccessException
-	 *             IllegalAccessException
-	 * @throws IllegalArgumentException
-	 *             IllegalArgumentException
-	 * @throws InvocationTargetException
-	 *             InvocationTargetException
-	 * @throws NoSuchMethodException
-	 *             NoSuchMethodException
-	 * @throws SecurityException
-	 *             SecurityException
-	 * @throws ClassNotFoundException
-	 *             ClassNotFoundException
-	 * 
-	 * @see Cache
+	 * Closes engine and does a last commit if engine is run as persistent.
 	 */
-	// FIXME
-	static Engine newInMemoryRoot() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, ClassNotFoundException {
-		return ((Class<Engine>) Class.forName("org.genericsystem.impl.EngineImpl")).getConstructor(Class[].class).newInstance().newInMemoryEngine();
-	}
+	void close();
+
+	/**
+	 * Mounts a new cache encapsulated on the current cache.
+	 * 
+	 * @return a new cache encapsulated on the current cache.
+	 */
+	Cache mountNewCache();
 
 	/**
 	 * Creates a new engine in a persistent mode and starts a cache.
@@ -108,19 +121,6 @@ public interface Engine extends Generic {
 	 * @return engine with a new directoryPath
 	 */
 	Engine setDirectoryPath(String directoryPath);
-
-	// close => detail
-	/**
-	 * Closes engine and does a last commit if engine is run as persistent.
-	 */
-	void close();
-
-	/**
-	 * Mounts a new cache encapsulated on the current cache.
-	 * 
-	 * @return a new cache encapsulated on the current cache.
-	 */
-	Cache mountNewCache();
 
 	// FIXME : switchCache ?
 }

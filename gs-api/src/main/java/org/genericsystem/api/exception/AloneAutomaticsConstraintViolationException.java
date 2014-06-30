@@ -1,12 +1,15 @@
 package org.genericsystem.api.exception;
 
 /**
- * Is triggered if the constraint is positioned and that the generic does not respect the constraint. The constraint is active by default. Checks that no Generic isn't alive in the context.
- * 
- * @author Nicolas Feybesse
+ * <p>
+ * Thrown when doing operations on an element with no inheriting(s) nor composites connected.
+ * </p>
+ * <p>
+ * AloneAutomaticsConstraint can not be disabled.
+ * </p>
  */
 public class AloneAutomaticsConstraintViolationException extends ConstraintViolationException {
 
-	private static final long serialVersionUID = 1838361171620854149L;
+	private static final long serialVersionUID = -8498679180064283070L;
 
 }

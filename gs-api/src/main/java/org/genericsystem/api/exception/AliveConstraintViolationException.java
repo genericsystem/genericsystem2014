@@ -1,9 +1,16 @@
 package org.genericsystem.api.exception;
 
 /**
- * Is triggered if the constraint is positioned and that the generic does not respect the constraint. The constraint is active by default. Checks that no Generic isn't alive in the context.
- * 
- * @author Nicolas Feybesse
+ * <p>
+ * Thrown when doing forbidden operations on a dead element. A dead element is an element which has been removed. These include :
+ * </p>
+ * <ul>
+ * <li>Adding a dead element as a component.
+ * <li>Modifying a dead element.
+ * </ul>
+ * <p>
+ * AliveConstraint can not be disabled.
+ * </p>
  */
 public class AliveConstraintViolationException extends ConstraintViolationException {
 
