@@ -48,8 +48,26 @@ public interface FactoryService<T extends FactoryService<T>> extends Dependencie
 
 	default CompositesDependencies<T> buildCompositeDependencies(Supplier<Iterator<DependenciesEntry<T>>> subDependenciesSupplier) {
 		class CompositesDependenciesImpl implements CompositesDependencies<T> {
+
+			private CompositesDependencies<?> secondaryCompositesDependencies = null;
+
 			@SuppressWarnings("unchecked")
 			private final Dependencies<DependenciesEntry<T>> delegate = (Dependencies<DependenciesEntry<T>>) buildDependencies((Supplier) subDependenciesSupplier);
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public <E> Dependencies<E> getSecondaryDependencies() {
+				addSecondaryDependencies();
+				return (Dependencies<E>) secondaryCompositesDependencies;
+			}
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public <E> Dependencies<E> addSecondaryDependencies() {
+				if (secondaryCompositesDependencies == null)
+					secondaryCompositesDependencies = new CompositesDependenciesImpl();
+				return (Dependencies<E>) secondaryCompositesDependencies;
+			}
 
 			@Override
 			public boolean remove(DependenciesEntry<T> vertex) {

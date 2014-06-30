@@ -1,9 +1,13 @@
 package org.genericsystem.api.exception;
 
+import org.genericsystem.api.annotation.constraint.SingularConstraint;
+
 /**
- * Is triggered if the constraint is positioned and that the generic does not respect the constraint. Checks that the Generic a only one single value.
+ * <p>
+ * Thrown when trying to instantiate a new relation with a different value on the bound where <tt>SingularConstraint</tt> is positioned.
+ * </p>
  * 
- * @author Nicolas Feybesse
+ * @see SingularConstraint
  */
 public class SingularConstraintViolationException extends ConstraintViolationException {
 

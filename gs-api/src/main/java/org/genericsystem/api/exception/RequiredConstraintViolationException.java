@@ -1,9 +1,13 @@
 package org.genericsystem.api.exception;
 
+import org.genericsystem.api.annotation.constraint.RequiredConstraint;
+
 /**
- * Is triggered if the constraint is positioned and that the generic does not respect the constraint. Checks that the generic possess the information imposed by the constraint.
+ * <p>
+ * Thrown when instantiating an element without specifying a value on the field where the <tt>RequiredConstraint</tt> is positioned.
+ * </p>
  * 
- * @author Nicolas Feybesse
+ * @see RequiredConstraint
  */
 public class RequiredConstraintViolationException extends ConstraintViolationException {
 

@@ -9,6 +9,9 @@ import org.genericsystem.api.exception.PropertyConstraintViolationException;
 
 /**
  * <p>
+ * Equivalent to <tt>SingularConstraint</tt>.
+ * </p>
+ * <p>
  * Interface used to propagate a value to all the components on the same "axis".
  * </p>
  * <p>
@@ -18,6 +21,7 @@ import org.genericsystem.api.exception.PropertyConstraintViolationException;
  * Throws a <tt>PropertyConstraintViolationException</tt> when trying to instantiate a new relation with a different value on the bound where <tt>PropertyConstraint</tt> is positioned.
  * </p>
  * 
+ * @see SingularConstraint
  * @see PropertyConstraintViolationException
  */
 @Retention(RetentionPolicy.RUNTIME)

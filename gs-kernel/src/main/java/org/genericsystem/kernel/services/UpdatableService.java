@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.genericsystem.kernel.exceptions.ExistsException;
+
 public interface UpdatableService<T extends UpdatableService<T>> extends BindingService<T> {
 
 	default T updateValue(Serializable newValue) {
@@ -51,6 +53,34 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 		convertMap.put((T) this, build);
 
 		dependenciesToRebuild.forEach(x -> x.getOrBuild(convertMap));
+		return build;
+	}
+
+	@SuppressWarnings("unchecked")
+	default T rebuildAll(Supplier<T> rebuilder, List<T> overrides, Serializable value, List<T> components) {
+		Map<T, T> convertMap = new HashMap<T, T>();
+		LinkedHashSet<T> dependenciesToRebuild = computeAllDependencies(overrides, value, components);
+		dependenciesToRebuild.forEach(UpdatableService::unplug);
+
+		T build = rebuilder.get();
+		// convertMap.put((T) this, build);
+
+		dependenciesToRebuild.forEach(x -> x.getOrBuild(convertMap));
+		return build;
+	}
+
+	@SuppressWarnings("unchecked")
+	default T partialRebuild(Supplier<T> rebuilder) {
+		Map<T, T> convertMap = new HashMap<T, T>();
+		LinkedHashSet<T> allDependencies = this.computeAllDependencies();
+
+		allDependencies.forEach(UpdatableService::unplug);
+
+		T build = rebuilder.get();
+		allDependencies.remove(this);
+		convertMap.put((T) this, build);
+
+		allDependencies.forEach(x -> x.getOrBuild(convertMap));
 		return build;
 	}
 
@@ -108,22 +138,30 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 		return addInstance(overrides, value, components);
 	}
 
-	// default T updateInstance(T instance, List<T> overrides, Serializable value, List<T> components) {
-	// if (components.size() != instance.getComponents().size())
-	// rollbackAndThrowException(new IllegalArgumentException());
-	// boolean needToUpdateSupers = !allOverridesAreReached(overrides, instance.getSupers());
-	// if (instance.equiv(instance.getMeta(), value, components) && !needToUpdateSupers)
-	// return instance;
-	// List<T> supers = needToUpdateSupers ? new Supers<T>(instance.getSupers(), getUnreachedSupers(instance, overrides)) : instance.getSupers();
-	// return instance.update(supers, value, instance.findNewComponentsList(components));
-	// }
+	@SuppressWarnings("unchecked")
+	default T addInstance(Serializable value, T... components) {
+		return addInstance(Collections.emptyList(), value, components);
+	}
 
-	// default List<T> findNewComponentsList(List<T> target) {
-	// List<T> newComponents = getComponents();
-	// for (int i = 0; i < newComponents.size(); i++)
-	// newComponents.set(i, target.get(i));
-	// return newComponents;
-	// }
+	@SuppressWarnings("unchecked")
+	default T addInstance(T superGeneric, Serializable value, T... components) {
+		return addInstance(Collections.singletonList(superGeneric), value, components);
+	}
+
+	@SuppressWarnings("unchecked")
+	default T addInstance(List<T> overrides, Serializable value, T... components) {
+		checkSameEngine(Arrays.asList(components));
+		checkSameEngine(overrides);
+		T nearestMeta = adjustMeta(overrides, value, Arrays.asList(components));
+		if (nearestMeta != this)
+			return nearestMeta.addInstance(overrides, value, components);
+		T weakInstance = getWeakInstance(value, components);
+		if (weakInstance != null)
+			rollbackAndThrowException(new ExistsException(weakInstance.info()));
+		T instance = buildInstance(overrides, value, Arrays.asList(components));
+		return instance.rebuildAll(() -> instance.plug());
+		// return buildInstance(overrides, value, Arrays.asList(components)).plug();
+	}
 
 	default List<T> getUnreachedSupers(T instance, List<T> overrides) {
 		return overrides.stream().filter(override -> instance.getSupers().stream().allMatch(superVertex -> !superVertex.inheritsFrom(override))).collect(Collectors.toList());

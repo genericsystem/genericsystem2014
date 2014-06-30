@@ -1,13 +1,13 @@
 package org.genericsystem.api.exception;
 
 /**
- * Is triggered if you remove a Generic that a alive dependency.
- * 
- * @author Nicolas Feybesse
+ * <p>
+ * Thrown when a connection from one element to another (that is <tt>Attribute</tt>, <tt>Relation</tt> or any instance of those) is broken.
+ * </p>
  */
 public class ReferentialIntegrityConstraintViolationException extends ConstraintViolationException {
 
-	private static final long serialVersionUID = 1783386811956942568L;
+	private static final long serialVersionUID = -1892289381598641871L;
 
 	public ReferentialIntegrityConstraintViolationException(String msg) {
 		super(msg);

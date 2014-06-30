@@ -1,13 +1,13 @@
 package org.genericsystem.api.exception;
 
 /**
- * Is triggered if the constraint is positioned and that the generic does not respect the constraint. The constraint is active by default. Checks that each super is a parent of the Generic.
- * 
- * @author Nicolas Feybesse
+ * <p>
+ * Thrown when an element does not have as a super the element where the constraint is positioned.
+ * </p>
  */
 public class SuperRuleConstraintViolationException extends ConstraintViolationException {
 
-	private static final long serialVersionUID = 1838361171620854149L;
+	private static final long serialVersionUID = -3463698607393192237L;
 
 	public SuperRuleConstraintViolationException() {
 		super();
@@ -16,4 +16,5 @@ public class SuperRuleConstraintViolationException extends ConstraintViolationEx
 	public SuperRuleConstraintViolationException(String msg) {
 		super(msg);
 	}
+
 }
