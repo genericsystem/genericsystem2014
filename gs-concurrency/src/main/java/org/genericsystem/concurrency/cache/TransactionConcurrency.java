@@ -38,29 +38,29 @@ public class TransactionConcurrency<T extends GenericServiceConcurrency<T>> exte
 
 	@Override
 	public Dependencies<T> getInheritings(T generic) {
-		return aliveAdapter(generic.unwrap().getInheritings().project(generic::wrap, org.genericsystem.impl.GenericService::unwrap));
+		return aliveAdapter(generic.unwrap().getInheritings().project(generic::wrap, org.genericsystem.impl.GenericService::unwrap, t -> true));
 	}
 
 	@Override
 	public Dependencies<T> getInstances(T generic) {
-		return aliveAdapter(generic.unwrap().getInstances().project(generic::wrap, org.genericsystem.impl.GenericService::unwrap));
+		return aliveAdapter(generic.unwrap().getInstances().project(generic::wrap, org.genericsystem.impl.GenericService::unwrap, t -> true));
 	}
 
 	@Override
 	public CompositesDependencies<T> getMetaComposites(T generic) {
-		return aliveAdapter(generic.unwrap().getMetaComposites().projectComposites(generic::wrap, org.genericsystem.impl.GenericService::unwrap));
+		return aliveAdapter(generic.unwrap().getMetaComposites().projectComposites(generic::wrap, org.genericsystem.impl.GenericService::unwrap, t -> true));
 	}
 
 	@Override
 	public CompositesDependencies<T> getSuperComposites(T generic) {
-		return aliveAdapter(generic.unwrap().getSuperComposites().projectComposites(generic::wrap, org.genericsystem.impl.GenericService::unwrap));
+		return aliveAdapter(generic.unwrap().getSuperComposites().projectComposites(generic::wrap, org.genericsystem.impl.GenericService::unwrap, t -> true));
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private Dependencies<T> aliveAdapter(Dependencies<T> dependenciesToFilter) {
 		return (Dependencies) new Dependencies<VertexConcurrency>() {
 
-			private AbstractDependenciesConcurrency dependencies = (AbstractDependenciesConcurrency) dependenciesToFilter;
+			private final AbstractDependenciesConcurrency dependencies = (AbstractDependenciesConcurrency) dependenciesToFilter;
 
 			@Override
 			public Iterator<VertexConcurrency> iterator() {
@@ -74,7 +74,7 @@ public class TransactionConcurrency<T extends GenericServiceConcurrency<T>> exte
 
 			@Override
 			public boolean remove(VertexConcurrency vertex) {
-				return dependencies.remove((VertexConcurrency) vertex);
+				return dependencies.remove(vertex);
 			}
 
 			@Override
@@ -88,7 +88,7 @@ public class TransactionConcurrency<T extends GenericServiceConcurrency<T>> exte
 	private CompositesDependencies<T> aliveAdapter(CompositesDependencies<T> dependenciesToFilter) {
 		return (CompositesDependencies) new CompositesDependencies<VertexConcurrency>() {
 
-			private CompositesDependencies dependencies = (org.genericsystem.kernel.Dependencies.CompositesDependencies) dependenciesToFilter;
+			private final CompositesDependencies dependencies = dependenciesToFilter;
 
 			@Override
 			public Iterator<org.genericsystem.kernel.Dependencies.DependenciesEntry<VertexConcurrency>> iterator() {
