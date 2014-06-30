@@ -444,4 +444,15 @@ public class UpdatableServiceTest extends AbstractTest {
 		}.assertIsCausedBy(IllegalStateException.class);
 	}
 
+	public void test021_AddInstance_AttributeWithSameNameAlreadyExisting() {
+		Root engine = new Root();
+		Vertex car = engine.addInstance("Car", engine);
+		Vertex carPower = engine.setInstance("Power", car);
+		Vertex power = engine.addInstance("Power");
+
+		assert !carPower.isAlive();
+		assert power.isAlive();
+
+		assert car.getAttributes(engine).contains(carPower.getAlive());
+	}
 }

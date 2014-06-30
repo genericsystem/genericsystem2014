@@ -24,7 +24,7 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 
 	default T wrap(Vertex vertex) {
 		if (vertex.isRoot())
-			return (T) getRoot();
+			return getRoot();
 		Vertex alive = vertex.getAlive();
 		T meta = wrap(alive.getMeta());
 		return meta.buildInstance().init(meta, wrap(alive.getSupersStream()), alive.getValue(), wrap(alive.getComponentsStream()));
@@ -52,22 +52,22 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 
 	@Override
 	default Dependencies<T> getInstances() {
-		return getVertex().getInstances().project(this::wrap, GenericService::unwrap);
+		return getVertex().getInstances().project(this::wrap, GenericService::unwrap, t -> true);
 	}
 
 	@Override
 	default Dependencies<T> getInheritings() {
-		return getVertex().getInheritings().project(this::wrap, GenericService::unwrap);
+		return getVertex().getInheritings().project(this::wrap, GenericService::unwrap, t -> true);
 	}
 
 	@Override
 	default CompositesDependencies<T> getMetaComposites() {
-		return getVertex().getMetaComposites().projectComposites(this::wrap, GenericService::unwrap);
+		return getVertex().getMetaComposites().projectComposites(this::wrap, GenericService::unwrap, t -> true);
 	}
 
 	@Override
 	default CompositesDependencies<T> getSuperComposites() {
-		return getVertex().getSuperComposites().projectComposites(this::wrap, GenericService::unwrap);
+		return getVertex().getSuperComposites().projectComposites(this::wrap, GenericService::unwrap, t -> true);
 	}
 
 	@Override
