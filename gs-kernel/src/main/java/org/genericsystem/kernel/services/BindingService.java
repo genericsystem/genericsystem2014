@@ -10,33 +10,9 @@ import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.exceptions.AmbiguousSelectionException;
 import org.genericsystem.kernel.exceptions.CrossEnginesAssignementsException;
-import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 
 public interface BindingService<T extends BindingService<T>> extends DependenciesService<T>, FactoryService<T>, ExceptionAdviserService<T>, DisplayService<T> {
-
-	@SuppressWarnings("unchecked")
-	default T addInstance(Serializable value, T... components) {
-		return addInstance(Collections.emptyList(), value, components);
-	}
-
-	@SuppressWarnings("unchecked")
-	default T addInstance(T superGeneric, Serializable value, T... components) {
-		return addInstance(Collections.singletonList(superGeneric), value, components);
-	}
-
-	@SuppressWarnings("unchecked")
-	default T addInstance(List<T> overrides, Serializable value, T... components) {
-		checkSameEngine(Arrays.asList(components));
-		checkSameEngine(overrides);
-		T nearestMeta = adjustMeta(overrides, value, Arrays.asList(components));
-		if (nearestMeta != this)
-			return nearestMeta.addInstance(overrides, value, components);
-		T weakInstance = getWeakInstance(value, components);
-		if (weakInstance != null)
-			rollbackAndThrowException(new ExistsException(weakInstance.info()));
-		return buildInstance(overrides, value, Arrays.asList(components)).plug();
-	}
 
 	default void checkSameEngine(List<T> components) {
 		if (components.stream().anyMatch(component -> !component.getRoot().equals(getRoot())))
@@ -116,7 +92,9 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 	default T plug() {
 		T t = getMeta().getInstances().set((T) this);
 		getSupersStream().forEach(superGeneric -> superGeneric.getInheritings().set((T) this));
-		getComponentsStream().forEach(component -> component.getMetaComposites().setByIndex(getMeta(), (T) this));
+		getComponentsStream().forEach(component -> {
+			component.getMetaComposites().setByIndex(getMeta(), (T) this);
+		});
 		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> component.getSuperComposites().setByIndex(superGeneric, (T) this)));
 
 		// assert getSupersStream().allMatch(superGeneric -> this == superGeneric.getInheritings().get((T) this));
