@@ -27,11 +27,12 @@ public interface Snapshot<T> extends List<T>, Set<T> {
 	@FunctionalInterface
 	static interface Filter<T> {
 		/**
-		 * Returns true if the element is selected (this means the element is not filtered).
+		 * Returns {@code true} if the element is selected (this means the element is not filtered).
 		 *
 		 * @param element
-		 *            element to which we apply the filtering.
-		 * @return true if the element is selected, false if it is filtered.
+		 *            element to which we apply the filtering
+		 * 
+		 * @return {@code true} if the element is selected, {@code false} if it is filtered
 		 */
 		boolean isSelected(T element);
 	};
@@ -50,8 +51,9 @@ public interface Snapshot<T> extends List<T>, Set<T> {
 		 * Maps elements with the function to apply.
 		 *
 		 * @param element
-		 *            element to which we apply the mapping.
-		 * @return the result of the element after mapping it.
+		 *            element to which we apply the mapping
+		 * 
+		 * @return the result of the element after mapping it
 		 */
 		T map(E element);
 	}
@@ -60,15 +62,17 @@ public interface Snapshot<T> extends List<T>, Set<T> {
 	 * Filters the Snapshot with the <tt>Filter</tt> specified.
 	 *
 	 * @param filter
-	 *            the filter to apply.
-	 * @return Returns a snapshot of the elements non filtered.
+	 *            the filter to apply
+	 * 
+	 * @return Returns a snapshot of the elements non filtered
+	 * 
 	 * @see Filter
 	 * @see Snapshot
 	 */
 	Snapshot<T> filter(Filter<T> filter);
 
 	/**
-	 * log the snapshot.
+	 * log the snapshot
 	 */
 	void log();
 
@@ -76,10 +80,12 @@ public interface Snapshot<T> extends List<T>, Set<T> {
 	 * Maps the Snapshot with the <tt>Mapper</tt> specified.
 	 *
 	 * @param mapper
-	 *            the mapper containing the elements and the function to apply.
+	 *            the mapper containing the elements and the function to apply
 	 * @param <E>
 	 *            generic's result after being mapped
-	 * @return a snapshot of Generic after applying the mapping to the elements of the <tt>Mapper</tt>.
+	 * 
+	 * @return a snapshot of Generic after applying the mapping to the elements of the <tt>Mapper</tt>
+	 * 
 	 * @see Mapper
 	 * @see Snapshot
 	 */

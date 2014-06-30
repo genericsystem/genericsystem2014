@@ -6,7 +6,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * <p>
  * Interface used to manage generic components.
+ * </p>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })

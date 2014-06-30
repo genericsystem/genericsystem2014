@@ -18,8 +18,9 @@ public interface Tree extends Attribute {
 	 * @param <T>
 	 *            node of the tree
 	 * @param value
-	 *            The root name.
-	 * @return Return the root.
+	 *            The root name
+	 * 
+	 * @return Return the root
 	 */
 	<T extends Node> T addRoot(Serializable value);
 
@@ -29,10 +30,11 @@ public interface Tree extends Attribute {
 	 * @param <T>
 	 *            node of the tree
 	 * @param value
-	 *            The root name.
+	 *            The root name
 	 * @param dim
-	 *            Dimension of the root.
-	 * @return Return the root.
+	 *            Dimension of the root
+	 * 
+	 * @return Return the root
 	 */
 	<T extends Node> T addRoot(Serializable value, int dim);
 
@@ -44,8 +46,9 @@ public interface Tree extends Attribute {
 	 * @param value
 	 *            root name
 	 * 
-	 * @see Snapshot
 	 * @return the root or null.
+	 * 
+	 * @see Snapshot
 	 */
 	<T extends Node> T getRootByValue(Serializable value);
 
@@ -54,8 +57,10 @@ public interface Tree extends Attribute {
 	 * 
 	 * @param <T>
 	 *            node of the tree
+	 * 
+	 * @return the root elements
+	 * 
 	 * @see Snapshot
-	 * @return the root elements.
 	 */
 	<T extends Node> Snapshot<T> getRoots();
 
@@ -65,7 +70,8 @@ public interface Tree extends Attribute {
 	 * @param <T>
 	 *            node of the tree
 	 * @param value
-	 *            The root name.
+	 *            The root name
+	 * 
 	 * @return Return the root.
 	 */
 	<T extends Node> T setRoot(Serializable value);
@@ -76,9 +82,10 @@ public interface Tree extends Attribute {
 	 * @param <T>
 	 *            node of the tree
 	 * @param value
-	 *            The root name.
+	 *            The root name
 	 * @param dim
-	 *            Dimension of the root.
+	 *            Dimension of the root
+	 * 
 	 * @return Return the root.
 	 */
 	<T extends Node> T setRoot(Serializable value, int dim);

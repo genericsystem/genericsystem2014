@@ -6,6 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.genericsystem.api.exception.SizeConstraintViolationException;
+import org.genericsystem.api.model.Holder;
 
 /**
  * <p>
@@ -15,6 +16,7 @@ import org.genericsystem.api.exception.SizeConstraintViolationException;
  * Throws a <tt>SizeConstraintViolationException</tt> when adding more <tt>Holder</tt> than the number specified by the Constraint to the element where the constraint is positioned.
  * </p>
  * 
+ * @see Holder
  * @see SizeConstraintViolationException
  */
 @Retention(RetentionPolicy.RUNTIME)

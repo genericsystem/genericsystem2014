@@ -61,84 +61,92 @@ public interface Node extends Holder {
 	}
 
 	/**
-	 * Add a new node or throws an exception if this node already exists
+	 * Adds a new node. Do nothing if the node already exists.
 	 * 
 	 * @param <T>
 	 *            node of the tree
 	 * @param value
-	 *            The node name.
+	 *            the value to put into the node
 	 * @param targets
-	 *            The targets.
-	 * @return Return the Node.
+	 *            optional, the targets of the node added
+	 * 
+	 * @return the new node. Returns the node if it already exists
 	 */
 	<T extends Node> T addNode(Serializable value, Generic... targets);
 
 	/**
-	 * Returns the child of this.
+	 * Finds the child of this. Returns null if not found.
 	 * 
 	 * @param <T>
-	 *            node(s) of the tree
+	 *            node of the tree
 	 * @param value
-	 *            The value
+	 *            the value of the node searched
+	 * 
+	 * @return the children found, null if not found.
+	 * 
 	 * @see Snapshot
-	 * @return Return the children.
 	 */
 	<T extends Node> T getChild(Serializable value);
 
 	/**
-	 * Returns the children of this.
+	 * Returns the children of this, an empty snapshot if none is found.
 	 * 
 	 * @param <T>
 	 *            the children as node(s) of the tree
-	 * @return Returns the children.
+	 * 
+	 * @return the children, an empty snapshot if none is found
+	 * 
 	 * @see Snapshot
 	 */
 	<T extends Node> Snapshot<T> getChildren();
 
 	/**
-	 * Returns the children of this.
+	 * Returns the children of this at the position specified.
 	 * 
 	 * @param <T>
 	 *            node(s) of the tree
 	 * @param basePos
-	 *            The base position.
+	 *            the axis number where the children are searched
 	 * 
-	 * @return Return the children.
+	 * @return Return the children, an empty snapshot if none is found
+	 * 
 	 * @see Snapshot
 	 */
 	<T extends Node> Snapshot<T> getChildren(int basePos);
 
 	/**
-	 * Add a new node or returns this node if already exists.
+	 * Sets value and/or targets to the source of the call. Do nothing if it already exists.
 	 * 
 	 * @param <T>
 	 *            node of the tree
 	 * @param value
-	 *            The node name.
+	 *            the value of the node to set
 	 * @param targets
-	 *            The targets.
-	 * @return Return the Node.
+	 *            optional, the targets of the node set
+	 * 
+	 * @return Return the Node
 	 */
 	<T extends Node> T setNode(Serializable value, Generic... targets);
 
 	/**
-	 * Add an inheriting subNode if not exists, return existent inheriting subNode otherwise.
+	 * Adds an inheriting subNode if not exists, returns existent inheriting subNode otherwise.
 	 * 
 	 * @param <T>
-	 *            node of the tree
+	 *            subNode of the tree set
 	 * @param value
-	 *            The node name.
+	 *            the value of the subNode
 	 * @param targets
-	 *            The targets.
-	 * @return Return the subNode.
+	 *            optional, the targets of the subNode set
+	 * 
+	 * @return Return the subNode
 	 */
 	<T extends Node> T setSubNode(Serializable value, Generic... targets);
 
 	/**
-	 * Traverse the Tree.
+	 * Way of browsing the Tree.
 	 * 
 	 * @param visitor
-	 *            The class Visitor.
+	 *            the visitor to apply to browse the tree
 	 */
 	void traverse(Visitor visitor);
 
