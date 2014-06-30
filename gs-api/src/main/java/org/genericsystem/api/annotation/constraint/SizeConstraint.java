@@ -12,7 +12,7 @@ import org.genericsystem.api.exception.SizeConstraintViolationException;
  * Interface used to control the maximum number of components allowed.
  * </p>
  * <p>
- * Throws a <tt>SizeConstraintViolationException</tt> when the bound is reached.
+ * Throws a <tt>SizeConstraintViolationException</tt> when adding more <tt>Holder</tt> than the number specified by the Constraint to the element where the constraint is positioned.
  * </p>
  * 
  * @see SizeConstraintViolationException
@@ -22,9 +22,9 @@ import org.genericsystem.api.exception.SizeConstraintViolationException;
 public @interface SizeConstraint {
 
 	/**
-	 * Returns the maximum number of components allowed.
+	 * Returns the maximum number of <tt>Holder</tt> allowed.
 	 * 
-	 * @return the maximum number of components allowed.
+	 * @return the maximum number of <tt>Holder</tt> allowed.
 	 */
 	int[] value() default { 0 };
 }

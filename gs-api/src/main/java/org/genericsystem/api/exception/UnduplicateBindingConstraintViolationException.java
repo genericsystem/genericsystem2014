@@ -1,11 +1,9 @@
 package org.genericsystem.api.exception;
 
 /**
- * Is triggered if the constraint is positioned and that the generic does not respect the constraint. The constraint is active by default. Checks that two Generic that have the same supers doesn't have the same value. This problem can occur when creating
- * identical in different caches.
- * 
- * @author Nicolas Feybesse
- * @author Michaël Ory
+ * <p>
+ * Thrown when two elements have the same supers but doesn't have the same value. This exception occurs when flushing identical elements in different caches.
+ * </p>
  */
 public class UnduplicateBindingConstraintViolationException extends ConstraintViolationException {
 
@@ -18,4 +16,5 @@ public class UnduplicateBindingConstraintViolationException extends ConstraintVi
 	public UnduplicateBindingConstraintViolationException(String msg) {
 		super(msg);
 	}
+
 }
