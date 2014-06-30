@@ -2,6 +2,7 @@ package org.genericsystem.cache;
 
 import java.util.Arrays;
 import java.util.Collections;
+import org.genericsystem.kernel.Statics;
 import org.testng.annotations.Test;
 
 @Test
@@ -245,9 +246,12 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test020_AdjustMeta_TypeLevel_Attribute() {
 		Engine engine = new Engine();
-		Generic power = engine.addInstance("Power", engine);
-		Generic car = engine.addInstance("Car", engine);
+		Statics.debugCurrentThread();
+		Generic power = engine.addInstance("Power");
+		// Generic car = engine.addInstance("Car", engine);
+		assert power.isAlive();
+		// assert car.isAlive();
 		Generic carPower = engine.addInstance(power, "carPower", engine);
-		assert carPower.equals(power.adjustMeta(Collections.emptyList(), 235, Collections.singletonList(car)));
+		// assert carPower.equals(power.adjustMeta(Collections.emptyList(), 235, Collections.singletonList(car)));
 	}
 }

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.function.Supplier;
+
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
@@ -63,7 +64,7 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 	@SuppressWarnings("unchecked")
 	@Override
 	default void setSystemPropertyValue(Class<T> propertyClass, int pos, Serializable value) {
-		T root = (T) getRoot();
+		T root = getRoot();
 		root.setInstance(getMap(), new AxedPropertyClass(propertyClass, pos), root).setInstance(value, (T) this);
 	}
 
@@ -73,6 +74,14 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 		return getCurrentCache().isAlive((T) this);
 	}
 
+	@Override
+	@SuppressWarnings("unchecked")
+	default T getAlive() {
+		if (isAlive())
+			return (T) this;
+		return null;
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	default <U extends T> CacheDependencies<U> buildDependencies(Supplier<Iterator<T>> subDependenciesSupplier) {
@@ -80,7 +89,7 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 	}
 
 	default Cache<T> getCurrentCache() {
-		return ((T) getRoot()).getCurrentCache();
+		return getRoot().getCurrentCache();
 	}
 
 	@Override

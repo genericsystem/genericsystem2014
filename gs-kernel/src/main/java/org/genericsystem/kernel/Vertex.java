@@ -13,6 +13,11 @@ public class Vertex extends ExtendedSignature<Vertex> implements VertexService<V
 	private final CompositesDependencies<Vertex> superComposites = buildCompositeDependencies(null);
 	private final CompositesDependencies<Vertex> metaComposites = buildCompositeDependencies(null);
 
+	public Vertex() {
+		if (Statics.isCurrentThreadDebugged())
+			assert false;
+	}
+
 	@Override
 	public Vertex buildInstance() {
 		return new Vertex();

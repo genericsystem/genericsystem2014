@@ -36,22 +36,22 @@ public class Transaction<T extends GenericService<T>> implements Context<T> {
 
 	@Override
 	public Dependencies<T> getInheritings(T generic) {
-		return generic.unwrap().getInheritings().project(generic::wrap, org.genericsystem.impl.GenericService::unwrap);
+		return generic.unwrap().getInheritings().project(generic::wrap, org.genericsystem.impl.GenericService::unwrap, org.genericsystem.impl.GenericService::isAlive);
 	}
 
 	@Override
 	public Dependencies<T> getInstances(T generic) {
-		return generic.unwrap().getInstances().project(generic::wrap, org.genericsystem.impl.GenericService::unwrap);
+		return generic.unwrap().getInstances().project(generic::wrap, org.genericsystem.impl.GenericService::unwrap, org.genericsystem.impl.GenericService::isAlive);
 	}
 
 	@Override
 	public CompositesDependencies<T> getMetaComposites(T generic) {
-		return generic.unwrap().getMetaComposites().projectComposites(generic::wrap, org.genericsystem.impl.GenericService::unwrap);
+		return generic.unwrap().getMetaComposites().projectComposites(generic::wrap, org.genericsystem.impl.GenericService::unwrap, org.genericsystem.impl.GenericService::isAlive);
 	}
 
 	@Override
 	public CompositesDependencies<T> getSuperComposites(T generic) {
-		return generic.unwrap().getSuperComposites().projectComposites(generic::wrap, org.genericsystem.impl.GenericService::unwrap);
-	}
+		return generic.unwrap().getSuperComposites().projectComposites(generic::wrap, org.genericsystem.impl.GenericService::unwrap, org.genericsystem.impl.GenericService::isAlive);
+	};
 
 }

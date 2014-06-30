@@ -4,8 +4,10 @@ import java.util.AbstractMap;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import org.genericsystem.kernel.iterator.AbstractConcateIterator.ConcateIterator;
 import org.genericsystem.kernel.iterator.AbstractProjectionIterator;
 
 public interface Dependencies<T> extends Snapshot<T> {
@@ -34,27 +36,50 @@ public interface Dependencies<T> extends Snapshot<T> {
 		return result;
 	}
 
-	default <E> Dependencies<E> project(final Function<T, E> wrapper, final Function<E, T> unWrapper) {
+	default <E> Dependencies<E> addSecondaryDependencies() {
+		return null;
+	}
+
+	default <E> Dependencies<E> getSecondaryDependencies() {
+		return null;
+	}
+
+	default <E> Dependencies<E> project(final Function<T, E> wrapper, final Function<E, T> unWrapper, final Predicate<E> alive) {
 		return new Dependencies<E>() {
 
+			@SuppressWarnings("unchecked")
 			@Override
 			public Iterator<E> iterator() {
-				return new AbstractProjectionIterator<T, E>(Dependencies.this.iterator()) {
-					@Override
-					public E project(T t) {
-						return wrapper.apply(t);
-					}
-				};
+				if (Dependencies.this.getSecondaryDependencies() != null)
+					return new ConcateIterator<E>((Iterator<E>) (new AbstractProjectionIterator<T, E>(Dependencies.this.iterator()) {
+						@Override
+						public E project(T t) {
+							return wrapper.apply(t);
+						}
+					}), (Iterator<E>) Dependencies.this.getSecondaryDependencies().iterator());
+				else
+					return new AbstractProjectionIterator<T, E>(Dependencies.this.iterator()) {
+						@Override
+						public E project(T t) {
+							return wrapper.apply(t);
+						}
+					};
 			}
 
 			@Override
 			public boolean remove(E generic) {
-				return Dependencies.this.remove(unWrapper.apply(generic));
+				if (alive.test(generic))
+					return Dependencies.this.remove(unWrapper.apply(generic));
+				else
+					return Dependencies.this.getSecondaryDependencies().remove(generic);
 			}
 
 			@Override
 			public void add(E generic) {
-				Dependencies.this.add(unWrapper.apply(generic));
+				if (alive.test(generic))
+					Dependencies.this.add(unWrapper.apply(generic));
+				else
+					Dependencies.this.getSecondaryDependencies().add(generic);
 			}
 		};
 	}
@@ -105,17 +130,17 @@ public interface Dependencies<T> extends Snapshot<T> {
 
 		Dependencies<T> buildDependencies(Supplier<Iterator<T>> supplier);
 
-		default public <E> CompositesDependencies<E> projectComposites(Function<T, E> wrapper, Function<E, T> unWrapper) {
+		default public <E> CompositesDependencies<E> projectComposites(Function<T, E> wrapper, Function<E, T> unWrapper, Predicate<E> alive) {
 			return new CompositesDependencies<E>() {
 
 				@Override
 				public boolean remove(DependenciesEntry<E> entry) {
-					return CompositesDependencies.this.remove(new DependenciesEntry<T>(unWrapper.apply(entry.getKey()), entry.getValue().project(unWrapper, wrapper)));
+					return CompositesDependencies.this.remove(new DependenciesEntry<T>(unWrapper.apply(entry.getKey()), entry.getValue().project(unWrapper, wrapper, t -> true)));
 				}
 
 				@Override
 				public void add(DependenciesEntry<E> entry) {
-					CompositesDependencies.this.add(new DependenciesEntry<T>(unWrapper.apply(entry.getKey()), entry.getValue().project(unWrapper, wrapper)));
+					CompositesDependencies.this.add(new DependenciesEntry<T>(unWrapper.apply(entry.getKey()), entry.getValue().project(unWrapper, wrapper, t -> true)));
 				}
 
 				@Override
@@ -123,7 +148,7 @@ public interface Dependencies<T> extends Snapshot<T> {
 					return new AbstractProjectionIterator<DependenciesEntry<T>, DependenciesEntry<E>>(CompositesDependencies.this.iterator()) {
 						@Override
 						public DependenciesEntry<E> project(DependenciesEntry<T> vertexEntry) {
-							return buildEntry(wrapper.apply(vertexEntry.getKey()), vertexEntry.getValue().project(wrapper, unWrapper));
+							return buildEntry(wrapper.apply(vertexEntry.getKey()), vertexEntry.getValue().project(wrapper, unWrapper, alive));
 						}
 					};
 				}
