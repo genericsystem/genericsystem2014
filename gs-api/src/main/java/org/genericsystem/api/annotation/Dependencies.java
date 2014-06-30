@@ -19,7 +19,7 @@ public @interface Dependencies {
 	/**
 	 * Returns the classes of all the dependencies of generic.
 	 * 
-	 * @return the classes of all the dependencies of generic.
+	 * @return the classes of all the dependencies of generic
 	 */
 	Class<?>[] value();
 }

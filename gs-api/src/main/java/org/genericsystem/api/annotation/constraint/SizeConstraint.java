@@ -26,7 +26,7 @@ public @interface SizeConstraint {
 	/**
 	 * Returns the maximum number of <tt>Holder</tt> allowed.
 	 * 
-	 * @return the maximum number of <tt>Holder</tt> allowed.
+	 * @return the maximum number of <tt>Holder</tt> allowed
 	 */
 	int[] value() default { 0 };
 }

@@ -17,7 +17,7 @@ public @interface Extends {
 	/**
 	 * Returns the classes of all the supers of generic.
 	 * 
-	 * @return the classes of all the supers of generic.
+	 * @return the classes of all the supers of generic
 	 */
 	Class<?>[] value() default {};
 }

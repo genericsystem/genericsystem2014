@@ -71,7 +71,7 @@ public interface Cache {
 	/**
 	 * Returns the level of the cache. First level is number 1 : it is the cache mounted directly on the current transaction. A cache mounted on a cache "level 1" is level 2, and so on.
 	 * 
-	 * @return the level of the cache. First level is number 1 : it is the cache mounted directly on the current transaction. A cache mounted on a cache "level 1" is level 2, and so on.
+	 * @return the level of the cache. First level is number 1 : it is the cache mounted directly on the current transaction. A cache mounted on a cache "level 1" is level 2, and so on
 	 */
 	int getLevel();
 

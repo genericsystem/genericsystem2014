@@ -36,6 +36,7 @@ public interface Type extends Generic {
 	 *            the value of the instance
 	 * @param targets
 	 *            targets where the attribute is positioned. If none specified, is positioned to the generic calling this method
+	 * 
 	 * @return a new attribute with the value specified
 	 */
 	Generic addAttribute(Serializable value, Generic... targets);
@@ -61,6 +62,7 @@ public interface Type extends Generic {
 	 *            the value of the instance
 	 * @param targets
 	 *            targets where the property is positioned. If none specified, is positioned to the generic calling this method
+	 * 
 	 * @return a new property with the value specified
 	 */
 	Generic addProperty(Serializable value, Generic... targets);
@@ -72,6 +74,7 @@ public interface Type extends Generic {
 	 *            the value of the instance
 	 * @param bounds
 	 *            the bounds to connect. Should have at least two bounds
+	 * 
 	 * @return a new relation with the value specified, the relation if it already existed
 	 */
 	// TODO @throws numberOfBounds < 2
@@ -82,12 +85,13 @@ public interface Type extends Generic {
 	 * 
 	 * @param value
 	 *            the value of the Generic
+	 * 
 	 * @return a new subtype of Generic with the value specified
 	 */
 	Generic addSubType(Serializable value);
 
 	/**
-	 * Create a subtype. Throws an exception if it already exists.
+	 * Creates a subtype. Throws an exception if it already exists.
 	 * 
 	 * @param <T>
 	 *            subtype added as a type
@@ -97,60 +101,67 @@ public interface Type extends Generic {
 	 *            The satifies
 	 * @param components
 	 *            The components
-	 * @return Return the subtype
+	 * 
+	 * @return the subtype added
 	 */
 	<T extends Type> T addSubType(Serializable value, Generic[] satifies, Generic... components);
 
 	/**
-	 * Disable inheritance.
+	 * Disables inheritance.
 	 * 
 	 * @param <T>
 	 *            target of disabling as a relation
-	 * @return Return this
+	 * 
+	 * @return this
 	 */
 	<T extends Relation> T disableInheritance();
 
 	/**
-	 * Disable singleton constraint
+	 * Disables singleton constraint
 	 * 
 	 * @param <T>
 	 *            target of disabling as a type
+	 * 
 	 * @return this
 	 */
 	<T extends Type> T disableSingletonConstraint();
 
 	/**
-	 * Disable virtual constraint.
+	 * Disables virtual constraint.
 	 * 
 	 * @param <T>
 	 *            target of disabling as a type
+	 * 
 	 * @return this
 	 */
 	<T extends Type> T disableVirtualConstraint();
 
 	/**
-	 * Enable inheritance.
+	 * Enables inheritance.
 	 * 
 	 * @param <T>
 	 *            target of enabling as a relation
+	 * 
 	 * @return this
 	 */
 	<T extends Relation> T enableInheritance();
 
 	/**
-	 * Enable singleton constraint.
+	 * Enables singleton constraint.
 	 * 
 	 * @param <T>
 	 *            target of enabling as a type
+	 * 
 	 * @return this
 	 */
 	<T extends Type> T enableSingletonConstraint();
 
 	/**
-	 * Enable virtual constraint.
+	 * Enables virtual constraint.
 	 * 
 	 * @param <T>
 	 *            target of enabling as a type
+	 * 
 	 * @return this
 	 */
 	<T extends Type> T enableVirtualConstraint();
@@ -158,7 +169,8 @@ public interface Type extends Generic {
 	/**
 	 * Returns the instances of Generic and the instances of its children. Returns an empty snapshot if none is found.
 	 *
-	 * @return The snapshot with all instances of the Generic. Returns an empty snapshot if none is found
+	 * @return the snapshot with all instances of the Generic. Returns an empty snapshot if none is found
+	 * 
 	 * @see Snapshot
 	 */
 	Snapshot<Generic> getAllInstances();
@@ -170,7 +182,8 @@ public interface Type extends Generic {
 	 *            subtype searched as a type
 	 * @param value
 	 *            The sub type name
-	 * @return The sub type, or null if it does not exist
+	 * 
+	 * @return the sub type, null if it does not exist
 	 */
 	<T extends Type> T getAllSubType(Serializable value);
 
@@ -179,7 +192,9 @@ public interface Type extends Generic {
 	 * 
 	 * @param <T>
 	 *            subtype searched as a type
-	 * @return The snapshot with all sub types of the Generic
+	 * 
+	 * @return the snapshot with all sub types of the Generic
+	 * 
 	 * @see Snapshot
 	 */
 	<T extends Type> Snapshot<T> getAllSubTypes();
@@ -191,6 +206,7 @@ public interface Type extends Generic {
 	 *            subtype searched as a type
 	 * @param name
 	 *            the name of sub types
+	 * 
 	 * @return Snapshot
 	 */
 	<T extends Type> Snapshot<T> getAllSubTypes(String name);
@@ -204,6 +220,7 @@ public interface Type extends Generic {
 	 * @param holders
 	 *            optional, holders on which we look for
 	 * @return the attribute with the value specified, null if not found
+	 * 
 	 */
 	Generic getAttribute(Serializable value, Generic... holders);
 
@@ -211,6 +228,7 @@ public interface Type extends Generic {
 	 * Returns the attributes (and by extension the properties) of Generic. Does not return the instances or subtypes. Does not return the attributes of its children. Returns an empty snapshot if none is found.
 	 * 
 	 * @return a snapshot of Generic with all the attributes of Generic. Returns an empty snapshot if none is found
+	 * 
 	 * @see Snapshot
 	 */
 	Snapshot<Generic> getAttributes();
@@ -222,7 +240,8 @@ public interface Type extends Generic {
 	 *            subtype searched as an attribute
 	 * @param attribute
 	 *            The super attribute
-	 * @return The snapshot with all attributes of the Generic
+	 * @return the snapshot with all attributes of the Generic
+	 * 
 	 * @see Snapshot
 	 */
 	<T extends Attribute> Snapshot<T> getAttributes(Attribute attribute);
@@ -231,6 +250,7 @@ public interface Type extends Generic {
 	 * Returns the type restrained by the <tt>InstanceClassConstraint</tt> constraint. This is Object by default .
 	 * 
 	 * @return the type restrained
+	 * 
 	 * @see InstanceClassConstraint
 	 */
 	Class<?> getConstraintClass();
@@ -242,6 +262,7 @@ public interface Type extends Generic {
 	 * Returns the instances of Generic. Does not return the instances of its children. Returns an empty snapshot if none is found.
 	 * 
 	 * @return a snapshot of Generic with the instances of the Generic. Returns an empty snapshot if none is found
+	 * 
 	 * @see Snapshot
 	 */
 	Snapshot<Generic> getInstances();
@@ -254,6 +275,7 @@ public interface Type extends Generic {
 	 *            value of the generic
 	 * @param holders
 	 *            optional, holders on which we look for
+	 * 
 	 * @return the property with the value specified, null if not found
 	 */
 	Generic getProperty(Serializable value, Generic... holders);
@@ -263,6 +285,7 @@ public interface Type extends Generic {
 	 * 
 	 * @param bounds
 	 *            optional, targets on bounds we look for the relation. Should have at least two bounds and all bounds of the relation
+	 * 
 	 * @return the relation with the value specified, null if not found
 	 */
 	// TODO @throws numberOfBounds < 2
@@ -275,6 +298,7 @@ public interface Type extends Generic {
 	 *            value of the relation
 	 * @param bounds
 	 *            optional, bounds connected by the relation. Only a part of the bounds may be specified
+	 * 
 	 * @return the relation with the value specified, null if not found
 	 */
 	Generic getRelation(Serializable value, Generic... bounds);
@@ -283,6 +307,7 @@ public interface Type extends Generic {
 	 * Returns the relations bound to Generic. Does not return the relations of its children.
 	 * 
 	 * @return a snapshot of Generic with the relations of the Generic. Returns an empty snapshot if none is found
+	 * 
 	 * @see Snapshot
 	 */
 	Snapshot<Generic> getRelations();
@@ -294,7 +319,8 @@ public interface Type extends Generic {
 	 *            subtype searched as a Type
 	 * @param value
 	 *            the value
-	 * @return the subtype with the value specified, null if not found.
+	 * 
+	 * @return the subtype with the value specified, null if not found
 	 */
 	<T extends Type> T getSubType(Serializable value);
 
@@ -304,6 +330,7 @@ public interface Type extends Generic {
 	 * @param <T>
 	 *            subtype of this as a Type
 	 * @return the subtypes of Generic. Does not return the subtypes of the subtypes. Returns an empty Snapshot if none is found
+	 * 
 	 * @see Snapshot
 	 */
 	<T extends Type> Snapshot<T> getSubTypes();
@@ -340,7 +367,7 @@ public interface Type extends Generic {
 	 * @param components
 	 *            the ordered components
 	 * 
-	 * @return the instance by the components. Returns null if none is found, one component is missing or unordered components.
+	 * @return the instance set. Returns null if none is found, one component is missing or unordered components
 	 */
 	<T extends Generic> T setAnonymousInstance(Generic... components);
 
@@ -353,7 +380,9 @@ public interface Type extends Generic {
 	 *            The attribute value.
 	 * @param targets
 	 *            The targets
-	 * @return Return the attribute.
+	 * 
+	 * @return the attribute set
+	 * 
 	 * @see Attribute
 	 */
 	<T extends Attribute> T setAttribute(Serializable value, Generic... targets);
@@ -365,7 +394,8 @@ public interface Type extends Generic {
 	 *            target of the setter as a type
 	 * @param constraintClass
 	 *            The type constraint imposed
-	 * @return this
+	 * 
+	 * @return the constraintClass set
 	 */
 	<T extends Type> T setConstraintClass(Class<?> constraintClass);
 
@@ -379,7 +409,7 @@ public interface Type extends Generic {
 	 * @param components
 	 *            the components
 	 * 
-	 * @return the new instance
+	 * @return the instance set
 	 */
 	<T extends Generic> T setInstance(Serializable value, Generic... components);
 
@@ -392,7 +422,9 @@ public interface Type extends Generic {
 	 *            the property value
 	 * @param targets
 	 *            The target types
-	 * @return the attribute
+	 * 
+	 * @return the attribute set
+	 * 
 	 * @see Attribute
 	 */
 	<T extends Attribute> T setProperty(Serializable value, Generic... targets);
@@ -406,7 +438,9 @@ public interface Type extends Generic {
 	 *            The relation value
 	 * @param targets
 	 *            The target types
-	 * @return Return the relation
+	 * 
+	 * @return the relation set
+	 * 
 	 * @see Relation
 	 */
 	<T extends Relation> T setRelation(Serializable value, Generic... targets);
@@ -418,7 +452,8 @@ public interface Type extends Generic {
 	 *            target of the setter as a type
 	 * @param value
 	 *            The type value
-	 * @return Return the subtype
+	 * 
+	 * @return the subtype set
 	 */
 	<T extends Type> T setSubType(Serializable value);
 
@@ -433,7 +468,8 @@ public interface Type extends Generic {
 	 *            The satifies
 	 * @param components
 	 *            The components
-	 * @return Return the subtype
+	 * 
+	 * @return the subtype set
 	 */
 	<T extends Type> T setSubType(Serializable value, Generic[] satifies, Generic... components);
 

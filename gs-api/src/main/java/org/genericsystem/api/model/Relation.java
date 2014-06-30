@@ -35,7 +35,7 @@ public interface Relation extends Attribute, Link {
 	 *            target of the enabling as a relation
 	 * @param componentPos
 	 *            The component position implicated by the constraint.
-	 * @return Return this.
+	 * @return this
 	 */
 	<T extends Relation> T enableCascadeRemove(int componentPos);
 

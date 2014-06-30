@@ -23,7 +23,7 @@ public @interface Priority {
 	/**
 	 * Returns the value of the priority, 0 is the highest priority then it is 1 and so on.
 	 * 
-	 * @return the value of the priority, 0 is the highest priority then it is 1 and so on.
+	 * @return the value of the priority, 0 is the highest priority then it is 1 and so on
 	 */
 	int value();
 }

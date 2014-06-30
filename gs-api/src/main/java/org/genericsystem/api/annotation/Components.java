@@ -17,7 +17,7 @@ public @interface Components {
 	/**
 	 * Returns the classes of all the components of generic.
 	 * 
-	 * @return the classes of all the components of generic.
+	 * @return the classes of all the components of generic
 	 */
 	Class<?>[] value();
 }

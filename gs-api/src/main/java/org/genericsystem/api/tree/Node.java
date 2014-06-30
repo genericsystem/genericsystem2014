@@ -82,7 +82,7 @@ public interface Node extends Holder {
 	 * @param value
 	 *            the value of the node searched
 	 * 
-	 * @return the children found, null if not found.
+	 * @return the children found, null if not found
 	 * 
 	 * @see Snapshot
 	 */
