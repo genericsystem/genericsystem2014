@@ -9,9 +9,9 @@ import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.services.SignatureService;
 
-public class Engine extends Generic implements EngineService<Generic> {
+public class Engine extends Generic implements EngineService<Generic, Engine> {
 
-	private final ThreadLocal<Cache<Generic>> cacheLocal = new ThreadLocal<>();
+	private final ThreadLocal<Cache<Generic, Engine>> cacheLocal = new ThreadLocal<>();
 
 	private final Root root;
 
@@ -46,7 +46,7 @@ public class Engine extends Generic implements EngineService<Generic> {
 	}
 
 	@Override
-	public Cache<Generic> start(Cache<Generic> cache) {
+	public Cache<Generic, Engine> start(Cache<Generic, Engine> cache) {
 		if (!equals(cache.getEngine()))
 			throw new IllegalStateException();
 		cacheLocal.set(cache);
@@ -54,14 +54,14 @@ public class Engine extends Generic implements EngineService<Generic> {
 	}
 
 	@Override
-	public void stop(Cache<Generic> cache) {
+	public void stop(Cache<Generic, Engine> cache) {
 		assert cacheLocal.get() == cache;
 		cacheLocal.set(null);
 	}
 
 	@Override
-	public Cache<Generic> getCurrentCache() {
-		Cache<Generic> currentCache = cacheLocal.get();
+	public Cache<Generic, Engine> getCurrentCache() {
+		Cache<Generic, Engine> currentCache = cacheLocal.get();
 		if (currentCache == null)
 			throw new IllegalStateException();
 		return currentCache;

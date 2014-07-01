@@ -8,7 +8,7 @@ import org.genericsystem.concurrency.cache.CacheConcurrency;
 import org.genericsystem.concurrency.vertex.LifeManager;
 import org.genericsystem.concurrency.vertex.VertexConcurrency;
 
-public interface GenericServiceConcurrency<T extends GenericServiceConcurrency<T>> extends GenericService<T> {
+public interface GenericServiceConcurrency<T extends GenericServiceConcurrency<T, U>, U extends EngineServiceConcurrency<T, U>> extends GenericService<T, U> {
 
 	// @Override
 	// default Vertex unwrap() {
@@ -16,7 +16,7 @@ public interface GenericServiceConcurrency<T extends GenericServiceConcurrency<T
 	// }
 
 	@Override
-	default CacheConcurrency<T> getCurrentCache() {
+	default CacheConcurrency<T, U> getCurrentCache() {
 		return getMeta().getCurrentCache();
 	}
 

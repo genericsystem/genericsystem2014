@@ -23,7 +23,7 @@ public class GenericImpl implements Generic, Type, Link, Relation, Holder, Attri
 
 	private static final long serialVersionUID = -7421589436345797803L;
 
-	private GenericService<? extends GenericService<?>> genericService;
+	private GenericService<? extends GenericService<?, ?>, ?> genericService;
 
 	@Override
 	public <T extends Generic> T addAnonymousInstance(Generic... components) {
