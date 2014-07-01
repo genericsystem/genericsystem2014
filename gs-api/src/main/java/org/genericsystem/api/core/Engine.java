@@ -23,7 +23,7 @@ public interface Engine extends Generic {
 	/**
 	 * Creates a root to the graph as a new engine in a in-memory mode. Starts a cache.
 	 * 
-	 * @return a new engine used in-memory.
+	 * @return a new engine used in-memory
 	 * 
 	 * @throws InstantiationException
 	 *             InstantiationException
@@ -51,8 +51,9 @@ public interface Engine extends Generic {
 	 * Creates a root to the graph as a new engine in a persistent mode. Starts a cache.
 	 * 
 	 * @param directoryPath
-	 *            the directoryPath where the model and data will be stored.
-	 * @return a new engine stored on the directory path specified.
+	 *            the directoryPath where the model and data will be stored
+	 * 
+	 * @return a new engine stored on the directory path specified
 	 * 
 	 * @throws InstantiationException
 	 *             InstantiationException
@@ -85,7 +86,7 @@ public interface Engine extends Generic {
 	/**
 	 * Mounts a new cache encapsulated on the current cache.
 	 * 
-	 * @return a new cache encapsulated on the current cache.
+	 * @return a new cache encapsulated on the current cache
 	 */
 	Cache mountNewCache();
 
@@ -93,8 +94,9 @@ public interface Engine extends Generic {
 	 * Creates a new engine in a persistent mode and starts a cache.
 	 * 
 	 * @param directoryPath
-	 *            the directoryPath where the model and data will be stored.
-	 * @return a new engine stored on the directory path specified.
+	 *            the directoryPath where the model and data will be stored
+	 * 
+	 * @return a new engine stored on the directory path specified
 	 * 
 	 * @see Cache
 	 */
@@ -103,7 +105,7 @@ public interface Engine extends Generic {
 	/**
 	 * Creates a new engine in a in-memory mode and starts a cache.
 	 * 
-	 * @return a new engine used in-memory.
+	 * @return a new engine used in-memory
 	 * 
 	 * @see Cache
 	 */
@@ -118,6 +120,7 @@ public interface Engine extends Generic {
 	 * 
 	 * @param directoryPath
 	 *            the directory path where the model and data will be stored
+	 * 
 	 * @return engine with a new directoryPath
 	 */
 	Engine setDirectoryPath(String directoryPath);

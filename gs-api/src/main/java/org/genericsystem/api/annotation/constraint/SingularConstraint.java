@@ -31,7 +31,7 @@ public @interface SingularConstraint {
 	/**
 	 * Returns the axis number where the components will be restrained by the SingularConstraint.
 	 * 
-	 * @return the axis number where the components will be restrained by the SingularConstraint.
+	 * @return the axis number where the components will be restrained by the SingularConstraint
 	 */
 	int[] value() default { 0 };
 

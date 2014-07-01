@@ -13,8 +13,9 @@ public interface Link extends Holder {
 	 * Returns the target component.
 	 * 
 	 * @param <T>
-	 *            component as generic.
-	 * @return Returns the target component.
+	 *            component as generic
+	 * 
+	 * @return Returns the target component
 	 */
 	<T extends Generic> T getTargetComponent();
 

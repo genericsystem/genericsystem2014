@@ -23,7 +23,7 @@ public @interface InstantiatedGeneric {
 	/**
 	 * Defines the class of the element. Should extends Generic.
 	 * 
-	 * @return the class of the element.
+	 * @return the class of the element
 	 */
 	Class<? extends Generic> value();
 }

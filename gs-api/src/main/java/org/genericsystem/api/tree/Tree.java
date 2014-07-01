@@ -13,39 +13,42 @@ import org.genericsystem.api.model.Snapshot;
 public interface Tree extends Attribute {
 
 	/**
-	 * Create a new root.Throws an exception if already exists.
+	 * Creates a new root.Throws an exception if already exists.
 	 * 
 	 * @param <T>
 	 *            node of the tree
 	 * @param value
-	 *            The root name.
-	 * @return Return the root.
+	 *            the value of the root to add
+	 * 
+	 * @return the root added
 	 */
 	<T extends Node> T addRoot(Serializable value);
 
 	/**
-	 * Create a new root.Throws an exception if already exists.
+	 * Creates a new root.Throws an exception if already exists.
 	 * 
 	 * @param <T>
 	 *            node of the tree
 	 * @param value
-	 *            The root name.
+	 *            the value of the root to add
 	 * @param dim
-	 *            Dimension of the root.
-	 * @return Return the root.
+	 *            Dimension of the root
+	 * 
+	 * @return the root added
 	 */
 	<T extends Node> T addRoot(Serializable value, int dim);
 
 	/**
-	 * Returns the root by value or null.
+	 * Returns the root by its value, null if not found.
 	 * 
 	 * @param <T>
 	 *            node of the tree
 	 * @param value
-	 *            root name
+	 *            the value of the root search
+	 * 
+	 * @return the root, null if not found
 	 * 
 	 * @see Snapshot
-	 * @return the root or null.
 	 */
 	<T extends Node> T getRootByValue(Serializable value);
 
@@ -54,32 +57,37 @@ public interface Tree extends Attribute {
 	 * 
 	 * @param <T>
 	 *            node of the tree
+	 * 
+	 * @return the roots found
+	 * 
 	 * @see Snapshot
-	 * @return the root elements.
 	 */
 	<T extends Node> Snapshot<T> getRoots();
 
 	/**
-	 * Creates a root or returns this root if this root already exists.
+	 * Set a root. Do nothing is it is already set to the value specified.
 	 * 
 	 * @param <T>
 	 *            node of the tree
 	 * @param value
-	 *            The root name.
-	 * @return Return the root.
+	 *            the value of the root to set
+	 * 
+	 * @return the root set
 	 */
 	<T extends Node> T setRoot(Serializable value);
 
 	/**
-	 * Creates a root or returns this root if this root already exists.
+	 * Set a root at the dimension specified. Do nothing is the root at the dimension specified is already set to the value specified.
 	 * 
 	 * @param <T>
 	 *            node of the tree
 	 * @param value
-	 *            The root name.
+	 *            the value of the root to set
 	 * @param dim
-	 *            Dimension of the root.
-	 * @return Return the root.
+	 *            dimension of the root
+	 * 
+	 * @return the root set
 	 */
 	<T extends Node> T setRoot(Serializable value, int dim);
+
 }
