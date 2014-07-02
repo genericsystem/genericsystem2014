@@ -92,9 +92,7 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 	default T plug() {
 		T t = getMeta().getInstances().set((T) this);
 		getSupersStream().forEach(superGeneric -> superGeneric.getInheritings().set((T) this));
-		getComponentsStream().forEach(component -> {
-			component.getMetaComposites().setByIndex(getMeta(), (T) this);
-		});
+		getComponentsStream().forEach(component -> component.getMetaComposites().setByIndex(getMeta(), (T) this));
 		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> component.getSuperComposites().setByIndex(superGeneric, (T) this)));
 
 		// assert getSupersStream().allMatch(superGeneric -> this == superGeneric.getInheritings().get((T) this));
