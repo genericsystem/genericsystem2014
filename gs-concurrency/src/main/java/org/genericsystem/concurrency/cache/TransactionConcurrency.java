@@ -13,15 +13,15 @@ import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.iterator.AbstractFilterIterator;
 
-public class TransactionConcurrency<T extends GenericServiceConcurrency<T>> extends Transaction<T> implements ContextConcurrency<T> {
+public class TransactionConcurrency<T extends GenericServiceConcurrency<T, U>, U extends EngineServiceConcurrency<T, U>> extends Transaction<T, U> implements ContextConcurrency<T, U> {
 
 	private transient long ts;
 
-	public TransactionConcurrency(EngineServiceConcurrency<T> engine) {
+	public TransactionConcurrency(EngineServiceConcurrency<T, U> engine) {
 		this(((RootConcurrency) engine.getRoot().getVertex()).pickNewTs(), engine);
 	}
 
-	public TransactionConcurrency(long ts, EngineServiceConcurrency<T> engine) {
+	public TransactionConcurrency(long ts, EngineServiceConcurrency<T, U> engine) {
 		super(engine);
 		this.ts = ts;
 	}

@@ -4,7 +4,7 @@ import org.genericsystem.impl.GenericSignature;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 
-public class Generic extends GenericSignature<Generic> implements GenericService<Generic> {
+public class Generic extends GenericSignature<Generic> implements GenericService<Generic, Engine> {
 
 	@Override
 	public Generic buildInstance() {

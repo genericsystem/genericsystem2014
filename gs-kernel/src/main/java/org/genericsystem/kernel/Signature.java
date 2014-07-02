@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.genericsystem.kernel.services.BindingService;
 import org.genericsystem.kernel.services.DisplayService;
@@ -69,4 +70,5 @@ public abstract class Signature<T extends Signature<T>> implements DisplayServic
 	public int getLevel() {
 		return (isRoot() || components.stream().allMatch(c -> c.isRoot()) && Objects.equals(getValue(), getRoot().getValue())) ? 0 : meta.getLevel() + 1;
 	}
+
 }
