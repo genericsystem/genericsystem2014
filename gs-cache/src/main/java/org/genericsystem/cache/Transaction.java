@@ -6,11 +6,11 @@ import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Vertex;
 
-public class Transaction<T extends GenericService<T>> implements Context<T> {
+public class Transaction<T extends GenericService<T, U>, U extends EngineService<T, U>> implements Context<T, U> {
 
-	private transient final EngineService<T> engine;
+	private transient final EngineService<T, U> engine;
 
-	public Transaction(EngineService<T> engine) {
+	public Transaction(EngineService<T, U> engine) {
 		this.engine = engine;
 	}
 
@@ -30,7 +30,7 @@ public class Transaction<T extends GenericService<T>> implements Context<T> {
 	}
 
 	@Override
-	public EngineService<T> getEngine() {
+	public EngineService<T, U> getEngine() {
 		return engine;
 	}
 

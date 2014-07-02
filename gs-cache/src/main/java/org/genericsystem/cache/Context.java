@@ -5,9 +5,9 @@ import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 
-public interface Context<T extends GenericService<T>> {
+public interface Context<T extends GenericService<T, U>, U extends EngineService<T, U>> {
 
-	EngineService<T> getEngine();
+	EngineService<T, U> getEngine();
 
 	boolean isAlive(T generic);
 

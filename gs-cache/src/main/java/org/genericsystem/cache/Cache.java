@@ -9,8 +9,6 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import org.genericsystem.kernel.Dependencies;
-import org.genericsystem.kernel.Dependencies.CompositesDependencies;
-import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
@@ -22,17 +20,14 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 
 	private transient Map<T, Dependencies<T>> inheritingDependenciesMap = new HashMap<>();
 	private transient Map<T, Dependencies<T>> instancesDependenciesMap = new HashMap<>();
-	private transient Map<T, CompositesDependencies<T>> metaCompositesDependenciesMap = new HashMap<>();
-	private transient Map<T, CompositesDependencies<T>> superCompositesDependenciesMap = new HashMap<>();
-
+	private transient Map<T, Dependencies<T>> compositesDependenciesMap = new HashMap<>();
 	private Set<T> adds = new LinkedHashSet<>();
 	private Set<T> removes = new LinkedHashSet<>();
 
 	void clear() {
 		inheritingDependenciesMap = new HashMap<>();
 		instancesDependenciesMap = new HashMap<>();
-		metaCompositesDependenciesMap = new HashMap<>();
-		superCompositesDependenciesMap = new HashMap<>();
+		compositesDependenciesMap = new HashMap<>();
 		adds = new LinkedHashSet<>();
 		removes = new LinkedHashSet<>();
 	}
@@ -141,13 +136,8 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 	}
 
 	@Override
-	public CompositesDependencies<T> getMetaComposites(T generic) {
-		return getCompositesDependencies(generic, metaCompositesDependenciesMap, () -> iteratorFromAlivecomposite(generic, () -> subContext.getMetaComposites(generic).iterator()));
-	}
-
-	@Override
-	public CompositesDependencies<T> getSuperComposites(T generic) {
-		return getCompositesDependencies(generic, superCompositesDependenciesMap, () -> iteratorFromAlivecomposite(generic, () -> subContext.getSuperComposites(generic).iterator()));
+	public Dependencies<T> getMetaComposites(T generic) {
+		return getCompositesDependencies(generic, compositesDependenciesMap, () -> iteratorFromAlivecomposite(generic, () -> subContext.getMetaComposites(generic).iterator()));
 	}
 
 	protected Dependencies<T> getDependencies(T generic, Map<T, Dependencies<T>> dependenciesMap, Supplier<Iterator<T>> iteratorSupplier) {
@@ -157,8 +147,8 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 		return dependencies;
 	}
 
-	protected CompositesDependencies<T> getCompositesDependencies(T generic, Map<T, CompositesDependencies<T>> dependenciesMap, Supplier<Iterator<DependenciesEntry<T>>> iteratorSupplier) {
-		CompositesDependencies<T> dependencies = dependenciesMap.get(generic);
+	protected Dependencies<T> getCompositesDependencies(T generic, Map<T, Dependencies<T>> dependenciesMap, Supplier<Iterator<T>> iteratorSupplier) {
+		Dependencies<T> dependencies = dependenciesMap.get(generic);
 		if (dependencies == null)
 			dependenciesMap.put(generic, dependencies = generic.buildCompositeDependencies(iteratorSupplier));
 		return dependencies;
@@ -168,7 +158,7 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 		return generic.getVertex() == null ? Collections.emptyIterator() : supplier.get();
 	}
 
-	private Iterator<DependenciesEntry<T>> iteratorFromAlivecomposite(T generic, Supplier<Iterator<DependenciesEntry<T>>> supplier) {
+	private Iterator<T> iteratorFromAlivecomposite(T generic, Supplier<Iterator<T>> supplier) {
 		return generic.getVertex() == null ? Collections.emptyIterator() : supplier.get();
 	}
 

@@ -12,13 +12,13 @@ import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.VertexService;
 
-public interface GenericService<T extends GenericService<T>> extends VertexService<T> {
+public interface GenericService<T extends GenericService<T, U>, U extends EngineService<T, U>> extends VertexService<T, U> {
 
 	default List<T> wrap(Stream<Vertex> stream) {
 		return stream.map(this::wrap).collect(Collectors.toList());
 	}
 
-	static List<Vertex> unwrap(Stream<? extends GenericService<?>> stream) {
+	static List<Vertex> unwrap(Stream<? extends GenericService<?, ?>> stream) {
 		return stream.map(GenericService::unwrap).collect(Collectors.toList());
 	}
 

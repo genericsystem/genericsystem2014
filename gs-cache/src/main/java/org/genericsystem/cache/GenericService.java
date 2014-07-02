@@ -10,7 +10,7 @@ import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
 
-public interface GenericService<T extends GenericService<T>> extends org.genericsystem.impl.GenericService<T> {
+public interface GenericService<T extends GenericService<T, U>, U extends EngineService<T, U>> extends org.genericsystem.impl.GenericService<T, U> {
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -88,7 +88,7 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 		return (CacheDependencies<U>) new CacheDependencies<T>(subDependenciesSupplier);
 	}
 
-	default Cache<T> getCurrentCache() {
+	default Cache<T, U> getCurrentCache() {
 		return getRoot().getCurrentCache();
 	}
 
