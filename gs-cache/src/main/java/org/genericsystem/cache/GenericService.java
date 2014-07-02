@@ -164,8 +164,7 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 
 			@Override
 			public Dependencies<T> buildDependencies(Supplier<Iterator<T>> supplier) {
-				assert false;
-				return null;
+				return GenericService.this.buildDependencies(supplier);
 			}
 		}
 		return new CacheCompositesDependenciesImpl();
