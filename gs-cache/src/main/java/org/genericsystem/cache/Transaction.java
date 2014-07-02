@@ -1,5 +1,7 @@
 package org.genericsystem.cache;
 
+import java.util.Iterator;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.genericsystem.kernel.Dependencies;
@@ -36,22 +38,149 @@ public class Transaction<T extends GenericService<T>> implements Context<T> {
 
 	@Override
 	public Dependencies<T> getInheritings(T generic) {
-		return generic.unwrap().getInheritings().project(generic::wrap, org.genericsystem.impl.GenericService::unwrap, org.genericsystem.impl.GenericService::isAlive);
+		return new Dependencies<T>() {
+
+			@Override
+			public Iterator<T> iterator() {
+				return generic.unwrap().getInheritings().project(generic::wrap).iterator();
+			}
+
+			@Override
+			public boolean remove(T vertex) {
+				assert false;
+				return false;
+			}
+
+			@Override
+			public void add(T vertex) {
+				assert false;
+			}
+
+		};
+
+		// return generic.unwrap().getInheritings().project(generic::wrap, org.genericsystem.impl.GenericService::unwrap, org.genericsystem.impl.GenericService::isAlive);
 	}
 
 	@Override
 	public Dependencies<T> getInstances(T generic) {
-		return generic.unwrap().getInstances().project(generic::wrap, org.genericsystem.impl.GenericService::unwrap, org.genericsystem.impl.GenericService::isAlive);
+		return new Dependencies<T>() {
+
+			@Override
+			public Iterator<T> iterator() {
+				return generic.unwrap().getInstances().project(generic::wrap).iterator();
+			}
+
+			@Override
+			public boolean remove(T vertex) {
+				assert false;
+				return false;
+			}
+
+			@Override
+			public void add(T vertex) {
+				assert false;
+			}
+
+		};
+
+		// return generic.unwrap().getInstances().project(generic::wrap, org.genericsystem.impl.GenericService::unwrap, org.genericsystem.impl.GenericService::isAlive);
 	}
 
 	@Override
 	public CompositesDependencies<T> getMetaComposites(T generic) {
-		return generic.unwrap().getMetaComposites().projectComposites(generic::wrap, org.genericsystem.impl.GenericService::unwrap, org.genericsystem.impl.GenericService::isAlive);
+		return new CompositesDependencies<T>() {
+
+			@Override
+			public boolean remove(DependenciesEntry<T> vertex) {
+				assert false;
+				return false;
+			}
+
+			@Override
+			public void add(DependenciesEntry<T> vertex) {
+				assert false;
+			}
+
+			@Override
+			public Iterator<DependenciesEntry<T>> iterator() {
+				return generic.unwrap().getMetaComposites().stream().map(x -> buildEntry(generic.wrap(x.getKey()), new Dependencies<T>() {
+
+					@Override
+					public Iterator<T> iterator() {
+						return x.getValue().stream().map(generic::wrap).iterator();
+					}
+
+					@Override
+					public boolean remove(T vertex) {
+						assert false;
+						return false;
+					}
+
+					@Override
+					public void add(T vertex) {
+						assert false;
+					}
+
+				})).iterator();
+			}
+
+			@Override
+			public Dependencies<T> buildDependencies(Supplier<Iterator<T>> supplier) {
+				assert false;
+				return null;
+			}
+
+		};
+
+		// return generic.unwrap().getMetaComposites().projectComposites(generic::wrap, org.genericsystem.impl.GenericService::unwrap, org.genericsystem.impl.GenericService::isAlive);
 	}
 
 	@Override
 	public CompositesDependencies<T> getSuperComposites(T generic) {
-		return generic.unwrap().getSuperComposites().projectComposites(generic::wrap, org.genericsystem.impl.GenericService::unwrap, org.genericsystem.impl.GenericService::isAlive);
+		return new CompositesDependencies<T>() {
+
+			@Override
+			public boolean remove(DependenciesEntry<T> vertex) {
+				assert false;
+				return false;
+			}
+
+			@Override
+			public void add(DependenciesEntry<T> vertex) {
+				assert false;
+			}
+
+			@Override
+			public Iterator<DependenciesEntry<T>> iterator() {
+				return generic.unwrap().getSuperComposites().stream().map(x -> buildEntry(generic.wrap(x.getKey()), new Dependencies<T>() {
+
+					@Override
+					public Iterator<T> iterator() {
+						return x.getValue().stream().map(generic::wrap).iterator();
+					}
+
+					@Override
+					public boolean remove(T vertex) {
+						assert false;
+						return false;
+					}
+
+					@Override
+					public void add(T vertex) {
+						assert false;
+					}
+
+				})).iterator();
+			}
+
+			@Override
+			public Dependencies<T> buildDependencies(Supplier<Iterator<T>> supplier) {
+				assert false;
+				return null;
+			}
+
+		};
+		// return generic.unwrap().getSuperComposites().projectComposites(generic::wrap, org.genericsystem.impl.GenericService::unwrap, org.genericsystem.impl.GenericService::isAlive);
 	};
 
 }

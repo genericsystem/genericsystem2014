@@ -52,22 +52,30 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 
 	@Override
 	default Dependencies<T> getInstances() {
-		return getVertex().getInstances().project(this::wrap, GenericService::unwrap, t -> true);
+		assert false;
+		return null;
+		// return getVertex().getInstances().project(this::wrap, GenericService::unwrap, t -> true);
 	}
 
 	@Override
 	default Dependencies<T> getInheritings() {
-		return getVertex().getInheritings().project(this::wrap, GenericService::unwrap, t -> true);
+		assert false;
+		return null;
+		// return getVertex().getInheritings().project(this::wrap, GenericService::unwrap, t -> true);
 	}
 
 	@Override
 	default CompositesDependencies<T> getMetaComposites() {
-		return getVertex().getMetaComposites().projectComposites(this::wrap, GenericService::unwrap, t -> true);
+		assert false;
+		return null;
+		// return getVertex().getMetaComposites().projectComposites(this::wrap, GenericService::unwrap, t -> true);
 	}
 
 	@Override
 	default CompositesDependencies<T> getSuperComposites() {
-		return getVertex().getSuperComposites().projectComposites(this::wrap, GenericService::unwrap, t -> true);
+		assert false;
+		return null;
+		// return getVertex().getSuperComposites().projectComposites(this::wrap, GenericService::unwrap, t -> true);
 	}
 
 	@Override

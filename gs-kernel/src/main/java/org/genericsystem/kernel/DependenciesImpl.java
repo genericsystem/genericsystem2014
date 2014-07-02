@@ -9,22 +9,23 @@ public class DependenciesImpl<T> extends AbstractSnapshot<T> implements Dependen
 
 	private Node<T> head = null;
 	private Node<T> tail = null;
-	private Dependencies<?> secondaryDependencies = null;
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public <E> Dependencies<E> getSecondaryDependencies() {
-		addSecondaryDependencies();
-		return (Dependencies<E>) secondaryDependencies;
-	}
+	// private final Dependencies<?> secondaryDependencies = null;
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public <E> Dependencies<E> addSecondaryDependencies() {
-		if (secondaryDependencies == null)
-			secondaryDependencies = new DependenciesImpl<E>();
-		return (DependenciesImpl<E>) secondaryDependencies;
-	}
+	// @SuppressWarnings("unchecked")
+	// @Override
+	// public <E> Dependencies<E> getSecondaryDependencies() {
+	// addSecondaryDependencies();
+	// return (Dependencies<E>) secondaryDependencies;
+	// }
+	//
+	// @SuppressWarnings("unchecked")
+	// @Override
+	// public <E> Dependencies<E> addSecondaryDependencies() {
+	// if (secondaryDependencies == null)
+	// secondaryDependencies = new DependenciesImpl<E>();
+	// return (DependenciesImpl<E>) secondaryDependencies;
+	// }
 
 	@Override
 	public void add(T element) {
