@@ -6,18 +6,12 @@ import java.util.function.Supplier;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
-import org.genericsystem.kernel.ExtendedSignature;
+import org.genericsystem.kernel.Vertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class VertexConcurrency extends ExtendedSignature<VertexConcurrency> implements VertexServiceConcurrency<VertexConcurrency, RootConcurrency> {
-
+public class VertexConcurrency extends Vertex {
 	protected static Logger log = LoggerFactory.getLogger(VertexConcurrency.class);
-
-	private final Dependencies<VertexConcurrency> instances = buildDependencies(null);
-	private final Dependencies<VertexConcurrency> inheritings = buildDependencies(null);
-	private final CompositesDependencies<VertexConcurrency> superComposites = buildCompositeDependencies(null);
-	private final CompositesDependencies<VertexConcurrency> metaComposites = buildCompositeDependencies(null);
 
 	private LifeManager lifeManager;
 
@@ -30,29 +24,9 @@ public class VertexConcurrency extends ExtendedSignature<VertexConcurrency> impl
 		return new VertexConcurrency();
 	}
 
-	@Override
-	public Dependencies<VertexConcurrency> getInstances() {
-		return instances;
-	}
-
-	@Override
-	public Dependencies<VertexConcurrency> getInheritings() {
-		return inheritings;
-	}
-
-	@Override
-	public CompositesDependencies<VertexConcurrency> getMetaComposites() {
-		return metaComposites;
-	}
-
-	@Override
-	public CompositesDependencies<VertexConcurrency> getSuperComposites() {
-		return superComposites;
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
-	public <U extends VertexConcurrency> Dependencies<U> buildDependencies(Supplier<Iterator<VertexConcurrency>> subDependenciesSupplier) {
+	public <U extends Vertex> Dependencies<U> buildDependencies(Supplier<Iterator<Vertex>> subDependenciesSupplier) {
 		return (Dependencies<U>) new AbstractDependenciesConcurrency() {
 
 			@Override
@@ -63,10 +37,10 @@ public class VertexConcurrency extends ExtendedSignature<VertexConcurrency> impl
 	}
 
 	@Override
-	public CompositesDependencies<VertexConcurrency> buildCompositeDependencies(Supplier<Iterator<DependenciesEntry<VertexConcurrency>>> subDependenciesSupplier) {
+	public CompositesDependencies<Vertex> buildCompositeDependencies(Supplier<Iterator<DependenciesEntry<Vertex>>> subDependenciesSupplier) {
 		class CompositesDependenciesImpl<E> implements CompositesDependencies<E> {
 			@SuppressWarnings({ "unchecked", "rawtypes" })
-			private final Dependencies<DependenciesEntry<E>> delegate = (Dependencies<DependenciesEntry<E>>) buildDependencies((Supplier) subDependenciesSupplier);
+			private Dependencies<DependenciesEntry<E>> delegate = (Dependencies<DependenciesEntry<E>>) buildDependencies((Supplier) subDependenciesSupplier);
 
 			@Override
 			public boolean remove(DependenciesEntry<E> vertex) {
@@ -83,12 +57,13 @@ public class VertexConcurrency extends ExtendedSignature<VertexConcurrency> impl
 				return delegate.iterator();
 			}
 
+			@SuppressWarnings({ "unchecked", "rawtypes" })
 			@Override
 			public Dependencies<E> buildDependencies(Supplier<Iterator<E>> supplier) {
 				return (Dependencies<E>) VertexConcurrency.super.buildDependencies((Supplier) supplier);
 			}
 		}
-		return new CompositesDependenciesImpl<VertexConcurrency>();
+		return new CompositesDependenciesImpl<Vertex>();
 	}
 
 	public LifeManager getLifeManager() {

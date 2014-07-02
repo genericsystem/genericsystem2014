@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 import org.genericsystem.cache.CacheDependencies;
 import org.genericsystem.impl.GenericSignature;
 
-public class GenericConcurrency extends GenericSignature<GenericConcurrency> implements GenericServiceConcurrency<GenericConcurrency, EngineConcurrency> {
+public class GenericConcurrency extends GenericSignature<GenericConcurrency> implements GenericServiceConcurrency<GenericConcurrency> {
 
 	@Override
 	public GenericConcurrency buildInstance() {

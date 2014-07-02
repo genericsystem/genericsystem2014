@@ -4,7 +4,7 @@ import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Vertex extends ExtendedSignature<Vertex> implements VertexService<Vertex, Root> {
+public class Vertex extends ExtendedSignature<Vertex> implements VertexService<Vertex> {
 
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 
