@@ -2,6 +2,7 @@ package org.genericsystem.cache;
 
 import java.util.Iterator;
 import java.util.function.Supplier;
+
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.DependenciesImpl;
 import org.genericsystem.kernel.iterator.AbstractConcateIterator.ConcateIterator;
@@ -33,6 +34,16 @@ public class CacheDependencies<T> implements Dependencies<T> {
 
 	@Override
 	public Iterator<T> iterator() {
+		return new ConcateIterator<T>(new AbstractFilterIterator<T>(iteratorSupplier.get()) {
+			@Override
+			public boolean isSelected() {
+				return !deletes.contains(next);
+			}
+		}, inserts.iterator());
+	}
+
+	@Override
+	public Iterator<T> metaFilterIterator() {
 		return new ConcateIterator<T>(new AbstractFilterIterator<T>(iteratorSupplier.get()) {
 			@Override
 			public boolean isSelected() {
