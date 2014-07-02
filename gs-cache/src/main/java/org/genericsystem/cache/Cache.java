@@ -2,15 +2,12 @@ package org.genericsystem.cache;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
-import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
@@ -156,18 +153,10 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 
 	@Override
 	public CompositesDependencies<T> getSuperComposites(T generic) {
-		return getCompositesDependencies(generic, superCompositesDependenciesMap, () -> iteratorFromAlivecomposite(generic, () -> subContext.getSuperComposites(generic).iterator()));
-	}
-
-	protected CompositesDependencies<T> getCompositesDependencies(T generic, Map<T, CompositesDependencies<T>> dependenciesMap, Supplier<Iterator<DependenciesEntry<T>>> iteratorSupplier) {
-		CompositesDependencies<T> dependencies = dependenciesMap.get(generic);
+		CompositesDependencies<T> dependencies = superCompositesDependenciesMap.get(generic);
 		if (dependencies == null)
-			dependenciesMap.put(generic, dependencies = generic.buildCompositeDependencies(iteratorSupplier));
+			superCompositesDependenciesMap.put(generic, dependencies = generic.buildCompositeDependencies(() -> generic.getVertex() == null ? Collections.emptyIterator() : subContext.getSuperComposites(generic).iterator()));
 		return dependencies;
-	}
-
-	private Iterator<DependenciesEntry<T>> iteratorFromAlivecomposite(T generic, Supplier<Iterator<DependenciesEntry<T>>> supplier) {
-		return generic.getVertex() == null ? Collections.emptyIterator() : supplier.get();
 	}
 
 	@Override
