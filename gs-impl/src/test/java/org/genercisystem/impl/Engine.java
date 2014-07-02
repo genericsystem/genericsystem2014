@@ -9,7 +9,7 @@ import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.services.SignatureService;
 
-public class Engine extends Generic implements EngineService<Generic, Engine> {
+public class Engine extends Generic implements EngineService<Generic> {
 
 	private final Root root;
 

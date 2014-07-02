@@ -8,7 +8,7 @@ import org.genericsystem.concurrency.cache.CacheConcurrency;
 import org.genericsystem.concurrency.cache.ContextConcurrency;
 import org.genericsystem.kernel.services.SignatureService;
 
-public interface EngineServiceConcurrency<T extends GenericServiceConcurrency<T, U>, U extends EngineServiceConcurrency<T, U>> extends org.genericsystem.cache.EngineService<T, U>, GenericServiceConcurrency<T, U> {
+public interface EngineServiceConcurrency<T extends GenericServiceConcurrency<T>> extends org.genericsystem.cache.EngineService<T>, GenericServiceConcurrency<T> {
 
 	@Override
 	default boolean equiv(SignatureService<?> service) {
@@ -18,14 +18,14 @@ public interface EngineServiceConcurrency<T extends GenericServiceConcurrency<T,
 	}
 
 	@Override
-	default CacheConcurrency<T, U> buildCache(Context<T, U> subContext) {
-		return new CacheConcurrency<T, U>((ContextConcurrency<T, U>) subContext);
+	default CacheConcurrency<T> buildCache(Context<T> subContext) {
+		return new CacheConcurrency<T>((ContextConcurrency<T>) subContext);
 	}
 
 	@Override
-	CacheConcurrency<T, U> start(Cache<T, U> cache);
+	CacheConcurrency<T> start(Cache<T> cache);
 
 	@Override
-	void stop(Cache<T, U> cache);
+	void stop(Cache<T> cache);
 
 }

@@ -4,7 +4,10 @@ import java.util.Objects;
 
 import org.genericsystem.kernel.services.SignatureService;
 
-public interface RootService<T extends VertexService<T, U>, U extends RootService<T, U>> extends VertexService<T, U> {
+public interface RootService<T extends VertexService<T>> extends VertexService<T> {
+
+	// TODO clean ?
+	// T find(Class<?> clazz);
 
 	@Override
 	default int getLevel() {
@@ -16,16 +19,19 @@ public interface RootService<T extends VertexService<T, U>, U extends RootServic
 		return true;
 	}
 
-	@Override
-	default T getRoot() {
-		return (T) this;
-	}
+	// TODO clean ?
+	// @Override
+	// default RootService<? extends T> getRoot() {
+	// return this;
+	// }
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default T getMeta() {
 		return (T) this;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default T getAlive() {
 		return (T) this;

@@ -9,7 +9,7 @@ public class EngineImpl extends GenericImpl implements Engine {
 
 	private static final long serialVersionUID = 1247189250885720995L;
 
-	private EngineService<? extends EngineService<?, ?>, ?> engineService;
+	private EngineService<? extends EngineService<?>> engineService;
 
 	@Override
 	public Engine newEngine(String directoryPath) {
