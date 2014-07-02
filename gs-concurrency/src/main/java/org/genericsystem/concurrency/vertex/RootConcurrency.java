@@ -1,22 +1,23 @@
 package org.genericsystem.concurrency.vertex;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.genericsystem.kernel.Root;
+import org.genericsystem.kernel.RootService;
 import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.Vertex;
 
-public class RootConcurrency extends Root {
+public class RootConcurrency extends Root implements RootService<Vertex> {
 
 	private final TsGenerator generator = new TsGenerator();
 
-	public RootConcurrency() {
-		this(Statics.ENGINE_VALUE);
+	public RootConcurrency(Class<?>... userClasses) {
+		this(Statics.ENGINE_VALUE, userClasses);
 	}
 
-	public RootConcurrency(Serializable value) {
-		init(null, Collections.emptyList(), value, Collections.emptyList());
+	public RootConcurrency(Serializable value, Class<?>... userClasses) {
+		super(value, userClasses);
 	}
 
 	public long pickNewTs() {

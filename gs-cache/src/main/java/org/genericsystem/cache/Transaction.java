@@ -1,11 +1,7 @@
 package org.genericsystem.cache;
 
-import java.util.Iterator;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
-import org.genericsystem.kernel.Dependencies;
-import org.genericsystem.kernel.Dependencies.CompositesDependencies;
+import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Vertex;
 
 public class Transaction<T extends GenericService<T>> implements Context<T> {
@@ -37,107 +33,27 @@ public class Transaction<T extends GenericService<T>> implements Context<T> {
 	}
 
 	@Override
-	public Dependencies<T> getInheritings(T generic) {
-		return new Dependencies<T>() {
-
-			@Override
-			public Iterator<T> iterator() {
-				return generic.unwrap().getInheritings().project(generic::wrap).iterator();
-			}
-
-			@Override
-			public boolean remove(T vertex) {
-				assert false;
-				return false;
-			}
-
-			@Override
-			public void add(T vertex) {
-				assert false;
-			}
-
-		};
+	public Snapshot<T> getInheritings(T generic) {
+		return () -> generic.unwrap().getInheritings().project(generic::wrap).iterator();
 	}
 
 	@Override
-	public Dependencies<T> getInstances(T generic) {
-		return new Dependencies<T>() {
-
-			@Override
-			public Iterator<T> iterator() {
-				return generic.unwrap().getInstances().project(generic::wrap).iterator();
-			}
-
-			@Override
-			public boolean remove(T vertex) {
-				assert false;
-				return false;
-			}
-
-			@Override
-			public void add(T vertex) {
-				assert false;
-			}
-
-		};
+	public Snapshot<T> getInstances(T generic) {
+		return () -> generic.unwrap().getInstances().project(generic::wrap).iterator();
 	}
 
 	@Override
-	public CompositesDependencies<T> getMetaComposites(T generic) {
-		return new CompositesDependencies<T>() {
-
-			@Override
-			public boolean remove(DependenciesEntry<T> vertex) {
-				assert false;
-				return false;
-			}
-
-			@Override
-			public void add(DependenciesEntry<T> vertex) {
-				assert false;
-			}
-
-			@Override
-			public Iterator<DependenciesEntry<T>> iterator() {
-				return generic.unwrap().getCompositesByMeta().stream().map(x -> buildEntry(generic.wrap(x.getKey()), generic.buildDependencies(() -> x.getValue().stream().map(generic::wrap).iterator()))).iterator();
-			}
-
-			@Override
-			public Dependencies<T> buildDependencies(Supplier<Iterator<T>> supplier) {
-				assert false;
-				return null;
-			}
-
-		};
+	public Snapshot<T> getComposites(T generic) {
+		return () -> generic.unwrap().getComposites().project(generic::wrap).iterator();
 	}
 
 	@Override
-	public CompositesDependencies<T> getSuperComposites(T generic) {
-		return new CompositesDependencies<T>() {
+	public Snapshot<T> getCompositesByMeta(T generic, T meta) {
+		return () -> generic.unwrap().getCompositesByMeta(meta.unwrap()).project(generic::wrap).iterator();
+	}
 
-			@Override
-			public boolean remove(DependenciesEntry<T> vertex) {
-				assert false;
-				return false;
-			}
-
-			@Override
-			public void add(DependenciesEntry<T> vertex) {
-				assert false;
-			}
-
-			@Override
-			public Iterator<DependenciesEntry<T>> iterator() {
-				return generic.unwrap().getCompositesBySuper().stream().map(x -> buildEntry(generic.wrap(x.getKey()), generic.buildDependencies(() -> x.getValue().stream().map(generic::wrap).iterator()))).iterator();
-			}
-
-			@Override
-			public Dependencies<T> buildDependencies(Supplier<Iterator<T>> supplier) {
-				assert false;
-				return null;
-			}
-
-		};
-	};
-
+	@Override
+	public Snapshot<T> getCompositesBySuper(T generic, T superT) {
+		return () -> generic.unwrap().getCompositesBySuper(superT.unwrap()).project(generic::wrap).iterator();
+	}
 }

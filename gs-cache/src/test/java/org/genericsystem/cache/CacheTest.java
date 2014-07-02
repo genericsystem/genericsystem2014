@@ -1,7 +1,5 @@
 package org.genericsystem.cache;
 
-import java.util.stream.Collectors;
-
 import org.testng.annotations.Test;
 
 @Test
@@ -32,7 +30,7 @@ public class CacheTest extends AbstractTest {
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		Generic myVehicle123 = powerVehicle.addInstance("123", myVehicle);
 
-		assert myVehicle.getCompositesByMeta().getByIndex(powerVehicle).stream().anyMatch(g -> g.equals(myVehicle123));
+		assert myVehicle.getCompositesByMeta(powerVehicle).stream().anyMatch(g -> g.equals(myVehicle123));
 	}
 
 	public void test001_getSuperComposites() {
@@ -43,7 +41,7 @@ public class CacheTest extends AbstractTest {
 		Generic vehicle256 = powerVehicle.addInstance("256", vehicle);
 		Generic myVehicle123 = powerVehicle.addInstance(vehicle256, "123", myVehicle);
 
-		assert myVehicle.getCompositesBySuper().getByIndex(vehicle256).contains(myVehicle123) : myVehicle.getCompositesBySuper().stream().collect(Collectors.toList());
+		assert myVehicle.getCompositesBySuper(vehicle256).contains(myVehicle123);
 	}
 
 	public void test002_getSuperComposites() {
@@ -55,7 +53,7 @@ public class CacheTest extends AbstractTest {
 		Generic vehicle256 = powerVehicle.addInstance("256", vehicle);
 		Generic myVehicle123 = powerVehicle.addInstance("123", myVehicle);
 
-		assert myVehicle.getCompositesBySuper().getByIndex(vehicle256).contains(myVehicle123) : myVehicle.getCompositesBySuper().stream().collect(Collectors.toList());
+		assert myVehicle.getCompositesBySuper(vehicle256).contains(myVehicle123);
 	}
 
 	public void test002_flush() {

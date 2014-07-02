@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Snapshot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +80,17 @@ public interface SignatureService<T extends SignatureService<T>> {
 	}
 
 	default WeakPredicate getWeakPredicate() {
-		return (value, components, otherValue, otherComponents) -> WEAK_EQUIV.test(components, otherComponents) && getValuesBiPredicate().test(value, otherValue);
+		return (value, components, otherValue, otherComponents) -> singularOrReferential(components, otherComponents) || (weakEquiv(components, otherComponents) && getValuesBiPredicate().test(value, otherValue));
+	}
+
+	default boolean singularOrReferential(List<? extends SignatureService<?>> components, List<? extends SignatureService<?>> otherComponents) {
+		if (!(components.size() == otherComponents.size()))
+			return false;
+		for (int i = 0; i < otherComponents.size(); ++i) {
+			if (isReferentialIntegrityConstraintEnabled(i) && isSingularConstraintEnabled(i))
+				return true;
+		}
+		return false;
 	}
 
 	public static BiPredicate<Serializable, Serializable> VALUE_EQUALS = (X, Y) -> Objects.equals(X, Y);
@@ -90,17 +101,18 @@ public interface SignatureService<T extends SignatureService<T>> {
 		return X.size() == Y.size();
 	};
 
-	public static BiPredicate<List<? extends SignatureService<?>>, List<? extends SignatureService<?>>> WEAK_EQUIV = (X, Y) -> {
-		if (!SIZE_EQUALS.test(X, Y))
+	default boolean weakEquiv(List<? extends SignatureService<?>> components, List<? extends SignatureService<?>> otherComponents) {
+		if (!(components.size() == otherComponents.size()))
 			return false;
-		// KK no singular constraint tested here ? and referencialIntegrity ?
-		// no componendsDepends call ??
-		Iterator<? extends SignatureService<?>> otherComponentsIt = Y.iterator();
-		boolean result = X.stream().allMatch(x -> x.weakEquiv(otherComponentsIt.next()));
-		return result;
-	};
+		Iterator<? extends SignatureService<?>> otherComponentsIt = otherComponents.iterator();
+		return components.stream().allMatch(x -> x.weakEquiv(otherComponentsIt.next()));
+	}
 
 	boolean isPropertyConstraintEnabled();
+
+	boolean isReferentialIntegrityConstraintEnabled(int position);
+
+	boolean isSingularConstraintEnabled(int position);
 
 	default BiPredicate<Serializable, Serializable> getValuesBiPredicate() {
 		return isPropertyConstraintEnabled() ? VALUE_IGNORED : VALUE_EQUALS.or(KEY_EQUALS);

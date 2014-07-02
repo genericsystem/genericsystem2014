@@ -83,7 +83,7 @@ public class VertexTest extends AbstractTest {
 		assert car.getSupersStream().findFirst().get() == vehicle : car.getSupersStream().findFirst().get().info();
 		assert car.getSupersStream().anyMatch(vehicle::equals);
 		assert vehicle.getInheritings().contains(car);
-		assert myBmw.getCompositesBySuper(v233.getMeta()).contains(v233);
+		assert myBmw.getCompositesByMeta(v233.getMeta()).contains(v233);
 		assert myBmw.isInstanceOf(car);
 		assert myBmw.isInstanceOf(vehicle);
 		assert !myBmw.isInstanceOf(engine);

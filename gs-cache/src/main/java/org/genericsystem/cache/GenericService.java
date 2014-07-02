@@ -69,13 +69,39 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getCompositesByMeta(T meta) {
-		return getCurrentCache().getMetaComposites((T) this).getByIndex(meta);
+		return getCurrentCache().getCompositesByMeta((T) this, meta);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getCompositesBySuper(T superVertex) {
-		return getCurrentCache().getSuperComposites((T) this).getByIndex(superVertex);
+		return getCurrentCache().getCompositesBySuper((T) this, superVertex);
+	}
+
+	@Override
+	default Snapshot<T> getComposites() {
+		return getCurrentCache().getComposites((T) this);
+	}
+
+	@Override
+	default void setCompositeByMeta(T meta, T composite) {
+		getCurrentCache().indexCompositeByMeta((T) this, meta, composite);
+	}
+
+	@Override
+	default void setCompositeBySuper(T superT, T composite) {
+		assert false;
+		getCurrentCache().indexCompositeBySuper((T) this, superT, composite);
+	}
+
+	@Override
+	default void removeCompositeByMeta(T meta, T composite) {
+		getCurrentCache().removeCompositeByMeta((T) this, meta, composite);
+	}
+
+	@Override
+	default void removeCompositeBySuper(T superT, T composite) {
+		getCurrentCache().removeCompositeBySuper((T) this, superT, composite);
 	}
 
 	@Override
