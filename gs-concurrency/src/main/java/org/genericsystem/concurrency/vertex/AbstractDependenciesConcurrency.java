@@ -5,10 +5,9 @@ import java.util.Iterator;
 
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Snapshot.AbstractSnapshot;
-import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
-public abstract class AbstractDependenciesConcurrency<T extends Vertex> extends AbstractSnapshot<VertexConcurrency> implements Dependencies<VertexConcurrency> {
+public abstract class AbstractDependenciesConcurrency extends AbstractSnapshot<VertexConcurrency> implements Dependencies<VertexConcurrency> {
 
 	// private final LifeManager lifeManager;
 
@@ -75,7 +74,7 @@ public abstract class AbstractDependenciesConcurrency<T extends Vertex> extends 
 
 	private class InternalIterator extends AbstractGeneralAwareIterator<Node<VertexConcurrency>, VertexConcurrency> {
 
-		private long ts;
+		private final long ts;
 
 		private InternalIterator(long iterationTs) {
 			ts = iterationTs;
@@ -109,6 +108,7 @@ public abstract class AbstractDependenciesConcurrency<T extends Vertex> extends 
 		}
 	}
 
+	@Override
 	public boolean isEmpty() {
 		return head == null;
 	}

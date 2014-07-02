@@ -6,12 +6,9 @@ import java.util.function.Supplier;
 import org.genericsystem.cache.Transaction;
 import org.genericsystem.concurrency.generic.EngineServiceConcurrency;
 import org.genericsystem.concurrency.generic.GenericServiceConcurrency;
-import org.genericsystem.concurrency.vertex.AbstractDependenciesConcurrency;
 import org.genericsystem.concurrency.vertex.RootConcurrency;
-import org.genericsystem.concurrency.vertex.VertexConcurrency;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
-import org.genericsystem.kernel.iterator.AbstractFilterIterator;
 
 public class TransactionConcurrency<T extends GenericServiceConcurrency<T>> extends Transaction<T> implements ContextConcurrency<T> {
 
@@ -38,82 +35,102 @@ public class TransactionConcurrency<T extends GenericServiceConcurrency<T>> exte
 
 	@Override
 	public Dependencies<T> getInheritings(T generic) {
-		return aliveAdapter(generic.unwrap().getInheritings().project(generic::wrap, org.genericsystem.impl.GenericService::unwrap, t -> true));
+		return new Dependencies<T>() {
+
+			@Override
+			public Iterator<T> iterator() {
+				return generic.unwrap().getInheritings().project(generic::wrap).iterator();
+			}
+
+			@Override
+			public boolean remove(T vertex) {
+				assert false;
+				return false;
+			}
+
+			@Override
+			public void add(T vertex) {
+				assert false;
+			}
+		};
 	}
 
 	@Override
 	public Dependencies<T> getInstances(T generic) {
-		return aliveAdapter(generic.unwrap().getInstances().project(generic::wrap, org.genericsystem.impl.GenericService::unwrap, t -> true));
+		return new Dependencies<T>() {
+
+			@Override
+			public Iterator<T> iterator() {
+				return generic.unwrap().getInstances().project(generic::wrap).iterator();
+			}
+
+			@Override
+			public boolean remove(T vertex) {
+				assert false;
+				return false;
+			}
+
+			@Override
+			public void add(T vertex) {
+				assert false;
+			}
+		};
 	}
 
 	@Override
 	public CompositesDependencies<T> getMetaComposites(T generic) {
-		return aliveAdapter(generic.unwrap().getMetaComposites().projectComposites(generic::wrap, org.genericsystem.impl.GenericService::unwrap, t -> true));
+		return new CompositesDependencies<T>() {
+
+			@Override
+			public boolean remove(DependenciesEntry<T> vertex) {
+				assert false;
+				return false;
+			}
+
+			@Override
+			public void add(DependenciesEntry<T> vertex) {
+				assert false;
+			}
+
+			@Override
+			public Iterator<DependenciesEntry<T>> iterator() {
+				return generic.unwrap().getMetaComposites().stream().map(x -> buildEntry(generic.wrap(x.getKey()), generic.buildDependencies(() -> x.getValue().stream().map(generic::wrap).iterator()))).iterator();
+			}
+
+			@Override
+			public Dependencies<T> buildDependencies(Supplier<Iterator<T>> supplier) {
+				assert false;
+				return null;
+			}
+		};
 	}
 
 	@Override
 	public CompositesDependencies<T> getSuperComposites(T generic) {
-		return aliveAdapter(generic.unwrap().getSuperComposites().projectComposites(generic::wrap, org.genericsystem.impl.GenericService::unwrap, t -> true));
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private Dependencies<T> aliveAdapter(Dependencies<T> dependenciesToFilter) {
-		return (Dependencies) new Dependencies<VertexConcurrency>() {
-
-			private final AbstractDependenciesConcurrency dependencies = (AbstractDependenciesConcurrency) dependenciesToFilter;
+		return new CompositesDependencies<T>() {
 
 			@Override
-			public Iterator<VertexConcurrency> iterator() {
-				return new AbstractFilterIterator<VertexConcurrency>(dependencies.iterator(ts)) {
-					@Override
-					public boolean isSelected() {
-						return next.isAlive(ts);
-					}
-				};
+			public boolean remove(DependenciesEntry<T> vertex) {
+				assert false;
+				return false;
 			}
 
 			@Override
-			public boolean remove(VertexConcurrency vertex) {
-				return dependencies.remove(vertex);
+			public void add(DependenciesEntry<T> vertex) {
+				assert false;
 			}
 
 			@Override
-			public void add(VertexConcurrency vertex) {
-				dependencies.add(vertex);
+			public Iterator<DependenciesEntry<T>> iterator() {
+				return generic.unwrap().getSuperComposites().stream().map(x -> buildEntry(generic.wrap(x.getKey()), generic.buildDependencies(() -> x.getValue().stream().map(generic::wrap).iterator()))).iterator();
+			}
+
+			@Override
+			public Dependencies<T> buildDependencies(Supplier<Iterator<T>> supplier) {
+				assert false;
+				return null;
 			}
 		};
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private CompositesDependencies<T> aliveAdapter(CompositesDependencies<T> dependenciesToFilter) {
-		return (CompositesDependencies) new CompositesDependencies<VertexConcurrency>() {
-
-			private final CompositesDependencies dependencies = dependenciesToFilter;
-
-			@Override
-			public Iterator<org.genericsystem.kernel.Dependencies.DependenciesEntry<VertexConcurrency>> iterator() {
-				return new AbstractFilterIterator<org.genericsystem.kernel.Dependencies.DependenciesEntry<VertexConcurrency>>(dependencies.iterator()) {
-					@Override
-					public boolean isSelected() {
-						return next.getKey().isAlive(ts);
-					}
-				};
-			}
-
-			@Override
-			public boolean remove(org.genericsystem.kernel.Dependencies.DependenciesEntry<VertexConcurrency> vertex) {
-				return dependencies.remove(vertex);
-			}
-
-			@Override
-			public void add(org.genericsystem.kernel.Dependencies.DependenciesEntry<VertexConcurrency> vertex) {
-				dependencies.add(vertex);
-			}
-
-			@Override
-			public Dependencies<VertexConcurrency> buildDependencies(Supplier<Iterator<VertexConcurrency>> supplier) {
-				return dependencies.buildDependencies(supplier);
-			}
-		};
-	}
 }

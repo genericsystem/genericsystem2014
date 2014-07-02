@@ -15,7 +15,7 @@ import org.genericsystem.kernel.annotations.value.StringValue;
 
 public class Root extends Vertex implements RootService<Vertex> {
 
-	final Map<Class<?>, Vertex> systemCache = new HashMap<Class<?>, Vertex>();
+	private final Map<Class<?>, Vertex> systemCache = new HashMap<Class<?>, Vertex>();
 
 	public Root(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
@@ -29,20 +29,10 @@ public class Root extends Vertex implements RootService<Vertex> {
 			find(clazz);
 	}
 
-	public void initSystemMap() {
+	private void initSystemMap() {
 		Vertex map = buildInstance(Collections.emptyList(), SystemMap.class, Collections.singletonList(this)).plug();
 		systemCache.put(SystemMap.class, map);
 		map.enablePropertyConstraint();
-	}
-
-	@Override
-	public Root getRoot() {
-		return this;
-	}
-
-	@Override
-	public Vertex getAlive() {
-		return this;
 	}
 
 	@Override
@@ -55,12 +45,12 @@ public class Root extends Vertex implements RootService<Vertex> {
 		return result;
 	}
 
-	Vertex findMeta(Class<?> clazz) {
+	private Vertex findMeta(Class<?> clazz) {
 		Meta meta = clazz.getAnnotation(Meta.class);
 		return meta == null ? (Vertex) getRoot() : find(meta.value());
 	}
 
-	List<Vertex> findOverrides(Class<?> clazz) {
+	private List<Vertex> findOverrides(Class<?> clazz) {
 		List<Vertex> overridesVertices = new ArrayList<Vertex>();
 		org.genericsystem.kernel.annotations.Supers supersAnnotation = clazz.getAnnotation(org.genericsystem.kernel.annotations.Supers.class);
 		if (supersAnnotation != null)
@@ -69,7 +59,7 @@ public class Root extends Vertex implements RootService<Vertex> {
 		return overridesVertices;
 	}
 
-	Serializable findValue(Class<?> clazz) {
+	private Serializable findValue(Class<?> clazz) {
 		BooleanValue booleanValue = clazz.getAnnotation(BooleanValue.class);
 		if (booleanValue != null)
 			return booleanValue.value();
@@ -85,7 +75,7 @@ public class Root extends Vertex implements RootService<Vertex> {
 		return clazz;
 	}
 
-	Vertex[] findComponents(Class<?> clazz) {
+	private Vertex[] findComponents(Class<?> clazz) {
 		List<Vertex> components = new ArrayList<Vertex>();
 		Components componentsAnnotation = clazz.getAnnotation(Components.class);
 		if (componentsAnnotation != null)
