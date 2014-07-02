@@ -57,8 +57,6 @@ public class Transaction<T extends GenericService<T>> implements Context<T> {
 			}
 
 		};
-
-		// return generic.unwrap().getInheritings().project(generic::wrap, org.genericsystem.impl.GenericService::unwrap, org.genericsystem.impl.GenericService::isAlive);
 	}
 
 	@Override
@@ -82,8 +80,6 @@ public class Transaction<T extends GenericService<T>> implements Context<T> {
 			}
 
 		};
-
-		// return generic.unwrap().getInstances().project(generic::wrap, org.genericsystem.impl.GenericService::unwrap, org.genericsystem.impl.GenericService::isAlive);
 	}
 
 	@Override
@@ -103,25 +99,7 @@ public class Transaction<T extends GenericService<T>> implements Context<T> {
 
 			@Override
 			public Iterator<DependenciesEntry<T>> iterator() {
-				return generic.unwrap().getMetaComposites().stream().map(x -> buildEntry(generic.wrap(x.getKey()), new Dependencies<T>() {
-
-					@Override
-					public Iterator<T> iterator() {
-						return x.getValue().stream().map(generic::wrap).iterator();
-					}
-
-					@Override
-					public boolean remove(T vertex) {
-						assert false;
-						return false;
-					}
-
-					@Override
-					public void add(T vertex) {
-						assert false;
-					}
-
-				})).iterator();
+				return generic.unwrap().getMetaComposites().stream().map(x -> buildEntry(generic.wrap(x.getKey()), generic.buildDependencies(() -> x.getValue().stream().map(generic::wrap).iterator()))).iterator();
 			}
 
 			@Override
@@ -131,8 +109,6 @@ public class Transaction<T extends GenericService<T>> implements Context<T> {
 			}
 
 		};
-
-		// return generic.unwrap().getMetaComposites().projectComposites(generic::wrap, org.genericsystem.impl.GenericService::unwrap, org.genericsystem.impl.GenericService::isAlive);
 	}
 
 	@Override
@@ -152,25 +128,7 @@ public class Transaction<T extends GenericService<T>> implements Context<T> {
 
 			@Override
 			public Iterator<DependenciesEntry<T>> iterator() {
-				return generic.unwrap().getSuperComposites().stream().map(x -> buildEntry(generic.wrap(x.getKey()), new Dependencies<T>() {
-
-					@Override
-					public Iterator<T> iterator() {
-						return x.getValue().stream().map(generic::wrap).iterator();
-					}
-
-					@Override
-					public boolean remove(T vertex) {
-						assert false;
-						return false;
-					}
-
-					@Override
-					public void add(T vertex) {
-						assert false;
-					}
-
-				})).iterator();
+				return generic.unwrap().getSuperComposites().stream().map(x -> buildEntry(generic.wrap(x.getKey()), generic.buildDependencies(() -> x.getValue().stream().map(generic::wrap).iterator()))).iterator();
 			}
 
 			@Override
@@ -180,7 +138,6 @@ public class Transaction<T extends GenericService<T>> implements Context<T> {
 			}
 
 		};
-		// return generic.unwrap().getSuperComposites().projectComposites(generic::wrap, org.genericsystem.impl.GenericService::unwrap, org.genericsystem.impl.GenericService::isAlive);
 	};
 
 }
