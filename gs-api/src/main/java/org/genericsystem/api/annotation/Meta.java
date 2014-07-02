@@ -24,7 +24,7 @@ public @interface Meta {
 	/**
 	 * The meta class, Engine by default.
 	 * 
-	 * @return the meta class, Engine by default.
+	 * @return the meta class, Engine by default
 	 * 
 	 * @see Engine
 	 */

@@ -10,9 +10,9 @@ import org.genericsystem.concurrency.vertex.RootConcurrency;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
 
-public class EngineConcurrency extends GenericConcurrency implements EngineServiceConcurrency<GenericConcurrency> {
+public class EngineConcurrency extends GenericConcurrency implements EngineServiceConcurrency<GenericConcurrency, EngineConcurrency> {
 
-	private final ThreadLocal<CacheConcurrency<GenericConcurrency>> cacheLocal = new ThreadLocal<>();
+	private final ThreadLocal<CacheConcurrency<GenericConcurrency, EngineConcurrency>> cacheLocal = new ThreadLocal<>();
 
 	private final RootConcurrency root;
 
@@ -37,23 +37,23 @@ public class EngineConcurrency extends GenericConcurrency implements EngineServi
 	}
 
 	@Override
-	public CacheConcurrency<GenericConcurrency> start(Cache<GenericConcurrency> cache) {
+	public CacheConcurrency<GenericConcurrency, EngineConcurrency> start(Cache<GenericConcurrency, EngineConcurrency> cache) {
 		if (!equals(cache.getEngine()))
 			throw new IllegalStateException();
 		// TODO KK
-		cacheLocal.set((CacheConcurrency<GenericConcurrency>) cache);
-		return (CacheConcurrency<GenericConcurrency>) cache;
+		cacheLocal.set((CacheConcurrency<GenericConcurrency, EngineConcurrency>) cache);
+		return (CacheConcurrency<GenericConcurrency, EngineConcurrency>) cache;
 	}
 
 	@Override
-	public void stop(Cache<GenericConcurrency> cache) {
+	public void stop(Cache<GenericConcurrency, EngineConcurrency> cache) {
 		assert cacheLocal.get() == cache;
 		cacheLocal.set(null);
 	}
 
 	@Override
-	public CacheConcurrency<GenericConcurrency> getCurrentCache() {
-		CacheConcurrency<GenericConcurrency> currentCache = cacheLocal.get();
+	public CacheConcurrency<GenericConcurrency, EngineConcurrency> getCurrentCache() {
+		CacheConcurrency<GenericConcurrency, EngineConcurrency> currentCache = cacheLocal.get();
 		if (currentCache == null)
 			throw new IllegalStateException();
 		return currentCache;

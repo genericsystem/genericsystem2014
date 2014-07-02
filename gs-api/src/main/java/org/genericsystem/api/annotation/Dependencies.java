@@ -7,7 +7,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * <p>
  * Interface used to manage generic dependency.
+ * </p>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
@@ -17,7 +19,7 @@ public @interface Dependencies {
 	/**
 	 * Returns the classes of all the dependencies of generic.
 	 * 
-	 * @return the classes of all the dependencies of generic.
+	 * @return the classes of all the dependencies of generic
 	 */
 	Class<?>[] value();
 }

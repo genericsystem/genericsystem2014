@@ -1,14 +1,17 @@
 package org.genericsystem.api.exception;
 
+import org.genericsystem.api.annotation.constraint.UniqueValueConstraint;
+
 /**
- * Is triggered if the constraint is positioned and that the generic does not respect the constraint.<br>
- * Checks the value can not be used that by a single instance.
+ * <p>
+ * Thrown when a value already affected is instantiated in the same context.
+ * </p>
  * 
- * @author Nicolas Feybesse
+ * @see UniqueValueConstraint
  */
 public class UniqueValueConstraintViolationException extends ConstraintViolationException {
 
-	private static final long serialVersionUID = 6347098699041855226L;
+	private static final long serialVersionUID = 4845817633427387248L;
 
 	public UniqueValueConstraintViolationException(String message) {
 		super(message);

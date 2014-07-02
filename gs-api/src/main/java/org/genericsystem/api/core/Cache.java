@@ -31,7 +31,7 @@ public interface Cache {
 	/**
 	 * Discards modifications in this cache. Returns the deepest sub cache. Returns the same cache If this is the cache of the first level (cache mounted directly on current transaction).
 	 * 
-	 * @return Returns the deepest sub cache. Returns the same cache If this is the cache of the first level (cache mounted directly on current transaction).
+	 * @return Returns the deepest sub cache. Returns the same cache If this is the cache of the first level (cache mounted directly on current transaction)
 	 */
 	Cache discardAndUnmount();
 
@@ -43,14 +43,14 @@ public interface Cache {
 	/**
 	 * Flushes Cache into its subcache. Returns its deepest subcache after the flush. Returns the same cache If this is the cache of the first level (cache mounted directly on current transaction).
 	 * 
-	 * @return the deepest subcache after the flush. Returns the same cache If this is the cache of the first level (cache mounted directly on current transaction).
+	 * @return the deepest subcache after the flush. Returns the same cache If this is the cache of the first level (cache mounted directly on current transaction)
 	 */
 	Cache flushAndUnmount();
 
 	/**
 	 * Returns the Engine of this cache.
 	 * 
-	 * @return the engine of this cache.
+	 * @return the engine of this cache
 	 */
 	Engine getEngine();
 
@@ -64,54 +64,53 @@ public interface Cache {
 	 * @param components
 	 *            components of Generic
 	 * 
-	 * @return the Generic.
+	 * @return the Generic searched, null if not found
 	 */
 	Generic getGeneric(Serializable value, Generic meta, Generic... components);
 
 	/**
 	 * Returns the level of the cache. First level is number 1 : it is the cache mounted directly on the current transaction. A cache mounted on a cache "level 1" is level 2, and so on.
 	 * 
-	 * @return the level of the cache. First level is number 1 : it is the cache mounted directly on the current transaction. A cache mounted on a cache "level 1" is level 2, and so on.
+	 * @return the level of the cache. First level is number 1 : it is the cache mounted directly on the current transaction. A cache mounted on a cache "level 1" is level 2, and so on
 	 */
 	int getLevel();
 
 	/**
-	 * Returns true if the generic has not been removed in this cache and all its subcaches, false otherwise. Returns false if generic is not found.
+	 * Returns {@code true} if the generic has not been removed in this cache and all its subcaches, {@code false} otherwise. Returns {@code false} if the generic is not found.
 	 * 
 	 * @param generic
-	 *            the generic to check.
+	 *            the generic to check
 	 * 
-	 * @return true if the generic has not been removed in this cache and all its subcaches, false otherwise. Returns false if generic is not found.
+	 * @return {@code true} if the generic has not been removed in this cache and all its subcaches, {@code false} otherwise. Returns {@code false} if the generic is not found
 	 */
 	boolean isAlive(Generic generic);
 
 	/**
-	 * Returns true if the generic is alive and has no constraint which could prevent the remove of the generic specified. False otherwise. Returns false if generic is not found.
+	 * Returns {@code true} if the generic is alive and has no constraint which could prevent the remove of the generic specified. {@code false} otherwise. Returns {@code false} if the generic is not found.
 	 * 
 	 * @param generic
-	 *            the generic to check.
+	 *            the generic to check
 	 * 
-	 * @return Returns true if the generic is alive and has no constraint which could prevent the remove of the generic specified. Returns false if generic is not found.
+	 * @return Returns {@code true} if the generic is alive and has no constraint which could prevent the remove of the generic specified. Returns {@code false} if the generic is not found
 	 */
 	boolean isRemovable(Generic generic);
 
 	/**
 	 * Mounts and starts a new cache (a subcache) on this cache.
 	 * 
-	 * @return a new cache.
+	 * @return the new cache
 	 */
 	Cache mountNewCache();
 
 	/**
 	 * Starts the execution of this cache.
 	 * 
-	 * @return this cache. This interface is a part of <tt>Generic System Core</tt>.
+	 * @return the cache running
 	 */
 	Cache start();
 
 	/**
 	 * Stops the execution of this cache.
-	 * 
 	 */
 	void stop();
 

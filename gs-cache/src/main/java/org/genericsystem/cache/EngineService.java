@@ -1,19 +1,19 @@
 package org.genericsystem.cache;
 
-public interface EngineService<T extends GenericService<T>> extends org.genericsystem.impl.EngineService<T>, GenericService<T> {
+public interface EngineService<T extends GenericService<T, U>, U extends EngineService<T, U>> extends org.genericsystem.impl.EngineService<T, U>, GenericService<T, U> {
 
 	@Override
 	default T getAlive() {
 		return org.genericsystem.cache.GenericService.super.getAlive();
 	}
 
-	default Cache<T> buildCache(Context<T> subContext) {
-		return new Cache<T>(subContext);
+	default Cache<T, U> buildCache(Context<T, U> subContext) {
+		return new Cache<T, U>(subContext);
 	}
 
-	Cache<T> start(Cache<T> cache);
+	Cache<T, U> start(Cache<T, U> cache);
 
-	void stop(Cache<T> cache);
+	void stop(Cache<T, U> cache);
 
 	@Override
 	// TODO necessary for eclipse ?

@@ -1,14 +1,13 @@
 package org.genericsystem.api.exception;
 
 /**
- * Is triggered if the constraint is positioned and that the generic does not respect the constraint. The constraint is active by default. Checks that the structural (attribute, relation...) name should be unique for a type.
- * 
- * @author Nicolas Feybesse
- * @author Michael Ory
+ * <p>
+ * Checks that the value of every structural (that is the value of <tt>Attribute</tt>, <tt>Relation</tt> or <tt>subType</tt>) is unique in the <tt>Type</tt>'s context (including structurals and their instances).
+ * </p>
  */
 public class UniqueStructuralValueConstraintViolationException extends ConstraintViolationException {
 
-	private static final long serialVersionUID = 4617646668336129382L;
+	private static final long serialVersionUID = -7533761851331731445L;
 
 	public UniqueStructuralValueConstraintViolationException() {
 		super();
@@ -17,4 +16,5 @@ public class UniqueStructuralValueConstraintViolationException extends Constrain
 	public UniqueStructuralValueConstraintViolationException(String msg) {
 		super(msg);
 	}
+
 }

@@ -14,9 +14,9 @@ import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 import org.genericsystem.kernel.exceptions.RollbackException;
 
-public class Cache<T extends GenericService<T>> implements Context<T> {
+public class Cache<T extends GenericService<T, U>, U extends EngineService<T, U>> implements Context<T, U> {
 
-	protected Context<T> subContext;
+	protected Context<T, U> subContext;
 
 	private transient Map<T, Dependencies<T>> inheritingDependenciesMap = new HashMap<>();
 	private transient Map<T, Dependencies<T>> instancesDependenciesMap = new HashMap<>();
@@ -32,11 +32,11 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 		removes = new LinkedHashSet<>();
 	}
 
-	public Cache(EngineService<T> engine) {
-		this(new Transaction<T>(engine));
+	public Cache(EngineService<T, U> engine) {
+		this(new Transaction<T, U>(engine));
 	}
 
-	public Cache(Context<T> subContext) {
+	public Cache(Context<T, U> subContext) {
 		this.subContext = subContext;
 		clear();
 	}
@@ -46,21 +46,21 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 		return adds.contains(generic) || (!removes.contains(generic) && getSubContext().isAlive(generic));
 	}
 
-	public Cache<T> mountNewCache() {
+	public Cache<T, U> mountNewCache() {
 		return getEngine().buildCache(this).start();
 	}
 
-	public Cache<T> flushAndUnmount() {
+	public Cache<T, U> flushAndUnmount() {
 		flush();
-		return subContext instanceof Cache ? ((Cache<T>) subContext).start() : this;
+		return subContext instanceof Cache ? ((Cache<T, U>) subContext).start() : this;
 	}
 
-	public Cache<T> discardAndUnmount() {
+	public Cache<T, U> discardAndUnmount() {
 		clear();
-		return subContext instanceof Cache ? ((Cache<T>) subContext).start() : this;
+		return subContext instanceof Cache ? ((Cache<T, U>) subContext).start() : this;
 	}
 
-	public Cache<T> start() {
+	public Cache<T, U> start() {
 		return getEngine().start(this);
 	}
 
@@ -163,11 +163,11 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 	}
 
 	@Override
-	public EngineService<T> getEngine() {
+	public EngineService<T, U> getEngine() {
 		return subContext.getEngine();
 	}
 
-	public Context<T> getSubContext() {
+	public Context<T, U> getSubContext() {
 		return subContext;
 	}
 

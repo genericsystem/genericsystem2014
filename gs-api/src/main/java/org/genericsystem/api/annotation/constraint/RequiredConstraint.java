@@ -24,7 +24,7 @@ public @interface RequiredConstraint {
 	/**
 	 * Returns the positions of the generics which should be linked when instantiating the source of RequiredConstraint.
 	 * 
-	 * @return the positions of the generics which should be linked when instantiating the source of RequiredConstraint.
+	 * @return the positions of the generics which should be linked when instantiating the source of RequiredConstraint
 	 */
 	int[] value() default {};
 }

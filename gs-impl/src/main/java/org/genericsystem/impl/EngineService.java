@@ -8,7 +8,7 @@ import org.genericsystem.kernel.RootService;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.services.SignatureService;
 
-public interface EngineService<T extends GenericService<T>> extends GenericService<T>, RootService<T> {
+public interface EngineService<T extends GenericService<T, U>, U extends EngineService<T, U>> extends RootService<T, U>, GenericService<T, U> {
 
 	@Override
 	default T find(Class<?> clazz) {

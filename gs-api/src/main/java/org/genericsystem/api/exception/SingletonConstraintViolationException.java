@@ -1,9 +1,13 @@
 package org.genericsystem.api.exception;
 
+import org.genericsystem.api.annotation.constraint.SingletonConstraint;
+
 /**
- * Is triggered if the constraint is positioned and that the generic does not respect the constraint. Checks that the Generic is a singleton.
+ * <p>
+ * Thrown when trying to instantiate a <tt>SingletonConstraint</tt> element which has already been instantiated.
+ * </p>
  * 
- * @author Nicolas Feybesse
+ * @see SingletonConstraint
  */
 public class SingletonConstraintViolationException extends ConstraintViolationException {
 
