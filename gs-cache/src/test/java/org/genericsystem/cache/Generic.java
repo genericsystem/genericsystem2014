@@ -27,12 +27,12 @@ public class Generic extends GenericSignature<Generic> implements GenericService
 	}
 
 	@Override
-	public CompositesDependencies<Generic> getMetaComposites() {
+	public CompositesDependencies<Generic> getCompositesByMeta() {
 		return getCurrentCache().getMetaComposites(this);
 	}
 
 	@Override
-	public CompositesDependencies<Generic> getSuperComposites() {
+	public CompositesDependencies<Generic> getCompositesBySuper() {
 		return getCurrentCache().getSuperComposites(this);
 	}
 }

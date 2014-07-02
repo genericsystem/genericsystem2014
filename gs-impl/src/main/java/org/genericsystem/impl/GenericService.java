@@ -5,10 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Dependencies;
-import org.genericsystem.kernel.Dependencies.CompositesDependencies;
-import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.VertexService;
 
@@ -52,30 +49,12 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 
 	@Override
 	default Dependencies<T> getInstances() {
-		assert false;
-		return null;
-		// return getVertex().getInstances().project(this::wrap, GenericService::unwrap, t -> true);
+		return getVertex().getInstances().project(this::wrap, GenericService::unwrap);
 	}
 
 	@Override
 	default Dependencies<T> getInheritings() {
-		assert false;
-		return null;
-		// return getVertex().getInheritings().project(this::wrap, GenericService::unwrap, t -> true);
-	}
-
-	@Override
-	default CompositesDependencies<T> getMetaComposites() {
-		assert false;
-		return null;
-		// return getVertex().getMetaComposites().projectComposites(this::wrap, GenericService::unwrap, t -> true);
-	}
-
-	@Override
-	default CompositesDependencies<T> getSuperComposites() {
-		assert false;
-		return null;
-		// return getVertex().getSuperComposites().projectComposites(this::wrap, GenericService::unwrap, t -> true);
+		return getVertex().getInheritings().project(this::wrap, GenericService::unwrap);
 	}
 
 	@Override
@@ -89,23 +68,4 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 		return wrap(vertex);
 	}
 
-	@Override
-	default Snapshot<T> getMetaComposites(T meta) {
-		// return getVertex().getMetaComposites(meta.getVertex()).project(this::wrap);
-
-		Vertex vertex = getVertex();
-		if (vertex == null)
-			return null;
-		return vertex.getMetaComposites(meta.getVertex()).project(this::wrap);
-	}
-
-	@Override
-	default Snapshot<T> getSuperComposites(T superVertex) {
-		// return getVertex().getSuperComposites(superVertex.getVertex()).project(this::wrap);
-
-		Vertex vertex = getVertex();
-		if (vertex == null)
-			return null;
-		return vertex.getSuperComposites(superVertex.getVertex()).project(this::wrap);
-	}
 }

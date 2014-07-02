@@ -99,7 +99,7 @@ public class Transaction<T extends GenericService<T>> implements Context<T> {
 
 			@Override
 			public Iterator<DependenciesEntry<T>> iterator() {
-				return generic.unwrap().getMetaComposites().stream().map(x -> buildEntry(generic.wrap(x.getKey()), generic.buildDependencies(() -> x.getValue().stream().map(generic::wrap).iterator()))).iterator();
+				return generic.unwrap().getCompositesByMeta().stream().map(x -> buildEntry(generic.wrap(x.getKey()), generic.buildDependencies(() -> x.getValue().stream().map(generic::wrap).iterator()))).iterator();
 			}
 
 			@Override
@@ -128,7 +128,7 @@ public class Transaction<T extends GenericService<T>> implements Context<T> {
 
 			@Override
 			public Iterator<DependenciesEntry<T>> iterator() {
-				return generic.unwrap().getSuperComposites().stream().map(x -> buildEntry(generic.wrap(x.getKey()), generic.buildDependencies(() -> x.getValue().stream().map(generic::wrap).iterator()))).iterator();
+				return generic.unwrap().getCompositesBySuper().stream().map(x -> buildEntry(generic.wrap(x.getKey()), generic.buildDependencies(() -> x.getValue().stream().map(generic::wrap).iterator()))).iterator();
 			}
 
 			@Override

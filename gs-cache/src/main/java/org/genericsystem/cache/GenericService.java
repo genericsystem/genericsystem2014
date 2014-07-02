@@ -27,18 +27,6 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 		return getCurrentCache().getInheritings((T) this);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	default CompositesDependencies<T> getMetaComposites() {
-		return getCurrentCache().getMetaComposites((T) this);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	default CompositesDependencies<T> getSuperComposites() {
-		return getCurrentCache().getSuperComposites((T) this);
-	}
-
 	@Override
 	default T getInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
 		T nearestMeta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
@@ -80,13 +68,13 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default Snapshot<T> getMetaComposites(T meta) {
+	default Snapshot<T> getCompositesByMeta(T meta) {
 		return getCurrentCache().getMetaComposites((T) this).getByIndex(meta);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default Snapshot<T> getSuperComposites(T superVertex) {
+	default Snapshot<T> getCompositesBySuper(T superVertex) {
 		return getCurrentCache().getSuperComposites((T) this).getByIndex(superVertex);
 	}
 

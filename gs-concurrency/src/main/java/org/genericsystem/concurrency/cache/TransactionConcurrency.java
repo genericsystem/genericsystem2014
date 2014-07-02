@@ -48,12 +48,12 @@ public class TransactionConcurrency<T extends GenericServiceConcurrency<T>> exte
 
 	@Override
 	public CompositesDependencies<T> getMetaComposites(T generic) {
-		return aliveAdapter(generic.unwrap().getMetaComposites().projectComposites(generic::wrap, org.genericsystem.impl.GenericService::unwrap, t -> true));
+		return aliveAdapter(generic.unwrap().getCompositesByMeta().projectComposites(generic::wrap, org.genericsystem.impl.GenericService::unwrap, t -> true));
 	}
 
 	@Override
 	public CompositesDependencies<T> getSuperComposites(T generic) {
-		return aliveAdapter(generic.unwrap().getSuperComposites().projectComposites(generic::wrap, org.genericsystem.impl.GenericService::unwrap, t -> true));
+		return aliveAdapter(generic.unwrap().getCompositesBySuper().projectComposites(generic::wrap, org.genericsystem.impl.GenericService::unwrap, t -> true));
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
