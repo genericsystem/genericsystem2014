@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.function.Supplier;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
@@ -40,27 +39,14 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 		return getCurrentCache().getSuperComposites((T) this);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	default Snapshot<T> getMetaComposites(T meta) {
-		return getCurrentCache().getMetaComposites((T) this).getByIndex(meta);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	default Snapshot<T> getSuperComposites(T superVertex) {
-		return getCurrentCache().getSuperComposites((T) this).getByIndex(superVertex);
-	}
-
 	@Override
 	default T getInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
 		T nearestMeta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
-		if (nearestMeta != this)
+		if (!equals(nearestMeta))
 			return nearestMeta.getInstance(value, components);
-		for (T instance : getCurrentCache().getInstances(nearestMeta)) {
+		for (T instance : getCurrentCache().getInstances(nearestMeta))
 			if (instance.equiv(this, value, Arrays.asList(components)))
 				return instance;
-		}
 		return null;
 	}
 
@@ -92,6 +78,18 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 		return (CacheDependencies<U>) new CacheDependencies<T>(iteratorSupplier);
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	default Snapshot<T> getMetaComposites(T meta) {
+		return getCurrentCache().getMetaComposites((T) this).getByIndex(meta);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Snapshot<T> getSuperComposites(T superVertex) {
+		return getCurrentCache().getSuperComposites((T) this).getByIndex(superVertex);
+	}
+
 	@Override
 	default CompositesDependencies<T> buildCompositeDependencies(Supplier<Iterator<DependenciesEntry<T>>> iteratorSupplier) {
 		class CacheCompositesDependenciesImpl implements CompositesDependencies<T> {
@@ -99,7 +97,6 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 			private final Dependencies<DependenciesEntry<T>> inserts = new DependenciesImpl<DependenciesEntry<T>>();
 			private final Dependencies<DependenciesEntry<T>> deletes = new DependenciesImpl<DependenciesEntry<T>>();
 
-			// TODO KK perf
 			@Override
 			public Dependencies<T> internalGetByIndex(T index) {
 				Iterator<DependenciesEntry<T>> it = iterator();
@@ -134,22 +131,19 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 			}
 
 			@Override
-			public DependenciesEntry<T> buildEntry(T index, Dependencies<T> result) {
-				return new DependenciesEntry<T>(index, result);
-			}
-
-			@Override
-			public boolean remove(DependenciesEntry<T> entry) {
-				if (inserts.remove(entry)) {
-					deletes.add(entry);
+			public boolean remove(DependenciesEntry<T> composite) {
+				assert false;
+				if (inserts.remove(composite)) {
+					deletes.add(composite);
 					return true;
 				}
 				return false;
 			}
 
 			@Override
-			public void add(DependenciesEntry<T> entry) {
-				inserts.add(entry);
+			public void add(DependenciesEntry<T> composite) {
+				assert false;
+				inserts.add(composite);
 			}
 
 			@Override

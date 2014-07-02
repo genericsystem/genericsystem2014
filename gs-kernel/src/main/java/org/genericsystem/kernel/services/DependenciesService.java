@@ -9,8 +9,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
-import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
 
@@ -20,9 +18,9 @@ public interface DependenciesService<T extends DependenciesService<T>> extends A
 
 	Snapshot<T> getInheritings();
 
-	Snapshot<DependenciesEntry<T>> getMetaComposites();
+	// Snapshot<DependenciesEntry<T>> getMetaComposites();
 
-	Snapshot<DependenciesEntry<T>> getSuperComposites();
+	// Snapshot<DependenciesEntry<T>> getSuperComposites();
 
 	default boolean isAncestorOf(final T dependency) {
 		return equiv(dependency) || (!dependency.equals(dependency.getMeta()) && isAncestorOf(dependency.getMeta())) || dependency.getSupersStream().anyMatch(component -> this.isAncestorOf(component))
@@ -129,9 +127,7 @@ public interface DependenciesService<T extends DependenciesService<T>> extends A
 		return new DirectDependencies();
 	}
 
-	default Snapshot<T> getComposites() {
-		return () -> Statics.concat(getMetaComposites().stream(), entry -> entry.getValue().stream()).iterator();
-	}
+	Snapshot<T> getComposites();
 
 	@SuppressWarnings("unchecked")
 	default boolean isSuperOf(T subMeta, List<T> overrides, Serializable subValue, List<T> subComponents) {

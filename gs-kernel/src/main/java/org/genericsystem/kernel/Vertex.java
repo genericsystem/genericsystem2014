@@ -28,14 +28,47 @@ public class Vertex extends ExtendedSignature<Vertex> implements VertexService<V
 		return inheritings;
 	}
 
-	@Override
 	public CompositesDependencies<Vertex> getMetaComposites() {
 		return metaComposites;
 	}
 
-	@Override
 	public CompositesDependencies<Vertex> getSuperComposites() {
 		return superComposites;
+	}
+
+	@Override
+	public Snapshot<Vertex> getComposites() {
+		return () -> Statics.concat(getMetaComposites().stream(), entry -> entry.getValue().stream()).iterator();
+	}
+
+	@Override
+	public Snapshot<Vertex> getCompositesByMeta(Vertex meta) {
+		return getMetaComposites().getByIndex(meta);
+	}
+
+	@Override
+	public Snapshot<Vertex> getCompositesBySuper(Vertex superVertex) {
+		return getSuperComposites().getByIndex(superVertex);
+	}
+
+	@Override
+	public void setCompositeByMeta(Vertex meta, Vertex composite) {
+
+	}
+
+	@Override
+	public void setCompositeBySuper(Vertex superGeneric, Vertex composite) {
+
+	}
+
+	@Override
+	public void removeCompositeByMeta(Vertex meta, Vertex composite) {
+
+	}
+
+	@Override
+	public void removeCompositeBySuper(Vertex superGeneric, Vertex composite) {
+
 	}
 
 }
