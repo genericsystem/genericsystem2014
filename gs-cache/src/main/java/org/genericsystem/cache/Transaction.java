@@ -3,7 +3,6 @@ package org.genericsystem.cache;
 import java.util.Iterator;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Vertex;
@@ -103,25 +102,7 @@ public class Transaction<T extends GenericService<T>> implements Context<T> {
 
 			@Override
 			public Iterator<DependenciesEntry<T>> iterator() {
-				return generic.unwrap().getMetaComposites().stream().map(x -> buildEntry(generic.wrap(x.getKey()), new Dependencies<T>() {
-
-					@Override
-					public Iterator<T> iterator() {
-						return x.getValue().stream().map(generic::wrap).iterator();
-					}
-
-					@Override
-					public boolean remove(T vertex) {
-						assert false;
-						return false;
-					}
-
-					@Override
-					public void add(T vertex) {
-						assert false;
-					}
-
-				})).iterator();
+				return generic.unwrap().getMetaComposites().stream().map(x -> buildEntry(generic.wrap(x.getKey()), buildDependencies(() -> x.getValue().stream().map(generic::wrap).iterator()))).iterator();
 			}
 
 			@Override
@@ -129,7 +110,6 @@ public class Transaction<T extends GenericService<T>> implements Context<T> {
 				assert false;
 				return null;
 			}
-
 		};
 
 		// return generic.unwrap().getMetaComposites().projectComposites(generic::wrap, org.genericsystem.impl.GenericService::unwrap, org.genericsystem.impl.GenericService::isAlive);
