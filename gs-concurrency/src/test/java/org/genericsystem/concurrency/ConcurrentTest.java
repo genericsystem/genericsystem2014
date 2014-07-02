@@ -11,6 +11,7 @@ public class ConcurrentTest extends AbstractTest {
 	// TODO: To CacheTest
 	public void testNonFlushedModificationsStillAliveInCache() {
 		EngineConcurrency engine = new EngineConcurrency();
+		System.out.println("===================================");
 		GenericConcurrency car = engine.addInstance("Car");
 		CacheConcurrency<GenericConcurrency> cache = engine.getCurrentCache().mountNewCache();
 

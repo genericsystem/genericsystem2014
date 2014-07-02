@@ -7,11 +7,9 @@ import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Vertex;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.genericsystem.kernel.VertexService;
 
-public class VertexConcurrency extends Vertex {
-	protected static Logger log = LoggerFactory.getLogger(VertexConcurrency.class);
+public class VertexConcurrency extends Vertex implements VertexService<Vertex> {
 
 	private LifeManager lifeManager;
 
@@ -40,7 +38,7 @@ public class VertexConcurrency extends Vertex {
 	public CompositesDependencies<Vertex> buildCompositeDependencies(Supplier<Iterator<DependenciesEntry<Vertex>>> subDependenciesSupplier) {
 		class CompositesDependenciesImpl<E> implements CompositesDependencies<E> {
 			@SuppressWarnings({ "unchecked", "rawtypes" })
-			private Dependencies<DependenciesEntry<E>> delegate = (Dependencies<DependenciesEntry<E>>) buildDependencies((Supplier) subDependenciesSupplier);
+			private final Dependencies<DependenciesEntry<E>> delegate = (Dependencies<DependenciesEntry<E>>) buildDependencies((Supplier) subDependenciesSupplier);
 
 			@Override
 			public boolean remove(DependenciesEntry<E> vertex) {
@@ -60,7 +58,7 @@ public class VertexConcurrency extends Vertex {
 			@SuppressWarnings({ "unchecked", "rawtypes" })
 			@Override
 			public Dependencies<E> buildDependencies(Supplier<Iterator<E>> supplier) {
-				return (Dependencies<E>) VertexConcurrency.super.buildDependencies((Supplier) supplier);
+				return VertexConcurrency.super.buildDependencies((Supplier) supplier);
 			}
 		}
 		return new CompositesDependenciesImpl<Vertex>();

@@ -19,11 +19,11 @@ public interface RootService<T extends VertexService<T>> extends VertexService<T
 		return true;
 	}
 
-	// TODO clean ?
-	// @Override
-	// default RootService<? extends T> getRoot() {
-	// return this;
-	// }
+	@SuppressWarnings("unchecked")
+	@Override
+	default T getRoot() {
+		return (T) this;
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
