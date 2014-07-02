@@ -18,7 +18,6 @@ import org.genericsystem.kernel.exceptions.RollbackException;
 
 public class Cache<T extends GenericService<T>> implements Context<T> {
 
-	// TOOTO
 	protected Context<T> subContext;
 
 	private transient Map<T, Dependencies<T>> inheritingDependenciesMap = new HashMap<>();
@@ -149,8 +148,6 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 
 	@Override
 	public CompositesDependencies<T> getMetaComposites(T generic) {
-		// return getCompositesDependencies(generic, metaCompositesDependenciesMap, () -> iteratorFromAlivecomposite(generic, () -> subContext.getMetaComposites(generic).iterator()));
-
 		CompositesDependencies<T> dependencies = metaCompositesDependenciesMap.get(generic);
 		if (dependencies == null)
 			metaCompositesDependenciesMap.put(generic, dependencies = generic.buildCompositeDependencies(() -> generic.getVertex() == null ? Collections.emptyIterator() : subContext.getMetaComposites(generic).iterator()));
