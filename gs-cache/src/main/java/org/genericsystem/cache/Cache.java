@@ -132,17 +132,28 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 
 	@Override
 	public Dependencies<T> getInheritings(T generic) {
-		return getDependencies(generic, inheritingDependenciesMap, () -> iteratorFromAlive(generic, () -> subContext.getInheritings(generic).iterator()));
+		Dependencies<T> dependencies = inheritingDependenciesMap.get(generic);
+		if (dependencies == null)
+			inheritingDependenciesMap.put(generic, dependencies = generic.buildDependencies(() -> generic.getVertex() == null ? Collections.emptyIterator() : subContext.getInheritings(generic).iterator()));
+		return dependencies;
 	}
 
 	@Override
 	public Dependencies<T> getInstances(T generic) {
-		return getDependencies(generic, instancesDependenciesMap, () -> iteratorFromAlive(generic, () -> subContext.getInstances(generic).iterator()));
+		Dependencies<T> dependencies = instancesDependenciesMap.get(generic);
+		if (dependencies == null)
+			instancesDependenciesMap.put(generic, dependencies = generic.buildDependencies(() -> generic.getVertex() == null ? Collections.emptyIterator() : subContext.getInstances(generic).iterator()));
+		return dependencies;
 	}
 
 	@Override
 	public CompositesDependencies<T> getMetaComposites(T generic) {
-		return getCompositesDependencies(generic, metaCompositesDependenciesMap, () -> iteratorFromAlivecomposite(generic, () -> subContext.getMetaComposites(generic).iterator()));
+		// return getCompositesDependencies(generic, metaCompositesDependenciesMap, () -> iteratorFromAlivecomposite(generic, () -> subContext.getMetaComposites(generic).iterator()));
+
+		CompositesDependencies<T> dependencies = metaCompositesDependenciesMap.get(generic);
+		if (dependencies == null)
+			metaCompositesDependenciesMap.put(generic, dependencies = generic.buildCompositeDependencies(() -> generic.getVertex() == null ? Collections.emptyIterator() : subContext.getMetaComposites(generic).iterator()));
+		return dependencies;
 	}
 
 	@Override
@@ -150,22 +161,11 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 		return getCompositesDependencies(generic, superCompositesDependenciesMap, () -> iteratorFromAlivecomposite(generic, () -> subContext.getSuperComposites(generic).iterator()));
 	}
 
-	protected Dependencies<T> getDependencies(T generic, Map<T, Dependencies<T>> dependenciesMap, Supplier<Iterator<T>> iteratorSupplier) {
-		Dependencies<T> dependencies = dependenciesMap.get(generic);
-		if (dependencies == null)
-			dependenciesMap.put(generic, dependencies = generic.buildDependencies(iteratorSupplier));
-		return dependencies;
-	}
-
 	protected CompositesDependencies<T> getCompositesDependencies(T generic, Map<T, CompositesDependencies<T>> dependenciesMap, Supplier<Iterator<DependenciesEntry<T>>> iteratorSupplier) {
 		CompositesDependencies<T> dependencies = dependenciesMap.get(generic);
 		if (dependencies == null)
 			dependenciesMap.put(generic, dependencies = generic.buildCompositeDependencies(iteratorSupplier));
 		return dependencies;
-	}
-
-	private Iterator<T> iteratorFromAlive(T generic, Supplier<Iterator<T>> supplier) {
-		return generic.getVertex() == null ? Collections.emptyIterator() : supplier.get();
 	}
 
 	private Iterator<DependenciesEntry<T>> iteratorFromAlivecomposite(T generic, Supplier<Iterator<DependenciesEntry<T>>> supplier) {
