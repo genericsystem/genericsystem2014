@@ -2,10 +2,9 @@ package org.genericsystem.concurrency.vertex;
 
 import java.util.Objects;
 
-import org.genericsystem.kernel.RootService;
 import org.genericsystem.kernel.services.SignatureService;
 
-public interface RootServiceConcurrency<T extends VertexServiceConcurrency<T, U>, U extends RootServiceConcurrency<T, U>> extends VertexServiceConcurrency<T, U>, RootService<T, U> {
+public interface RootServiceConcurrency<T extends VertexServiceConcurrency<T>> extends VertexServiceConcurrency<T> {
 
 	@Override
 	default int getLevel() {

@@ -4,13 +4,13 @@ import org.genericsystem.cache.Cache;
 import org.genericsystem.concurrency.generic.EngineServiceConcurrency;
 import org.genericsystem.concurrency.generic.GenericServiceConcurrency;
 
-public class CacheConcurrency<T extends GenericServiceConcurrency<T, U>, U extends EngineServiceConcurrency<T, U>> extends Cache<T, U> implements ContextConcurrency<T, U> {
+public class CacheConcurrency<T extends GenericServiceConcurrency<T>> extends Cache<T> implements ContextConcurrency<T> {
 
-	public CacheConcurrency(EngineServiceConcurrency<T, U> engine) {
-		this(new TransactionConcurrency<T, U>(engine));
+	public CacheConcurrency(EngineServiceConcurrency<T> engine) {
+		this(new TransactionConcurrency<T>(engine));
 	}
 
-	public CacheConcurrency(ContextConcurrency<T, U> subContext) {
+	public CacheConcurrency(ContextConcurrency<T> subContext) {
 		super(subContext);
 	}
 
@@ -20,18 +20,18 @@ public class CacheConcurrency<T extends GenericServiceConcurrency<T, U>, U exten
 	}
 
 	@Override
-	public ContextConcurrency<T, U> getSubContext() {
-		return (ContextConcurrency<T, U>) super.getSubContext();
+	public ContextConcurrency<T> getSubContext() {
+		return (ContextConcurrency<T>) super.getSubContext();
 	}
 
 	@Override
-	public CacheConcurrency<T, U> mountNewCache() {
-		return (CacheConcurrency<T, U>) super.mountNewCache();
+	public CacheConcurrency<T> mountNewCache() {
+		return (CacheConcurrency<T>) super.mountNewCache();
 	}
 
 	@Override
-	public EngineServiceConcurrency<T, U> getEngine() {
-		return (EngineServiceConcurrency<T, U>) subContext.getEngine();
+	public EngineServiceConcurrency<T> getEngine() {
+		return (EngineServiceConcurrency<T>) subContext.getEngine();
 	}
 
 }
