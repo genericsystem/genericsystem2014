@@ -13,7 +13,7 @@ import org.genericsystem.kernel.annotations.value.BooleanValue;
 import org.genericsystem.kernel.annotations.value.IntValue;
 import org.genericsystem.kernel.annotations.value.StringValue;
 
-public class Root extends Vertex implements RootService<Vertex> {
+public class Root extends Vertex implements RootService<Vertex, Root> {
 
 	final Map<Class<?>, Vertex> systemCache = new HashMap<Class<?>, Vertex>();
 
