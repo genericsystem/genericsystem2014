@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.function.Supplier;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
@@ -120,7 +119,7 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 			public T setByIndex(T index, T vertex) {
 				Dependencies<T> result = internalGetByIndex(index);
 				if (result == null)
-					set(buildEntry(index, result = buildDependencies(() -> Collections.emptyIterator())));
+					set(new DependenciesEntry<>(index, result = buildDependencies(() -> Collections.emptyIterator())));
 				return result.set(vertex);
 			}
 
@@ -130,11 +129,6 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 				if (dependencies == null)
 					return false;
 				return dependencies.remove(vertex);
-			}
-
-			@Override
-			public DependenciesEntry<T> buildEntry(T index, Dependencies<T> result) {
-				return new DependenciesEntry<T>(index, result);
 			}
 
 			@Override
