@@ -5,7 +5,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Dependencies;
+import org.genericsystem.kernel.Dependencies.CompositesDependencies;
+import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.VertexService;
 
@@ -58,6 +61,16 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 	}
 
 	@Override
+	default CompositesDependencies<T> getMetaComposites() {
+		return getVertex().getMetaComposites().projectComposites(this::wrap, GenericService::unwrap);
+	}
+
+	@Override
+	default CompositesDependencies<T> getSuperComposites() {
+		return getVertex().getSuperComposites().projectComposites(this::wrap, GenericService::unwrap);
+	}
+
+	@Override
 	default T getInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
 		Vertex vertex = getVertex();
 		if (vertex == null)
@@ -68,4 +81,15 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 		return wrap(vertex);
 	}
 
+	@Override
+	default Snapshot<T> getMetaComposites(T meta) {
+		Vertex vertex = getVertex();
+		return vertex == null ? null : vertex.getMetaComposites(meta.getVertex()).project(this::wrap);
+	}
+
+	@Override
+	default Snapshot<T> getSuperComposites(T superVertex) {
+		Vertex vertex = getVertex();
+		return vertex == null ? null : vertex.getSuperComposites(superVertex.getVertex()).project(this::wrap);
+	}
 }

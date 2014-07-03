@@ -1,6 +1,7 @@
 package org.genericsystem.cache;
 
-import org.genericsystem.kernel.Snapshot;
+import org.genericsystem.kernel.Dependencies;
+import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 
@@ -29,17 +30,12 @@ public interface Context<T extends GenericService<T>> {
 
 	void simpleRemove(T generic);
 
-	Snapshot<T> getInheritings(T generic);
+	Dependencies<T> getInheritings(T generic);
 
-	Snapshot<T> getInstances(T generic);
+	Dependencies<T> getInstances(T generic);
 
-	Snapshot<T> getComposites(T generic);
+	CompositesDependencies<T> getMetaComposites(T generic);
 
-	Snapshot<T> getCompositesByMeta(T generic, T meta);
-
-	Snapshot<T> getCompositesBySuper(T generic, T superT);
-	// CompositesDependencies<T> getMetaComposites(T generic);
-	//
-	// CompositesDependencies<T> getSuperComposites(T generic);
+	CompositesDependencies<T> getSuperComposites(T generic);
 
 }
