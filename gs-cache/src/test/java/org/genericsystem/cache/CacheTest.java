@@ -88,4 +88,15 @@ public class CacheTest extends AbstractTest {
 		currentCache.flush();
 		assert vehicle.getVertex() != null;
 	}
+
+	public void test004_TwoCompositesWithSameMetaInDifferentCaches() {
+		Engine engine = new Engine();
+		Cache<Generic> currentCache = engine.getCurrentCache();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic color = engine.addInstance("Color", vehicle);
+		Cache<Generic> mountNewCache = currentCache.mountNewCache();
+		Generic power = engine.addInstance("Power", vehicle);
+		currentCache.flush();
+
+	}
 }

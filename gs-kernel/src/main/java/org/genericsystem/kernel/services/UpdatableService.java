@@ -157,7 +157,7 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 			return nearestMeta.addInstance(overrides, value, components);
 		T weakInstance = getWeakInstance(value, components);
 		if (weakInstance != null)
-			rollbackAndThrowException(new ExistsException(weakInstance.info()));
+			rollbackAndThrowException(new ExistsException("In confict with existing instance : " + weakInstance.info()));
 		T instance = buildInstance(overrides, value, Arrays.asList(components));
 		return instance.rebuildAll(() -> instance.plug());
 		// return buildInstance(overrides, value, Arrays.asList(components)).plug();
