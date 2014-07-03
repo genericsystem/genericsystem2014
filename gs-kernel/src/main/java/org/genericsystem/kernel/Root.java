@@ -15,7 +15,7 @@ import org.genericsystem.kernel.annotations.value.StringValue;
 
 public class Root extends Vertex implements RootService<Vertex> {
 
-	private final Map<Class<?>, Vertex> systemCache = new HashMap<Class<?>, Vertex>();
+	protected final Map<Class<?>, Vertex> systemCache = new HashMap<Class<?>, Vertex>();
 
 	public Root(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);

@@ -7,19 +7,32 @@ import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Vertex;
-import org.genericsystem.kernel.VertexService;
 
-public class VertexConcurrency extends Vertex implements VertexService<Vertex> {
+public class VertexConcurrency extends Vertex implements VertexServiceConcurrency<Vertex> {
 
+	// TODO KK DEBUT KK cf RootConcurrency
 	private LifeManager lifeManager;
 
 	void restore(Long designTs, long birthTs, long lastReadTs, long deathTs) {
-		lifeManager = new LifeManager(designTs == null ? ((RootConcurrency) getRoot()).pickNewTs() : designTs, birthTs, lastReadTs, deathTs);
+		lifeManager = buildLifeManager(designTs, birthTs, lastReadTs, deathTs);
 	}
 
 	@Override
+	public LifeManager getLifeManager() {
+		return lifeManager;
+	}
+
+	public boolean isAlive(long ts) {
+		return lifeManager.isAlive(ts);
+	}
+
+	// TODO KK FIN KK
+
+	@Override
 	public VertexConcurrency buildInstance() {
-		return new VertexConcurrency();
+		VertexConcurrency vertexConcurrency = new VertexConcurrency();
+		vertexConcurrency.lifeManager = buildLifeManager();
+		return vertexConcurrency;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -58,17 +71,9 @@ public class VertexConcurrency extends Vertex implements VertexService<Vertex> {
 			@SuppressWarnings({ "unchecked", "rawtypes" })
 			@Override
 			public Dependencies<E> buildDependencies(Supplier<Iterator<E>> supplier) {
-				return VertexConcurrency.super.buildDependencies((Supplier) supplier);
+				return (Dependencies<E>) VertexConcurrency.super.buildDependencies((Supplier) supplier);
 			}
 		}
 		return new CompositesDependenciesImpl<Vertex>();
-	}
-
-	public LifeManager getLifeManager() {
-		return lifeManager;
-	}
-
-	public boolean isAlive(long ts) {
-		return lifeManager.isAlive(ts);
 	}
 }

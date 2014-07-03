@@ -2,6 +2,7 @@ package org.genericsystem.concurrency.generic;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.Objects;
 
 import org.genericsystem.cache.Cache;
 import org.genericsystem.concurrency.cache.CacheConcurrency;
@@ -9,6 +10,7 @@ import org.genericsystem.concurrency.cache.TransactionConcurrency;
 import org.genericsystem.concurrency.vertex.RootConcurrency;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
+import org.genericsystem.kernel.services.SignatureService;
 
 public class EngineConcurrency extends GenericConcurrency implements EngineServiceConcurrency<GenericConcurrency> {
 
@@ -57,5 +59,12 @@ public class EngineConcurrency extends GenericConcurrency implements EngineServi
 		if (currentCache == null)
 			throw new IllegalStateException();
 		return currentCache;
+	}
+
+	@Override
+	public boolean equiv(SignatureService<?> service) {
+		if (this == service)
+			return true;
+		return Objects.equals(getValue(), service.getValue()) && SignatureService.equivComponents(getComponents(), service.getComponents());
 	}
 }

@@ -30,6 +30,8 @@ public class TransactionConcurrency<T extends GenericServiceConcurrency<T>> exte
 
 	@Override
 	public boolean isAlive(T generic) {
+		System.out.println("generic " + generic + " " + generic.getClass());
+		System.out.println("generic.getLifeManager() " + generic.getLifeManager());
 		return generic.getLifeManager().isAlive(getTs());
 	}
 
