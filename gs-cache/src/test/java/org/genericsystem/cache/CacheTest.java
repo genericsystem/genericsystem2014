@@ -1,5 +1,6 @@
 package org.genericsystem.cache;
 
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import org.testng.annotations.Test;
@@ -95,10 +96,12 @@ public class CacheTest extends AbstractTest {
 		Engine engine = new Engine();
 		Cache<Generic> currentCache = engine.getCurrentCache();
 		Generic vehicle = engine.addInstance("Vehicle");
-		Generic color = engine.addInstance("Color", vehicle);
+		Generic color = engine.addInstance("Color");
+		Generic vehicleColor = color.addInstance("vehicleColor", vehicle);
 		Cache<Generic> mountNewCache = currentCache.mountNewCache();
-		Generic power = engine.addInstance("Power", vehicle);
+		Generic vehicleColor2 = color.addInstance("vehicleColor2", vehicle);
 		currentCache.flush();
+		assert vehicle.getMetaComposites(color).containsAll(Arrays.asList(vehicleColor, vehicleColor2)) : vehicle.getMetaComposites(color).size();
 
 	}
 }
