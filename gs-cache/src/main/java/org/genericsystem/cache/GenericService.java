@@ -8,10 +8,7 @@ import java.util.function.Supplier;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
-import org.genericsystem.kernel.DependenciesImpl;
 import org.genericsystem.kernel.Snapshot;
-import org.genericsystem.kernel.iterator.AbstractConcateIterator.ConcateIterator;
-import org.genericsystem.kernel.iterator.AbstractFilterIterator;
 
 public interface GenericService<T extends GenericService<T>> extends org.genericsystem.impl.GenericService<T> {
 
@@ -92,75 +89,7 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 
 	@Override
 	default CompositesDependencies<T> buildCompositeDependencies(Supplier<Iterator<DependenciesEntry<T>>> iteratorSupplier) {
-		class CacheCompositesDependenciesImpl implements CompositesDependencies<T> {
-
-			private final Dependencies<DependenciesEntry<T>> inserts = new DependenciesImpl<DependenciesEntry<T>>();
-			private final Dependencies<DependenciesEntry<T>> deletes = new DependenciesImpl<DependenciesEntry<T>>();
-
-			// TODO KK perf
-			@Override
-			public Dependencies<T> internalGetByIndex(T index) {
-				Iterator<DependenciesEntry<T>> it = iterator();
-				while (it.hasNext()) {
-					DependenciesEntry<T> next = it.next();
-					if (index.equals(next.getKey()))
-						return next.getValue();
-				}
-				return null;
-			}
-
-			@Override
-			public Snapshot<T> getByIndex(T index) {
-				Snapshot<T> result = internalGetByIndex(index);
-				return result != null ? result : AbstractSnapshot.<T> emptySnapshot();
-			}
-
-			@Override
-			public T setByIndex(T index, T vertex) {
-				Dependencies<T> result = internalGetByIndex(index);
-				if (result == null)
-					set(new DependenciesEntry<>(index, result = buildDependencies(() -> Collections.emptyIterator())));
-				return result.set(vertex);
-			}
-
-			@Override
-			public boolean removeByIndex(T index, T vertex) {
-				Dependencies<T> dependencies = internalGetByIndex(index);
-				if (dependencies == null)
-					return false;
-				return dependencies.remove(vertex);
-			}
-
-			@Override
-			public boolean remove(DependenciesEntry<T> entry) {
-				if (inserts.remove(entry)) {
-					deletes.add(entry);
-					return true;
-				}
-				return false;
-			}
-
-			@Override
-			public void add(DependenciesEntry<T> entry) {
-				inserts.add(entry);
-			}
-
-			@Override
-			public Iterator<DependenciesEntry<T>> iterator() {
-				return new ConcateIterator<DependenciesEntry<T>>(new AbstractFilterIterator<DependenciesEntry<T>>(iteratorSupplier.get()) {
-					@Override
-					public boolean isSelected() {
-						return !deletes.contains(next);
-					}
-				}, inserts.iterator());
-			}
-
-			@Override
-			public Dependencies<T> buildDependencies(Supplier<Iterator<T>> supplier) {
-				return GenericService.this.buildDependencies(supplier);
-			}
-		}
-		return new CacheCompositesDependenciesImpl();
+		return new CacheCompositesDependencies<T>(iteratorSupplier);
 	}
 
 	default Cache<T> getCurrentCache() {
