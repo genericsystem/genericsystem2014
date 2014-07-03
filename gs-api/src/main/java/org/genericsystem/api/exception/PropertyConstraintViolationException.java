@@ -1,13 +1,17 @@
 package org.genericsystem.api.exception;
 
+import org.genericsystem.api.annotation.constraint.PropertyConstraint;
+
 /**
- * Is triggered if the constraint is positioned and that the generic does not respect the constraint. Checks that the Generic a single value for the same components.
+ * <p>
+ * Thrown when an element is instantiated with a value already affected on another component.
+ * </p>
  * 
- * @author Nicolas Feybesse
+ * @see PropertyConstraint
  */
 public class PropertyConstraintViolationException extends ConstraintViolationException {
 
-	private static final long serialVersionUID = -7308284483020917510L;
+	private static final long serialVersionUID = 2865134783470066396L;
 
 	public PropertyConstraintViolationException(String msg) {
 		super(msg);

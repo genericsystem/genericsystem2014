@@ -10,4 +10,5 @@ public class MetaLevelConstraintViolationException extends ConstraintViolationEx
 	public MetaLevelConstraintViolationException(String msg) {
 		super(msg);
 	}
+
 }

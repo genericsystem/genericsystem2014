@@ -26,7 +26,7 @@ public @interface InstanceClassConstraint {
 	/**
 	 * Returns the class which restricts the target of InstanceClassConstraint.
 	 * 
-	 * @return the class which restricts the target of InstanceClassConstraint.
+	 * @return the class which restricts the target of InstanceClassConstraint
 	 */
 	Class<?> value();
 

@@ -1,15 +1,20 @@
 package org.genericsystem.api.exception;
 
+import org.genericsystem.api.annotation.constraint.VirtualConstraint;
+
 /**
- * Is triggered if the constraint is positioned and that the generic does not respect the constraint. Checks the Generic is abstract.
+ * <p>
+ * Thrown when trying to instantiate a <tt>VirtualConstraint</tt> element.
+ * </p>
  * 
- * @author Nicolas Feybesse
+ * @see VirtualConstraint
  */
 public class VirtualConstraintException extends ConstraintViolationException {
 
-	private static final long serialVersionUID = -372566533541440420L;
+	private static final long serialVersionUID = 5824755167671354312L;
 
 	public VirtualConstraintException(String msg) {
 		super(msg);
 	}
+
 }

@@ -19,9 +19,9 @@ public interface MapProvider extends Attribute {
 	 * @param <Value>
 	 *            value linked to the key as a Serializable
 	 * @param generic
-	 *            the generic targeted.
+	 *            the generic targeted
 	 * 
-	 * @return the map of generics associated with the generic specified. Returns an empty map if none is found.
+	 * @return the map of generics associated with the generic specified. Returns an empty map if none is found
 	 */
 	<Key extends Serializable, Value extends Serializable> Map<Key, Value> getExtendedMap(Generic generic);
 

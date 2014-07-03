@@ -1,10 +1,9 @@
 package org.genericsystem.api.exception;
 
-//TODO ???
 /**
- * Is triggered if remove alive Generic.
- * 
- * @author Nicolas Feybesse
+ * <p>
+ * Thrown when trying to do a modification on an outdated living element.
+ * </p>
  */
 public class OptimisticLockConstraintViolationException extends ConstraintViolationException {
 
@@ -13,4 +12,5 @@ public class OptimisticLockConstraintViolationException extends ConstraintViolat
 	public OptimisticLockConstraintViolationException(String message) {
 		super(message);
 	}
+
 }
