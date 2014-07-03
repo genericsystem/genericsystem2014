@@ -1,11 +1,9 @@
 package org.genericsystem.cache;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Statics;
@@ -131,7 +129,7 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 	public Dependencies<T> getInheritings(T generic) {
 		Dependencies<T> dependencies = inheritingDependenciesMap.get(generic);
 		if (dependencies == null)
-			inheritingDependenciesMap.put(generic, dependencies = generic.buildDependencies(() -> generic.getVertex() == null ? Collections.emptyIterator() : subContext.getInheritings(generic).iterator()));
+			inheritingDependenciesMap.put(generic, dependencies = generic.buildDependencies(() -> subContext.getInheritings(generic).iterator()));
 		return dependencies;
 	}
 
@@ -139,7 +137,7 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 	public Dependencies<T> getInstances(T generic) {
 		Dependencies<T> dependencies = instancesDependenciesMap.get(generic);
 		if (dependencies == null)
-			instancesDependenciesMap.put(generic, dependencies = generic.buildDependencies(() -> generic.getVertex() == null ? Collections.emptyIterator() : subContext.getInstances(generic).iterator()));
+			instancesDependenciesMap.put(generic, dependencies = generic.buildDependencies(() -> subContext.getInstances(generic).iterator()));
 		return dependencies;
 	}
 
@@ -147,7 +145,7 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 	public CompositesDependencies<T> getMetaComposites(T generic) {
 		CompositesDependencies<T> dependencies = metaCompositesDependenciesMap.get(generic);
 		if (dependencies == null)
-			metaCompositesDependenciesMap.put(generic, dependencies = generic.buildCompositeDependencies(() -> generic.getVertex() == null ? Collections.emptyIterator() : subContext.getMetaComposites(generic).iterator()));
+			metaCompositesDependenciesMap.put(generic, dependencies = generic.buildCompositeDependencies(() -> subContext.getMetaComposites(generic).iterator()));
 		return dependencies;
 	}
 
@@ -155,7 +153,7 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 	public CompositesDependencies<T> getSuperComposites(T generic) {
 		CompositesDependencies<T> dependencies = superCompositesDependenciesMap.get(generic);
 		if (dependencies == null)
-			superCompositesDependenciesMap.put(generic, dependencies = generic.buildCompositeDependencies(() -> generic.getVertex() == null ? Collections.emptyIterator() : subContext.getSuperComposites(generic).iterator()));
+			superCompositesDependenciesMap.put(generic, dependencies = generic.buildCompositeDependencies(() -> subContext.getSuperComposites(generic).iterator()));
 		return dependencies;
 	}
 

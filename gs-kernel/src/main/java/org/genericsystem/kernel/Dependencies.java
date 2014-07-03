@@ -83,11 +83,6 @@ public interface Dependencies<T> extends Snapshot<T> {
 			Snapshot<T> result = internalGetByIndex(index);
 			return result != null ? result : AbstractSnapshot.<T> emptySnapshot();
 		}
-		//
-		// default DependenciesEntry<T> buildEntry(T index, Dependencies<T> result) {
-		// return new DependenciesEntry<T>(index, result);
-		// }
-
 	}
 
 	public static interface CompositesDependencies<T> extends Dependencies<DependenciesEntry<T>>, CompositesSnapshot<T> {

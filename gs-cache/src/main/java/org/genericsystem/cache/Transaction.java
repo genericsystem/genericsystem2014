@@ -37,14 +37,15 @@ public class Transaction<T extends GenericService<T>> implements Context<T> {
 
 	@Override
 	public Snapshot<T> getInheritings(T generic) {
-		return () -> generic.unwrap().getInheritings().project(generic::wrap).iterator();
+		return () -> generic.getVertex() != null ? generic.unwrap().getInheritings().project(generic::wrap).iterator() : Collections.emptyIterator();
 	}
 
 	@Override
 	public Snapshot<T> getInstances(T generic) {
-		return () -> generic.unwrap().getInstances().project(generic::wrap).iterator();
+		return () -> generic.getVertex() != null ? generic.unwrap().getInstances().project(generic::wrap).iterator() : Collections.emptyIterator();
 	}
 
+	// @Override
 	@Override
 	public CompositesSnapshot<T> getMetaComposites(T generic) {
 		return () -> generic.getVertex() != null ? generic.unwrap().getMetaComposites().stream().map(x -> new DependenciesEntry<>(generic.wrap(x.getKey()), generic.buildDependencies(() -> x.getValue().stream().map(generic::wrap).iterator()))).iterator()
