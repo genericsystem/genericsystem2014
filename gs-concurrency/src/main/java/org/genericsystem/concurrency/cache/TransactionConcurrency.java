@@ -1,39 +1,36 @@
-package org.genericsystem.cache;
+package org.genericsystem.concurrency.cache;
 
 import java.util.Iterator;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
+import org.genericsystem.cache.Transaction;
+import org.genericsystem.concurrency.generic.EngineServiceConcurrency;
+import org.genericsystem.concurrency.generic.GenericServiceConcurrency;
+import org.genericsystem.concurrency.vertex.RootConcurrency;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.CompositesDependencies;
-import org.genericsystem.kernel.Vertex;
 
-public class Transaction<T extends GenericService<T>> implements Context<T> {
+public class TransactionConcurrency<T extends GenericServiceConcurrency<T>> extends Transaction<T> implements ContextConcurrency<T> {
 
-	private transient final EngineService<T> engine;
+	private transient long ts;
 
-	public Transaction(EngineService<T> engine) {
-		this.engine = engine;
+	public TransactionConcurrency(EngineServiceConcurrency<T> engine) {
+		this(((RootConcurrency) engine.getRoot().getVertex()).pickNewTs(), engine);
+	}
+
+	public TransactionConcurrency(long ts, EngineServiceConcurrency<T> engine) {
+		super(engine);
+		this.ts = ts;
+	}
+
+	@Override
+	public long getTs() {
+		return ts;
 	}
 
 	@Override
 	public boolean isAlive(T generic) {
-		return generic.getVertex() != null && generic.getVertex().isAlive();
-	}
-
-	@Override
-	public void simpleAdd(T generic) {
-		generic.getMeta().getVertex().addInstance(generic.getSupersStream().map(g -> g.unwrap()).collect(Collectors.toList()), generic.getValue(), generic.getComponentsStream().map(g -> g.unwrap()).toArray(Vertex[]::new));
-	}
-
-	@Override
-	public void simpleRemove(T generic) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public EngineService<T> getEngine() {
-		return engine;
+		return generic.getLifeManager().isAlive(getTs());
 	}
 
 	@Override
@@ -55,7 +52,6 @@ public class Transaction<T extends GenericService<T>> implements Context<T> {
 			public void add(T vertex) {
 				assert false;
 			}
-
 		};
 	}
 
@@ -78,7 +74,6 @@ public class Transaction<T extends GenericService<T>> implements Context<T> {
 			public void add(T vertex) {
 				assert false;
 			}
-
 		};
 	}
 
@@ -107,7 +102,6 @@ public class Transaction<T extends GenericService<T>> implements Context<T> {
 				assert false;
 				return null;
 			}
-
 		};
 	}
 
@@ -136,8 +130,7 @@ public class Transaction<T extends GenericService<T>> implements Context<T> {
 				assert false;
 				return null;
 			}
-
 		};
-	};
+	}
 
 }

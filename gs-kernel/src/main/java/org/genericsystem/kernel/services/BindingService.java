@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
 import org.genericsystem.kernel.Dependencies;
+import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.exceptions.AmbiguousSelectionException;
 import org.genericsystem.kernel.exceptions.CrossEnginesAssignementsException;
@@ -71,24 +73,27 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 	@Override
 	Dependencies<T> getInheritings();
 
-	Snapshot<T> getCompositesByMeta(T meta);
+	@Override
+	CompositesDependencies<T> getMetaComposites();
 
-	Snapshot<T> getCompositesBySuper(T superVertex);
+	@Override
+	CompositesDependencies<T> getSuperComposites();
 
-	void setCompositeByMeta(T meta, T composite);
+	default Snapshot<T> getMetaComposites(T meta) {
+		return getMetaComposites().getByIndex(meta);
+	}
 
-	void setCompositeBySuper(T superGeneric, T composite);
-
-	void removeCompositeByMeta(T meta, T composite);
-
-	void removeCompositeBySuper(T superGeneric, T composite);
+	default Snapshot<T> getSuperComposites(T superVertex) {
+		assert getSuperComposites() != null : this.info();
+		return getSuperComposites().getByIndex(superVertex);
+	}
 
 	@SuppressWarnings("unchecked")
 	default T plug() {
 		T t = getMeta().getInstances().set((T) this);
 		getSupersStream().forEach(superGeneric -> superGeneric.getInheritings().set((T) this));
-		getComponentsStream().forEach(component -> component.setCompositeByMeta(getMeta(), (T) this));
-		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> component.setCompositeBySuper(superGeneric, (T) this)));
+		getComponentsStream().forEach(component -> component.getMetaComposites().setByIndex(getMeta(), (T) this));
+		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> component.getSuperComposites().setByIndex(superGeneric, (T) this)));
 
 		// assert getSupersStream().allMatch(superGeneric -> this == superGeneric.getInheritings().get((T) this));
 		// assert Arrays.stream(getComponents()).allMatch(component -> this == component.getMetaComposites(getMeta()).get((T) this));
@@ -103,8 +108,8 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 		if (!result)
 			rollbackAndThrowException(new NotFoundException(((DisplayService<T>) this).info()));
 		getSupersStream().forEach(superGeneric -> superGeneric.getInheritings().remove((T) this));
-		getComponentsStream().forEach(component -> component.removeCompositeByMeta(getMeta(), (T) this));
-		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> component.removeCompositeBySuper(superGeneric, (T) this)));
+		getComponentsStream().forEach(component -> component.getMetaComposites().removeByIndex(getMeta(), (T) this));
+		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> component.getSuperComposites().removeByIndex(superGeneric, (T) this)));
 		return result;
 	}
 	//

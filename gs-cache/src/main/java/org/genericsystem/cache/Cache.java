@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Dependencies;
-import org.genericsystem.kernel.Snapshot;
+import org.genericsystem.kernel.Dependencies.CompositesDependencies;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
@@ -19,7 +19,8 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 
 	private transient Map<T, Dependencies<T>> inheritingDependenciesMap = new HashMap<>();
 	private transient Map<T, Dependencies<T>> instancesDependenciesMap = new HashMap<>();
-	private transient Map<T, Dependencies<T>> compositesDependenciesMap = new HashMap<>();
+	private transient Map<T, CompositesDependencies<T>> metaCompositesDependenciesMap = new HashMap<>();
+	private transient Map<T, CompositesDependencies<T>> superCompositesDependenciesMap = new HashMap<>();
 
 	private Set<T> adds = new LinkedHashSet<>();
 	private Set<T> removes = new LinkedHashSet<>();
@@ -27,6 +28,8 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 	void clear() {
 		inheritingDependenciesMap = new HashMap<>();
 		instancesDependenciesMap = new HashMap<>();
+		metaCompositesDependenciesMap = new HashMap<>();
+		superCompositesDependenciesMap = new HashMap<>();
 		adds = new LinkedHashSet<>();
 		removes = new LinkedHashSet<>();
 	}
@@ -141,10 +144,18 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 	}
 
 	@Override
-	public Dependencies<T> getComposites(T generic) {
-		Dependencies<T> dependencies = compositesDependenciesMap.get(generic);
+	public CompositesDependencies<T> getMetaComposites(T generic) {
+		CompositesDependencies<T> dependencies = metaCompositesDependenciesMap.get(generic);
 		if (dependencies == null)
-			instancesDependenciesMap.put(generic, dependencies = generic.buildDependencies(() -> generic.getVertex() == null ? Collections.emptyIterator() : subContext.getComposites(generic).iterator()));
+			metaCompositesDependenciesMap.put(generic, dependencies = generic.buildCompositeDependencies(() -> generic.getVertex() == null ? Collections.emptyIterator() : subContext.getMetaComposites(generic).iterator()));
+		return dependencies;
+	}
+
+	@Override
+	public CompositesDependencies<T> getSuperComposites(T generic) {
+		CompositesDependencies<T> dependencies = superCompositesDependenciesMap.get(generic);
+		if (dependencies == null)
+			superCompositesDependenciesMap.put(generic, dependencies = generic.buildCompositeDependencies(() -> generic.getVertex() == null ? Collections.emptyIterator() : subContext.getSuperComposites(generic).iterator()));
 		return dependencies;
 	}
 
@@ -155,36 +166,6 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 
 	public Context<T> getSubContext() {
 		return subContext;
-	}
-
-	@Override
-	public Snapshot<T> getCompositesByMeta(T generic, T meta) {
-		return () -> Stream.concat(subContext.getCompositesByMeta(generic, meta).stream(), getComposites(generic).stream().filter(x -> meta.equals(x.getMeta()))).iterator();
-	}
-
-	@Override
-	public Snapshot<T> getCompositesBySuper(T generic, T superT) {
-		return () -> Stream.concat(subContext.getCompositesBySuper(generic, superT).stream(), getComposites(generic).stream().filter(x -> x.getSupers().contains(superT))).iterator();
-	}
-
-	public void indexCompositeByMeta(T generic, T meta, T composite) {
-		// if (!getCompositesByMeta(generic, meta).contains(composite))
-		getComposites(generic).add(composite);
-	}
-
-	public void indexCompositeBySuper(T generic, T superT, T composite) {
-		// if (!getCompositesBySuper(generic, superT).contains(composite))
-		getComposites(generic).add(composite);
-	}
-
-	public void removeCompositeByMeta(T generic, T meta, T composite) {
-		// if (getCompositesByMeta(generic, meta).contains(composite))
-		getComposites(generic).remove(composite);
-	}
-
-	public void removeCompositeBySuper(T generic, T superT, T composite) {
-		// if (getCompositesBySuper(generic, superT).contains(composite))
-		getComposites(generic).remove(composite);
 	}
 
 }
