@@ -9,8 +9,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
-import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
 
@@ -20,9 +18,9 @@ public interface DependenciesService<T extends DependenciesService<T>> extends A
 
 	Snapshot<T> getInheritings();
 
-	Snapshot<DependenciesEntry<T>> getMetaComposites();
+	// Snapshot<DependenciesEntry<T>> getMetaComposites();
 
-	Snapshot<DependenciesEntry<T>> getSuperComposites();
+	// Snapshot<DependenciesEntry<T>> getSuperComposites();
 
 	default boolean isAncestorOf(final T dependency) {
 		return equiv(dependency) || (!dependency.equals(dependency.getMeta()) && isAncestorOf(dependency.getMeta())) || dependency.getSupersStream().anyMatch(component -> this.isAncestorOf(component))
@@ -63,9 +61,73 @@ public interface DependenciesService<T extends DependenciesService<T>> extends A
 		return new DirectDependencies();
 	}
 
-	default Snapshot<T> getComposites() {
-		return () -> Statics.concat(getMetaComposites().stream(), entry -> entry.getValue().stream()).iterator();
+	default LinkedHashSet<T> computeAllDependencies(List<T> overrides, Serializable value, List<T> components) {
+		class DirectDependencies extends LinkedHashSet<T> {
+			private static final long serialVersionUID = -5970021419012502402L;
+			private final Set<T> alreadyVisited = new HashSet<>();
+
+			public DirectDependencies() {
+				visit((T) this);
+			}
+
+			public void visit(T node) {
+				if (!alreadyVisited.contains(node))
+					if (!isAncestorOf(node)) {
+						alreadyVisited.add(node);
+						node.getComposites().forEach(this::visit);
+						node.getInheritings().forEach(this::visit);
+						node.getInstances().forEach(this::visit);
+					} else
+						addDependency(node);
+			}
+
+			public void addDependency(T node) {
+				if (!alreadyVisited.contains(node)) {
+					alreadyVisited.add(node);
+					node.getComposites().forEach(this::addDependency);
+					node.getInheritings().forEach(this::addDependency);
+					node.getInstances().forEach(this::addDependency);
+					super.add(node);
+				}
+			}
+		}
+		return new DirectDependencies();
 	}
+
+	default LinkedHashSet<T> computeDescendingDependencies() {
+		class DirectDependencies extends LinkedHashSet<T> {
+			private static final long serialVersionUID = -5970021419012502402L;
+			private final Set<T> alreadyVisited = new HashSet<>();
+
+			public DirectDependencies() {
+				visit(getMeta());
+			}
+
+			public void visit(T node) {
+				if (!alreadyVisited.contains(node))
+					if (!isAncestorOf(node)) {
+						alreadyVisited.add(node);
+						node.getComposites().forEach(this::visit);
+						node.getInheritings().forEach(this::visit);
+						node.getInstances().forEach(this::visit);
+					} else
+						addDependency(node);
+			}
+
+			public void addDependency(T node) {
+				if (!alreadyVisited.contains(node)) {
+					alreadyVisited.add(node);
+					node.getComposites().forEach(this::addDependency);
+					node.getInheritings().forEach(this::addDependency);
+					node.getInstances().forEach(this::addDependency);
+					super.add(node);
+				}
+			}
+		}
+		return new DirectDependencies();
+	}
+
+	Snapshot<T> getComposites();
 
 	@SuppressWarnings("unchecked")
 	default boolean isSuperOf(T subMeta, List<T> overrides, Serializable subValue, List<T> subComponents) {

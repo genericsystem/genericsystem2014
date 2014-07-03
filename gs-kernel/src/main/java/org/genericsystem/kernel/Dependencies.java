@@ -3,10 +3,7 @@ package org.genericsystem.kernel;
 import java.util.AbstractMap;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.function.Function;
 import java.util.function.Supplier;
-
-import org.genericsystem.kernel.iterator.AbstractProjectionIterator;
 
 public interface Dependencies<T> extends Snapshot<T> {
 
@@ -32,31 +29,6 @@ public interface Dependencies<T> extends Snapshot<T> {
 			return vertex;
 		}
 		return result;
-	}
-
-	default <E> Dependencies<E> project(final Function<T, E> wrapper, final Function<E, T> unWrapper) {
-		return new Dependencies<E>() {
-
-			@Override
-			public Iterator<E> iterator() {
-				return new AbstractProjectionIterator<T, E>(Dependencies.this.iterator()) {
-					@Override
-					public E project(T t) {
-						return wrapper.apply(t);
-					}
-				};
-			}
-
-			@Override
-			public boolean remove(E generic) {
-				return Dependencies.this.remove(unWrapper.apply(generic));
-			}
-
-			@Override
-			public void add(E generic) {
-				Dependencies.this.add(unWrapper.apply(generic));
-			}
-		};
 	}
 
 	public static class DependenciesEntry<T> extends AbstractMap.SimpleImmutableEntry<T, Dependencies<T>> {
@@ -87,8 +59,12 @@ public interface Dependencies<T> extends Snapshot<T> {
 
 		default T setByIndex(T index, T vertex) {
 			Dependencies<T> result = internalGetByIndex(index);
-			if (result == null)
+			if (result == null) {
 				set(buildEntry(index, result = buildDependencies(() -> Collections.emptyIterator())));
+				System.out.println("AAA" + result.getClass());
+			}
+			System.out.println("BBB" + result.getClass());
+			System.out.println("EEEEEEEEEE" + result.getClass());
 			return result.set(vertex);
 		}
 
@@ -105,35 +81,5 @@ public interface Dependencies<T> extends Snapshot<T> {
 
 		Dependencies<T> buildDependencies(Supplier<Iterator<T>> supplier);
 
-		default public <E> CompositesDependencies<E> projectComposites(Function<T, E> wrapper, Function<E, T> unWrapper) {
-			return new CompositesDependencies<E>() {
-
-				@Override
-				public boolean remove(DependenciesEntry<E> entry) {
-					return CompositesDependencies.this.remove(new DependenciesEntry<T>(unWrapper.apply(entry.getKey()), entry.getValue().project(unWrapper, wrapper)));
-				}
-
-				@Override
-				public void add(DependenciesEntry<E> entry) {
-					CompositesDependencies.this.add(new DependenciesEntry<T>(unWrapper.apply(entry.getKey()), entry.getValue().project(unWrapper, wrapper)));
-				}
-
-				@Override
-				public Iterator<DependenciesEntry<E>> iterator() {
-					return new AbstractProjectionIterator<DependenciesEntry<T>, DependenciesEntry<E>>(CompositesDependencies.this.iterator()) {
-						@Override
-						public DependenciesEntry<E> project(DependenciesEntry<T> vertexEntry) {
-							return buildEntry(wrapper.apply(vertexEntry.getKey()), vertexEntry.getValue().project(wrapper, unWrapper));
-						}
-					};
-				}
-
-				@SuppressWarnings({ "unchecked", "rawtypes" })
-				@Override
-				public Dependencies<E> buildDependencies(Supplier<Iterator<E>> supplier) {
-					return (Dependencies<E>) CompositesDependencies.this.buildDependencies((Supplier) supplier);
-				}
-			};
-		}
 	}
 }

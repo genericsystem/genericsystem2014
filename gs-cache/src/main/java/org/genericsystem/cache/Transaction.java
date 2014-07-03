@@ -1,9 +1,7 @@
 package org.genericsystem.cache;
 
 import java.util.stream.Collectors;
-
-import org.genericsystem.kernel.Dependencies;
-import org.genericsystem.kernel.Dependencies.CompositesDependencies;
+import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Vertex;
 
 public class Transaction<T extends GenericService<T>> implements Context<T> {
@@ -35,23 +33,27 @@ public class Transaction<T extends GenericService<T>> implements Context<T> {
 	}
 
 	@Override
-	public Dependencies<T> getInheritings(T generic) {
-		return generic.unwrap().getInheritings().project(generic::wrap, org.genericsystem.impl.GenericService::unwrap);
+	public Snapshot<T> getInheritings(T generic) {
+		return () -> generic.unwrap().getInheritings().project(generic::wrap).iterator();
 	}
 
 	@Override
-	public Dependencies<T> getInstances(T generic) {
-		return generic.unwrap().getInstances().project(generic::wrap, org.genericsystem.impl.GenericService::unwrap);
+	public Snapshot<T> getInstances(T generic) {
+		return () -> generic.unwrap().getInstances().project(generic::wrap).iterator();
 	}
 
 	@Override
-	public CompositesDependencies<T> getMetaComposites(T generic) {
-		return generic.unwrap().getMetaComposites().projectComposites(generic::wrap, org.genericsystem.impl.GenericService::unwrap);
+	public Snapshot<T> getComposites(T generic) {
+		return () -> generic.unwrap().getComposites().project(generic::wrap).iterator();
 	}
 
 	@Override
-	public CompositesDependencies<T> getSuperComposites(T generic) {
-		return generic.unwrap().getSuperComposites().projectComposites(generic::wrap, org.genericsystem.impl.GenericService::unwrap);
+	public Snapshot<T> getCompositesByMeta(T generic, T meta) {
+		return () -> generic.unwrap().getCompositesByMeta(meta.unwrap()).project(generic::wrap).iterator();
 	}
 
+	@Override
+	public Snapshot<T> getCompositesBySuper(T generic, T superT) {
+		return () -> generic.unwrap().getCompositesBySuper(superT.unwrap()).project(generic::wrap).iterator();
+	}
 }
