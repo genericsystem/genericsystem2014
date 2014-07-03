@@ -1,11 +1,10 @@
 package org.genericsystem.cache;
 
-import java.util.Iterator;
-import java.util.function.Supplier;
+import java.util.Collections;
 import java.util.stream.Collectors;
-
-import org.genericsystem.kernel.Dependencies;
-import org.genericsystem.kernel.Dependencies.CompositesDependencies;
+import org.genericsystem.kernel.Dependencies.CompositesSnapshot;
+import org.genericsystem.kernel.Dependencies.DependenciesEntry;
+import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Vertex;
 
 public class Transaction<T extends GenericService<T>> implements Context<T> {
@@ -37,107 +36,26 @@ public class Transaction<T extends GenericService<T>> implements Context<T> {
 	}
 
 	@Override
-	public Dependencies<T> getInheritings(T generic) {
-		return new Dependencies<T>() {
-
-			@Override
-			public Iterator<T> iterator() {
-				return generic.unwrap().getInheritings().project(generic::wrap).iterator();
-			}
-
-			@Override
-			public boolean remove(T vertex) {
-				assert false;
-				return false;
-			}
-
-			@Override
-			public void add(T vertex) {
-				assert false;
-			}
-
-		};
+	public Snapshot<T> getInheritings(T generic) {
+		return () -> generic.getVertex() != null ? generic.unwrap().getInheritings().project(generic::wrap).iterator() : Collections.emptyIterator();
 	}
 
 	@Override
-	public Dependencies<T> getInstances(T generic) {
-		return new Dependencies<T>() {
+	public Snapshot<T> getInstances(T generic) {
+		return () -> generic.getVertex() != null ? generic.unwrap().getInstances().project(generic::wrap).iterator() : Collections.emptyIterator();
+	}
 
-			@Override
-			public Iterator<T> iterator() {
-				return generic.unwrap().getInstances().project(generic::wrap).iterator();
-			}
-
-			@Override
-			public boolean remove(T vertex) {
-				assert false;
-				return false;
-			}
-
-			@Override
-			public void add(T vertex) {
-				assert false;
-			}
-
-		};
+	// @Override
+	@Override
+	public CompositesSnapshot<T> getMetaComposites(T generic) {
+		return () -> generic.getVertex() != null ? generic.unwrap().getMetaComposites().stream().map(x -> new DependenciesEntry<>(generic.wrap(x.getKey()), generic.buildDependencies(() -> x.getValue().stream().map(generic::wrap).iterator()))).iterator()
+				: Collections.emptyIterator();
 	}
 
 	@Override
-	public CompositesDependencies<T> getMetaComposites(T generic) {
-		return new CompositesDependencies<T>() {
-
-			@Override
-			public boolean remove(DependenciesEntry<T> vertex) {
-				assert false;
-				return false;
-			}
-
-			@Override
-			public void add(DependenciesEntry<T> vertex) {
-				assert false;
-			}
-
-			@Override
-			public Iterator<DependenciesEntry<T>> iterator() {
-				return generic.unwrap().getMetaComposites().stream().map(x -> buildEntry(generic.wrap(x.getKey()), generic.buildDependencies(() -> x.getValue().stream().map(generic::wrap).iterator()))).iterator();
-			}
-
-			@Override
-			public Dependencies<T> buildDependencies(Supplier<Iterator<T>> supplier) {
-				assert false;
-				return null;
-			}
-
-		};
-	}
-
-	@Override
-	public CompositesDependencies<T> getSuperComposites(T generic) {
-		return new CompositesDependencies<T>() {
-
-			@Override
-			public boolean remove(DependenciesEntry<T> vertex) {
-				assert false;
-				return false;
-			}
-
-			@Override
-			public void add(DependenciesEntry<T> vertex) {
-				assert false;
-			}
-
-			@Override
-			public Iterator<DependenciesEntry<T>> iterator() {
-				return generic.unwrap().getSuperComposites().stream().map(x -> buildEntry(generic.wrap(x.getKey()), generic.buildDependencies(() -> x.getValue().stream().map(generic::wrap).iterator()))).iterator();
-			}
-
-			@Override
-			public Dependencies<T> buildDependencies(Supplier<Iterator<T>> supplier) {
-				assert false;
-				return null;
-			}
-
-		};
+	public CompositesSnapshot<T> getSuperComposites(T generic) {
+		return () -> generic.getVertex() != null ? generic.unwrap().getSuperComposites().stream().map(x -> new DependenciesEntry<>(generic.wrap(x.getKey()), generic.buildDependencies(() -> x.getValue().stream().map(generic::wrap).iterator()))).iterator()
+				: Collections.emptyIterator();
 	};
 
 }

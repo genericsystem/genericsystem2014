@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.function.Function;
 import java.util.function.Supplier;
-
 import org.genericsystem.kernel.iterator.AbstractProjectionIterator;
 
 public interface Dependencies<T> extends Snapshot<T> {
@@ -68,8 +67,8 @@ public interface Dependencies<T> extends Snapshot<T> {
 		}
 	}
 
-	public static interface CompositesDependencies<T> extends Dependencies<DependenciesEntry<T>> {
-
+	@FunctionalInterface
+	public static interface CompositesSnapshot<T> extends Snapshot<DependenciesEntry<T>> {
 		default Dependencies<T> internalGetByIndex(T index) {
 			Iterator<DependenciesEntry<T>> it = iterator();
 			while (it.hasNext()) {
@@ -84,11 +83,14 @@ public interface Dependencies<T> extends Snapshot<T> {
 			Snapshot<T> result = internalGetByIndex(index);
 			return result != null ? result : AbstractSnapshot.<T> emptySnapshot();
 		}
+	}
+
+	public static interface CompositesDependencies<T> extends Dependencies<DependenciesEntry<T>>, CompositesSnapshot<T> {
 
 		default T setByIndex(T index, T vertex) {
 			Dependencies<T> result = internalGetByIndex(index);
 			if (result == null)
-				set(buildEntry(index, result = buildDependencies(() -> Collections.emptyIterator())));
+				set(new DependenciesEntry<>(index, result = buildDependencies(() -> Collections.emptyIterator())));
 			return result.set(vertex);
 		}
 
@@ -97,10 +99,6 @@ public interface Dependencies<T> extends Snapshot<T> {
 			if (dependencies == null)
 				return false;
 			return dependencies.remove(vertex);
-		}
-
-		default DependenciesEntry<T> buildEntry(T index, Dependencies<T> result) {
-			return new DependenciesEntry<T>(index, result);
 		}
 
 		Dependencies<T> buildDependencies(Supplier<Iterator<T>> supplier);
@@ -123,7 +121,7 @@ public interface Dependencies<T> extends Snapshot<T> {
 					return new AbstractProjectionIterator<DependenciesEntry<T>, DependenciesEntry<E>>(CompositesDependencies.this.iterator()) {
 						@Override
 						public DependenciesEntry<E> project(DependenciesEntry<T> vertexEntry) {
-							return buildEntry(wrapper.apply(vertexEntry.getKey()), vertexEntry.getValue().project(wrapper, unWrapper));
+							return new DependenciesEntry<>(wrapper.apply(vertexEntry.getKey()), vertexEntry.getValue().project(wrapper, unWrapper));
 						}
 					};
 				}
