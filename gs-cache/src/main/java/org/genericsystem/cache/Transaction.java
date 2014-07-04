@@ -1,6 +1,9 @@
 package org.genericsystem.cache;
 
+import java.util.Collections;
 import java.util.stream.Collectors;
+import org.genericsystem.kernel.Dependencies.CompositesSnapshot;
+import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Vertex;
 
@@ -34,26 +37,25 @@ public class Transaction<T extends GenericService<T>> implements Context<T> {
 
 	@Override
 	public Snapshot<T> getInheritings(T generic) {
-		return () -> generic.unwrap().getInheritings().project(generic::wrap).iterator();
+		return () -> generic.getVertex() != null ? generic.unwrap().getInheritings().project(generic::wrap).iterator() : Collections.emptyIterator();
 	}
 
 	@Override
 	public Snapshot<T> getInstances(T generic) {
-		return () -> generic.unwrap().getInstances().project(generic::wrap).iterator();
+		return () -> generic.getVertex() != null ? generic.unwrap().getInstances().project(generic::wrap).iterator() : Collections.emptyIterator();
+	}
+
+	// @Override
+	@Override
+	public CompositesSnapshot<T> getMetaComposites(T generic) {
+		return () -> generic.getVertex() != null ? generic.unwrap().getMetaComposites().stream().map(x -> new DependenciesEntry<>(generic.wrap(x.getKey()), generic.buildDependencies(() -> x.getValue().stream().map(generic::wrap).iterator()))).iterator()
+				: Collections.emptyIterator();
 	}
 
 	@Override
-	public Snapshot<T> getComposites(T generic) {
-		return () -> generic.unwrap().getComposites().project(generic::wrap).iterator();
-	}
+	public CompositesSnapshot<T> getSuperComposites(T generic) {
+		return () -> generic.getVertex() != null ? generic.unwrap().getSuperComposites().stream().map(x -> new DependenciesEntry<>(generic.wrap(x.getKey()), generic.buildDependencies(() -> x.getValue().stream().map(generic::wrap).iterator()))).iterator()
+				: Collections.emptyIterator();
+	};
 
-	@Override
-	public Snapshot<T> getCompositesByMeta(T generic, T meta) {
-		return () -> generic.unwrap().getCompositesByMeta(meta.unwrap()).project(generic::wrap).iterator();
-	}
-
-	@Override
-	public Snapshot<T> getCompositesBySuper(T generic, T superT) {
-		return () -> generic.unwrap().getCompositesBySuper(superT.unwrap()).project(generic::wrap).iterator();
-	}
 }

@@ -1,5 +1,6 @@
 package org.genericsystem.cache;
 
+import org.genericsystem.kernel.Dependencies.CompositesSnapshot;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
@@ -33,13 +34,8 @@ public interface Context<T extends GenericService<T>> {
 
 	Snapshot<T> getInstances(T generic);
 
-	Snapshot<T> getComposites(T generic);
+	CompositesSnapshot<T> getMetaComposites(T generic);
 
-	Snapshot<T> getCompositesByMeta(T generic, T meta);
-
-	Snapshot<T> getCompositesBySuper(T generic, T superT);
-	// CompositesDependencies<T> getMetaComposites(T generic);
-	//
-	// CompositesDependencies<T> getSuperComposites(T generic);
+	CompositesSnapshot<T> getSuperComposites(T generic);
 
 }
