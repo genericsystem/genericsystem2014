@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+
 import org.genericsystem.kernel.services.DependenciesService;
 
 public class SupersComputer<T extends DependenciesService<T>> extends LinkedHashSet<T> {
@@ -25,7 +26,7 @@ public class SupersComputer<T extends DependenciesService<T>> extends LinkedHash
 		this.overrides = overrides;
 		this.components = components;
 		this.value = value;
-		visit((T) meta.getRoot());
+		visit(meta.getRoot());
 	}
 
 	private boolean visit(T candidate) {
