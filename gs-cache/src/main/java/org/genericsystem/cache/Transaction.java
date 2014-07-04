@@ -2,6 +2,7 @@ package org.genericsystem.cache;
 
 import java.util.Collections;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.Dependencies.CompositesSnapshot;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Snapshot;
@@ -45,7 +46,6 @@ public class Transaction<T extends GenericService<T>> implements Context<T> {
 		return () -> generic.getVertex() != null ? generic.unwrap().getInstances().project(generic::wrap).iterator() : Collections.emptyIterator();
 	}
 
-	// @Override
 	@Override
 	public CompositesSnapshot<T> getMetaComposites(T generic) {
 		return () -> generic.getVertex() != null ? generic.unwrap().getMetaComposites().stream().map(x -> new DependenciesEntry<>(generic.wrap(x.getKey()), generic.buildDependencies(() -> x.getValue().stream().map(generic::wrap).iterator()))).iterator()
