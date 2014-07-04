@@ -65,6 +65,7 @@ public abstract class AbstractDependenciesConcurrency extends AbstractSnapshot<V
 
 	@Override
 	public Iterator<VertexConcurrency> iterator() {
+		// return iterator(head.content.getC);
 		throw new UnsupportedOperationException();
 	}
 

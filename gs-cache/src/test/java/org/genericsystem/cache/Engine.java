@@ -36,16 +36,6 @@ public class Engine extends Generic implements EngineService<Generic> {
 	}
 
 	@Override
-	public Engine getRoot() {
-		return this;
-	}
-
-	@Override
-	public Generic getAlive() {
-		return this;
-	}
-
-	@Override
 	public Cache<Generic> start(Cache<Generic> cache) {
 		if (!equals(cache.getEngine()))
 			throw new IllegalStateException();

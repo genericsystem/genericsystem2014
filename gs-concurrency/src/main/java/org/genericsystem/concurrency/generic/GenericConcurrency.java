@@ -1,10 +1,10 @@
 package org.genericsystem.concurrency.generic;
 
-import java.util.Iterator;
-import java.util.function.Supplier;
-
-import org.genericsystem.cache.CacheDependencies;
+import org.genericsystem.concurrency.vertex.LifeManager;
+import org.genericsystem.concurrency.vertex.RootConcurrency;
+import org.genericsystem.concurrency.vertex.VertexConcurrency;
 import org.genericsystem.impl.GenericSignature;
+import org.genericsystem.kernel.Vertex;
 
 public class GenericConcurrency extends GenericSignature<GenericConcurrency> implements GenericServiceConcurrency<GenericConcurrency> {
 
@@ -13,9 +13,11 @@ public class GenericConcurrency extends GenericSignature<GenericConcurrency> imp
 		return new GenericConcurrency();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <U extends GenericConcurrency> CacheDependencies<U> buildDependencies(Supplier<Iterator<GenericConcurrency>> subDependenciesSupplier) {
-		return (CacheDependencies<U>) new CacheDependencies<GenericConcurrency>(subDependenciesSupplier);
+	public LifeManager getLifeManager() {
+		Vertex unwrap = unwrap();
+		if (unwrap instanceof RootConcurrency)
+			return ((RootConcurrency) unwrap).getLifeManager();
+		return ((VertexConcurrency) unwrap).getLifeManager();
 	}
 }

@@ -4,13 +4,30 @@ import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.genericsystem.kernel.Root;
-import org.genericsystem.kernel.RootService;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
 
-public class RootConcurrency extends Root implements RootService<Vertex> {
+public class RootConcurrency extends Root implements RootServiceConcurrency<Vertex> {
 
 	private final TsGenerator generator = new TsGenerator();
+
+	// TODO KK DEBUT KK cf VertexConcurrency
+	private LifeManager lifeManager;
+
+	void restore(Long designTs, long birthTs, long lastReadTs, long deathTs) {
+		lifeManager = buildLifeManager(designTs, birthTs, lastReadTs, deathTs);
+	}
+
+	@Override
+	public LifeManager getLifeManager() {
+		return lifeManager;
+	}
+
+	public boolean isAlive(long ts) {
+		return lifeManager.isAlive(ts);
+	}
+
+	// TODO KK FIN KK
 
 	public RootConcurrency(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
@@ -18,6 +35,12 @@ public class RootConcurrency extends Root implements RootService<Vertex> {
 
 	public RootConcurrency(Serializable value, Class<?>... userClasses) {
 		super(value, userClasses);
+		lifeManager = buildLifeManager();
+	}
+
+	@Override
+	public VertexConcurrency buildInstance() {
+		return new VertexConcurrency();
 	}
 
 	public long pickNewTs() {
