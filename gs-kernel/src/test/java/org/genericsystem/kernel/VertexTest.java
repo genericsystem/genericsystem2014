@@ -2,8 +2,6 @@ package org.genericsystem.kernel;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.genericsystem.kernel.services.RemovableService.RemoveStrategy;
 import org.testng.annotations.Test;
@@ -32,7 +30,7 @@ public class VertexTest extends AbstractTest {
 		Vertex myVehicle = vehicle.addInstance("myVehicle");
 		Vertex myVehicle123 = powerVehicle.addInstance("123", myVehicle);
 
-		assert myVehicle.getMetaComposites().getByIndex(powerVehicle).stream().anyMatch(g -> g.equals(myVehicle123));
+		assert myVehicle.getMetaComposites(powerVehicle).stream().anyMatch(g -> g.equals(myVehicle123));
 	}
 
 	public void test001_getSuperComposites() {
@@ -43,7 +41,7 @@ public class VertexTest extends AbstractTest {
 		Vertex vehicle256 = powerVehicle.addInstance("256", vehicle);
 		Vertex myVehicle123 = powerVehicle.addInstance(vehicle256, "123", myVehicle);
 
-		assert myVehicle.getSuperComposites().getByIndex(vehicle256).contains(myVehicle123) : myVehicle.getSuperComposites().stream().collect(Collectors.toList());
+		assert myVehicle.getSuperComposites(vehicle256).contains(myVehicle123);
 	}
 
 	public void test002_getSuperComposites() {
@@ -55,7 +53,7 @@ public class VertexTest extends AbstractTest {
 		Vertex vehicle256 = powerVehicle.addInstance("256", vehicle);
 		Vertex myVehicle123 = powerVehicle.addInstance("123", myVehicle);
 
-		assert myVehicle.getSuperComposites().getByIndex(vehicle256).contains(myVehicle123) : myVehicle.getSuperComposites().stream().collect(Collectors.toList());
+		assert myVehicle.getSuperComposites(vehicle256).contains(myVehicle123);
 	}
 
 	public void test() {

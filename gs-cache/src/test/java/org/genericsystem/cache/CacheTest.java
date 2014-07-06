@@ -1,8 +1,6 @@
 package org.genericsystem.cache;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
-
 import org.testng.annotations.Test;
 
 @Test
@@ -30,10 +28,10 @@ public class CacheTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic powerVehicle = engine.addInstance("power", vehicle);
+		assert vehicle.getMetaComposites(engine).contains(powerVehicle);
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		Generic myVehicle123 = powerVehicle.addInstance("123", myVehicle);
-
-		assert myVehicle.getMetaComposites().getByIndex(powerVehicle).stream().anyMatch(g -> g.equals(myVehicle123));
+		assert myVehicle.getMetaComposites(powerVehicle).contains(myVehicle123);
 	}
 
 	public void test001_getSuperComposites() {
@@ -44,7 +42,7 @@ public class CacheTest extends AbstractTest {
 		Generic vehicle256 = powerVehicle.addInstance("256", vehicle);
 		Generic myVehicle123 = powerVehicle.addInstance(vehicle256, "123", myVehicle);
 
-		assert myVehicle.getSuperComposites().getByIndex(vehicle256).contains(myVehicle123) : myVehicle.getSuperComposites().stream().collect(Collectors.toList());
+		assert myVehicle.getSuperComposites(vehicle256).contains(myVehicle123);
 	}
 
 	public void test002_getSuperComposites() {
@@ -56,7 +54,7 @@ public class CacheTest extends AbstractTest {
 		Generic vehicle256 = powerVehicle.addInstance("256", vehicle);
 		Generic myVehicle123 = powerVehicle.addInstance("123", myVehicle);
 
-		assert myVehicle.getSuperComposites().getByIndex(vehicle256).contains(myVehicle123) : myVehicle.getSuperComposites().stream().collect(Collectors.toList());
+		assert myVehicle.getSuperComposites(vehicle256).contains(myVehicle123);
 	}
 
 	public void test002_flush() {
@@ -101,6 +99,6 @@ public class CacheTest extends AbstractTest {
 		Cache<Generic> mountNewCache = currentCache.mountNewCache();
 		Generic vehicleColor2 = color.addInstance("vehicleColor2", vehicle);
 		mountNewCache.flush();
-		assert vehicle.getMetaComposites(color).containsAll(Arrays.asList(vehicleColor, vehicleColor2)) : vehicle.getMetaComposites(color).size();
+		assert vehicle.getMetaComposites(color).containsAll(Arrays.asList(vehicleColor, vehicleColor2)) : vehicle.getMetaComposites(color);
 	}
 }

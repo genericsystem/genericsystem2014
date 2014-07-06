@@ -1,11 +1,12 @@
 package org.genericsystem.cache;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import org.genericsystem.kernel.Dependencies;
-import org.genericsystem.kernel.Dependencies.CompositesDependencies;
+import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
@@ -15,10 +16,10 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 
 	protected Context<T> subContext;
 
-	private transient Map<T, Dependencies<T>> inheritingDependenciesMap = new HashMap<>();
-	private transient Map<T, Dependencies<T>> instancesDependenciesMap = new HashMap<>();
-	private transient Map<T, CompositesDependencies<T>> metaCompositesDependenciesMap = new HashMap<>();
-	private transient Map<T, CompositesDependencies<T>> superCompositesDependenciesMap = new HashMap<>();
+	private transient Map<T, Dependencies<T>> inheritingDependenciesMap;
+	private transient Map<T, Dependencies<T>> instancesDependenciesMap;
+	private transient Map<T, Map<T, Dependencies<T>>> metaCompositesDependenciesMap;
+	private transient Map<T, Map<T, Dependencies<T>>> superCompositesDependenciesMap;
 
 	private Set<T> adds = new LinkedHashSet<>();
 	private Set<T> removes = new LinkedHashSet<>();
@@ -126,38 +127,6 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 	}
 
 	@Override
-	public Dependencies<T> getInheritings(T generic) {
-		Dependencies<T> dependencies = inheritingDependenciesMap.get(generic);
-		if (dependencies == null)
-			inheritingDependenciesMap.put(generic, dependencies = generic.buildDependencies(() -> subContext.getInheritings(generic).iterator()));
-		return dependencies;
-	}
-
-	@Override
-	public Dependencies<T> getInstances(T generic) {
-		Dependencies<T> dependencies = instancesDependenciesMap.get(generic);
-		if (dependencies == null)
-			instancesDependenciesMap.put(generic, dependencies = generic.buildDependencies(() -> subContext.getInstances(generic).iterator()));
-		return dependencies;
-	}
-
-	@Override
-	public CompositesDependencies<T> getMetaComposites(T generic) {
-		CompositesDependencies<T> dependencies = metaCompositesDependenciesMap.get(generic);
-		if (dependencies == null)
-			metaCompositesDependenciesMap.put(generic, dependencies = generic.buildCompositeDependencies(() -> subContext.getMetaComposites(generic).iterator()));
-		return dependencies;
-	}
-
-	@Override
-	public CompositesDependencies<T> getSuperComposites(T generic) {
-		CompositesDependencies<T> dependencies = superCompositesDependenciesMap.get(generic);
-		if (dependencies == null)
-			superCompositesDependenciesMap.put(generic, dependencies = generic.buildCompositeDependencies(() -> subContext.getSuperComposites(generic).iterator()));
-		return dependencies;
-	}
-
-	@Override
 	public EngineService<T> getEngine() {
 		return subContext.getEngine();
 	}
@@ -166,4 +135,92 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 		return subContext;
 	}
 
+	@Override
+	public Dependencies<T> getInheritings(T generic) {
+		Dependencies<T> dependencies = inheritingDependenciesMap.get(generic);
+		if (dependencies == null)
+			inheritingDependenciesMap.put(generic, dependencies = new CacheDependencies<T>(() -> subContext.getInheritings(generic).iterator()));
+		return dependencies;
+	}
+
+	@Override
+	public Dependencies<T> getInstances(T generic) {
+		Dependencies<T> dependencies = instancesDependenciesMap.get(generic);
+		if (dependencies == null)
+			instancesDependenciesMap.put(generic, dependencies = new CacheDependencies<T>(() -> subContext.getInstances(generic).iterator()));
+		return dependencies;
+	}
+
+	public Snapshot<T> getComposites(T generic) {
+		return () -> {
+			Map<T, Dependencies<T>> dependencies = metaCompositesDependenciesMap.get(generic);
+			if (dependencies == null)
+				return Collections.emptyIterator();
+			return metaCompositesDependenciesMap.get(generic).entrySet().stream().map(x -> x.getValue().stream()).flatMap(x -> x).iterator();
+		};
+	}
+
+	@Override
+	public Snapshot<T> getMetaComposites(T generic, T meta) {
+		Map<T, Dependencies<T>> dependencies = metaCompositesDependenciesMap.get(generic);
+		if (dependencies == null)
+			metaCompositesDependenciesMap.put(generic, dependencies = new HashMap<>());
+		Dependencies<T> dependenciesByIndex = dependencies.get(meta);
+		if (dependenciesByIndex == null)
+			dependencies.put(meta, dependenciesByIndex = new CacheDependencies<T>(() -> subContext.getMetaComposites(generic, meta).iterator()));
+		return dependenciesByIndex;
+	}
+
+	@Override
+	public Snapshot<T> getSuperComposites(T generic, T superT) {
+		Map<T, Dependencies<T>> dependencies = superCompositesDependenciesMap.get(generic);
+		if (dependencies == null)
+			superCompositesDependenciesMap.put(generic, dependencies = new HashMap<>());
+		Dependencies<T> dependenciesByIndex = dependencies.get(superT);
+		if (dependenciesByIndex == null)
+			dependencies.put(superT, dependenciesByIndex = new CacheDependencies<T>(() -> subContext.getSuperComposites(generic, superT).iterator()));
+		return dependenciesByIndex;
+	}
+
+	T indexByMeta(T generic, T meta, T composite) {
+
+		Map<T, Dependencies<T>> dependencies = metaCompositesDependenciesMap.get(generic);
+		if (dependencies == null)
+			metaCompositesDependenciesMap.put(generic, dependencies = new HashMap<>());
+		Dependencies<T> dependenciesByIndex = dependencies.get(meta);
+		if (dependenciesByIndex == null)
+			dependencies.put(meta, dependenciesByIndex = new CacheDependencies<T>(() -> subContext.getMetaComposites(generic, meta).iterator()));
+		return dependenciesByIndex.set(composite);
+
+	}
+
+	T indexBySuper(T generic, T superT, T composite) {
+		Map<T, Dependencies<T>> dependencies = superCompositesDependenciesMap.get(generic);
+		if (dependencies == null)
+			superCompositesDependenciesMap.put(generic, dependencies = new HashMap<>());
+		Dependencies<T> dependenciesByIndex = dependencies.get(superT);
+		if (dependenciesByIndex == null)
+			dependencies.put(superT, dependenciesByIndex = new CacheDependencies<T>(() -> subContext.getSuperComposites(generic, superT).iterator()));
+		return dependenciesByIndex.set(composite);
+	};
+
+	boolean unIndexByMeta(T generic, T meta, T composite) {
+		Map<T, Dependencies<T>> dependencies = metaCompositesDependenciesMap.get(generic);
+		if (dependencies == null)
+			return false;
+		Dependencies<T> dependenciesByIndex = dependencies.get(meta);
+		if (dependenciesByIndex == null)
+			return false;
+		return dependenciesByIndex.remove(composite);
+	}
+
+	boolean unIndexBySuper(T generic, T superT, T composite) {
+		Map<T, Dependencies<T>> dependencies = superCompositesDependenciesMap.get(generic);
+		if (dependencies == null)
+			return false;
+		Dependencies<T> dependenciesByIndex = dependencies.get(superT);
+		if (dependenciesByIndex == null)
+			return false;
+		return dependenciesByIndex.remove(composite);
+	}
 }
