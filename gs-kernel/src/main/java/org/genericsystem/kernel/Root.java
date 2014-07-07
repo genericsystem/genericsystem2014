@@ -30,9 +30,7 @@ public class Root extends Vertex implements RootService<Vertex> {
 	}
 
 	private void initSystemMap() {
-		Vertex map = buildInstance(Collections.emptyList(), SystemMap.class, Collections.singletonList(this)).plug();
-		systemCache.put(SystemMap.class, map);
-		map.enablePropertyConstraint();
+		systemCache.put(SystemMap.class, buildInstance(Collections.emptyList(), SystemMap.class, Collections.singletonList(this)).plug());
 	}
 
 	@Override
