@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Snapshot.AbstractSnapshot;
 import org.genericsystem.kernel.Statics;
@@ -36,7 +35,7 @@ public interface CompositesInheritanceService<T extends CompositesInheritanceSer
 	}
 
 	default Snapshot<Serializable> getValues(T attribute) {
-		return getHolders(attribute).project(T::getValue);
+		return () -> getHolders(attribute).stream().map(T::getValue).iterator();
 	}
 
 	default Snapshot<T> getInheritings(final T origin, final int level) {
@@ -102,7 +101,7 @@ public interface CompositesInheritanceService<T extends CompositesInheritanceSer
 					Stream<T> supersStream = baseSupersStream();
 					if (!baseSupersStream().iterator().hasNext())
 						return (base.isRoot() || !origin.isAttributeOf(base.getMeta())) ? Stream.of(origin) : getInheringsStream(base.getMeta());
-					return Statics.concat(supersStream, superVertex -> getInheringsStream(superVertex)).distinct();
+						return Statics.concat(supersStream, superVertex -> getInheringsStream(superVertex)).distinct();
 				}
 
 				protected Stream<T> projectStream(Stream<T> streamToProject) {

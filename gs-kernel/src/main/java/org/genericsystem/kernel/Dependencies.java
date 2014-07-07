@@ -1,9 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.util.AbstractMap;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.function.Supplier;
 
 public interface Dependencies<T> extends Snapshot<T> {
 
@@ -40,41 +38,4 @@ public interface Dependencies<T> extends Snapshot<T> {
 		}
 	}
 
-	@FunctionalInterface
-	public static interface CompositesSnapshot<T> extends Snapshot<DependenciesEntry<T>> {
-		default Dependencies<T> internalGetByIndex(T index) {
-			Iterator<DependenciesEntry<T>> it = iterator();
-			while (it.hasNext()) {
-				DependenciesEntry<T> next = it.next();
-				if (index.equals(next.getKey()))
-					return next.getValue();
-			}
-			return null;
-		}
-
-		default Snapshot<T> getByIndex(T index) {
-			Snapshot<T> result = internalGetByIndex(index);
-			return result != null ? result : AbstractSnapshot.<T> emptySnapshot();
-		}
-	}
-
-	public static interface CompositesDependencies<T> extends Dependencies<DependenciesEntry<T>>, CompositesSnapshot<T> {
-
-		default T setByIndex(T index, T vertex) {
-			Dependencies<T> result = internalGetByIndex(index);
-			if (result == null)
-				set(new DependenciesEntry<>(index, result = buildDependencies(() -> Collections.emptyIterator())));
-			return result.set(vertex);
-		}
-
-		default public boolean removeByIndex(T index, T vertex) {
-			Dependencies<T> dependencies = internalGetByIndex(index);
-			if (dependencies == null)
-				return false;
-			return dependencies.remove(vertex);
-		}
-
-		Dependencies<T> buildDependencies(Supplier<Iterator<T>> supplier);
-
-	}
 }

@@ -6,10 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
-
 import org.genericsystem.kernel.Dependencies;
-import org.genericsystem.kernel.Dependencies.CompositesDependencies;
-import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.DependenciesImpl;
 import org.genericsystem.kernel.ExtendedSignature;
 import org.genericsystem.kernel.Signature;
@@ -46,32 +43,4 @@ public interface FactoryService<T extends FactoryService<T>> extends Dependencie
 		return new DependenciesImpl<U>();
 	}
 
-	default CompositesDependencies<T> buildCompositeDependencies(Supplier<Iterator<DependenciesEntry<T>>> subDependenciesSupplier) {
-		class CompositesDependenciesImpl implements CompositesDependencies<T> {
-
-			@SuppressWarnings("unchecked")
-			private final Dependencies<DependenciesEntry<T>> delegate = (Dependencies<DependenciesEntry<T>>) buildDependencies((Supplier) subDependenciesSupplier);
-
-			@Override
-			public boolean remove(DependenciesEntry<T> vertex) {
-				return delegate.remove(vertex);
-			}
-
-			@Override
-			public void add(DependenciesEntry<T> vertex) {
-				delegate.add(vertex);
-			}
-
-			@Override
-			public Iterator<DependenciesEntry<T>> iterator() {
-				return delegate.iterator();
-			}
-
-			@Override
-			public Dependencies<T> buildDependencies(Supplier<Iterator<T>> supplier) {
-				return FactoryService.this.buildDependencies(supplier);
-			}
-		}
-		return new CompositesDependenciesImpl();
-	}
 }
