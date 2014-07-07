@@ -28,7 +28,7 @@ public class Root extends Vertex implements RootService<Vertex> {
 	public Root(Serializable value, Class<?>... userClasses) {
 		init(null, Collections.emptyList(), value, Collections.emptyList());
 		systemCache.put(Root.class, this);
-		find(SystemMap.class);
+		initSystemMap();
 		for (Class<?> clazz : userClasses)
 			find(clazz);
 		systemCache.put(MetaAttribute.class, setMetaAttribute());
@@ -42,12 +42,17 @@ public class Root extends Vertex implements RootService<Vertex> {
 	public static class MetaAttribute {
 	}
 
+	private void initSystemMap() {
+		Vertex map = buildInstance(Collections.emptyList(), SystemMap.class, Collections.singletonList(this)).plug();
+		systemCache.put(SystemMap.class, map);
+		map.enablePropertyConstraint();
+	}
+
 	@Override
 	public Vertex find(Class<?> clazz) {
-		log.info("find " + clazz);
 		Vertex result = systemCache.get(clazz);
 		if (result == null)
-			systemCache.put(clazz, result = findMeta(clazz).setInstance(findOverrides(clazz), findValue(clazz), findComponents(clazz)).mountConstraints(clazz));
+			systemCache.put(clazz, result = findMeta(clazz).setInstance(findOverrides(clazz), findValue(clazz), findComponents(clazz)));
 		return result;
 	}
 
