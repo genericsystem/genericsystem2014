@@ -2,11 +2,10 @@ package org.genericsystem.impl;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.genericsystem.kernel.Dependencies;
+
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.VertexService;
@@ -50,57 +49,34 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 	}
 
 	@Override
-	default Dependencies<T> getInstances() {
-		return wrapDependencies(getVertex().getInstances());
+	default Snapshot<T> getInstances() {
+		return () -> getVertex().getInstances().stream().map(GenericService.this::wrap).iterator();
 	}
 
 	@Override
-	default Dependencies<T> getInheritings() {
-		return wrapDependencies(getVertex().getInheritings());
+	default Snapshot<T> getInheritings() {
+		return () -> getVertex().getInheritings().stream().map(GenericService.this::wrap).iterator();
 	}
 
-	default Dependencies<T> wrapDependencies(Dependencies<Vertex> dependencies) {
-		return new Dependencies<T>() {
-			@Override
-			public Iterator<T> iterator() {
-				return dependencies.stream().map(GenericService.this::wrap).iterator();
-			}
-
-			@Override
-			public void add(T generic) {
-				dependencies.add(generic.unwrap());
-			}
-
-			@Override
-			public boolean remove(T generic) {
-				return dependencies.remove(generic.unwrap());
-			}
-		};
+	@Override
+	default T indexInstance(T instance) {
+		return wrap(getVertex().indexInstance(instance.unwrap()));
 	}
 
-	// default Dependencies<Vertex> unwrapDependencies(Dependencies<T> dependencies) {
-	// return new Dependencies<Vertex>() {
-	// @Override
-	// public Iterator<Vertex> iterator() {
-	// return new AbstractProjectionIterator<T, Vertex>(dependencies.iterator()) {
-	// @Override
-	// public Vertex project(T t) {
-	// return t.unwrap();
-	// }
-	// };
-	// }
-	//
-	// @Override
-	// public void add(Vertex vertex) {
-	// dependencies.add(wrap(vertex));
-	// }
-	//
-	// @Override
-	// public boolean remove(Vertex vertex) {
-	// return dependencies.remove(wrap(vertex));
-	// }
-	// };
-	// }
+	@Override
+	default T indexInheriting(T inheriting) {
+		return wrap(getVertex().indexInheriting(inheriting.unwrap()));
+	}
+
+	@Override
+	default boolean unIndexInstance(T instance) {
+		return getVertex().unIndexInstance(instance.unwrap());
+	}
+
+	@Override
+	default boolean unIndexInheriting(T inheriting) {
+		return getVertex().unIndexInheriting(inheriting.unwrap());
+	}
 
 	@Override
 	default T getInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
@@ -117,18 +93,6 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 	default Snapshot<T> getComposites() {
 		return () -> getVertex().getComposites().stream().map(this::wrap).iterator();
 	}
-
-	// @Override
-	// default Snapshot<T> getMetaComposites(T meta) {
-	// Vertex vertex = getVertex();
-	// return vertex == null ? null : vertex.getMetaComposites(meta.getVertex()).project(this::wrap);
-	// }
-	//
-	// @Override
-	// default Snapshot<T> getSuperComposites(T superVertex) {
-	// Vertex vertex = getVertex();
-	// return vertex == null ? null : vertex.getSuperComposites(superVertex.getVertex()).project(this::wrap);
-	// }
 
 	@Override
 	default Snapshot<T> getMetaComposites(T meta) {

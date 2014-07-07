@@ -1,7 +1,6 @@
 package org.genericsystem.kernel;
 
 import java.util.List;
-
 import org.genericsystem.kernel.AbstractTest.RollbackCatcher;
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.testng.annotations.Test;
@@ -107,7 +106,7 @@ public class RelationTest {
 		Vertex bobIsBrotherOfJane = humanIsBrotherOfHuman.addInstance("BobIsBrotherOfJane", bob, jane);
 		assert bobIsBrotherOfHuman.inheritsFrom(humanIsBrotherOfHuman);
 		assert bobIsBrotherOfJane.isInstanceOf(bobIsBrotherOfHuman) : bobIsBrotherOfJane.info();
-		Dependencies<Vertex> instances = bobIsBrotherOfHuman.getInstances();
+		Snapshot<Vertex> instances = bobIsBrotherOfHuman.getInstances();
 		assert instances.size() == 1 : instances.size();
 		assert instances.contains(bobIsBrotherOfJane) : instances;
 	}
@@ -124,7 +123,7 @@ public class RelationTest {
 		Vertex bobIsBrotherOfJane = humanIsBrotherOfHuman.addInstance("bobIsBrotherOfJane", bob, jane);
 		assert bobIsBrotherOfHuman.inheritsFrom(humanIsBrotherOfHuman);
 		assert bobIsBrotherOfJane.isInstanceOf(bobIsBrotherOfHuman);
-		Dependencies<Vertex> instances = bobIsBrotherOfHuman.getInstances();
+		Snapshot<Vertex> instances = bobIsBrotherOfHuman.getInstances();
 		assert instances.size() == 1 : instances.size();
 		assert instances.contains(bobIsBrotherOfJane) : instances;
 	}
@@ -139,7 +138,7 @@ public class RelationTest {
 		Vertex carHaveSameOwnerAsVehicle = root.addInstance(vehicleHaveSameOwnerAsVehicle, "carHaveSameOwnerAsVehicle", car, vehicle);
 		Vertex mycarHaveSameOwnerAsCaravane = vehicleHaveSameOwnerAsVehicle.addInstance("myCarHaveSameOwnerAsCaravane", microCar, caravane);
 		assert mycarHaveSameOwnerAsCaravane.isInstanceOf(carHaveSameOwnerAsVehicle);
-		Dependencies<Vertex> instances = carHaveSameOwnerAsVehicle.getInstances();
+		Snapshot<Vertex> instances = carHaveSameOwnerAsVehicle.getInstances();
 		assert instances.size() == 1 : instances.size();
 		assert instances.contains(mycarHaveSameOwnerAsCaravane) : instances;
 	}
@@ -156,7 +155,7 @@ public class RelationTest {
 		Vertex carHaveSameOwnerAsVehicle = root.addInstance(vehicleHaveSameOwnerAsVehicle, "carHaveSameOwnerAsVehicle", car, vehicle);
 		Vertex mycarHaveSameOwnerAsCaravane = vehicleHaveSameOwnerAsVehicle.addInstance("myCarHaveSameOwnerAsCaravane", microCar, caravane);
 		assert mycarHaveSameOwnerAsCaravane.isInstanceOf(carHaveSameOwnerAsVehicle);
-		Dependencies<Vertex> instances = carHaveSameOwnerAsVehicle.getInstances();
+		Snapshot<Vertex> instances = carHaveSameOwnerAsVehicle.getInstances();
 		assert instances.size() == 1 : instances.size();
 		assert instances.contains(mycarHaveSameOwnerAsCaravane) : instances;
 	}
@@ -171,7 +170,7 @@ public class RelationTest {
 		Vertex mycarHaveSameOwnerAsCaravane = vehicleHaveSameOwnerAsVehicle.addInstance("myCarHaveSameOwnerAsCaravane", caravane, car);
 		assert carHaveSameOwnerAsVehicle.inheritsFrom(vehicleHaveSameOwnerAsVehicle);
 		assert mycarHaveSameOwnerAsCaravane.isInstanceOf(carHaveSameOwnerAsVehicle);
-		Dependencies<Vertex> instances = carHaveSameOwnerAsVehicle.getInstances();
+		Snapshot<Vertex> instances = carHaveSameOwnerAsVehicle.getInstances();
 		assert instances.size() == 1 : instances.size();
 		assert instances.contains(mycarHaveSameOwnerAsCaravane) : instances;
 	}
@@ -188,7 +187,7 @@ public class RelationTest {
 		Vertex mycarHaveSameOwnerAsCaravane = vehicleHaveSameOwnerAsVehicle.addInstance("myCarHaveSameOwnerAsCaravane", caravane, car);
 		assert carHaveSameOwnerAsVehicle.inheritsFrom(vehicleHaveSameOwnerAsVehicle);
 		assert mycarHaveSameOwnerAsCaravane.isInstanceOf(carHaveSameOwnerAsVehicle);
-		Dependencies<Vertex> instances = carHaveSameOwnerAsVehicle.getInstances();
+		Snapshot<Vertex> instances = carHaveSameOwnerAsVehicle.getInstances();
 		assert instances.size() == 1 : instances.size();
 		assert instances.contains(mycarHaveSameOwnerAsCaravane) : instances;
 	}
@@ -203,7 +202,7 @@ public class RelationTest {
 		Vertex carHaveSameOwnerAsVehicle = root.addInstance(vehicleHaveSameOwnerAsVehicle, "carHaveSameOwnerAsVehicle", vehicle, car);
 		Vertex mycarHaveSameOwnerAsCaravane = vehicleHaveSameOwnerAsVehicle.addInstance("myCarHaveSameOwnerAsCaravane", caravane, microCar);
 		assert mycarHaveSameOwnerAsCaravane.isInstanceOf(carHaveSameOwnerAsVehicle);
-		Dependencies<Vertex> instances = carHaveSameOwnerAsVehicle.getInstances();
+		Snapshot<Vertex> instances = carHaveSameOwnerAsVehicle.getInstances();
 		assert instances.size() == 1 : instances.size();
 		assert instances.contains(mycarHaveSameOwnerAsCaravane) : instances;
 	}
@@ -220,7 +219,7 @@ public class RelationTest {
 		Vertex carHaveSameOwnerAsVehicle = root.addInstance(vehicleHaveSameOwnerAsVehicle, "carHaveSameOwnerAsVehicle", vehicle, car);
 		Vertex mycarHaveSameOwnerAsCaravane = vehicleHaveSameOwnerAsVehicle.addInstance("myCarHaveSameOwnerAsCaravane", caravane, microCar);
 		assert mycarHaveSameOwnerAsCaravane.isInstanceOf(carHaveSameOwnerAsVehicle);
-		Dependencies<Vertex> instances = carHaveSameOwnerAsVehicle.getInstances();
+		Snapshot<Vertex> instances = carHaveSameOwnerAsVehicle.getInstances();
 		assert instances.size() == 1 : instances.size();
 		assert instances.contains(mycarHaveSameOwnerAsCaravane) : instances;
 	}

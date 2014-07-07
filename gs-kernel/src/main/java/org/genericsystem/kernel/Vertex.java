@@ -20,18 +20,17 @@ public class Vertex extends ExtendedSignature<Vertex> implements VertexService<V
 	}
 
 	@Override
-	public Dependencies<Vertex> getInstances() {
+	public Snapshot<Vertex> getInstances() {
 		return instances;
 	}
 
 	@Override
-	public Dependencies<Vertex> getInheritings() {
+	public Snapshot<Vertex> getInheritings() {
 		return inheritings;
 	}
 
 	@Override
 	public Snapshot<Vertex> getComposites() {
-		// assert false;
 		return () -> metaComposites.stream().map(entry -> entry.getValue().stream()).flatMap(x -> x).iterator();
 	}
 
@@ -91,6 +90,34 @@ public class Vertex extends ExtendedSignature<Vertex> implements VertexService<V
 	@Override
 	public boolean unIndexBySuper(Vertex superVertex, Vertex composite) {
 		return unIndex(superComposites, superVertex, composite);
+	}
+
+	public Vertex index(Dependencies<Vertex> dependencies, Vertex dependency) {
+		return dependencies.set(dependency);
+	}
+
+	public boolean unIndex(Dependencies<Vertex> dependencies, Vertex dependency) {
+		return dependencies.remove(dependency);
+	}
+
+	@Override
+	public Vertex indexInstance(Vertex instance) {
+		return index(instances, instance);
+	}
+
+	@Override
+	public Vertex indexInheriting(Vertex inheriting) {
+		return index(inheritings, inheriting);
+	}
+
+	@Override
+	public boolean unIndexInstance(Vertex instance) {
+		return unIndex(instances, instance);
+	}
+
+	@Override
+	public boolean unIndexInheriting(Vertex inheriting) {
+		return unIndex(inheritings, inheriting);
 	}
 
 }

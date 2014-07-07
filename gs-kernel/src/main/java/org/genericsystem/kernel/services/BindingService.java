@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.exceptions.AmbiguousSelectionException;
 import org.genericsystem.kernel.exceptions.CrossEnginesAssignementsException;
@@ -65,20 +64,14 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 		return null;
 	}
 
-	@Override
-	Dependencies<T> getInstances();
-
-	@Override
-	Dependencies<T> getInheritings();
-
 	Snapshot<T> getMetaComposites(T meta);
 
 	Snapshot<T> getSuperComposites(T superVertex);
 
 	@SuppressWarnings("unchecked")
 	default T plug() {
-		T t = getMeta().getInstances().set((T) this);
-		getSupersStream().forEach(superGeneric -> superGeneric.getInheritings().set((T) this));
+		T t = getMeta().indexInstance((T) this);
+		getSupersStream().forEach(superGeneric -> superGeneric.indexInheriting((T) this));
 		getComponentsStream().forEach(component -> component.indexByMeta(getMeta(), (T) this));
 		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> component.indexBySuper(superGeneric, (T) this)));
 		// assert getSupersStream().allMatch(superGeneric -> this == superGeneric.getInheritings().get((T) this));
@@ -88,20 +81,28 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 		return t;
 	}
 
+	T indexInstance(T instance);
+
+	T indexInheriting(T inheriting);
+
 	T indexBySuper(T superT, T composite);
 
 	T indexByMeta(T meta, T composite);
 
 	@SuppressWarnings("unchecked")
 	default boolean unplug() {
-		boolean result = getMeta().getInstances().remove((T) this);
+		boolean result = getMeta().unIndexInstance((T) this);
 		if (!result)
 			rollbackAndThrowException(new NotFoundException(((DisplayService<T>) this).info()));
-		getSupersStream().forEach(superGeneric -> superGeneric.getInheritings().remove((T) this));
+		getSupersStream().forEach(superGeneric -> superGeneric.unIndexInheriting((T) this));
 		getComponentsStream().forEach(component -> component.unIndexByMeta(getMeta(), (T) this));
 		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> component.unIndexBySuper(superGeneric, (T) this)));
 		return result;
 	}
+
+	boolean unIndexInstance(T instance);
+
+	boolean unIndexInheriting(T inheriting);
 
 	boolean unIndexBySuper(T superT, T composite);
 
