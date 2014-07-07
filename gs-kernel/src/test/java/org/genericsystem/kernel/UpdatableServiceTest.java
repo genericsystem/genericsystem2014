@@ -170,7 +170,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert engine.equals(engine.getMeta());
 		assert engine.equals(machine.getMeta());
 		assert engine.equals(vehicle.getMeta());
-		assert engine.equals(power.getMeta());
+		assert engine.getMetaAttribute().equals(power.getMeta());
 		assert vehicle.equals(car.getMeta());
 
 		assert newValue.equals(newMachine.getValue());

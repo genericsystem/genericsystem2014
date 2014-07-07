@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
 
@@ -135,6 +136,8 @@ public interface DependenciesService<T extends DependenciesService<T>> extends A
 		if (!subMeta.isSpecializationOf(getMeta()))
 			return false;
 		if (!subMeta.componentsDepends(subComponents, getComponents()))
+			return false;
+		if (getLevel() == subMeta.getLevel() && subComponents.size() == getComponents().size() && subComponents.stream().allMatch(component -> component.getValue() == getRoot().getValue()))
 			return false;
 		return true;
 	}

@@ -3,6 +3,7 @@ package org.genercisystem.impl;
 import java.util.Arrays;
 import java.util.Collections;
 
+import org.genericsystem.kernel.services.UpdatableService;
 import org.testng.annotations.Test;
 
 @Test
@@ -10,20 +11,20 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test001_AdjustMeta_MetaLevel_metaAttribut_NoComponent() {
 		Engine engine = new Engine();
-		engine.addInstance(engine.getValue(), engine);
 		assert engine == engine.adjustMeta(Collections.emptyList(), "Power", Collections.emptyList());
 	}
 
 	public void test002_AdjustMeta_MetaLevel_metaAttribut_OneComponent() {
 		Engine engine = new Engine();
-		Generic metaAttribute = engine.addInstance(engine.getValue(), engine);
+		UpdatableService<Generic> updatableService = engine;
+		Generic metaAttribute = updatableService.getMetaAttribute();
 		Generic car = engine.addInstance("Car");
 		assert metaAttribute.equals(engine.adjustMeta(Collections.emptyList(), "Power", Collections.singletonList(car)));
 	}
 
 	public void test003_AdjustMeta_MetaLevel_metaAttribut_TwoComponents() {
 		Engine engine = new Engine();
-		Generic metaAttribute = engine.addInstance(engine.getValue(), engine);
+		Generic metaAttribute = engine.getMetaAttribute();
 		Generic car = engine.addInstance("Car");
 		Generic color = engine.addInstance("Color");
 		assert metaAttribute.equals(engine.adjustMeta(Collections.emptyList(), "CarColor", Arrays.asList(car, color)));
@@ -31,7 +32,7 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test004_AdjustMeta_MetaLevel_metaAttribut() {
 		Engine engine = new Engine();
-		Generic metaAttribute = engine.addInstance(engine.getValue(), engine);
+		Generic metaAttribute = engine.getMetaAttribute();
 		Generic robot = engine.addInstance("Robot");
 		Generic car = engine.addInstance("Car");
 		Generic color = engine.addInstance("Color");
@@ -42,7 +43,7 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test005_AdjustMeta_MetaLevel_metaRelation_ThreeComponents() {
 		Engine engine = new Engine();
-		Generic metaAttribute = engine.addInstance(engine.getValue(), engine);
+		Generic metaAttribute = engine.getMetaAttribute();
 		assert metaAttribute.equals(engine.adjustMeta(Collections.emptyList(), engine.getValue(), Arrays.asList(engine, engine)));
 		Generic metaRelation = engine.addInstance(engine.getValue(), engine, engine);
 		Generic car = engine.addInstance("Car");
