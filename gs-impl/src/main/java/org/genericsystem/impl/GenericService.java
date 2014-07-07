@@ -13,6 +13,11 @@ import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.VertexService;
 
 public interface GenericService<T extends GenericService<T>> extends VertexService<T> {
+	@Override
+	default T getMetaAttribute() {
+		T root = getRoot();
+		return root.getInstance(root.getValue(), root);
+	}
 
 	default List<T> wrap(Stream<Vertex> stream) {
 		return stream.map(this::wrap).collect(Collectors.toList());
