@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import org.genericsystem.kernel.Root.MetaAttribute;
+
 import org.genericsystem.kernel.exceptions.ExistsException;
 
 public interface UpdatableService<T extends UpdatableService<T>> extends BindingService<T> {
@@ -136,9 +136,10 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 		return addInstance(overrides, value, components);
 	}
 
-	@SuppressWarnings("unchecked")
 	default T getMetaAttribute() {
-		return getRoot().find(MetaAttribute.class);
+		// return getRoot().find(MetaAttribute.class);
+		T root = getRoot();
+		return root.getInstance(root.getValue(), root);
 	}
 
 	@SuppressWarnings("unchecked")
