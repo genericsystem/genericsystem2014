@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Meta;
 import org.genericsystem.kernel.annotations.value.BooleanValue;
@@ -26,22 +27,17 @@ public class Root extends Vertex implements RootService<Vertex> {
 	public Root(Serializable value, Class<?>... userClasses) {
 		init(null, Collections.emptyList(), value, Collections.emptyList());
 		systemCache.put(Root.class, this);
-		initSystemMap();
+		find(SystemMap.class);
 		for (Class<?> clazz : userClasses)
 			find(clazz);
 	}
 
-	private void initSystemMap() {
-		systemCache.put(SystemMap.class, buildInstance(Collections.emptyList(), SystemMap.class, Collections.singletonList(this)).plug());
-	}
-
 	@Override
 	public Vertex find(Class<?> clazz) {
+		log.info("find " + clazz);
 		Vertex result = systemCache.get(clazz);
-		if (result != null)
-			return result;
 		if (result == null)
-			systemCache.put(clazz, result = findMeta(clazz).setInstance(findOverrides(clazz), findValue(clazz), findComponents(clazz)));
+			systemCache.put(clazz, result = findMeta(clazz).setInstance(findOverrides(clazz), findValue(clazz), findComponents(clazz)).mountConstraints(clazz));
 		return result;
 	}
 
@@ -83,4 +79,5 @@ public class Root extends Vertex implements RootService<Vertex> {
 				components.add(find(componentClass));
 		return components.toArray(new Vertex[components.size()]);
 	}
+
 }
