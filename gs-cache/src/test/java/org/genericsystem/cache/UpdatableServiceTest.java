@@ -169,7 +169,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert engine.equals(engine.getMeta());
 		assert engine.equals(machine.getMeta());
 		assert engine.equals(vehicle.getMeta());
-		assert engine.equals(power.getMeta());
+		assert engine.getMetaAttribute().equals(power.getMeta());
 		assert vehicle.equals(car.getMeta());
 
 		assert newValue.equals(newMachine.getValue());
@@ -329,7 +329,7 @@ public class UpdatableServiceTest extends AbstractTest {
 
 		Generic newFourWheels = engine.getInstance("FourWheels");
 		// assert newFourWheels.computeAllDependencies().size() == 5;
-		assert newFourWheels.computeAllDependencies().containsAll(Arrays.asList(car, myCar, power, fourWheels)) : newFourWheels.computeAllDependencies();
+		assert newFourWheels.computeAllDependencies().containsAll(Arrays.asList(car, myCar, fourWheels)) : newFourWheels.computeAllDependencies();
 		assert newFourWheels.getInheritings().size() == 1;
 		assert newFourWheels.getSupersStream().count() == 1;
 

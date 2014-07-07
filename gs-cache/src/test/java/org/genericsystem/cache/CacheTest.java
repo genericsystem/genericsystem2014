@@ -1,6 +1,7 @@
 package org.genericsystem.cache;
 
 import java.util.Arrays;
+
 import org.testng.annotations.Test;
 
 @Test
@@ -28,7 +29,7 @@ public class CacheTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic powerVehicle = engine.addInstance("power", vehicle);
-		assert vehicle.getMetaComposites(engine).contains(powerVehicle);
+		assert vehicle.getMetaComposites(engine.getMetaAttribute()).contains(powerVehicle);
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		Generic myVehicle123 = powerVehicle.addInstance("123", myVehicle);
 		assert myVehicle.getMetaComposites(powerVehicle).contains(myVehicle123);
