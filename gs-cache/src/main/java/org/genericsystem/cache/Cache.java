@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
+
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
@@ -188,7 +189,7 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 	public Snapshot<T> getComposites(T generic) {
 		return () -> {
 			Map<T, Dependencies<T>> dependencies = metaCompositesDependenciesMap.get(generic);
-			return dependencies == null ? Collections.emptyIterator() : metaCompositesDependenciesMap.get(generic).entrySet().stream().map(x -> x.getValue().stream()).flatMap(x -> x).iterator();
+			return dependencies == null ? Collections.emptyIterator() : Statics.concat(metaCompositesDependenciesMap.get(generic).entrySet().stream(), x -> x.getValue().stream()).iterator();
 		};
 	}
 
