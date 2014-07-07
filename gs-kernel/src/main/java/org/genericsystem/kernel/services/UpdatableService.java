@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.exceptions.ExistsException;
 
 public interface UpdatableService<T extends UpdatableService<T>> extends BindingService<T> {
@@ -136,6 +135,7 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 		return addInstance(overrides, value, components);
 	}
 
+	@SuppressWarnings("unchecked")
 	default T getMetaAttribute() {
 		T root = getRoot();
 		return root.getInstance(root.getValue(), root);
@@ -160,14 +160,14 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 			return nearestMeta.addInstance(overrides, value, components);
 		T weakInstance = getWeakInstance(value, components);
 		if (weakInstance != null)
-			rollbackAndThrowException(new ExistsException("In confict with existing instance : " + weakInstance.info()));
+			rollbackAndThrowException(new ExistsException("Attempts to add an already existing instance : " + weakInstance.info()));
 		T instance = buildInstance(overrides, value, Arrays.asList(components));
 		return instance.rebuildAll(() -> instance.plug());
 	}
 
-	default List<T> getUnreachedSupers(T instance, List<T> overrides) {
-		return overrides.stream().filter(override -> instance.getSupers().stream().allMatch(superVertex -> !superVertex.inheritsFrom(override))).collect(Collectors.toList());
-	}
+	// default List<T> getUnreachedSupers(T instance, List<T> overrides) {
+	// return overrides.stream().filter(override -> instance.getSupers().stream().allMatch(superVertex -> !superVertex.inheritsFrom(override))).collect(Collectors.toList());
+	// }
 
 	public static class Supers<T extends UpdatableService<T>> extends ArrayList<T> {
 		private static final long serialVersionUID = 6163099887384346235L;
