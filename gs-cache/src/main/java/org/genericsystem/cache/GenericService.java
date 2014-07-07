@@ -3,9 +3,17 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
+
 import org.genericsystem.kernel.Snapshot;
 
 public interface GenericService<T extends GenericService<T>> extends org.genericsystem.impl.GenericService<T> {
+
+	// @Phantom [Lorg.genericsystem.kernel.services.UpdatableService; cannot be cast to [Lorg.genericsystem.cache.GenericService;
+	@Override
+	default T getMetaAttribute() {
+		T root = getRoot();
+		return root.getInstance(root.getValue(), root);
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
