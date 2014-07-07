@@ -41,7 +41,7 @@ public class CacheTest extends AbstractTest {
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		Generic vehicle256 = powerVehicle.addInstance("256", vehicle);
 		Generic myVehicle123 = powerVehicle.addInstance(vehicle256, "123", myVehicle);
-
+		assert myVehicle123.inheritsFrom(vehicle256);
 		assert myVehicle.getSuperComposites(vehicle256).contains(myVehicle123);
 	}
 
@@ -50,10 +50,12 @@ public class CacheTest extends AbstractTest {
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic powerVehicle = engine.addInstance("power", vehicle);
 		powerVehicle.enablePropertyConstraint();
+		assert powerVehicle.isPropertyConstraintEnabled();
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		Generic vehicle256 = powerVehicle.addInstance("256", vehicle);
 		Generic myVehicle123 = powerVehicle.addInstance("123", myVehicle);
-
+		assert !vehicle256.equiv(myVehicle123);
+		assert myVehicle123.inheritsFrom(vehicle256);
 		assert myVehicle.getSuperComposites(vehicle256).contains(myVehicle123);
 	}
 

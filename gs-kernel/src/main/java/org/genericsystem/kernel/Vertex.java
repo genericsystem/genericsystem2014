@@ -56,45 +56,41 @@ public class Vertex extends ExtendedSignature<Vertex> implements VertexService<V
 	}
 
 	@Override
-	public Vertex indexByMeta(Vertex meta, Vertex component) {
-		for (DependenciesEntry<Vertex> entry : metaComposites)
-			if (meta.equals(entry.getKey()))
-				return entry.getValue().set(component);
-
-		Dependencies<Vertex> dependencies = new DependenciesImpl<Vertex>();
-		Vertex result = dependencies.set(component);
-		metaComposites.set(new DependenciesEntry<Vertex>(meta, dependencies));
-		return result;
+	public Vertex indexByMeta(Vertex meta, Vertex composite) {
+		return index(metaComposites, meta, composite);
 	}
 
 	@Override
-	public Vertex indexBySuper(Vertex superVertex, Vertex component) {
+	public Vertex indexBySuper(Vertex superVertex, Vertex composite) {
+		return index(superComposites, superVertex, composite);
+	}
 
-		for (DependenciesEntry<Vertex> entry : superComposites)
-			if (superVertex.equals(entry.getKey()))
-				return entry.getValue().set(component);
+	private static Vertex index(Dependencies<DependenciesEntry<Vertex>> multimap, Vertex index, Vertex composite) {
+		for (DependenciesEntry<Vertex> entry : multimap)
+			if (index.equals(entry.getKey()))
+				return entry.getValue().set(composite);
 
 		Dependencies<Vertex> dependencies = new DependenciesImpl<Vertex>();
-		Vertex result = dependencies.set(component);// Add or Set
-		superComposites.set(new DependenciesEntry<Vertex>(superVertex, dependencies));
-
+		Vertex result = dependencies.set(composite);
+		multimap.set(new DependenciesEntry<Vertex>(index, dependencies));
 		return result;
 	}
 
-	@Override
-	public boolean unIndexByMeta(Vertex meta, Vertex component) {
-		for (DependenciesEntry<Vertex> entry : metaComposites)
-			if (meta.equals(entry.getKey()))
-				return entry.getValue().remove(component);
+	private static boolean unIndex(Dependencies<DependenciesEntry<Vertex>> multimap, Vertex index, Vertex composite) {
+		for (DependenciesEntry<Vertex> entry : multimap)
+			if (index.equals(entry.getKey()))
+				return entry.getValue().remove(composite);
 		return false;
 	}
 
 	@Override
-	public boolean unIndexBySuper(Vertex superVertex, Vertex component) {
-		for (DependenciesEntry<Vertex> entry : superComposites)
-			if (superVertex.equals(entry.getKey()))
-				return entry.getValue().remove(component);
-		return false;
+	public boolean unIndexByMeta(Vertex meta, Vertex composite) {
+		return unIndex(metaComposites, meta, composite);
+	}
+
+	@Override
+	public boolean unIndexBySuper(Vertex superVertex, Vertex composite) {
+		return unIndex(superComposites, superVertex, composite);
 	}
 
 }

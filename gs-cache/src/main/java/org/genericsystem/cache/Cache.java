@@ -157,9 +157,7 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 	public Snapshot<T> getComposites(T generic) {
 		return () -> {
 			Map<T, Dependencies<T>> dependencies = metaCompositesDependenciesMap.get(generic);
-			if (dependencies == null)
-				return Collections.emptyIterator();
-			return metaCompositesDependenciesMap.get(generic).entrySet().stream().map(x -> x.getValue().stream()).flatMap(x -> x).iterator();
+			return dependencies == null ? Collections.emptyIterator() : metaCompositesDependenciesMap.get(generic).entrySet().stream().map(x -> x.getValue().stream()).flatMap(x -> x).iterator();
 		};
 	}
 
@@ -171,16 +169,6 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 	@Override
 	public Snapshot<T> getSuperComposites(T generic, T superT) {
 		return getIndex(superCompositesDependenciesMap, () -> subContext.getSuperComposites(generic, superT).iterator(), generic, superT);
-	}
-
-	static <T> Snapshot<T> getIndex(Map<T, Map<T, Dependencies<T>>> multiMap, Supplier<Iterator<T>> subIteratorSupplier, T generic, T index) {
-		Map<T, Dependencies<T>> dependencies = multiMap.get(generic);
-		if (dependencies == null)
-			multiMap.put(generic, dependencies = new HashMap<>());
-		Dependencies<T> dependenciesByIndex = dependencies.get(index);
-		if (dependenciesByIndex == null)
-			dependencies.put(index, dependenciesByIndex = new CacheDependencies<T>(subIteratorSupplier));
-		return dependenciesByIndex;
 	}
 
 	T indexByMeta(T generic, T meta, T composite) {
@@ -197,6 +185,18 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 
 	boolean unIndexBySuper(T generic, T superT, T composite) {
 		return unIndex(superCompositesDependenciesMap, generic, superT, composite);
+	}
+
+	static <T> Snapshot<T> getIndex(Map<T, Map<T, Dependencies<T>>> multiMap, Supplier<Iterator<T>> subIteratorSupplier, T generic, T index) {
+		return () -> {
+			Map<T, Dependencies<T>> dependencies = multiMap.get(generic);
+			if (dependencies == null)
+				return subIteratorSupplier.get();
+			Dependencies<T> dependenciesByIndex = dependencies.get(index);
+			if (dependenciesByIndex == null)
+				return subIteratorSupplier.get();
+			return dependenciesByIndex.iterator();
+		};
 	}
 
 	static <T> T index(Map<T, Map<T, Dependencies<T>>> multiMap, Supplier<Iterator<T>> subIteratorSupplier, T generic, T index, T composite) {
