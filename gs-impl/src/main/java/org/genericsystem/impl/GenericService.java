@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.VertexService;

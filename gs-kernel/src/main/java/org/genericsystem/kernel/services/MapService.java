@@ -41,7 +41,7 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 	}
 
 	@SystemGeneric
-	@Components({ Root.class })
+	@Components(Root.class)
 	@org.genericsystem.kernel.annotations.constraints.PropertyConstraint
 	public static class SystemMap {
 

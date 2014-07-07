@@ -3,10 +3,17 @@ package org.genericsystem.kernel;
 import java.util.Arrays;
 import java.util.Collections;
 
+import org.genericsystem.kernel.Root.MetaAttribute;
+import org.genericsystem.kernel.services.MapService.SystemMap;
 import org.testng.annotations.Test;
 
 @Test
 public class AdjustMetaTest extends AbstractTest {
+
+	public void test001_AdjustMeta_SystemMap() {
+		Root engine = new Root();
+		assert engine.find(SystemMap.class).getMeta().equals(engine.find(MetaAttribute.class));
+	}
 
 	public void test001_AdjustMeta_MetaLevel_metaAttribut_NoComponent() {
 		Root engine = new Root();
@@ -23,6 +30,7 @@ public class AdjustMetaTest extends AbstractTest {
 	public void test003_AdjustMeta_MetaLevel_metaAttribut_TwoComponents() {
 		Root engine = new Root();
 		Vertex metaAttribute = engine.getMetaAttribute();
+		assert metaAttribute.isMeta();
 		Vertex car = engine.addInstance("Car");
 		Vertex color = engine.addInstance("Color");
 		assert metaAttribute == engine.adjustMeta(Collections.emptyList(), "CarColor", Arrays.asList(car, color));

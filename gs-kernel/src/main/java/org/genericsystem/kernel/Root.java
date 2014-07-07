@@ -28,24 +28,16 @@ public class Root extends Vertex implements RootService<Vertex> {
 	public Root(Serializable value, Class<?>... userClasses) {
 		init(null, Collections.emptyList(), value, Collections.emptyList());
 		systemCache.put(Root.class, this);
-		initSystemMap();
+		find(SystemMap.class).enablePropertyConstraint();
+		find(MetaAttribute.class);
 		for (Class<?> clazz : userClasses)
 			find(clazz);
-		systemCache.put(MetaAttribute.class, setMetaAttribute());
-	}
-
-	private Vertex setMetaAttribute() {
-		return buildInstance(Collections.emptyList(), getValue(), Collections.singletonList(this)).plug();
 	}
 
 	@SystemGeneric
+	@Components(Root.class)
+	@StringValue(Statics.ENGINE_VALUE)
 	public static class MetaAttribute {
-	}
-
-	private void initSystemMap() {
-		Vertex map = buildInstance(Collections.emptyList(), SystemMap.class, Collections.singletonList(this)).plug();
-		systemCache.put(SystemMap.class, map);
-		map.enablePropertyConstraint();
 	}
 
 	@Override
