@@ -30,7 +30,6 @@ public class AdjustMetaTest extends AbstractTest {
 	public void test003_AdjustMeta_MetaLevel_metaAttribut_TwoComponents() {
 		Root engine = new Root();
 		Vertex metaAttribute = engine.getMetaAttribute();
-		assert metaAttribute.isMeta();
 		Vertex car = engine.addInstance("Car");
 		Vertex color = engine.addInstance("Color");
 		assert metaAttribute == engine.adjustMeta(Collections.emptyList(), "CarColor", Arrays.asList(car, color));
