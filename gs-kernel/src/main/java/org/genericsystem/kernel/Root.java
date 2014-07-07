@@ -6,15 +6,17 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Meta;
 import org.genericsystem.kernel.annotations.value.BooleanValue;
 import org.genericsystem.kernel.annotations.value.IntValue;
 import org.genericsystem.kernel.annotations.value.StringValue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Root extends Vertex implements RootService<Vertex> {
 
+	protected final static Logger log = LoggerFactory.getLogger(Root.class);
 	protected final Map<Class<?>, Vertex> systemCache = new HashMap<Class<?>, Vertex>();
 
 	public Root(Class<?>... userClasses) {

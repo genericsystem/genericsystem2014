@@ -13,7 +13,7 @@ public interface EngineService<T extends GenericService<T>> extends org.generics
 	@Override
 	// TODO necessary for eclipse ?
 	default T getMap() {
-		return getRoot().find(SystemMap.class);
+		return find(SystemMap.class);
 	}
 
 	@SuppressWarnings("unchecked")

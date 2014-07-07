@@ -3,11 +3,7 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.function.Supplier;
 import org.genericsystem.kernel.Dependencies;
-import org.genericsystem.kernel.Dependencies.CompositesDependencies;
-import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Snapshot;
 
 public interface GenericService<T extends GenericService<T>> extends org.genericsystem.impl.GenericService<T> {
@@ -26,26 +22,14 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default CompositesDependencies<T> getMetaComposites() {
-		return getCurrentCache().getMetaComposites((T) this);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	default CompositesDependencies<T> getSuperComposites() {
-		return getCurrentCache().getSuperComposites((T) this);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
 	default Snapshot<T> getMetaComposites(T meta) {
-		return getCurrentCache().getMetaComposites((T) this).getByIndex(meta);
+		return getCurrentCache().getMetaComposites((T) this, meta);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getSuperComposites(T superVertex) {
-		return getCurrentCache().getSuperComposites((T) this).getByIndex(superVertex);
+		return getCurrentCache().getSuperComposites((T) this, superVertex);
 	}
 
 	@Override
@@ -81,17 +65,6 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	default <U extends T> CacheDependencies<U> buildDependencies(Supplier<Iterator<T>> iteratorSupplier) {
-		return (CacheDependencies<U>) new CacheDependencies<T>(iteratorSupplier);
-	}
-
-	@Override
-	default CompositesDependencies<T> buildCompositeDependencies(Supplier<Iterator<DependenciesEntry<T>>> iteratorSupplier) {
-		return new CacheCompositesDependencies<T>(iteratorSupplier);
-	}
-
 	default Cache<T> getCurrentCache() {
 		return getRoot().getCurrentCache();
 	}
@@ -108,4 +81,35 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 		getCurrentCache().simpleRemove((T) this);
 		return unplugged;
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Snapshot<T> getComposites() {
+		return getCurrentCache().getComposites((T) this);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default T indexBySuper(T superT, T composite) {
+		return getCurrentCache().indexBySuper((T) this, superT, composite);
+	};
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default T indexByMeta(T meta, T composite) {
+		return getCurrentCache().indexByMeta((T) this, meta, composite);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default boolean unIndexByMeta(T meta, T composite) {
+		return getCurrentCache().unIndexByMeta((T) this, meta, composite);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default boolean unIndexBySuper(T superT, T composite) {
+		return getCurrentCache().unIndexBySuper((T) this, superT, composite);
+	}
+
 }

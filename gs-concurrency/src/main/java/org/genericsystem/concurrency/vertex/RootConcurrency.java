@@ -11,6 +11,32 @@ public class RootConcurrency extends Root implements RootServiceConcurrency<Vert
 
 	private final TsGenerator generator = new TsGenerator();
 
+	// TODO KK DEBUT KK cf TsProvider
+	private final TsProvider tsProvider = new TsProvider(pickNewTs());
+
+	public TsProvider getTsProvider() {
+		return tsProvider;
+	}
+
+	class TsProvider {
+
+		long ts;
+
+		public TsProvider(long ts) {
+			this.ts = ts;
+		}
+
+		public void updateTs(long ts) {
+			this.ts = ts;
+		}
+
+		public long getTs() {
+			return ts;
+		}
+	}
+
+	// TODO KK FIN KK
+
 	// TODO KK DEBUT KK cf VertexConcurrency
 	private LifeManager lifeManager;
 

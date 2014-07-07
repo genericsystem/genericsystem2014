@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
-import org.genericsystem.kernel.Dependencies.CompositesDependencies;
+import java.util.Collections;
+import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,10 +9,10 @@ public class Vertex extends ExtendedSignature<Vertex> implements VertexService<V
 
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 
-	private final Dependencies<Vertex> instances = buildDependencies(null);
-	private final Dependencies<Vertex> inheritings = buildDependencies(null);
-	private final CompositesDependencies<Vertex> superComposites = buildCompositeDependencies(null);
-	private final CompositesDependencies<Vertex> metaComposites = buildCompositeDependencies(null);
+	private final Dependencies<Vertex> instances = new DependenciesImpl<Vertex>();
+	private final Dependencies<Vertex> inheritings = new DependenciesImpl<Vertex>();
+	private final Dependencies<DependenciesEntry<Vertex>> superComposites = new DependenciesImpl<DependenciesEntry<Vertex>>();
+	private final Dependencies<DependenciesEntry<Vertex>> metaComposites = new DependenciesImpl<DependenciesEntry<Vertex>>();
 
 	@Override
 	public Vertex buildInstance() {
@@ -29,13 +30,67 @@ public class Vertex extends ExtendedSignature<Vertex> implements VertexService<V
 	}
 
 	@Override
-	public CompositesDependencies<Vertex> getMetaComposites() {
-		return metaComposites;
+	public Snapshot<Vertex> getComposites() {
+		// assert false;
+		return () -> metaComposites.stream().map(entry -> entry.getValue().stream()).flatMap(x -> x).iterator();
 	}
 
 	@Override
-	public CompositesDependencies<Vertex> getSuperComposites() {
-		return superComposites;
+	public Snapshot<Vertex> getMetaComposites(Vertex meta) {
+		return () -> {
+			for (DependenciesEntry<Vertex> entry : metaComposites)
+				if (meta.equals(entry.getKey()))
+					return entry.getValue().iterator();
+			return Collections.emptyIterator();
+		};
+	};
+
+	@Override
+	public Snapshot<Vertex> getSuperComposites(Vertex superVertex) {
+		return () -> {
+			for (DependenciesEntry<Vertex> entry : superComposites)
+				if (superVertex.equals(entry.getKey()))
+					return entry.getValue().iterator();
+			return Collections.emptyIterator();
+		};
+	}
+
+	@Override
+	public Vertex indexByMeta(Vertex meta, Vertex composite) {
+		return index(metaComposites, meta, composite);
+	}
+
+	@Override
+	public Vertex indexBySuper(Vertex superVertex, Vertex composite) {
+		return index(superComposites, superVertex, composite);
+	}
+
+	private static Vertex index(Dependencies<DependenciesEntry<Vertex>> multimap, Vertex index, Vertex composite) {
+		for (DependenciesEntry<Vertex> entry : multimap)
+			if (index.equals(entry.getKey()))
+				return entry.getValue().set(composite);
+
+		Dependencies<Vertex> dependencies = new DependenciesImpl<Vertex>();
+		Vertex result = dependencies.set(composite);
+		multimap.set(new DependenciesEntry<Vertex>(index, dependencies));
+		return result;
+	}
+
+	private static boolean unIndex(Dependencies<DependenciesEntry<Vertex>> multimap, Vertex index, Vertex composite) {
+		for (DependenciesEntry<Vertex> entry : multimap)
+			if (index.equals(entry.getKey()))
+				return entry.getValue().remove(composite);
+		return false;
+	}
+
+	@Override
+	public boolean unIndexByMeta(Vertex meta, Vertex composite) {
+		return unIndex(metaComposites, meta, composite);
+	}
+
+	@Override
+	public boolean unIndexBySuper(Vertex superVertex, Vertex composite) {
+		return unIndex(superComposites, superVertex, composite);
 	}
 
 }
