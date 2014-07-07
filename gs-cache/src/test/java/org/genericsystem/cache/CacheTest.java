@@ -98,6 +98,7 @@ public class CacheTest extends AbstractTest {
 		Generic vehicleColor = color.addInstance("vehicleColor", vehicle);
 		Cache<Generic> mountNewCache = currentCache.mountNewCache();
 		Generic vehicleColor2 = color.addInstance("vehicleColor2", vehicle);
+		assert vehicle.getMetaComposites(color).containsAll(Arrays.asList(vehicleColor, vehicleColor2)) : vehicle.getMetaComposites(color);
 		mountNewCache.flush();
 		assert vehicle.getMetaComposites(color).containsAll(Arrays.asList(vehicleColor, vehicleColor2)) : vehicle.getMetaComposites(color);
 	}

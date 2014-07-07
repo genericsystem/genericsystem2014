@@ -2,9 +2,11 @@ package org.genericsystem.cache;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
@@ -111,6 +113,7 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 	public void simpleAdd(T generic) {
 		if (!removes.remove(generic))
 			adds.add(generic);
+
 	}
 
 	@Override
@@ -162,63 +165,55 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 
 	@Override
 	public Snapshot<T> getMetaComposites(T generic, T meta) {
-		Map<T, Dependencies<T>> dependencies = metaCompositesDependenciesMap.get(generic);
-		if (dependencies == null)
-			metaCompositesDependenciesMap.put(generic, dependencies = new HashMap<>());
-		Dependencies<T> dependenciesByIndex = dependencies.get(meta);
-		if (dependenciesByIndex == null)
-			dependencies.put(meta, dependenciesByIndex = new CacheDependencies<T>(() -> subContext.getMetaComposites(generic, meta).iterator()));
-		return dependenciesByIndex;
+		return getIndex(metaCompositesDependenciesMap, () -> subContext.getMetaComposites(generic, meta).iterator(), generic, meta);
 	}
 
 	@Override
 	public Snapshot<T> getSuperComposites(T generic, T superT) {
-		Map<T, Dependencies<T>> dependencies = superCompositesDependenciesMap.get(generic);
+		return getIndex(superCompositesDependenciesMap, () -> subContext.getSuperComposites(generic, superT).iterator(), generic, superT);
+	}
+
+	static <T> Snapshot<T> getIndex(Map<T, Map<T, Dependencies<T>>> multiMap, Supplier<Iterator<T>> subIteratorSupplier, T generic, T index) {
+		Map<T, Dependencies<T>> dependencies = multiMap.get(generic);
 		if (dependencies == null)
-			superCompositesDependenciesMap.put(generic, dependencies = new HashMap<>());
-		Dependencies<T> dependenciesByIndex = dependencies.get(superT);
+			multiMap.put(generic, dependencies = new HashMap<>());
+		Dependencies<T> dependenciesByIndex = dependencies.get(index);
 		if (dependenciesByIndex == null)
-			dependencies.put(superT, dependenciesByIndex = new CacheDependencies<T>(() -> subContext.getSuperComposites(generic, superT).iterator()));
+			dependencies.put(index, dependenciesByIndex = new CacheDependencies<T>(subIteratorSupplier));
 		return dependenciesByIndex;
 	}
 
 	T indexByMeta(T generic, T meta, T composite) {
-
-		Map<T, Dependencies<T>> dependencies = metaCompositesDependenciesMap.get(generic);
-		if (dependencies == null)
-			metaCompositesDependenciesMap.put(generic, dependencies = new HashMap<>());
-		Dependencies<T> dependenciesByIndex = dependencies.get(meta);
-		if (dependenciesByIndex == null)
-			dependencies.put(meta, dependenciesByIndex = new CacheDependencies<T>(() -> subContext.getMetaComposites(generic, meta).iterator()));
-		return dependenciesByIndex.set(composite);
-
+		return index(metaCompositesDependenciesMap, () -> subContext.getMetaComposites(generic, meta).iterator(), generic, meta, composite);
 	}
 
 	T indexBySuper(T generic, T superT, T composite) {
-		Map<T, Dependencies<T>> dependencies = superCompositesDependenciesMap.get(generic);
-		if (dependencies == null)
-			superCompositesDependenciesMap.put(generic, dependencies = new HashMap<>());
-		Dependencies<T> dependenciesByIndex = dependencies.get(superT);
-		if (dependenciesByIndex == null)
-			dependencies.put(superT, dependenciesByIndex = new CacheDependencies<T>(() -> subContext.getSuperComposites(generic, superT).iterator()));
-		return dependenciesByIndex.set(composite);
+		return index(superCompositesDependenciesMap, () -> subContext.getMetaComposites(generic, superT).iterator(), generic, superT, composite);
 	};
 
 	boolean unIndexByMeta(T generic, T meta, T composite) {
-		Map<T, Dependencies<T>> dependencies = metaCompositesDependenciesMap.get(generic);
-		if (dependencies == null)
-			return false;
-		Dependencies<T> dependenciesByIndex = dependencies.get(meta);
-		if (dependenciesByIndex == null)
-			return false;
-		return dependenciesByIndex.remove(composite);
+		return unIndex(metaCompositesDependenciesMap, generic, meta, composite);
 	}
 
 	boolean unIndexBySuper(T generic, T superT, T composite) {
-		Map<T, Dependencies<T>> dependencies = superCompositesDependenciesMap.get(generic);
+		return unIndex(superCompositesDependenciesMap, generic, superT, composite);
+	}
+
+	static <T> T index(Map<T, Map<T, Dependencies<T>>> multiMap, Supplier<Iterator<T>> subIteratorSupplier, T generic, T index, T composite) {
+		Map<T, Dependencies<T>> dependencies = multiMap.get(generic);
+		if (dependencies == null)
+			multiMap.put(generic, dependencies = new HashMap<>());
+		Dependencies<T> dependenciesByIndex = dependencies.get(index);
+		if (dependenciesByIndex == null)
+			dependencies.put(index, dependenciesByIndex = new CacheDependencies<T>(subIteratorSupplier));
+		return dependenciesByIndex.set(composite);
+	};
+
+	static <T> boolean unIndex(Map<T, Map<T, Dependencies<T>>> multiMap, T generic, T index, T composite) {
+		Map<T, Dependencies<T>> dependencies = multiMap.get(generic);
 		if (dependencies == null)
 			return false;
-		Dependencies<T> dependenciesByIndex = dependencies.get(superT);
+		Dependencies<T> dependenciesByIndex = dependencies.get(index);
 		if (dependenciesByIndex == null)
 			return false;
 		return dependenciesByIndex.remove(composite);
