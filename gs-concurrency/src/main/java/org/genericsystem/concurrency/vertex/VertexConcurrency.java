@@ -45,7 +45,6 @@ public class VertexConcurrency extends Vertex implements VertexServiceConcurrenc
 
 			@Override
 			public Iterator<VertexConcurrency> iterator() {
-				System.out.println("=> " + ((RootConcurrency) getRoot()).getTsProvider());
 				return iterator(((RootConcurrency) getRoot()).getTsProvider().getTs());
 			}
 		};
