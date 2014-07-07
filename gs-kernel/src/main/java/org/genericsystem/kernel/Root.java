@@ -51,8 +51,6 @@ public class Root extends Vertex implements RootService<Vertex> {
 	@Override
 	public Vertex find(Class<?> clazz) {
 		Vertex result = systemCache.get(clazz);
-		if (result != null)
-			return result;
 		if (result == null)
 			systemCache.put(clazz, result = findMeta(clazz).setInstance(findOverrides(clazz), findValue(clazz), findComponents(clazz)));
 		return result;
@@ -96,4 +94,5 @@ public class Root extends Vertex implements RootService<Vertex> {
 				components.add(find(componentClass));
 		return components.toArray(new Vertex[components.size()]);
 	}
+
 }

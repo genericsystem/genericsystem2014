@@ -3,6 +3,9 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import org.genericsystem.kernel.Root;
+import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.SystemGeneric;
 
 public interface MapService<T extends MapService<T>> extends SystemPropertiesService<T>, CompositesInheritanceService<T>, UpdatableService<T> {
@@ -38,6 +41,8 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 	}
 
 	@SystemGeneric
+	@Components({ Root.class })
+	@org.genericsystem.kernel.annotations.constraints.PropertyConstraint
 	public static class SystemMap {
 
 	}

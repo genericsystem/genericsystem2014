@@ -9,14 +9,8 @@ import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
 public abstract class AbstractDependenciesConcurrency extends AbstractSnapshot<VertexConcurrency> implements Dependencies<VertexConcurrency> {
 
-	// private final LifeManager lifeManager;
-
 	private Node<VertexConcurrency> head = null;
 	private Node<VertexConcurrency> tail = null;
-
-	// public DependenciesConcurrency(LifeManager lifeManager) {
-	// this.lifeManager = lifeManager;
-	// }
 
 	public abstract LifeManager getLifeManager();
 
@@ -61,12 +55,6 @@ public abstract class AbstractDependenciesConcurrency extends AbstractSnapshot<V
 			nextNode = nextNextNode;
 		}
 		return false;
-	}
-
-	@Override
-	public Iterator<VertexConcurrency> iterator() {
-		// return iterator(head.content.getC);
-		throw new UnsupportedOperationException();
 	}
 
 	public Iterator<VertexConcurrency> iterator(long ts) {

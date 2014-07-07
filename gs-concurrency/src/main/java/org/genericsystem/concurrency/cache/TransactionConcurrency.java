@@ -53,6 +53,6 @@ public class TransactionConcurrency<T extends GenericServiceConcurrency<T>> exte
 	public CompositesSnapshot<T> getSuperComposites(T generic) {
 		return () -> generic.getVertex() != null ? generic.unwrap().getSuperComposites().stream().map(x -> new DependenciesEntry<>(generic.wrap(x.getKey()), generic.buildDependencies(() -> x.getValue().stream().map(generic::wrap).iterator()))).iterator()
 				: Collections.emptyIterator();
-	};
+	}
 
 }

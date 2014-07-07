@@ -24,8 +24,8 @@ public class EngineConcurrency extends GenericConcurrency implements EngineServi
 
 	public EngineConcurrency(Serializable rootValue, Serializable engineValue) {
 		root = buildRoot(rootValue);
-		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
 		cacheLocal.set(buildCache(new TransactionConcurrency<>(this)));
+		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
 	}
 
 	@Override

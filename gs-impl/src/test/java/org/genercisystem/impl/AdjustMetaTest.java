@@ -3,7 +3,6 @@ package org.genercisystem.impl;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.genericsystem.kernel.services.UpdatableService;
 import org.testng.annotations.Test;
 
 @Test
@@ -16,8 +15,7 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test002_AdjustMeta_MetaLevel_metaAttribut_OneComponent() {
 		Engine engine = new Engine();
-		UpdatableService<Generic> updatableService = engine;
-		Generic metaAttribute = updatableService.getMetaAttribute();
+		Generic metaAttribute = engine.getMetaAttribute();
 		Generic car = engine.addInstance("Car");
 		assert metaAttribute.equals(engine.adjustMeta(Collections.emptyList(), "Power", Collections.singletonList(car)));
 	}
@@ -55,7 +53,6 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test006_AdjustMeta_TypeLevel_Relation_TwoComponents() {
 		Engine engine = new Engine();
-		engine.addInstance(engine.getValue(), engine);
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
@@ -66,7 +63,6 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test007_AdjustMeta_TypeLevel_Relation_TwoComponents_oneComponentSpecializedByInheritance() {
 		Engine engine = new Engine();
-		engine.addInstance(engine.getValue(), engine);
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
@@ -78,7 +74,6 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test008_AdjustMeta_TypeLevel_Relation_TwoComponents_oneComponentSpecializedByInstanciation() {
 		Engine engine = new Engine();
-		engine.addInstance(engine.getValue(), engine);
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
@@ -90,7 +85,6 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test009_AdjustMeta_TypeLevel_Relation_TwoComponents_TwoComponentSpecializedByInheritance() {
 		Engine engine = new Engine();
-		engine.addInstance(engine.getValue(), engine);
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
@@ -103,7 +97,6 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test010_AdjustMeta_TypeLevel_Relation_TwoComponents_TwoComponentSpecializedByInstanciation() {
 		Engine engine = new Engine();
-		engine.addInstance(engine.getValue(), engine);
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
@@ -116,7 +109,6 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test011_AdjustMeta_TypeLevel_Relation_TwoComponents_TwoComponentSpecialized() {
 		Engine engine = new Engine();
-		engine.addInstance(engine.getValue(), engine);
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
@@ -129,7 +121,6 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test012_AdjustMeta_TypeLevel_Relation_ThreeComponents() {
 		Engine engine = new Engine();
-		engine.addInstance(engine.getValue(), engine);
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
@@ -144,7 +135,6 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test013_AdjustMeta_TypeLevel_Relation_ThreeComponents() {
 		Engine engine = new Engine();
-		engine.addInstance(engine.getValue(), engine);
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
@@ -160,7 +150,6 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test014_AdjustMeta_TypeLevel_Relation_ThreeComponents() {
 		Engine engine = new Engine();
-		engine.addInstance(engine.getValue(), engine);
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
@@ -175,7 +164,6 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test015_AdjustMeta_TypeLevel_Relation_ThreeComponents() {
 		Engine engine = new Engine();
-		engine.addInstance(engine.getValue(), engine);
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
@@ -190,7 +178,6 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test016_AdjustMeta_TypeLevel_Relation_ThreeComponents() {
 		Engine engine = new Engine();
-		engine.addInstance(engine.getValue(), engine);
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
@@ -206,7 +193,6 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test017_AdjustMeta_TypeLevel_Relation_ThreeComponents() {
 		Engine engine = new Engine();
-		engine.addInstance(engine.getValue(), engine);
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic vehicle2 = engine.addInstance(vehicle, "Vehicle2");
 		Generic vehicleVehicle2 = engine.addInstance("VehicleVehicle2", vehicle, vehicle2);
@@ -226,7 +212,6 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test018_AdjustMeta_TypeLevel_Relation() {
 		Engine engine = new Engine();
-		engine.addInstance(engine.getValue(), engine);
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic vehicle2 = engine.addInstance(vehicle, "Vehicle2");
 		Generic vehicleVehicle2 = engine.addInstance("VehicleVehicle2", vehicle, vehicle2);
