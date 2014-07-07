@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.exceptions.ExistsException;
 
 public interface UpdatableService<T extends UpdatableService<T>> extends BindingService<T> {
@@ -51,8 +50,8 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 		T build = rebuilder.get();
 		dependenciesToRebuild.remove(this);
 		convertMap.put((T) this, build);
-
 		dependenciesToRebuild.forEach(x -> x.getOrBuild(convertMap));
+
 		return build;
 	}
 
@@ -63,29 +62,27 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 		dependenciesToRebuild.forEach(UpdatableService::unplug);
 
 		T build = rebuilder.get();
-		// convertMap.put((T) this, build);
+		convertMap.put((T) this, build);
 
 		dependenciesToRebuild.forEach(x -> x.getOrBuild(convertMap));
 		return build;
 	}
 
-	@SuppressWarnings("unchecked")
-	default T partialRebuild(Supplier<T> rebuilder) {
-		Map<T, T> convertMap = new HashMap<T, T>();
-		LinkedHashSet<T> allDependencies = this.computeAllDependencies();
-
-		allDependencies.forEach(UpdatableService::unplug);
-
-		T build = rebuilder.get();
-		allDependencies.remove(this);
-		convertMap.put((T) this, build);
-
-		allDependencies.forEach(x -> x.getOrBuild(convertMap));
-		return build;
-	}
+	// @SuppressWarnings("unchecked")
+	// default T partialRebuild(Supplier<T> rebuilder) {
+	// Map<T, T> convertMap = new HashMap<T, T>();
+	// LinkedHashSet<T> allDependencies = this.computeAllDependencies();
+	// allDependencies.forEach(UpdatableService::unplug);
+	// T build = rebuilder.get();
+	// allDependencies.remove(this);
+	// convertMap.put((T) this, build);
+	// allDependencies.forEach(x -> x.getOrBuild(convertMap));
+	// return build;
+	// }
 
 	@SuppressWarnings("unchecked")
 	default T getOrBuild(Map<T, T> convertMap) {
+
 		if (this.isAlive())
 			return (T) this;
 		T newDependency = convertMap.get(this);
@@ -160,7 +157,6 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 			rollbackAndThrowException(new ExistsException("In confict with existing instance : " + weakInstance.info()));
 		T instance = buildInstance(overrides, value, Arrays.asList(components));
 		return instance.rebuildAll(() -> instance.plug());
-		// return buildInstance(overrides, value, Arrays.asList(components)).plug();
 	}
 
 	default List<T> getUnreachedSupers(T instance, List<T> overrides) {
