@@ -3,21 +3,44 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
-import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Snapshot;
 
 public interface GenericService<T extends GenericService<T>> extends org.genericsystem.impl.GenericService<T> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default Dependencies<T> getInstances() {
+	default Snapshot<T> getInstances() {
 		return getCurrentCache().getInstances((T) this);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default Dependencies<T> getInheritings() {
+	default Snapshot<T> getInheritings() {
 		return getCurrentCache().getInheritings((T) this);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default T indexInstance(T instance) {
+		return getCurrentCache().indexInstance((T) this, instance);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default T indexInheriting(T inheriting) {
+		return getCurrentCache().indexInheriting((T) this, inheriting);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default boolean unIndexInstance(T instance) {
+		return getCurrentCache().unIndexInstance((T) this, instance);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default boolean unIndexInheriting(T inheriting) {
+		return getCurrentCache().unIndexInheriting((T) this, inheriting);
 	}
 
 	@SuppressWarnings("unchecked")
