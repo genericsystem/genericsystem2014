@@ -1,7 +1,6 @@
 package org.genericsystem.cache;
 
 import java.util.Arrays;
-
 import org.testng.annotations.Test;
 
 @Test
@@ -24,9 +23,9 @@ public class AttributesTest extends AbstractTest {
 		Generic car = engine.addInstance(vehicle, "Car");
 		log.info(vehicle.info());
 		log.info(power.info());
-		//assert vehicle.getAttributes(engine).size() == 1 : vehicle.getAttributes(engine);
+		// assert vehicle.getAttributes(engine).size() == 1 : vehicle.getAttributes(engine);
 		assert vehicle.getAttributes(engine).contains(power);
-		//assert car.getAttributes(engine).size() == 1;
+		// assert car.getAttributes(engine).size() == 1;
 		assert car.getAttributes(engine).contains(power);
 	}
 
@@ -45,9 +44,9 @@ public class AttributesTest extends AbstractTest {
 		assert car.getLevel() == 1;
 		assert power.getLevel() == 1;
 
-		//assert vehicle.getAttributes(engine).size() == 0;
+		// assert vehicle.getAttributes(engine).size() == 0;
 		assert !vehicle.getAttributes(engine).contains(power);
-		//assert car.getAttributes(engine).size() == 1;
+		// assert car.getAttributes(engine).size() == 1;
 		assert car.getAttributes(engine).contains(power);
 	}
 
@@ -57,11 +56,11 @@ public class AttributesTest extends AbstractTest {
 		Generic power = engine.addInstance("Power", vehicle);
 		Generic car = engine.addInstance(vehicle, "Car");
 		Generic microcar = engine.addInstance(car, "Microcar");
-		//assert vehicle.getAttributes(engine).size() == 1;
+		// assert vehicle.getAttributes(engine).size() == 1;
 		assert vehicle.getAttributes(engine).contains(power);
-		//assert car.getAttributes(engine).size() == 1;
+		// assert car.getAttributes(engine).size() == 1;
 		assert car.getAttributes(engine).contains(power);
-		//assert microcar.getAttributes(engine).size() == 1;
+		// assert microcar.getAttributes(engine).size() == 1;
 		assert microcar.getAttributes(engine).contains(power);
 	}
 
@@ -71,11 +70,11 @@ public class AttributesTest extends AbstractTest {
 		Generic car = engine.addInstance(vehicle, "Car");
 		Generic power = engine.addInstance("Power", car);
 		Generic microcar = engine.addInstance(car, "Microcar");
-		//assert vehicle.getAttributes(engine).size() == 0;
+		// assert vehicle.getAttributes(engine).size() == 0;
 		assert !vehicle.getAttributes(engine).contains(power);
-		//assert car.getAttributes(engine).size() == 1;
+		// assert car.getAttributes(engine).size() == 1;
 		assert car.getAttributes(engine).contains(power);
-		//assert microcar.getAttributes(engine).size() == 1;
+		// assert microcar.getAttributes(engine).size() == 1;
 		assert microcar.getAttributes(engine).contains(power);
 	}
 
@@ -85,11 +84,11 @@ public class AttributesTest extends AbstractTest {
 		Generic car = engine.addInstance(vehicle, "Car");
 		Generic microcar = engine.addInstance(car, "Microcar");
 		Generic power = engine.addInstance("Power", microcar);
-		//assert vehicle.getAttributes(engine).size() == 0;
+		// assert vehicle.getAttributes(engine).size() == 0;
 		assert !vehicle.getAttributes(engine).contains(power);
-		//assert car.getAttributes(engine).size() == 0;
+		// assert car.getAttributes(engine).size() == 0;
 		assert !car.getAttributes(engine).contains(power);
-		//assert microcar.getAttributes(engine).size() == 1;
+		// assert microcar.getAttributes(engine).size() == 1;
 		assert microcar.getAttributes(engine).contains(power);
 	}
 
@@ -103,7 +102,7 @@ public class AttributesTest extends AbstractTest {
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic power = engine.addInstance("Power", vehicle);
 		Generic airconditioner = engine.addInstance("AirConditioner", vehicle);
-		//assert vehicle.getAttributes(engine).size() == 2;
+		// assert vehicle.getAttributes(engine).size() == 2;
 		assert vehicle.getAttributes(engine).contains(power);
 		assert vehicle.getAttributes(engine).contains(airconditioner);
 		assert power.isAlive();
@@ -117,10 +116,10 @@ public class AttributesTest extends AbstractTest {
 		Generic power = engine.addInstance("Power", vehicle);
 		Generic airconditioner = engine.addInstance("AirConditioner", vehicle);
 		Generic car = engine.addInstance(vehicle, "Car");
-		//assert vehicle.getAttributes(engine).size() == 2;
+		// assert vehicle.getAttributes(engine).size() == 2;
 		assert vehicle.getAttributes(engine).contains(power);
 		assert vehicle.getAttributes(engine).contains(airconditioner);
-		//assert car.getAttributes(engine).size() == 2;
+		// assert car.getAttributes(engine).size() == 2;
 		assert car.getAttributes(engine).contains(power);
 		assert car.getAttributes(engine).contains(airconditioner);
 	}
@@ -132,10 +131,10 @@ public class AttributesTest extends AbstractTest {
 		Generic car = engine.addInstance(vehicle, "Car");
 		Generic power = engine.addInstance("Power", car);
 		Generic airconditioner = engine.addInstance("AirConditioner", car);
-		//assert vehicle.getAttributes(engine).size() == 0;
+		// assert vehicle.getAttributes(engine).size() == 0;
 		assert !vehicle.getAttributes(engine).contains(power);
 		assert !vehicle.getAttributes(engine).contains(airconditioner);
-		//assert car.getAttributes(engine).size() == 2;
+		// assert car.getAttributes(engine).size() == 2;
 		assert car.getAttributes(engine).contains(power);
 		assert car.getAttributes(engine).contains(airconditioner);
 	}
@@ -147,10 +146,10 @@ public class AttributesTest extends AbstractTest {
 		Generic power = engine.addInstance("Power", vehicle);
 		Generic car = engine.addInstance(vehicle, "Car");
 		Generic airconditioner = engine.addInstance("AirConditioner", car);
-		//assert vehicle.getAttributes(engine).size() == 1;
+		// assert vehicle.getAttributes(engine).size() == 1;
 		assert vehicle.getAttributes(engine).contains(power);
 		assert !vehicle.getAttributes(engine).contains(airconditioner);
-		//assert car.getAttributes(engine).size() == 2;
+		// assert car.getAttributes(engine).size() == 2;
 		assert car.getAttributes(engine).contains(power);
 		assert car.getAttributes(engine).contains(airconditioner);
 	}
@@ -162,13 +161,13 @@ public class AttributesTest extends AbstractTest {
 		Generic airconditioner = engine.addInstance("AirConditioner", vehicle);
 		Generic car = engine.addInstance(vehicle, "Car");
 		Generic microcar = engine.addInstance(car, "Microcar");
-		//assert vehicle.getAttributes(engine).size() == 2;
+		// assert vehicle.getAttributes(engine).size() == 2;
 		assert vehicle.getAttributes(engine).contains(power);
 		assert vehicle.getAttributes(engine).contains(airconditioner);
-		//assert car.getAttributes(engine).size() == 2;
+		// assert car.getAttributes(engine).size() == 2;
 		assert car.getAttributes(engine).contains(power);
 		assert car.getAttributes(engine).contains(airconditioner);
-		//assert microcar.getAttributes(engine).size() == 2;
+		// assert microcar.getAttributes(engine).size() == 2;
 		assert microcar.getAttributes(engine).contains(power);
 		assert microcar.getAttributes(engine).contains(airconditioner);
 	}
@@ -180,13 +179,13 @@ public class AttributesTest extends AbstractTest {
 		Generic power = engine.addInstance("Power", car);
 		Generic airconditioner = engine.addInstance("AirConditioner", car);
 		Generic microcar = engine.addInstance(car, "Microcar");
-		//assert vehicle.getAttributes(engine).size() == 0;
+		// assert vehicle.getAttributes(engine).size() == 0;
 		assert !vehicle.getAttributes(engine).contains(power);
 		assert !vehicle.getAttributes(engine).contains(airconditioner);
-		//assert car.getAttributes(engine).size() == 2;
+		// assert car.getAttributes(engine).size() == 2;
 		assert car.getAttributes(engine).contains(power);
 		assert car.getAttributes(engine).contains(airconditioner);
-		//assert microcar.getAttributes(engine).size() == 2;
+		// assert microcar.getAttributes(engine).size() == 2;
 		assert microcar.getAttributes(engine).contains(power);
 		assert microcar.getAttributes(engine).contains(airconditioner);
 	}
@@ -198,13 +197,13 @@ public class AttributesTest extends AbstractTest {
 		Generic microcar = engine.addInstance(car, "Microcar");
 		Generic power = engine.addInstance("Power", microcar);
 		Generic airconditioner = engine.addInstance("AirConditioner", microcar);
-		//assert vehicle.getAttributes(engine).size() == 0;
+		// assert vehicle.getAttributes(engine).size() == 0;
 		assert !vehicle.getAttributes(engine).contains(power);
 		assert !vehicle.getAttributes(engine).contains(airconditioner);
-		//assert car.getAttributes(engine).size() == 0;
+		// assert car.getAttributes(engine).size() == 0;
 		assert !car.getAttributes(engine).contains(power);
 		assert !car.getAttributes(engine).contains(airconditioner);
-		//assert microcar.getAttributes(engine).size() == 2;
+		// assert microcar.getAttributes(engine).size() == 2;
 		assert microcar.getAttributes(engine).contains(power);
 		assert microcar.getAttributes(engine).contains(airconditioner);
 	}
@@ -216,13 +215,13 @@ public class AttributesTest extends AbstractTest {
 		Generic car = engine.addInstance(vehicle, "Car");
 		Generic airconditioner = engine.addInstance("AirConditioner", car);
 		Generic microcar = engine.addInstance(car, "Microcar");
-		//assert vehicle.getAttributes(engine).size() == 1;
+		// assert vehicle.getAttributes(engine).size() == 1;
 		assert vehicle.getAttributes(engine).contains(power);
 		assert !vehicle.getAttributes(engine).contains(airconditioner);
-		//assert car.getAttributes(engine).size() == 2;
+		// assert car.getAttributes(engine).size() == 2;
 		assert car.getAttributes(engine).contains(power);
 		assert car.getAttributes(engine).contains(airconditioner);
-		//assert microcar.getAttributes(engine).size() == 2;
+		// assert microcar.getAttributes(engine).size() == 2;
 		assert microcar.getAttributes(engine).contains(power);
 		assert microcar.getAttributes(engine).contains(airconditioner);
 	}
@@ -234,12 +233,12 @@ public class AttributesTest extends AbstractTest {
 		Generic car = engine.addInstance(vehicle, "Car");
 		Generic microcar = engine.addInstance(car, "Microcar");
 		Generic airconditioner = engine.addInstance("AirConditioner", microcar);
-		//assert vehicle.getAttributes(engine).size() == 1;
+		// assert vehicle.getAttributes(engine).size() == 1;
 		assert vehicle.getAttributes(engine).contains(power);
 		assert !vehicle.getAttributes(engine).contains(airconditioner);
-		//assert car.getAttributes(engine).size() == 1;
+		// assert car.getAttributes(engine).size() == 1;
 		assert car.getAttributes(engine).contains(power);
-		//assert microcar.getAttributes(engine).size() == 2;
+		// assert microcar.getAttributes(engine).size() == 2;
 		assert microcar.getAttributes(engine).contains(power);
 		assert microcar.getAttributes(engine).contains(airconditioner);
 	}
@@ -251,13 +250,13 @@ public class AttributesTest extends AbstractTest {
 		Generic power = engine.addInstance("Power", car);
 		Generic microcar = engine.addInstance(car, "Microcar");
 		Generic airconditioner = engine.addInstance("AirConditioner", microcar);
-		//assert vehicle.getAttributes(engine).size() == 0;
+		// assert vehicle.getAttributes(engine).size() == 0;
 		assert !vehicle.getAttributes(engine).contains(power);
 		assert !vehicle.getAttributes(engine).contains(airconditioner);
-		//assert car.getAttributes(engine).size() == 1;
+		// assert car.getAttributes(engine).size() == 1;
 		assert car.getAttributes(engine).contains(power);
 		assert !car.getAttributes(engine).contains(airconditioner);
-		//assert microcar.getAttributes(engine).size() == 2;
+		// assert microcar.getAttributes(engine).size() == 2;
 		assert microcar.getAttributes(engine).contains(power);
 		assert microcar.getAttributes(engine).contains(airconditioner);
 	}
@@ -268,11 +267,11 @@ public class AttributesTest extends AbstractTest {
 		Generic power = engine.addInstance("Power", vehicle);
 		Generic car = engine.addInstance(vehicle, "Car");
 		Generic caravan = engine.addInstance(vehicle, "Caravan");
-		//assert vehicle.getAttributes(engine).size() == 1;
+		// assert vehicle.getAttributes(engine).size() == 1;
 		assert vehicle.getAttributes(engine).contains(power);
-		//assert car.getAttributes(engine).size() == 1;
+		// assert car.getAttributes(engine).size() == 1;
 		assert car.getAttributes(engine).contains(power);
-		//assert caravan.getAttributes(engine).size() == 1;
+		// assert caravan.getAttributes(engine).size() == 1;
 		assert caravan.getAttributes(engine).contains(power);
 	}
 
@@ -282,11 +281,11 @@ public class AttributesTest extends AbstractTest {
 		Generic car = engine.addInstance(vehicle, "Car");
 		Generic power = engine.addInstance("Power", car);
 		Generic caravan = engine.addInstance(vehicle, "Caravan");
-		//assert vehicle.getAttributes(engine).size() == 0;
+		// assert vehicle.getAttributes(engine).size() == 0;
 		assert !vehicle.getAttributes(engine).contains(power);
-		//assert car.getAttributes(engine).size() == 1;
+		// assert car.getAttributes(engine).size() == 1;
 		assert car.getAttributes(engine).contains(power);
-		//assert caravan.getAttributes(engine).size() == 0;
+		// assert caravan.getAttributes(engine).size() == 0;
 		assert !caravan.getAttributes(engine).contains(power);
 	}
 
@@ -296,11 +295,11 @@ public class AttributesTest extends AbstractTest {
 		Generic car = engine.addInstance(vehicle, "Car");
 		Generic caravan = engine.addInstance(vehicle, "Caravan");
 		Generic power = engine.addInstance("Power", caravan);
-		//assert vehicle.getAttributes(engine).size() == 0;
+		// assert vehicle.getAttributes(engine).size() == 0;
 		assert !vehicle.getAttributes(engine).contains(power);
-		//assert car.getAttributes(engine).size() == 0;
+		// assert car.getAttributes(engine).size() == 0;
 		assert !car.getAttributes(engine).contains(power);
-		//assert caravan.getAttributes(engine).size() == 1;
+		// assert caravan.getAttributes(engine).size() == 1;
 		assert caravan.getAttributes(engine).contains(power);
 	}
 
@@ -312,13 +311,13 @@ public class AttributesTest extends AbstractTest {
 		Generic robot = engine.addInstance(object, "Robot");
 		Generic transformer = engine.addInstance(Arrays.asList(vehicle, robot), "Transformer");
 
-		//assert object.getAttributes(engine).size() == 1;
+		// assert object.getAttributes(engine).size() == 1;
 		assert object.getAttributes(engine).contains(power);
-		//assert vehicle.getAttributes(engine).size() == 1;
+		// assert vehicle.getAttributes(engine).size() == 1;
 		assert vehicle.getAttributes(engine).contains(power);
-		//assert robot.getAttributes(engine).size() == 1;
+		// assert robot.getAttributes(engine).size() == 1;
 		assert robot.getAttributes(engine).contains(power);
-		//assert transformer.getAttributes(engine).size() == 1;
+		// assert transformer.getAttributes(engine).size() == 1;
 		assert transformer.getAttributes(engine).contains(power);
 	}
 
@@ -330,13 +329,13 @@ public class AttributesTest extends AbstractTest {
 		Generic robot = engine.addInstance(object, "Robot");
 		Generic transformer = engine.addInstance(Arrays.asList(vehicle, robot), "Transformer");
 
-		//assert object.getAttributes(engine).size() == 0;
+		// assert object.getAttributes(engine).size() == 0;
 		assert !object.getAttributes(engine).contains(power);
-		//assert vehicle.getAttributes(engine).size() == 1;
+		// assert vehicle.getAttributes(engine).size() == 1;
 		assert vehicle.getAttributes(engine).contains(power);
-		//assert robot.getAttributes(engine).size() == 0;
+		// assert robot.getAttributes(engine).size() == 0;
 		assert !robot.getAttributes(engine).contains(power);
-		//assert transformer.getAttributes(engine).size() == 1;
+		// assert transformer.getAttributes(engine).size() == 1;
 		assert transformer.getAttributes(engine).contains(power);
 	}
 
@@ -348,13 +347,13 @@ public class AttributesTest extends AbstractTest {
 		Generic power = engine.addInstance("Power", vehicle);
 		Generic transformer = engine.addInstance(Arrays.asList(vehicle, robot), "Transformer");
 
-		//assert object.getAttributes(engine).size() == 0;
+		// assert object.getAttributes(engine).size() == 0;
 		assert !object.getAttributes(engine).contains(power);
-		//assert vehicle.getAttributes(engine).size() == 1;
+		// assert vehicle.getAttributes(engine).size() == 1;
 		assert vehicle.getAttributes(engine).contains(power);
-		//assert robot.getAttributes(engine).size() == 0;
+		// assert robot.getAttributes(engine).size() == 0;
 		assert !robot.getAttributes(engine).contains(power);
-		//assert transformer.getAttributes(engine).size() == 1;
+		// assert transformer.getAttributes(engine).size() == 1;
 		assert transformer.getAttributes(engine).contains(power);
 	}
 
@@ -365,13 +364,13 @@ public class AttributesTest extends AbstractTest {
 		Generic robot = engine.addInstance(object, "Robot");
 		Generic transformer = engine.addInstance(Arrays.asList(vehicle, robot), "Transformer");
 		Generic power = engine.addInstance("Power", transformer);
-		//assert object.getAttributes(engine).size() == 0;
+		// assert object.getAttributes(engine).size() == 0;
 		assert !object.getAttributes(engine).contains(power);
-		//assert vehicle.getAttributes(engine).size() == 0;
+		// assert vehicle.getAttributes(engine).size() == 0;
 		assert !vehicle.getAttributes(engine).contains(power);
-		//assert robot.getAttributes(engine).size() == 0;
+		// assert robot.getAttributes(engine).size() == 0;
 		assert !robot.getAttributes(engine).contains(power);
-		//assert transformer.getAttributes(engine).size() == 1;
+		// assert transformer.getAttributes(engine).size() == 1;
 		assert transformer.getAttributes(engine).contains(power);
 	}
 
@@ -385,16 +384,16 @@ public class AttributesTest extends AbstractTest {
 		Generic robot = engine.addInstance(object, "Robot");
 		Generic transformer = engine.addInstance(Arrays.asList(vehicle, robot), "Transformer");
 
-		//assert object.getAttributes(engine).size() == 2 : object.getAttributes(engine);
+		// assert object.getAttributes(engine).size() == 2 : object.getAttributes(engine);
 		assert object.getAttributes(engine).contains(power);
 		assert object.getAttributes(engine).contains(airconditioner);
-		//assert vehicle.getAttributes(engine).size() == 2;
+		// assert vehicle.getAttributes(engine).size() == 2;
 		assert vehicle.getAttributes(engine).contains(power);
 		assert vehicle.getAttributes(engine).contains(airconditioner);
-		//assert robot.getAttributes(engine).size() == 2;
+		// assert robot.getAttributes(engine).size() == 2;
 		assert robot.getAttributes(engine).contains(power);
 		assert robot.getAttributes(engine).contains(airconditioner);
-		//assert transformer.getAttributes(engine).size() == 2;
+		// assert transformer.getAttributes(engine).size() == 2;
 		assert transformer.getAttributes(engine).contains(power);
 		assert transformer.getAttributes(engine).contains(airconditioner);
 	}
@@ -408,16 +407,16 @@ public class AttributesTest extends AbstractTest {
 		Generic robot = engine.addInstance(object, "Robot");
 		Generic transformer = engine.addInstance(Arrays.asList(vehicle, robot), "Transformer");
 
-		//assert object.getAttributes(engine).size() == 0;
+		// assert object.getAttributes(engine).size() == 0;
 		assert !object.getAttributes(engine).contains(power);
 		assert !object.getAttributes(engine).contains(airconditioner);
-		//assert vehicle.getAttributes(engine).size() == 2;
+		// assert vehicle.getAttributes(engine).size() == 2;
 		assert vehicle.getAttributes(engine).contains(power);
 		assert vehicle.getAttributes(engine).contains(airconditioner);
-		//assert robot.getAttributes(engine).size() == 0;
+		// assert robot.getAttributes(engine).size() == 0;
 		assert !robot.getAttributes(engine).contains(power);
 		assert !robot.getAttributes(engine).contains(airconditioner);
-		//assert transformer.getAttributes(engine).size() == 2;
+		// assert transformer.getAttributes(engine).size() == 2;
 		assert transformer.getAttributes(engine).contains(power);
 		assert transformer.getAttributes(engine).contains(airconditioner);
 	}
@@ -431,16 +430,16 @@ public class AttributesTest extends AbstractTest {
 		Generic airconditioner = engine.addInstance("AirConditioner", robot);
 		Generic transformer = engine.addInstance(Arrays.asList(vehicle, robot), "Transformer");
 
-		//assert object.getAttributes(engine).size() == 0;
+		// assert object.getAttributes(engine).size() == 0;
 		assert !object.getAttributes(engine).contains(power);
 		assert !object.getAttributes(engine).contains(airconditioner);
-		//assert vehicle.getAttributes(engine).size() == 0;
+		// assert vehicle.getAttributes(engine).size() == 0;
 		assert !vehicle.getAttributes(engine).contains(power);
 		assert !vehicle.getAttributes(engine).contains(airconditioner);
-		//assert robot.getAttributes(engine).size() == 2;
+		// assert robot.getAttributes(engine).size() == 2;
 		assert robot.getAttributes(engine).contains(power);
 		assert robot.getAttributes(engine).contains(airconditioner);
-		//assert transformer.getAttributes(engine).size() == 2;
+		// assert transformer.getAttributes(engine).size() == 2;
 		assert transformer.getAttributes(engine).contains(power);
 		assert transformer.getAttributes(engine).contains(airconditioner);
 	}
@@ -453,16 +452,16 @@ public class AttributesTest extends AbstractTest {
 		Generic transformer = engine.addInstance(Arrays.asList(vehicle, robot), "Transformer");
 		Generic power = engine.addInstance("Power", transformer);
 		Generic airconditioner = engine.addInstance("AirConditioner", transformer);
-		//assert object.getAttributes(engine).size() == 0;
+		// assert object.getAttributes(engine).size() == 0;
 		assert !object.getAttributes(engine).contains(power);
 		assert !object.getAttributes(engine).contains(airconditioner);
-		//assert vehicle.getAttributes(engine).size() == 0;
+		// assert vehicle.getAttributes(engine).size() == 0;
 		assert !vehicle.getAttributes(engine).contains(power);
 		assert !vehicle.getAttributes(engine).contains(airconditioner);
-		//assert robot.getAttributes(engine).size() == 0;
+		// assert robot.getAttributes(engine).size() == 0;
 		assert !robot.getAttributes(engine).contains(power);
 		assert !robot.getAttributes(engine).contains(airconditioner);
-		//assert transformer.getAttributes(engine).size() == 2;
+		// assert transformer.getAttributes(engine).size() == 2;
 		assert transformer.getAttributes(engine).contains(power);
 		assert transformer.getAttributes(engine).contains(airconditioner);
 	}

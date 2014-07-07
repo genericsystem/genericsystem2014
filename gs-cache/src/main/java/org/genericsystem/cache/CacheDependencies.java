@@ -1,16 +1,18 @@
 package org.genericsystem.cache;
 
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import org.genericsystem.kernel.Dependencies;
-import org.genericsystem.kernel.DependenciesImpl;
 import org.genericsystem.kernel.iterator.AbstractConcateIterator.ConcateIterator;
 import org.genericsystem.kernel.iterator.AbstractFilterIterator;
 
 public class CacheDependencies<T> implements Dependencies<T> {
 
-	private final Dependencies<T> inserts = new DependenciesImpl<T>();
-	private final Dependencies<T> deletes = new DependenciesImpl<T>();
+	private final Set<T> inserts = new LinkedHashSet<T>();
+	private final Set<T> deletes = new LinkedHashSet<T>();
 	private final Supplier<Iterator<T>> iteratorSupplier;
 
 	public CacheDependencies(Supplier<Iterator<T>> iteratorSupplier) {
@@ -39,5 +41,10 @@ public class CacheDependencies<T> implements Dependencies<T> {
 				return !deletes.contains(next);
 			}
 		}, inserts.iterator());
+	}
+
+	@Override
+	public String toString() {
+		return stream().collect(Collectors.toList()).toString();
 	}
 }

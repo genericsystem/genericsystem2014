@@ -2,7 +2,6 @@ package org.genericsystem.impl;
 
 import java.io.Serializable;
 import java.util.Objects;
-
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.RootService;
 import org.genericsystem.kernel.Statics;

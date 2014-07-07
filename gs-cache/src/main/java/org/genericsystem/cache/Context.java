@@ -1,11 +1,14 @@
 package org.genericsystem.cache;
 
-import org.genericsystem.kernel.Dependencies.CompositesSnapshot;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public interface Context<T extends GenericService<T>> {
+
+	static Logger log = LoggerFactory.getLogger(Context.class);
 
 	EngineService<T> getEngine();
 
@@ -34,8 +37,8 @@ public interface Context<T extends GenericService<T>> {
 
 	Snapshot<T> getInstances(T generic);
 
-	CompositesSnapshot<T> getMetaComposites(T generic);
+	Snapshot<T> getMetaComposites(T generic, T meta);
 
-	CompositesSnapshot<T> getSuperComposites(T generic);
+	Snapshot<T> getSuperComposites(T generic, T superT);
 
 }
