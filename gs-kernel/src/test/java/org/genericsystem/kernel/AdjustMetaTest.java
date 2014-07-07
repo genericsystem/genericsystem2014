@@ -10,20 +10,19 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test001_AdjustMeta_MetaLevel_metaAttribut_NoComponent() {
 		Root engine = new Root();
-		engine.addInstance(engine.getValue(), engine);
 		assert engine == engine.adjustMeta(Collections.emptyList(), "Power", Collections.emptyList());
 	}
 
 	public void test002_AdjustMeta_MetaLevel_metaAttribut_OneComponent() {
 		Root engine = new Root();
-		Vertex metaAttribute = engine.addInstance(engine.getValue(), engine);
+		Vertex metaAttribute = engine.getMetaAttribute();
 		Vertex car = engine.addInstance("Car");
 		assert metaAttribute == engine.adjustMeta(Collections.emptyList(), "Power", Collections.singletonList(car));
 	}
 
 	public void test003_AdjustMeta_MetaLevel_metaAttribut_TwoComponents() {
 		Root engine = new Root();
-		Vertex metaAttribute = engine.addInstance(engine.getValue(), engine);
+		Vertex metaAttribute = engine.getMetaAttribute();
 		Vertex car = engine.addInstance("Car");
 		Vertex color = engine.addInstance("Color");
 		assert metaAttribute == engine.adjustMeta(Collections.emptyList(), "CarColor", Arrays.asList(car, color));
@@ -31,7 +30,7 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test004_AdjustMeta_MetaLevel_metaAttribut() {
 		Root engine = new Root();
-		Vertex metaAttribute = engine.addInstance(engine.getValue(), engine);
+		Vertex metaAttribute = engine.getMetaAttribute();
 		Vertex robot = engine.addInstance("Robot");
 		Vertex car = engine.addInstance("Car");
 		Vertex color = engine.addInstance("Color");
@@ -42,7 +41,7 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test005_AdjustMeta_MetaLevel_metaRelation_ThreeComponents() {
 		Root engine = new Root();
-		Vertex metaAttribute = engine.addInstance(engine.getValue(), engine);
+		Vertex metaAttribute = engine.getMetaAttribute();
 		assert metaAttribute == engine.adjustMeta(Collections.emptyList(), engine.getValue(), Arrays.asList(engine, engine));
 		Vertex metaRelation = engine.addInstance(engine.getValue(), engine, engine);
 		Vertex car = engine.addInstance("Car");
@@ -54,7 +53,7 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test006_AdjustMeta_TypeLevel_Relation_TwoComponents() {
 		Root engine = new Root();
-		engine.addInstance(engine.getValue(), engine);
+		engine.setInstance(engine.getValue(), engine);
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex color = engine.addInstance("Color");
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
@@ -65,7 +64,7 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test007_AdjustMeta_TypeLevel_Relation_TwoComponents_oneComponentSpecializedByInheritance() {
 		Root engine = new Root();
-		engine.addInstance(engine.getValue(), engine);
+		engine.setInstance(engine.getValue(), engine);
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex color = engine.addInstance("Color");
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
@@ -77,7 +76,7 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test008_AdjustMeta_TypeLevel_Relation_TwoComponents_oneComponentSpecializedByInstanciation() {
 		Root engine = new Root();
-		engine.addInstance(engine.getValue(), engine);
+		engine.setInstance(engine.getValue(), engine);
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex color = engine.addInstance("Color");
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
@@ -89,7 +88,7 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test009_AdjustMeta_TypeLevel_Relation_TwoComponents_TwoComponentSpecializedByInheritance() {
 		Root engine = new Root();
-		engine.addInstance(engine.getValue(), engine);
+		engine.setInstance(engine.getValue(), engine);
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex color = engine.addInstance("Color");
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
@@ -102,7 +101,7 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test010_AdjustMeta_TypeLevel_Relation_TwoComponents_TwoComponentSpecializedByInstanciation() {
 		Root engine = new Root();
-		engine.addInstance(engine.getValue(), engine);
+		engine.setInstance(engine.getValue(), engine);
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex color = engine.addInstance("Color");
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
@@ -115,7 +114,7 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test011_AdjustMeta_TypeLevel_Relation_TwoComponents_TwoComponentSpecialized() {
 		Root engine = new Root();
-		engine.addInstance(engine.getValue(), engine);
+		engine.setInstance(engine.getValue(), engine);
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex color = engine.addInstance("Color");
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
@@ -128,7 +127,7 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test012_AdjustMeta_TypeLevel_Relation_ThreeComponents() {
 		Root engine = new Root();
-		engine.addInstance(engine.getValue(), engine);
+		engine.setInstance(engine.getValue(), engine);
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex color = engine.addInstance("Color");
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
@@ -143,7 +142,7 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test013_AdjustMeta_TypeLevel_Relation_ThreeComponents() {
 		Root engine = new Root();
-		engine.addInstance(engine.getValue(), engine);
+		engine.setInstance(engine.getValue(), engine);
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex color = engine.addInstance("Color");
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
@@ -159,7 +158,7 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test014_AdjustMeta_TypeLevel_Relation_ThreeComponents() {
 		Root engine = new Root();
-		engine.addInstance(engine.getValue(), engine);
+		engine.setInstance(engine.getValue(), engine);
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex color = engine.addInstance("Color");
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
@@ -174,7 +173,7 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test015_AdjustMeta_TypeLevel_Relation_ThreeComponents() {
 		Root engine = new Root();
-		engine.addInstance(engine.getValue(), engine);
+		engine.setInstance(engine.getValue(), engine);
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex color = engine.addInstance("Color");
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
@@ -189,7 +188,7 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test016_AdjustMeta_TypeLevel_Relation_ThreeComponents() {
 		Root engine = new Root();
-		engine.addInstance(engine.getValue(), engine);
+		engine.setInstance(engine.getValue(), engine);
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex color = engine.addInstance("Color");
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
@@ -205,7 +204,7 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test017_AdjustMeta_TypeLevel_Relation_ThreeComponents() {
 		Root engine = new Root();
-		engine.addInstance(engine.getValue(), engine);
+		engine.setInstance(engine.getValue(), engine);
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex vehicle2 = engine.addInstance(vehicle, "Vehicle2");
 		Vertex vehicleVehicle2 = engine.addInstance("VehicleVehicle2", vehicle, vehicle2);
@@ -225,7 +224,7 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test018_AdjustMeta_TypeLevel_Relation() {
 		Root engine = new Root();
-		engine.addInstance(engine.getValue(), engine);
+		engine.setInstance(engine.getValue(), engine);
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex vehicle2 = engine.addInstance(vehicle, "Vehicle2");
 		Vertex vehicleVehicle2 = engine.addInstance("VehicleVehicle2", vehicle, vehicle2);
