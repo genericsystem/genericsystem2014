@@ -10,4 +10,8 @@ public class Generic extends GenericSignature<Generic> implements GenericService
 		return new Generic();
 	}
 
+	// @Override
+	// public String toString() {
+	// return this.info();
+	// }
 }

@@ -6,8 +6,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Meta;
+import org.genericsystem.kernel.annotations.SystemGeneric;
 import org.genericsystem.kernel.annotations.value.BooleanValue;
 import org.genericsystem.kernel.annotations.value.IntValue;
 import org.genericsystem.kernel.annotations.value.StringValue;
@@ -29,6 +31,15 @@ public class Root extends Vertex implements RootService<Vertex> {
 		initSystemMap();
 		for (Class<?> clazz : userClasses)
 			find(clazz);
+		systemCache.put(MetaAttribute.class, setMetaAttribute());
+	}
+
+	private Vertex setMetaAttribute() {
+		return buildInstance(Collections.emptyList(), getValue(), Collections.singletonList(this)).plug();
+	}
+
+	@SystemGeneric
+	public static class MetaAttribute {
 	}
 
 	private void initSystemMap() {
