@@ -13,7 +13,7 @@ public abstract class GenericSignature<T extends GenericSignature<T>> extends Ex
 		if (!(obj instanceof AncestorsService))
 			return false;
 		AncestorsService<?> service = (AncestorsService<?>) obj;
-		return equiv(service);
+		return ((AncestorsService) this).equiv(service);
 	}
 
 	@Override

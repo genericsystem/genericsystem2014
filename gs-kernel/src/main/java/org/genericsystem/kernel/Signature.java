@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 import org.genericsystem.kernel.exceptions.NotAliveException;
-import org.genericsystem.kernel.services.BindingService;
+import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.DisplayService;
 import org.genericsystem.kernel.services.ExceptionAdviserService;
 
-public abstract class Signature<T extends Signature<T>> implements DisplayService<T>, ExceptionAdviserService<T>, BindingService<T> {
+public abstract class Signature<T extends Signature<T>> {
 	protected T meta;
 	protected List<T> components;
 	protected Serializable value;
@@ -36,26 +36,22 @@ public abstract class Signature<T extends Signature<T>> implements DisplayServic
 	}
 
 	public void checkIsAlive() {
-		if (!isAlive())
-			rollbackAndThrowException(new NotAliveException(info()));
+		if (!((AncestorsService) this).isAlive())
+			((ExceptionAdviserService<?>) this).rollbackAndThrowException(new NotAliveException(((DisplayService<?>) this).info()));
 	}
 
-	@Override
 	public T getMeta() {
 		return meta;
 	}
 
-	@Override
 	public List<T> getComponents() {
 		return components;
 	}
 
-	@Override
 	public Serializable getValue() {
 		return value;
 	}
 
-	@Override
 	public Stream<T> getComponentsStream() {
 		return components.stream();
 	}
@@ -65,8 +61,7 @@ public abstract class Signature<T extends Signature<T>> implements DisplayServic
 		return Objects.toString(getValue());
 	}
 
-	@Override
 	public int getLevel() {
-		return (isRoot() || components.stream().allMatch(c -> c.isRoot()) && Objects.equals(getValue(), getRoot().getValue())) ? 0 : meta.getLevel() + 1;
+		return (((AncestorsService) this).isRoot() || components.stream().allMatch(c -> ((AncestorsService) c).isRoot()) && Objects.equals(getValue(), ((AncestorsService) this).getRoot().getValue())) ? 0 : meta.getLevel() + 1;
 	}
 }

@@ -5,10 +5,6 @@ import java.util.stream.Stream;
 
 public interface AncestorsService<T extends AncestorsService<T>> extends SignatureService<T> {
 
-	default T find(Class<?> clazz) {
-		return getRoot().find(clazz);
-	}
-
 	default int getLevel() {
 		return isRoot() || getValue().equals(getRoot().getValue()) || getComponentsStream().allMatch(c -> c.isRoot()) ? 0 : getMeta().getLevel() + 1;
 	}
@@ -33,6 +29,11 @@ public interface AncestorsService<T extends AncestorsService<T>> extends Signatu
 
 	default Stream<T> getSupersStream() {
 		return getSupers().stream();
+	}
+
+	default T find(Class<?> clazz) {
+		log.info("" + this.getClass());
+		return getRoot().find(clazz);
 	}
 
 	// default boolean hasSuperSameMeta() {

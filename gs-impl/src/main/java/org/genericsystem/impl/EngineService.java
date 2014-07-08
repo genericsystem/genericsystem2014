@@ -7,7 +7,7 @@ import org.genericsystem.kernel.RootService;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.services.SignatureService;
 
-public interface EngineService<T extends GenericService<T>> extends GenericService<T>, RootService<T> {
+public interface EngineService<T extends GenericService<T>> extends RootService<T>, GenericService<T> {
 
 	@Override
 	default T find(Class<?> clazz) {
@@ -55,4 +55,15 @@ public interface EngineService<T extends GenericService<T>> extends GenericServi
 		return Objects.equals(getValue(), service.getValue()) && SignatureService.equivComponents(getComponents(), service.getComponents());
 	}
 
+	// // @Phantom
+	// @Override
+	// default Snapshot<T> getSuperComposites(T superT) {
+	// return GenericService.super.getSuperComposites(superT);
+	// }
+	//
+	// // @Phantom
+	// @Override
+	// default Snapshot<T> getMetaComposites(T meta) {
+	// return GenericService.super.getMetaComposites(meta);
+	// }
 }
