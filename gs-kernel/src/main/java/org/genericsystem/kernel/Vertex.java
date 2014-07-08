@@ -10,10 +10,14 @@ public class Vertex extends ExtendedSignature<Vertex> implements VertexService<V
 
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 
-	private final Dependencies<Vertex> instances = new DependenciesImpl<Vertex>();
-	private final Dependencies<Vertex> inheritings = new DependenciesImpl<Vertex>();
-	private final Dependencies<DependenciesEntry<Vertex>> superComposites = new DependenciesImpl<DependenciesEntry<Vertex>>();
-	private final Dependencies<DependenciesEntry<Vertex>> metaComposites = new DependenciesImpl<DependenciesEntry<Vertex>>();
+	private final Dependencies<Vertex> instances = buildDependencies();
+	private final Dependencies<Vertex> inheritings = buildDependencies();
+	private final Dependencies<DependenciesEntry<Vertex>> superComposites = buildDependencies();
+	private final Dependencies<DependenciesEntry<Vertex>> metaComposites = buildDependencies();
+
+	<T> Dependencies<T> buildDependencies() {
+		return new DependenciesImpl<T>();
+	}
 
 	@Override
 	public Vertex buildInstance() {
@@ -68,7 +72,7 @@ public class Vertex extends ExtendedSignature<Vertex> implements VertexService<V
 			if (index.equals(entry.getKey()))
 				return entry.getValue().set(composite);
 
-		Dependencies<Vertex> dependencies = new DependenciesImpl<Vertex>();
+		Dependencies<Vertex> dependencies = composite.buildDependencies();
 		Vertex result = dependencies.set(composite);
 		multimap.set(new DependenciesEntry<Vertex>(index, dependencies));
 		return result;

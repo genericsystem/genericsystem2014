@@ -2,12 +2,8 @@ package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Supplier;
-import org.genericsystem.kernel.Dependencies;
-import org.genericsystem.kernel.DependenciesImpl;
 import org.genericsystem.kernel.ExtendedSignature;
 import org.genericsystem.kernel.Signature;
 import org.genericsystem.kernel.SupersComputer;
@@ -36,9 +32,5 @@ public interface FactoryService<T extends FactoryService<T>> extends Dependencie
 	}
 
 	T init(T meta, List<T> overrides, Serializable value, List<T> components);
-
-	default <U extends T> Dependencies<U> buildDependencies(Supplier<Iterator<T>> subDependenciesSupplier) {
-		return new DependenciesImpl<U>();
-	}
 
 }
