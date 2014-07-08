@@ -26,30 +26,6 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 		return getCurrentCache().getInheritings((T) this);
 	}
 
-	// @SuppressWarnings("unchecked")
-	// @Override
-	// default T indexInstance(T instance) {
-	// return getCurrentCache().indexInstance((T) this, instance);
-	// }
-	//
-	// @SuppressWarnings("unchecked")
-	// @Override
-	// default T indexInheriting(T inheriting) {
-	// return getCurrentCache().indexInheriting((T) this, inheriting);
-	// }
-
-	// @SuppressWarnings("unchecked")
-	// @Override
-	// default boolean unIndexInstance(T instance) {
-	// return getCurrentCache().unIndexInstance((T) this, instance);
-	// }
-	//
-	// @SuppressWarnings("unchecked")
-	// @Override
-	// default boolean unIndexInheriting(T inheriting) {
-	// return getCurrentCache().unIndexInheriting((T) this, inheriting);
-	// }
-
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getMetaComposites(T meta) {
