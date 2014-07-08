@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Meta;
 import org.genericsystem.kernel.annotations.SystemGeneric;
@@ -37,8 +36,7 @@ public class Root extends Vertex implements RootService<Vertex> {
 	@SystemGeneric
 	@Components(Root.class)
 	@StringValue(Statics.ENGINE_VALUE)
-	public static class MetaAttribute {
-	}
+	public static class MetaAttribute {}
 
 	@Override
 	public Vertex find(Class<?> clazz) {
@@ -85,6 +83,18 @@ public class Root extends Vertex implements RootService<Vertex> {
 			for (Class<?> componentClass : componentsAnnotation.value())
 				components.add(find(componentClass));
 		return components.toArray(new Vertex[components.size()]);
+	}
+
+	// @Phantom
+	@Override
+	public Vertex getRoot() {
+		return this;
+	}
+
+	// @Phantom
+	@Override
+	public Vertex getAlive() {
+		return this;
 	}
 
 }
