@@ -64,26 +64,6 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 		return () -> getVertex().getInheritings().stream().map(GenericService.this::wrap).iterator();
 	}
 
-	// @Override
-	// default T indexInstance(T instance) {
-	// return wrap(getVertex().indexInstance(instance.unwrap()));
-	// }
-	//
-	// @Override
-	// default T indexInheriting(T inheriting) {
-	// return wrap(getVertex().indexInheriting(inheriting.unwrap()));
-	// }
-	//
-	// @Override
-	// default boolean unIndexInstance(T instance) {
-	// return getVertex().unIndexInstance(instance.unwrap());
-	// }
-	//
-	// @Override
-	// default boolean unIndexInheriting(T inheriting) {
-	// return getVertex().unIndexInheriting(inheriting.unwrap());
-	// }
-
 	@Override
 	default T getInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
 		Vertex vertex = getVertex();
@@ -111,26 +91,6 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 
 	}
 
-	// @Override
-	// default T indexBySuper(T superT, T component) {
-	// return wrap(getVertex().indexBySuper(superT.getVertex(), component.getVertex()));
-	// }
-	//
-	// @Override
-	// default T indexByMeta(T meta, T component) {
-	// return wrap(getVertex().indexByMeta(meta.getVertex(), component.getVertex()));
-	// }
-	//
-	// @Override
-	// default boolean unIndexBySuper(T superT, T component) {
-	// return getVertex().unIndexBySuper(superT.getVertex(), component.getVertex());
-	// }
-	//
-	// @Override
-	// default boolean unIndexByMeta(T meta, T component) {
-	// return getVertex().unIndexByMeta(meta.getVertex(), component.getVertex());
-	// }
-
 	@Override
 	default T plug() {
 		return wrap(unwrap().plug());
@@ -141,29 +101,4 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 		Vertex vertex = getVertex();
 		return vertex != null && getVertex().unplug();
 	}
-	// @Override
-	// @SuppressWarnings("unchecked")
-	// default T plug() {
-	// T t = getMeta().indexInstance((T) this);
-	// getSupersStream().forEach(superGeneric -> superGeneric.indexInheriting((T) this));
-	// getComponentsStream().forEach(component -> component.indexByMeta(getMeta(), (T) this));
-	// getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> component.indexBySuper(superGeneric, (T) this)));
-	// // assert getSupersStream().allMatch(superGeneric -> this == superGeneric.getInheritings().get((T) this));
-	// // assert Arrays.stream(getComponents()).allMatch(component -> this == component.getMetaComposites(getMeta()).get((T) this));
-	// // assert getSupersStream().allMatch(superGeneric -> Arrays.stream(getComponents()).allMatch(component -> component == component.getSuperComposites(superGeneric).get((T) this)));
-	//
-	// return t;
-	// }
-	//
-	// @Override
-	// @SuppressWarnings("unchecked")
-	// default boolean unplug() {
-	// boolean result = getMeta().unIndexInstance((T) this);
-	// if (!result)
-	// rollbackAndThrowException(new NotFoundException(((DisplayService<T>) this).info()));
-	// getSupersStream().forEach(superGeneric -> superGeneric.unIndexInheriting((T) this));
-	// getComponentsStream().forEach(component -> component.unIndexByMeta(getMeta(), (T) this));
-	// getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> component.unIndexBySuper(superGeneric, (T) this)));
-	// return result;
-	// }
 }
