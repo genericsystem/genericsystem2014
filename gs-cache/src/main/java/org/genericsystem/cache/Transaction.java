@@ -24,8 +24,9 @@ public class Transaction<T extends GenericService<T>> implements Context<T> {
 	}
 
 	@Override
-	public void simpleRemove(T generic) {
+	public boolean simpleRemove(T generic) {
 		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override

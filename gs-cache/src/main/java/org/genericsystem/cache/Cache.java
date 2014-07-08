@@ -7,12 +7,12 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
+import org.genericsystem.kernel.exceptions.NotFoundException;
 import org.genericsystem.kernel.exceptions.RollbackException;
 
 public class Cache<T extends GenericService<T>> implements Context<T> {
@@ -118,11 +118,12 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 	}
 
 	@Override
-	public void simpleRemove(T generic) {
+	public boolean simpleRemove(T generic) {
 		if (!isAlive(generic))
 			rollback(new IllegalStateException(generic + " is not alive"));
 		if (!adds.remove(generic))
-			removes.add(generic);
+			return removes.add(generic);
+		return true;
 	}
 
 	void rollback(Throwable e) throws RollbackException {
@@ -249,5 +250,24 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 		if (dependenciesByIndex == null)
 			return false;
 		return dependenciesByIndex.remove(composite);
+	}
+
+	T plug(T generic) {
+		T t = indexInstance(generic.getMeta(), generic);
+		generic.getSupersStream().forEach(superGeneric -> indexInheriting(superGeneric, generic));
+		generic.getComponentsStream().forEach(component -> indexByMeta(component, generic.getMeta(), generic));
+		generic.getSupersStream().forEach(superGeneric -> generic.getComponentsStream().forEach(component -> indexBySuper(component, superGeneric, generic)));
+		insert(generic);
+		return t;
+	}
+
+	public boolean unplug(T generic) {
+		boolean result = unIndexInstance(generic.getMeta(), generic);
+		if (!result)
+			generic.rollbackAndThrowException(new NotFoundException(generic.info()));
+		generic.getSupersStream().forEach(superGeneric -> unIndexInheriting(superGeneric, generic));
+		generic.getComponentsStream().forEach(component -> unIndexByMeta(component, generic.getMeta(), generic));
+		generic.getSupersStream().forEach(superGeneric -> generic.getComponentsStream().forEach(component -> unIndexBySuper(component, superGeneric, generic)));
+		return result && simpleRemove(generic);
 	}
 }

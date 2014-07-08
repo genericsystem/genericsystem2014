@@ -31,7 +31,7 @@ public interface Context<T extends GenericService<T>> {
 
 	void simpleAdd(T generic);
 
-	void simpleRemove(T generic);
+	boolean simpleRemove(T generic);
 
 	Snapshot<T> getInheritings(T generic);
 

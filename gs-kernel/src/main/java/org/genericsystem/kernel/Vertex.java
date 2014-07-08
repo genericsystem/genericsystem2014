@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.Collections;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
+import org.genericsystem.kernel.exceptions.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,13 +55,11 @@ public class Vertex extends ExtendedSignature<Vertex> implements VertexService<V
 		};
 	}
 
-	@Override
-	public Vertex indexByMeta(Vertex meta, Vertex composite) {
+	private Vertex indexByMeta(Vertex meta, Vertex composite) {
 		return index(metaComposites, meta, composite);
 	}
 
-	@Override
-	public Vertex indexBySuper(Vertex superVertex, Vertex composite) {
+	private Vertex indexBySuper(Vertex superVertex, Vertex composite) {
 		return index(superComposites, superVertex, composite);
 	}
 
@@ -82,42 +81,56 @@ public class Vertex extends ExtendedSignature<Vertex> implements VertexService<V
 		return false;
 	}
 
-	@Override
-	public boolean unIndexByMeta(Vertex meta, Vertex composite) {
+	private boolean unIndexByMeta(Vertex meta, Vertex composite) {
 		return unIndex(metaComposites, meta, composite);
 	}
 
-	@Override
-	public boolean unIndexBySuper(Vertex superVertex, Vertex composite) {
+	private boolean unIndexBySuper(Vertex superVertex, Vertex composite) {
 		return unIndex(superComposites, superVertex, composite);
 	}
 
-	public Vertex index(Dependencies<Vertex> dependencies, Vertex dependency) {
+	private static Vertex index(Dependencies<Vertex> dependencies, Vertex dependency) {
 		return dependencies.set(dependency);
 	}
 
-	public boolean unIndex(Dependencies<Vertex> dependencies, Vertex dependency) {
+	private static boolean unIndex(Dependencies<Vertex> dependencies, Vertex dependency) {
 		return dependencies.remove(dependency);
 	}
 
-	@Override
-	public Vertex indexInstance(Vertex instance) {
+	private Vertex indexInstance(Vertex instance) {
 		return index(instances, instance);
 	}
 
-	@Override
-	public Vertex indexInheriting(Vertex inheriting) {
+	private Vertex indexInheriting(Vertex inheriting) {
 		return index(inheritings, inheriting);
 	}
 
-	@Override
-	public boolean unIndexInstance(Vertex instance) {
+	private boolean unIndexInstance(Vertex instance) {
 		return unIndex(instances, instance);
 	}
 
-	@Override
-	public boolean unIndexInheriting(Vertex inheriting) {
+	private boolean unIndexInheriting(Vertex inheriting) {
 		return unIndex(inheritings, inheriting);
+	}
+
+	@Override
+	public Vertex plug() {
+		Vertex t = getMeta().indexInstance(this);
+		getSupersStream().forEach(superGeneric -> superGeneric.indexInheriting(this));
+		getComponentsStream().forEach(component -> component.indexByMeta(getMeta(), this));
+		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> component.indexBySuper(superGeneric, this)));
+		return t;
+	}
+
+	@Override
+	public boolean unplug() {
+		boolean result = getMeta().unIndexInstance(this);
+		if (!result)
+			rollbackAndThrowException(new NotFoundException(this.info()));
+		getSupersStream().forEach(superGeneric -> superGeneric.unIndexInheriting(this));
+		getComponentsStream().forEach(component -> component.unIndexByMeta(getMeta(), this));
+		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> component.unIndexBySuper(superGeneric, this)));
+		return result;
 	}
 
 }

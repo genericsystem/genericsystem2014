@@ -3,7 +3,6 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
-
 import org.genericsystem.kernel.Snapshot;
 
 public interface GenericService<T extends GenericService<T>> extends org.genericsystem.impl.GenericService<T> {
@@ -27,29 +26,29 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 		return getCurrentCache().getInheritings((T) this);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	default T indexInstance(T instance) {
-		return getCurrentCache().indexInstance((T) this, instance);
-	}
+	// @SuppressWarnings("unchecked")
+	// @Override
+	// default T indexInstance(T instance) {
+	// return getCurrentCache().indexInstance((T) this, instance);
+	// }
+	//
+	// @SuppressWarnings("unchecked")
+	// @Override
+	// default T indexInheriting(T inheriting) {
+	// return getCurrentCache().indexInheriting((T) this, inheriting);
+	// }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	default T indexInheriting(T inheriting) {
-		return getCurrentCache().indexInheriting((T) this, inheriting);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	default boolean unIndexInstance(T instance) {
-		return getCurrentCache().unIndexInstance((T) this, instance);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	default boolean unIndexInheriting(T inheriting) {
-		return getCurrentCache().unIndexInheriting((T) this, inheriting);
-	}
+	// @SuppressWarnings("unchecked")
+	// @Override
+	// default boolean unIndexInstance(T instance) {
+	// return getCurrentCache().unIndexInstance((T) this, instance);
+	// }
+	//
+	// @SuppressWarnings("unchecked")
+	// @Override
+	// default boolean unIndexInheriting(T inheriting) {
+	// return getCurrentCache().unIndexInheriting((T) this, inheriting);
+	// }
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -100,19 +99,6 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 		return getRoot().getCurrentCache();
 	}
 
-	@Override
-	default T plug() {
-		return getCurrentCache().insert(org.genericsystem.impl.GenericService.super.plug());
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	default boolean unplug() {
-		boolean unplugged = org.genericsystem.impl.GenericService.super.unplug();
-		getCurrentCache().simpleRemove((T) this);
-		return unplugged;
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getComposites() {
@@ -121,26 +107,14 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T indexBySuper(T superT, T composite) {
-		return getCurrentCache().indexBySuper((T) this, superT, composite);
-	};
-
-	@SuppressWarnings("unchecked")
-	@Override
-	default T indexByMeta(T meta, T composite) {
-		return getCurrentCache().indexByMeta((T) this, meta, composite);
+	default T plug() {
+		return getCurrentCache().plug((T) this);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default boolean unIndexByMeta(T meta, T composite) {
-		return getCurrentCache().unIndexByMeta((T) this, meta, composite);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	default boolean unIndexBySuper(T superT, T composite) {
-		return getCurrentCache().unIndexBySuper((T) this, superT, composite);
+	default boolean unplug() {
+		return getCurrentCache().unplug((T) this);
 	}
 
 }
