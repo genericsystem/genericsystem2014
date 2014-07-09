@@ -3,6 +3,7 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
+
 import org.genericsystem.kernel.Snapshot;
 
 public interface GenericService<T extends GenericService<T>> extends org.genericsystem.impl.GenericService<T> {
@@ -54,7 +55,7 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 	@Override
 	default void setSystemPropertyValue(Class<T> propertyClass, int pos, Serializable value) {
 		T root = getRoot();
-		root.setInstance(getMap(), new AxedPropertyClass(propertyClass, pos), root).setInstance(value, (T) this);
+		getMetaAttribute().setInstance(getMap(), new AxedPropertyClass(propertyClass, pos), root).setInstance(value, (T) this);
 	}
 
 	@Override

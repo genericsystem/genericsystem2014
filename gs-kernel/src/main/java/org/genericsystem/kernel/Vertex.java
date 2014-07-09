@@ -1,6 +1,8 @@
 package org.genericsystem.kernel;
 
+import java.util.ArrayList;
 import java.util.Collections;
+
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 import org.slf4j.Logger;
@@ -10,10 +12,47 @@ public class Vertex extends ExtendedSignature<Vertex> implements VertexService<V
 
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 
-	private final Dependencies<Vertex> instances = new DependenciesImpl<Vertex>();
-	private final Dependencies<Vertex> inheritings = new DependenciesImpl<Vertex>();
-	private final Dependencies<DependenciesEntry<Vertex>> superComposites = new DependenciesImpl<DependenciesEntry<Vertex>>();
-	private final Dependencies<DependenciesEntry<Vertex>> metaComposites = new DependenciesImpl<DependenciesEntry<Vertex>>();
+	private final Dependencies<Vertex> instances = buildDependencies();
+	private final Dependencies<Vertex> inheritings = buildDependencies();
+	private final Dependencies<DependenciesEntry<Vertex>> superComposites = buildDependencies();
+	private final Dependencies<DependenciesEntry<Vertex>> metaComposites = buildDependencies();
+
+	<T> Dependencies<T> buildDependencies() {
+		return new DependenciesImpl<T>();
+	}
+
+	public Vertex buildMetaAttribute() {
+		Vertex metaAttribute = buildInstance();
+		Vertex root = getRoot();
+		metaAttribute.meta = root;
+		metaAttribute.value = root.value;
+		metaAttribute.components = new ArrayList<Vertex>();
+		metaAttribute.components.add(root);
+		metaAttribute.supers = new ArrayList<Vertex>();
+		metaAttribute.supers.add(root);
+		return metaAttribute;
+	};
+
+	public Vertex buildSystemMap() {
+		Vertex metaAttribute = buildMetaAttribute();
+		metaAttribute.plug();
+		Vertex root = getRoot();
+		Vertex systemMap = buildInstance();
+		systemMap.meta = metaAttribute;
+		systemMap.value = SystemMap.class;
+		systemMap.components = new ArrayList<Vertex>();
+		systemMap.components.add(root);
+		systemMap.supers = new ArrayList<Vertex>();
+		return systemMap;
+	}
+
+	public void buildMetaAttributeAndSystemMap() {
+		Vertex systemMap = buildSystemMap();
+		Vertex root = getRoot();
+		systemMap.plug();
+		((Root) root).systemCache.put(SystemMap.class, systemMap);
+		systemMap.enablePropertyConstraint();
+	}
 
 	@Override
 	public Vertex buildInstance() {

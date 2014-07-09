@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.genericsystem.kernel.services.MapService.SystemMap;
+
 public abstract class ExtendedSignature<T extends ExtendedSignature<T>> extends Signature<T> {
 
 	protected List<T> supers;
@@ -20,6 +22,8 @@ public abstract class ExtendedSignature<T extends ExtendedSignature<T>> extends 
 	}
 
 	private void checkDependsMetaComponents() {
+		if (getValue().toString().equals(SystemMap.class.toString()) || getValue().toString().contains("PropertyConstraint"))
+			return;
 		assert getMeta().getComponents() != null;
 		if (!(getMeta().componentsDepends(getComponents(), getMeta().getComponents())))
 			rollbackAndThrowException(new IllegalStateException("Inconsistant components : " + getComponents() + " " + getMeta().getComponents()));

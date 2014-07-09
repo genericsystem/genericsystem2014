@@ -137,7 +137,11 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 	}
 
 	default T getMetaAttribute() {
-		// return getRoot().find(MetaAttribute.class);
+		T root = getRoot();
+		return root.getInstance(root.getValue(), root);
+	}
+
+	default T getSystemMap() {
 		T root = getRoot();
 		return root.getInstance(root.getValue(), root);
 	}

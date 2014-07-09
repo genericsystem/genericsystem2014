@@ -25,7 +25,7 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 	@Override
 	default void setSystemPropertyValue(Class<T> propertyClass, int pos, Serializable value) {
 		T root = getRoot();
-		root.setInstance(getMap(), new AxedPropertyClass(propertyClass, pos), root).setInstance(value, (T) this);
+		getMetaAttribute().setInstance(getMap(), new AxedPropertyClass(propertyClass, pos), root).setInstance(value, (T) this);
 	}
 
 	default T getMap() {

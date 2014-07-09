@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Meta;
 import org.genericsystem.kernel.annotations.SystemGeneric;
@@ -27,16 +28,23 @@ public class Root extends Vertex implements RootService<Vertex> {
 	public Root(Serializable value, Class<?>... userClasses) {
 		init(null, Collections.emptyList(), value, Collections.emptyList());
 		systemCache.put(Root.class, this);
-		find(SystemMap.class).enablePropertyConstraint();
-		find(MetaAttribute.class);
+		buildMetaAttributeAndSystemMap();
 		for (Class<?> clazz : userClasses)
 			find(clazz);
+	}
+
+	private void forceBuild() {
+
 	}
 
 	@SystemGeneric
 	@Components(Root.class)
 	@StringValue(Statics.ENGINE_VALUE)
-	public static class MetaAttribute {}
+	public static class MetaAttribute {
+		// String getValue() {
+		// return Root.class.getAnnotationsByType(StringValue.class)
+		// }
+	}
 
 	@Override
 	public Vertex find(Class<?> clazz) {
