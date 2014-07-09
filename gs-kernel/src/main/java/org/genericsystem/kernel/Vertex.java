@@ -21,6 +21,7 @@ public class Vertex extends ExtendedSignature<Vertex> implements VertexService<V
 		return new DependenciesImpl<T>();
 	}
 
+
 	public Vertex buildMetaAttribute() {
 		Vertex metaAttribute = buildInstance();
 		Vertex root = getRoot();
@@ -107,7 +108,7 @@ public class Vertex extends ExtendedSignature<Vertex> implements VertexService<V
 			if (index.equals(entry.getKey()))
 				return entry.getValue().set(composite);
 
-		Dependencies<Vertex> dependencies = new DependenciesImpl<Vertex>();
+		Dependencies<Vertex> dependencies = composite.buildDependencies();
 		Vertex result = dependencies.set(composite);
 		multimap.set(new DependenciesEntry<Vertex>(index, dependencies));
 		return result;

@@ -1,7 +1,6 @@
 package org.genericsystem.kernel;
 
 import java.util.Objects;
-
 import org.genericsystem.kernel.services.SignatureService;
 
 public interface RootService<T extends VertexService<T>> extends VertexService<T> {
@@ -43,4 +42,5 @@ public interface RootService<T extends VertexService<T>> extends VertexService<T
 			return true;
 		return Objects.equals(getValue(), service.getValue()) && SignatureService.equivComponents(getComponents(), service.getComponents());
 	}
+
 }
