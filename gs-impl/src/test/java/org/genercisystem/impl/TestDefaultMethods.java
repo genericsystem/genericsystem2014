@@ -4,11 +4,11 @@ import org.testng.annotations.Test;
 
 public class TestDefaultMethods extends AbstractTest {
 
-	private static interface BaseService<T extends BaseService<T>> {
+	private static interface BaseService<T> {
 		T test();
 	}
 
-	private static interface NodeService<T extends NodeService<T>> extends BaseService<T> {
+	private static interface NodeService<T> extends BaseService<T> {
 		@Override
 		T test();
 	}
