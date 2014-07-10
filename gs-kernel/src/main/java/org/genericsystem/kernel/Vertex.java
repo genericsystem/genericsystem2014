@@ -21,7 +21,6 @@ public class Vertex extends ExtendedSignature<Vertex> implements VertexService<V
 		return new DependenciesImpl<T>();
 	}
 
-
 	public Vertex buildMetaAttribute() {
 		Vertex metaAttribute = buildInstance();
 		Vertex root = getRoot();
@@ -32,7 +31,7 @@ public class Vertex extends ExtendedSignature<Vertex> implements VertexService<V
 		metaAttribute.supers = new ArrayList<Vertex>();
 		metaAttribute.supers.add(root);
 		return metaAttribute;
-	};
+	}
 
 	public Vertex buildSystemMap() {
 		Vertex metaAttribute = buildMetaAttribute();
