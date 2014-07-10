@@ -4,19 +4,14 @@ import org.testng.annotations.Test;
 
 public class TestDefaultMethods extends AbstractTest {
 
-	private static interface BaseService<T> {
+	private static interface NodeService<T> {
 		T test();
 	}
 
-	private static interface NodeService<T> extends BaseService<T> {
-		@Override
-		T test();
-	}
+	private static interface RootService extends NodeService<Node> {
 
-	private static interface RootService<T extends NodeService<T>> extends NodeService<T> {
 		@Override
-		default T test() {
-			log.info("RootService");
+		default Node test() {
 			return null;
 		}
 	}
@@ -25,13 +20,18 @@ public class TestDefaultMethods extends AbstractTest {
 
 	}
 
-	private static class Root extends Node implements BaseService<Node>, RootService<Node> {
+	private static class Root extends Node implements RootService, NodeService<Node> {
+
+	}
+
+	private static class Root2 extends Node implements NodeService<Node>, RootService {
 
 	}
 
 	@Test
-	public void testDefaultMethodeOnRoot() {
+	public void testInterfacesOrder() {
 		new Root().test();
+		new Root2().test();
 	}
 
 }
