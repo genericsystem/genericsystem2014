@@ -4,10 +4,6 @@ import java.io.Serializable;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.genericsystem.kernel.Root;
-import org.genericsystem.kernel.annotations.Components;
-import org.genericsystem.kernel.annotations.SystemGeneric;
-
 public interface MapService<T extends MapService<T>> extends SystemPropertiesService<T>, CompositesInheritanceService<T>, UpdatableService<T> {
 
 	@Override
@@ -40,9 +36,10 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 		return getKeys().filter(x -> x.getValue().equals(property)).findFirst();
 	}
 
-	@SystemGeneric
-	@Components(Root.class)
-	@org.genericsystem.kernel.annotations.constraints.PropertyConstraint
+	// TODO clean
+	// @SystemGeneric
+	// @Components(Root.class)
+	// @org.genericsystem.kernel.annotations.constraints.PropertyConstraint
 	public static class SystemMap {
 
 	}
