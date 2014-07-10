@@ -88,6 +88,7 @@ public class Root extends Vertex implements RootService<Vertex> {
 			if (!startupTime)
 				throw new IllegalStateException("Class : " + clazz + " has not been built at startup");
 			Vertex result;
+			// TODO KK setInstance or buildInstance
 			put(clazz, result = findMeta(clazz).setInstance(findOverrides(clazz), findValue(clazz), findComponents(clazz)));
 			return result;
 		}

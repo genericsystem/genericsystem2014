@@ -54,8 +54,7 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 	@SuppressWarnings("unchecked")
 	@Override
 	default void setSystemPropertyValue(Class<T> propertyClass, int pos, Serializable value) {
-		T root = getRoot();
-		getMetaAttribute().setInstance(getMap(), new AxedPropertyClass(propertyClass, pos), root).setInstance(value, (T) this);
+		getSystemMap().getMeta().setInstance(getMap(), new AxedPropertyClass(propertyClass, pos), getRoot()).setInstance(value, (T) this);
 	}
 
 	@Override

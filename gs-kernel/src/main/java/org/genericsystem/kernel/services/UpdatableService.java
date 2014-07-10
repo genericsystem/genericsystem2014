@@ -13,6 +13,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.genericsystem.kernel.exceptions.ExistsException;
+import org.genericsystem.kernel.services.MapService.SystemMap;
 
 public interface UpdatableService<T extends UpdatableService<T>> extends BindingService<T> {
 
@@ -143,7 +144,8 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 
 	default T getSystemMap() {
 		T root = getRoot();
-		return root.getInstance(root.getValue(), root);
+		T meta = getMetaAttribute();
+		return meta == null ? root.getInstance(SystemMap.class, root) : meta.getInstance(SystemMap.class, root);
 	}
 
 	@SuppressWarnings("unchecked")
