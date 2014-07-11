@@ -32,7 +32,6 @@ public interface AncestorsService<T extends AncestorsService<T>> extends Signatu
 	}
 
 	default T find(Class<?> clazz) {
-		log.info("" + this.getClass());
 		return getRoot().find(clazz);
 	}
 

@@ -46,7 +46,7 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 	@SuppressWarnings("unchecked")
 	default T rebuildAll(Supplier<T> rebuilder) {
 		Map<T, T> convertMap = new HashMap<T, T>();
-		LinkedHashSet<T> dependenciesToRebuild = this.computeAllDependencies();
+		LinkedHashSet<T> dependenciesToRebuild = computeAllDependencies();
 		dependenciesToRebuild.forEach(UpdatableService::unplug);
 
 		T build = rebuilder.get();
@@ -134,7 +134,8 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 				return weakInstance;
 			return weakInstance.update(overrides, value, components);
 		}
-		return addInstance(overrides, value, components);
+		T instance = buildInstance(overrides, value, Arrays.asList(components));
+		return instance.rebuildAll(() -> instance.plug());
 	}
 
 	default T getMetaAttribute() {

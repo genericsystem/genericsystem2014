@@ -1,6 +1,7 @@
 package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
+
 import org.genericsystem.kernel.Statics;
 
 public interface SystemPropertiesService<T extends SystemPropertiesService<T>> extends RemovableService<T> {
