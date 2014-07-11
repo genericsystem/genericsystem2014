@@ -1,6 +1,5 @@
 package org.genericsystem.kernel;
 
-import java.util.ArrayList;
 import java.util.Collections;
 
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
