@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Snapshot.AbstractSnapshot;
 import org.genericsystem.kernel.Statics;
@@ -96,6 +97,8 @@ public interface CompositesInheritanceService<T extends CompositesInheritanceSer
 				}
 
 				private Stream<T> fromAboveStream() {
+					if (origin == null)
+						System.out.println("origin is null");
 					if (!origin.isAttributeOf(base))
 						return Stream.empty();
 					Stream<T> supersStream = baseSupersStream();

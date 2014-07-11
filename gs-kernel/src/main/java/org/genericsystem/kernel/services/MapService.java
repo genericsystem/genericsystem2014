@@ -1,6 +1,7 @@
 package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -20,7 +21,9 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 	@SuppressWarnings("unchecked")
 	@Override
 	default void setSystemPropertyValue(Class<T> propertyClass, int pos, Serializable value) {
-		getSystemMap().getMeta().setInstance(getMap(), new AxedPropertyClass(propertyClass, pos), getRoot()).setInstance(value, (T) this);
+		T systemMap = getSystemMap();
+		Objects.requireNonNull(systemMap);
+		systemMap.getMeta().setInstance(getMap(), new AxedPropertyClass(propertyClass, pos), getRoot()).setInstance(value, (T) this);
 	}
 
 	default T getMap() {
@@ -28,7 +31,10 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 	}
 
 	default Stream<T> getKeys() {
-		return getAttributes(getMap()).stream();
+		T map = getMap();
+		if (map == null)
+			return Stream.empty();
+		return getAttributes(map).stream();
 	}
 
 	default Optional<T> getKey(AxedPropertyClass property) {
