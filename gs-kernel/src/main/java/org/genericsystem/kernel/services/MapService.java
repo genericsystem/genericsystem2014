@@ -40,6 +40,5 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 	// @Components(Root.class)
 	// @org.genericsystem.kernel.annotations.constraints.PropertyConstraint
 	public static class SystemMap {
-
 	}
 }
