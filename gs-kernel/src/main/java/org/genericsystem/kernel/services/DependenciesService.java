@@ -131,12 +131,13 @@ public interface DependenciesService<T extends DependenciesService<T>> extends A
 		return overrides.stream().anyMatch(override -> override.inheritsFrom((T) this)) || inheritsFrom(subMeta, subValue, subComponents, getMeta(), getValue(), getComponents());
 	}
 
-	default boolean isMetaOf(T subMeta, List<T> overrides, List<T> subComponents) {
+	default boolean isMetaOf(T subMeta, Serializable value, List<T> overrides, List<T> subComponents) {
 		if (!subMeta.isSpecializationOf(getMeta()))
 			return false;
 		if (!subMeta.componentsDepends(subComponents, getComponents()))
 			return false;
-		if (getLevel() == subMeta.getLevel() && subComponents.size() == getComponents().size() && subComponents.stream().allMatch(component -> component.getValue() == getRoot().getValue()))
+		if (getLevel() == subMeta.getLevel() && (subComponents.size() == subMeta.getComponents().size() || subComponents.size() == getComponents().size()) && subComponents.stream().allMatch(component -> component.getValue() == getRoot().getValue())
+				&& value.equals(getRoot().getValue()))
 			return false;
 		return true;
 	}

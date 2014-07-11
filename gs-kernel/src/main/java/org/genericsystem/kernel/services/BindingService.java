@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.exceptions.AmbiguousSelectionException;
 import org.genericsystem.kernel.exceptions.CrossEnginesAssignementsException;
@@ -19,7 +20,7 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 	default T adjustMeta(List<T> overrides, Serializable subValue, List<T> subComponents) {
 		T result = null;
 		for (T directInheriting : getInheritings())
-			if (directInheriting.isMetaOf((T) this, overrides, subComponents))
+			if (directInheriting.isMetaOf((T) this, subValue, overrides, subComponents))
 				if (result == null)
 					result = directInheriting;
 				else

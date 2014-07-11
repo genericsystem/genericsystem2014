@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Meta;
@@ -64,10 +65,10 @@ public class Root extends Vertex implements RootService<Vertex> {
 		}
 
 		void init(Class<?>... userClasses) {
-			Vertex metaAttribute = Root.this.buildInstance(Collections.emptyList(), getValue(), Collections.singletonList(Root.this)).plug();
+			Vertex metaAttribute = Root.this.setInstance(Root.this, getValue(), Root.this);
 			systemCache.put(MetaAttribute.class, metaAttribute);
 
-			Vertex map = metaAttribute.buildInstance(Collections.emptyList(), SystemMap.class, Collections.singletonList(Root.this)).plug();
+			Vertex map = Root.this.setInstance(SystemMap.class, Root.this);
 			systemCache.put(SystemMap.class, map);
 			map.enablePropertyConstraint();
 
@@ -75,7 +76,7 @@ public class Root extends Vertex implements RootService<Vertex> {
 			// for (Class<?> clazz : classes)
 			// get(clazz);
 			for (Class<?> clazz : userClasses)
-				get(clazz);
+				set(clazz);
 			startupTime = false;
 		}
 
@@ -85,11 +86,25 @@ public class Root extends Vertex implements RootService<Vertex> {
 				assert systemProperty.isAlive();
 				return systemProperty;
 			}
+			return null;
+		}
+
+		public Vertex set(Class<?> clazz) {
 			if (!startupTime)
 				throw new IllegalStateException("Class : " + clazz + " has not been built at startup");
+			Vertex systemProperty = super.get(clazz);
+			if (systemProperty != null) {
+				assert systemProperty.isAlive();
+				return systemProperty;
+			}
 			Vertex result;
-			// TODO KK setInstance or buildInstance
-			put(clazz, result = findMeta(clazz).setInstance(findOverrides(clazz), findValue(clazz), findComponents(clazz)));
+			Vertex meta = setMeta(clazz);
+			Objects.requireNonNull(meta);
+			List<Vertex> overrides = setOverrides(clazz);
+			Objects.requireNonNull(overrides);
+			Vertex components[] = setComponents(clazz);
+			Objects.requireNonNull(components);
+			put(clazz, result = meta.setInstance(overrides, findValue(clazz), components));
 			return result;
 		}
 
@@ -98,12 +113,26 @@ public class Root extends Vertex implements RootService<Vertex> {
 			return meta == null ? (Vertex) getRoot() : find(meta.value());
 		}
 
+		private Vertex setMeta(Class<?> clazz) {
+			Meta meta = clazz.getAnnotation(Meta.class);
+			return meta == null ? (Vertex) getRoot() : set(meta.value());
+		}
+
 		private List<Vertex> findOverrides(Class<?> clazz) {
 			List<Vertex> overridesVertices = new ArrayList<Vertex>();
 			org.genericsystem.kernel.annotations.Supers supersAnnotation = clazz.getAnnotation(org.genericsystem.kernel.annotations.Supers.class);
 			if (supersAnnotation != null)
 				for (Class<?> overrideClass : supersAnnotation.value())
 					overridesVertices.add(find(overrideClass));
+			return overridesVertices;
+		}
+
+		private List<Vertex> setOverrides(Class<?> clazz) {
+			List<Vertex> overridesVertices = new ArrayList<Vertex>();
+			org.genericsystem.kernel.annotations.Supers supersAnnotation = clazz.getAnnotation(org.genericsystem.kernel.annotations.Supers.class);
+			if (supersAnnotation != null)
+				for (Class<?> overrideClass : supersAnnotation.value())
+					overridesVertices.add(set(overrideClass));
 			return overridesVertices;
 		}
 
@@ -129,6 +158,15 @@ public class Root extends Vertex implements RootService<Vertex> {
 			if (componentsAnnotation != null)
 				for (Class<?> componentClass : componentsAnnotation.value())
 					components.add(find(componentClass));
+			return components.toArray(new Vertex[components.size()]);
+		}
+
+		private Vertex[] setComponents(Class<?> clazz) {
+			List<Vertex> components = new ArrayList<Vertex>();
+			Components componentsAnnotation = clazz.getAnnotation(Components.class);
+			if (componentsAnnotation != null)
+				for (Class<?> componentClass : componentsAnnotation.value())
+					components.add(set(componentClass));
 			return components.toArray(new Vertex[components.size()]);
 		}
 	}

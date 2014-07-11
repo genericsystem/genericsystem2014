@@ -25,6 +25,7 @@ public class AdjustMetaTest extends AbstractTest {
 	public void test002_AdjustMeta_MetaLevel_metaAttribut_OneComponent() {
 		Root engine = new Root();
 		Vertex metaAttribute = engine.getMetaAttribute();
+		assert metaAttribute != null;
 		Vertex car = engine.addInstance("Car");
 		assert metaAttribute == engine.adjustMeta(Collections.emptyList(), "Power", Collections.singletonList(car));
 	}
