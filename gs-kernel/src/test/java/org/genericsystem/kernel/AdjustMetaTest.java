@@ -12,7 +12,9 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test001_AdjustMeta_SystemMap() {
 		Root engine = new Root();
-		assert engine.find(SystemMap.class).getMeta().equals(engine.find(MetaAttribute.class));
+		Vertex metaAttribute = engine.find(MetaAttribute.class);
+		Vertex systemMap = engine.find(SystemMap.class);
+		assert systemMap.getMeta().equals(metaAttribute);
 	}
 
 	public void test001_AdjustMeta_MetaLevel_metaAttribut_NoComponent() {

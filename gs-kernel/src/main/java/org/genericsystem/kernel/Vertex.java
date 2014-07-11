@@ -21,40 +21,6 @@ public class Vertex extends ExtendedSignature<Vertex> implements VertexService<V
 		return new DependenciesImpl<T>();
 	}
 
-
-	public Vertex buildMetaAttribute() {
-		Vertex metaAttribute = buildInstance();
-		Vertex root = getRoot();
-		metaAttribute.meta = root;
-		metaAttribute.value = root.value;
-		metaAttribute.components = new ArrayList<Vertex>();
-		metaAttribute.components.add(root);
-		metaAttribute.supers = new ArrayList<Vertex>();
-		metaAttribute.supers.add(root);
-		return metaAttribute;
-	};
-
-	public Vertex buildSystemMap() {
-		Vertex metaAttribute = buildMetaAttribute();
-		metaAttribute.plug();
-		Vertex root = getRoot();
-		Vertex systemMap = buildInstance();
-		systemMap.meta = metaAttribute;
-		systemMap.value = SystemMap.class;
-		systemMap.components = new ArrayList<Vertex>();
-		systemMap.components.add(root);
-		systemMap.supers = new ArrayList<Vertex>();
-		return systemMap;
-	}
-
-	public void buildMetaAttributeAndSystemMap() {
-		Vertex systemMap = buildSystemMap();
-		Vertex root = getRoot();
-		systemMap.plug();
-		((Root) root).systemCache.put(SystemMap.class, systemMap);
-		systemMap.enablePropertyConstraint();
-	}
-
 	@Override
 	public Vertex buildInstance() {
 		return new Vertex();
