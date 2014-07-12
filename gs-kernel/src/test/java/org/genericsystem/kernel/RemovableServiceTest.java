@@ -1,8 +1,5 @@
 package org.genericsystem.kernel;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.exceptions.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.kernel.services.RemovableService.RemoveStrategy;
 import org.testng.annotations.Test;
@@ -392,137 +389,137 @@ public class RemovableServiceTest extends AbstractTest {
 		assert !myVehicleGreen.isAlive();
 	}
 
-	public void test130_remove_Type_ConserveStrategy() {
-		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-
-		// when
-		vehicle.remove(RemoveStrategy.CONSERVE);
-
-		// then
-		assert !vehicle.isAlive();
-		// assert engine.computeAllDependencies().stream().count() == 1;
-		assert engine.computeAllDependencies().contains(engine);
-	}
-
-	public void test131_remove_SubType_ConserveStrategy() {
-		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = vehicle.addInstance("Car");
-
-		// when
-		vehicle.remove(RemoveStrategy.CONSERVE);
-
-		// then
-		assert !vehicle.isAlive();
-		assert !car.isAlive();
-
-		List<Vertex> engineDependencies = engine.computeAllDependencies().stream().collect(Collectors.toList());
-		// assert engineDependencies.size() == 2;
-		Vertex newCar = engine.getInstance("Car");
-		assert newCar.isAlive();
-		assert "Car".equals(newCar.getValue());
-		assert newCar.computeAllDependencies().size() == 1;
-		assert newCar.computeAllDependencies().contains(newCar);
-	}
-
-	public void test132_remove_with2SubTypes_ConserveStrategy() {
-		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = engine.addInstance(vehicle, "Car");
-		Vertex automatic = engine.addInstance(vehicle, "Automatic");
-
-		// when
-		vehicle.remove(RemoveStrategy.CONSERVE);
-
-		// then
-		assert !vehicle.isAlive();
-		assert !car.isAlive();
-		assert !automatic.isAlive();
-
-		List<Vertex> engineDependencies = engine.computeAllDependencies().stream().collect(Collectors.toList());
-		// assert engineDependencies.size() == 3;
-		// assert engine.getAllInstances().count() == 2 : engine.getAllInstances();
-
-		Vertex newCar = engine.getInstance("Car");
-		assert newCar.isAlive();
-		assert "Car".equals(newCar.getValue());
-		assert newCar.computeAllDependencies().size() == 1;
-		assert newCar.getAllInstances().count() == 0;
-		assert newCar.computeAllDependencies().contains(newCar);
-
-		Vertex newAutomatic = engine.getInstance("Automatic");
-		assert newAutomatic.isAlive();
-		assert "Automatic".equals(newAutomatic.getValue());
-		assert newAutomatic.computeAllDependencies().size() == 1;
-		assert newAutomatic.getAllInstances().count() == 0;
-		assert newAutomatic.computeAllDependencies().contains(newAutomatic);
-	}
-
-	public void test133_remove_SubSubTypes_ConserveStrategy() {
-		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = engine.addInstance(vehicle, "Car");
-		Vertex automatic = engine.addInstance(car, "Automatic");
-
-		// when
-		vehicle.remove(RemoveStrategy.CONSERVE);
-
-		// then
-		assert !vehicle.isAlive();
-		assert !car.isAlive();
-		assert !automatic.isAlive();
-
-		List<Vertex> engineDependencies = engine.computeAllDependencies().stream().collect(Collectors.toList());
-		// assert engineDependencies.size() == 3;
-		// assert engine.getAllInstances().count() == 2;
-
-		Vertex newCar = engine.getInstance("Car");
-		assert newCar.isAlive();
-		assert "Car".equals(newCar.getValue());
-		assert newCar.computeAllDependencies().size() == 2;
-		assert newCar.getSupersStream().count() == 0;
-
-		Vertex newAutomatic = engine.getInstance("Automatic");
-		assert newAutomatic.isAlive();
-		assert "Automatic".equals(newAutomatic.getValue());
-		assert newAutomatic.computeAllDependencies().size() == 1;
-		assert newAutomatic.getSupersStream().count() == 1;
-		assert newAutomatic.getSupers().contains(newCar);
-	}
-
-	public void test134_remove_TypeWithAttribute_ConserveStrategy() {
-		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = vehicle.addInstance("Car");
-		Vertex options = engine.addInstance(vehicle, "Options");
-
-		// when
-		vehicle.remove(RemoveStrategy.CONSERVE);
-
-		// then
-		assert !vehicle.isAlive();
-		assert !options.isAlive();
-		assert !car.isAlive();
-
-		List<Vertex> engineDependencies = engine.computeAllDependencies().stream().collect(Collectors.toList());
-		// assert engineDependencies.size() == 3;
-		// assert engine.getAllInstances().count() == 2;
-
-		Vertex newCar = engine.getInstance("Car");
-		Vertex newOptions = engine.getInstance("Options");
-		assert newCar != null;
-		assert newCar.getInheritings().stream().count() == 1;
-		assert newOptions.equals(newCar.getInheritings().stream().collect(Collectors.toList()).get(0));
-
-		assert newOptions != null;
-		assert newOptions.getSupersStream().count() == 1;
-		assert newCar.equals(newOptions.getSupers().get(0));
-
-	}
+	// public void test130_remove_Type_ConserveStrategy() {
+	// // given
+	// Vertex engine = new Root();
+	// Vertex vehicle = engine.addInstance("Vehicle");
+	//
+	// // when
+	// vehicle.remove(RemoveStrategy.CONSERVE);
+	//
+	// // then
+	// assert !vehicle.isAlive();
+	// // assert engine.computeAllDependencies().stream().count() == 1;
+	// assert engine.computeAllDependencies().contains(engine);
+	// }
+	//
+	// public void test131_remove_SubType_ConserveStrategy() {
+	// // given
+	// Vertex engine = new Root();
+	// Vertex vehicle = engine.addInstance("Vehicle");
+	// Vertex car = vehicle.addInstance("Car");
+	//
+	// // when
+	// vehicle.remove(RemoveStrategy.CONSERVE);
+	//
+	// // then
+	// assert !vehicle.isAlive();
+	// assert !car.isAlive();
+	//
+	// List<Vertex> engineDependencies = engine.computeAllDependencies().stream().collect(Collectors.toList());
+	// // assert engineDependencies.size() == 2;
+	// Vertex newCar = engine.getInstance("Car");
+	// assert newCar.isAlive();
+	// assert "Car".equals(newCar.getValue());
+	// assert newCar.computeAllDependencies().size() == 1;
+	// assert newCar.computeAllDependencies().contains(newCar);
+	// }
+	//
+	// public void test132_remove_with2SubTypes_ConserveStrategy() {
+	// // given
+	// Vertex engine = new Root();
+	// Vertex vehicle = engine.addInstance("Vehicle");
+	// Vertex car = engine.addInstance(vehicle, "Car");
+	// Vertex automatic = engine.addInstance(vehicle, "Automatic");
+	//
+	// // when
+	// vehicle.remove(RemoveStrategy.CONSERVE);
+	//
+	// // then
+	// assert !vehicle.isAlive();
+	// assert !car.isAlive();
+	// assert !automatic.isAlive();
+	//
+	// List<Vertex> engineDependencies = engine.computeAllDependencies().stream().collect(Collectors.toList());
+	// // assert engineDependencies.size() == 3;
+	// // assert engine.getAllInstances().count() == 2 : engine.getAllInstances();
+	//
+	// Vertex newCar = engine.getInstance("Car");
+	// assert newCar.isAlive();
+	// assert "Car".equals(newCar.getValue());
+	// assert newCar.computeAllDependencies().size() == 1;
+	// assert newCar.getAllInstances().count() == 0;
+	// assert newCar.computeAllDependencies().contains(newCar);
+	//
+	// Vertex newAutomatic = engine.getInstance("Automatic");
+	// assert newAutomatic.isAlive();
+	// assert "Automatic".equals(newAutomatic.getValue());
+	// assert newAutomatic.computeAllDependencies().size() == 1;
+	// assert newAutomatic.getAllInstances().count() == 0;
+	// assert newAutomatic.computeAllDependencies().contains(newAutomatic);
+	// }
+	//
+	// public void test133_remove_SubSubTypes_ConserveStrategy() {
+	// // given
+	// Vertex engine = new Root();
+	// Vertex vehicle = engine.addInstance("Vehicle");
+	// Vertex car = engine.addInstance(vehicle, "Car");
+	// Vertex automatic = engine.addInstance(car, "Automatic");
+	//
+	// // when
+	// vehicle.remove(RemoveStrategy.CONSERVE);
+	//
+	// // then
+	// assert !vehicle.isAlive();
+	// assert !car.isAlive();
+	// assert !automatic.isAlive();
+	//
+	// List<Vertex> engineDependencies = engine.computeAllDependencies().stream().collect(Collectors.toList());
+	// // assert engineDependencies.size() == 3;
+	// // assert engine.getAllInstances().count() == 2;
+	//
+	// Vertex newCar = engine.getInstance("Car");
+	// assert newCar.isAlive();
+	// assert "Car".equals(newCar.getValue());
+	// assert newCar.computeAllDependencies().size() == 2;
+	// assert newCar.getSupersStream().count() == 0;
+	//
+	// Vertex newAutomatic = engine.getInstance("Automatic");
+	// assert newAutomatic.isAlive();
+	// assert "Automatic".equals(newAutomatic.getValue());
+	// assert newAutomatic.computeAllDependencies().size() == 1;
+	// assert newAutomatic.getSupersStream().count() == 1;
+	// assert newAutomatic.getSupers().contains(newCar);
+	// }
+	//
+	// public void test134_remove_TypeWithAttribute_ConserveStrategy() {
+	// // given
+	// Vertex engine = new Root();
+	// Vertex vehicle = engine.addInstance("Vehicle");
+	// Vertex car = vehicle.addInstance("Car");
+	// Vertex options = engine.addInstance(vehicle, "Options");
+	//
+	// // when
+	// vehicle.remove(RemoveStrategy.CONSERVE);
+	//
+	// // then
+	// assert !vehicle.isAlive();
+	// assert !options.isAlive();
+	// assert !car.isAlive();
+	//
+	// List<Vertex> engineDependencies = engine.computeAllDependencies().stream().collect(Collectors.toList());
+	// // assert engineDependencies.size() == 3;
+	// // assert engine.getAllInstances().count() == 2;
+	//
+	// Vertex newCar = engine.getInstance("Car");
+	// Vertex newOptions = engine.getInstance("Options");
+	// assert newCar != null;
+	// assert newCar.getInheritings().stream().count() == 1;
+	// assert newOptions.equals(newCar.getInheritings().stream().collect(Collectors.toList()).get(0));
+	//
+	// assert newOptions != null;
+	// assert newOptions.getSupersStream().count() == 1;
+	// assert newCar.equals(newOptions.getSupers().get(0));
+	//
+	// }
 }

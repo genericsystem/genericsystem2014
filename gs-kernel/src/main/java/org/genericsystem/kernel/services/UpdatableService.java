@@ -8,12 +8,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.exceptions.ExistsException;
-import org.genericsystem.kernel.services.MapService.SystemMap;
 
 public interface UpdatableService<T extends UpdatableService<T>> extends BindingService<T> {
 
@@ -45,71 +42,77 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 
 	@SuppressWarnings("unchecked")
 	default T rebuildAll(Supplier<T> rebuilder) {
-		Map<T, T> convertMap = new HashMap<T, T>();
+		class ConvertMap extends HashMap<T, T> {
+			private static final long serialVersionUID = 5003546962293036021L;
+
+			T convert(T dependency) {
+				if (dependency.isAlive())
+					return dependency;
+				T newDependency = get(dependency);
+				if (newDependency == null) {
+					T meta = (dependency.equals(dependency.getMeta())) ? dependency : convert(dependency.getMeta());
+					newDependency = meta.buildInstance(dependency.getSupersStream().map(x -> convert(x)).collect(Collectors.toList()), dependency.getValue(),
+							dependency.getComponentsStream().map(x -> x.equals(this) ? null : convert(x)).collect(Collectors.toList())).plug();
+					put(dependency, newDependency);
+				}
+				return newDependency;
+			}
+		}
+		ConvertMap convertMap = new ConvertMap();
 		LinkedHashSet<T> dependenciesToRebuild = computeAllDependencies();
 		dependenciesToRebuild.forEach(UpdatableService::unplug);
 
 		T build = rebuilder.get();
 		dependenciesToRebuild.remove(this);
 		convertMap.put((T) this, build);
-		dependenciesToRebuild.forEach(x -> x.getOrBuild(convertMap));
+		dependenciesToRebuild.forEach(x -> convertMap.convert(x));
 
 		return build;
 	}
 
 	@SuppressWarnings("unchecked")
 	default T rebuildAll(Supplier<T> rebuilder, List<T> overrides, Serializable value, List<T> components) {
-		Map<T, T> convertMap = new HashMap<T, T>();
+		class ConvertMap extends HashMap<T, T> {
+			private static final long serialVersionUID = 5003546962293036021L;
+
+			T convert(T dependency) {
+				if (dependency.isAlive())
+					return dependency;
+				T newDependency = get(dependency);
+				if (newDependency == null) {
+					T meta = (dependency.equals(dependency.getMeta())) ? dependency : convert(dependency.getMeta());
+					newDependency = meta.buildInstance(dependency.getSupersStream().map(x -> convert(x)).collect(Collectors.toList()), dependency.getValue(),
+							dependency.getComponentsStream().map(x -> x.equals(this) ? null : convert(x)).collect(Collectors.toList())).plug();
+					put(dependency, newDependency);
+				}
+				return newDependency;
+			}
+		}
+		ConvertMap convertMap = new ConvertMap();
 		LinkedHashSet<T> dependenciesToRebuild = computeAllDependencies(overrides, value, components);
 		dependenciesToRebuild.forEach(UpdatableService::unplug);
 
 		T build = rebuilder.get();
 		convertMap.put((T) this, build);
 
-		dependenciesToRebuild.forEach(x -> x.getOrBuild(convertMap));
+		dependenciesToRebuild.forEach(x -> convertMap.convert(x));
+
 		return build;
 	}
 
 	// @SuppressWarnings("unchecked")
-	// default T partialRebuild(Supplier<T> rebuilder) {
-	// Map<T, T> convertMap = new HashMap<T, T>();
-	// LinkedHashSet<T> allDependencies = this.computeAllDependencies();
-	// allDependencies.forEach(UpdatableService::unplug);
-	// T build = rebuilder.get();
-	// allDependencies.remove(this);
-	// convertMap.put((T) this, build);
-	// allDependencies.forEach(x -> x.getOrBuild(convertMap));
-	// return build;
+	// default T getOrBuild(Map<T, T> convertMap) {
+	//
+	// if (this.isAlive())
+	// return (T) this;
+	// T newDependency = convertMap.get(this);
+	// if (newDependency == null) {
+	// T meta = (this == getMeta()) ? (T) this : getMeta().getOrBuild(convertMap);
+	// newDependency = meta.buildInstance(getSupersStream().map(x -> x.getOrBuild(convertMap)).collect(Collectors.toList()), getValue(), getComponentsStream().map(x -> x.equals(this) ? null : x.getOrBuild(convertMap)).collect(Collectors.toList()))
+	// .plug();
+	// convertMap.put((T) this, newDependency);
 	// }
-
-	@SuppressWarnings("unchecked")
-	default T getOrBuild(Map<T, T> convertMap) {
-
-		if (this.isAlive())
-			return (T) this;
-		T newDependency = convertMap.get(this);
-		if (newDependency == null)
-			convertMap.put((T) this, newDependency = this.build(convertMap));
-		return newDependency;
-	}
-
-	@SuppressWarnings("unchecked")
-	default T build(Map<T, T> convertMap) {
-		T meta = (this == getMeta()) ? (T) this : getMeta().getOrBuild(convertMap);
-		return meta.buildInstance(getSupersStream().map(x -> x.getOrBuild(convertMap)).collect(Collectors.toList()), getValue(), getComponentsStream().map(x -> x.equals(this) ? null : x.getOrBuild(convertMap)).collect(Collectors.toList())).plug();
-	}
-
-	// default List<T> replaceInComponents(T source, T target) {
-	// List<T> newComponents = getComponents();
-	// boolean hasBeenModified = false;
-	// for (int i = 0; i < newComponents.size(); i++)
-	// if (source.equiv(newComponents.get(i))) {
-	// newComponents.set(i, target);
-	// hasBeenModified = true;
-	// }
-	// if (!hasBeenModified)
-	// rollbackAndThrowException(new NotFoundException("Component : " + source.info() + " not found in component list : " + newComponents.toString() + " for " + this.info() + "when modifying componentList."));
-	// return newComponents;
+	// return newDependency;
 	// }
 
 	default T setInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
@@ -141,12 +144,6 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Binding
 	default T getMetaAttribute() {
 		T root = getRoot();
 		return root.getInstance(root.getValue(), root);
-	}
-
-	default T getSystemMap() {
-		T root = getRoot();
-		T meta = getMetaAttribute();
-		return meta == null ? root.getInstance(SystemMap.class, root) : meta.getInstance(SystemMap.class, root);
 	}
 
 	@SuppressWarnings("unchecked")

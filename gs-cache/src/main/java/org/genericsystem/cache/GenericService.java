@@ -3,17 +3,16 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
-
 import org.genericsystem.kernel.Snapshot;
 
 public interface GenericService<T extends GenericService<T>> extends org.genericsystem.impl.GenericService<T> {
 
-	// @Phantom [Lorg.genericsystem.kernel.services.UpdatableService; cannot be cast to [Lorg.genericsystem.cache.GenericService;
-	@Override
-	default T getMetaAttribute() {
-		T root = getRoot();
-		return root.getInstance(root.getValue(), root);
-	}
+	// // @Phantom [Lorg.genericsystem.kernel.services.UpdatableService; cannot be cast to [Lorg.genericsystem.cache.GenericService;
+	// @Override
+	// default T getMetaAttribute() {
+	// T root = getRoot();
+	// return root.getInstance(root.getValue(), root);
+	// }
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -39,8 +38,17 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 		return getCurrentCache().getSuperComposites((T) this, superVertex);
 	}
 
+	// @Phantom [Lorg.genericsystem.kernel.services.UpdatableService; cannot be cast to [Lorg.genericsystem.impl.GenericService;
+	@SuppressWarnings("unchecked")
 	@Override
-	default T getInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
+	default T getMetaAttribute() {
+		T root = getRoot();
+		return root.getInstance(root.getValue(), root);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default T getInstance(Serializable value, T... components) {
 		T nearestMeta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
 		if (!equals(nearestMeta))
 			return nearestMeta.getInstance(value, components);
@@ -48,13 +56,6 @@ public interface GenericService<T extends GenericService<T>> extends org.generic
 			if (instance.equiv(this, value, Arrays.asList(components)))
 				return instance;
 		return null;
-	}
-
-	// @Phantom
-	@SuppressWarnings("unchecked")
-	@Override
-	default void setSystemPropertyValue(Class<T> propertyClass, int pos, Serializable value) {
-		getSystemMap().getMeta().setInstance(getMap(), new AxedPropertyClass(propertyClass, pos), getRoot()).setInstance(value, (T) this);
 	}
 
 	@Override

@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
 import org.genericsystem.kernel.ExtendedSignature;
 import org.genericsystem.kernel.Signature;
 import org.genericsystem.kernel.SupersComputer;
@@ -20,8 +19,10 @@ public interface FactoryService<T extends FactoryService<T>> extends Dependencie
 		components.forEach(x -> ((Signature) x).checkIsAlive());
 		List<T> supers = new ArrayList<T>(new SupersComputer(level, this, overrides, value, components));
 		checkOverridesAreReached(overrides, supers);
-		return (T) ((ExtendedSignature) buildInstance().init((T) this, supers, value, components));
+		return ((T) ((ExtendedSignature) buildInstance().init((T) this, supers, value, components)));
 	}
+
+	T plug();
 
 	default boolean allOverridesAreReached(List<T> overrides, List<T> supers) {
 		return overrides.stream().allMatch(override -> supers.stream().anyMatch(superVertex -> superVertex.inheritsFrom(override)));

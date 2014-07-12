@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.VertexService;
@@ -13,6 +12,7 @@ import org.genericsystem.kernel.VertexService;
 public interface GenericService<T extends GenericService<T>> extends VertexService<T> {
 
 	// @Phantom [Lorg.genericsystem.kernel.services.UpdatableService; cannot be cast to [Lorg.genericsystem.impl.GenericService;
+	@SuppressWarnings("unchecked")
 	@Override
 	default T getMetaAttribute() {
 		T root = getRoot();
@@ -66,7 +66,8 @@ public interface GenericService<T extends GenericService<T>> extends VertexServi
 	}
 
 	@Override
-	default T getInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
+	@SuppressWarnings("unchecked")
+	default T getInstance(Serializable value, T... components) {
 		Vertex vertex = getVertex();
 		if (vertex == null)
 			return null;

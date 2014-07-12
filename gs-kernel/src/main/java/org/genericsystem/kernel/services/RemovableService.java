@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
-
-import org.genericsystem.kernel.RemoveRestructurator;
 import org.genericsystem.kernel.exceptions.AliveConstraintViolationException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 import org.genericsystem.kernel.exceptions.ReferentialIntegrityConstraintViolationException;
@@ -14,6 +12,7 @@ public interface RemovableService<T extends RemovableService<T>> extends Binding
 
 	boolean isCascadeRemove(int pos);
 
+	@Override
 	boolean isReferentialIntegrityConstraintEnabled(int pos);
 
 	default void remove(RemoveStrategy removeStrategy) {
@@ -22,10 +21,7 @@ public interface RemovableService<T extends RemovableService<T>> extends Binding
 			remove();
 			break;
 		case FORCE:
-			removeForce();
-			break;
-		case CONSERVE:
-			removeConserve();
+			forceRemove();
 			break;
 		}
 	}
@@ -86,19 +82,12 @@ public interface RemovableService<T extends RemovableService<T>> extends Binding
 		vertex.unplug();
 	}
 
-	default void removeForce() {
+	default void forceRemove() {
 		computeAllDependencies().forEach(x -> simpleRemove(x));
 	}
 
-	@SuppressWarnings("unchecked")
-	default void removeConserve() {
-		new RemoveRestructurator<T>((T) RemovableService.this) {
-			private static final long serialVersionUID = 6513791665544090616L;
-		}.rebuildAll();
-	}
-
 	public enum RemoveStrategy {
-		NORMAL, FORCE, CONSERVE;
+		NORMAL, FORCE;
 	}
 
 }
