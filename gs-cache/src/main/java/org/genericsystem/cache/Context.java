@@ -6,7 +6,7 @@ import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public interface Context<T extends GenericService<T>> {
+public interface Context<T extends AbstractGeneric<T>> {
 
 	static Logger log = LoggerFactory.getLogger(Context.class);
 

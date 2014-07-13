@@ -1,7 +1,6 @@
 package org.genericsystem.kernel;
 
 import org.genericsystem.kernel.exceptions.ReferentialIntegrityConstraintViolationException;
-import org.genericsystem.kernel.services.RemovableService.RemoveStrategy;
 import org.testng.annotations.Test;
 
 @Test
@@ -14,7 +13,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Vertex myVehicule = engine.addInstance("MyVehicule");
 
 		// when
-		myVehicule.remove(RemoveStrategy.NORMAL);
+		myVehicule.remove();
 
 		// then
 		assert vehicle.isAlive();
@@ -35,8 +34,8 @@ public class RemovableServiceTest extends AbstractTest {
 		Vertex myVehicule3 = vehicle.addInstance("MyVehicule3");
 
 		// when
-		myVehicule2.remove(RemoveStrategy.NORMAL);
-		myVehicule1.remove(RemoveStrategy.NORMAL);
+		myVehicule2.remove();
+		myVehicule1.remove();
 
 		// then
 		assert vehicle.isAlive();
@@ -64,7 +63,7 @@ public class RemovableServiceTest extends AbstractTest {
 			@Override
 			public void intercept() {
 				// when
-				vehicle.remove(RemoveStrategy.NORMAL);
+				vehicle.remove();
 			}
 			// then
 		}.assertIsCausedBy(ReferentialIntegrityConstraintViolationException.class);
@@ -77,7 +76,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Vertex car = engine.addInstance(vehicle, "Car");
 
 		// when
-		car.remove(RemoveStrategy.NORMAL);
+		car.remove();
 
 		// then
 		assert vehicle.isAlive();
@@ -96,7 +95,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Vertex power = engine.addInstance("Power", vehicle);
 
 		// when
-		vehicle.remove(RemoveStrategy.NORMAL);
+		vehicle.remove();
 		// then
 		assert engine.isAlive();
 		assert !vehicle.isAlive();
@@ -115,7 +114,7 @@ public class RemovableServiceTest extends AbstractTest {
 			@Override
 			public void intercept() {
 				// when
-				vehicle.remove(RemoveStrategy.NORMAL);
+				vehicle.remove();
 			}
 			// then
 		}.assertIsCausedBy(ReferentialIntegrityConstraintViolationException.class);
@@ -131,7 +130,7 @@ public class RemovableServiceTest extends AbstractTest {
 		assert vehicle.isAlive();
 		assert power.isAlive();
 		assert unit.isAlive();
-		vehicle.remove(RemoveStrategy.NORMAL);
+		vehicle.remove();
 		assert !vehicle.isAlive();
 		assert !power.isAlive();
 		assert !unit.isAlive();
@@ -147,7 +146,7 @@ public class RemovableServiceTest extends AbstractTest {
 			@Override
 			public void intercept() {
 				// when
-				vehicle.remove(RemoveStrategy.NORMAL);
+				vehicle.remove();
 			}
 			// then
 		}.assertIsCausedBy(ReferentialIntegrityConstraintViolationException.class);
@@ -167,7 +166,7 @@ public class RemovableServiceTest extends AbstractTest {
 			@Override
 			public void intercept() {
 				// when
-				vehicleColor.remove(RemoveStrategy.NORMAL);
+				vehicleColor.remove();
 			}
 			// then
 		}.assertIsCausedBy(ReferentialIntegrityConstraintViolationException.class);
@@ -184,7 +183,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Vertex carRed = vehicleColor.addInstance("CarRed", car, red);
 
 		// when
-		red.remove(RemoveStrategy.NORMAL);
+		red.remove();
 
 		// then
 		assert engine.isAlive();
@@ -207,7 +206,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Vertex carRed = vehicleColor.addInstance("CarRed", car, red);
 
 		// when
-		carRed.remove(RemoveStrategy.NORMAL);
+		carRed.remove();
 
 		// then
 		assert engine.isAlive();
@@ -225,7 +224,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Vertex vehicle = engine.addInstance("Vehicle");
 
 		// when
-		vehicle.remove(RemoveStrategy.FORCE);
+		vehicle.forceRemove();
 
 		// then
 		assert !vehicle.isAlive();
@@ -240,7 +239,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Vertex myVehicle = vehicle.addInstance("MyVehicule");
 
 		// when
-		vehicle.remove(RemoveStrategy.FORCE);
+		vehicle.forceRemove();
 		// then
 		assert !vehicle.isAlive();
 		assert !myVehicle.isAlive();
@@ -255,7 +254,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Vertex car = engine.addInstance(vehicle, "Car");
 
 		// when
-		vehicle.remove(RemoveStrategy.FORCE);
+		vehicle.forceRemove();
 
 		// then
 		assert !vehicle.isAlive();
@@ -271,7 +270,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Vertex power = engine.addInstance("Power", vehicle);
 
 		// when
-		vehicle.remove(RemoveStrategy.FORCE);
+		vehicle.forceRemove();
 
 		// then
 		assert engine.isAlive();
@@ -294,7 +293,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Vertex carRed = vehicleColor.addInstance("CarRed", car, red);
 
 		// when
-		vehicleColor.remove(RemoveStrategy.FORCE);
+		vehicleColor.forceRemove();
 
 		// then
 		assert engine.isAlive();
@@ -317,7 +316,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Vertex carRed = vehicleColor.addInstance("CarRed", car, red);
 
 		// when
-		car.remove(RemoveStrategy.FORCE);
+		car.forceRemove();
 
 		// then
 		assert engine.isAlive();
@@ -340,7 +339,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Vertex carRed = vehicleColor.addInstance("CarRed", car, red);
 
 		// when
-		red.remove(RemoveStrategy.FORCE);
+		red.forceRemove();
 
 		// then
 		assert engine.isAlive();
@@ -370,7 +369,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Vertex myVehicleGreen = vehicleColor.addInstance("myCarRed", myVehicle, green);
 
 		// when
-		vehicle.remove(RemoveStrategy.FORCE);
+		vehicle.forceRemove();
 
 		// then
 		assert engine.isAlive();

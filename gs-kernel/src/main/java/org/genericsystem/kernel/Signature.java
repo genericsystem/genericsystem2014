@@ -5,16 +5,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.DisplayService;
 import org.genericsystem.kernel.services.ExceptionAdviserService;
 
 public abstract class Signature<T extends Signature<T>> {
-	protected T meta;
-	protected List<T> components;
-	protected Serializable value;
+	private T meta;
+	private List<T> components;
+	private Serializable value;
 
 	@SuppressWarnings("unchecked")
 	protected T init(T meta, Serializable value, List<T> components) {

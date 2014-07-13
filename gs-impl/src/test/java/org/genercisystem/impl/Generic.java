@@ -1,31 +1,18 @@
 package org.genercisystem.impl;
 
+import org.genericsystem.impl.AbstractGeneric;
 import org.genericsystem.impl.GenericService;
-import org.genericsystem.impl.GenericSignature;
-import org.genericsystem.kernel.Snapshot;
 
-public class Generic extends GenericSignature<Generic> implements GenericService<Generic> {
+public class Generic extends AbstractGeneric<Generic> implements GenericService<Generic> {
 
 	@Override
-	public Generic buildInstance() {
+	public Generic newT() {
 		return new Generic();
 	}
 
-	// @Phantom
 	@Override
-	public Snapshot<Generic> getSuperComposites(Generic superT) {
-		return GenericService.super.getSuperComposites(superT);
+	public Generic[] newTArray(int dim) {
+		return new Generic[dim];
 	}
 
-	// @Phantom
-	@Override
-	public Snapshot<Generic> getMetaComposites(Generic meta) {
-		return GenericService.super.getMetaComposites(meta);
-	}
-
-	// @Phantom
-	@Override
-	public Generic plug() {
-		return GenericService.super.plug();
-	}
 }

@@ -63,20 +63,4 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 		return null;
 	}
 
-	Snapshot<T> getMetaComposites(T meta);
-
-	Snapshot<T> getSuperComposites(T superVertex);
-
-	T plug();
-
-	boolean unplug();
-	//
-	// @SuppressWarnings("unchecked")
-	// default void removeInstance(Serializable value, T... components) {
-	// T t = getInstance(value, components);
-	// if (t == null)
-	// rollbackAndThrowException(new NotFoundException(((DisplayService<T>) this).info()));
-	// ((BindingService<T>) t).unplug();
-	// }
-
 }

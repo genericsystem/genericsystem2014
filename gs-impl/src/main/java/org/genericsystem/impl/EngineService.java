@@ -9,10 +9,10 @@ import org.genericsystem.kernel.services.SignatureService;
 
 public interface EngineService<T extends GenericService<T>> extends RootService<T>, GenericService<T> {
 
-	@Override
-	default T find(Class<?> clazz) {
-		return wrap(getVertex().find(clazz));
-	}
+	// @Override
+	// default T find(Class<?> clazz) {
+	// return (T) ((AbstractGeneric) this).wrap(((AbstractGeneric) this).getVertex().find(clazz));
+	// }
 
 	default Root buildRoot() {
 		return buildRoot(Statics.ENGINE_VALUE);

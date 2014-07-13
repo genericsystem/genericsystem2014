@@ -68,9 +68,18 @@ public class Engine extends Generic implements EngineService<Generic> {
 		return wrap(root.find(clazz));
 	}
 
-	// @Phantom
+	@Override
+	public Generic getMeta() {
+		return this;
+	}
+
 	@Override
 	public Generic getRoot() {
+		return this;
+	}
+
+	@Override
+	public Generic getAlive() {
 		return this;
 	}
 }

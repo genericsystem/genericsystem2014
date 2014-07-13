@@ -1,7 +1,6 @@
 package org.genericsystem.impl;
 
 import org.genericsystem.api.core.Generic;
-import org.genericsystem.kernel.services.RemovableService.RemoveStrategy;
 
 public class Statics {
 
@@ -57,16 +56,5 @@ public class Statics {
 	public static final long GARBAGE_PERIOD = 1000L;
 	public static final long GARBAGE_INITIAL_DELAY = 1000L;
 	public static final long LIFE_TIMEOUT = 1386174608777L;// 30 minutes
-
-	public static RemoveStrategy convert(org.genericsystem.api.statics.RemoveStrategy removeStrategy) {
-		switch (removeStrategy) {
-		case FORCE:
-			return RemoveStrategy.FORCE;
-		case CONSERVE:
-			return RemoveStrategy.CONSERVE;
-		default:
-			return RemoveStrategy.NORMAL;
-		}
-	}
 
 }

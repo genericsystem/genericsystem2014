@@ -3,8 +3,9 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.Optional;
 import java.util.stream.Stream;
+import org.genericsystem.kernel.VertexService;
 
-public interface MapService<T extends MapService<T>> extends SystemPropertiesService<T>, CompositesInheritanceService<T>, UpdatableService<T> {
+public interface MapService<T extends VertexService<T>> extends SystemPropertiesService<T>, CompositesInheritanceService<T>, UpdatableService<T> {
 
 	@Override
 	default Serializable getSystemPropertyValue(Class<?> propertyClass, int pos) {
@@ -20,7 +21,7 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 	@SuppressWarnings("unchecked")
 	@Override
 	default void setSystemPropertyValue(Class<T> propertyClass, int pos, Serializable value) {
-		getMap().getMeta().setInstance(getMap(), new AxedPropertyClass(propertyClass, pos), getRoot()).setInstance(value, (T) this);
+		getMap().getMeta().setInstance(getMap(), new AxedPropertyClass(propertyClass, pos), coerceToArray(getRoot().setInstance(value, coerceToArray(this))));
 	}
 
 	default T getMap() {
@@ -38,9 +39,5 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 		return getKeys().filter(x -> x.getValue().equals(property)).findFirst();
 	}
 
-	// TODO clean
-	// @SystemGeneric
-	// @Components(Root.class)
-	// @org.genericsystem.kernel.annotations.constraints.PropertyConstraint
 	public static class SystemMap {}
 }

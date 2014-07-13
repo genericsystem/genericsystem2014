@@ -27,8 +27,13 @@ public class Engine extends Generic implements EngineService<Generic> {
 	}
 
 	@Override
-	public Vertex getVertex() {
+	protected Vertex getVertex() {
 		return root;
+	}
+
+	@Override
+	public Generic getMeta() {
+		return this;
 	}
 
 	@Override
@@ -46,22 +51,9 @@ public class Engine extends Generic implements EngineService<Generic> {
 		return EngineService.super.equiv(service);
 	}
 
-	// @Phantom
 	@Override
 	public Generic find(Class<?> clazz) {
-		return wrap(getVertex().find(clazz));
+		return wrap((getVertex().find(clazz)));
 	}
-	//
-	// // @Phantom
-	// @Override
-	// public Snapshot<Generic> getSuperComposites(Generic superT) {
-	// return super.getSuperComposites(superT);
-	// }
-	//
-	// // @Phantom
-	// @Override
-	// public Snapshot<Generic> getMetaComposites(Generic meta) {
-	// return super.getMetaComposites(meta);
-	// }
 
 }

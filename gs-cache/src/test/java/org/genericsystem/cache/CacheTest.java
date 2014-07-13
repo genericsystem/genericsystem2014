@@ -1,7 +1,6 @@
 package org.genericsystem.cache;
 
 import java.util.Arrays;
-
 import org.testng.annotations.Test;
 
 @Test
@@ -88,7 +87,7 @@ public class CacheTest extends AbstractTest {
 		assert mountNewCache.getSubContext() == currentCache;
 		Generic vehicle = engine.addInstance("Vehicle");
 		assert currentCache == mountNewCache.flushAndUnmount();
-		assert vehicle.getVertex() == null;
+		assert ((AbstractGeneric) vehicle).getVertex() == null;
 		currentCache.flush();
 		assert vehicle.getVertex() != null;
 	}

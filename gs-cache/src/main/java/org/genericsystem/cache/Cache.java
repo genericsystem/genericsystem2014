@@ -15,7 +15,7 @@ import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 import org.genericsystem.kernel.exceptions.RollbackException;
 
-public class Cache<T extends GenericService<T>> implements Context<T> {
+public class Cache<T extends AbstractGeneric<T>> implements Context<T> {
 
 	protected Context<T> subContext;
 

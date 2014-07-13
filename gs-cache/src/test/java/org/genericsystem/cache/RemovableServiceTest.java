@@ -1,11 +1,7 @@
 package org.genericsystem.cache;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.genericsystem.kernel.exceptions.ReferentialIntegrityConstraintViolationException;
-import org.genericsystem.kernel.services.RemovableService.RemoveStrategy;
 import org.testng.annotations.Test;
 
 @Test
@@ -18,7 +14,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Generic myVehicule = engine.addInstance("MyVehicule");
 
 		// when
-		myVehicule.remove(RemoveStrategy.NORMAL);
+		myVehicule.remove();
 
 		// then
 		assert vehicle.isAlive();
@@ -39,8 +35,8 @@ public class RemovableServiceTest extends AbstractTest {
 		Generic myVehicule3 = vehicle.addInstance("MyVehicule3");
 
 		// when
-		myVehicule2.remove(RemoveStrategy.NORMAL);
-		myVehicule1.remove(RemoveStrategy.NORMAL);
+		myVehicule2.remove();
+		myVehicule1.remove();
 
 		// then
 		assert vehicle.isAlive();
@@ -68,7 +64,7 @@ public class RemovableServiceTest extends AbstractTest {
 			@Override
 			public void intercept() {
 				// when
-				vehicle.remove(RemoveStrategy.NORMAL);
+				vehicle.remove();
 			}
 			// then
 		}.assertIsCausedBy(ReferentialIntegrityConstraintViolationException.class);
@@ -81,7 +77,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Generic car = engine.addInstance(vehicle, "Car");
 
 		// when
-		car.remove(RemoveStrategy.NORMAL);
+		car.remove();
 
 		// then
 		assert vehicle.isAlive();
@@ -100,7 +96,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Generic power = engine.addInstance("Power", vehicle);
 
 		// when
-		vehicle.remove(RemoveStrategy.NORMAL);
+		vehicle.remove();
 		// then
 		assert engine.isAlive();
 		assert !vehicle.isAlive();
@@ -119,7 +115,7 @@ public class RemovableServiceTest extends AbstractTest {
 			@Override
 			public void intercept() {
 				// when
-				vehicle.remove(RemoveStrategy.NORMAL);
+				vehicle.remove();
 			}
 			// then
 		}.assertIsCausedBy(ReferentialIntegrityConstraintViolationException.class);
@@ -135,7 +131,7 @@ public class RemovableServiceTest extends AbstractTest {
 		assert vehicle.isAlive();
 		assert power.isAlive();
 		assert unit.isAlive();
-		vehicle.remove(RemoveStrategy.NORMAL);
+		vehicle.remove();
 		assert !vehicle.isAlive();
 		assert !power.isAlive();
 		assert !unit.isAlive();
@@ -151,7 +147,7 @@ public class RemovableServiceTest extends AbstractTest {
 			@Override
 			public void intercept() {
 				// when
-				vehicle.remove(RemoveStrategy.NORMAL);
+				vehicle.remove();
 			}
 			// then
 		}.assertIsCausedBy(ReferentialIntegrityConstraintViolationException.class);
@@ -171,7 +167,7 @@ public class RemovableServiceTest extends AbstractTest {
 			@Override
 			public void intercept() {
 				// when
-				vehicleColor.remove(RemoveStrategy.NORMAL);
+				vehicleColor.remove();
 			}
 			// then
 		}.assertIsCausedBy(ReferentialIntegrityConstraintViolationException.class);
@@ -188,7 +184,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Generic carRed = vehicleColor.addInstance("CarRed", car, red);
 
 		// when
-		red.remove(RemoveStrategy.NORMAL);
+		red.remove();
 
 		// then
 		assert engine.isAlive();
@@ -211,7 +207,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Generic carRed = vehicleColor.addInstance("CarRed", car, red);
 
 		// when
-		carRed.remove(RemoveStrategy.NORMAL);
+		carRed.remove();
 
 		// then
 		assert engine.isAlive();
@@ -229,7 +225,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Generic vehicle = engine.addInstance("Vehicle");
 
 		// when
-		vehicle.remove(RemoveStrategy.FORCE);
+		vehicle.forceRemove();
 
 		// then
 		assert !vehicle.isAlive();
@@ -244,7 +240,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Generic myVehicle = vehicle.addInstance("MyVehicule");
 
 		// when
-		vehicle.remove(RemoveStrategy.FORCE);
+		vehicle.forceRemove();
 		// then
 		assert !vehicle.isAlive();
 		assert !myVehicle.isAlive();
@@ -259,7 +255,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Generic car = engine.addInstance(vehicle, "Car");
 
 		// when
-		vehicle.remove(RemoveStrategy.FORCE);
+		vehicle.forceRemove();
 
 		// then
 		assert !vehicle.isAlive();
@@ -275,7 +271,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Generic power = engine.addInstance("Power", vehicle);
 
 		// when
-		vehicle.remove(RemoveStrategy.FORCE);
+		vehicle.forceRemove();
 
 		// then
 		assert engine.isAlive();
@@ -298,7 +294,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Generic carRed = vehicleColor.addInstance("CarRed", car, red);
 
 		// when
-		vehicleColor.remove(RemoveStrategy.FORCE);
+		vehicleColor.forceRemove();
 
 		// then
 		assert engine.isAlive();
@@ -321,7 +317,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Generic carRed = vehicleColor.addInstance("CarRed", car, red);
 
 		// when
-		car.remove(RemoveStrategy.FORCE);
+		car.forceRemove();
 
 		// then
 		assert engine.isAlive();
@@ -344,7 +340,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Generic carRed = vehicleColor.addInstance("CarRed", car, red);
 
 		// when
-		red.remove(RemoveStrategy.FORCE);
+		red.forceRemove();
 
 		// then
 		assert engine.isAlive();
@@ -374,7 +370,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Generic myVehicleGreen = vehicleColor.addInstance("myCarRed", myVehicle, green);
 
 		// when
-		vehicle.remove(RemoveStrategy.FORCE);
+		((AbstractGeneric) vehicle).forceRemove();
 
 		// then
 		assert engine.isAlive();
@@ -393,144 +389,144 @@ public class RemovableServiceTest extends AbstractTest {
 		assert !myVehicleGreen.isAlive();
 	}
 
-	public void test130_remove_Type_ConserveStrategy() {
-		// given
-		Generic engine = new Engine();
-		Generic vehicle = engine.addInstance("Vehicle");
-
-		// when
-		vehicle.remove(RemoveStrategy.CONSERVE);
-
-		// then
-		assert !vehicle.isAlive();
-		// assert engine.computeAllDependencies().stream().count() == 1;
-		assert engine.computeAllDependencies().contains(engine);
-	}
-
-	public void test131_remove_SubType_ConserveStrategy() {
-		// given
-		Generic engine = new Engine();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic car = vehicle.addInstance("Car");
-
-		// when
-		vehicle.remove(RemoveStrategy.CONSERVE);
-
-		// then
-		assert !vehicle.isAlive();
-		assert !car.isAlive();
-
-		List<Generic> engineDependencies = engine.computeAllDependencies().stream().collect(Collectors.toList());
-		// assert engineDependencies.size() == 2;
-		Generic newCar = engine.getInstance("Car");
-		assert newCar.isAlive();
-		assert "Car".equals(newCar.getValue());
-		assert newCar.computeAllDependencies().size() == 1;
-		assert newCar.computeAllDependencies().contains(newCar);
-	}
-
-	public void test132_remove_with2SubTypes_ConserveStrategy() {
-		// given
-		Generic engine = new Engine();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic car = engine.addInstance(vehicle, "Car");
-		Generic automatic = engine.addInstance(vehicle, "Automatic");
-
-		// when
-		vehicle.remove(RemoveStrategy.CONSERVE);
-
-		// then
-		assert !vehicle.isAlive();
-		assert car.isAlive();
-		assert automatic.isAlive();
-
-		List<Generic> engineDependencies = engine.computeAllDependencies().stream().collect(Collectors.toList());
-		// assert engineDependencies.size() == 3;
-		// assert engine.getAllInstances().count() == 2 : engine.getAllInstances();
-
-		Generic newCar = engine.getInstance("Car");
-		assert newCar.isAlive();
-		assert "Car".equals(newCar.getValue());
-		assert newCar.computeAllDependencies().size() == 1;
-		assert newCar.getAllInstances().count() == 0;
-		assert newCar.computeAllDependencies().contains(newCar);
-
-		Generic newAutomatic = engine.getInstance("Automatic");
-		assert newAutomatic.isAlive();
-		assert "Automatic".equals(newAutomatic.getValue());
-		assert newAutomatic.computeAllDependencies().size() == 1;
-		assert newAutomatic.getAllInstances().count() == 0;
-		assert newAutomatic.computeAllDependencies().contains(newAutomatic);
-	}
-
-	public void test133_remove_SubSubTypes_ConserveStrategy() {
-		// given
-		Generic engine = new Engine();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic car = engine.addInstance(vehicle, "Car");
-		Generic automatic = engine.addInstance(car, "Automatic");
-
-		// when
-		vehicle.remove(RemoveStrategy.CONSERVE);
-
-		// then
-		assert !vehicle.isAlive();
-		assert car.isAlive();
-		assert automatic.isAlive();
-
-		List<Generic> engineDependencies = engine.computeAllDependencies().stream().collect(Collectors.toList());
-		// assert engineDependencies.size() == 3;
-		// assert engine.getAllInstances().count() == 2;
-
-		Generic newCar = engine.getInstance("Car");
-		assert newCar.isAlive();
-		assert "Car".equals(newCar.getValue());
-		assert newCar.computeAllDependencies().size() == 2;
-		assert newCar.getSupersStream().count() == 0;
-
-		Generic newAutomatic = engine.getInstance("Automatic");
-		assert newAutomatic.isAlive();
-		assert "Automatic".equals(newAutomatic.getValue());
-		assert newAutomatic.computeAllDependencies().size() == 1;
-		assert newAutomatic.getSupersStream().count() == 1;
-		assert newAutomatic.getSupers().contains(newCar);
-	}
-
-	public void test134_remove_TypeWithAttribute_ConserveStrategy() {
-		// given
-		Generic engine = new Engine();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic car = vehicle.addInstance("Car");
-		Generic options = engine.addInstance(vehicle, "Options");
-
-		// when
-		vehicle.remove(RemoveStrategy.CONSERVE);
-
-		// then
-		assert !vehicle.isAlive();
-		assert options.isAlive();
-		assert !car.isAlive();
-
-		List<Generic> engineDependencies = engine.computeAllDependencies().stream().collect(Collectors.toList());
-		// assert engineDependencies.size() == 3;
-		// assert engine.getAllInstances().count() == 2;
-
-		Generic newCar = engine.getInstance("Car");
-		Generic newOptions = engine.getInstance("Options");
-		assert newCar != null;
-		assert newCar.getInheritings().stream().count() == 1;
-		assert newOptions.equals(newCar.getInheritings().stream().collect(Collectors.toList()).get(0));
-
-		assert newOptions != null;
-		assert newOptions.getSupersStream().count() == 1;
-		assert newCar.equals(newOptions.getSupers().get(0));
-
-	}
+	// public void test130_remove_Type_ConserveStrategy() {
+	// // given
+	// Generic engine = new Engine();
+	// Generic vehicle = engine.addInstance("Vehicle");
+	//
+	// // when
+	// vehicle.remove(RemoveStrategy.CONSERVE);
+	//
+	// // then
+	// assert !vehicle.isAlive();
+	// // assert engine.computeAllDependencies().stream().count() == 1;
+	// assert engine.computeAllDependencies().contains(engine);
+	// }
+	//
+	// public void test131_remove_SubType_ConserveStrategy() {
+	// // given
+	// Generic engine = new Engine();
+	// Generic vehicle = engine.addInstance("Vehicle");
+	// Generic car = vehicle.addInstance("Car");
+	//
+	// // when
+	// vehicle.remove(RemoveStrategy.CONSERVE);
+	//
+	// // then
+	// assert !vehicle.isAlive();
+	// assert !car.isAlive();
+	//
+	// List<Generic> engineDependencies = engine.computeAllDependencies().stream().collect(Collectors.toList());
+	// // assert engineDependencies.size() == 2;
+	// Generic newCar = engine.getInstance("Car");
+	// assert newCar.isAlive();
+	// assert "Car".equals(newCar.getValue());
+	// assert newCar.computeAllDependencies().size() == 1;
+	// assert newCar.computeAllDependencies().contains(newCar);
+	// }
+	//
+	// public void test132_remove_with2SubTypes_ConserveStrategy() {
+	// // given
+	// Generic engine = new Engine();
+	// Generic vehicle = engine.addInstance("Vehicle");
+	// Generic car = engine.addInstance(vehicle, "Car");
+	// Generic automatic = engine.addInstance(vehicle, "Automatic");
+	//
+	// // when
+	// vehicle.remove(RemoveStrategy.CONSERVE);
+	//
+	// // then
+	// assert !vehicle.isAlive();
+	// assert car.isAlive();
+	// assert automatic.isAlive();
+	//
+	// List<Generic> engineDependencies = engine.computeAllDependencies().stream().collect(Collectors.toList());
+	// // assert engineDependencies.size() == 3;
+	// // assert engine.getAllInstances().count() == 2 : engine.getAllInstances();
+	//
+	// Generic newCar = engine.getInstance("Car");
+	// assert newCar.isAlive();
+	// assert "Car".equals(newCar.getValue());
+	// assert newCar.computeAllDependencies().size() == 1;
+	// assert newCar.getAllInstances().count() == 0;
+	// assert newCar.computeAllDependencies().contains(newCar);
+	//
+	// Generic newAutomatic = engine.getInstance("Automatic");
+	// assert newAutomatic.isAlive();
+	// assert "Automatic".equals(newAutomatic.getValue());
+	// assert newAutomatic.computeAllDependencies().size() == 1;
+	// assert newAutomatic.getAllInstances().count() == 0;
+	// assert newAutomatic.computeAllDependencies().contains(newAutomatic);
+	// }
+	//
+	// public void test133_remove_SubSubTypes_ConserveStrategy() {
+	// // given
+	// Generic engine = new Engine();
+	// Generic vehicle = engine.addInstance("Vehicle");
+	// Generic car = engine.addInstance(vehicle, "Car");
+	// Generic automatic = engine.addInstance(car, "Automatic");
+	//
+	// // when
+	// vehicle.remove(RemoveStrategy.CONSERVE);
+	//
+	// // then
+	// assert !vehicle.isAlive();
+	// assert car.isAlive();
+	// assert automatic.isAlive();
+	//
+	// List<Generic> engineDependencies = engine.computeAllDependencies().stream().collect(Collectors.toList());
+	// // assert engineDependencies.size() == 3;
+	// // assert engine.getAllInstances().count() == 2;
+	//
+	// Generic newCar = engine.getInstance("Car");
+	// assert newCar.isAlive();
+	// assert "Car".equals(newCar.getValue());
+	// assert newCar.computeAllDependencies().size() == 2;
+	// assert newCar.getSupersStream().count() == 0;
+	//
+	// Generic newAutomatic = engine.getInstance("Automatic");
+	// assert newAutomatic.isAlive();
+	// assert "Automatic".equals(newAutomatic.getValue());
+	// assert newAutomatic.computeAllDependencies().size() == 1;
+	// assert newAutomatic.getSupersStream().count() == 1;
+	// assert newAutomatic.getSupers().contains(newCar);
+	// }
+	//
+	// public void test134_remove_TypeWithAttribute_ConserveStrategy() {
+	// // given
+	// Generic engine = new Engine();
+	// Generic vehicle = engine.addInstance("Vehicle");
+	// Generic car = vehicle.addInstance("Car");
+	// Generic options = engine.addInstance(vehicle, "Options");
+	//
+	// // when
+	// vehicle.remove(RemoveStrategy.CONSERVE);
+	//
+	// // then
+	// assert !vehicle.isAlive();
+	// assert options.isAlive();
+	// assert !car.isAlive();
+	//
+	// List<Generic> engineDependencies = engine.computeAllDependencies().stream().collect(Collectors.toList());
+	// // assert engineDependencies.size() == 3;
+	// // assert engine.getAllInstances().count() == 2;
+	//
+	// Generic newCar = engine.getInstance("Car");
+	// Generic newOptions = engine.getInstance("Options");
+	// assert newCar != null;
+	// assert newCar.getInheritings().stream().count() == 1;
+	// assert newOptions.equals(newCar.getInheritings().stream().collect(Collectors.toList()).get(0));
+	//
+	// assert newOptions != null;
+	// assert newOptions.getSupersStream().count() == 1;
+	// assert newCar.equals(newOptions.getSupers().get(0));
+	//
+	// }
 
 	public void testRemove() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
-		vehicle.remove(RemoveStrategy.NORMAL);
+		vehicle.remove();
 		new RollbackCatcher() {
 			@Override
 			public void intercept() {
