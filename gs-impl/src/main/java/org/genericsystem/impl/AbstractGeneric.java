@@ -40,10 +40,10 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 		return vertex != null && getVertex().unplug();
 	}
 
-	@Deprecated
-	List<T> wrap(Stream<Vertex> stream) {
-		return stream.map(this::wrap).collect(Collectors.toList());
-	}
+	// @Deprecated
+	// List<T> wrap(Stream<Vertex> stream) {
+	// return stream.map(this::wrap).collect(Collectors.toList());
+	// }
 
 	static List<Vertex> unwrap(Stream<? extends AbstractGeneric<?>> stream) {
 		return stream.map(AbstractGeneric::unwrap).collect(Collectors.toList());
@@ -54,7 +54,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 			return getRoot();
 		Vertex alive = vertex.getAlive();
 		T meta = wrap(alive.getMeta());
-		return meta.newT().init(meta, wrap(alive.getSupersStream()), alive.getValue(), wrap(alive.getComponentsStream()));
+		return meta.newT().init(meta, alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList()));
 	}
 
 	protected Vertex unwrap() {
@@ -64,7 +64,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 		alive = getMeta().unwrap();
 		if (!alive.isAlive())
 			throw new IllegalStateException("Not Alive" + alive.info() + alive.getMeta().getInstances());
-		return alive.newT().init(alive, unwrap(getSupersStream()), getValue(), unwrap(getComponentsStream()));
+		return alive.buildInstance(getSupersStream().map(T::unwrap).collect(Collectors.toList()), getValue(), getComponentsStream().map(T::unwrap).collect(Collectors.toList()));
 	}
 
 	protected Vertex getVertex() {

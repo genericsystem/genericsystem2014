@@ -8,7 +8,7 @@ import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.exceptions.AmbiguousSelectionException;
 import org.genericsystem.kernel.exceptions.CrossEnginesAssignementsException;
 
-public interface BindingService<T extends BindingService<T>> extends DependenciesService<T>, FactoryService<T>, ExceptionAdviserService<T>, DisplayService<T> {
+public interface BindingService<T extends BindingService<T>> extends DependenciesService<T>, ExceptionAdviserService<T>, DisplayService<T> {
 
 	default void checkSameEngine(List<T> components) {
 		if (components.stream().anyMatch(component -> !component.getRoot().equals(getRoot())))

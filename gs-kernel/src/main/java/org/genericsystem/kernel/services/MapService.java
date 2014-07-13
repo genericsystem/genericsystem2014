@@ -17,7 +17,6 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	default void setSystemPropertyValue(Class<T> propertyClass, int pos, Serializable value) {
 		getMap().getMeta().setInstance(getMap(), new AxedPropertyClass(propertyClass, pos), coerceToArray(getRoot())).setInstance(value, coerceToArray(this));

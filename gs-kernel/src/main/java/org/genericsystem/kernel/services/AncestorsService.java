@@ -35,14 +35,6 @@ public interface AncestorsService<T extends AncestorsService<T>> extends Signatu
 		return getRoot().find(clazz);
 	}
 
-	// default boolean hasSuperSameMeta() {
-	// return getSupersStream().anyMatch(x -> getMeta().equals(x.getMeta()));
-	// }
-
-	// default Stream<T> getSuprasStream() {
-	// return isRoot() || hasSuperSameMeta() ? getSupersStream() : Stream.concat(Stream.of(getMeta()), getSupersStream());
-	// }
-
 	default boolean inheritsFrom(T superVertex) {
 		if (this == superVertex || equals(superVertex))
 			return true;
@@ -62,4 +54,15 @@ public interface AncestorsService<T extends AncestorsService<T>> extends Signatu
 	default boolean isAttributeOf(T vertex) {
 		return isRoot() || getComponentsStream().anyMatch(component -> vertex.isSpecializationOf(component));
 	}
+
+	// default List<T> getUnreachedSupers(T instance, List<T> overrides) {
+	// return overrides.stream().filter(override -> instance.getSupers().stream().allMatch(superVertex -> !superVertex.inheritsFrom(override))).collect(Collectors.toList());
+	// }
+	// default boolean hasSuperSameMeta() {
+	// return getSupersStream().anyMatch(x -> getMeta().equals(x.getMeta()));
+	// }
+
+	// default Stream<T> getSuprasStream() {
+	// return isRoot() || hasSuperSameMeta() ? getSupersStream() : Stream.concat(Stream.of(getMeta()), getSupersStream());
+	// }
 }

@@ -1,10 +1,9 @@
 package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
-
 import org.genericsystem.kernel.Statics;
 
-public interface SystemPropertiesService<T extends SystemPropertiesService<T>> extends RemovableService<T> {
+public interface SystemPropertiesService<T extends SystemPropertiesService<T>> extends BindingService<T> {
 
 	Serializable getSystemPropertyValue(Class<?> propertyClass, int pos);
 
@@ -90,7 +89,6 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 		return disableSystemProperty(CascadeRemoveProperty.class, pos);
 	}
 
-	@Override
 	default boolean isCascadeRemove(int pos) {
 		return isSystemPropertyEnabled(CascadeRemoveProperty.class, pos);
 	}

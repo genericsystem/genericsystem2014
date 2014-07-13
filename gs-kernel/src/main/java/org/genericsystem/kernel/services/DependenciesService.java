@@ -2,11 +2,8 @@ package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import org.genericsystem.kernel.Snapshot;
@@ -24,74 +21,73 @@ public interface DependenciesService<T extends DependenciesService<T>> extends A
 				|| inheritsFrom(dependency.getMeta(), dependency.getValue(), dependency.getComponents(), getMeta(), getValue(), getComponents());
 	}
 
-	default LinkedHashSet<T> computeAllDependencies() {
-		class DirectDependencies extends LinkedHashSet<T> {
-			private static final long serialVersionUID = -5970021419012502402L;
-			private final Set<T> alreadyVisited = new HashSet<>();
+	// default LinkedHashSet<T> computeAllDependencies() {
+	// class DirectDependencies extends LinkedHashSet<T> {
+	// private static final long serialVersionUID = -5970021419012502402L;
+	// private final Set<T> alreadyVisited = new HashSet<>();
+	//
+	// public DirectDependencies() {
+	// visit(getMeta());
+	// }
+	//
+	// public void visit(T node) {
+	// if (!alreadyVisited.contains(node))
+	// if (!isAncestorOf(node)) {
+	// alreadyVisited.add(node);
+	// node.getComposites().forEach(this::visit);
+	// node.getInheritings().forEach(this::visit);
+	// node.getInstances().forEach(this::visit);
+	// } else
+	// addDependency(node);
+	// }
+	//
+	// public void addDependency(T node) {
+	// if (!alreadyVisited.contains(node)) {
+	// alreadyVisited.add(node);
+	// node.getComposites().forEach(this::addDependency);
+	// node.getInheritings().forEach(this::addDependency);
+	// node.getInstances().forEach(this::addDependency);
+	// super.add(node);
+	// }
+	// }
+	// }
+	// return new DirectDependencies();
+	// }
 
-			public DirectDependencies() {
-				visit(getMeta());
-			}
+	// default LinkedHashSet<T> computeAllPotentialInstancesDependencies(List<T> overrides, Serializable value, List<T> components) {
+	// class DirectDependencies extends LinkedHashSet<T> {
+	// private static final long serialVersionUID = -5970021419012502402L;
+	// private final Set<T> alreadyVisited = new HashSet<>();
+	//
+	// @SuppressWarnings("unchecked")
+	// public DirectDependencies() {
+	// visit((T) this);
+	// }
+	//
+	// public void visit(T node) {
+	// if (!alreadyVisited.contains(node))
+	// if (!isAncestorOf(node)) {
+	// alreadyVisited.add(node);
+	// node.getComposites().forEach(this::visit);
+	// node.getInheritings().forEach(this::visit);
+	// node.getInstances().forEach(this::visit);
+	// } else
+	// addDependency(node);
+	// }
+	//
+	// public void addDependency(T node) {
+	// if (!alreadyVisited.contains(node)) {
+	// alreadyVisited.add(node);
+	// node.getComposites().forEach(this::addDependency);
+	// node.getInheritings().forEach(this::addDependency);
+	// node.getInstances().forEach(this::addDependency);
+	// super.add(node);
+	// }
+	// }
+	// }
+	// return new DirectDependencies();
+	// }
 
-			public void visit(T node) {
-				if (!alreadyVisited.contains(node))
-					if (!isAncestorOf(node)) {
-						alreadyVisited.add(node);
-						node.getComposites().forEach(this::visit);
-						node.getInheritings().forEach(this::visit);
-						node.getInstances().forEach(this::visit);
-					} else
-						addDependency(node);
-			}
-
-			public void addDependency(T node) {
-				if (!alreadyVisited.contains(node)) {
-					alreadyVisited.add(node);
-					node.getComposites().forEach(this::addDependency);
-					node.getInheritings().forEach(this::addDependency);
-					node.getInstances().forEach(this::addDependency);
-					super.add(node);
-				}
-			}
-		}
-		return new DirectDependencies();
-	}
-
-	default LinkedHashSet<T> computeAllPotentialInstancesDependencies(List<T> overrides, Serializable value, List<T> components) {
-		class DirectDependencies extends LinkedHashSet<T> {
-			private static final long serialVersionUID = -5970021419012502402L;
-			private final Set<T> alreadyVisited = new HashSet<>();
-
-			@SuppressWarnings("unchecked")
-			public DirectDependencies() {
-				visit((T) this);
-			}
-
-			public void visit(T node) {
-				if (!alreadyVisited.contains(node))
-					if (!isAncestorOf(node)) {
-						alreadyVisited.add(node);
-						node.getComposites().forEach(this::visit);
-						node.getInheritings().forEach(this::visit);
-						node.getInstances().forEach(this::visit);
-					} else
-						addDependency(node);
-			}
-
-			public void addDependency(T node) {
-				if (!alreadyVisited.contains(node)) {
-					alreadyVisited.add(node);
-					node.getComposites().forEach(this::addDependency);
-					node.getInheritings().forEach(this::addDependency);
-					node.getInstances().forEach(this::addDependency);
-					super.add(node);
-				}
-			}
-		}
-		return new DirectDependencies();
-	}
-
-	
 	Snapshot<T> getComposites();
 
 	@SuppressWarnings("unchecked")

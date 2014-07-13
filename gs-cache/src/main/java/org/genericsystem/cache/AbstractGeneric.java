@@ -3,6 +3,7 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Vertex;
 
@@ -87,6 +88,11 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.
 	@Override
 	public Snapshot<T> getComposites() {
 		return getCurrentCache().getComposites((T) this);
+	}
+
+	@Override
+	protected LinkedHashSet<T> computeAllDependencies() {
+		return super.computeAllDependencies();
 	}
 
 }

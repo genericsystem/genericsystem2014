@@ -5,10 +5,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import org.genericsystem.kernel.Snapshot.AbstractSnapshot;
 import org.genericsystem.kernel.Statics.Supers;
 import org.genericsystem.kernel.exceptions.AliveConstraintViolationException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
@@ -19,9 +22,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 
 	protected List<T> supers;
 
-	@Override
 	@SuppressWarnings("unchecked")
-	public T init(T meta, List<T> supers, Serializable value, List<T> components) {
+	protected T init(T meta, List<T> supers, Serializable value, List<T> components) {
 		super.init(meta, value, components);
 		this.supers = supers;
 		checkDependsMetaComponents();
@@ -137,26 +139,27 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 		return rebuildAll(() -> newT().init(getMeta(), new Supers<T>(getSupers(), supersToAdd), newValue, newComponents).plug());
 	}
 
-	// should not be public !!!
+	private static class ConvertMap<T extends AbstractVertex<T>> extends HashMap<T, T> {
+		private static final long serialVersionUID = 5003546962293036021L;
+
+		T convert(T dependency) {
+			if (dependency.isAlive())
+				return dependency;
+			T newDependency = get(dependency);
+			if (newDependency == null) {
+				T meta = (dependency.isRoot()) ? dependency : convert(dependency.getMeta());
+				newDependency = meta.buildInstance(dependency.getSupersStream().map(x -> convert(x)).collect(Collectors.toList()), dependency.getValue(),
+						dependency.getComponentsStream().map(x -> x.equals(this) ? null : convert(x)).collect(Collectors.toList())).plug();
+				put(dependency, newDependency);
+			}
+			return newDependency;
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	T rebuildAll(Supplier<T> rebuilder) {
-		class ConvertMap extends HashMap<T, T> {
-			private static final long serialVersionUID = 5003546962293036021L;
 
-			T convert(T dependency) {
-				if (dependency.isAlive())
-					return dependency;
-				T newDependency = get(dependency);
-				if (newDependency == null) {
-					T meta = (dependency.isRoot()) ? dependency : convert(dependency.getMeta());
-					newDependency = meta.buildInstance(dependency.getSupersStream().map(x -> convert(x)).collect(Collectors.toList()), dependency.getValue(),
-							dependency.getComponentsStream().map(x -> x.equals(this) ? null : convert(x)).collect(Collectors.toList())).plug();
-					put(dependency, newDependency);
-				}
-				return newDependency;
-			}
-		}
-		ConvertMap convertMap = new ConvertMap();
+		ConvertMap<T> convertMap = new ConvertMap<>();
 		LinkedHashSet<T> dependenciesToRebuild = computeAllDependencies();
 		dependenciesToRebuild.forEach(this::simpleRemove);
 		T build = rebuilder.get();
@@ -166,33 +169,9 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 		return build;
 	}
 
-	T rebuildAll(Supplier<T> rebuilder, List<T> overrides, Serializable value, List<T> components) {
-		class ConvertMap extends HashMap<T, T> {
-			private static final long serialVersionUID = 5003546962293036021L;
-
-			T convert(T dependency) {
-				if (dependency.isAlive())
-					return dependency;
-				T newDependency = get(dependency);
-				if (newDependency == null) {
-					T meta = (dependency.equals(dependency.getMeta())) ? dependency : convert(dependency.getMeta());
-					newDependency = meta.buildInstance(dependency.getSupersStream().map(x -> convert(x)).collect(Collectors.toList()), dependency.getValue(),
-							dependency.getComponentsStream().map(x -> x.equals(this) ? null : convert(x)).collect(Collectors.toList())).plug();
-					put(dependency, newDependency);
-				}
-				return newDependency;
-			}
-		}
-		ConvertMap convertMap = new ConvertMap();
-		LinkedHashSet<T> dependenciesToRebuild = computeAllPotentialInstancesDependencies(overrides, value, components);
-		dependenciesToRebuild.forEach(this::simpleRemove);
-
-		T build = rebuilder.get();
-		convertMap.put((T) this, build);
-
-		dependenciesToRebuild.forEach(x -> convertMap.convert(x));
-
-		return build;
+	@SuppressWarnings("unchecked")
+	protected LinkedHashSet<T> computeAllDependencies() {
+		return new DependenciesComputer<T>((T) AbstractVertex.this);
 	}
 
 	@Override
@@ -226,6 +205,50 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 		}
 		T instance = buildInstance(overrides, value, Arrays.asList(components));
 		return (T) ((AbstractVertex<?>) instance).rebuildAll(() -> ((AbstractVertex<?>) instance).plug());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Snapshot<T> getInheritings(final T origin, final int level) {
+		// No closure here cause we needs equals implementation of AbstractSnapshot
+		return new AbstractSnapshot<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return new InheritanceComputer<T>((T) AbstractVertex.this, origin, level).inheritanceIterator();
+			}
+		};
+	}
+
+	abstract protected T newT();
+
+	abstract protected T[] newTArray(int dim);
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public T[] coerceToArray(Object... array) {
+		T[] result = newTArray(array.length);
+		for (int i = 0; i < array.length; i++)
+			result[i] = (T) array[i];
+		return result;
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public T buildInstance(List<T> overrides, Serializable value, List<T> components) {
+		int level = getLevel() == 0 && Objects.equals(getValue(), getRoot().getValue()) && getComponentsStream().allMatch(c -> c.isRoot()) && Objects.equals(value, getRoot().getValue()) && components.stream().allMatch(c -> c.isRoot()) ? 0 : getLevel() + 1;
+		overrides.forEach(x -> ((Signature) x).checkIsAlive());
+		components.forEach(x -> ((Signature) x).checkIsAlive());
+		List<T> supers = new ArrayList<T>(new SupersComputer(level, this, overrides, value, components));
+		checkOverridesAreReached(overrides, supers);
+		return ((T) ((AbstractVertex) newT().init((T) this, supers, value, components)));
+	}
+
+	private boolean allOverridesAreReached(List<T> overrides, List<T> supers) {
+		return overrides.stream().allMatch(override -> supers.stream().anyMatch(superVertex -> superVertex.inheritsFrom(override)));
+	}
+
+	private void checkOverridesAreReached(List<T> overrides, List<T> supers) {
+		if (!allOverridesAreReached(overrides, supers))
+			rollbackAndThrowException(new IllegalStateException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
 	}
 
 }

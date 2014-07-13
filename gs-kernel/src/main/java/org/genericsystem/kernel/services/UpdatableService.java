@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public interface UpdatableService<T extends UpdatableService<T>> extends RemovableService<T> {
+public interface UpdatableService<T extends UpdatableService<T>> extends BindingService<T> {
+
+	void remove();
 
 	default T updateValue(Serializable newValue) {
 		return update(getSupers(), newValue, getComponents());
@@ -60,10 +62,8 @@ public interface UpdatableService<T extends UpdatableService<T>> extends Removab
 		return addInstance(Collections.singletonList(superGeneric), value, components);
 	}
 
+	@SuppressWarnings("unchecked")
 	T addInstance(List<T> overrides, Serializable value, T... components);
 
-	// default List<T> getUnreachedSupers(T instance, List<T> overrides) {
-	// return overrides.stream().filter(override -> instance.getSupers().stream().allMatch(superVertex -> !superVertex.inheritsFrom(override))).collect(Collectors.toList());
-	// }
-
+	T[] coerceToArray(Object... array);
 }
