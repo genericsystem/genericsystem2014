@@ -1,11 +1,7 @@
 package org.genericsystem.impl;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Vertex;
@@ -38,15 +34,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 	public boolean unplug() {
 		Vertex vertex = getVertex();
 		return vertex != null && getVertex().unplug();
-	}
-
-	// @Deprecated
-	// List<T> wrap(Stream<Vertex> stream) {
-	// return stream.map(this::wrap).collect(Collectors.toList());
-	// }
-
-	static List<Vertex> unwrap(Stream<? extends AbstractGeneric<?>> stream) {
-		return stream.map(AbstractGeneric::unwrap).collect(Collectors.toList());
 	}
 
 	protected T wrap(Vertex vertex) {
@@ -87,17 +74,17 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 		return () -> getVertex().getInheritings().stream().map(this::wrap).iterator();
 	}
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public T getInstance(Serializable value, T... components) {
-		Vertex vertex = getVertex();
-		if (vertex == null)
-			return null;
-		vertex = vertex.getInstance(value, Arrays.asList(components).stream().map(AbstractGeneric::unwrap).collect(Collectors.toList()).toArray(new Vertex[components.length]));
-		if (vertex == null)
-			return null;
-		return wrap(vertex);
-	}
+	// @Override
+	// @SuppressWarnings("unchecked")
+	// public T getInstance(Serializable value, T... components) {
+	// Vertex vertex = getVertex();
+	// if (vertex == null)
+	// return null;
+	// vertex = vertex.getInstance(value, Arrays.asList(components).stream().map(AbstractGeneric::unwrap).collect(Collectors.toList()).toArray(new Vertex[components.length]));
+	// if (vertex == null)
+	// return null;
+	// return wrap(vertex);
+	// }
 
 	@Override
 	public Snapshot<T> getComposites() {

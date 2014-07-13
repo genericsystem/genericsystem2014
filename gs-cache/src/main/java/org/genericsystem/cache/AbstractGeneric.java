@@ -64,14 +64,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.
 		return getCurrentCache().getSuperComposites((T) this, superVertex);
 	}
 
-	// @Phantom [Lorg.genericsystem.kernel.services.UpdatableService; cannot be cast to [Lorg.genericsystem.impl.GenericService;
-	@SuppressWarnings("unchecked")
-	@Override
-	public T getMetaAttribute() {
-		T root = getRoot();
-		return root.getInstance(root.getValue(), root);
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public T getInstance(Serializable value, T... components) {
