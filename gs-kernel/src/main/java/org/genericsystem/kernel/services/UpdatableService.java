@@ -4,9 +4,8 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.genericsystem.kernel.VertexService;
 
-public interface UpdatableService<T extends VertexService<T>> extends RemovableService<T> {
+public interface UpdatableService<T extends UpdatableService<T>> extends RemovableService<T> {
 
 	default T updateValue(Serializable newValue) {
 		return update(getSupers(), newValue, getComponents());
