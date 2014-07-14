@@ -53,7 +53,7 @@ public class Engine extends Generic implements EngineService<Generic> {
 
 	@Override
 	public Generic find(Class<?> clazz) {
-		return wrap((getVertex().find(clazz)));
+		return wrap(root.find(clazz));
 	}
 
 }
