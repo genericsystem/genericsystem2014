@@ -5,9 +5,8 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import org.genericsystem.kernel.services.DependenciesService;
 
-public class SupersComputer<T extends DependenciesService<T>> extends LinkedHashSet<T> {
+public class SupersComputer<T extends VertexService<T>> extends LinkedHashSet<T> {
 
 	private static final long serialVersionUID = -1078004898524170057L;
 

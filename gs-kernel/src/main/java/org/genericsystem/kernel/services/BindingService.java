@@ -5,16 +5,19 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.genericsystem.kernel.Snapshot;
+import org.genericsystem.kernel.VertexService;
 import org.genericsystem.kernel.exceptions.AmbiguousSelectionException;
 import org.genericsystem.kernel.exceptions.CrossEnginesAssignementsException;
 
-public interface BindingService<T extends BindingService<T>> extends DependenciesService<T>, DisplayService<T> {
+public interface BindingService<T extends VertexService<T>> extends ApiService<T> {
 
+	@Override
 	default void checkSameEngine(List<T> components) {
 		if (components.stream().anyMatch(component -> !component.getRoot().equals(getRoot())))
 			rollbackAndThrowException(new CrossEnginesAssignementsException());
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	default T adjustMeta(List<T> overrides, Serializable subValue, List<T> subComponents) {
 		T result = null;
@@ -28,6 +31,7 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 	}
 
 	// TODO KK
+	@Override
 	default boolean isMetaOf(T subMeta, Serializable value, List<T> overrides, List<T> subComponents) {
 		if (!subMeta.isSpecializationOf(getMeta()))
 			return false;
@@ -39,6 +43,7 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 		return true;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	default T getInstance(Serializable value, T... components) {
 		T meta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
@@ -53,6 +58,7 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 		return null;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	default T getWeakInstance(Serializable value, T... components) {
 		T meta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
@@ -67,6 +73,7 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 		return null;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	default T getInstance(List<T> supers, Serializable value, T... components) {
 		T result = getInstance(value, components);

@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.Objects;
 import org.genericsystem.kernel.services.AncestorsService;
+import org.genericsystem.kernel.services.ApiService;
 
 public interface RootService<T extends VertexService<T>> extends VertexService<T> {
 
@@ -20,8 +21,8 @@ public interface RootService<T extends VertexService<T>> extends VertexService<T
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T getRoot() {
-		return (T) this;
+	default RootService<T> getRoot() {
+		return this;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -37,7 +38,7 @@ public interface RootService<T extends VertexService<T>> extends VertexService<T
 	}
 
 	@Override
-	default boolean equiv(AncestorsService<? extends AncestorsService<?>> service) {
+	default boolean equiv(ApiService<? extends ApiService<?>> service) {
 		if (this == service)
 			return true;
 		return Objects.equals(getValue(), service.getValue()) && AncestorsService.equivComponents(getComponents(), service.getComponents());

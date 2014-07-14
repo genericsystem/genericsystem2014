@@ -1,6 +1,5 @@
 package org.genericsystem.cache;
 
-
 public interface GenericService<T extends AbstractGeneric<T>> extends org.genericsystem.impl.GenericService<T> {
 
 	@Override
@@ -19,6 +18,11 @@ public interface GenericService<T extends AbstractGeneric<T>> extends org.generi
 
 	default Cache<T> getCurrentCache() {
 		return getRoot().getCurrentCache();
+	}
+
+	@Override
+	default EngineService<T> getRoot() {
+		return (EngineService<T>) org.genericsystem.impl.GenericService.super.getRoot();
 	}
 
 }

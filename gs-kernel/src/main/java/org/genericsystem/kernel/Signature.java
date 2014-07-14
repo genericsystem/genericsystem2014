@@ -9,7 +9,7 @@ import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.DisplayService;
 
-public abstract class Signature<T extends Signature<T>> implements AncestorsService<T> {
+public abstract class Signature<T extends Signature<T>> implements VertexService<T> {
 	private T meta;
 	private List<T> components;
 	private Serializable value;

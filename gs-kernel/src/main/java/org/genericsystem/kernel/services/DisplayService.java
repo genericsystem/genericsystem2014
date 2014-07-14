@@ -1,21 +1,26 @@
 package org.genericsystem.kernel.services;
 
 import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.VertexService;
 
-public interface DisplayService<T extends DisplayService<T>> extends AncestorsService<T> {
+public interface DisplayService<T extends VertexService<T>> extends ApiService<T> {
 
+	@Override
 	default String info() {
 		return "(" + getMeta().getValue() + ")" + getSupers() + this + getComponents() + " ";
 	}
 
+	@Override
 	default void log() {
 		log.info(detailedInfo());
 	}
 
+	@Override
 	default void log(String prefix) {
 		log.info(prefix + detailedInfo());
 	}
 
+	@Override
 	default String detailedInfo() {
 		String s = "\n\n*******************************" + System.identityHashCode(this) + "******************************\n";
 		s += " Value       : " + getValue() + "\n";

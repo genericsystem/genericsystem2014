@@ -36,9 +36,10 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 		return vertex != null && getVertex().unplug();
 	}
 
+	@SuppressWarnings("unchecked")
 	protected T wrap(Vertex vertex) {
 		if (vertex.isRoot())
-			return getRoot();
+			return (T) getRoot();
 		Vertex alive = vertex.getAlive();
 		T meta = wrap(alive.getMeta());
 		return meta.newT().init(meta, alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList()));

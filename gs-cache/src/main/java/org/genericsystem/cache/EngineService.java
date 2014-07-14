@@ -22,10 +22,12 @@ public interface EngineService<T extends AbstractGeneric<T>> extends org.generic
 		return (T) this;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	default T getRoot() {
-		return (T) this;
+	default EngineService<T> getRoot() {
+		return this;
 	}
+
+	@Override
+	public Cache<T> getCurrentCache();
 
 }

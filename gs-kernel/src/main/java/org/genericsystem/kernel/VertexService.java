@@ -7,8 +7,8 @@ import org.genericsystem.kernel.services.DependenciesService;
 import org.genericsystem.kernel.services.DisplayService;
 import org.genericsystem.kernel.services.MapService;
 import org.genericsystem.kernel.services.SystemPropertiesService;
-import org.genericsystem.kernel.services.UpdatableService;
+import org.genericsystem.kernel.services.WriteService;
 
-public interface VertexService<T extends VertexService<T>> extends AncestorsService<T>, DependenciesService<T>, BindingService<T>, DisplayService<T>, SystemPropertiesService<T>, CompositesInheritanceService<T>, UpdatableService<T>, MapService<T> {
+public interface VertexService<T extends VertexService<T>> extends AncestorsService<T>, DependenciesService<T>, BindingService<T>, DisplayService<T>, SystemPropertiesService<T>, CompositesInheritanceService<T>, WriteService<T>, MapService<T> {
 
 }

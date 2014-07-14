@@ -7,6 +7,7 @@ import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.services.AncestorsService;
+import org.genericsystem.kernel.services.ApiService;
 
 public class Engine extends Generic implements EngineService<Generic> {
 
@@ -57,7 +58,7 @@ public class Engine extends Generic implements EngineService<Generic> {
 	}
 
 	@Override
-	public boolean equiv(AncestorsService<?> service) {
+	public boolean equiv(ApiService<?> service) {
 		if (this == service)
 			return true;
 		return Objects.equals(getValue(), service.getValue()) && AncestorsService.equivComponents(getComponents(), service.getComponents());
@@ -74,7 +75,7 @@ public class Engine extends Generic implements EngineService<Generic> {
 	}
 
 	@Override
-	public Generic getRoot() {
+	public Engine getRoot() {
 		return this;
 	}
 

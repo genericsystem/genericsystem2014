@@ -3,9 +3,10 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.Optional;
 import java.util.stream.Stream;
-import org.genericsystem.kernel.RootService;
+import org.genericsystem.kernel.VertexService;
+import org.genericsystem.kernel.services.SystemPropertiesService.AxedPropertyClass;
 
-public interface MapService<T extends MapService<T>> extends SystemPropertiesService<T>, CompositesInheritanceService<T>, UpdatableService<T> {
+public interface MapService<T extends VertexService<T>> extends ApiService<T> {
 
 	@Override
 	default Serializable getSystemPropertyValue(Class<?> propertyClass, int pos) {
@@ -23,10 +24,12 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 		getMap().getMeta().setInstance(getMap(), new AxedPropertyClass(propertyClass, pos), coerceToArray(getRoot())).setInstance(value, coerceToArray(this));
 	}
 
+	@Override
 	default T getMap() {
-		return (T) ((RootService) getRoot()).find(SystemMap.class);
+		return getRoot().find(SystemMap.class);
 	}
 
+	@Override
 	default Stream<T> getKeys() {
 		T map = getMap();
 		if (map == null)
@@ -34,6 +37,7 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 		return getAttributes(map).stream();
 	}
 
+	@Override
 	default Optional<T> getKey(AxedPropertyClass property) {
 		return getKeys().filter(x -> x.getValue().equals(property)).findFirst();
 	}

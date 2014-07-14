@@ -1,34 +1,28 @@
 package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
-import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.VertexService;
 
-public interface DependenciesService<T extends DependenciesService<T>> extends AncestorsService<T> {
-
-	Snapshot<T> getInstances();
-
-	Snapshot<T> getInheritings();
-
-	Snapshot<T> getComposites();
+public interface DependenciesService<T extends VertexService<T>> extends ApiService<T> {
 
 	// TODO KK
+	@Override
 	default boolean isAncestorOf(final T dependency) {
 		return equiv(dependency) || (!dependency.equals(dependency.getMeta()) && isAncestorOf(dependency.getMeta())) || dependency.getSupersStream().anyMatch(component -> this.isAncestorOf(component))
 				|| dependency.getComponentsStream().filter(component -> !dependency.equals(component)).anyMatch(component -> this.isAncestorOf(component))
 				|| inheritsFrom(dependency.getMeta(), dependency.getValue(), dependency.getComponents(), getMeta(), getValue(), getComponents());
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	default boolean isSuperOf(T subMeta, List<T> overrides, Serializable subValue, List<T> subComponents) {
 		return overrides.stream().anyMatch(override -> override.inheritsFrom((T) this)) || inheritsFrom(subMeta, subValue, subComponents, getMeta(), getValue(), getComponents());
 	}
 
+	@Override
 	default boolean inheritsFrom(T subMeta, Serializable subValue, List<T> subComponents, T superMeta, Serializable superValue, List<T> superComponents) {
 		if (!subMeta.inheritsFrom(superMeta))
 			return false;
@@ -41,6 +35,7 @@ public interface DependenciesService<T extends DependenciesService<T>> extends A
 		boolean get(int i);
 	}
 
+	@Override
 	default boolean componentsDepends(List<T> subComponents, List<T> superComponents) {
 		class SingularsLazyCacheImpl implements SingularsLazyCache {
 			private final Boolean[] singulars = new Boolean[subComponents.size()];
@@ -54,8 +49,6 @@ public interface DependenciesService<T extends DependenciesService<T>> extends A
 	}
 
 	@Override
-	boolean isSingularConstraintEnabled(int pos);
-
 	default boolean componentsDepends(SingularsLazyCache singulars, List<T> subComponents, List<T> superComponents) {
 		int subIndex = 0;
 		loop: for (T superComponent : superComponents) {
@@ -78,68 +71,84 @@ public interface DependenciesService<T extends DependenciesService<T>> extends A
 		return Stream.of((T) this);
 	}
 
+	@Override
 	default Stream<T> getAllInheritings() {
 		return Stream.concat(select(), Statics.concat(getInheritings().stream(), inheriting -> inheriting.getAllInheritings()).distinct());
 	}
 
+	@Override
 	default Stream<T> getAllInstances() {
 		return getAllInheritings().map(inheriting -> ((DependenciesService<T>) inheriting).getInstances().stream()).flatMap(x -> x);// .reduce(Stream.empty(), Stream::concat);
 	}
 
-	default Stream<T> selectInstances(Predicate<T> valuePredicate) {
-		return getAllInstances().filter(valuePredicate);
-	}
+	// @Override
+	// default Stream<T> selectInstances(Predicate<T> valuePredicate) {
+	// return getAllInstances().filter(valuePredicate);
+	// }
+	//
+	// @Override
+	// default Stream<T> selectInstances(Serializable value) {
+	// return selectInstances(instance -> Objects.equals(value, instance.getValue()));
+	// }
 
-	default Stream<T> selectInstances(Serializable value) {
-		return selectInstances(instance -> Objects.equals(value, instance.getValue()));
-	}
-
-	default Stream<T> selectInstances(Serializable value, T[] components) {
-		return selectInstances(value, instance -> componentsDepends(Arrays.asList(components), instance.getComponents()));
-	}
-
-	default Stream<T> selectInstances(Serializable value, Predicate<T> componentsPredicate) {
-		return selectInstances(value).filter(componentsPredicate);
-	}
-
-	@SuppressWarnings("unchecked")
-	default Stream<T> selectInstances(Predicate<T> valuePredicate, T... components) {
-		return selectInstances(valuePredicate, instance -> componentsDepends(Arrays.asList(components), instance.getComponents()));
-	}
-
-	default Stream<T> selectInstances(Predicate<T> valuePredicate, Predicate<T> componentsPredicate) {
-		return selectInstances(valuePredicate).filter(componentsPredicate);
-	}
-
-	@SuppressWarnings("unchecked")
-	default Stream<T> selectInstances(Predicate<T> supersPredicate, Serializable value, T... components) {
-		return selectInstances(value, components).filter(supersPredicate);
-	}
-
-	default Stream<T> selectInstances(Predicate<T> supersPredicate, Serializable value, Predicate<T> componentsPredicate) {
-		return selectInstances(value, componentsPredicate).filter(supersPredicate);
-	}
-
-	@SuppressWarnings("unchecked")
-	default Stream<T> selectInstances(Predicate<T> supersPredicate, Predicate<T> valuePredicate, T... components) {
-		return selectInstances(valuePredicate, components).filter(supersPredicate);
-	}
-
-	default Stream<T> selectInstances(Predicate<T> supersPredicate, Predicate<T> valuePredicate, Predicate<T> componentsPredicate) {
-		return selectInstances(valuePredicate, componentsPredicate).filter(supersPredicate);
-	}
-
-	default Stream<T> selectInstances(Stream<T> supers, Serializable value, Predicate<T> componentsPredicate) {
-		return selectInstances(instance -> supers.allMatch(superT -> instance.inheritsFrom(superT)), value, componentsPredicate);
-	}
-
-	@SuppressWarnings("unchecked")
-	default Stream<T> selectInstances(Stream<T> supers, Predicate<T> valuePredicate, T... components) {
-		return selectInstances((Predicate<T>) (instance -> supers.allMatch(superT -> instance.inheritsFrom(superT))), valuePredicate, components);
-	}
-
-	default Stream<T> selectInstances(Stream<T> supers, Predicate<T> valuePredicate, Predicate<T> componentsPredicate) {
-		return selectInstances((Predicate<T>) (instance -> supers.allMatch(superT -> instance.inheritsFrom(superT))), valuePredicate, componentsPredicate);
-	}
+	//
+	// @Override
+	// default Stream<T> selectInstances(Serializable value, T[] components) {
+	// return selectInstances(value, instance -> componentsDepends(Arrays.asList(components), instance.getComponents()));
+	// }
+	//
+	// @Override
+	// default Stream<T> selectInstances(Serializable value, Predicate<T> componentsPredicate) {
+	// return selectInstances(value).filter(componentsPredicate);
+	// }
+	//
+	// @Override
+	// @SuppressWarnings("unchecked")
+	// default Stream<T> selectInstances(Predicate<T> valuePredicate, T... components) {
+	// return selectInstances(valuePredicate, instance -> componentsDepends(Arrays.asList(components), instance.getComponents()));
+	// }
+	//
+	// @Override
+	// default Stream<T> selectInstances(Predicate<T> valuePredicate, Predicate<T> componentsPredicate) {
+	// return selectInstances(valuePredicate).filter(componentsPredicate);
+	// }
+	//
+	// @Override
+	// @SuppressWarnings("unchecked")
+	// default Stream<T> selectInstances(Predicate<T> supersPredicate, Serializable value, T... components) {
+	// return selectInstances(value, components).filter(supersPredicate);
+	// }
+	//
+	// @Override
+	// default Stream<T> selectInstances(Predicate<T> supersPredicate, Serializable value, Predicate<T> componentsPredicate) {
+	// return selectInstances(value, componentsPredicate).filter(supersPredicate);
+	// }
+	//
+	// @Override
+	// @SuppressWarnings("unchecked")
+	// default Stream<T> selectInstances(Predicate<T> supersPredicate, Predicate<T> valuePredicate, T... components) {
+	// return selectInstances(valuePredicate, components).filter(supersPredicate);
+	// }
+	//
+	// @Override
+	// default Stream<T> selectInstances(Predicate<T> supersPredicate, Predicate<T> valuePredicate, Predicate<T> componentsPredicate) {
+	// return selectInstances(valuePredicate, componentsPredicate).filter(supersPredicate);
+	// }
+	//
+	// @Override
+	// default Stream<T> selectInstances(Stream<T> supers, Serializable value, Predicate<T> componentsPredicate) {
+	// return selectInstances(instance -> supers.allMatch(superT -> instance.inheritsFrom(superT)), value, componentsPredicate);
+	// }
+	//
+	// @Override
+	// @SuppressWarnings("unchecked")
+	// default Stream<T> selectInstances(Stream<T> supers, Predicate<T> valuePredicate, T... components) {
+	// return selectInstances((Predicate<T>) (instance -> supers.allMatch(superT -> instance.inheritsFrom(superT))), valuePredicate, components);
+	// }
+	//
+	// @Override
+	// default Stream<T> selectInstances(Stream<T> supers, Predicate<T> valuePredicate, Predicate<T> componentsPredicate) {
+	// return selectInstances((Predicate<T>) (instance -> supers.allMatch(superT -> instance.inheritsFrom(superT))), valuePredicate, componentsPredicate);
+	// }
 
 }
