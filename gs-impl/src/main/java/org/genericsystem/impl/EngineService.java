@@ -5,7 +5,7 @@ import java.util.Objects;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.RootService;
 import org.genericsystem.kernel.Statics;
-import org.genericsystem.kernel.services.SignatureService;
+import org.genericsystem.kernel.services.AncestorsService;
 
 public interface EngineService<T extends GenericService<T>> extends RootService<T>, GenericService<T> {
 
@@ -49,10 +49,10 @@ public interface EngineService<T extends GenericService<T>> extends RootService<
 	}
 
 	@Override
-	default boolean equiv(SignatureService<? extends SignatureService<?>> service) {
+	default boolean equiv(AncestorsService<? extends AncestorsService<?>> service) {
 		if (this == service)
 			return true;
-		return Objects.equals(getValue(), service.getValue()) && SignatureService.equivComponents(getComponents(), service.getComponents());
+		return Objects.equals(getValue(), service.getValue()) && AncestorsService.equivComponents(getComponents(), service.getComponents());
 	}
 
 	// // @Phantom

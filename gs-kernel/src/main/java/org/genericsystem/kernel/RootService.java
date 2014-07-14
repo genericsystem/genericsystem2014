@@ -1,7 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.util.Objects;
-import org.genericsystem.kernel.services.SignatureService;
+import org.genericsystem.kernel.services.AncestorsService;
 
 public interface RootService<T extends VertexService<T>> extends VertexService<T> {
 
@@ -37,10 +37,10 @@ public interface RootService<T extends VertexService<T>> extends VertexService<T
 	}
 
 	@Override
-	default boolean equiv(SignatureService<? extends SignatureService<?>> service) {
+	default boolean equiv(AncestorsService<? extends AncestorsService<?>> service) {
 		if (this == service)
 			return true;
-		return Objects.equals(getValue(), service.getValue()) && SignatureService.equivComponents(getComponents(), service.getComponents());
+		return Objects.equals(getValue(), service.getValue()) && AncestorsService.equivComponents(getComponents(), service.getComponents());
 	}
 
 	default void rollback() {};

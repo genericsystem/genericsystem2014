@@ -6,7 +6,7 @@ import org.genericsystem.impl.EngineService;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
-import org.genericsystem.kernel.services.SignatureService;
+import org.genericsystem.kernel.services.AncestorsService;
 
 public class Engine extends Generic implements EngineService<Generic> {
 
@@ -47,7 +47,7 @@ public class Engine extends Generic implements EngineService<Generic> {
 	}
 
 	@Override
-	public boolean equiv(SignatureService<? extends SignatureService<?>> service) {
+	public boolean equiv(AncestorsService<? extends AncestorsService<?>> service) {
 		return EngineService.super.equiv(service);
 	}
 

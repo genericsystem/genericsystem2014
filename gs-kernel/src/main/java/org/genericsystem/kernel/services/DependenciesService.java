@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
 
-public interface DependenciesService<T extends DependenciesService<T>> extends AncestorsService<T>, ExceptionAdviserService<T> {
+public interface DependenciesService<T extends DependenciesService<T>> extends AncestorsService<T> {
 
 	Snapshot<T> getInstances();
 

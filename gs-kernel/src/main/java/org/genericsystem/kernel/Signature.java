@@ -8,7 +8,6 @@ import java.util.stream.Stream;
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.DisplayService;
-import org.genericsystem.kernel.services.ExceptionAdviserService;
 
 public abstract class Signature<T extends Signature<T>> implements AncestorsService<T> {
 	private T meta;
@@ -37,7 +36,7 @@ public abstract class Signature<T extends Signature<T>> implements AncestorsServ
 
 	public void checkIsAlive() {
 		if (!this.isAlive())
-			((ExceptionAdviserService<?>) this).rollbackAndThrowException(new NotAliveException(((DisplayService<?>) this).info()));
+			((AncestorsService<?>) this).rollbackAndThrowException(new NotAliveException(((DisplayService<?>) this).info()));
 	}
 
 	@Override
