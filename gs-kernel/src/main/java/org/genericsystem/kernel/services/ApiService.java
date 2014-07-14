@@ -7,9 +7,7 @@ import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 import org.genericsystem.kernel.RootService;
 import org.genericsystem.kernel.Snapshot;
-import org.genericsystem.kernel.VertexService;
 import org.genericsystem.kernel.exceptions.RollbackException;
-import org.genericsystem.kernel.services.DependenciesService.SingularsLazyCache;
 import org.genericsystem.kernel.services.SystemPropertiesService.AxedPropertyClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,11 +100,7 @@ public interface ApiService<T extends VertexService<T>> {
 
 	Snapshot<T> getSuperComposites(T superVertex);
 
-	Snapshot<T> getMetaAttributes(T attribute);
-
-	Snapshot<T> getRelations();
-
-	Snapshot<T> getRelations(T origin);
+	Snapshot<T> getAttributes();
 
 	Snapshot<T> getAttributes(T attribute);
 
@@ -128,41 +122,11 @@ public interface ApiService<T extends VertexService<T>> {
 
 	boolean componentsDepends(List<T> subComponents, List<T> superComponents);
 
-	boolean componentsDepends(SingularsLazyCache singulars, List<T> subComponents, List<T> superComponents);
+	// boolean componentsDepends(SingularsLazyCache singulars, List<T> subComponents, List<T> superComponents);
 
-	Stream<T> getAllInheritings();
+	Snapshot<T> getAllInheritings();
 
-	Stream<T> getAllInstances();
-
-	// Stream<T> selectInstances(Predicate<T> valuePredicate);
-	//
-	// Stream<T> selectInstances(Serializable value);
-	//
-	// Stream<T> selectInstances(Serializable value, T[] components);
-	//
-	// Stream<T> selectInstances(Serializable value, Predicate<T> componentsPredicate);
-	//
-	// @SuppressWarnings("unchecked")
-	// Stream<T> selectInstances(Predicate<T> valuePredicate, T... components);
-	//
-	// Stream<T> selectInstances(Predicate<T> valuePredicate, Predicate<T> componentsPredicate);
-	//
-	// @SuppressWarnings("unchecked")
-	// Stream<T> selectInstances(Predicate<T> supersPredicate, Serializable value, T... components);
-	//
-	// Stream<T> selectInstances(Predicate<T> supersPredicate, Serializable value, Predicate<T> componentsPredicate);
-	//
-	// @SuppressWarnings("unchecked")
-	// Stream<T> selectInstances(Predicate<T> supersPredicate, Predicate<T> valuePredicate, T... components);
-	//
-	// Stream<T> selectInstances(Predicate<T> supersPredicate, Predicate<T> valuePredicate, Predicate<T> componentsPredicate);
-	//
-	// Stream<T> selectInstances(Stream<T> supers, Serializable value, Predicate<T> componentsPredicate);
-	//
-	// @SuppressWarnings("unchecked")
-	// Stream<T> selectInstances(Stream<T> supers, Predicate<T> valuePredicate, T... components);
-	//
-	// Stream<T> selectInstances(Stream<T> supers, Predicate<T> valuePredicate, Predicate<T> componentsPredicate);
+	Snapshot<T> getAllInstances();
 
 	String info();
 

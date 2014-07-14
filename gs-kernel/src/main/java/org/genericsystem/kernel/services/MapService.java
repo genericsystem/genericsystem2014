@@ -3,7 +3,6 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.Optional;
 import java.util.stream.Stream;
-import org.genericsystem.kernel.VertexService;
 import org.genericsystem.kernel.services.SystemPropertiesService.AxedPropertyClass;
 
 public interface MapService<T extends VertexService<T>> extends ApiService<T> {

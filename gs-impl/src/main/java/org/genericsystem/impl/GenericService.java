@@ -1,6 +1,6 @@
 package org.genericsystem.impl;
 
-import org.genericsystem.kernel.VertexService;
+import org.genericsystem.kernel.services.VertexService;
 
 public interface GenericService<T extends GenericService<T>> extends VertexService<T> {
 	@Override

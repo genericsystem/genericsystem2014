@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.DisplayService;
+import org.genericsystem.kernel.services.VertexService;
 
 public abstract class Signature<T extends Signature<T>> implements VertexService<T> {
 	private T meta;

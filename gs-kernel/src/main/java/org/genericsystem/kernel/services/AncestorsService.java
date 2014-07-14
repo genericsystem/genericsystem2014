@@ -10,7 +10,6 @@ import java.util.stream.Stream;
 import org.genericsystem.kernel.RootService;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
-import org.genericsystem.kernel.VertexService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

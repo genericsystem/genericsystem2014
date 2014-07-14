@@ -3,6 +3,7 @@ package org.genericsystem.kernel;
 import java.util.Collections;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.exceptions.NotFoundException;
+import org.genericsystem.kernel.services.VertexService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

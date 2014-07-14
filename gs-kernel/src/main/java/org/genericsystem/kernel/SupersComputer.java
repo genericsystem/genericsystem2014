@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import org.genericsystem.kernel.services.VertexService;
 
 public class SupersComputer<T extends VertexService<T>> extends LinkedHashSet<T> {
 

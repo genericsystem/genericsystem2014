@@ -18,6 +18,7 @@ import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.kernel.exceptions.RollbackException;
+import org.genericsystem.kernel.services.VertexService;
 
 public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signature<T> implements VertexService<T> {
 

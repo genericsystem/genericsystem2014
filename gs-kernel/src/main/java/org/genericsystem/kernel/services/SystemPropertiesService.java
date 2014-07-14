@@ -2,7 +2,6 @@ package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
 import org.genericsystem.kernel.Statics;
-import org.genericsystem.kernel.VertexService;
 
 public interface SystemPropertiesService<T extends VertexService<T>> extends ApiService<T> {
 

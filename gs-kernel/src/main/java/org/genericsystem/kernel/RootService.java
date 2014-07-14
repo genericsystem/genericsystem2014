@@ -3,6 +3,7 @@ package org.genericsystem.kernel;
 import java.util.Objects;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.ApiService;
+import org.genericsystem.kernel.services.VertexService;
 
 public interface RootService<T extends VertexService<T>> extends VertexService<T> {
 

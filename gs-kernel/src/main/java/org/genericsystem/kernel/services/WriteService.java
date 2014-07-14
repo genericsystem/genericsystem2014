@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.genericsystem.kernel.RootService;
-import org.genericsystem.kernel.VertexService;
 
 public interface WriteService<T extends VertexService<T>> extends ApiService<T> {
 

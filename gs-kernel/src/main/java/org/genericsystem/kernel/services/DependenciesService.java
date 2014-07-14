@@ -3,8 +3,8 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Stream;
+import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
-import org.genericsystem.kernel.VertexService;
 
 public interface DependenciesService<T extends VertexService<T>> extends ApiService<T> {
 
@@ -48,8 +48,7 @@ public interface DependenciesService<T extends VertexService<T>> extends ApiServ
 		return componentsDepends(new SingularsLazyCacheImpl(), subComponents, superComponents);
 	}
 
-	@Override
-	default boolean componentsDepends(SingularsLazyCache singulars, List<T> subComponents, List<T> superComponents) {
+	static <T extends VertexService<T>> boolean componentsDepends(SingularsLazyCache singulars, List<T> subComponents, List<T> superComponents) {
 		int subIndex = 0;
 		loop: for (T superComponent : superComponents) {
 			for (; subIndex < subComponents.size(); subIndex++) {
@@ -72,83 +71,12 @@ public interface DependenciesService<T extends VertexService<T>> extends ApiServ
 	}
 
 	@Override
-	default Stream<T> getAllInheritings() {
-		return Stream.concat(select(), Statics.concat(getInheritings().stream(), inheriting -> inheriting.getAllInheritings()).distinct());
+	default Snapshot<T> getAllInheritings() {
+		return () -> (Stream.concat(select(), Statics.concat(getInheritings().stream(), inheriting -> inheriting.getAllInheritings().stream()).distinct())).iterator();
 	}
 
 	@Override
-	default Stream<T> getAllInstances() {
-		return getAllInheritings().map(inheriting -> ((DependenciesService<T>) inheriting).getInstances().stream()).flatMap(x -> x);// .reduce(Stream.empty(), Stream::concat);
+	default Snapshot<T> getAllInstances() {
+		return () -> getAllInheritings().stream().map(inheriting -> ((DependenciesService<T>) inheriting).getInstances().stream()).flatMap(x -> x).iterator();// .reduce(Stream.empty(), Stream::concat);
 	}
-
-	// @Override
-	// default Stream<T> selectInstances(Predicate<T> valuePredicate) {
-	// return getAllInstances().filter(valuePredicate);
-	// }
-	//
-	// @Override
-	// default Stream<T> selectInstances(Serializable value) {
-	// return selectInstances(instance -> Objects.equals(value, instance.getValue()));
-	// }
-
-	//
-	// @Override
-	// default Stream<T> selectInstances(Serializable value, T[] components) {
-	// return selectInstances(value, instance -> componentsDepends(Arrays.asList(components), instance.getComponents()));
-	// }
-	//
-	// @Override
-	// default Stream<T> selectInstances(Serializable value, Predicate<T> componentsPredicate) {
-	// return selectInstances(value).filter(componentsPredicate);
-	// }
-	//
-	// @Override
-	// @SuppressWarnings("unchecked")
-	// default Stream<T> selectInstances(Predicate<T> valuePredicate, T... components) {
-	// return selectInstances(valuePredicate, instance -> componentsDepends(Arrays.asList(components), instance.getComponents()));
-	// }
-	//
-	// @Override
-	// default Stream<T> selectInstances(Predicate<T> valuePredicate, Predicate<T> componentsPredicate) {
-	// return selectInstances(valuePredicate).filter(componentsPredicate);
-	// }
-	//
-	// @Override
-	// @SuppressWarnings("unchecked")
-	// default Stream<T> selectInstances(Predicate<T> supersPredicate, Serializable value, T... components) {
-	// return selectInstances(value, components).filter(supersPredicate);
-	// }
-	//
-	// @Override
-	// default Stream<T> selectInstances(Predicate<T> supersPredicate, Serializable value, Predicate<T> componentsPredicate) {
-	// return selectInstances(value, componentsPredicate).filter(supersPredicate);
-	// }
-	//
-	// @Override
-	// @SuppressWarnings("unchecked")
-	// default Stream<T> selectInstances(Predicate<T> supersPredicate, Predicate<T> valuePredicate, T... components) {
-	// return selectInstances(valuePredicate, components).filter(supersPredicate);
-	// }
-	//
-	// @Override
-	// default Stream<T> selectInstances(Predicate<T> supersPredicate, Predicate<T> valuePredicate, Predicate<T> componentsPredicate) {
-	// return selectInstances(valuePredicate, componentsPredicate).filter(supersPredicate);
-	// }
-	//
-	// @Override
-	// default Stream<T> selectInstances(Stream<T> supers, Serializable value, Predicate<T> componentsPredicate) {
-	// return selectInstances(instance -> supers.allMatch(superT -> instance.inheritsFrom(superT)), value, componentsPredicate);
-	// }
-	//
-	// @Override
-	// @SuppressWarnings("unchecked")
-	// default Stream<T> selectInstances(Stream<T> supers, Predicate<T> valuePredicate, T... components) {
-	// return selectInstances((Predicate<T>) (instance -> supers.allMatch(superT -> instance.inheritsFrom(superT))), valuePredicate, components);
-	// }
-	//
-	// @Override
-	// default Stream<T> selectInstances(Stream<T> supers, Predicate<T> valuePredicate, Predicate<T> componentsPredicate) {
-	// return selectInstances((Predicate<T>) (instance -> supers.allMatch(superT -> instance.inheritsFrom(superT))), valuePredicate, componentsPredicate);
-	// }
-
 }

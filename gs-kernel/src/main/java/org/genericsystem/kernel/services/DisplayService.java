@@ -1,7 +1,6 @@
 package org.genericsystem.kernel.services;
 
 import org.genericsystem.kernel.Statics;
-import org.genericsystem.kernel.VertexService;
 
 public interface DisplayService<T extends VertexService<T>> extends ApiService<T> {
 
