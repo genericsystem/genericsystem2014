@@ -17,7 +17,7 @@ public class AnnotationTest extends AbstractTest {
 		Vertex myck = engine.find(Myck.class);
 		assert vehicle.isStructural();
 		assert human.isStructural();
-		assert myck.isFactual();
+		assert myck.isConcrete();
 	}
 
 	public void test002_SuperVertex() {

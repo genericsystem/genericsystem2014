@@ -43,4 +43,7 @@ public interface RootService<T extends VertexService<T>> extends VertexService<T
 		return Objects.equals(getValue(), service.getValue()) && SignatureService.equivComponents(getComponents(), service.getComponents());
 	}
 
+	default void rollback() {};
+
+	T find(Class<?> clazz);
 }

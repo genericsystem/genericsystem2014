@@ -3,6 +3,7 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.Optional;
 import java.util.stream.Stream;
+import org.genericsystem.kernel.RootService;
 
 public interface MapService<T extends MapService<T>> extends SystemPropertiesService<T>, CompositesInheritanceService<T>, UpdatableService<T> {
 
@@ -23,7 +24,7 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 	}
 
 	default T getMap() {
-		return getRoot().find(SystemMap.class);
+		return (T) ((RootService) getRoot()).find(SystemMap.class);
 	}
 
 	default Stream<T> getKeys() {

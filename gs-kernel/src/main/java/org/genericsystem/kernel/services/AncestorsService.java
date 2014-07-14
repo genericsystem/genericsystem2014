@@ -2,6 +2,7 @@ package org.genericsystem.kernel.services;
 
 import java.util.List;
 import java.util.stream.Stream;
+import org.genericsystem.kernel.Statics;
 
 public interface AncestorsService<T extends AncestorsService<T>> extends SignatureService<T> {
 
@@ -14,15 +15,15 @@ public interface AncestorsService<T extends AncestorsService<T>> extends Signatu
 	}
 
 	default boolean isMeta() {
-		return getLevel() == 0;
+		return getLevel() == Statics.META;
 	}
 
 	default boolean isStructural() {
-		return getLevel() == 1;
+		return getLevel() == Statics.STRUCTURAL;
 	}
 
-	default boolean isFactual() {
-		return getLevel() == 2;
+	default boolean isConcrete() {
+		return getLevel() == Statics.CONCRETE;
 	}
 
 	List<T> getSupers();
@@ -31,12 +32,8 @@ public interface AncestorsService<T extends AncestorsService<T>> extends Signatu
 		return getSupers().stream();
 	}
 
-	default T find(Class<?> clazz) {
-		return getRoot().find(clazz);
-	}
-
 	default boolean inheritsFrom(T superVertex) {
-		if (this == superVertex || equals(superVertex))
+		if (equals(superVertex))
 			return true;
 		if (getLevel() != superVertex.getLevel())
 			return false;

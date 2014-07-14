@@ -120,11 +120,11 @@ public class Vertex extends AbstractVertex<Vertex> implements VertexService<Vert
 
 	@Override
 	public Vertex plug() {
-		Vertex t = getMeta().indexInstance(this);
+		Vertex result = getMeta().indexInstance(this);
 		getSupersStream().forEach(superGeneric -> superGeneric.indexInheriting(this));
 		getComponentsStream().forEach(component -> component.indexByMeta(getMeta(), this));
 		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> component.indexBySuper(superGeneric, this)));
-		return t;
+		return result;
 	}
 
 	@Override

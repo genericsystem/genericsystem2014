@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-
 import org.genericsystem.kernel.services.DependenciesService;
 
 public class SupersComputer<T extends DependenciesService<T>> extends LinkedHashSet<T> {
@@ -20,13 +19,14 @@ public class SupersComputer<T extends DependenciesService<T>> extends LinkedHash
 
 	private final Map<T, Boolean> alreadyComputed = new HashMap<>();
 
+	@SuppressWarnings("unchecked")
 	public SupersComputer(int level, T meta, List<T> overrides, Serializable value, List<T> components) {
 		this.level = level;
 		this.meta = meta;
 		this.overrides = overrides;
 		this.components = components;
 		this.value = value;
-		visit(meta.getRoot());
+		visit((T) meta.getRoot());
 	}
 
 	private boolean visit(T candidate) {

@@ -7,7 +7,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Snapshot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +17,7 @@ public interface SignatureService<T extends SignatureService<T>> {
 
 	T getMeta();
 
-	abstract Serializable getValue();
+	Serializable getValue();
 
 	List<T> getComponents();
 

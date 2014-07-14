@@ -15,95 +15,18 @@ public interface DependenciesService<T extends DependenciesService<T>> extends A
 
 	Snapshot<T> getInheritings();
 
+	Snapshot<T> getComposites();
+
+	// TODO KK
 	default boolean isAncestorOf(final T dependency) {
 		return equiv(dependency) || (!dependency.equals(dependency.getMeta()) && isAncestorOf(dependency.getMeta())) || dependency.getSupersStream().anyMatch(component -> this.isAncestorOf(component))
 				|| dependency.getComponentsStream().filter(component -> !dependency.equals(component)).anyMatch(component -> this.isAncestorOf(component))
 				|| inheritsFrom(dependency.getMeta(), dependency.getValue(), dependency.getComponents(), getMeta(), getValue(), getComponents());
 	}
 
-	// default LinkedHashSet<T> computeAllDependencies() {
-	// class DirectDependencies extends LinkedHashSet<T> {
-	// private static final long serialVersionUID = -5970021419012502402L;
-	// private final Set<T> alreadyVisited = new HashSet<>();
-	//
-	// public DirectDependencies() {
-	// visit(getMeta());
-	// }
-	//
-	// public void visit(T node) {
-	// if (!alreadyVisited.contains(node))
-	// if (!isAncestorOf(node)) {
-	// alreadyVisited.add(node);
-	// node.getComposites().forEach(this::visit);
-	// node.getInheritings().forEach(this::visit);
-	// node.getInstances().forEach(this::visit);
-	// } else
-	// addDependency(node);
-	// }
-	//
-	// public void addDependency(T node) {
-	// if (!alreadyVisited.contains(node)) {
-	// alreadyVisited.add(node);
-	// node.getComposites().forEach(this::addDependency);
-	// node.getInheritings().forEach(this::addDependency);
-	// node.getInstances().forEach(this::addDependency);
-	// super.add(node);
-	// }
-	// }
-	// }
-	// return new DirectDependencies();
-	// }
-
-	// default LinkedHashSet<T> computeAllPotentialInstancesDependencies(List<T> overrides, Serializable value, List<T> components) {
-	// class DirectDependencies extends LinkedHashSet<T> {
-	// private static final long serialVersionUID = -5970021419012502402L;
-	// private final Set<T> alreadyVisited = new HashSet<>();
-	//
-	// @SuppressWarnings("unchecked")
-	// public DirectDependencies() {
-	// visit((T) this);
-	// }
-	//
-	// public void visit(T node) {
-	// if (!alreadyVisited.contains(node))
-	// if (!isAncestorOf(node)) {
-	// alreadyVisited.add(node);
-	// node.getComposites().forEach(this::visit);
-	// node.getInheritings().forEach(this::visit);
-	// node.getInstances().forEach(this::visit);
-	// } else
-	// addDependency(node);
-	// }
-	//
-	// public void addDependency(T node) {
-	// if (!alreadyVisited.contains(node)) {
-	// alreadyVisited.add(node);
-	// node.getComposites().forEach(this::addDependency);
-	// node.getInheritings().forEach(this::addDependency);
-	// node.getInstances().forEach(this::addDependency);
-	// super.add(node);
-	// }
-	// }
-	// }
-	// return new DirectDependencies();
-	// }
-
-	Snapshot<T> getComposites();
-
 	@SuppressWarnings("unchecked")
 	default boolean isSuperOf(T subMeta, List<T> overrides, Serializable subValue, List<T> subComponents) {
 		return overrides.stream().anyMatch(override -> override.inheritsFrom((T) this)) || inheritsFrom(subMeta, subValue, subComponents, getMeta(), getValue(), getComponents());
-	}
-
-	default boolean isMetaOf(T subMeta, Serializable value, List<T> overrides, List<T> subComponents) {
-		if (!subMeta.isSpecializationOf(getMeta()))
-			return false;
-		if (!subMeta.componentsDepends(subComponents, getComponents()))
-			return false;
-		if (getLevel() == subMeta.getLevel() && (subComponents.size() == subMeta.getComponents().size() || subComponents.size() == getComponents().size()) && subComponents.stream().allMatch(component -> component.getValue() == getRoot().getValue())
-				&& value.equals(getRoot().getValue()))
-			return false;
-		return true;
 	}
 
 	default boolean inheritsFrom(T subMeta, Serializable subValue, List<T> subComponents, T superMeta, Serializable superValue, List<T> superComponents) {

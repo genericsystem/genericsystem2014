@@ -1,8 +1,5 @@
 package org.genericsystem.cache;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Vertex;
@@ -64,17 +61,17 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.
 		return getCurrentCache().getSuperComposites((T) this, superVertex);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public T getInstance(Serializable value, T... components) {
-		T nearestMeta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
-		if (!equals(nearestMeta))
-			return nearestMeta.getInstance(value, components);
-		for (T instance : getCurrentCache().getInstances(nearestMeta))
-			if (instance.equiv(this, value, Arrays.asList(components)))
-				return instance;
-		return null;
-	}
+	// @SuppressWarnings("unchecked")
+	// @Override
+	// public T getInstance(Serializable value, T... components) {
+	// T nearestMeta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
+	// if (!equals(nearestMeta))
+	// return nearestMeta.getInstance(value, components);
+	// for (T instance : getCurrentCache().getInstances(nearestMeta))
+	// if (instance.equiv(this, value, Arrays.asList(components)))
+	// return instance;
+	// return null;
+	// }
 
 	@SuppressWarnings("unchecked")
 	@Override

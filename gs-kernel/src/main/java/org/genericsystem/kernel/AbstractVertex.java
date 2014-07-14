@@ -17,6 +17,7 @@ import org.genericsystem.kernel.exceptions.AliveConstraintViolationException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.ReferentialIntegrityConstraintViolationException;
+import org.genericsystem.kernel.exceptions.RollbackException;
 
 public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signature<T> implements VertexService<T> {
 
@@ -174,9 +175,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 		return new DependenciesComputer<T>((T) AbstractVertex.this);
 	}
 
-	@Override
 	@SuppressWarnings("unchecked")
-	public T addInstance(List<T> overrides, Serializable value, T... components) {
+	private T bindInstance(boolean throwExistException, List<T> overrides, Serializable value, T... components) {
 		checkSameEngine(Arrays.asList(components));
 		checkSameEngine(overrides);
 		T nearestMeta = adjustMeta(overrides, value, Arrays.asList(components));
@@ -184,27 +184,24 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 			return nearestMeta.addInstance(overrides, value, components);
 		T weakInstance = getWeakInstance(value, components);
 		if (weakInstance != null)
-			rollbackAndThrowException(new ExistsException("Attempts to add an already existing instance : " + weakInstance.info()));
+			if (throwExistException)
+				rollbackAndThrowException(new ExistsException("Attempts to add an already existing instance : " + weakInstance.info()));
+			else
+				return weakInstance.equiv(this, value, Arrays.asList(components)) ? weakInstance : weakInstance.update(overrides, value, components);
 		T instance = buildInstance(overrides, value, Arrays.asList(components));
 		return (T) ((AbstractVertex<?>) instance).rebuildAll(() -> ((AbstractVertex<?>) instance).plug());
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
+	public T addInstance(List<T> overrides, Serializable value, T... components) {
+		return bindInstance(true, overrides, value, components);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
 	public T setInstance(List<T> overrides, Serializable value, T... components) {
-		checkSameEngine(Arrays.asList(components));
-		checkSameEngine(overrides);
-		T nearestMeta = adjustMeta(overrides, value, Arrays.asList(components));
-		if (nearestMeta != this)
-			return nearestMeta.setInstance(overrides, value, components);
-		T weakInstance = getWeakInstance(value, components);
-		if (weakInstance != null) {
-			if (weakInstance.equiv(this, value, Arrays.asList(components)))
-				return weakInstance;
-			return weakInstance.update(overrides, value, components);
-		}
-		T instance = buildInstance(overrides, value, Arrays.asList(components));
-		return (T) ((AbstractVertex<?>) instance).rebuildAll(() -> ((AbstractVertex<?>) instance).plug());
+		return bindInstance(false, overrides, value, components);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -249,6 +246,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 	private void checkOverridesAreReached(List<T> overrides, List<T> supers) {
 		if (!allOverridesAreReached(overrides, supers))
 			rollbackAndThrowException(new IllegalStateException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
+	}
+
+	@Override
+	public void rollbackAndThrowException(Exception exception) throws RollbackException {
+		((RootService<?>) getRoot()).rollback();
+		throw new RollbackException(exception);
 	}
 
 }

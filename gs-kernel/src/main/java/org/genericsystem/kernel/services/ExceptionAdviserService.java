@@ -4,10 +4,5 @@ import org.genericsystem.kernel.exceptions.RollbackException;
 
 public interface ExceptionAdviserService<T extends ExceptionAdviserService<T>> extends AncestorsService<T> {
 
-	default void rollbackAndThrowException(Exception exception) throws RollbackException {
-		((ExceptionAdviserService<T>) getRoot().getAlive()).rollback();
-		throw new RollbackException(exception);
-	}
-
-	default void rollback() {}
+	void rollbackAndThrowException(Exception exception) throws RollbackException;
 }

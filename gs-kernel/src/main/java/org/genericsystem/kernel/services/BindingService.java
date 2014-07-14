@@ -27,30 +27,42 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 		return result == null ? (T) this : result.adjustMeta(overrides, subValue, subComponents);
 	}
 
+	// TODO KK
+	default boolean isMetaOf(T subMeta, Serializable value, List<T> overrides, List<T> subComponents) {
+		if (!subMeta.isSpecializationOf(getMeta()))
+			return false;
+		if (!subMeta.componentsDepends(subComponents, getComponents()))
+			return false;
+		if (getLevel() == subMeta.getLevel() && (subComponents.size() == subMeta.getComponents().size() || subComponents.size() == getComponents().size()) && subComponents.stream().allMatch(component -> component.getValue() == getRoot().getValue())
+				&& value.equals(getRoot().getValue()))
+			return false;
+		return true;
+	}
+
 	@SuppressWarnings("unchecked")
 	default T getInstance(Serializable value, T... components) {
-		T nearestMeta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
-		if (nearestMeta != this)
-			return nearestMeta.getInstance(value, components);
-		T pluggedMeta = getAlive();
-		if (pluggedMeta == null)
+		T meta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
+		if (meta != this)
+			return meta.getInstance(value, components);
+		meta = getAlive();
+		if (meta == null)
 			return null;
-		for (T instance : (Snapshot<T>) (((DependenciesService<?>) pluggedMeta).getInstances()))
-			if (instance.equiv(pluggedMeta, value, Arrays.asList(components)))
+		for (T instance : (Snapshot<T>) (((DependenciesService<?>) meta).getInstances()))
+			if (instance.equiv(meta, value, Arrays.asList(components)))
 				return instance;
 		return null;
 	}
 
 	@SuppressWarnings("unchecked")
 	default T getWeakInstance(Serializable value, T... components) {
-		T nearestMeta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
-		if (nearestMeta != this)
-			return nearestMeta.getInstance(value, components);
-		T alive = getAlive();
-		if (alive == null)
+		T meta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
+		if (meta != this)
+			return meta.getInstance(value, components);
+		meta = getAlive();
+		if (meta == null)
 			return null;
-		for (T instance : (Snapshot<T>) (((DependenciesService<?>) alive).getInstances()))
-			if (instance.weakEquiv(alive, value, Arrays.asList(components)))
+		for (T instance : (Snapshot<T>) (((DependenciesService<?>) meta).getInstances()))
+			if (instance.weakEquiv(meta, value, Arrays.asList(components)))
 				return instance;
 		return null;
 	}
@@ -58,9 +70,6 @@ public interface BindingService<T extends BindingService<T>> extends Dependencie
 	@SuppressWarnings("unchecked")
 	default T getInstance(List<T> supers, Serializable value, T... components) {
 		T result = getInstance(value, components);
-		if (result != null && supers.stream().allMatch(superT -> result.inheritsFrom(superT)))
-			return result;
-		return null;
+		return result != null && supers.stream().allMatch(superT -> result.inheritsFrom(superT)) ? result : null;
 	}
-
 }

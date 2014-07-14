@@ -6,6 +6,7 @@ import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+//TODO KK should be an abstract class : most of methods should be protected!
 public interface Context<T extends AbstractGeneric<T>> {
 
 	static Logger log = LoggerFactory.getLogger(Context.class);
