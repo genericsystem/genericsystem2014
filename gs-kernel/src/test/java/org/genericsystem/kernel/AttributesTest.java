@@ -1,6 +1,8 @@
 package org.genericsystem.kernel;
 
 import java.util.Arrays;
+import java.util.Collections;
+
 import org.testng.annotations.Test;
 
 @Test
@@ -32,6 +34,30 @@ public class AttributesTest extends AbstractTest {
 		assert power.getComponentsStream().count() == 1;
 		assert vehicle.equals(power.getComponents().get(0));
 		assert power.isAlive();
+	}
+
+	public void test003_isDependencyOf_ByComposite() {
+		Root root = new Root();
+		Vertex vehicle = root.addInstance("Vehicle");
+		Vertex car = root.addInstance(vehicle, "Car");
+		Vertex carPower = root.addInstance("Power", car);
+		Vertex carPowerUnit = root.addInstance("Unit", carPower);
+		assert carPower.isDependencyOf(root, "Power", Collections.singletonList(vehicle));
+		assert carPowerUnit.isDependencyOf(root, "Power", Collections.singletonList(vehicle));
+		assert !carPowerUnit.inheritsFrom(root, "Power", Collections.singletonList(vehicle));
+		Vertex vehiclePower = root.addInstance("Power", vehicle);
+		assert root.getInstance("Power", car).getSupersStream().anyMatch(x -> x.equals(vehiclePower));
+	}
+
+	public void test003_isDependencyOf_ByMeta() {
+		Root root = new Root();
+		Vertex vehicle = root.addInstance("Vehicle");
+		Vertex power = root.addInstance("Power", vehicle);
+		Vertex myVehicle = vehicle.addInstance("myVehicle");
+		Vertex p123 = power.addInstance("123", myVehicle);
+		Vertex myVehicle123 = power.addInstance("myVehicle123", myVehicle, p123);
+		assert myVehicle123.isDependencyOf(root, "Power", Collections.singletonList(vehicle));
+		assert !myVehicle123.inheritsFrom(root, "Power", Collections.singletonList(vehicle));
 	}
 
 	public void test1AttributWith2LevelsInheritance1AttributOnParent() {

@@ -80,8 +80,8 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.
 	}
 
 	@Override
-	protected LinkedHashSet<T> computeAllDependencies() {
-		return super.computeAllDependencies();
+	protected LinkedHashSet<T> computeDependencies() {
+		return super.computeDependencies();
 	}
 
 }

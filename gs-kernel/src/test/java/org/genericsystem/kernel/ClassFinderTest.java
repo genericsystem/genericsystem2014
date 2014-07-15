@@ -114,12 +114,12 @@ public class ClassFinderTest extends AbstractTest {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex car = engine.addInstance(vehicle, "Car");
-		assert car.computeAllDependencies().contains(car);
-		assert !car.computeAllDependencies().contains(vehicle);
-		assert !car.computeAllDependencies().contains(engine);
-		assert vehicle.computeAllDependencies().contains(car);
-		assert vehicle.computeAllDependencies().contains(vehicle);
-		assert !vehicle.computeAllDependencies().contains(engine);
+		assert car.computeDependencies().contains(car);
+		assert !car.computeDependencies().contains(vehicle);
+		assert !car.computeDependencies().contains(engine);
+		assert vehicle.computeDependencies().contains(car);
+		assert vehicle.computeDependencies().contains(vehicle);
+		assert !vehicle.computeDependencies().contains(engine);
 	}
 
 	public void test13() {
@@ -127,14 +127,14 @@ public class ClassFinderTest extends AbstractTest {
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex car = engine.addInstance(vehicle, "Car");
 		Vertex sportCar = engine.addInstance(car, "SportCar");
-		assert car.computeAllDependencies().contains(car);
-		assert !car.computeAllDependencies().contains(vehicle);
-		assert car.computeAllDependencies().contains(sportCar);
-		assert !car.computeAllDependencies().contains(engine);
-		assert vehicle.computeAllDependencies().contains(car);
-		assert vehicle.computeAllDependencies().contains(vehicle);
-		assert !vehicle.computeAllDependencies().contains(engine);
-		assert vehicle.computeAllDependencies().contains(sportCar);
+		assert car.computeDependencies().contains(car);
+		assert !car.computeDependencies().contains(vehicle);
+		assert car.computeDependencies().contains(sportCar);
+		assert !car.computeDependencies().contains(engine);
+		assert vehicle.computeDependencies().contains(car);
+		assert vehicle.computeDependencies().contains(vehicle);
+		assert !vehicle.computeDependencies().contains(engine);
+		assert vehicle.computeDependencies().contains(sportCar);
 		// assert false : engine.computeAllDependencies();
 	}
 
@@ -145,14 +145,14 @@ public class ClassFinderTest extends AbstractTest {
 		Vertex myCar = car.addInstance("myCar");
 		assert !myCar.isAncestorOf(engine);
 		assert engine.isAncestorOf(myCar);
-		assert car.computeAllDependencies().contains(car);
-		assert !car.computeAllDependencies().contains(vehicle);
-		assert car.computeAllDependencies().contains(myCar);
-		assert !car.computeAllDependencies().contains(engine);
-		assert vehicle.computeAllDependencies().contains(car);
-		assert vehicle.computeAllDependencies().contains(vehicle);
-		assert !vehicle.computeAllDependencies().contains(engine);
-		assert vehicle.computeAllDependencies().contains(myCar);
+		assert car.computeDependencies().contains(car);
+		assert !car.computeDependencies().contains(vehicle);
+		assert car.computeDependencies().contains(myCar);
+		assert !car.computeDependencies().contains(engine);
+		assert vehicle.computeDependencies().contains(car);
+		assert vehicle.computeDependencies().contains(vehicle);
+		assert !vehicle.computeDependencies().contains(engine);
+		assert vehicle.computeDependencies().contains(myCar);
 		// assert false : engine.computeAllDependencies();
 	}
 
@@ -163,16 +163,16 @@ public class ClassFinderTest extends AbstractTest {
 		Vertex power = engine.addInstance("Power", car);
 		Vertex unit = engine.addInstance("Unit", power);
 		assert vehicle.isAncestorOf(unit);
-		assert car.computeAllDependencies().contains(car);
-		assert !car.computeAllDependencies().contains(vehicle);
-		assert car.computeAllDependencies().contains(power);
-		assert car.computeAllDependencies().contains(unit);
-		assert !car.computeAllDependencies().contains(engine);
-		assert vehicle.computeAllDependencies().contains(car);
-		assert vehicle.computeAllDependencies().contains(vehicle);
-		assert !vehicle.computeAllDependencies().contains(engine);
-		assert vehicle.computeAllDependencies().contains(power);
-		assert vehicle.computeAllDependencies().contains(unit);
+		assert car.computeDependencies().contains(car);
+		assert !car.computeDependencies().contains(vehicle);
+		assert car.computeDependencies().contains(power);
+		assert car.computeDependencies().contains(unit);
+		assert !car.computeDependencies().contains(engine);
+		assert vehicle.computeDependencies().contains(car);
+		assert vehicle.computeDependencies().contains(vehicle);
+		assert !vehicle.computeDependencies().contains(engine);
+		assert vehicle.computeDependencies().contains(power);
+		assert vehicle.computeDependencies().contains(unit);
 		// assert false : engine.computeAllDependencies();
 	}
 
@@ -193,6 +193,6 @@ public class ClassFinderTest extends AbstractTest {
 		assert !car233.isAlive();
 		assert v233.isAlive();
 		assert !car233.isAncestorOf(v233);
-		assert !car233.computeAllDependencies().contains(v233);
+		assert !car233.computeDependencies().contains(v233);
 	}
 }
