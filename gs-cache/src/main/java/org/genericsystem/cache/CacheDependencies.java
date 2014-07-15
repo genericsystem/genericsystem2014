@@ -5,6 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.iterator.AbstractConcateIterator.ConcateIterator;
 import org.genericsystem.kernel.iterator.AbstractFilterIterator;
@@ -26,11 +27,9 @@ public class CacheDependencies<T> implements Dependencies<T> {
 
 	@Override
 	public boolean remove(T generic) {
-		if (inserts.remove(generic)) {
-			deletes.add(generic);
-			return true;
-		}
-		return false;
+		if (!inserts.remove(generic))
+			return deletes.add(generic);
+		return true;
 	}
 
 	@Override
