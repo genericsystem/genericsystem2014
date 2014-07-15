@@ -35,13 +35,14 @@ class DependenciesComputer<T extends AbstractVertex<T>> extends LinkedHashSet<T>
 
 	public void visit(T node) {
 		if (!alreadyVisited.contains(node))
-			if (!base.isAncestorOf(node)) {
+			if (base.isAncestorOf(node))// node.isDependencyOf(base);
+				addDependency(node);
+			else {
 				alreadyVisited.add(node);
 				node.getComposites().forEach(this::visit);
 				node.getInheritings().forEach(this::visit);
 				node.getInstances().forEach(this::visit);
-			} else
-				addDependency(node);
+			}
 	}
 
 	public void visit2(T node) {

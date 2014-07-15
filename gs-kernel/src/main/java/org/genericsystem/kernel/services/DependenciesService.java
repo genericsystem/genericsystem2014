@@ -3,6 +3,7 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
 
@@ -14,9 +15,20 @@ public interface DependenciesService<T extends VertexService<T>> extends ApiServ
 				|| dependency.getComponentsStream().filter(component -> !dependency.equals(component)).anyMatch(this::isAncestorOf);
 	}
 
+	@SuppressWarnings("unchecked")
+	default boolean isDependencyOf(T ancestor) {
+		return ancestor.isAncestorOf((T) this);
+	}
+
 	default boolean isAncestorOf(T meta, List<T> overrides, Serializable value, List<T> components) {
 		// perhaps we have to adjust meta here
 		return isSuperOf(meta, overrides, value, components) || isAncestorOf(meta) || components.stream().filter(component -> component != null).anyMatch(component -> this.isAncestorOf(component));
+	}
+
+	@SuppressWarnings("unchecked")
+	default boolean isDependencyOf(T meta, List<T> overrides, Serializable value, List<T> components) {
+		// perhaps we have to adjust meta here
+		return isSuperOf(meta, overrides, value, components) || meta.isDependencyOf((T) this) || components.stream().filter(component -> component != null).anyMatch(component -> component.isDependencyOf((T) this));
 	}
 
 	@SuppressWarnings("unchecked")

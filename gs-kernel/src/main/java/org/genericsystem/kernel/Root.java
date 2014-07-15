@@ -63,6 +63,7 @@ public class Root extends Vertex implements RootService<Vertex> {
 
 		private void init(Class<?>... userClasses) {
 			Vertex metaAttribute = Root.this.setInstance(Root.this, getValue(), Root.this);
+
 			systemCache.put(MetaAttribute.class, metaAttribute);
 			Vertex map = Root.this.setInstance(SystemMap.class, Root.this);
 			systemCache.put(SystemMap.class, map);
