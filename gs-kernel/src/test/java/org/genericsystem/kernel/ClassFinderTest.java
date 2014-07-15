@@ -192,7 +192,7 @@ public class ClassFinderTest extends AbstractTest {
 		assert car233.isAncestorOf(vehiclePower, Collections.emptyList(), 233, Arrays.asList(car));
 		assert !car233.isAlive();
 		assert v233.isAlive();
-		assert car233.isAncestorOf(v233);
-		assert car233.computeAllDependencies().contains(v233);
+		assert !car233.isAncestorOf(v233);
+		assert !car233.computeAllDependencies().contains(v233);
 	}
 }
