@@ -295,6 +295,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 		return overrides.stream().anyMatch(override -> override.inheritsFrom((T) this)) || isSuperOf(subMeta, subValue, subComponents, getMeta(), getValue(), getComponents());
 	}
 
+	@Override
+	public boolean inheritsFrom(T superMeta, Serializable superValue, List<T> superComponents) {
+		return isSuperOf(getMeta(), getValue(), getComponents(), superMeta, superValue, superComponents);
+	}
+
 	private static <T extends AbstractVertex<T>> boolean isSuperOf(T subMeta, Serializable subValue, List<T> subComponents, T superMeta, Serializable superValue, List<T> superComponents) {
 		if (!subMeta.inheritsFrom(superMeta))
 			return false;
