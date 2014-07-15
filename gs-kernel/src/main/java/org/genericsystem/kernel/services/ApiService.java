@@ -118,11 +118,9 @@ public interface ApiService<T extends VertexService<T>> {
 
 	boolean isSuperOf(T subMeta, List<T> overrides, Serializable subValue, List<T> subComponents);
 
-	boolean inheritsFrom(T subMeta, Serializable subValue, List<T> subComponents, T superMeta, Serializable superValue, List<T> superComponents);
+	// boolean isSuperOf(T subMeta, Serializable subValue, List<T> subComponents, T superMeta, Serializable superValue, List<T> superComponents);
 
 	boolean componentsDepends(List<T> subComponents, List<T> superComponents);
-
-	// boolean componentsDepends(SingularsLazyCache singulars, List<T> subComponents, List<T> superComponents);
 
 	Snapshot<T> getAllInheritings();
 

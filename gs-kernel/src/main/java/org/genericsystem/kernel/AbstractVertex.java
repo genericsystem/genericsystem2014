@@ -255,4 +255,51 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 		throw new RollbackException(exception);
 	}
 
+	static <T extends VertexService<T>> boolean componentsDepends(SingularsLazyCache singulars, List<T> subComponents, List<T> superComponents) {
+		int subIndex = 0;
+		loop: for (T superComponent : superComponents) {
+			for (; subIndex < subComponents.size(); subIndex++) {
+				T subComponent = subComponents.get(subIndex);
+				if (subComponent.isSpecializationOf(superComponent)) {
+					if (singulars.get(subIndex))
+						return true;
+					subIndex++;
+					continue loop;
+				}
+			}
+			return false;
+		}
+		return true;
+	}
+
+	static interface SingularsLazyCache {
+		boolean get(int i);
+	}
+
+	@Override
+	public boolean componentsDepends(List<T> subComponents, List<T> superComponents) {
+		class SingularsLazyCacheImpl implements SingularsLazyCache {
+			private final Boolean[] singulars = new Boolean[subComponents.size()];
+
+			@Override
+			public boolean get(int i) {
+				return singulars[i] != null ? singulars[i] : (singulars[i] = isSingularConstraintEnabled(i));
+			}
+		}
+		return componentsDepends(new SingularsLazyCacheImpl(), subComponents, superComponents);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public boolean isSuperOf(T subMeta, List<T> overrides, Serializable subValue, List<T> subComponents) {
+		return overrides.stream().anyMatch(override -> override.inheritsFrom((T) this)) || isSuperOf(subMeta, subValue, subComponents, getMeta(), getValue(), getComponents());
+	}
+
+	private static <T extends AbstractVertex<T>> boolean isSuperOf(T subMeta, Serializable subValue, List<T> subComponents, T superMeta, Serializable superValue, List<T> superComponents) {
+		if (!subMeta.inheritsFrom(superMeta))
+			return false;
+		if (!subMeta.componentsDepends(subComponents, superComponents))
+			return false;
+		return subMeta.getValuesBiPredicate().test(subValue, superValue);
+	}
 }

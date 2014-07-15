@@ -8,61 +8,15 @@ import org.genericsystem.kernel.Statics;
 
 public interface DependenciesService<T extends VertexService<T>> extends ApiService<T> {
 
-	// TODO KK
 	@Override
-	default boolean isAncestorOf(final T dependency) {
-		return equiv(dependency) || (!dependency.equals(dependency.getMeta()) && isAncestorOf(dependency.getMeta())) || dependency.getSupersStream().anyMatch(component -> this.isAncestorOf(component))
-				|| dependency.getComponentsStream().filter(component -> !dependency.equals(component)).anyMatch(component -> this.isAncestorOf(component))
-				|| inheritsFrom(dependency.getMeta(), dependency.getValue(), dependency.getComponents(), getMeta(), getValue(), getComponents());
+	default boolean isAncestorOf(T dependency) {
+		return equiv(dependency) || (!dependency.isRoot() && isAncestorOf(dependency.getMeta())) || dependency.getSupersStream().anyMatch(this::isAncestorOf)
+				|| dependency.getComponentsStream().filter(component -> !dependency.equals(component)).anyMatch(this::isAncestorOf);
 	}
 
-	@Override
-	@SuppressWarnings("unchecked")
-	default boolean isSuperOf(T subMeta, List<T> overrides, Serializable subValue, List<T> subComponents) {
-		return overrides.stream().anyMatch(override -> override.inheritsFrom((T) this)) || inheritsFrom(subMeta, subValue, subComponents, getMeta(), getValue(), getComponents());
-	}
-
-	@Override
-	default boolean inheritsFrom(T subMeta, Serializable subValue, List<T> subComponents, T superMeta, Serializable superValue, List<T> superComponents) {
-		if (!subMeta.inheritsFrom(superMeta))
-			return false;
-		if (!subMeta.componentsDepends(subComponents, superComponents))
-			return false;
-		return subMeta.getValuesBiPredicate().test(subValue, superValue);
-	}
-
-	static interface SingularsLazyCache {
-		boolean get(int i);
-	}
-
-	@Override
-	default boolean componentsDepends(List<T> subComponents, List<T> superComponents) {
-		class SingularsLazyCacheImpl implements SingularsLazyCache {
-			private final Boolean[] singulars = new Boolean[subComponents.size()];
-
-			@Override
-			public boolean get(int i) {
-				return singulars[i] != null ? singulars[i] : (singulars[i] = DependenciesService.this.isSingularConstraintEnabled(i));
-			}
-		}
-		return componentsDepends(new SingularsLazyCacheImpl(), subComponents, superComponents);
-	}
-
-	static <T extends VertexService<T>> boolean componentsDepends(SingularsLazyCache singulars, List<T> subComponents, List<T> superComponents) {
-		int subIndex = 0;
-		loop: for (T superComponent : superComponents) {
-			for (; subIndex < subComponents.size(); subIndex++) {
-				T subComponent = subComponents.get(subIndex);
-				if (subComponent.isSpecializationOf(superComponent)) {
-					if (singulars.get(subIndex))
-						return true;
-					subIndex++;
-					continue loop;
-				}
-			}
-			return false;
-		}
-		return true;
+	default boolean isAncestorOf(T meta, List<T> overrides, Serializable value, List<T> components) {
+		// perhaps we have to adjust meta here
+		return isSuperOf(meta, overrides, value, components) || isAncestorOf(meta) || components.stream().filter(component -> component != null).anyMatch(component -> this.isAncestorOf(component));
 	}
 
 	@SuppressWarnings("unchecked")
