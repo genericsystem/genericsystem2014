@@ -139,7 +139,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 	public T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
 		if (newComponents.size() != getComponents().size())
 			rollbackAndThrowException(new IllegalArgumentException());
-		return rebuildAll(() -> newT().init(getMeta(), new Supers<T>(getSupers(), supersToAdd), newValue, newComponents).plug());
+		return rebuildAll(() -> newT().init(getMeta(), new Supers<T>(getSupers(), supersToAdd), newValue, newComponents).plug(), computeAllDependencies());
 	}
 
 	private static class ConvertMap<T extends AbstractVertex<T>> extends HashMap<T, T> {
@@ -159,13 +159,27 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	protected LinkedHashSet<T> computeAllDependencies() {
-		return new DependenciesComputer<T>((T) AbstractVertex.this);
+		return new AbstractDependenciesComputer<T>(getMeta()) {
+			private static final long serialVersionUID = 4116681784718071815L;
+
+			@SuppressWarnings("unchecked")
+			@Override
+			boolean checkDependency(T node) {
+				return ((T) AbstractVertex.this).isAncestorOf(node);
+			}
+		};
 	}
 
-	protected LinkedHashSet<T> computeAllDependencies(T meta, List<T> overrides, Serializable value, T... components) {
-		return new DependenciesComputer<T>(meta, overrides, value, components);
+	protected LinkedHashSet<T> computeAllDependencies(T meta, Serializable value, List<T> components) {
+		return new AbstractDependenciesComputer<T>(meta) {
+			private static final long serialVersionUID = -3611136800445783634L;
+
+			@Override
+			boolean checkDependency(T node) {
+				return node.inheritsFrom(meta, value, components);
+			}
+		};
 	}
 
 	@SuppressWarnings("unchecked")
@@ -181,27 +195,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 				rollbackAndThrowException(new ExistsException("Attempts to add an already existing instance : " + weakInstance.info()));
 			else
 				return weakInstance.equiv(this, value, Arrays.asList(components)) ? weakInstance : weakInstance.update(overrides, value, components);
-		// T instance = buildInstance(overrides, value, Arrays.asList(components));
-		// return (T) ((AbstractVertex<?>) instance).rebuildAll(() -> ((AbstractVertex<?>) instance).plug());
-		return rebuildAll(nearestMeta, overrides, value, components);
-	}
-
-	// TODO to static
-	private T rebuildAll(T meta, List<T> overrides, Serializable value, T... components) {
-		ConvertMap<T> convertMap = new ConvertMap<>();
-		LinkedHashSet<T> dependenciesToRebuild = computeAllDependencies(meta, overrides, value, components);
-		// dependenciesToRebuild.forEach(this::simpleRemove);
-		T build = buildInstance(overrides, value, Arrays.asList(components));// rebuilder.get();
-		// dependenciesToRebuild.remove(this);
-		convertMap.put((T) this, build);
-		dependenciesToRebuild.forEach(x -> convertMap.convert(x));
-		return build;
+		return rebuildAll(() -> buildInstance(overrides, value, Arrays.asList(components)).plug(), computeAllDependencies(nearestMeta, value, Arrays.asList(components)));
 	}
 
 	@SuppressWarnings("unchecked")
-	T rebuildAll(Supplier<T> rebuilder) {
+	T rebuildAll(Supplier<T> rebuilder, LinkedHashSet<T> dependenciesToRebuild) {
 		ConvertMap<T> convertMap = new ConvertMap<>();
-		LinkedHashSet<T> dependenciesToRebuild = computeAllDependencies();
 		dependenciesToRebuild.forEach(this::simpleRemove);
 		T build = rebuilder.get();
 		dependenciesToRebuild.remove(this);

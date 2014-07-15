@@ -28,6 +28,7 @@ public class TransactionConcurrency<T extends GenericServiceConcurrency<T>> exte
 		return generic.getLifeManager().isAlive(getTs());
 	}
 
+	//TODO clean
 	// @Override
 	// public Snapshot<T> getInheritings(T generic) {
 	// return () -> generic.getVertex() != null ? generic.unwrap().getInheritings().project(generic::wrap).iterator() : Collections.emptyIterator();

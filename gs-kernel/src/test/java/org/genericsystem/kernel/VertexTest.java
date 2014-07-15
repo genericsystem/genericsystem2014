@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.Arrays;
 import java.util.Collections;
+
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.testng.annotations.Test;
 
@@ -322,7 +323,8 @@ public class VertexTest extends AbstractTest {
 		Vertex car233 = vehiclePower.buildInstance(Collections.emptyList(), 233, Arrays.asList(car));
 		assert !car233.isAlive();
 		assert v233.isAlive();
-		assert car233.isAncestorOf(v233);
-		assert car233.computeAllDependencies().contains(v233);
+		assert !car233.isAncestorOf(v233);
+		assert car233.isAncestorOf(vehiclePower, Collections.emptyList(), 233, Arrays.asList(car));
+		assert car233.computeAllDependencies(vehiclePower, 233, Arrays.asList(car)).contains(v233);
 	}
 }
