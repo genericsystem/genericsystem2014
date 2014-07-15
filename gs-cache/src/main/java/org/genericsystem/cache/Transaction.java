@@ -24,10 +24,12 @@ public class Transaction<T extends AbstractGeneric<T>> implements Context<T> {
 		generic.getMeta().getVertex().addInstance(generic.getSupersStream().map(g -> g.unwrap()).collect(Collectors.toList()), generic.getValue(), generic.getComponentsStream().map(g -> g.unwrap()).toArray(Vertex[]::new));
 	}
 
+	// TODO : check performance
+	// remove should return a boolean.
 	@Override
 	public boolean simpleRemove(T generic) {
-		// TODO Auto-generated method stub
-		return false;
+		generic.getVertex().remove();
+		return true;
 	}
 
 	@Override

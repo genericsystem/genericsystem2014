@@ -105,6 +105,15 @@ public class Cache<T extends AbstractGeneric<T>> implements Context<T> {
 		rollback(cause);
 	}
 
+	@Override
+	public void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
+		for (T remove : removes)
+			unplug(remove);
+		for (T add : adds)
+			plug(add);
+
+	}
+
 	private void add(T generic) throws ConstraintViolationException {
 		simpleAdd(generic);
 		// check(CheckingType.CHECK_ON_ADD_NODE, false, generic);
