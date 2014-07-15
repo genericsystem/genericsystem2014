@@ -1,7 +1,9 @@
 package org.genericsystem.kernel;
 
 import java.util.Objects;
-import org.genericsystem.kernel.services.SignatureService;
+import org.genericsystem.kernel.services.AncestorsService;
+import org.genericsystem.kernel.services.ApiService;
+import org.genericsystem.kernel.services.VertexService;
 
 public interface RootService<T extends VertexService<T>> extends VertexService<T> {
 
@@ -20,8 +22,8 @@ public interface RootService<T extends VertexService<T>> extends VertexService<T
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T getRoot() {
-		return (T) this;
+	default RootService<T> getRoot() {
+		return this;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -37,10 +39,13 @@ public interface RootService<T extends VertexService<T>> extends VertexService<T
 	}
 
 	@Override
-	default boolean equiv(SignatureService<? extends SignatureService<?>> service) {
+	default boolean equiv(ApiService<? extends ApiService<?>> service) {
 		if (this == service)
 			return true;
-		return Objects.equals(getValue(), service.getValue()) && SignatureService.equivComponents(getComponents(), service.getComponents());
+		return Objects.equals(getValue(), service.getValue()) && AncestorsService.equivComponents(getComponents(), service.getComponents());
 	}
 
+	default void rollback() {};
+
+	T find(Class<?> clazz);
 }

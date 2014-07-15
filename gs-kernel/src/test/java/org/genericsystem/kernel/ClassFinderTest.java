@@ -2,9 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.Arrays;
 import java.util.Collections;
-
 import org.genericsystem.kernel.exceptions.NotAliveException;
-import org.genericsystem.kernel.services.RemovableService.RemoveStrategy;
 import org.testng.annotations.Test;
 
 @Test
@@ -91,7 +89,7 @@ public class ClassFinderTest extends AbstractTest {
 	public void test10() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
-		vehicle.remove(RemoveStrategy.NORMAL);
+		vehicle.remove();
 		new RollbackCatcher() {
 			@Override
 			public void intercept() {
@@ -103,7 +101,7 @@ public class ClassFinderTest extends AbstractTest {
 	public void test11() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
-		vehicle.remove(RemoveStrategy.NORMAL);
+		vehicle.remove();
 		new RollbackCatcher() {
 			@Override
 			public void intercept() {
@@ -191,6 +189,7 @@ public class ClassFinderTest extends AbstractTest {
 		assert vehiclePower.isAncestorOf(v233);
 		assert vehicle.isAncestorOf(v233);
 		Vertex car233 = vehiclePower.buildInstance(Collections.emptyList(), 233, Arrays.asList(car));
+		assert car233.isAncestorOf(vehiclePower, Collections.emptyList(), 233, Arrays.asList(car));
 		assert !car233.isAlive();
 		assert v233.isAlive();
 		assert car233.isAncestorOf(v233);

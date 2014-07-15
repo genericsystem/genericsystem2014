@@ -3,7 +3,6 @@ package org.genercisystem.impl;
 import java.util.Arrays;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.testng.annotations.Test;

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Meta;
 import org.genericsystem.kernel.annotations.value.BooleanValue;
@@ -33,8 +32,7 @@ public class Root extends Vertex implements RootService<Vertex> {
 	// @SystemGeneric
 	// @Components(Root.class)
 	// @StringValue(Statics.ENGINE_VALUE)
-	public static class MetaAttribute {
-	}
+	public static class MetaAttribute {}
 
 	@Override
 	public Vertex find(Class<?> clazz) {
@@ -43,13 +41,13 @@ public class Root extends Vertex implements RootService<Vertex> {
 
 	// @Phantom
 	@Override
-	public Vertex getRoot() {
+	public Root getRoot() {
 		return this;
 	}
 
 	// @Phantom
 	@Override
-	public Vertex getAlive() {
+	public Root getAlive() {
 		return this;
 	}
 
@@ -59,27 +57,22 @@ public class Root extends Vertex implements RootService<Vertex> {
 
 		private boolean startupTime = true;
 
-		public SystemCache() {
+		private SystemCache() {
 			put(Root.class, Root.this);
 		}
 
-		void init(Class<?>... userClasses) {
+		private void init(Class<?>... userClasses) {
 			Vertex metaAttribute = Root.this.setInstance(Root.this, getValue(), Root.this);
 			systemCache.put(MetaAttribute.class, metaAttribute);
-
 			Vertex map = Root.this.setInstance(SystemMap.class, Root.this);
 			systemCache.put(SystemMap.class, map);
 			map.enablePropertyConstraint();
-
-			// List<Class<?>> classes = Arrays.<Class<?>> asList(MetaAttribute.class, SystemMap.class);
-			// for (Class<?> clazz : classes)
-			// get(clazz);
 			for (Class<?> clazz : userClasses)
 				set(clazz);
 			startupTime = false;
 		}
 
-		public Vertex get(Class<?> clazz) {
+		private Vertex get(Class<?> clazz) {
 			Vertex systemProperty = super.get(clazz);
 			if (systemProperty != null) {
 				assert systemProperty.isAlive();
@@ -88,7 +81,7 @@ public class Root extends Vertex implements RootService<Vertex> {
 			return null;
 		}
 
-		public Vertex set(Class<?> clazz) {
+		private Vertex set(Class<?> clazz) {
 			if (!startupTime)
 				throw new IllegalStateException("Class : " + clazz + " has not been built at startup");
 			Vertex systemProperty = super.get(clazz);

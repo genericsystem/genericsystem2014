@@ -2,16 +2,31 @@ package org.genericsystem.kernel.services;
 
 import org.genericsystem.kernel.Statics;
 
-public interface DisplayService<T extends DisplayService<T>> extends AncestorsService<T> {
+public interface DisplayService<T extends VertexService<T>> extends ApiService<T> {
 
+	@Override
+	default String info() {
+		return "(" + getMeta().getValue() + ")" + getSupers() + this + getComponents() + " ";
+	}
+
+	@Override
+	default void log() {
+		log.info(detailedInfo());
+	}
+
+	@Override
+	default void log(String prefix) {
+		log.info(prefix + detailedInfo());
+	}
+
+	@Override
 	default String detailedInfo() {
-		String s = "\n******************************" + System.identityHashCode(this) + "******************************\n";
-		s += " Name        : " + toString() + "\n";
+		String s = "\n\n*******************************" + System.identityHashCode(this) + "******************************\n";
 		s += " Value       : " + getValue() + "\n";
 		s += " Meta        : " + getMeta() + " (" + System.identityHashCode(getMeta()) + ")\n";
 		s += " MetaLevel   : " + Statics.getMetaLevelString(getLevel()) + "\n";
 		s += " Category    : " + Statics.getCategoryString(getLevel(), getComponents().size()) + "\n";
-		s += " Class       : " + getClass().getSimpleName() + "\n";
+		s += " Class       : " + getClass().getName() + "\n";
 		s += "**********************************************************************\n";
 		for (T superGeneric : getSupers())
 			s += " Super       : " + superGeneric + " (" + System.identityHashCode(superGeneric) + ")\n";
@@ -32,17 +47,5 @@ public interface DisplayService<T extends DisplayService<T>> extends AncestorsSe
 		// s += "**********************************************************************\n";
 
 		return s;
-	}
-
-	default String info() {
-		return "(" + getMeta().getValue() + ")" + getSupers() + "{" + this + "}" + getComponents() + " ";
-	}
-
-	default void log() {
-		log.info(detailedInfo());
-	}
-
-	default void log(String prefix) {
-		log.info(prefix + detailedInfo());
 	}
 }

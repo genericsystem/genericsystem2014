@@ -12,7 +12,6 @@ public class SystemPropertiesTest extends AbstractTest {
 		power.enablePropertyConstraint();
 		power.enablePropertyConstraint();
 		power.enableReferentialIntegrity(0);
-		power.enablePropertyConstraint();
 		assert power.isPropertyConstraintEnabled();
 		assert power.isReferentialIntegrityConstraintEnabled(0);
 		power.disablePropertyConstraint();

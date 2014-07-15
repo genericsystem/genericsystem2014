@@ -1,12 +1,14 @@
 package org.genericsystem.cache;
 
-import org.genericsystem.impl.GenericSignature;
-
-public class Generic extends GenericSignature<Generic> implements GenericService<Generic> {
+public class Generic extends AbstractGeneric<Generic> implements GenericService<Generic> {
 
 	@Override
-	public Generic buildInstance() {
+	public Generic newT() {
 		return new Generic();
 	}
 
+	@Override
+	public Generic[] newTArray(int dim) {
+		return new Generic[dim];
+	}
 }

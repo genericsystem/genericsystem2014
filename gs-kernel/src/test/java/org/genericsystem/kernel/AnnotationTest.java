@@ -17,7 +17,7 @@ public class AnnotationTest extends AbstractTest {
 		Vertex myck = engine.find(Myck.class);
 		assert vehicle.isStructural();
 		assert human.isStructural();
-		assert myck.isFactual();
+		assert myck.isConcrete();
 	}
 
 	public void test002_SuperVertex() {
@@ -72,7 +72,7 @@ public class AnnotationTest extends AbstractTest {
 		engine.find(Vehicle.class);
 		Vertex human = engine.find(Human.class);
 		Vertex possess = engine.find(HumanPossessVehicle.class);
-		assert human.getRelations().contains(possess);
+		assert human.getAttributes().contains(possess);
 	}
 
 	public void test008_SubRelation() {
@@ -82,7 +82,7 @@ public class AnnotationTest extends AbstractTest {
 		Vertex possessVehicle = engine.find(HumanPossessVehicle.class);
 		Vertex possessCar = engine.find(HumanPossessCar.class);
 		assert possessCar.inheritsFrom(possessVehicle);
-		assert human.getRelations().contains(possessCar) : human.getRelations();
+		assert human.getAttributes().contains(possessCar) : human.getAttributes();
 
 	}
 
@@ -93,8 +93,8 @@ public class AnnotationTest extends AbstractTest {
 		Vertex man = engine.find(Man.class);
 		Vertex humanPossessVehicle = engine.find(HumanPossessVehicle.class);
 		Vertex manPossessCar = engine.find(ManPossessCar.class);
-		assert human.getRelations().contains(humanPossessVehicle);
-		assert man.getRelations().contains(manPossessCar) : man.getRelations();
+		assert human.getAttributes().contains(humanPossessVehicle);
+		assert man.getAttributes().contains(manPossessCar) : man.getAttributes();
 		assert manPossessCar.inheritsFrom(humanPossessVehicle);
 	}
 
@@ -104,7 +104,7 @@ public class AnnotationTest extends AbstractTest {
 		Vertex human = engine.find(Human.class);
 		engine.find(Time.class);
 		Vertex possess = engine.find(HumanPossessVehicleTime.class);
-		assert human.getRelations().contains(possess);
+		assert human.getAttributes().contains(possess);
 	}
 
 	public void test011_getDirectSubVertexsWithDiamondProblem() {
@@ -245,57 +245,46 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	public static class Games {
-	}
+	public static class Games {}
 
 	@SystemGeneric
 	@Meta(Games.class)
-	public static class MyGames {
-	}
+	public static class MyGames {}
 
 	@SystemGeneric
 	@Meta(Games.class)
-	public static class MyGames2 extends Vertex {
-	}
+	public static class MyGames2 extends Vertex {}
 
 	@SystemGeneric
-	public static class Children {
-	}
+	public static class Children {}
 
 	@SystemGeneric
 	@Meta(Children.class)
-	public static class MyChildren {
-	}
+	public static class MyChildren {}
 
 	@SystemGeneric
 	@Supers({ Games.class, Children.class })
-	public static class ChildrenGames {
-	}
+	public static class ChildrenGames {}
 
 	@SystemGeneric
 	@Meta(ChildrenGames.class)
-	public static class MyChildrenGames {
-	}
+	public static class MyChildrenGames {}
 
 	@SystemGeneric
 	@Supers({ Human.class, Vehicle.class })
-	public static class Transformer {
-	}
+	public static class Transformer {}
 
 	@SystemGeneric
 	@Meta(Transformer.class)
-	public static class MyTransformer {
-	}
+	public static class MyTransformer {}
 
 	@SystemGeneric
 	@Supers({ Transformer.class, ChildrenGames.class })
-	public static class TransformerChildrenGames {
-	}
+	public static class TransformerChildrenGames {}
 
 	@SystemGeneric
 	@Meta(TransformerChildrenGames.class)
-	public static class MyTransformerChildrenGames {
-	}
+	public static class MyTransformerChildrenGames {}
 
 	@SystemGeneric
 	public static class GraphicComponent {
@@ -345,8 +334,7 @@ public class AnnotationTest extends AbstractTest {
 
 	@SystemGeneric
 	@Meta(Vehicle.class)
-	public static class MyVehicle {
-	}
+	public static class MyVehicle {}
 
 	@SystemGeneric
 	@Components(Vehicle.class)
@@ -370,8 +358,7 @@ public class AnnotationTest extends AbstractTest {
 
 	@SystemGeneric
 	@Meta(Car.class)
-	public static class myCar {
-	}
+	public static class myCar {}
 
 	@SystemGeneric
 	@Components(Car.class)
@@ -387,42 +374,34 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	public static class Human {
-	}
+	public static class Human {}
 
 	@SystemGeneric
-	public static class Man extends Human {
-	}
+	public static class Man extends Human {}
 
 	@SystemGeneric
 	@Meta(Human.class)
-	public static class Myck {
-	}
+	public static class Myck {}
 
 	@SystemGeneric
-	public static class Time {
-	}
+	public static class Time {}
 
 	@SystemGeneric
 	@Components({ Human.class, Vehicle.class })
-	public static class HumanPossessVehicle {
-	}
+	public static class HumanPossessVehicle {}
 
 	@SystemGeneric
 	@Components({ Human.class, Car.class })
 	@Supers(HumanPossessVehicle.class)
-	public static class HumanPossessCar extends HumanPossessVehicle {
-	}
+	public static class HumanPossessCar extends HumanPossessVehicle {}
 
 	@SystemGeneric
 	@Components({ Man.class, Car.class })
 	@Supers(HumanPossessVehicle.class)
-	public static class ManPossessCar extends HumanPossessVehicle {
-	}
+	public static class ManPossessCar extends HumanPossessVehicle {}
 
 	@SystemGeneric
 	@Components({ Human.class, Vehicle.class, Time.class })
-	public static class HumanPossessVehicleTime {
-	}
+	public static class HumanPossessVehicleTime {}
 
 }

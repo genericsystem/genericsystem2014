@@ -6,7 +6,7 @@ import org.genericsystem.impl.EngineService;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
-import org.genericsystem.kernel.services.SignatureService;
+import org.genericsystem.kernel.services.ApiService;
 
 public class Engine extends Generic implements EngineService<Generic> {
 
@@ -27,12 +27,17 @@ public class Engine extends Generic implements EngineService<Generic> {
 	}
 
 	@Override
-	public Vertex getVertex() {
+	protected Vertex getVertex() {
 		return root;
 	}
 
 	@Override
-	public Generic getRoot() {
+	public Generic getMeta() {
+		return this;
+	}
+
+	@Override
+	public Engine getRoot() {
 		return this;
 	}
 
@@ -42,26 +47,13 @@ public class Engine extends Generic implements EngineService<Generic> {
 	}
 
 	@Override
-	public boolean equiv(SignatureService<? extends SignatureService<?>> service) {
+	public boolean equiv(ApiService<? extends ApiService<?>> service) {
 		return EngineService.super.equiv(service);
 	}
 
-	// @Phantom
 	@Override
 	public Generic find(Class<?> clazz) {
-		return wrap(getVertex().find(clazz));
+		return wrap(root.find(clazz));
 	}
-	//
-	// // @Phantom
-	// @Override
-	// public Snapshot<Generic> getSuperComposites(Generic superT) {
-	// return super.getSuperComposites(superT);
-	// }
-	//
-	// // @Phantom
-	// @Override
-	// public Snapshot<Generic> getMetaComposites(Generic meta) {
-	// return super.getMetaComposites(meta);
-	// }
 
 }

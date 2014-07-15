@@ -5,16 +5,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.DisplayService;
-import org.genericsystem.kernel.services.ExceptionAdviserService;
+import org.genericsystem.kernel.services.VertexService;
 
-public abstract class Signature<T extends Signature<T>> {
-	protected T meta;
-	protected List<T> components;
-	protected Serializable value;
+public abstract class Signature<T extends Signature<T>> implements VertexService<T> {
+	private T meta;
+	private List<T> components;
+	private Serializable value;
 
 	@SuppressWarnings("unchecked")
 	protected T init(T meta, Serializable value, List<T> components) {
@@ -37,22 +36,26 @@ public abstract class Signature<T extends Signature<T>> {
 	}
 
 	public void checkIsAlive() {
-		if (!((AncestorsService) this).isAlive())
-			((ExceptionAdviserService<?>) this).rollbackAndThrowException(new NotAliveException(((DisplayService<?>) this).info()));
+		if (!this.isAlive())
+			((AncestorsService<?>) this).rollbackAndThrowException(new NotAliveException(((DisplayService<?>) this).info()));
 	}
 
+	@Override
 	public T getMeta() {
 		return meta;
 	}
 
+	@Override
 	public List<T> getComponents() {
 		return components;
 	}
 
+	@Override
 	public Serializable getValue() {
 		return value;
 	}
 
+	@Override
 	public Stream<T> getComponentsStream() {
 		return components.stream();
 	}
@@ -62,7 +65,9 @@ public abstract class Signature<T extends Signature<T>> {
 		return Objects.toString(getValue());
 	}
 
+	@Override
 	public int getLevel() {
-		return (((AncestorsService) this).isRoot() || components.stream().allMatch(c -> ((AncestorsService) c).isRoot()) && Objects.equals(getValue(), ((AncestorsService) this).getRoot().getValue())) ? 0 : meta.getLevel() + 1;
+		return (isRoot() || components.stream().allMatch(c -> c.isRoot()) && Objects.equals(getValue(), getRoot().getValue())) ? 0 : meta.getLevel() + 1;
 	}
+
 }

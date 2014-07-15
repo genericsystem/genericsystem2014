@@ -5,14 +5,15 @@ import java.util.Objects;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.RootService;
 import org.genericsystem.kernel.Statics;
-import org.genericsystem.kernel.services.SignatureService;
+import org.genericsystem.kernel.services.AncestorsService;
+import org.genericsystem.kernel.services.ApiService;
 
 public interface EngineService<T extends GenericService<T>> extends RootService<T>, GenericService<T> {
 
-	@Override
-	default T find(Class<?> clazz) {
-		return wrap(getVertex().find(clazz));
-	}
+	// @Override
+	// default T find(Class<?> clazz) {
+	// return (T) ((AbstractGeneric) this).wrap(((AbstractGeneric) this).getVertex().find(clazz));
+	// }
 
 	default Root buildRoot() {
 		return buildRoot(Statics.ENGINE_VALUE);
@@ -32,8 +33,8 @@ public interface EngineService<T extends GenericService<T>> extends RootService<
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T getRoot() {
-		return (T) this;
+	default EngineService<T> getRoot() {
+		return this;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -49,10 +50,10 @@ public interface EngineService<T extends GenericService<T>> extends RootService<
 	}
 
 	@Override
-	default boolean equiv(SignatureService<? extends SignatureService<?>> service) {
+	default boolean equiv(ApiService<? extends ApiService<?>> service) {
 		if (this == service)
 			return true;
-		return Objects.equals(getValue(), service.getValue()) && SignatureService.equivComponents(getComponents(), service.getComponents());
+		return Objects.equals(getValue(), service.getValue()) && AncestorsService.equivComponents(getComponents(), service.getComponents());
 	}
 
 	// // @Phantom

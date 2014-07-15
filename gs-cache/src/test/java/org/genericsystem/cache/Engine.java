@@ -6,7 +6,8 @@ import java.util.Objects;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
-import org.genericsystem.kernel.services.SignatureService;
+import org.genericsystem.kernel.services.AncestorsService;
+import org.genericsystem.kernel.services.ApiService;
 
 public class Engine extends Generic implements EngineService<Generic> {
 
@@ -57,10 +58,10 @@ public class Engine extends Generic implements EngineService<Generic> {
 	}
 
 	@Override
-	public boolean equiv(SignatureService<?> service) {
+	public boolean equiv(ApiService<?> service) {
 		if (this == service)
 			return true;
-		return Objects.equals(getValue(), service.getValue()) && SignatureService.equivComponents(getComponents(), service.getComponents());
+		return Objects.equals(getValue(), service.getValue()) && AncestorsService.equivComponents(getComponents(), service.getComponents());
 	}
 
 	@Override
@@ -68,9 +69,18 @@ public class Engine extends Generic implements EngineService<Generic> {
 		return wrap(root.find(clazz));
 	}
 
-	// @Phantom
 	@Override
-	public Generic getRoot() {
+	public Generic getMeta() {
+		return this;
+	}
+
+	@Override
+	public Engine getRoot() {
+		return this;
+	}
+
+	@Override
+	public Generic getAlive() {
 		return this;
 	}
 }

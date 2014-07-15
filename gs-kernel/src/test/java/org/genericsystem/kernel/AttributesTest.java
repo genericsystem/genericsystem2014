@@ -12,8 +12,8 @@ public class AttributesTest extends AbstractTest {
 		assert vehicle.getLevel() == 1 : vehicle.getLevel();
 		Vertex power = root.addInstance("Power", vehicle);
 		assert root.getInstance("Power", vehicle) == power;
-		assert root.selectInstances("Power").count() == 1;
-		assert root.selectInstances("Power").anyMatch(x -> x.equals(power));
+		// assert root.selectInstances("Power").count() == 1;
+		// assert root.selectInstances("Power").anyMatch(x -> x.equals(power));
 		assert power.getComponentsStream().count() == 1;
 		assert vehicle.equals(power.getComponents().get(0));
 		assert power.isAlive();
@@ -26,9 +26,9 @@ public class AttributesTest extends AbstractTest {
 		Vertex powerType = root.addInstance("Power");
 		Vertex power = root.addInstance("Power", vehicle);
 		assert root.getInstance("Power", vehicle) == power;
-		assert root.selectInstances("Power").count() == 2;
-		assert root.selectInstances("Power").anyMatch(x -> x.equals(powerType));
-		assert root.selectInstances("Power").anyMatch(x -> x.equals(power));
+		// assert root.selectInstances("Power").count() == 2;
+		// assert root.selectInstances("Power").anyMatch(x -> x.equals(powerType));
+		// assert root.selectInstances("Power").anyMatch(x -> x.equals(power));
 		assert power.getComponentsStream().count() == 1;
 		assert vehicle.equals(power.getComponents().get(0));
 		assert power.isAlive();

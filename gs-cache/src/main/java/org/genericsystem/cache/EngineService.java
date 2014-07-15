@@ -1,6 +1,6 @@
 package org.genericsystem.cache;
 
-public interface EngineService<T extends GenericService<T>> extends org.genericsystem.impl.EngineService<T>, GenericService<T> {
+public interface EngineService<T extends AbstractGeneric<T>> extends org.genericsystem.impl.EngineService<T>, GenericService<T> {
 
 	default Cache<T> buildCache(Context<T> subContext) {
 		return new Cache<>(subContext);
@@ -22,10 +22,12 @@ public interface EngineService<T extends GenericService<T>> extends org.generics
 		return (T) this;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	default T getRoot() {
-		return (T) this;
+	default EngineService<T> getRoot() {
+		return this;
 	}
+
+	@Override
+	public Cache<T> getCurrentCache();
 
 }

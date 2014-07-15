@@ -1,9 +1,12 @@
 package org.genericsystem.kernel;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
-
+import org.genericsystem.kernel.services.VertexService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,6 +122,36 @@ public class Statics {
 			}
 		default:
 			return null;
+		}
+	}
+
+	public static class Supers<T extends VertexService<T>> extends ArrayList<T> {
+		private static final long serialVersionUID = 6163099887384346235L;
+
+		public Supers(List<T> adds) {
+			adds.forEach(this::add);
+		}
+
+		public Supers(List<T> adds, T lastAdd) {
+			this(adds);
+			add(lastAdd);
+		}
+
+		public Supers(List<T> adds, List<T> otherAdds) {
+			this(adds);
+			otherAdds.forEach(this::add);
+		}
+
+		@Override
+		public boolean add(T candidate) {
+			for (T element : this)
+				if (element.inheritsFrom(candidate))
+					return false;
+			Iterator<T> it = iterator();
+			while (it.hasNext())
+				if (candidate.inheritsFrom(it.next()))
+					it.remove();
+			return super.add(candidate);
 		}
 	}
 

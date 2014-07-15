@@ -1,11 +1,11 @@
 package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
+import org.genericsystem.kernel.services.SystemPropertiesService.AxedPropertyClass;
 
-public interface MapService<T extends MapService<T>> extends SystemPropertiesService<T>, CompositesInheritanceService<T>, UpdatableService<T> {
+public interface MapService<T extends VertexService<T>> extends ApiService<T> {
 
 	@Override
 	default Serializable getSystemPropertyValue(Class<?> propertyClass, int pos) {
@@ -18,16 +18,17 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	default void setSystemPropertyValue(Class<T> propertyClass, int pos, Serializable value) {
-		Objects.requireNonNull(getSystemMap()).getMeta().setInstance(getMap(), new AxedPropertyClass(propertyClass, pos), getRoot()).setInstance(value, (T) this);
+		getMap().getMeta().setInstance(getMap(), new AxedPropertyClass(propertyClass, pos), coerceToArray(getRoot())).setInstance(value, coerceToArray(this));
 	}
 
+	@Override
 	default T getMap() {
 		return getRoot().find(SystemMap.class);
 	}
 
+	@Override
 	default Stream<T> getKeys() {
 		T map = getMap();
 		if (map == null)
@@ -35,14 +36,10 @@ public interface MapService<T extends MapService<T>> extends SystemPropertiesSer
 		return getAttributes(map).stream();
 	}
 
+	@Override
 	default Optional<T> getKey(AxedPropertyClass property) {
 		return getKeys().filter(x -> x.getValue().equals(property)).findFirst();
 	}
 
-	// TODO clean
-	// @SystemGeneric
-	// @Components(Root.class)
-	// @org.genericsystem.kernel.annotations.constraints.PropertyConstraint
-	public static class SystemMap {
-	}
+	public static class SystemMap {}
 }

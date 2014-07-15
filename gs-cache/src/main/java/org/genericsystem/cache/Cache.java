@@ -15,7 +15,7 @@ import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 import org.genericsystem.kernel.exceptions.RollbackException;
 
-public class Cache<T extends GenericService<T>> implements Context<T> {
+public class Cache<T extends AbstractGeneric<T>> implements Context<T> {
 
 	protected Context<T> subContext;
 
@@ -157,33 +157,33 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 		return getDependencies(inheritingsDependenciesMap, () -> subContext.getInheritings(generic).iterator(), generic);
 	}
 
-	public T index(Map<T, Dependencies<T>> multiMap, Supplier<Iterator<T>> subIteratorSupplier, T generic, T dependency) {
+	private T index(Map<T, Dependencies<T>> multiMap, Supplier<Iterator<T>> subIteratorSupplier, T generic, T dependency) {
 		Dependencies<T> dependencies = multiMap.get(generic);
 		if (dependencies == null)
 			multiMap.put(generic, dependencies = new CacheDependencies<T>(subIteratorSupplier));
 		return dependencies.set(dependency);
 	}
 
-	public boolean unIndex(Map<T, Dependencies<T>> multiMap, T generic, T dependency) {
+	private boolean unIndex(Map<T, Dependencies<T>> multiMap, T generic, T dependency) {
 		Dependencies<T> dependencies = multiMap.get(generic);
 		if (dependencies == null)
 			return false;
 		return dependencies.remove(dependency);
 	}
 
-	public T indexInstance(T generic, T instance) {
+	private T indexInstance(T generic, T instance) {
 		return index(instancesDependenciesMap, () -> subContext.getInstances(generic).iterator(), generic, instance);
 	}
 
-	public T indexInheriting(T generic, T inheriting) {
+	private T indexInheriting(T generic, T inheriting) {
 		return index(inheritingsDependenciesMap, () -> subContext.getInheritings(generic).iterator(), generic, inheriting);
 	}
 
-	public boolean unIndexInstance(T generic, T instance) {
+	private boolean unIndexInstance(T generic, T instance) {
 		return unIndex(instancesDependenciesMap, generic, instance);
 	}
 
-	public boolean unIndexInheriting(T generic, T inheriting) {
+	private boolean unIndexInheriting(T generic, T inheriting) {
 		return unIndex(inheritingsDependenciesMap, generic, inheriting);
 	}
 
@@ -204,23 +204,23 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 		return getIndex(superCompositesDependenciesMap, () -> subContext.getSuperComposites(generic, superT).iterator(), generic, superT);
 	}
 
-	T indexByMeta(T generic, T meta, T composite) {
+	private T indexByMeta(T generic, T meta, T composite) {
 		return index(metaCompositesDependenciesMap, () -> subContext.getMetaComposites(generic, meta).iterator(), generic, meta, composite);
 	}
 
-	T indexBySuper(T generic, T superT, T composite) {
+	private T indexBySuper(T generic, T superT, T composite) {
 		return index(superCompositesDependenciesMap, () -> subContext.getMetaComposites(generic, superT).iterator(), generic, superT, composite);
 	};
 
-	boolean unIndexByMeta(T generic, T meta, T composite) {
+	private boolean unIndexByMeta(T generic, T meta, T composite) {
 		return unIndex(metaCompositesDependenciesMap, generic, meta, composite);
 	}
 
-	boolean unIndexBySuper(T generic, T superT, T composite) {
+	private boolean unIndexBySuper(T generic, T superT, T composite) {
 		return unIndex(superCompositesDependenciesMap, generic, superT, composite);
 	}
 
-	static <T> Snapshot<T> getIndex(Map<T, Map<T, Dependencies<T>>> multiMap, Supplier<Iterator<T>> subIteratorSupplier, T generic, T index) {
+	private static <T> Snapshot<T> getIndex(Map<T, Map<T, Dependencies<T>>> multiMap, Supplier<Iterator<T>> subIteratorSupplier, T generic, T index) {
 		return () -> {
 			Map<T, Dependencies<T>> dependencies = multiMap.get(generic);
 			if (dependencies == null)
@@ -232,7 +232,7 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 		};
 	}
 
-	static <T> T index(Map<T, Map<T, Dependencies<T>>> multiMap, Supplier<Iterator<T>> subIteratorSupplier, T generic, T index, T composite) {
+	private static <T> T index(Map<T, Map<T, Dependencies<T>>> multiMap, Supplier<Iterator<T>> subIteratorSupplier, T generic, T index, T composite) {
 		Map<T, Dependencies<T>> dependencies = multiMap.get(generic);
 		if (dependencies == null)
 			multiMap.put(generic, dependencies = new HashMap<>());
@@ -242,7 +242,7 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 		return dependenciesByIndex.set(composite);
 	};
 
-	static <T> boolean unIndex(Map<T, Map<T, Dependencies<T>>> multiMap, T generic, T index, T composite) {
+	private static <T> boolean unIndex(Map<T, Map<T, Dependencies<T>>> multiMap, T generic, T index, T composite) {
 		Map<T, Dependencies<T>> dependencies = multiMap.get(generic);
 		if (dependencies == null)
 			return false;
@@ -261,7 +261,7 @@ public class Cache<T extends GenericService<T>> implements Context<T> {
 		return t;
 	}
 
-	public boolean unplug(T generic) {
+	boolean unplug(T generic) {
 		boolean result = unIndexInstance(generic.getMeta(), generic);
 		if (!result)
 			generic.rollbackAndThrowException(new NotFoundException(generic.info()));

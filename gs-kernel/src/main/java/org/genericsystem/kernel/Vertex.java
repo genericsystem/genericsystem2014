@@ -1,13 +1,13 @@
 package org.genericsystem.kernel;
 
 import java.util.Collections;
-
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.exceptions.NotFoundException;
+import org.genericsystem.kernel.services.VertexService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Vertex extends ExtendedSignature<Vertex> implements VertexService<Vertex> {
+public class Vertex extends AbstractVertex<Vertex> implements VertexService<Vertex> {
 
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 
@@ -16,13 +16,14 @@ public class Vertex extends ExtendedSignature<Vertex> implements VertexService<V
 	private final Dependencies<DependenciesEntry<Vertex>> superComposites = buildDependencies();
 	private final Dependencies<DependenciesEntry<Vertex>> metaComposites = buildDependencies();
 
-	<T> Dependencies<T> buildDependencies() {
-		return new DependenciesImpl<T>();
+	@Override
+	public Vertex newT() {
+		return new Vertex();
 	}
 
 	@Override
-	public Vertex buildInstance() {
-		return new Vertex();
+	public Vertex[] newTArray(int dim) {
+		return new Vertex[dim];
 	}
 
 	@Override
@@ -120,11 +121,11 @@ public class Vertex extends ExtendedSignature<Vertex> implements VertexService<V
 
 	@Override
 	public Vertex plug() {
-		Vertex t = getMeta().indexInstance(this);
+		Vertex result = getMeta().indexInstance(this);
 		getSupersStream().forEach(superGeneric -> superGeneric.indexInheriting(this));
 		getComponentsStream().forEach(component -> component.indexByMeta(getMeta(), this));
 		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> component.indexBySuper(superGeneric, this)));
-		return t;
+		return result;
 	}
 
 	@Override

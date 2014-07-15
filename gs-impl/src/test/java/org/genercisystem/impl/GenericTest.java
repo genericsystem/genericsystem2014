@@ -1,15 +1,10 @@
 package org.genercisystem.impl;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.stream.Collectors;
-
-import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
-import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotAliveException;
-import org.genericsystem.kernel.services.RemovableService.RemoveStrategy;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 
@@ -153,7 +148,7 @@ public class GenericTest extends AbstractTest {
 	public void testRemove() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
-		vehicle.remove(RemoveStrategy.NORMAL);
+		vehicle.remove();
 		new RollbackCatcher() {
 			@Override
 			public void intercept() {
@@ -166,27 +161,27 @@ public class GenericTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic power = engine.addInstance("Power", vehicle);
-		Vertex vehicleVertex = vehicle.getVertex();
+		// Vertex vehicleVertex = vehicle.getVertex();
 		Generic radio = engine.addInstance("Radio", vehicle);
-		Root root = (Root) engine.getVertex();
-		Vertex color = root.addInstance("Color", vehicleVertex);
+		// Root root = (Root) engine.getVertex();
+		// Vertex color = root.addInstance("Color", vehicleVertex);
 		vehicle.log();
 		vehicle.getMetaComposites(engine).forEach(mc -> mc.log());
-		vehicleVertex.log();
-		vehicleVertex.getMetaComposites(root).forEach(mc -> mc.log());
+		// vehicleVertex.log();
+		// vehicleVertex.getMetaComposites(root).forEach(mc -> mc.log());
 	}
 
-	public void unwrapDependenciesTest2() {
-		Engine engine = new Engine();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic power = engine.addInstance("Power", vehicle);
-		Vertex vehicleVertex = vehicle.getVertex();
-		Generic radio = engine.buildInstance(Collections.emptyList(), "Radio", Collections.singletonList(vehicle));
-		Root root = (Root) engine.getVertex();
-		Vertex color = root.addInstance("Color", vehicleVertex);
-		vehicle.log();
-		vehicle.getMetaComposites(engine).forEach(mc -> mc.log());
-		vehicleVertex.log();
-		vehicleVertex.getMetaComposites(root).forEach(mc -> mc.log());
-	}
+	// public void unwrapDependenciesTest2() {
+	// Engine engine = new Engine();
+	// Generic vehicle = engine.addInstance("Vehicle");
+	// Generic power = engine.addInstance("Power", vehicle);
+	// Vertex vehicleVertex = ((AbstractGeneric) vehicle).getVertex();
+	// Generic radio = engine.buildInstance(Collections.emptyList(), "Radio", Collections.singletonList(vehicle));
+	// Root root = (Root) engine.getVertex();
+	// Vertex color = root.addInstance("Color", vehicleVertex);
+	// vehicle.log();
+	// vehicle.getMetaComposites(engine).forEach(mc -> mc.log());
+	// vehicleVertex.log();
+	// vehicleVertex.getMetaComposites(root).forEach(mc -> mc.log());
+	// }
 }

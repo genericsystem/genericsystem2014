@@ -1,17 +1,13 @@
 package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
-
 import org.genericsystem.kernel.Statics;
 
-public interface SystemPropertiesService<T extends SystemPropertiesService<T>> extends RemovableService<T> {
-
-	Serializable getSystemPropertyValue(Class<?> propertyClass, int pos);
-
-	void setSystemPropertyValue(Class<T> propertyClass, int pos, Serializable value);
+public interface SystemPropertiesService<T extends VertexService<T>> extends ApiService<T> {
 
 	// We have to introduce the method restoreInheritancePropertyValue
 
+	@Override
 	@SuppressWarnings("unchecked")
 	default T enableSystemProperty(Class<?> propertyClass, int pos) {
 		assert isStructural();
@@ -19,6 +15,7 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 		return (T) this;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	default T disableSystemProperty(Class<?> propertyClass, int pos) {
 		assert isStructural();
@@ -26,15 +23,18 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 		return (T) this;
 	}
 
+	@Override
 	default boolean isSystemPropertyEnabled(Class<?> propertyClass, int pos) {
 		Serializable value = getSystemPropertyValue(propertyClass, pos);
 		return value != null && !Boolean.FALSE.equals(value);
 	}
 
+	@Override
 	default T enableReferentialIntegrity(int pos) {
 		return enableSystemProperty(ReferentialIntegrityConstraint.class, pos);
 	}
 
+	@Override
 	default T disableReferentialIntegrity(int pos) {
 		return disableSystemProperty(ReferentialIntegrityConstraint.class, pos);
 	}
@@ -44,10 +44,12 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 		return isSystemPropertyEnabled(ReferentialIntegrityConstraint.class, pos);
 	}
 
+	@Override
 	default T enableSingularConstraint(int pos) {
 		return enableSystemProperty(SingularConstraint.class, pos);
 	}
 
+	@Override
 	default T disableSingularConstraint(int pos) {
 		return disableSystemProperty(SingularConstraint.class, pos);
 	}
@@ -57,10 +59,12 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 		return isSystemPropertyEnabled(SingularConstraint.class, pos);
 	}
 
+	@Override
 	default T enablePropertyConstraint() {
 		return enableSystemProperty(PropertyConstraint.class, Statics.NO_POSITION);
 	}
 
+	@Override
 	default T disablePropertyConstraint() {
 		return disableSystemProperty(PropertyConstraint.class, Statics.NO_POSITION);
 	}
@@ -70,22 +74,27 @@ public interface SystemPropertiesService<T extends SystemPropertiesService<T>> e
 		return isSystemPropertyEnabled(PropertyConstraint.class, Statics.NO_POSITION);
 	}
 
+	@Override
 	default T enableRequiredConstraint(int pos) {
 		return enableSystemProperty(RequiredConstraint.class, pos);
 	}
 
+	@Override
 	default T disableRequiredConstraint(int pos) {
 		return disableSystemProperty(RequiredConstraint.class, pos);
 	}
 
+	@Override
 	default boolean isRequiredConstraintEnabled(int pos) {
 		return isSystemPropertyEnabled(RequiredConstraint.class, pos);
 	}
 
+	@Override
 	default T enableCascadeRemove(int pos) {
 		return enableSystemProperty(CascadeRemoveProperty.class, pos);
 	}
 
+	@Override
 	default T disableCascadeRemove(int pos) {
 		return disableSystemProperty(CascadeRemoveProperty.class, pos);
 	}
