@@ -21,7 +21,7 @@ public interface BindingService<T extends VertexService<T>> extends ApiService<T
 	default T adjustMeta(List<T> overrides, Serializable subValue, List<T> subComponents) {
 		T result = null;
 		for (T directInheriting : getInheritings())
-			if (directInheriting.isMetaOf((T) this, subValue, overrides, subComponents))
+			if (directInheriting.isSuperOf(directInheriting, overrides, subValue, subComponents))
 				if (result == null)
 					result = directInheriting;
 				else
@@ -29,18 +29,22 @@ public interface BindingService<T extends VertexService<T>> extends ApiService<T
 		return result == null ? (T) this : result.adjustMeta(overrides, subValue, subComponents);
 	}
 
+	// static abstract boolean isSuperOf(T superMeta, Serializable value, List<T> overrides, List<T> subComponents) {
+	// return false;
+	// }
+
 	// TODO KK
-	@Override
-	default boolean isMetaOf(T subMeta, Serializable value, List<T> overrides, List<T> subComponents) {
-		if (!subMeta.isSpecializationOf(getMeta()))
-			return false;
-		if (!subMeta.componentsDepends(subComponents, getComponents()))
-			return false;
-		if (getLevel() == subMeta.getLevel() && (subComponents.size() == subMeta.getComponents().size() || subComponents.size() == getComponents().size()) && subComponents.stream().allMatch(component -> component.getValue() == getRoot().getValue())
-				&& value.equals(getRoot().getValue()))
-			return false;
-		return true;
-	}
+	// @Override
+	// default boolean isMetaOf(T subMeta, Serializable value, List<T> overrides, List<T> subComponents) {
+	// if (!subMeta.isSpecializationOf(getMeta()))
+	// return false;
+	// if (!subMeta.componentsDepends(subComponents, getComponents()))
+	// return false;
+	// if (getLevel() == subMeta.getLevel() && (subComponents.size() == subMeta.getComponents().size() || subComponents.size() == getComponents().size()) && subComponents.stream().allMatch(component -> component.getValue() == getRoot().getValue())
+	// && value.equals(getRoot().getValue()))
+	// return false;
+	// return true;
+	// }
 
 	@Override
 	@SuppressWarnings("unchecked")

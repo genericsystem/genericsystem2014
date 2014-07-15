@@ -83,7 +83,7 @@ public interface ApiService<T extends VertexService<T>> {
 
 	T adjustMeta(List<T> overrides, Serializable subValue, List<T> subComponents);
 
-	boolean isMetaOf(T subMeta, Serializable value, List<T> overrides, List<T> subComponents);
+	// boolean isMetaOf(T subMeta, Serializable value, List<T> overrides, List<T> subComponents);
 
 	@SuppressWarnings("unchecked")
 	T getInstance(Serializable value, T... components);
