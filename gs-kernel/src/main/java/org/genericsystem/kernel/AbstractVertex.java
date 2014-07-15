@@ -12,6 +12,8 @@ import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.genericsystem.kernel.AbstractDependenciesComputer.DependenciesComputer;
+import org.genericsystem.kernel.AbstractDependenciesComputer.DependenciesPotentialComputer;
 import org.genericsystem.kernel.Snapshot.AbstractSnapshot;
 import org.genericsystem.kernel.Statics.Supers;
 import org.genericsystem.kernel.exceptions.AliveConstraintViolationException;
@@ -75,7 +77,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 	public abstract boolean unplug();
 
 	protected void forceRemove() {
-		computeAllDependencies().forEach(this::simpleRemove);
+		computeDependencies().forEach(this::simpleRemove);
 	}
 
 	void simpleRemove(T vertex) {
@@ -139,7 +141,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 	public T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
 		if (newComponents.size() != getComponents().size())
 			rollbackAndThrowException(new IllegalArgumentException());
-		return rebuildAll(() -> newT().init(getMeta(), new Supers<T>(getSupers(), supersToAdd), newValue, newComponents).plug(), computeAllDependencies());
+		return rebuildAll(() -> newT().init(getMeta(), new Supers<T>(getSupers(), supersToAdd), newValue, newComponents).plug(), computeDependencies());
 	}
 
 	private static class ConvertMap<T extends AbstractVertex<T>> extends HashMap<T, T> {
@@ -159,43 +161,29 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 		}
 	}
 
-	protected LinkedHashSet<T> computeAllDependencies() {
-		return new AbstractDependenciesComputer<T>(getMeta()) {
-			private static final long serialVersionUID = 4116681784718071815L;
-
-			@SuppressWarnings("unchecked")
-			@Override
-			boolean checkDependency(T node) {
-				return ((T) AbstractVertex.this).isAncestorOf(node);
-			}
-		};
+	@SuppressWarnings("unchecked")
+	protected LinkedHashSet<T> computeDependencies() {
+		return new DependenciesComputer<T>((T) this);
 	}
 
-	protected LinkedHashSet<T> computeAllDependencies(T meta, Serializable value, List<T> components) {
-		return new AbstractDependenciesComputer<T>(meta) {
-			private static final long serialVersionUID = -3611136800445783634L;
-
-			@Override
-			boolean checkDependency(T node) {
-				return node.inheritsFrom(meta, value, components);
-			}
-		};
+	protected LinkedHashSet<T> computePotentialDependencies(T meta, Serializable value, List<T> components) {
+		return new DependenciesPotentialComputer<T>(meta, value, components);
 	}
 
 	@SuppressWarnings("unchecked")
-	private T bindInstance(boolean throwExistException, List<T> overrides, Serializable value, T... components) {
+	T bindInstance(boolean throwExistException, List<T> overrides, Serializable value, T... components) {
 		checkSameEngine(Arrays.asList(components));
 		checkSameEngine(overrides);
 		T nearestMeta = adjustMeta(overrides, value, Arrays.asList(components));
 		if (nearestMeta != this)
-			return nearestMeta.addInstance(overrides, value, components);
+			return nearestMeta.bindInstance(throwExistException, overrides, value, components);
 		T weakInstance = getWeakInstance(value, components);
 		if (weakInstance != null)
 			if (throwExistException)
 				rollbackAndThrowException(new ExistsException("Attempts to add an already existing instance : " + weakInstance.info()));
 			else
 				return weakInstance.equiv(this, value, Arrays.asList(components)) ? weakInstance : weakInstance.update(overrides, value, components);
-		return rebuildAll(() -> buildInstance(overrides, value, Arrays.asList(components)).plug(), computeAllDependencies(nearestMeta, value, Arrays.asList(components)));
+		return rebuildAll(() -> buildInstance(overrides, value, Arrays.asList(components)).plug(), computePotentialDependencies(nearestMeta, value, Arrays.asList(components)));
 	}
 
 	@SuppressWarnings("unchecked")

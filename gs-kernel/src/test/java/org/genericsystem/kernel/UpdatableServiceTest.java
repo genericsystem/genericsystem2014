@@ -27,7 +27,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert newValue.equals(newVehicle.getValue());
 		assert valueCar.equals(car.getValue());
 		assert engine == newVehicle.getMeta();
-		assert engine.computeAllDependencies().contains(newVehicle);
+		assert engine.computeDependencies().contains(newVehicle);
 		Vertex newCar = newVehicle.getInstances().iterator().next();
 		assert newValue.equals(newCar.getMeta().getValue());
 	}
@@ -56,7 +56,7 @@ public class UpdatableServiceTest extends AbstractTest {
 
 		Vertex newVehicle = vehicle.updateValue(newValue);
 
-		LinkedHashSet<Vertex> engineAliveDependencies = newVehicle.computeAllDependencies();
+		LinkedHashSet<Vertex> engineAliveDependencies = newVehicle.computeDependencies();
 		assert engineAliveDependencies.size() == 3;
 		assert !engineAliveDependencies.contains(vehicle);
 		assert !engineAliveDependencies.contains(car);
@@ -86,7 +86,7 @@ public class UpdatableServiceTest extends AbstractTest {
 
 		Vertex newCar = car.updateValue(newValue);
 
-		LinkedHashSet<Vertex> engineAliveDependencies = newCar.computeAllDependencies();
+		LinkedHashSet<Vertex> engineAliveDependencies = newCar.computeDependencies();
 		assert engineAliveDependencies.size() == 2;
 		assert !engineAliveDependencies.contains(car);
 		assert !engineAliveDependencies.contains(newBeetle);
@@ -115,13 +115,13 @@ public class UpdatableServiceTest extends AbstractTest {
 
 		assert newValue.equals(newVehicle.getValue());
 		assert engine.equals(newVehicle.getMeta());
-		assert engine.computeAllDependencies().contains(newVehicle);
-		assert newVehicle.computeAllDependencies().size() == 2;
-		assert newVehicle.computeAllDependencies().contains(newVehicle);
-		Vertex newOptions = newVehicle.computeAllDependencies().stream().collect(Collectors.toList()).get(0);
+		assert engine.computeDependencies().contains(newVehicle);
+		assert newVehicle.computeDependencies().size() == 2;
+		assert newVehicle.computeDependencies().contains(newVehicle);
+		Vertex newOptions = newVehicle.computeDependencies().stream().collect(Collectors.toList()).get(0);
 		assert newOptions.isAlive();
 		if (newValue.equals(newOptions.getValue()))
-			newOptions = newVehicle.computeAllDependencies().stream().collect(Collectors.toList()).get(1);
+			newOptions = newVehicle.computeDependencies().stream().collect(Collectors.toList()).get(1);
 		assert engine.equals(newOptions.getMeta());
 		assert options.getValue().equals(newOptions.getValue());
 		List<Vertex> newOptionsSupers = newOptions.getSupers();
@@ -142,7 +142,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert newValue.equals(newVehicle.getValue());
 		assert !power.isAlive();
 		assert engine.equals(newVehicle.getMeta());
-		assert engine.computeAllDependencies().contains(newVehicle);
+		assert engine.computeDependencies().contains(newVehicle);
 		Vertex newPower = engine.getInstance("Power", newVehicle);
 		assert newPower.getComponentsStream().count() == 1;
 		Vertex componentOfPower = newPower.getComponents().get(0);
@@ -237,23 +237,23 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert vehicle.isAlive();
 		assert !car.isAlive();
 
-		LinkedHashSet<Vertex> engineDependencies = engine.computeAllDependencies();
+		LinkedHashSet<Vertex> engineDependencies = engine.computeDependencies();
 		// assert engineDependencies.size() == 4;
 		// assert engine.getAllInstances().count() == 3;
 
 		Vertex newVehicle = engine.getInstance("Vehicle");
-		LinkedHashSet<Vertex> newVehicleDependencies = newVehicle.computeAllDependencies();
+		LinkedHashSet<Vertex> newVehicleDependencies = newVehicle.computeDependencies();
 		assert newVehicleDependencies.size() == 3;
 		assert newVehicle.getInheritings().size() == 1;
 
 		Vertex newFourWheels = engine.getInstance("FourWheels");
-		LinkedHashSet<Vertex> newFourWheelsDependencies = newFourWheels.computeAllDependencies();
+		LinkedHashSet<Vertex> newFourWheelsDependencies = newFourWheels.computeDependencies();
 		assert newFourWheelsDependencies.size() == 2;
 		assert newFourWheels.getInheritings().size() == 1;
 		assert newFourWheels.getSupersStream().count() == 1;
 
 		Vertex newCar = engine.getInstance("Car");
-		assert newCar.computeAllDependencies().size() == 1;
+		assert newCar.computeDependencies().size() == 1;
 		assert newCar.getSupersStream().count() == 1;
 	}
 
@@ -271,17 +271,17 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert vehicle.isAlive();
 		assert !car.isAlive();
 
-		LinkedHashSet<Vertex> engineDependencies = engine.computeAllDependencies();
+		LinkedHashSet<Vertex> engineDependencies = engine.computeDependencies();
 		// assert engineDependencies.size() == 3 : engineDependencies.size();
 		// assert engine.getAllInstances().count() == 2;
 
 		Vertex newVehicle = engine.getInstance("Vehicle");
-		LinkedHashSet<Vertex> newVehicleDependencies = newVehicle.computeAllDependencies();
+		LinkedHashSet<Vertex> newVehicleDependencies = newVehicle.computeDependencies();
 		assert newVehicleDependencies.size() == 2;
 		assert newVehicle.getInheritings().size() == 1;
 
 		Vertex newCar = engine.getInstance("Car");
-		assert newCar.computeAllDependencies().size() == 1;
+		assert newCar.computeDependencies().size() == 1;
 		assert newCar.getSupersStream().count() == 1;
 	}
 
@@ -324,17 +324,17 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert fourWheels.isAlive();
 
 		Vertex newVehicle = engine.getInstance("Vehicle");
-		LinkedHashSet<Vertex> newVehicleDependencies = newVehicle.computeAllDependencies();
+		LinkedHashSet<Vertex> newVehicleDependencies = newVehicle.computeDependencies();
 		assert newVehicleDependencies.size() == 9;
 		assert newVehicle.getInheritings().size() == 1;
 
 		Vertex newFourWheels = engine.getInstance("FourWheels");
-		assert newFourWheels.computeAllDependencies().size() == 5;
+		assert newFourWheels.computeDependencies().size() == 5;
 		assert newFourWheels.getInheritings().size() == 1;
 		assert newFourWheels.getSupersStream().count() == 1;
 
 		Vertex newCar = engine.getInstance("Car");
-		assert newCar.computeAllDependencies().size() == 4;
+		assert newCar.computeDependencies().size() == 4;
 		assert newCar.getSupersStream().count() == 1;
 	}
 
@@ -417,7 +417,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert vehicleColor.getInstance("MyCarBlue", myCar, red) == null;
 
 		Vertex newCarBlue = vehicleColor.getInstance("MyCarBlue", myCar, blue);
-		assert newCarBlue.computeAllDependencies().size() == 1;
+		assert newCarBlue.computeDependencies().size() == 1;
 		List<Vertex> newCarBlueComponents = newCarBlue.getComponents();
 		assert newCarBlueComponents.size() == 2;
 	}

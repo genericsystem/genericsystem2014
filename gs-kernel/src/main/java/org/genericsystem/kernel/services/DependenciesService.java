@@ -20,6 +20,12 @@ public interface DependenciesService<T extends VertexService<T>> extends ApiServ
 		return isSuperOf(meta, overrides, value, components) || isAncestorOf(meta) || components.stream().filter(component -> component != null).anyMatch(component -> this.isAncestorOf(component));
 	}
 
+	default boolean isDependencyOf(T meta, Serializable value, List<T> components) {
+		// perhaps we have to adjust meta here
+		return inheritsFrom(meta, value, components) || getComponentsStream().filter(component -> component != null).anyMatch(component -> component.isDependencyOf(meta, value, components))
+				|| (!isRoot() && getMeta().isDependencyOf(meta, value, components));
+	}
+
 	@SuppressWarnings("unchecked")
 	default Stream<T> select() {
 		return Stream.of((T) this);

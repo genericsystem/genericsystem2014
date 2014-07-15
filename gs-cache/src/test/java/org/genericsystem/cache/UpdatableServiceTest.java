@@ -28,7 +28,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert newValue.equals(newVehicle.getValue());
 		assert valueCar.equals(car.getValue());
 		assert engine == newVehicle.getMeta();
-		assert engine.computeAllDependencies().contains(newVehicle);
+		assert engine.computeDependencies().contains(newVehicle);
 		Generic newCar = newVehicle.getInstances().iterator().next();
 		assert newValue.equals(newCar.getMeta().getValue());
 	}
@@ -57,7 +57,7 @@ public class UpdatableServiceTest extends AbstractTest {
 
 		Generic newVehicle = vehicle.updateValue(newValue);
 
-		LinkedHashSet<Generic> engineAliveDependencies = newVehicle.computeAllDependencies();
+		LinkedHashSet<Generic> engineAliveDependencies = newVehicle.computeDependencies();
 		assert engineAliveDependencies.size() == 3;
 		assert !engineAliveDependencies.contains(vehicle);
 		assert !engineAliveDependencies.contains(car);
@@ -87,7 +87,7 @@ public class UpdatableServiceTest extends AbstractTest {
 
 		Generic newCar = car.updateValue(newValue);
 
-		LinkedHashSet<Generic> engineAliveDependencies = newCar.computeAllDependencies();
+		LinkedHashSet<Generic> engineAliveDependencies = newCar.computeDependencies();
 		assert engineAliveDependencies.size() == 2;
 		assert !engineAliveDependencies.contains(car);
 		assert !engineAliveDependencies.contains(newBeetle);
@@ -114,13 +114,13 @@ public class UpdatableServiceTest extends AbstractTest {
 
 		assert "Vehicle2".equals(newVehicle.getValue());
 		assert engine.equals(newVehicle.getMeta());
-		assert engine.computeAllDependencies().contains(newVehicle);
-		assert newVehicle.computeAllDependencies().size() == 2;
-		assert newVehicle.computeAllDependencies().contains(newVehicle);
-		Generic newOptions = newVehicle.computeAllDependencies().stream().collect(Collectors.toList()).get(0);
+		assert engine.computeDependencies().contains(newVehicle);
+		assert newVehicle.computeDependencies().size() == 2;
+		assert newVehicle.computeDependencies().contains(newVehicle);
+		Generic newOptions = newVehicle.computeDependencies().stream().collect(Collectors.toList()).get(0);
 		assert newOptions.isAlive();
 		if ("Vehicle2".equals(newOptions.getValue()))
-			newOptions = newVehicle.computeAllDependencies().stream().collect(Collectors.toList()).get(1);
+			newOptions = newVehicle.computeDependencies().stream().collect(Collectors.toList()).get(1);
 		assert engine.equals(newOptions.getMeta());
 		assert car.getValue().equals(newOptions.getValue());
 		List<Generic> newOptionsSupers = newOptions.getSupers();
@@ -141,7 +141,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert newValue.equals(newVehicle.getValue());
 		assert !power.isAlive();
 		assert engine.equals(newVehicle.getMeta());
-		assert engine.computeAllDependencies().contains(newVehicle);
+		assert engine.computeDependencies().contains(newVehicle);
 		Generic newPower = engine.getInstance("Power", newVehicle);
 		assert newPower.getComponentsStream().count() == 1;
 		Generic componentOfPower = newPower.getComponents().get(0);
@@ -236,23 +236,23 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert vehicle.isAlive();
 		assert car.isAlive();
 
-		LinkedHashSet<Generic> engineDependencies = engine.computeAllDependencies();
+		LinkedHashSet<Generic> engineDependencies = engine.computeDependencies();
 		// assert engineDependencies.size() == 4;
 		// assert engine.getAllInstances().count() == 3;
 
 		Generic newVehicle = engine.getInstance("Vehicle");
-		LinkedHashSet<Generic> newVehicleDependencies = newVehicle.computeAllDependencies();
+		LinkedHashSet<Generic> newVehicleDependencies = newVehicle.computeDependencies();
 		assert newVehicleDependencies.size() == 3;
 		assert newVehicle.getInheritings().size() == 1;
 
 		Generic newFourWheels = engine.getInstance("FourWheels");
-		LinkedHashSet<Generic> newFourWheelsDependencies = newFourWheels.computeAllDependencies();
+		LinkedHashSet<Generic> newFourWheelsDependencies = newFourWheels.computeDependencies();
 		assert newFourWheelsDependencies.size() == 2;
 		assert newFourWheels.getInheritings().size() == 1;
 		assert newFourWheels.getSupersStream().count() == 1;
 
 		Generic newCar = engine.getInstance("Car");
-		assert newCar.computeAllDependencies().size() == 1;
+		assert newCar.computeDependencies().size() == 1;
 		assert newCar.getSupersStream().count() == 1;
 	}
 
@@ -270,17 +270,17 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert vehicle.isAlive();
 		assert car.isAlive();
 
-		LinkedHashSet<Generic> engineDependencies = engine.computeAllDependencies();
+		LinkedHashSet<Generic> engineDependencies = engine.computeDependencies();
 		// assert engineDependencies.size() == 3 : engineDependencies.size();
 		// assert engine.getAllInstances().count() == 2;
 
 		Generic newVehicle = engine.getInstance("Vehicle");
-		LinkedHashSet<Generic> newVehicleDependencies = newVehicle.computeAllDependencies();
+		LinkedHashSet<Generic> newVehicleDependencies = newVehicle.computeDependencies();
 		assert newVehicleDependencies.size() == 2;
 		assert newVehicle.getInheritings().size() == 1;
 
 		Generic newCar = engine.getInstance("Car");
-		assert newCar.computeAllDependencies().size() == 1;
+		assert newCar.computeDependencies().size() == 1;
 		assert newCar.getSupersStream().count() == 1;
 	}
 
@@ -323,18 +323,18 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert fourWheels.isAlive();
 
 		Generic newVehicle = engine.getInstance("Vehicle");
-		LinkedHashSet<Generic> newVehicleDependencies = newVehicle.computeAllDependencies();
+		LinkedHashSet<Generic> newVehicleDependencies = newVehicle.computeDependencies();
 		assert newVehicleDependencies.size() == 9;
 		assert newVehicle.getInheritings().size() == 1;
 
 		Generic newFourWheels = engine.getInstance("FourWheels");
 		// assert newFourWheels.computeAllDependencies().size() == 5;
-		assert newFourWheels.computeAllDependencies().containsAll(Arrays.asList(car, myCar, fourWheels)) : newFourWheels.computeAllDependencies();
+		assert newFourWheels.computeDependencies().containsAll(Arrays.asList(car, myCar, fourWheels)) : newFourWheels.computeDependencies();
 		assert newFourWheels.getInheritings().size() == 1;
 		assert newFourWheels.getSupersStream().count() == 1;
 
 		Generic newCar = engine.getInstance("Car");
-		assert newCar.computeAllDependencies().size() == 4;
+		assert newCar.computeDependencies().size() == 4;
 		assert newCar.getSupersStream().count() == 1;
 	}
 
@@ -417,7 +417,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert vehicleColor.getInstance("MyCarBlue", myCar, red) == null;
 
 		Generic newCarBlue = vehicleColor.getInstance("MyCarBlue", myCar, blue);
-		assert newCarBlue.computeAllDependencies().size() == 1;
+		assert newCarBlue.computeDependencies().size() == 1;
 		List<Generic> newCarBlueComponents = newCarBlue.getComponents();
 		assert newCarBlueComponents.size() == 2;
 	}
