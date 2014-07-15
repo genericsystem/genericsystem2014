@@ -190,7 +190,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 			else
 				return weakInstance.equiv(this, value, Arrays.asList(components)) ? weakInstance : weakInstance.update(overrides, value, components);
 		T instance = buildInstance(overrides, value, Arrays.asList(components));
-		return (T) ((AbstractVertex<?>) instance).rebuildAll(() -> ((AbstractVertex<?>) instance).plug());
+		return ((AbstractVertex<T>) instance).rebuildAll(() -> ((AbstractVertex<T>) instance).plug());
 	}
 
 	@Override
