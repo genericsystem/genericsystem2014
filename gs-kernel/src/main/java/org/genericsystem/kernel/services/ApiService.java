@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.RootService;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.exceptions.RollbackException;
@@ -118,7 +119,7 @@ public interface ApiService<T extends VertexService<T>> {
 
 	boolean isSuperOf(T subMeta, List<T> overrides, Serializable subValue, List<T> subComponents);
 
-	// boolean isSuperOf(T subMeta, Serializable subValue, List<T> subComponents, T superMeta, Serializable superValue, List<T> superComponents);
+	boolean inheritsFrom(T superMeta, Serializable superValue, List<T> superComponents);
 
 	boolean componentsDepends(List<T> subComponents, List<T> superComponents);
 

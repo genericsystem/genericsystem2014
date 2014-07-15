@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
+
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.DisplayService;
@@ -55,10 +55,11 @@ public abstract class Signature<T extends Signature<T>> implements VertexService
 		return value;
 	}
 
-	@Override
-	public Stream<T> getComponentsStream() {
-		return components.stream();
-	}
+	// TODO clean
+	// @Override
+	// public Stream<T> getComponentsStream() {
+	// return components.stream();
+	// }
 
 	@Override
 	public String toString() {

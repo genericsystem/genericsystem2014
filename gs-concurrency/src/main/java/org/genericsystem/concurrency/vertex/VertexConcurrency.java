@@ -1,7 +1,6 @@
 package org.genericsystem.concurrency.vertex;
 
 import java.util.Iterator;
-import java.util.function.Supplier;
 
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Vertex;
@@ -35,8 +34,8 @@ public class VertexConcurrency extends Vertex implements VertexServiceConcurrenc
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <U extends Vertex> Dependencies<U> buildDependencies(Supplier<Iterator<Vertex>> subDependenciesSupplier) {
-		return (Dependencies<U>) new AbstractDependenciesConcurrency() {
+	protected <T> Dependencies<T> buildDependencies() {
+		return (Dependencies<T>) new AbstractDependenciesConcurrency() {
 
 			@Override
 			public LifeManager getLifeManager() {
@@ -45,7 +44,7 @@ public class VertexConcurrency extends Vertex implements VertexServiceConcurrenc
 
 			@Override
 			public Iterator<VertexConcurrency> iterator() {
-				return iterator(((RootConcurrency) getRoot()).getTsProvider().getTs());
+				return iterator(0L);
 			}
 		};
 	}

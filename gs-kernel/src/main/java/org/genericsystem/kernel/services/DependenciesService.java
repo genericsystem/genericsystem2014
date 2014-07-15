@@ -3,6 +3,7 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
 

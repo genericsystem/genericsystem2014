@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.util.List;
+
 import org.genericsystem.kernel.AbstractTest.RollbackCatcher;
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.testng.annotations.Test;
@@ -98,7 +99,7 @@ public class RelationTest {
 
 	public void test004_addInstance_OverridenRelation() {
 		final Root root = new Root();
-		Vertex human = root.addInstance("Vehicle");
+		Vertex human = root.addInstance("Human");
 		Vertex bob = human.addInstance("Bob");
 		Vertex jane = human.addInstance("Jane");
 		Vertex humanIsBrotherOfHuman = root.addInstance("HumanIsBrotherOfHuman", human, human);

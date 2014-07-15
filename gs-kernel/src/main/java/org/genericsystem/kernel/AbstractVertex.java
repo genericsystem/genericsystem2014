@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.Snapshot.AbstractSnapshot;
 import org.genericsystem.kernel.Statics.Supers;
 import org.genericsystem.kernel.exceptions.AliveConstraintViolationException;
@@ -138,7 +139,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 	public T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
 		if (newComponents.size() != getComponents().size())
 			rollbackAndThrowException(new IllegalArgumentException());
-		return rebuildAll(() -> newT().init(getMeta(), new Supers<T>(getSupers(), supersToAdd), newValue, newComponents).plug());
+		return rebuildAll(() -> newT().init(getMeta(), new Supers<T>(getSupers(), supersToAdd), newValue, newComponents).plug(), computeAllDependencies());
 	}
 
 	private static class ConvertMap<T extends AbstractVertex<T>> extends HashMap<T, T> {
@@ -158,22 +159,27 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	T rebuildAll(Supplier<T> rebuilder) {
+	protected LinkedHashSet<T> computeAllDependencies() {
+		return new AbstractDependenciesComputer<T>(getMeta()) {
+			private static final long serialVersionUID = 4116681784718071815L;
 
-		ConvertMap<T> convertMap = new ConvertMap<>();
-		LinkedHashSet<T> dependenciesToRebuild = computeAllDependencies();
-		dependenciesToRebuild.forEach(this::simpleRemove);
-		T build = rebuilder.get();
-		dependenciesToRebuild.remove(this);
-		convertMap.put((T) this, build);
-		dependenciesToRebuild.forEach(x -> convertMap.convert(x));
-		return build;
+			@SuppressWarnings("unchecked")
+			@Override
+			boolean checkDependency(T node) {
+				return ((T) AbstractVertex.this).isAncestorOf(node);
+			}
+		};
 	}
 
-	@SuppressWarnings("unchecked")
-	protected LinkedHashSet<T> computeAllDependencies() {
-		return new DependenciesComputer<T>((T) AbstractVertex.this);
+	protected LinkedHashSet<T> computeAllDependencies(T meta, Serializable value, List<T> components) {
+		return new AbstractDependenciesComputer<T>(meta) {
+			private static final long serialVersionUID = -3611136800445783634L;
+
+			@Override
+			boolean checkDependency(T node) {
+				return node.inheritsFrom(meta, value, components);
+			}
+		};
 	}
 
 	@SuppressWarnings("unchecked")
@@ -189,8 +195,18 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 				rollbackAndThrowException(new ExistsException("Attempts to add an already existing instance : " + weakInstance.info()));
 			else
 				return weakInstance.equiv(this, value, Arrays.asList(components)) ? weakInstance : weakInstance.update(overrides, value, components);
-		T instance = buildInstance(overrides, value, Arrays.asList(components));
-		return ((AbstractVertex<T>) instance).rebuildAll(() -> ((AbstractVertex<T>) instance).plug());
+		return rebuildAll(() -> buildInstance(overrides, value, Arrays.asList(components)).plug(), computeAllDependencies(nearestMeta, value, Arrays.asList(components)));
+	}
+
+	@SuppressWarnings("unchecked")
+	T rebuildAll(Supplier<T> rebuilder, LinkedHashSet<T> dependenciesToRebuild) {
+		ConvertMap<T> convertMap = new ConvertMap<>();
+		dependenciesToRebuild.forEach(this::simpleRemove);
+		T build = rebuilder.get();
+		dependenciesToRebuild.remove(this);
+		convertMap.put((T) this, build);
+		dependenciesToRebuild.forEach(x -> convertMap.convert(x));
+		return build;
 	}
 
 	@Override
@@ -293,6 +309,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 	@SuppressWarnings("unchecked")
 	public boolean isSuperOf(T subMeta, List<T> overrides, Serializable subValue, List<T> subComponents) {
 		return overrides.stream().anyMatch(override -> override.inheritsFrom((T) this)) || isSuperOf(subMeta, subValue, subComponents, getMeta(), getValue(), getComponents());
+	}
+
+	@Override
+	public boolean inheritsFrom(T superMeta, Serializable superValue, List<T> superComponents) {
+		return isSuperOf(getMeta(), getValue(), getComponents(), superMeta, superValue, superComponents);
 	}
 
 	private static <T extends AbstractVertex<T>> boolean isSuperOf(T subMeta, Serializable subValue, List<T> subComponents, T superMeta, Serializable superValue, List<T> superComponents) {
