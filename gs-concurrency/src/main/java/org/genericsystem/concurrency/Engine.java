@@ -86,4 +86,14 @@ public class Engine extends Generic implements EngineService<Generic> {
 	public Generic getAlive() {
 		return this;
 	}
+
+	@Override
+	public Generic getGenericOfVertexFromSystemCache(Vertex vertex) {
+		return null;
+	}
+
+	@Override
+	public Generic setGenericInSystemCache(Generic generic) {
+		return null;
+	}
 }
