@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.AbstractDependenciesComputer.DependenciesComputer;
 import org.genericsystem.kernel.AbstractDependenciesComputer.PotentialDependenciesComputer;
 import org.genericsystem.kernel.Statics.Supers;
@@ -140,7 +141,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 	public T update(List<T> supersToAdd, Serializable newValue, T... newComponents) {
 		if (newComponents.length != getComponents().size())
 			rollbackAndThrowException(new IllegalArgumentException());
-		return rebuildAll(() -> getMeta().setInstance(new Supers<T>(getSupers(), supersToAdd), newValue, newComponents), computeDependencies());
+		return rebuildAll(() -> getMeta().bindInstance(isThrowExistException(), new Supers<T>(getSupers(), supersToAdd), newValue, newComponents), computeDependencies());
 	}
 
 	private static class ConvertMap<T extends AbstractVertex<T>> extends HashMap<T, T> {
@@ -152,7 +153,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 			T newDependency = get(dependency);
 			if (newDependency == null) {
 				T meta = (dependency.isRoot()) ? dependency : convert(dependency.getMeta());
-				newDependency = meta.buildInstance(dependency.getSupersStream().map(x -> convert(x)).collect(Collectors.toList()), dependency.getValue(),
+				newDependency = meta.buildInstance(dependency.isThrowExistException(), dependency.getSupersStream().map(x -> convert(x)).collect(Collectors.toList()), dependency.getValue(),
 						dependency.getComponentsStream().map(x -> x.equals(this) ? null : convert(x)).collect(Collectors.toList())).plug();
 				put(dependency, newDependency);
 			}
@@ -182,7 +183,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 				rollbackAndThrowException(new ExistsException("Attempts to add an already existing instance : " + weakInstance.info()));
 			else
 				return weakInstance.equiv(this, value, Arrays.asList(components)) ? weakInstance : weakInstance.update(overrides, value, components);
-		return rebuildAll(() -> buildInstance(overrides, value, Arrays.asList(components)).plug(), computePotentialDependencies(nearestMeta, value, Arrays.asList(components)));
+		return rebuildAll(() -> buildInstance(throwExistException, overrides, value, Arrays.asList(components)).plug(), computePotentialDependencies(nearestMeta, value, Arrays.asList(components)));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -214,9 +215,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 		return () -> new InheritanceComputer<>((T) AbstractVertex.this, origin, level).inheritanceIterator();
 	}
 
-	abstract protected T newT();
+	abstract protected T newT(boolean throwExistException);
 
 	abstract protected T[] newTArray(int dim);
+
+	abstract public boolean isThrowExistException();
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -228,13 +231,13 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public T buildInstance(List<T> overrides, Serializable value, List<T> components) {
+	public T buildInstance(boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
 		int level = getLevel() == 0 && Objects.equals(getValue(), getRoot().getValue()) && getComponentsStream().allMatch(c -> c.isRoot()) && Objects.equals(value, getRoot().getValue()) && components.stream().allMatch(c -> c.isRoot()) ? 0 : getLevel() + 1;
 		overrides.forEach(x -> ((Signature) x).checkIsAlive());
 		components.forEach(x -> ((Signature) x).checkIsAlive());
 		List<T> supers = new ArrayList<T>(new SupersComputer(level, this, overrides, value, components));
 		checkOverridesAreReached(overrides, supers);
-		return ((T) ((AbstractVertex) newT().init((T) this, supers, value, components)));
+		return ((T) ((AbstractVertex) newT(throwExistException).init((T) this, supers, value, components)));
 	}
 
 	private boolean allOverridesAreReached(List<T> overrides, List<T> supers) {

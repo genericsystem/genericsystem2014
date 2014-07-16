@@ -3,6 +3,8 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
@@ -13,6 +15,8 @@ public class Engine extends Generic implements EngineService<Generic> {
 
 	private final ThreadLocal<Cache<Generic>> cacheLocal = new ThreadLocal<>();
 
+	private final ConcurrentHashMap<Generic, Generic> generics = new ConcurrentHashMap<>();
+
 	private final Root root;
 
 	public Engine() {
@@ -20,6 +24,7 @@ public class Engine extends Generic implements EngineService<Generic> {
 	}
 
 	public Engine(Serializable rootValue, Serializable engineValue) {
+		super(false);
 		root = buildRoot(rootValue);
 		init(null, Collections.emptyList(), Statics.ENGINE_VALUE, Collections.emptyList());
 		cacheLocal.set(buildCache(new Transaction<>(this)));
@@ -82,5 +87,25 @@ public class Engine extends Generic implements EngineService<Generic> {
 	@Override
 	public Generic getAlive() {
 		return this;
+	}
+
+	@Override
+	public Generic setGenericInSystemCache(Generic generic) {
+		assert generic != null;
+		Generic result = generics.putIfAbsent(generic, generic);
+		return result != null ? result : generic;
+	}
+
+	public Generic getGenericOfVertexFromSystemCache(Generic vertex) {
+		if (vertex.isRoot())
+			return this;
+		return generics.get(vertex);
+	}
+
+	@Override
+	public Generic getGenericOfVertexFromSystemCache(Vertex vertex) {
+		if (vertex.isRoot())
+			return this;
+		return generics.get(vertex);
 	}
 }
