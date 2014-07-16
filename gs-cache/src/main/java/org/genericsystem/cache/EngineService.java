@@ -1,5 +1,7 @@
 package org.genericsystem.cache;
 
+import org.genericsystem.kernel.Vertex;
+
 public interface EngineService<T extends AbstractGeneric<T>> extends org.genericsystem.impl.EngineService<T>, GenericService<T> {
 
 	default Cache<T> buildCache(Context<T> subContext) {
@@ -30,4 +32,7 @@ public interface EngineService<T extends AbstractGeneric<T>> extends org.generic
 	@Override
 	public Cache<T> getCurrentCache();
 
+	public T getGenericOfVertexFromSystemCache(Vertex vertex);
+
+	public T setGenericInSystemCache(T generic);
 }

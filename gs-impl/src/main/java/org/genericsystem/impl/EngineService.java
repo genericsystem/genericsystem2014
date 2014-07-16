@@ -2,9 +2,11 @@ package org.genericsystem.impl;
 
 import java.io.Serializable;
 import java.util.Objects;
+
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.RootService;
 import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.ApiService;
 
@@ -67,4 +69,8 @@ public interface EngineService<T extends GenericService<T>> extends RootService<
 	// default Snapshot<T> getMetaComposites(T meta) {
 	// return GenericService.super.getMetaComposites(meta);
 	// }
+
+	public T getGenericOfVertexFromSystemCache(Vertex vertex);
+
+	public T setGenericInSystemCache(T generic);
 }

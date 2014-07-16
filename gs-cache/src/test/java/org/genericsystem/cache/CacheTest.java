@@ -2,6 +2,7 @@ package org.genericsystem.cache;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
+
 import org.testng.annotations.Test;
 
 @Test
@@ -88,7 +89,7 @@ public class CacheTest extends AbstractTest {
 		assert mountNewCache.getSubContext() == currentCache;
 		Generic vehicle = engine.addInstance("Vehicle");
 		assert currentCache == mountNewCache.flushAndUnmount();
-		assert ((AbstractGeneric) vehicle).getVertex() == null;
+		assert ((AbstractGeneric<Generic>) vehicle).getVertex() == null;
 		currentCache.flush();
 		assert vehicle.getVertex() != null;
 	}
@@ -114,12 +115,10 @@ public class CacheTest extends AbstractTest {
 		Engine engine = new Engine();
 		Cache<Generic> currentCache = engine.getCurrentCache();
 		Generic vehicle = engine.addInstance("Vehicle");
-		Generic power = engine.addInstance("Power");
 		Generic vehiclePower = engine.addInstance("vehiclePower", vehicle);
 		Cache<Generic> mountNewCache = currentCache.mountNewCache();
 		assert vehiclePower.isAlive();
 		assert !vehicle.getMetaComposites(engine.getMetaAttribute()).isEmpty() : vehicle.getMetaComposites(engine.getMetaAttribute()).stream().collect(Collectors.toList());
-
 		vehiclePower.remove();
 		assert vehicle.getMetaComposites(engine.getMetaAttribute()).isEmpty() : vehicle.getMetaComposites(engine.getMetaAttribute()).stream().collect(Collectors.toList());
 		mountNewCache.flush();

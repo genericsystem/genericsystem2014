@@ -1,6 +1,7 @@
 package org.genericsystem.cache;
 
 import java.util.LinkedHashSet;
+
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Vertex;
 
@@ -29,7 +30,11 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.
 
 	@Override
 	protected T wrap(Vertex vertex) {
-		return super.wrap(vertex);
+		EngineService<T> root = getRoot();
+		T cachedGeneric = root.getGenericOfVertexFromSystemCache(vertex);
+		if (cachedGeneric != null)
+			return cachedGeneric;
+		return root.setGenericInSystemCache(super.wrap(vertex));
 	}
 
 	@Override
