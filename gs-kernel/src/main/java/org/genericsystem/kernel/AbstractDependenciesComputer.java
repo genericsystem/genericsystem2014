@@ -52,7 +52,7 @@ abstract class AbstractDependenciesComputer<T extends AbstractVertex<T>> extends
 
 	}
 
-	static class DependenciesPotentialComputer<T extends AbstractVertex<T>> extends AbstractDependenciesComputer<T> {
+	static class PotentialDependenciesComputer<T extends AbstractVertex<T>> extends AbstractDependenciesComputer<T> {
 
 		private static final long serialVersionUID = 1729603045668083855L;
 
@@ -60,7 +60,7 @@ abstract class AbstractDependenciesComputer<T extends AbstractVertex<T>> extends
 		Serializable value;
 		List<T> components;
 
-		DependenciesPotentialComputer(T meta, Serializable value, List<T> components) {
+		PotentialDependenciesComputer(T meta, Serializable value, List<T> components) {
 			this.meta = meta;
 			this.value = value;
 			this.components = components;

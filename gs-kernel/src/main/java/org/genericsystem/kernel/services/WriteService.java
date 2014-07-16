@@ -13,13 +13,13 @@ public interface WriteService<T extends VertexService<T>> extends ApiService<T> 
 
 	@Override
 	default T updateValue(Serializable newValue) {
-		return update(getSupers(), newValue, getComponents());
+		return update(getSupers(), newValue, coerceToArray(getComponents().toArray()));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	default T updateSupers(T... supersToAdd) {
-		return update(Arrays.asList(supersToAdd), getValue(), getComponents());
+		return update(Arrays.asList(supersToAdd), getValue(), coerceToArray(getComponents().toArray()));
 	}
 
 	@Override
@@ -30,18 +30,13 @@ public interface WriteService<T extends VertexService<T>> extends ApiService<T> 
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T update(List<T> supersToAdd, Serializable newValue, T... newComponents) {
-		return update(supersToAdd, newValue, Arrays.asList(newComponents));
-	}
+	T update(List<T> supersToAdd, Serializable newValue, T... newComponents);
 
 	@Override
 	@SuppressWarnings("unchecked")
 	default T update(Serializable newValue, T... newComponents) {
-		return update(Collections.emptyList(), newValue, Arrays.asList(newComponents));
+		return update(Collections.emptyList(), newValue, newComponents);
 	}
-
-	@Override
-	T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents);
 
 	@Override
 	default T setInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {

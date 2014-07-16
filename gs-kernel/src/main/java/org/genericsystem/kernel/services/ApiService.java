@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.RootService;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.exceptions.RollbackException;
@@ -205,9 +204,8 @@ public interface ApiService<T extends VertexService<T>> {
 	@SuppressWarnings("unchecked")
 	T update(Serializable newValue, T... newComponents);
 
-	T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents);
-
-	T setInstance(Serializable value, @SuppressWarnings("unchecked") T... components);
+	@SuppressWarnings("unchecked")
+	T setInstance(Serializable value, T... components);
 
 	@SuppressWarnings("unchecked")
 	T setInstance(T override, Serializable value, T... components);
