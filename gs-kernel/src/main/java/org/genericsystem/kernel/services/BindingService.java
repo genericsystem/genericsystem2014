@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.exceptions.AmbiguousSelectionException;
 import org.genericsystem.kernel.exceptions.CrossEnginesAssignementsException;
@@ -23,7 +24,7 @@ public interface BindingService<T extends VertexService<T>> extends ApiService<T
 		for (T directInheriting : getInheritings()) {
 			if (directInheriting.equiv(this, subValue, subComponents))
 				return (T) this;
-			if (!directInheriting.equiv(this, subValue, subComponents) && isSpecializationOf(getMeta()) && componentsDepends(subComponents, directInheriting.getComponents()))
+			if (isSpecializationOf(getMeta()) && componentsDepends(subComponents, directInheriting.getComponents()))
 				if (result == null)
 					result = directInheriting;
 				else
@@ -55,7 +56,7 @@ public interface BindingService<T extends VertexService<T>> extends ApiService<T
 			return null;
 		meta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
 		if (meta != this)
-			return meta.getInstance(value, components);
+			return meta.getWeakInstance(value, components);
 		for (T instance : meta.getInstances())
 			if (instance.weakEquiv(meta, value, Arrays.asList(components)))
 				return instance;
