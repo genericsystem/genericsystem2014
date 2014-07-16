@@ -1,6 +1,7 @@
 package org.genericsystem.cache;
 
 import java.util.Arrays;
+
 import org.testng.annotations.Test;
 
 @Test
@@ -107,5 +108,22 @@ public class CacheTest extends AbstractTest {
 		assert vehicleColor.isAlive();
 		assert vehicleColor2.isAlive();
 		assert vehicle.getMetaComposites(color).containsAll(Arrays.asList(vehicleColor, vehicleColor2)) : vehicle.getMetaComposites(color);
+	}
+
+	public void test005_TwoCompositesWithSameMetaInDifferentCaches_remove() {
+		Engine engine = new Engine();
+		Cache<Generic> currentCache = engine.getCurrentCache();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic color = engine.addInstance("Color");
+		Generic vehicleColor = color.addInstance("vehicleColor", vehicle);
+		Cache<Generic> mountNewCache = currentCache.mountNewCache();
+		assert vehicleColor.isAlive();
+		vehicleColor.remove();
+		assert vehicle.getMetaComposites(color).isEmpty() : vehicle.getMetaComposites(color).size();
+		mountNewCache.flush();
+		assert vehicle.isAlive();
+		assert color.isAlive();
+		assert !vehicleColor.isAlive();
+		assert vehicle.getMetaComposites(color).isEmpty() : vehicle.getMetaComposites(color);
 	}
 }

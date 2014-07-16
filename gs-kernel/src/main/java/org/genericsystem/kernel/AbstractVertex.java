@@ -11,9 +11,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.AbstractDependenciesComputer.DependenciesComputer;
-import org.genericsystem.kernel.AbstractDependenciesComputer.DependenciesPotentialComputer;
+import org.genericsystem.kernel.AbstractDependenciesComputer.PotentialDependenciesComputer;
 import org.genericsystem.kernel.Snapshot.AbstractSnapshot;
 import org.genericsystem.kernel.Statics.Supers;
 import org.genericsystem.kernel.exceptions.AliveConstraintViolationException;
@@ -137,11 +136,13 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
-		if (newComponents.size() != getComponents().size())
+	// TODO consider bindInstance with throwExistException argument here
+	public T update(List<T> supersToAdd, Serializable newValue, T... newComponents) {
+		if (newComponents.length != getComponents().size())
 			rollbackAndThrowException(new IllegalArgumentException());
-		return rebuildAll(() -> newT().init(getMeta(), new Supers<T>(getSupers(), supersToAdd), newValue, newComponents).plug(), computeDependencies());
+		return rebuildAll(() -> getMeta().setInstance(new Supers<T>(getSupers(), supersToAdd), newValue, newComponents), computeDependencies());
 	}
 
 	private static class ConvertMap<T extends AbstractVertex<T>> extends HashMap<T, T> {
@@ -163,11 +164,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 
 	@SuppressWarnings("unchecked")
 	protected LinkedHashSet<T> computeDependencies() {
-		return new DependenciesComputer<T>((T) this);
+		return new DependenciesComputer<>((T) this);
 	}
 
 	protected LinkedHashSet<T> computePotentialDependencies(T meta, Serializable value, List<T> components) {
-		return new DependenciesPotentialComputer<T>(meta, value, components);
+		return new PotentialDependenciesComputer<>(meta, value, components);
 	}
 
 	@SuppressWarnings("unchecked")
