@@ -50,10 +50,6 @@ public interface WriteService<T extends VertexService<T>> extends ApiService<T> 
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	T setInstance(List<T> overrides, Serializable value, T... components);
-
-	@Override
 	default T getMetaAttribute() {
 		RootService<T> root = getRoot();
 		return root.getInstance(root.getValue(), coerceToArray(root));
@@ -70,10 +66,6 @@ public interface WriteService<T extends VertexService<T>> extends ApiService<T> 
 	default T addInstance(T superGeneric, Serializable value, T... components) {
 		return addInstance(Collections.singletonList(superGeneric), value, components);
 	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	T addInstance(List<T> overrides, Serializable value, T... components);
 
 	@Override
 	T[] coerceToArray(Object... array);

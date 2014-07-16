@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
@@ -13,7 +12,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.genericsystem.kernel.AbstractDependenciesComputer.DependenciesComputer;
 import org.genericsystem.kernel.AbstractDependenciesComputer.PotentialDependenciesComputer;
-import org.genericsystem.kernel.Snapshot.AbstractSnapshot;
 import org.genericsystem.kernel.Statics.Supers;
 import org.genericsystem.kernel.exceptions.AliveConstraintViolationException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
@@ -213,13 +211,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 	@SuppressWarnings("unchecked")
 	@Override
 	public Snapshot<T> getInheritings(final T origin, final int level) {
-		// No closure here cause we needs equals implementation of AbstractSnapshot
-		return new AbstractSnapshot<T>() {
-			@Override
-			public Iterator<T> iterator() {
-				return new InheritanceComputer<T>((T) AbstractVertex.this, origin, level).inheritanceIterator();
-			}
-		};
+		return () -> new InheritanceComputer<>((T) AbstractVertex.this, origin, level).inheritanceIterator();
 	}
 
 	abstract protected T newT();
