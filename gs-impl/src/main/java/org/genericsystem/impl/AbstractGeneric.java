@@ -51,7 +51,8 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 			return (T) getRoot();
 		Vertex alive = vertex.getAlive();
 		T meta = wrap(alive.getMeta());
-		return meta.newT(alive.isThrowExistException()).init(meta, alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList()));
+		return getRoot().setGenericInSystemCache(
+				meta.newT(alive.isThrowExistException()).init(meta, alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList())));
 	}
 
 	protected Vertex unwrap() {
