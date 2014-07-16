@@ -69,7 +69,7 @@ abstract class AbstractDependenciesComputer<T extends AbstractVertex<T>> extends
 
 		@Override
 		boolean checkDependency(T node) {
-			return node.isDependencyOf(meta, value, components);
+			return node.dependsFrom(meta, value, components);
 		}
 
 	}

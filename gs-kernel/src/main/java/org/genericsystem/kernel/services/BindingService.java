@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.exceptions.AmbiguousSelectionException;
 import org.genericsystem.kernel.exceptions.CrossEnginesAssignementsException;
@@ -54,7 +53,7 @@ public interface BindingService<T extends VertexService<T>> extends ApiService<T
 		meta = getAlive();
 		if (meta == null)
 			return null;
-		for (T instance : (Snapshot<T>) (((DependenciesService<?>) meta).getInstances()))
+		for (T instance : meta.getInstances())
 			if (instance.weakEquiv(meta, value, Arrays.asList(components)))
 				return instance;
 		return null;
