@@ -219,7 +219,7 @@ public class Cache<T extends AbstractGeneric<T>> implements Context<T> {
 
 	private T indexBySuper(T generic, T superT, T composite) {
 		return index(superCompositesDependenciesMap, () -> subContext.getSuperComposites(generic, superT).iterator(), generic, superT, composite);
-	};
+	}
 
 	private boolean unIndexByMeta(T generic, T meta, T composite) {
 		return unIndex(metaCompositesDependenciesMap, () -> subContext.getMetaComposites(generic, meta).iterator(), generic, meta, composite);
@@ -249,7 +249,7 @@ public class Cache<T extends AbstractGeneric<T>> implements Context<T> {
 		if (dependenciesByIndex == null)
 			dependencies.put(index, dependenciesByIndex = new CacheDependencies<>(subIteratorSupplier));
 		return dependenciesByIndex.set(composite);
-	};
+	}
 
 	private static <T> boolean unIndex(Map<T, Map<T, Dependencies<T>>> multiMap, Supplier<Iterator<T>> subIteratorSupplier, T generic, T index, T composite) {
 		Map<T, Dependencies<T>> dependencies = multiMap.get(generic);
@@ -261,7 +261,7 @@ public class Cache<T extends AbstractGeneric<T>> implements Context<T> {
 		return dependenciesByIndex.remove(composite);
 	}
 
-	T plug(T generic) {
+	public T plug(T generic) {
 		T t = indexInstance(generic.getMeta(), generic);
 		generic.getSupersStream().forEach(superGeneric -> indexInheriting(superGeneric, generic));
 		generic.getComponentsStream().forEach(component -> indexByMeta(component, generic.getMeta(), generic));
@@ -270,7 +270,7 @@ public class Cache<T extends AbstractGeneric<T>> implements Context<T> {
 		return t;
 	}
 
-	boolean unplug(T generic) {
+	public boolean unplug(T generic) {
 		boolean result = unIndexInstance(generic.getMeta(), generic);
 		if (!result)
 			generic.rollbackAndThrowException(new NotFoundException(generic.info()));

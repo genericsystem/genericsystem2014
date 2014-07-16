@@ -65,7 +65,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 	}
 
 	@SuppressWarnings("static-method")
-	<U> Dependencies<U> buildDependencies() {
+	protected <U> Dependencies<U> buildDependencies() {
 		return new DependenciesImpl<U>();
 	}
 

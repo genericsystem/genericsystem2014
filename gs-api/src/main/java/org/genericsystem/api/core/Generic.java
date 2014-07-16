@@ -3,13 +3,13 @@ package org.genericsystem.api.core;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.api.map.MapProvider;
 import org.genericsystem.api.model.Holder;
 import org.genericsystem.api.model.Link;
 import org.genericsystem.api.model.Relation;
 import org.genericsystem.api.model.Snapshot;
-import org.genericsystem.api.statics.RemoveStrategy;
 
 /**
  * <p>
@@ -905,7 +905,6 @@ public interface Generic extends Serializable {
 	/**
 	 * Removes the Generic using the default removeStrategy. Do nothing if the Generic has already been removed.
 	 *
-	 * @see #remove(RemoveStrategy)
 	 */
 	// TODO @throws referentialIntegrity
 	// TODO @throws dependencyInconsistence
