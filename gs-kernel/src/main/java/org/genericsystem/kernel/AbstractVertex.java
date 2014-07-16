@@ -164,11 +164,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 
 	@SuppressWarnings("unchecked")
 	protected LinkedHashSet<T> computeDependencies() {
-		return new DependenciesComputer<T>((T) this);
+		return new DependenciesComputer<>((T) this);
 	}
 
 	protected LinkedHashSet<T> computePotentialDependencies(T meta, Serializable value, List<T> components) {
-		return new PotentialDependenciesComputer<T>(meta, value, components);
+		return new PotentialDependenciesComputer<>(meta, value, components);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -20,13 +20,16 @@ public interface BindingService<T extends VertexService<T>> extends ApiService<T
 	@SuppressWarnings("unchecked")
 	default T adjustMeta(List<T> overrides, Serializable subValue, List<T> subComponents) {
 		T result = null;
-		for (T directInheriting : getInheritings())
+		for (T directInheriting : getInheritings()) {
+			if (directInheriting.equiv(this, subValue, subComponents))
+				return (T) this;
 			if (!directInheriting.equiv(this, subValue, subComponents) && isSpecializationOf(getMeta()) && componentsDepends(subComponents, directInheriting.getComponents()))
 				if (result == null)
 					result = directInheriting;
 				else
 					rollbackAndThrowException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
-		return result == null ? (T) this : result.equiv(this, subValue, subComponents) ? (T) this : result.adjustMeta(overrides, subValue, subComponents);
+		}
+		return result == null ? (T) this : result.adjustMeta(overrides, subValue, subComponents);
 	}
 
 	@Override
