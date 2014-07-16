@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.AbstractDependenciesComputer.DependenciesComputer;
 import org.genericsystem.kernel.AbstractDependenciesComputer.PotentialDependenciesComputer;
 import org.genericsystem.kernel.Statics.Supers;
@@ -24,6 +23,11 @@ import org.genericsystem.kernel.services.VertexService;
 public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signature<T> implements VertexService<T> {
 
 	protected List<T> supers;
+	protected final boolean throwExistException;
+
+	public AbstractVertex(boolean throwExistException) {
+		this.throwExistException = throwExistException;
+	}
 
 	@SuppressWarnings("unchecked")
 	protected T init(T meta, List<T> supers, Serializable value, List<T> components) {
@@ -63,6 +67,10 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 	@Override
 	public List<T> getSupers() {
 		return supers;
+	}
+
+	public boolean isThrowExistException() {
+		return throwExistException;
 	}
 
 	@SuppressWarnings("static-method")
@@ -218,8 +226,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 	abstract protected T newT(boolean throwExistException);
 
 	abstract protected T[] newTArray(int dim);
-
-	abstract public boolean isThrowExistException();
 
 	@Override
 	@SuppressWarnings("unchecked")

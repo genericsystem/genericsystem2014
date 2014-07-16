@@ -5,10 +5,8 @@ import org.genericsystem.impl.GenericService;
 
 public class Generic extends AbstractGeneric<Generic> implements GenericService<Generic> {
 
-	private final boolean throwExistException;
-
 	public Generic(boolean throwExistException) {
-		this.throwExistException = throwExistException;
+		super(throwExistException);
 	}
 
 	@Override
@@ -19,10 +17,5 @@ public class Generic extends AbstractGeneric<Generic> implements GenericService<
 	@Override
 	public Generic[] newTArray(int dim) {
 		return new Generic[dim];
-	}
-
-	@Override
-	public boolean isThrowExistException() {
-		return throwExistException;
 	}
 }

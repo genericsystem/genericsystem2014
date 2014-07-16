@@ -2,7 +2,6 @@ package org.genericsystem.kernel;
 
 import java.util.Arrays;
 import java.util.Collections;
-
 import org.testng.annotations.Test;
 
 @Test
@@ -13,6 +12,7 @@ public class AttributesTest extends AbstractTest {
 		Vertex vehicle = root.addInstance("Vehicle");
 		assert vehicle.getLevel() == 1 : vehicle.getLevel();
 		Vertex power = root.addInstance("Power", vehicle);
+		assert power.isThrowExistException();
 		assert root.getInstance("Power", vehicle) == power;
 		// assert root.selectInstances("Power").count() == 1;
 		// assert root.selectInstances("Power").anyMatch(x -> x.equals(power));
@@ -170,6 +170,7 @@ public class AttributesTest extends AbstractTest {
 		Vertex power = root.addInstance("Power", vehicle);
 		Vertex car = root.addInstance(vehicle, "Car");
 		Vertex airconditioner = root.addInstance("AirConditioner", car);
+		assert airconditioner.isThrowExistException();
 		// assert vehicle.getAttributes(root).size() == 1;
 		assert vehicle.getAttributes(root).contains(power);
 		// assert car.getAttributes(root).size() == 2;

@@ -1,7 +1,6 @@
 package org.genericsystem.kernel;
 
 import java.util.Collections;
-
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 import org.genericsystem.kernel.services.VertexService;
@@ -17,10 +16,8 @@ public class Vertex extends AbstractVertex<Vertex> implements VertexService<Vert
 	private final Dependencies<DependenciesEntry<Vertex>> superComposites = buildDependencies();
 	private final Dependencies<DependenciesEntry<Vertex>> metaComposites = buildDependencies();
 
-	private final boolean throwExistException;
-
 	public Vertex(boolean throwExistException) {
-		this.throwExistException = throwExistException;
+		super(throwExistException);
 	}
 
 	@Override
@@ -31,11 +28,6 @@ public class Vertex extends AbstractVertex<Vertex> implements VertexService<Vert
 	@Override
 	public Vertex[] newTArray(int dim) {
 		return new Vertex[dim];
-	}
-
-	@Override
-	public boolean isThrowExistException() {
-		return throwExistException;
 	}
 
 	@Override

@@ -5,6 +5,11 @@ import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Vertex;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.genericsystem.impl.AbstractGeneric<T> implements GenericService<T> {
+
+	public AbstractGeneric(boolean throwExistException) {
+		super(throwExistException);
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public T plug() {
