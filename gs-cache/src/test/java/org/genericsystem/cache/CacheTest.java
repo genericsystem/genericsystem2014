@@ -1,7 +1,7 @@
 package org.genericsystem.cache;
 
 import java.util.Arrays;
-
+import java.util.stream.Collectors;
 import org.testng.annotations.Test;
 
 @Test
@@ -114,16 +114,17 @@ public class CacheTest extends AbstractTest {
 		Engine engine = new Engine();
 		Cache<Generic> currentCache = engine.getCurrentCache();
 		Generic vehicle = engine.addInstance("Vehicle");
-		Generic color = engine.addInstance("Color");
-		Generic vehicleColor = color.addInstance("vehicleColor", vehicle);
+		Generic power = engine.addInstance("Power");
+		Generic vehiclePower = engine.addInstance("vehiclePower", vehicle);
 		Cache<Generic> mountNewCache = currentCache.mountNewCache();
-		assert vehicleColor.isAlive();
-		vehicleColor.remove();
-		assert vehicle.getMetaComposites(color).isEmpty() : vehicle.getMetaComposites(color).size();
+		assert vehiclePower.isAlive();
+		assert !vehicle.getMetaComposites(engine.getMetaAttribute()).isEmpty() : vehicle.getMetaComposites(engine.getMetaAttribute()).stream().collect(Collectors.toList());
+
+		vehiclePower.remove();
+		assert vehicle.getMetaComposites(engine.getMetaAttribute()).isEmpty() : vehicle.getMetaComposites(engine.getMetaAttribute()).stream().collect(Collectors.toList());
 		mountNewCache.flush();
 		assert vehicle.isAlive();
-		assert color.isAlive();
-		assert !vehicleColor.isAlive();
-		assert vehicle.getMetaComposites(color).isEmpty() : vehicle.getMetaComposites(color);
+		assert !vehiclePower.isAlive();
+		assert vehicle.getMetaComposites(engine.getMetaAttribute()).isEmpty() : vehicle.getMetaComposites(engine.getMetaAttribute()).stream().collect(Collectors.toList());
 	}
 }

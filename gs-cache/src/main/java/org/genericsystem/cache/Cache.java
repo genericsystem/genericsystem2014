@@ -169,14 +169,14 @@ public class Cache<T extends AbstractGeneric<T>> implements Context<T> {
 	private T index(Map<T, Dependencies<T>> multiMap, Supplier<Iterator<T>> subIteratorSupplier, T generic, T dependency) {
 		Dependencies<T> dependencies = multiMap.get(generic);
 		if (dependencies == null)
-			multiMap.put(generic, dependencies = new CacheDependencies<T>(subIteratorSupplier));
+			multiMap.put(generic, dependencies = new CacheDependencies<>(subIteratorSupplier));
 		return dependencies.set(dependency);
 	}
 
-	private boolean unIndex(Map<T, Dependencies<T>> multiMap, T generic, T dependency) {
+	private boolean unIndex(Map<T, Dependencies<T>> multiMap, Supplier<Iterator<T>> subIteratorSupplier, T generic, T dependency) {
 		Dependencies<T> dependencies = multiMap.get(generic);
 		if (dependencies == null)
-			return false;
+			multiMap.put(generic, dependencies = new CacheDependencies<>(subIteratorSupplier));
 		return dependencies.remove(dependency);
 	}
 
@@ -189,11 +189,11 @@ public class Cache<T extends AbstractGeneric<T>> implements Context<T> {
 	}
 
 	private boolean unIndexInstance(T generic, T instance) {
-		return unIndex(instancesDependenciesMap, generic, instance);
+		return unIndex(instancesDependenciesMap, () -> subContext.getInstances(generic).iterator(), generic, instance);
 	}
 
 	private boolean unIndexInheriting(T generic, T inheriting) {
-		return unIndex(inheritingsDependenciesMap, generic, inheriting);
+		return unIndex(inheritingsDependenciesMap, () -> subContext.getInheritings(generic).iterator(), generic, inheriting);
 	}
 
 	public Snapshot<T> getComposites(T generic) {
@@ -218,15 +218,15 @@ public class Cache<T extends AbstractGeneric<T>> implements Context<T> {
 	}
 
 	private T indexBySuper(T generic, T superT, T composite) {
-		return index(superCompositesDependenciesMap, () -> subContext.getMetaComposites(generic, superT).iterator(), generic, superT, composite);
+		return index(superCompositesDependenciesMap, () -> subContext.getSuperComposites(generic, superT).iterator(), generic, superT, composite);
 	};
 
 	private boolean unIndexByMeta(T generic, T meta, T composite) {
-		return unIndex(metaCompositesDependenciesMap, generic, meta, composite);
+		return unIndex(metaCompositesDependenciesMap, () -> subContext.getMetaComposites(generic, meta).iterator(), generic, meta, composite);
 	}
 
 	private boolean unIndexBySuper(T generic, T superT, T composite) {
-		return unIndex(superCompositesDependenciesMap, generic, superT, composite);
+		return unIndex(superCompositesDependenciesMap, () -> subContext.getSuperComposites(generic, superT).iterator(), generic, superT, composite);
 	}
 
 	private static <T> Snapshot<T> getIndex(Map<T, Map<T, Dependencies<T>>> multiMap, Supplier<Iterator<T>> subIteratorSupplier, T generic, T index) {
@@ -247,17 +247,17 @@ public class Cache<T extends AbstractGeneric<T>> implements Context<T> {
 			multiMap.put(generic, dependencies = new HashMap<>());
 		Dependencies<T> dependenciesByIndex = dependencies.get(index);
 		if (dependenciesByIndex == null)
-			dependencies.put(index, dependenciesByIndex = new CacheDependencies<T>(subIteratorSupplier));
+			dependencies.put(index, dependenciesByIndex = new CacheDependencies<>(subIteratorSupplier));
 		return dependenciesByIndex.set(composite);
 	};
 
-	private static <T> boolean unIndex(Map<T, Map<T, Dependencies<T>>> multiMap, T generic, T index, T composite) {
+	private static <T> boolean unIndex(Map<T, Map<T, Dependencies<T>>> multiMap, Supplier<Iterator<T>> subIteratorSupplier, T generic, T index, T composite) {
 		Map<T, Dependencies<T>> dependencies = multiMap.get(generic);
 		if (dependencies == null)
-			return false;
+			multiMap.put(generic, dependencies = new HashMap<>());
 		Dependencies<T> dependenciesByIndex = dependencies.get(index);
 		if (dependenciesByIndex == null)
-			return false;
+			dependencies.put(index, dependenciesByIndex = new CacheDependencies<>(subIteratorSupplier));
 		return dependenciesByIndex.remove(composite);
 	}
 
