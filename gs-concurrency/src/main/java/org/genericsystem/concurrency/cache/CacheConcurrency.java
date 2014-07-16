@@ -1,10 +1,10 @@
 package org.genericsystem.concurrency.cache;
 
 import org.genericsystem.cache.Cache;
+import org.genericsystem.concurrency.generic.AbstractGeneric;
 import org.genericsystem.concurrency.generic.EngineServiceConcurrency;
-import org.genericsystem.concurrency.generic.GenericServiceConcurrency;
 
-public class CacheConcurrency<T extends GenericServiceConcurrency<T>> extends Cache<T> implements ContextConcurrency<T> {
+public class CacheConcurrency<T extends AbstractGeneric<T>> extends Cache<T> implements ContextConcurrency<T> {
 
 	public CacheConcurrency(EngineServiceConcurrency<T> engine) {
 		this(new TransactionConcurrency<T>(engine));

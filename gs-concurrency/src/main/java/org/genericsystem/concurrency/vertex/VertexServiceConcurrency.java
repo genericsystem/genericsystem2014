@@ -1,6 +1,6 @@
 package org.genericsystem.concurrency.vertex;
 
-import org.genericsystem.kernel.VertexService;
+import org.genericsystem.kernel.services.VertexService;
 
 public interface VertexServiceConcurrency<T extends VertexService<T>> extends VertexService<T> {
 

@@ -10,7 +10,8 @@ import org.genericsystem.concurrency.cache.TransactionConcurrency;
 import org.genericsystem.concurrency.vertex.RootConcurrency;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
-import org.genericsystem.kernel.services.SignatureService;
+import org.genericsystem.kernel.services.AncestorsService;
+import org.genericsystem.kernel.services.ApiService;
 
 public class EngineConcurrency extends GenericConcurrency implements EngineServiceConcurrency<GenericConcurrency> {
 
@@ -62,9 +63,29 @@ public class EngineConcurrency extends GenericConcurrency implements EngineServi
 	}
 
 	@Override
-	public boolean equiv(SignatureService<?> service) {
+	public boolean equiv(ApiService<?> service) {
 		if (this == service)
 			return true;
-		return Objects.equals(getValue(), service.getValue()) && SignatureService.equivComponents(getComponents(), service.getComponents());
+		return Objects.equals(getValue(), service.getValue()) && AncestorsService.equivComponents(getComponents(), service.getComponents());
+	}
+
+	@Override
+	public GenericConcurrency find(Class<?> clazz) {
+		return wrap(root.find(clazz));
+	}
+
+	@Override
+	public GenericConcurrency getMeta() {
+		return this;
+	}
+
+	@Override
+	public EngineConcurrency getRoot() {
+		return this;
+	}
+
+	@Override
+	public GenericConcurrency getAlive() {
+		return this;
 	}
 }

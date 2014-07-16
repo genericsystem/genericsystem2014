@@ -26,16 +26,21 @@ public class VertexConcurrency extends Vertex implements VertexServiceConcurrenc
 	// TODO KK FIN KK
 
 	@Override
-	public VertexConcurrency buildInstance() {
+	public VertexConcurrency newT() {
 		VertexConcurrency vertexConcurrency = new VertexConcurrency();
 		vertexConcurrency.lifeManager = buildLifeManager();
 		return vertexConcurrency;
 	}
 
+	@Override
+	public Vertex[] newTArray(int dim) {
+		return new VertexConcurrency[dim];
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
-	protected <T> Dependencies<T> buildDependencies() {
-		return (Dependencies<T>) new AbstractDependenciesConcurrency() {
+	protected <U> Dependencies<U> buildDependencies() {
+		return (Dependencies<U>) new AbstractDependenciesConcurrency() {
 
 			@Override
 			public LifeManager getLifeManager() {

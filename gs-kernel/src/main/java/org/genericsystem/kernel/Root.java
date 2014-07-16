@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Meta;
 import org.genericsystem.kernel.annotations.value.BooleanValue;
@@ -32,7 +33,8 @@ public class Root extends Vertex implements RootService<Vertex> {
 	// @SystemGeneric
 	// @Components(Root.class)
 	// @StringValue(Statics.ENGINE_VALUE)
-	public static class MetaAttribute {}
+	public static class MetaAttribute {
+	}
 
 	@Override
 	public Vertex find(Class<?> clazz) {
@@ -63,8 +65,8 @@ public class Root extends Vertex implements RootService<Vertex> {
 
 		private void init(Class<?>... userClasses) {
 			Vertex metaAttribute = Root.this.setInstance(Root.this, getValue(), Root.this);
-
 			systemCache.put(MetaAttribute.class, metaAttribute);
+
 			Vertex map = Root.this.setInstance(SystemMap.class, Root.this);
 			systemCache.put(SystemMap.class, map);
 			map.enablePropertyConstraint();

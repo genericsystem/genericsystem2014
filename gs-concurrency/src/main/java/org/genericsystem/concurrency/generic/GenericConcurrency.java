@@ -3,14 +3,18 @@ package org.genericsystem.concurrency.generic;
 import org.genericsystem.concurrency.vertex.LifeManager;
 import org.genericsystem.concurrency.vertex.RootConcurrency;
 import org.genericsystem.concurrency.vertex.VertexConcurrency;
-import org.genericsystem.impl.GenericSignature;
 import org.genericsystem.kernel.Vertex;
 
-public class GenericConcurrency extends GenericSignature<GenericConcurrency> implements GenericServiceConcurrency<GenericConcurrency> {
+public class GenericConcurrency extends AbstractGeneric<GenericConcurrency> implements GenericServiceConcurrency<GenericConcurrency> {
 
 	@Override
-	public GenericConcurrency buildInstance() {
+	public GenericConcurrency newT() {
 		return new GenericConcurrency();
+	}
+
+	@Override
+	public GenericConcurrency[] newTArray(int dim) {
+		return new GenericConcurrency[dim];
 	}
 
 	@Override

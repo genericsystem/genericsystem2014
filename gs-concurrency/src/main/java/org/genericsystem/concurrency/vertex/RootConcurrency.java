@@ -65,8 +65,15 @@ public class RootConcurrency extends Root implements RootServiceConcurrency<Vert
 	}
 
 	@Override
-	public VertexConcurrency buildInstance() {
-		return new VertexConcurrency();
+	public RootConcurrency newT() {
+		RootConcurrency rootConcurrency = new RootConcurrency();
+		rootConcurrency.lifeManager = buildLifeManager();
+		return rootConcurrency;
+	}
+
+	@Override
+	public RootConcurrency[] newTArray(int dim) {
+		return new RootConcurrency[dim];
 	}
 
 	public long pickNewTs() {

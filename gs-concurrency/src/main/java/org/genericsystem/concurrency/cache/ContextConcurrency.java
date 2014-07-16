@@ -1,9 +1,9 @@
 package org.genericsystem.concurrency.cache;
 
 import org.genericsystem.cache.Context;
-import org.genericsystem.concurrency.generic.GenericServiceConcurrency;
+import org.genericsystem.concurrency.generic.AbstractGeneric;
 
-public interface ContextConcurrency<T extends GenericServiceConcurrency<T>> extends Context<T> {
+public interface ContextConcurrency<T extends AbstractGeneric<T>> extends Context<T> {
 
 	long getTs();
 
