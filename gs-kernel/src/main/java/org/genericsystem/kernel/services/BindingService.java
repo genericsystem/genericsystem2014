@@ -35,12 +35,12 @@ public interface BindingService<T extends VertexService<T>> extends ApiService<T
 	@Override
 	@SuppressWarnings("unchecked")
 	default T getInstance(Serializable value, T... components) {
-		T meta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
-		if (meta != this)
-			return meta.getInstance(value, components);
-		meta = getAlive();
+		T meta = getAlive();
 		if (meta == null)
 			return null;
+		meta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
+		if (meta != this)
+			return meta.getInstance(value, components);
 		for (T instance : (Snapshot<T>) (((DependenciesService<?>) meta).getInstances()))
 			if (instance.equiv(meta, value, Arrays.asList(components)))
 				return instance;
@@ -50,12 +50,12 @@ public interface BindingService<T extends VertexService<T>> extends ApiService<T
 	@Override
 	@SuppressWarnings("unchecked")
 	default T getWeakInstance(Serializable value, T... components) {
-		T meta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
-		if (meta != this)
-			return meta.getInstance(value, components);
-		meta = getAlive();
+		T meta = getAlive();
 		if (meta == null)
 			return null;
+		meta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
+		if (meta != this)
+			return meta.getInstance(value, components);
 		for (T instance : meta.getInstances())
 			if (instance.weakEquiv(meta, value, Arrays.asList(components)))
 				return instance;
