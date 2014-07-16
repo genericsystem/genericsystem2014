@@ -1,20 +1,17 @@
-package org.genericsystem.concurrency.cache;
+package org.genericsystem.concurrency;
 
-import org.genericsystem.cache.Transaction;
-import org.genericsystem.concurrency.generic.AbstractGeneric;
-import org.genericsystem.concurrency.generic.EngineServiceConcurrency;
-import org.genericsystem.concurrency.vertex.RootConcurrency;
+import org.genericsystem.concurrency.vertex.Root;
 
-public class TransactionConcurrency<T extends AbstractGeneric<T>> extends Transaction<T> implements ContextConcurrency<T> {
+public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem.cache.Transaction<T> implements Context<T> {
 
 	private transient long ts;
 
 	@SuppressWarnings("unchecked")
-	public TransactionConcurrency(EngineServiceConcurrency<T> engine) {
-		this(((RootConcurrency) ((AbstractGeneric<T>) engine).getVertex()).pickNewTs(), engine);
+	public Transaction(EngineService<T> engine) {
+		this(((Root) ((AbstractGeneric<T>) engine).getVertex()).pickNewTs(), engine);
 	}
 
-	public TransactionConcurrency(long ts, EngineServiceConcurrency<T> engine) {
+	public Transaction(long ts, EngineService<T> engine) {
 		super(engine);
 		this.ts = ts;
 	}
