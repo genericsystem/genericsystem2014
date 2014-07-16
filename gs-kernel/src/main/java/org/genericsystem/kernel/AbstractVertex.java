@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.AbstractDependenciesComputer.DependenciesComputer;
 import org.genericsystem.kernel.AbstractDependenciesComputer.PotentialDependenciesComputer;
 import org.genericsystem.kernel.Statics.Supers;
@@ -227,8 +226,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 	abstract protected T newT(boolean throwExistException);
 
 	abstract protected T[] newTArray(int dim);
-
-	abstract public boolean isThrowExistException();
 
 	@Override
 	@SuppressWarnings("unchecked")
