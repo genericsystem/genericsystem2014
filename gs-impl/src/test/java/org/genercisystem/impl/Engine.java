@@ -2,10 +2,7 @@ package org.genercisystem.impl;
 
 import java.io.Serializable;
 import java.util.Collections;
-<<<<<<< HEAD
 import java.util.concurrent.ConcurrentHashMap;
-=======
->>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 
 import org.genericsystem.impl.EngineService;
 import org.genericsystem.kernel.Root;
