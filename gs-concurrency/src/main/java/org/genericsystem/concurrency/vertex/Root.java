@@ -63,7 +63,8 @@ public class Root extends org.genericsystem.kernel.Root implements RootService<o
 	}
 
 	@Override
-	public Root newT() {
+	// TODO use throwExistException ?
+	public Root newT(boolean throwExistException) {
 		Root rootConcurrency = new Root();
 		rootConcurrency.lifeManager = buildLifeManager();
 		return rootConcurrency;

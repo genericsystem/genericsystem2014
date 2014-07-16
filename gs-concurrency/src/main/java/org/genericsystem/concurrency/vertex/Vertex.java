@@ -24,9 +24,13 @@ public class Vertex extends org.genericsystem.kernel.Vertex implements VertexSer
 
 	// TODO KK FIN KK
 
+	public Vertex(boolean throwExistException) {
+		super(throwExistException);
+	}
+
 	@Override
-	public Vertex newT() {
-		Vertex vertexConcurrency = new Vertex();
+	public Vertex newT(boolean throwExistException) {
+		Vertex vertexConcurrency = new Vertex(throwExistException);
 		vertexConcurrency.lifeManager = buildLifeManager();
 		return vertexConcurrency;
 	}

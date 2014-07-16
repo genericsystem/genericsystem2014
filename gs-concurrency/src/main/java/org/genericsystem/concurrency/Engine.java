@@ -21,6 +21,7 @@ public class Engine extends Generic implements EngineService<Generic> {
 	}
 
 	public Engine(Serializable rootValue, Serializable engineValue) {
+		super(false);
 		root = buildRoot(rootValue);
 		cacheLocal.set(buildCache(new Transaction<>(this)));
 		init(null, Collections.emptyList(), engineValue, Collections.emptyList());

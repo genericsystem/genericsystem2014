@@ -25,6 +25,7 @@ public class Root extends Vertex implements RootService<Vertex> {
 	}
 
 	public Root(Serializable value, Class<?>... userClasses) {
+		super(false);
 		init(null, Collections.emptyList(), value, Collections.emptyList());
 		systemCache.init(userClasses);
 	}

@@ -2,6 +2,7 @@ package org.genericsystem.impl;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Vertex;
@@ -42,7 +43,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 			return (T) getRoot();
 		Vertex alive = vertex.getAlive();
 		T meta = wrap(alive.getMeta());
-		return meta.newT().init(meta, alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList()));
+		return meta.newT(alive.isThrowExistException()).init(meta, alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList()));
 	}
 
 	protected Vertex unwrap() {
@@ -52,7 +53,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 		alive = getMeta().unwrap();
 		if (!alive.isAlive())
 			throw new IllegalStateException("Not Alive" + alive.info() + alive.getMeta().getInstances());
-		return alive.buildInstance(getSupersStream().map(T::unwrap).collect(Collectors.toList()), getValue(), getComponentsStream().map(T::unwrap).collect(Collectors.toList()));
+		return alive.buildInstance(isThrowExistException(), getSupersStream().map(T::unwrap).collect(Collectors.toList()), getValue(), getComponentsStream().map(T::unwrap).collect(Collectors.toList()));
 	}
 
 	protected Vertex getVertex() {
