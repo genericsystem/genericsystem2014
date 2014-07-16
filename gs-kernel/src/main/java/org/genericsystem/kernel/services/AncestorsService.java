@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.RootService;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
@@ -75,7 +76,7 @@ public interface AncestorsService<T extends VertexService<T>> extends ApiService
 
 	@Override
 	default boolean weakEquiv(ApiService<? extends ApiService<?>> service) {
-		return service == this ? true : weakEquiv(service.getMeta(), service.getValue(), service.getComponents());
+		return service.equals(this) ? true : weakEquiv(service.getMeta(), service.getValue(), service.getComponents());
 	}
 
 	@Override

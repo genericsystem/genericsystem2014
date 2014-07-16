@@ -16,9 +16,13 @@ public class Vertex extends AbstractVertex<Vertex> implements VertexService<Vert
 	private final Dependencies<DependenciesEntry<Vertex>> superComposites = buildDependencies();
 	private final Dependencies<DependenciesEntry<Vertex>> metaComposites = buildDependencies();
 
+	public Vertex(boolean throwExistException) {
+		super(throwExistException);
+	}
+
 	@Override
-	public Vertex newT() {
-		return new Vertex();
+	public Vertex newT(boolean throwExistException) {
+		return new Vertex(throwExistException);
 	}
 
 	@Override

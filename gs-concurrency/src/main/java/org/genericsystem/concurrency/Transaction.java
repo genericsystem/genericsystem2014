@@ -1,19 +1,17 @@
-package org.genericsystem.concurrency.cache;
+package org.genericsystem.concurrency;
 
-import org.genericsystem.cache.Transaction;
-import org.genericsystem.concurrency.generic.EngineServiceConcurrency;
-import org.genericsystem.concurrency.generic.GenericServiceConcurrency;
-import org.genericsystem.concurrency.vertex.RootConcurrency;
+import org.genericsystem.concurrency.vertex.Root;
 
-public class TransactionConcurrency<T extends GenericServiceConcurrency<T>> extends Transaction<T> implements ContextConcurrency<T> {
+public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem.cache.Transaction<T> implements Context<T> {
 
 	private transient long ts;
 
-	public TransactionConcurrency(EngineServiceConcurrency<T> engine) {
-		this(((RootConcurrency) engine.getRoot().getVertex()).pickNewTs(), engine);
+	@SuppressWarnings("unchecked")
+	public Transaction(EngineService<T> engine) {
+		this(((Root) ((AbstractGeneric<T>) engine).getVertex()).pickNewTs(), engine);
 	}
 
-	public TransactionConcurrency(long ts, EngineServiceConcurrency<T> engine) {
+	public Transaction(long ts, EngineService<T> engine) {
 		super(engine);
 		this.ts = ts;
 	}
@@ -28,7 +26,7 @@ public class TransactionConcurrency<T extends GenericServiceConcurrency<T>> exte
 		return generic.getLifeManager().isAlive(getTs());
 	}
 
-	//TODO clean
+	// TODO clean
 	// @Override
 	// public Snapshot<T> getInheritings(T generic) {
 	// return () -> generic.getVertex() != null ? generic.unwrap().getInheritings().project(generic::wrap).iterator() : Collections.emptyIterator();

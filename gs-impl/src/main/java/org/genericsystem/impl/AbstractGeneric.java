@@ -10,6 +10,10 @@ import org.genericsystem.kernel.services.AncestorsService;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends AbstractVertex<T> implements GenericService<T> {
 
+	public AbstractGeneric(boolean throwExistException) {
+		super(throwExistException);
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

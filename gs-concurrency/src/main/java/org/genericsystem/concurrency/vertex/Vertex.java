@@ -3,9 +3,8 @@ package org.genericsystem.concurrency.vertex;
 import java.util.Iterator;
 
 import org.genericsystem.kernel.Dependencies;
-import org.genericsystem.kernel.Vertex;
 
-public class VertexConcurrency extends Vertex implements VertexServiceConcurrency<Vertex> {
+public class Vertex extends org.genericsystem.kernel.Vertex implements VertexService<org.genericsystem.kernel.Vertex> {
 
 	// TODO KK DEBUT KK cf RootConcurrency
 	private LifeManager lifeManager;
@@ -25,17 +24,26 @@ public class VertexConcurrency extends Vertex implements VertexServiceConcurrenc
 
 	// TODO KK FIN KK
 
+	public Vertex(boolean throwExistException) {
+		super(throwExistException);
+	}
+
 	@Override
-	public VertexConcurrency buildInstance() {
-		VertexConcurrency vertexConcurrency = new VertexConcurrency();
+	public Vertex newT(boolean throwExistException) {
+		Vertex vertexConcurrency = new Vertex(throwExistException);
 		vertexConcurrency.lifeManager = buildLifeManager();
 		return vertexConcurrency;
 	}
 
+	@Override
+	public org.genericsystem.kernel.Vertex[] newTArray(int dim) {
+		return new Vertex[dim];
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
-	protected <T> Dependencies<T> buildDependencies() {
-		return (Dependencies<T>) new AbstractDependenciesConcurrency() {
+	protected <U> Dependencies<U> buildDependencies() {
+		return (Dependencies<U>) new AbstractDependencies() {
 
 			@Override
 			public LifeManager getLifeManager() {
@@ -43,7 +51,7 @@ public class VertexConcurrency extends Vertex implements VertexServiceConcurrenc
 			}
 
 			@Override
-			public Iterator<VertexConcurrency> iterator() {
+			public Iterator<Vertex> iterator() {
 				return iterator(0L);
 			}
 		};

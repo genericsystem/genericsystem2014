@@ -24,6 +24,11 @@ import org.genericsystem.kernel.services.VertexService;
 public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signature<T> implements VertexService<T> {
 
 	protected List<T> supers;
+	protected final boolean throwExistException;
+
+	public AbstractVertex(boolean throwExistException) {
+		this.throwExistException = throwExistException;
+	}
 
 	@SuppressWarnings("unchecked")
 	protected T init(T meta, List<T> supers, Serializable value, List<T> components) {
@@ -63,6 +68,10 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 	@Override
 	public List<T> getSupers() {
 		return supers;
+	}
+
+	public boolean isThrowExistException() {
+		return throwExistException;
 	}
 
 	@SuppressWarnings("static-method")

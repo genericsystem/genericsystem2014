@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.Arrays;
 import java.util.Collections;
+
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.testng.annotations.Test;
 
@@ -189,7 +190,7 @@ public class ClassFinderTest extends AbstractTest {
 		assert vehiclePower.isAncestorOf(v233);
 		assert vehicle.isAncestorOf(v233);
 
-		Vertex car233 = vehiclePower.buildInstance(Collections.emptyList(), 233, Arrays.asList(car));
+		Vertex car233 = vehiclePower.buildInstance(false, Collections.emptyList(), 233, Arrays.asList(car));
 		assert v233.dependsFrom(vehiclePower, 233, Arrays.asList(car));
 		assert !car233.isAlive();
 		assert v233.isAlive();

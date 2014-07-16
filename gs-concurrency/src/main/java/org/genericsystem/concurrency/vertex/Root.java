@@ -3,11 +3,9 @@ package org.genericsystem.concurrency.vertex;
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
-import org.genericsystem.kernel.Vertex;
 
-public class RootConcurrency extends Root implements RootServiceConcurrency<Vertex> {
+public class Root extends org.genericsystem.kernel.Root implements RootService<org.genericsystem.kernel.Vertex> {
 
 	private final TsGenerator generator = new TsGenerator();
 
@@ -55,18 +53,26 @@ public class RootConcurrency extends Root implements RootServiceConcurrency<Vert
 
 	// TODO KK FIN KK
 
-	public RootConcurrency(Class<?>... userClasses) {
+	public Root(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
 	}
 
-	public RootConcurrency(Serializable value, Class<?>... userClasses) {
+	public Root(Serializable value, Class<?>... userClasses) {
 		super(value, userClasses);
 		lifeManager = buildLifeManager();
 	}
 
 	@Override
-	public VertexConcurrency buildInstance() {
-		return new VertexConcurrency();
+	// TODO use throwExistException ?
+	public Root newT(boolean throwExistException) {
+		Root rootConcurrency = new Root();
+		rootConcurrency.lifeManager = buildLifeManager();
+		return rootConcurrency;
+	}
+
+	@Override
+	public Root[] newTArray(int dim) {
+		return new Root[dim];
 	}
 
 	public long pickNewTs() {

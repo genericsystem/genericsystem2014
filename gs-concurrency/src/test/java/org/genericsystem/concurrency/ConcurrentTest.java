@@ -1,8 +1,5 @@
 package org.genericsystem.concurrency;
 
-import org.genericsystem.concurrency.cache.CacheConcurrency;
-import org.genericsystem.concurrency.generic.EngineConcurrency;
-import org.genericsystem.concurrency.generic.GenericConcurrency;
 import org.testng.annotations.Test;
 
 @Test
@@ -10,10 +7,9 @@ public class ConcurrentTest extends AbstractTest {
 
 	// TODO: To CacheTest
 	public void testNonFlushedModificationsStillAliveInCache() {
-		EngineConcurrency engine = new EngineConcurrency();
-		System.out.println("===================================");
-		GenericConcurrency car = engine.addInstance("Car");
-		CacheConcurrency<GenericConcurrency> cache = engine.getCurrentCache().mountNewCache();
+		Engine engine = new Engine();
+		Generic car = engine.addInstance("Car");
+		Cache<Generic> cache = engine.getCurrentCache().mountNewCache();
 
 		assert cache.isAlive(car);
 		assert engine.getInheritings().contains(car);

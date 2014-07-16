@@ -1,10 +1,10 @@
-package org.genericsystem.cache;
+package org.genericsystem.concurrency;
 
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-import org.genericsystem.kernel.Root;
+
+import org.genericsystem.concurrency.vertex.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.services.AncestorsService;
@@ -13,8 +13,6 @@ import org.genericsystem.kernel.services.ApiService;
 public class Engine extends Generic implements EngineService<Generic> {
 
 	private final ThreadLocal<Cache<Generic>> cacheLocal = new ThreadLocal<>();
-
-	private final ConcurrentHashMap<Generic, Generic> generics = new ConcurrentHashMap<>();
 
 	private final Root root;
 
@@ -25,8 +23,8 @@ public class Engine extends Generic implements EngineService<Generic> {
 	public Engine(Serializable rootValue, Serializable engineValue) {
 		super(false);
 		root = buildRoot(rootValue);
-		init(null, Collections.emptyList(), Statics.ENGINE_VALUE, Collections.emptyList());
 		cacheLocal.set(buildCache(new Transaction<>(this)));
+		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
 	}
 
 	@Override
@@ -40,15 +38,16 @@ public class Engine extends Generic implements EngineService<Generic> {
 	}
 
 	@Override
-	public Cache<Generic> start(Cache<Generic> cache) {
+	public Cache<Generic> start(org.genericsystem.cache.Cache<Generic> cache) {
 		if (!equals(cache.getEngine()))
 			throw new IllegalStateException();
-		cacheLocal.set(cache);
-		return cache;
+		// TODO KK
+		cacheLocal.set((Cache) cache);
+		return (Cache) cache;
 	}
 
 	@Override
-	public void stop(Cache<Generic> cache) {
+	public void stop(org.genericsystem.cache.Cache<Generic> cache) {
 		assert cacheLocal.get() == cache;
 		cacheLocal.set(null);
 	}
@@ -86,25 +85,5 @@ public class Engine extends Generic implements EngineService<Generic> {
 	@Override
 	public Generic getAlive() {
 		return this;
-	}
-
-	@Override
-	public Generic setGenericInSystemCache(Generic generic) {
-		assert generic != null;
-		Generic result = generics.putIfAbsent(generic, generic);
-		return result != null ? result : generic;
-	}
-
-	public Generic getGenericOfVertexFromSystemCache(Generic vertex) {
-		if (vertex.isRoot())
-			return this;
-		return generics.get(vertex);
-	}
-
-	@Override
-	public Generic getGenericOfVertexFromSystemCache(Vertex vertex) {
-		if (vertex.isRoot())
-			return this;
-		return generics.get(vertex);
 	}
 }
