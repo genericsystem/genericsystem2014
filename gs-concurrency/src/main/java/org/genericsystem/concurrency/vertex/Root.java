@@ -12,15 +12,21 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 
 	private final TsGenerator generator = new TsGenerator();
 
-	private final SystemCache<Vertex> systemCache = new SystemCache<Vertex>(this);
+	private final SystemCache<Vertex> systemCache;
 
 	public Root(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
 	}
 
 	public Root(Serializable value, Class<?>... userClasses) {
+		this(Statics.ENGINE_VALUE, null, userClasses);
+	}
+
+	public Root(Serializable value, SystemCache<Vertex> systemCache, Class<?>... userClasses) {
 		init(false, null, Collections.emptyList(), value, Collections.emptyList());
-		systemCache.init(userClasses);
+		lifeManager = buildLifeManager();
+		this.systemCache = systemCache != null ? systemCache : new SystemCache<Vertex>(this);
+		this.systemCache.init(userClasses);
 	}
 
 	@Override
@@ -46,18 +52,6 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 	@Override
 	public boolean isRoot() {
 		return RootService.super.isRoot();
-	}
-
-	@Override
-	public Root newT() {
-		Root rootConcurrency = new Root();
-		rootConcurrency.lifeManager = buildLifeManager();
-		return rootConcurrency;
-	}
-
-	@Override
-	public Root[] newTArray(int dim) {
-		return new Root[dim];
 	}
 
 	@Override
