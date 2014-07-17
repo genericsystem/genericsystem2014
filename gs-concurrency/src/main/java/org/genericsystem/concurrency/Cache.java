@@ -1,12 +1,15 @@
 package org.genericsystem.concurrency;
 
-public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache.Cache<T> implements Context<T> {
+import org.genericsystem.kernel.AbstractVertex;
+import org.genericsystem.kernel.services.RootService;
 
-	public Cache(EngineService<T> engine) {
-		this(new Transaction<T>(engine));
+public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends org.genericsystem.cache.Cache<T, U, V, W> implements Context<T, U, V, W> {
+
+	public Cache(U engine) {
+		this(new Transaction<T, U, V, W>(engine));
 	}
 
-	public Cache(Context<T> subContext) {
+	public Cache(org.genericsystem.cache.Context<T, U, V, W> subContext) {
 		super(subContext);
 	}
 
@@ -16,18 +19,18 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 	}
 
 	@Override
-	public Context<T> getSubContext() {
-		return (Context<T>) super.getSubContext();
+	public Context<T, U, V, W> getSubContext() {
+		return (Context<T, U, V, W>) super.getSubContext();
 	}
 
 	@Override
-	public Cache<T> mountNewCache() {
-		return (Cache<T>) super.mountNewCache();
+	public Cache<T, U, V, W> mountNewCache() {
+		return (Cache<T, U, V, W>) super.mountNewCache();
 	}
 
 	@Override
-	public EngineService<T> getEngine() {
-		return (EngineService<T>) subContext.getEngine();
+	public U getEngine() {
+		return subContext.getEngine();
 	}
 
 }

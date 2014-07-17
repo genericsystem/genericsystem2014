@@ -1,16 +1,8 @@
-package org.genericsystem.impl;
+package org.genericsystem.kernel.services;
 
 import java.util.Objects;
-import org.genericsystem.kernel.services.AncestorsService;
-import org.genericsystem.kernel.services.ApiService;
-import org.genericsystem.kernel.services.RootService;
 
-public interface EngineService<T extends GenericService<T, U>, U extends EngineService<T, U>> extends RootService<T, U>, GenericService<T, U> {
-
-	// @Override
-	// default T find(Class<?> clazz) {
-	// return (T) ((AbstractGeneric) this).wrap(((AbstractGeneric) this).getVertex().find(clazz));
-	// }
+public interface RootService<T extends VertexService<T, U>, U extends RootService<T, U>> extends VertexService<T, U> {
 
 	@Override
 	default int getLevel() {
@@ -28,14 +20,8 @@ public interface EngineService<T extends GenericService<T, U>, U extends EngineS
 		return (U) this;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	default T getMeta() {
-		return (T) this;
-	}
-
 	@SuppressWarnings("unchecked")
-	@Override
 	default T getAlive() {
 		return (T) this;
 	}
@@ -46,4 +32,8 @@ public interface EngineService<T extends GenericService<T, U>, U extends EngineS
 			return true;
 		return Objects.equals(getValue(), service.getValue()) && AncestorsService.equivComponents(getComponents(), service.getComponents());
 	}
+
+	default void rollback() {};
+
+	T find(Class<?> clazz);
 }

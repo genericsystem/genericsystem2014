@@ -1,20 +1,17 @@
 package org.genericsystem.cache;
 
-public interface EngineService<T extends AbstractGeneric<T>> extends org.genericsystem.impl.EngineService<T>, GenericService<T> {
+import org.genericsystem.kernel.AbstractVertex;
+import org.genericsystem.kernel.services.RootService;
 
-	default Cache<T> buildCache(Context<T> subContext) {
-		return new Cache<>(subContext);
+public interface EngineService<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends GenericService<T, U, V, W>, org.genericsystem.impl.EngineService<T, U> {
+
+	default Cache<T, U, V, W> buildCache(Context<T, U, V, W> subContext) {
+		return new Cache<T, U, V, W>(subContext);
 	}
 
-	Cache<T> start(Cache<T> cache);
+	Cache<T, U, V, W> start(Cache<T, U, V, W> cache);
 
-	void stop(Cache<T> cache);
-
-	@Override
-	// TODO necessary for eclipse ?
-	default T getMap() {
-		return find(SystemMap.class);
-	}
+	void stop(Cache<T, U, V, W> cache);
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -23,11 +20,6 @@ public interface EngineService<T extends AbstractGeneric<T>> extends org.generic
 	}
 
 	@Override
-	default EngineService<T> getRoot() {
-		return this;
-	}
-
-	@Override
-	public Cache<T> getCurrentCache();
+	public Cache<T, U, V, W> getCurrentCache();
 
 }

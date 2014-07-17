@@ -8,7 +8,7 @@ import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.services.ApiService;
 
-public class Engine extends Generic implements EngineService<Generic> {
+public class Engine extends Generic implements EngineService<Generic, Engine> {
 
 	private final Root root;
 
@@ -21,8 +21,8 @@ public class Engine extends Generic implements EngineService<Generic> {
 		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
 	}
 
-	@Override
-	public Root buildRoot(Serializable value) {
+	@SuppressWarnings("static-method")
+	Root buildRoot(Serializable value) {
 		return new Root(value);
 	}
 
@@ -32,23 +32,23 @@ public class Engine extends Generic implements EngineService<Generic> {
 	}
 
 	@Override
-	public Generic getMeta() {
-		return this;
-	}
-
-	@Override
 	public Engine getRoot() {
-		return this;
+		return EngineService.super.getRoot();
 	}
 
 	@Override
-	public Generic getAlive() {
-		return this;
+	public Engine getAlive() {
+		return (Engine) EngineService.super.getAlive();
 	}
 
 	@Override
-	public boolean equiv(ApiService<? extends ApiService<?>> service) {
+	public boolean equiv(ApiService<? extends ApiService<?, ?>, ?> service) {
 		return EngineService.super.equiv(service);
+	}
+
+	@Override
+	public boolean isRoot() {
+		return EngineService.super.isRoot();
 	}
 
 	@Override

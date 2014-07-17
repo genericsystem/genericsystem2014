@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
 
-public interface DependenciesService<T extends VertexService<T>> extends ApiService<T> {
+public interface DependenciesService<T extends VertexService<T, U>, U extends RootService<T, U>> extends ApiService<T, U> {
 
 	@Override
 	default boolean isAncestorOf(T dependency) {
@@ -16,7 +16,8 @@ public interface DependenciesService<T extends VertexService<T>> extends ApiServ
 
 	default boolean dependsFrom(T meta, Serializable value, List<T> components) {
 		// perhaps we have to adjust meta here
-		return inheritsFrom(meta, value, components) || getComponentsStream().filter(component -> component != null).anyMatch(component -> component.dependsFrom(meta, value, components)) || (!isRoot() && getMeta().dependsFrom(meta, value, components));
+		return inheritsFrom(meta, value, components) || getComponentsStream().filter(component -> component != null && component != this).anyMatch(component -> component.dependsFrom(meta, value, components))
+				|| (!isRoot() && getMeta().dependsFrom(meta, value, components));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -31,6 +32,6 @@ public interface DependenciesService<T extends VertexService<T>> extends ApiServ
 
 	@Override
 	default Snapshot<T> getAllInstances() {
-		return () -> getAllInheritings().stream().map(inheriting -> ((DependenciesService<T>) inheriting).getInstances().stream()).flatMap(x -> x).iterator();// .reduce(Stream.empty(), Stream::concat);
+		return () -> getAllInheritings().stream().map(inheriting -> inheriting.getInstances().stream()).flatMap(x -> x).iterator();// .reduce(Stream.empty(), Stream::concat);
 	}
 }

@@ -4,12 +4,10 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.exceptions.AmbiguousSelectionException;
 import org.genericsystem.kernel.exceptions.CrossEnginesAssignementsException;
 
-public interface BindingService<T extends VertexService<T>> extends ApiService<T> {
+public interface BindingService<T extends VertexService<T, U>, U extends RootService<T, U>> extends ApiService<T, U> {
 
 	@Override
 	default void checkSameEngine(List<T> components) {
@@ -42,7 +40,7 @@ public interface BindingService<T extends VertexService<T>> extends ApiService<T
 		meta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
 		if (meta != this)
 			return meta.getInstance(value, components);
-		for (T instance : (Snapshot<T>) (((DependenciesService<?>) meta).getInstances()))
+		for (T instance : meta.getInstances())
 			if (instance.equiv(meta, value, Arrays.asList(components)))
 				return instance;
 		return null;

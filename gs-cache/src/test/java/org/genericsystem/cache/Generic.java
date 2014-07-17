@@ -1,6 +1,9 @@
 package org.genericsystem.cache;
 
-public class Generic extends AbstractGeneric<Generic> implements GenericService<Generic> {
+import org.genericsystem.kernel.Root;
+import org.genericsystem.kernel.Vertex;
+
+public class Generic extends AbstractGeneric<Generic, Engine, Vertex, Root> implements GenericService<Generic, Engine, Vertex, Root> {
 
 	@Override
 	public Generic newT() {

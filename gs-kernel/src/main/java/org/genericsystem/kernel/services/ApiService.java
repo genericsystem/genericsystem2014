@@ -5,14 +5,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
-import org.genericsystem.kernel.RootService;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.exceptions.RollbackException;
 import org.genericsystem.kernel.services.SystemPropertiesService.AxedPropertyClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public interface ApiService<T extends VertexService<T>> {
+public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, U>> {
 
 	static Logger log = LoggerFactory.getLogger(ApiService.class);
 
@@ -32,25 +31,25 @@ public interface ApiService<T extends VertexService<T>> {
 
 	T getWeakAlive();
 
-	boolean equiv(ApiService<? extends ApiService<?>> service);
+	boolean equiv(ApiService<? extends ApiService<?, ?>, ?> service);
 
-	boolean equiv(ApiService<?> meta, Serializable value, List<? extends ApiService<?>> components);
+	boolean equiv(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components);
 
-	boolean weakEquiv(ApiService<? extends ApiService<?>> service);
+	boolean weakEquiv(ApiService<? extends ApiService<?, ?>, ?> service);
 
-	boolean weakEquiv(ApiService<?> meta, Serializable value, List<? extends ApiService<?>> components);
+	boolean weakEquiv(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components);
 
 	WeakPredicate getWeakPredicate();
 
-	boolean singularOrReferential(List<? extends ApiService<?>> components, List<? extends ApiService<?>> otherComponents);
+	boolean singularOrReferential(List<? extends ApiService<?, ?>> components, List<? extends ApiService<?, ?>> otherComponents);
 
-	boolean weakEquiv(List<? extends ApiService<?>> components, List<? extends ApiService<?>> otherComponents);
+	boolean weakEquiv(List<? extends ApiService<?, ?>> components, List<? extends ApiService<?, ?>> otherComponents);
 
 	BiPredicate<Serializable, Serializable> getValuesBiPredicate();
 
 	@FunctionalInterface
 	public interface WeakPredicate {
-		boolean test(Serializable value, List<? extends ApiService<?>> components, Serializable otherValue, List<? extends ApiService<?>> otherComponents);
+		boolean test(Serializable value, List<? extends ApiService<?, ?>> components, Serializable otherValue, List<? extends ApiService<?, ?>> otherComponents);
 	}
 
 	T[] coerceToArray(Object... array);
@@ -59,7 +58,7 @@ public interface ApiService<T extends VertexService<T>> {
 
 	int getLevel();
 
-	RootService<T> getRoot();
+	U getRoot();
 
 	boolean isMeta();
 
@@ -82,8 +81,6 @@ public interface ApiService<T extends VertexService<T>> {
 	void checkSameEngine(List<T> components);
 
 	T adjustMeta(List<T> overrides, Serializable subValue, List<T> subComponents);
-
-	// boolean isMetaOf(T subMeta, Serializable value, List<T> overrides, List<T> subComponents);
 
 	@SuppressWarnings("unchecked")
 	T getInstance(Serializable value, T... components);

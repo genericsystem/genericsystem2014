@@ -1,10 +1,12 @@
 package org.genericsystem.cache;
 
 import java.util.LinkedHashSet;
+import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Snapshot;
-import org.genericsystem.kernel.Vertex;
+import org.genericsystem.kernel.services.RootService;
 
-public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.genericsystem.impl.AbstractGeneric<T> implements GenericService<T> {
+public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends org.genericsystem.impl.AbstractGeneric<T, U, V, W> implements
+GenericService<T, U, V, W> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public T plug() {
@@ -18,17 +20,17 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.
 	}
 
 	@Override
-	protected Vertex getVertex() {
+	protected V getVertex() {
 		return super.getVertex();
 	}
 
 	@Override
-	protected Vertex unwrap() {
+	protected V unwrap() {
 		return super.unwrap();
 	}
 
 	@Override
-	protected T wrap(Vertex vertex) {
+	protected T wrap(V vertex) {
 		return super.wrap(vertex);
 	}
 

@@ -3,16 +3,15 @@ package org.genericsystem.concurrency;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Objects;
-
 import org.genericsystem.concurrency.vertex.Root;
+import org.genericsystem.concurrency.vertex.Vertex;
 import org.genericsystem.kernel.Statics;
-import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.ApiService;
 
-public class Engine extends Generic implements EngineService<Generic> {
+public class Engine extends Generic implements EngineService<Generic, Engine, Vertex, Root> {
 
-	private final ThreadLocal<Cache<Generic>> cacheLocal = new ThreadLocal<>();
+	private final ThreadLocal<Cache<Generic, Engine, Vertex, Root>> cacheLocal = new ThreadLocal<>();
 
 	private final Root root;
 
@@ -22,11 +21,10 @@ public class Engine extends Generic implements EngineService<Generic> {
 
 	public Engine(Serializable rootValue, Serializable engineValue) {
 		root = buildRoot(rootValue);
-		cacheLocal.set(buildCache(new Transaction<>(this)));
+		cacheLocal.set(buildCache(new Transaction<Generic, Engine, Vertex, Root>(this)));
 		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
 	}
 
-	@Override
 	public Root buildRoot(Serializable value) {
 		return new Root(value);
 	}
@@ -37,30 +35,30 @@ public class Engine extends Generic implements EngineService<Generic> {
 	}
 
 	@Override
-	public Cache<Generic> start(org.genericsystem.cache.Cache<Generic> cache) {
+	public Cache<Generic, Engine, Vertex, Root> start(org.genericsystem.cache.Cache<Generic, Engine, Vertex, Root> cache) {
 		if (!equals(cache.getEngine()))
 			throw new IllegalStateException();
 		// TODO KK
-		cacheLocal.set((Cache) cache);
-		return (Cache) cache;
+		cacheLocal.set((Cache<Generic, Engine, Vertex, Root>) cache);
+		return (Cache<Generic, Engine, Vertex, Root>) cache;
 	}
 
 	@Override
-	public void stop(org.genericsystem.cache.Cache<Generic> cache) {
+	public void stop(org.genericsystem.cache.Cache<Generic, Engine, Vertex, Root> cache) {
 		assert cacheLocal.get() == cache;
 		cacheLocal.set(null);
 	}
 
 	@Override
-	public Cache<Generic> getCurrentCache() {
-		Cache<Generic> currentCache = cacheLocal.get();
+	public Cache<Generic, Engine, Vertex, Root> getCurrentCache() {
+		Cache<Generic, Engine, Vertex, Root> currentCache = cacheLocal.get();
 		if (currentCache == null)
 			throw new IllegalStateException();
 		return currentCache;
 	}
 
 	@Override
-	public boolean equiv(ApiService<?> service) {
+	public boolean equiv(ApiService<?, ?> service) {
 		if (this == service)
 			return true;
 		return Objects.equals(getValue(), service.getValue()) && AncestorsService.equivComponents(getComponents(), service.getComponents());
@@ -72,17 +70,13 @@ public class Engine extends Generic implements EngineService<Generic> {
 	}
 
 	@Override
-	public Generic getMeta() {
-		return this;
-	}
-
-	@Override
 	public Engine getRoot() {
-		return this;
+		return EngineService.super.getRoot();
 	}
 
 	@Override
 	public Generic getAlive() {
-		return this;
+		return EngineService.super.getAlive();
 	}
+
 }

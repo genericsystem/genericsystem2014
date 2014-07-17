@@ -2,16 +2,14 @@ package org.genericsystem.cache;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.Objects;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
-import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.ApiService;
 
-public class Engine extends Generic implements EngineService<Generic> {
+public class Engine extends Generic implements EngineService<Generic, Engine, Vertex, Root> {
 
-	private final ThreadLocal<Cache<Generic>> cacheLocal = new ThreadLocal<>();
+	private final ThreadLocal<Cache<Generic, Engine, Vertex, Root>> cacheLocal = new ThreadLocal<>();
 
 	private final Root root;
 
@@ -25,7 +23,7 @@ public class Engine extends Generic implements EngineService<Generic> {
 		cacheLocal.set(buildCache(new Transaction<>(this)));
 	}
 
-	@Override
+	@SuppressWarnings("static-method")
 	public Root buildRoot(Serializable value) {
 		return new Root(value);
 	}
@@ -36,7 +34,7 @@ public class Engine extends Generic implements EngineService<Generic> {
 	}
 
 	@Override
-	public Cache<Generic> start(Cache<Generic> cache) {
+	public Cache<Generic, Engine, Vertex, Root> start(Cache<Generic, Engine, Vertex, Root> cache) {
 		if (!equals(cache.getEngine()))
 			throw new IllegalStateException();
 		cacheLocal.set(cache);
@@ -44,24 +42,17 @@ public class Engine extends Generic implements EngineService<Generic> {
 	}
 
 	@Override
-	public void stop(Cache<Generic> cache) {
+	public void stop(Cache<Generic, Engine, Vertex, Root> cache) {
 		assert cacheLocal.get() == cache;
 		cacheLocal.set(null);
 	}
 
 	@Override
-	public Cache<Generic> getCurrentCache() {
-		Cache<Generic> currentCache = cacheLocal.get();
+	public Cache<Generic, Engine, Vertex, Root> getCurrentCache() {
+		Cache<Generic, Engine, Vertex, Root> currentCache = cacheLocal.get();
 		if (currentCache == null)
 			throw new IllegalStateException();
 		return currentCache;
-	}
-
-	@Override
-	public boolean equiv(ApiService<?> service) {
-		if (this == service)
-			return true;
-		return Objects.equals(getValue(), service.getValue()) && AncestorsService.equivComponents(getComponents(), service.getComponents());
 	}
 
 	@Override
@@ -70,17 +61,22 @@ public class Engine extends Generic implements EngineService<Generic> {
 	}
 
 	@Override
-	public Generic getMeta() {
-		return this;
-	}
-
-	@Override
 	public Engine getRoot() {
-		return this;
+		return EngineService.super.getRoot();
 	}
 
 	@Override
-	public Generic getAlive() {
-		return this;
+	public Engine getAlive() {
+		return (Engine) EngineService.super.getAlive();
+	}
+
+	@Override
+	public boolean equiv(ApiService<? extends ApiService<?, ?>, ?> service) {
+		return EngineService.super.equiv(service);
+	}
+
+	@Override
+	public boolean isRoot() {
+		return EngineService.super.isRoot();
 	}
 }

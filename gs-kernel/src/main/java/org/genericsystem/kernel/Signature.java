@@ -4,13 +4,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
 import org.genericsystem.kernel.exceptions.NotAliveException;
-import org.genericsystem.kernel.services.AncestorsService;
-import org.genericsystem.kernel.services.DisplayService;
+import org.genericsystem.kernel.services.RootService;
 import org.genericsystem.kernel.services.VertexService;
 
-public abstract class Signature<T extends Signature<T>> implements VertexService<T> {
+public abstract class Signature<T extends Signature<T, U>, U extends RootService<T, U>> implements VertexService<T, U> {
+
 	private T meta;
 	private List<T> components;
 	private Serializable value;
@@ -37,7 +36,7 @@ public abstract class Signature<T extends Signature<T>> implements VertexService
 
 	public void checkIsAlive() {
 		if (!this.isAlive())
-			((AncestorsService<?>) this).rollbackAndThrowException(new NotAliveException(((DisplayService<?>) this).info()));
+			rollbackAndThrowException(new NotAliveException(info()));
 	}
 
 	@Override

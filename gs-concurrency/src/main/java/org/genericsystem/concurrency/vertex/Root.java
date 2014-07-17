@@ -1,72 +1,55 @@
 package org.genericsystem.concurrency.vertex;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
-
 import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.SystemCache;
+import org.genericsystem.kernel.services.ApiService;
 
-public class Root extends org.genericsystem.kernel.Root implements RootService<org.genericsystem.kernel.Vertex> {
+public class Root extends Vertex implements RootService<Vertex, Root> {
 
 	private final TsGenerator generator = new TsGenerator();
 
-	// TODO KK DEBUT KK cf TsProvider
-	private final TsProvider tsProvider = new TsProvider(pickNewTs());
-
-	public TsProvider getTsProvider() {
-		return tsProvider;
-	}
-
-	class TsProvider {
-
-		long ts;
-
-		public TsProvider(long ts) {
-			this.ts = ts;
-		}
-
-		public void updateTs(long ts) {
-			this.ts = ts;
-		}
-
-		public long getTs() {
-			return ts;
-		}
-	}
-
-	// TODO KK FIN KK
-
-	// TODO KK DEBUT KK cf VertexConcurrency
-	private LifeManager lifeManager;
-
-	void restore(Long designTs, long birthTs, long lastReadTs, long deathTs) {
-		lifeManager = buildLifeManager(designTs, birthTs, lastReadTs, deathTs);
-	}
-
-	@Override
-	public LifeManager getLifeManager() {
-		return lifeManager;
-	}
-
-	public boolean isAlive(long ts) {
-		return lifeManager.isAlive(ts);
-	}
-
-	// TODO KK FIN KK
+	private final SystemCache<Vertex> systemCache = new SystemCache<Vertex>(this);
 
 	public Root(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
 	}
 
 	public Root(Serializable value, Class<?>... userClasses) {
-		super(value, userClasses);
-		lifeManager = buildLifeManager();
+		init(null, Collections.emptyList(), value, Collections.emptyList());
+		systemCache.init(userClasses);
+	}
+
+	@Override
+	public Vertex find(Class<?> clazz) {
+		return systemCache.get(clazz);
+	}
+
+	@Override
+	public Root getRoot() {
+		return RootService.super.getRoot();
+	}
+
+	@Override
+	public Root getAlive() {
+		return (Root) RootService.super.getAlive();
+	}
+
+	@Override
+	public boolean equiv(ApiService<? extends ApiService<?, ?>, ?> service) {
+		return RootService.super.equiv(service);
+	}
+
+	@Override
+	public boolean isRoot() {
+		return RootService.super.isRoot();
 	}
 
 	@Override
 	public Root newT() {
-		Root rootConcurrency = new Root();
-		rootConcurrency.lifeManager = buildLifeManager();
-		return rootConcurrency;
+		return new Root();
 	}
 
 	@Override
@@ -74,6 +57,7 @@ public class Root extends org.genericsystem.kernel.Root implements RootService<o
 		return new Root[dim];
 	}
 
+	@Override
 	public long pickNewTs() {
 		return generator.pickNewTs();
 	}
