@@ -4,15 +4,13 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.genericsystem.kernel.AbstractVertex;
+import org.genericsystem.kernel.Dependencies;
+import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Snapshot;
-import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.services.AncestorsService;
+import org.genericsystem.kernel.services.RootService;
 
-public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends AbstractVertex<T> implements GenericService<T> {
-
-	public AbstractGeneric(boolean throwExistException) {
-		super(throwExistException);
-	}
+public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends AbstractVertex<T, U> implements GenericService<T, U> {
 
 	@Override
 	public boolean equals(Object obj) {
@@ -20,7 +18,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 			return true;
 		if (!(obj instanceof AncestorsService))
 			return false;
-		AncestorsService<?> service = (AncestorsService<?>) obj;
+		AncestorsService<?, ?> service = (AncestorsService<?, ?>) obj;
 		return equiv(service);
 	}
 
@@ -37,25 +35,26 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 
 	@Override
 	public boolean unplug() {
-		Vertex vertex = getVertex();
+		AbstractVertex<?, ?> vertex = getVertex();
 		return vertex != null && getVertex().unplug();
 	}
 
 	@SuppressWarnings("unchecked")
-	protected T wrap(Vertex vertex) {
-		EngineService<T> engine = getRoot();
+	protected T wrap(V vertex) {
+		U engine = getRoot();
 		T cachedGeneric = engine.getGenericOfVertexFromSystemCache(vertex);
 		if (cachedGeneric != null)
 			return cachedGeneric;
 		if (vertex.isRoot())
 			return (T) getRoot();
-		Vertex alive = vertex.getAlive();
+		V alive = vertex.getAlive();
 		T meta = wrap(alive.getMeta());
-		return meta.newT(alive.isThrowExistException()).init(meta, alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList()));
+		return getRoot().setGenericInSystemCache(
+				meta.newT().init(alive.isThrowExistException(), meta, alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList())));
 	}
 
-	protected Vertex unwrap() {
-		Vertex alive = getVertex();
+	protected V unwrap() {
+		V alive = getVertex();
 		if (alive != null)
 			return alive;
 		alive = getMeta().unwrap();
@@ -64,11 +63,11 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 		return alive.buildInstance(isThrowExistException(), getSupersStream().map(T::unwrap).collect(Collectors.toList()), getValue(), getComponentsStream().map(T::unwrap).collect(Collectors.toList()));
 	}
 
-	protected Vertex getVertex() {
-		Vertex pluggedMeta = getMeta().getVertex();
+	protected V getVertex() {
+		V pluggedMeta = getMeta().getVertex();
 		if (pluggedMeta == null)
 			return null;
-		for (Vertex instance : pluggedMeta.getInstances())
+		for (V instance : pluggedMeta.getInstances())
 			if (equiv(instance))
 				return instance;
 		return null;
@@ -109,6 +108,25 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 	@Override
 	public Snapshot<T> getSuperComposites(T superT) {
 		return () -> getVertex().getSuperComposites(superT.getVertex()).stream().map(this::wrap).iterator();
+	}
 
+	@Override
+	protected Dependencies<T> getInheritingsDependencies() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	protected Dependencies<T> getInstancesDependencies() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	protected Dependencies<DependenciesEntry<T>> getMetaComposites() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	protected Dependencies<DependenciesEntry<T>> getSuperComposites() {
+		throw new UnsupportedOperationException();
 	}
 }

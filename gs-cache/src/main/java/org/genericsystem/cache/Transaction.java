@@ -2,26 +2,28 @@ package org.genericsystem.cache;
 
 import java.util.Collections;
 import java.util.stream.Collectors;
+import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Snapshot;
-import org.genericsystem.kernel.Vertex;
+import org.genericsystem.kernel.services.RootService;
 
-public class Transaction<T extends AbstractGeneric<T>> implements Context<T> {
+public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> implements Context<T, U, V, W> {
 
-	private transient final EngineService<T> engine;
+	private transient final U engine;
 
-	public Transaction(EngineService<T> engine) {
+	public Transaction(U engine) {
 		this.engine = engine;
 	}
 
 	@Override
 	public boolean isAlive(T generic) {
-		Vertex avatar = generic.getVertex();
+		AbstractVertex<?, ?> avatar = generic.getVertex();
 		return avatar != null && avatar.isAlive();
 	}
 
 	@Override
 	public void simpleAdd(T generic) {
-		generic.getMeta().getVertex().addInstance(generic.getSupersStream().map(g -> g.unwrap()).collect(Collectors.toList()), generic.getValue(), generic.getComponentsStream().map(g -> g.unwrap()).toArray(Vertex[]::new));
+		V vertex = generic.getMeta().getVertex();
+		vertex.addInstance(generic.getSupersStream().map(g -> g.unwrap()).collect(Collectors.toList()), generic.getValue(), vertex.coerceToArray(generic.getComponentsStream().map(T::unwrap).toArray()));
 	}
 
 	// TODO : check performance
@@ -33,7 +35,7 @@ public class Transaction<T extends AbstractGeneric<T>> implements Context<T> {
 	}
 
 	@Override
-	public EngineService<T> getEngine() {
+	public U getEngine() {
 		return engine;
 	}
 

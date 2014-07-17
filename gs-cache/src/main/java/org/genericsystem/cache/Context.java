@@ -1,17 +1,19 @@
 package org.genericsystem.cache;
 
+import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
+import org.genericsystem.kernel.services.RootService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 //TODO KK should be an abstract class : most of methods should be protected!
-public interface Context<T extends AbstractGeneric<T>> {
+public interface Context<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> {
 
 	static Logger log = LoggerFactory.getLogger(Context.class);
 
-	EngineService<T> getEngine();
+	U getEngine();
 
 	boolean isAlive(T generic);
 

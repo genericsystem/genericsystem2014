@@ -10,28 +10,27 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.AbstractDependenciesComputer.DependenciesComputer;
 import org.genericsystem.kernel.AbstractDependenciesComputer.PotentialDependenciesComputer;
+import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Statics.Supers;
 import org.genericsystem.kernel.exceptions.AliveConstraintViolationException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 import org.genericsystem.kernel.exceptions.ExistsException;
+import org.genericsystem.kernel.exceptions.NotFoundException;
 import org.genericsystem.kernel.exceptions.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.kernel.exceptions.RollbackException;
+import org.genericsystem.kernel.services.RootService;
 import org.genericsystem.kernel.services.VertexService;
 
-public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signature<T> implements VertexService<T> {
+public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends RootService<T, U>> extends Signature<T, U> implements VertexService<T, U> {
 
 	protected List<T> supers;
-	protected final boolean throwExistException;
-
-	public AbstractVertex(boolean throwExistException) {
-		this.throwExistException = throwExistException;
-	}
 
 	@SuppressWarnings("unchecked")
-	protected T init(T meta, List<T> supers, Serializable value, List<T> components) {
-		super.init(meta, value, components);
+	protected T init(boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
+		super.init(throwExistException, meta, value, components);
 		this.supers = supers;
 		checkDependsMetaComponents();
 		checkSupers(supers);
@@ -69,18 +68,10 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 		return supers;
 	}
 
-	public boolean isThrowExistException() {
-		return throwExistException;
-	}
-
 	@SuppressWarnings("static-method")
 	protected <U> Dependencies<U> buildDependencies() {
 		return new DependenciesImpl<U>();
 	}
-
-	public abstract T plug();
-
-	public abstract boolean unplug();
 
 	protected void forceRemove() {
 		computeDependencies().forEach(this::simpleRemove);
@@ -149,10 +140,10 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 	public T update(List<T> supersToAdd, Serializable newValue, T... newComponents) {
 		if (newComponents.length != getComponents().size())
 			rollbackAndThrowException(new IllegalArgumentException());
-		return rebuildAll(() -> getMeta().bindInstance(isThrowExistException(), new Supers<T>(getSupers(), supersToAdd), newValue, newComponents), computeDependencies());
+		return rebuildAll(() -> getMeta().bindInstance(isThrowExistException(), new Supers<T, U>(getSupers(), supersToAdd), newValue, newComponents), computeDependencies());
 	}
 
-	private static class ConvertMap<T extends AbstractVertex<T>> extends HashMap<T, T> {
+	private static class ConvertMap<T extends AbstractVertex<T, U>, U extends RootService<T, U>> extends HashMap<T, T> {
 		private static final long serialVersionUID = 5003546962293036021L;
 
 		T convert(T dependency) {
@@ -196,7 +187,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 
 	@SuppressWarnings("unchecked")
 	T rebuildAll(Supplier<T> rebuilder, LinkedHashSet<T> dependenciesToRebuild) {
-		ConvertMap<T> convertMap = new ConvertMap<>();
+		ConvertMap<T, U> convertMap = new ConvertMap<>();
 		dependenciesToRebuild.forEach(this::simpleRemove);
 		T build = rebuilder.get();
 		dependenciesToRebuild.remove(this);
@@ -223,7 +214,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 		return () -> new InheritanceComputer<>((T) AbstractVertex.this, origin, level).inheritanceIterator();
 	}
 
-	abstract protected T newT(boolean throwExistException);
+	abstract protected T newT();
 
 	abstract protected T[] newTArray(int dim);
 
@@ -243,7 +234,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 		components.forEach(x -> ((Signature) x).checkIsAlive());
 		List<T> supers = new ArrayList<T>(new SupersComputer(level, this, overrides, value, components));
 		checkOverridesAreReached(overrides, supers);
-		return ((T) ((AbstractVertex) newT(throwExistException).init((T) this, supers, value, components)));
+		return ((T) ((AbstractVertex) newT().init(throwExistException, (T) this, supers, value, components)));
 	}
 
 	private boolean allOverridesAreReached(List<T> overrides, List<T> supers) {
@@ -257,11 +248,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 
 	@Override
 	public void rollbackAndThrowException(Exception exception) throws RollbackException {
-		((RootService<?>) getRoot()).rollback();
+		getRoot().rollback();
 		throw new RollbackException(exception);
 	}
 
-	static <T extends VertexService<T>> boolean componentsDepends(SingularsLazyCache singulars, List<T> subComponents, List<T> superComponents) {
+	static <T extends VertexService<T, U>, U extends RootService<T, U>> boolean componentsDepends(SingularsLazyCache singulars, List<T> subComponents, List<T> superComponents) {
 		int subIndex = 0;
 		loop: for (T superComponent : superComponents) {
 			for (; subIndex < subComponents.size(); subIndex++) {
@@ -306,11 +297,133 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> extends Signat
 		return isSuperOf(getMeta(), getValue(), getComponents(), superMeta, superValue, superComponents);
 	}
 
-	private static <T extends AbstractVertex<T>> boolean isSuperOf(T subMeta, Serializable subValue, List<T> subComponents, T superMeta, Serializable superValue, List<T> superComponents) {
+	private static <T extends AbstractVertex<T, U>, U extends RootService<T, U>> boolean isSuperOf(T subMeta, Serializable subValue, List<T> subComponents, T superMeta, Serializable superValue, List<T> superComponents) {
 		if (!subMeta.inheritsFrom(superMeta))
 			return false;
 		if (!subMeta.componentsDepends(subComponents, superComponents))
 			return false;
 		return subMeta.getValuesBiPredicate().test(subValue, superValue);
 	}
+
+	@Override
+	public Snapshot<T> getComposites() {
+		return () -> getMetaComposites().stream().map(entry -> entry.getValue().stream()).flatMap(x -> x).iterator();
+	}
+
+	protected abstract Dependencies<DependenciesEntry<T>> getMetaComposites();
+
+	protected abstract Dependencies<DependenciesEntry<T>> getSuperComposites();
+
+	@Override
+	public Snapshot<T> getMetaComposites(T meta) {
+		return () -> {
+			for (DependenciesEntry<T> entry : getMetaComposites())
+				if (meta.equals(entry.getKey()))
+					return entry.getValue().iterator();
+			return Collections.emptyIterator();
+		};
+	};
+
+	@Override
+	public Snapshot<T> getSuperComposites(T superT) {
+		return () -> {
+			for (DependenciesEntry<T> entry : getSuperComposites())
+				if (superT.equals(entry.getKey()))
+					return entry.getValue().iterator();
+			return Collections.emptyIterator();
+		};
+	}
+
+	@SuppressWarnings("unchecked")
+	public T plug() {
+		T result = ((AbstractVertex<T, U>) getMeta()).indexInstance((T) this);
+		getSupersStream().forEach(superGeneric -> ((AbstractVertex<T, U>) superGeneric).indexInheriting((T) this));
+		getComponentsStream().forEach(component -> ((AbstractVertex<T, U>) component).indexByMeta(getMeta(), (T) this));
+		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> ((AbstractVertex<T, U>) component).indexBySuper(superGeneric, (T) this)));
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	public boolean unplug() {
+		boolean result = ((AbstractVertex<T, U>) getMeta()).unIndexInstance((T) this);
+		if (!result)
+			rollbackAndThrowException(new NotFoundException(this.info()));
+		getSupersStream().forEach(superGeneric -> ((AbstractVertex<T, U>) superGeneric).unIndexInheriting((T) this));
+		getComponentsStream().forEach(component -> ((AbstractVertex<T, U>) component).unIndexByMeta(getMeta(), (T) this));
+		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> ((AbstractVertex<T, U>) component).unIndexBySuper(superGeneric, (T) this)));
+		return result;
+	}
+
+	private T indexByMeta(T meta, T composite) {
+		return index(getMetaComposites(), meta, composite);
+	}
+
+	private T indexBySuper(T superVertex, T composite) {
+		return index(getSuperComposites(), superVertex, composite);
+	}
+
+	private static <T extends AbstractVertex<T, U>, U extends RootService<T, U>> T index(Dependencies<DependenciesEntry<T>> multimap, T index, T composite) {
+		for (DependenciesEntry<T> entry : multimap)
+			if (index.equals(entry.getKey()))
+				return entry.getValue().set(composite);
+
+		Dependencies<T> dependencies = composite.buildDependencies();
+		T result = dependencies.set(composite);
+		multimap.set(new DependenciesEntry<T>(index, dependencies));
+		return result;
+	}
+
+	private static <T> boolean unIndex(Dependencies<DependenciesEntry<T>> multimap, T index, T composite) {
+		for (DependenciesEntry<T> entry : multimap)
+			if (index.equals(entry.getKey()))
+				return entry.getValue().remove(composite);
+		return false;
+	}
+
+	private boolean unIndexByMeta(T meta, T composite) {
+		return unIndex(getMetaComposites(), meta, composite);
+	}
+
+	private boolean unIndexBySuper(T superT, T composite) {
+		return unIndex(getSuperComposites(), superT, composite);
+	}
+
+	private static <T> T index(Dependencies<T> dependencies, T dependency) {
+		return dependencies.set(dependency);
+	}
+
+	private static <T> boolean unIndex(Dependencies<T> dependencies, T dependency) {
+		return dependencies.remove(dependency);
+	}
+
+	@Override
+	public Snapshot<T> getInstances() {
+		return getInstancesDependencies();
+	}
+
+	@Override
+	public Snapshot<T> getInheritings() {
+		return getInheritingsDependencies();
+	}
+
+	protected abstract Dependencies<T> getInstancesDependencies();
+
+	protected abstract Dependencies<T> getInheritingsDependencies();
+
+	private T indexInstance(T instance) {
+		return index(getInstancesDependencies(), instance);
+	}
+
+	private T indexInheriting(T inheriting) {
+		return index(getInheritingsDependencies(), inheriting);
+	}
+
+	private boolean unIndexInstance(T instance) {
+		return unIndex(getInstancesDependencies(), instance);
+	}
+
+	private boolean unIndexInheriting(T inheriting) {
+		return unIndex(getInheritingsDependencies(), inheriting);
+	}
+
 }

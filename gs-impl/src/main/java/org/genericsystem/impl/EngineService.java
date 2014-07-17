@@ -1,27 +1,17 @@
 package org.genericsystem.impl;
 
-import java.io.Serializable;
 import java.util.Objects;
-
-import org.genericsystem.kernel.Root;
-import org.genericsystem.kernel.RootService;
-import org.genericsystem.kernel.Statics;
-import org.genericsystem.kernel.Vertex;
+import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.ApiService;
+import org.genericsystem.kernel.services.RootService;
 
-public interface EngineService<T extends GenericService<T>> extends RootService<T>, GenericService<T> {
+public interface EngineService<T extends GenericService<T, U>, U extends EngineService<T, U>> extends RootService<T, U>, GenericService<T, U> {
 
 	// @Override
 	// default T find(Class<?> clazz) {
 	// return (T) ((AbstractGeneric) this).wrap(((AbstractGeneric) this).getVertex().find(clazz));
 	// }
-
-	default Root buildRoot() {
-		return buildRoot(Statics.ENGINE_VALUE);
-	}
-
-	public Root buildRoot(Serializable value);
 
 	@Override
 	default int getLevel() {
@@ -35,8 +25,8 @@ public interface EngineService<T extends GenericService<T>> extends RootService<
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default EngineService<T> getRoot() {
-		return this;
+	default U getRoot() {
+		return (U) this;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -52,25 +42,13 @@ public interface EngineService<T extends GenericService<T>> extends RootService<
 	}
 
 	@Override
-	default boolean equiv(ApiService<? extends ApiService<?>> service) {
+	default boolean equiv(ApiService<? extends ApiService<?, ?>, ?> service) {
 		if (this == service)
 			return true;
 		return Objects.equals(getValue(), service.getValue()) && AncestorsService.equivComponents(getComponents(), service.getComponents());
 	}
 
-	// // @Phantom
-	// @Override
-	// default Snapshot<T> getSuperComposites(T superT) {
-	// return GenericService.super.getSuperComposites(superT);
-	// }
-	//
-	// // @Phantom
-	// @Override
-	// default Snapshot<T> getMetaComposites(T meta) {
-	// return GenericService.super.getMetaComposites(meta);
-	// }
-
-	public T getGenericOfVertexFromSystemCache(Vertex vertex);
+	public T getGenericOfVertexFromSystemCache(AbstractVertex<?, ?> vertex);
 
 	public T setGenericInSystemCache(T generic);
 }

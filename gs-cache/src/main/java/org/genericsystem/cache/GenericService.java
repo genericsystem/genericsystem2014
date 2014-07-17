@@ -1,28 +1,25 @@
 package org.genericsystem.cache;
 
-public interface GenericService<T extends AbstractGeneric<T>> extends org.genericsystem.impl.GenericService<T> {
+import org.genericsystem.kernel.AbstractVertex;
+import org.genericsystem.kernel.services.RootService;
 
-	@Override
+public interface GenericService<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends org.genericsystem.impl.GenericService<T, U> {
+
 	@SuppressWarnings("unchecked")
+	@Override
 	default boolean isAlive() {
 		return getCurrentCache().isAlive((T) this);
 	}
 
-	@Override
 	@SuppressWarnings("unchecked")
-	default T getAlive() {
-		if (isAlive())
-			return (T) this;
-		return null;
-	}
-
-	default Cache<T> getCurrentCache() {
-		return getRoot().getCurrentCache();
-	}
-
 	@Override
-	default EngineService<T> getRoot() {
-		return (EngineService<T>) org.genericsystem.impl.GenericService.super.getRoot();
+	default T getAlive() {
+		// Call buildCache here
+		return isAlive() ? (T) this : null;
+	}
+
+	default Cache<T, U, V, W> getCurrentCache() {
+		return getRoot().getCurrentCache();
 	}
 
 }

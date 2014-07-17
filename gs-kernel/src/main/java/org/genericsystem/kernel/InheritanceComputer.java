@@ -7,8 +7,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.genericsystem.kernel.services.RootService;
 
-class InheritanceComputer<T extends AbstractVertex<T>> extends HashSet<T> {
+class InheritanceComputer<T extends AbstractVertex<T, U>, U extends RootService<T, U>> extends HashSet<T> {
 
 	private static final long serialVersionUID = 1877502935577170921L;
 

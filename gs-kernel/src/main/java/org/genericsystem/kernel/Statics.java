@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import org.genericsystem.kernel.services.RootService;
 import org.genericsystem.kernel.services.VertexService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -125,7 +126,7 @@ public class Statics {
 		}
 	}
 
-	public static class Supers<T extends VertexService<T>> extends ArrayList<T> {
+	public static class Supers<T extends VertexService<T, U>, U extends RootService<T, U>> extends ArrayList<T> {
 		private static final long serialVersionUID = 6163099887384346235L;
 
 		public Supers(List<T> adds) {
