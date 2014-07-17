@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
+import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
@@ -14,10 +15,11 @@ import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 import org.genericsystem.kernel.exceptions.RollbackException;
+import org.genericsystem.kernel.services.RootService;
 
-public class Cache<T extends AbstractGeneric<T>> implements Context<T> {
+public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> implements Context<T, U, V, W> {
 
-	protected Context<T> subContext;
+	protected Context<T, U, V, W> subContext;
 
 	private transient Map<T, Dependencies<T>> inheritingsDependenciesMap;
 	private transient Map<T, Dependencies<T>> instancesDependenciesMap;
@@ -36,11 +38,11 @@ public class Cache<T extends AbstractGeneric<T>> implements Context<T> {
 		removes = new LinkedHashSet<>();
 	}
 
-	public Cache(EngineService<T> engine) {
-		this(new Transaction<T>(engine));
+	public Cache(U engine) {
+		this(new Transaction<T, U, V, W>(engine));
 	}
 
-	public Cache(Context<T> subContext) {
+	public Cache(Context<T, U, V, W> subContext) {
 		this.subContext = subContext;
 		clear();
 	}
@@ -50,21 +52,21 @@ public class Cache<T extends AbstractGeneric<T>> implements Context<T> {
 		return adds.contains(generic) || (!removes.contains(generic) && getSubContext().isAlive(generic));
 	}
 
-	public Cache<T> mountNewCache() {
+	public Cache<T, U, V, W> mountNewCache() {
 		return getEngine().buildCache(this).start();
 	}
 
-	public Cache<T> flushAndUnmount() {
+	public Cache<T, U, V, W> flushAndUnmount() {
 		flush();
-		return subContext instanceof Cache ? ((Cache<T>) subContext).start() : this;
+		return subContext instanceof Cache ? ((Cache<T, U, V, W>) subContext).start() : this;
 	}
 
-	public Cache<T> discardAndUnmount() {
+	public Cache<T, U, V, W> discardAndUnmount() {
 		clear();
-		return subContext instanceof Cache ? ((Cache<T>) subContext).start() : this;
+		return subContext instanceof Cache ? ((Cache<T, U, V, W>) subContext).start() : this;
 	}
 
-	public Cache<T> start() {
+	public Cache<T, U, V, W> start() {
 		return getEngine().start(this);
 	}
 
@@ -141,11 +143,11 @@ public class Cache<T extends AbstractGeneric<T>> implements Context<T> {
 	}
 
 	@Override
-	public EngineService<T> getEngine() {
+	public U getEngine() {
 		return subContext.getEngine();
 	}
 
-	public Context<T> getSubContext() {
+	public Context<T, U, V, W> getSubContext() {
 		return subContext;
 	}
 

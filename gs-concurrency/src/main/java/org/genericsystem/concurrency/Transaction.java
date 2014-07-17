@@ -1,17 +1,18 @@
 package org.genericsystem.concurrency;
 
-import org.genericsystem.concurrency.vertex.Root;
+import org.genericsystem.kernel.AbstractVertex;
+import org.genericsystem.kernel.services.RootService;
 
-public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem.cache.Transaction<T> implements Context<T> {
+public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends org.genericsystem.cache.Transaction<T, U, V, W> implements Context<T, U, V, W> {
 
 	private transient long ts;
 
-	@SuppressWarnings("unchecked")
-	public Transaction(EngineService<T> engine) {
-		this(((Root) ((AbstractGeneric<T>) engine).getVertex()).pickNewTs(), engine);
+	public Transaction(U engine) {
+		// TODO KK pickTs
+		this(0L, engine);
 	}
 
-	public Transaction(long ts, EngineService<T> engine) {
+	public Transaction(long ts, U engine) {
 		super(engine);
 		this.ts = ts;
 	}
@@ -25,28 +26,5 @@ public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem
 	public boolean isAlive(T generic) {
 		return generic.getLifeManager().isAlive(getTs());
 	}
-
-	// TODO clean
-	// @Override
-	// public Snapshot<T> getInheritings(T generic) {
-	// return () -> generic.getVertex() != null ? generic.unwrap().getInheritings().project(generic::wrap).iterator() : Collections.emptyIterator();
-	// }
-	//
-	// @Override
-	// public Snapshot<T> getInstances(T generic) {
-	// return () -> generic.getVertex() != null ? generic.unwrap().getInstances().project(generic::wrap).iterator() : Collections.emptyIterator();
-	// }
-	//
-	// @Override
-	// public CompositesSnapshot<T> getMetaComposites(T generic) {
-	// return () -> generic.getVertex() != null ? generic.unwrap().getMetaComposites().stream().map(x -> new DependenciesEntry<>(generic.wrap(x.getKey()), generic.buildDependencies(() -> x.getValue().stream().map(generic::wrap).iterator()))).iterator()
-	// : Collections.emptyIterator();
-	// }
-	//
-	// @Override
-	// public CompositesSnapshot<T> getSuperComposites(T generic) {
-	// return () -> generic.getVertex() != null ? generic.unwrap().getSuperComposites().stream().map(x -> new DependenciesEntry<>(generic.wrap(x.getKey()), generic.buildDependencies(() -> x.getValue().stream().map(generic::wrap).iterator()))).iterator()
-	// : Collections.emptyIterator();
-	// }
 
 }

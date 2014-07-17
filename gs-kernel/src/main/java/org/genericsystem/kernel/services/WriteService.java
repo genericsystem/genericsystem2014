@@ -4,9 +4,8 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.genericsystem.kernel.RootService;
 
-public interface WriteService<T extends VertexService<T>> extends ApiService<T> {
+public interface WriteService<T extends VertexService<T, U>, U extends RootService<T, U>> extends ApiService<T, U> {
 
 	@Override
 	void remove();
@@ -51,7 +50,7 @@ public interface WriteService<T extends VertexService<T>> extends ApiService<T> 
 
 	@Override
 	default T getMetaAttribute() {
-		RootService<T> root = getRoot();
+		U root = getRoot();
 		return root.getInstance(root.getValue(), coerceToArray(root));
 	}
 

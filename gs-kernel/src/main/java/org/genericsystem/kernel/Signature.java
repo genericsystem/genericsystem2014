@@ -6,17 +6,19 @@ import java.util.List;
 import java.util.Objects;
 
 import org.genericsystem.kernel.exceptions.NotAliveException;
-import org.genericsystem.kernel.services.AncestorsService;
-import org.genericsystem.kernel.services.DisplayService;
+import org.genericsystem.kernel.services.RootService;
 import org.genericsystem.kernel.services.VertexService;
 
-public abstract class Signature<T extends Signature<T>> implements VertexService<T> {
+public abstract class Signature<T extends Signature<T, U>, U extends RootService<T, U>> implements VertexService<T, U> {
+
 	private T meta;
 	private List<T> components;
 	private Serializable value;
+	protected boolean throwExistException;
 
 	@SuppressWarnings("unchecked")
-	protected T init(T meta, Serializable value, List<T> components) {
+	protected T init(boolean throwExistException, T meta, Serializable value, List<T> components) {
+		this.throwExistException = throwExistException;
 		if (meta != null) {
 			meta.checkIsAlive();
 			this.meta = meta;
@@ -37,7 +39,11 @@ public abstract class Signature<T extends Signature<T>> implements VertexService
 
 	public void checkIsAlive() {
 		if (!this.isAlive())
-			((AncestorsService<?>) this).rollbackAndThrowException(new NotAliveException(((DisplayService<?>) this).info()));
+			rollbackAndThrowException(new NotAliveException(info()));
+	}
+
+	public boolean isThrowExistException() {
+		return throwExistException;
 	}
 
 	@Override

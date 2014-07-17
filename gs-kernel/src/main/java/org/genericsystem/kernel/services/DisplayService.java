@@ -2,7 +2,7 @@ package org.genericsystem.kernel.services;
 
 import org.genericsystem.kernel.Statics;
 
-public interface DisplayService<T extends VertexService<T>> extends ApiService<T> {
+public interface DisplayService<T extends VertexService<T, U>, U extends RootService<T, U>> extends ApiService<T, U> {
 
 	@Override
 	default String info() {

@@ -1,5 +1,7 @@
 package org.genericsystem.concurrency;
 
+import org.genericsystem.concurrency.vertex.Root;
+import org.genericsystem.concurrency.vertex.Vertex;
 import org.testng.annotations.Test;
 
 @Test
@@ -9,7 +11,7 @@ public class ConcurrentTest extends AbstractTest {
 	public void testNonFlushedModificationsStillAliveInCache() {
 		Engine engine = new Engine();
 		Generic car = engine.addInstance("Car");
-		Cache<Generic> cache = engine.getCurrentCache().mountNewCache();
+		Cache<Generic, Engine, Vertex, Root> cache = engine.getCurrentCache().mountNewCache();
 
 		assert cache.isAlive(car);
 		assert engine.getInheritings().contains(car);

@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import org.genericsystem.kernel.services.SystemPropertiesService.AxedPropertyClass;
 
-public interface MapService<T extends VertexService<T>> extends ApiService<T> {
+public interface MapService<T extends VertexService<T, U>, U extends RootService<T, U>> extends ApiService<T, U> {
 
 	@Override
 	default Serializable getSystemPropertyValue(Class<?> propertyClass, int pos) {

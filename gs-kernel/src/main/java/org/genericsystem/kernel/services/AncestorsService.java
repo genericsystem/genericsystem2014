@@ -7,14 +7,11 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
-
-import org.genericsystem.kernel.RootService;
-import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public interface AncestorsService<T extends VertexService<T>> extends ApiService<T> {
+public interface AncestorsService<T extends VertexService<T, U>, U extends RootService<T, U>> extends ApiService<T, U> {
 
 	static Logger log = LoggerFactory.getLogger(AncestorsService.class);
 
@@ -34,53 +31,51 @@ public interface AncestorsService<T extends VertexService<T>> extends ApiService
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	default T getAlive() {
 		T pluggedMeta = getMeta().getAlive();
 		if (pluggedMeta == null)
 			return null;
-		for (T instance : (Snapshot<T>) (((DependenciesService<?>) pluggedMeta).getInstances()))
+		for (T instance : pluggedMeta.getInstances())
 			if (equiv(instance))
 				return instance;
 		return null;
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	default T getWeakAlive() {
 		T pluggedMeta = getMeta().getAlive();
 		if (pluggedMeta == null)
 			return null;
-		for (T instance : (Snapshot<T>) (((DependenciesService<?>) pluggedMeta).getInstances()))
+		for (T instance : pluggedMeta.getInstances())
 			if (weakEquiv(instance))
 				return instance;
 		return null;
 	}
 
 	@Override
-	default boolean equiv(ApiService<? extends ApiService<?>> service) {
+	default boolean equiv(ApiService<? extends ApiService<?, ?>, ?> service) {
 		return service == null ? false : equiv(service.getMeta(), service.getValue(), service.getComponents());
 	}
 
 	@Override
-	default boolean equiv(ApiService<?> meta, Serializable value, List<? extends ApiService<?>> components) {
+	default boolean equiv(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components) {
 		return getMeta().equiv(meta) && Objects.equals(getValue(), value) && equivComponents(getComponents(), components);
 	}
 
-	static boolean equivComponents(List<? extends ApiService<?>> components, List<? extends ApiService<?>> otherComponents) {
+	static boolean equivComponents(List<? extends ApiService<?, ?>> components, List<? extends ApiService<?, ?>> otherComponents) {
 		if (otherComponents.size() != components.size())
 			return false;
-		Iterator<? extends ApiService<?>> otherComponentsIt = otherComponents.iterator();
+		Iterator<? extends ApiService<?, ?>> otherComponentsIt = otherComponents.iterator();
 		return components.stream().allMatch(x -> x.equiv(otherComponentsIt.next()));
 	}
 
 	@Override
-	default boolean weakEquiv(ApiService<? extends ApiService<?>> service) {
-		return service.equals(this) ? true : weakEquiv(service.getMeta(), service.getValue(), service.getComponents());
+	default boolean weakEquiv(ApiService<? extends ApiService<?, ?>, ?> service) {
+		return service == this ? true : weakEquiv(service.getMeta(), service.getValue(), service.getComponents());
 	}
 
 	@Override
-	default boolean weakEquiv(ApiService<?> meta, Serializable value, List<? extends ApiService<?>> components) {
+	default boolean weakEquiv(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components) {
 		return getMeta().weakEquiv(meta) && getMeta().getWeakPredicate().test(getValue(), getComponents(), value, components);
 	}
 
@@ -90,7 +85,7 @@ public interface AncestorsService<T extends VertexService<T>> extends ApiService
 	}
 
 	@Override
-	default boolean singularOrReferential(List<? extends ApiService<?>> components, List<? extends ApiService<?>> otherComponents) {
+	default boolean singularOrReferential(List<? extends ApiService<?, ?>> components, List<? extends ApiService<?, ?>> otherComponents) {
 		if (!(components.size() == otherComponents.size()))
 			return false;
 		for (int i = 0; i < otherComponents.size(); ++i) {
@@ -104,15 +99,15 @@ public interface AncestorsService<T extends VertexService<T>> extends ApiService
 	public static BiPredicate<Serializable, Serializable> VALUE_IGNORED = (X, Y) -> true;
 	public static BiPredicate<Serializable, Serializable> KEY_EQUALS = (X, Y) -> (X instanceof Entry) && (Y instanceof Entry) && Objects.equals(((Entry<?, ?>) X).getKey(), ((Entry<?, ?>) Y).getKey());
 
-	public static BiPredicate<List<? extends AncestorsService<?>>, List<? extends AncestorsService<?>>> SIZE_EQUALS = (X, Y) -> {
+	public static BiPredicate<List<? extends AncestorsService<?, ?>>, List<? extends AncestorsService<?, ?>>> SIZE_EQUALS = (X, Y) -> {
 		return X.size() == Y.size();
 	};
 
 	@Override
-	default boolean weakEquiv(List<? extends ApiService<?>> components, List<? extends ApiService<?>> otherComponents) {
+	default boolean weakEquiv(List<? extends ApiService<?, ?>> components, List<? extends ApiService<?, ?>> otherComponents) {
 		if (!(components.size() == otherComponents.size()))
 			return false;
-		Iterator<? extends ApiService<?>> otherComponentsIt = otherComponents.iterator();
+		Iterator<? extends ApiService<?, ?>> otherComponentsIt = otherComponents.iterator();
 		return components.stream().allMatch(x -> x.weakEquiv(otherComponentsIt.next()));
 	}
 
@@ -127,7 +122,7 @@ public interface AncestorsService<T extends VertexService<T>> extends ApiService
 	}
 
 	@Override
-	default RootService<T> getRoot() {
+	default U getRoot() {
 		return getMeta().getRoot();
 	}
 

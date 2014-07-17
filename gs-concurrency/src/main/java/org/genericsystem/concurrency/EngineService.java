@@ -1,17 +1,20 @@
 package org.genericsystem.concurrency;
 
-public interface EngineService<T extends AbstractGeneric<T>> extends org.genericsystem.cache.EngineService<T>, GenericService<T> {
+import org.genericsystem.kernel.AbstractVertex;
+import org.genericsystem.kernel.services.RootService;
+
+public interface EngineService<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends org.genericsystem.cache.EngineService<T, U, V, W>, GenericService<T, U, V, W> {
 
 	@Override
-	default Cache<T> buildCache(org.genericsystem.cache.Context<T> subContext) {
-		return new Cache<T>((Context<T>) subContext);
+	default Cache<T, U, V, W> buildCache(org.genericsystem.cache.Context<T, U, V, W> subContext) {
+		return new Cache<T, U, V, W>(subContext);
 	}
 
 	@Override
-	Cache<T> start(org.genericsystem.cache.Cache<T> cache);
+	Cache<T, U, V, W> start(org.genericsystem.cache.Cache<T, U, V, W> cache);
 
 	@Override
-	void stop(org.genericsystem.cache.Cache<T> cache);
+	void stop(org.genericsystem.cache.Cache<T, U, V, W> cache);
 
 	@Override
 	// TODO necessary for eclipse ?
@@ -25,12 +28,13 @@ public interface EngineService<T extends AbstractGeneric<T>> extends org.generic
 		return (T) this;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	default EngineService<T> getRoot() {
-		return this;
+	default U getRoot() {
+		return (U) this;
 	}
 
 	@Override
-	public Cache<T> getCurrentCache();
+	public Cache<T, U, V, W> getCurrentCache();
 
 }
