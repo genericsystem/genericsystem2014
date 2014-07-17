@@ -3,7 +3,6 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.Collections;
 
-import org.genericsystem.impl.GenericsCache;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
@@ -14,7 +13,7 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 
 	private final ThreadLocal<Cache<Generic, Engine, Vertex, Root>> cacheLocal = new ThreadLocal<>();
 
-	private final GenericsCache<Generic, Engine> genericSystemCache = new GenericsCache<Generic, Engine>(this);
+	private final GenericsCache<Generic, Engine, Vertex, Root> genericSystemCache = new GenericsCache<Generic, Engine, Vertex, Root>(this);
 
 	private final Root root;
 
