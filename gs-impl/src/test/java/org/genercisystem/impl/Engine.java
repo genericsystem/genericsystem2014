@@ -71,7 +71,6 @@ public class Engine extends Generic implements EngineService<Generic, Engine> {
 	}
 
 	public Generic getGenericOfVertexFromSystemCache(Generic vertex) {
-		assert false;
 		if (vertex.isRoot())
 			return this;
 		return generics.get(vertex);
@@ -93,7 +92,7 @@ public class Engine extends Generic implements EngineService<Generic, Engine> {
 					return true;
 				if (!(obj instanceof AncestorsService))
 					return false;
-				AncestorsService<?> service = (AncestorsService<?>) obj;
+				AncestorsService<?, ?> service = (AncestorsService<?, ?>) obj;
 				return vertex.equiv(service);
 			}
 		};

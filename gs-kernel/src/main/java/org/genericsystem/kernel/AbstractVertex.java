@@ -170,7 +170,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	}
 
 	@SuppressWarnings("unchecked")
-	T bindInstance(boolean throwExistException, List<T> overrides, Serializable value, T... components) {
+	protected T bindInstance(boolean throwExistException, List<T> overrides, Serializable value, T... components) {
 		checkSameEngine(Arrays.asList(components));
 		checkSameEngine(overrides);
 		T nearestMeta = adjustMeta(overrides, value, Arrays.asList(components));
