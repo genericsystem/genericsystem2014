@@ -7,18 +7,18 @@ import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Snapshot.AbstractSnapshot;
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
-public abstract class AbstractDependencies extends AbstractSnapshot<Vertex> implements Dependencies<Vertex> {
+public abstract class AbstractDependencies<T extends AbstractVertex<?, ?>> extends AbstractSnapshot<T> implements Dependencies<T> {
 
-	private Node<Vertex> head = null;
-	private Node<Vertex> tail = null;
+	private Node<T> head = null;
+	private Node<T> tail = null;
 
 	public abstract LifeManager getLifeManager();
 
 	@Override
-	public void add(Vertex element) {
+	public void add(T element) {
 		assert !this.contains(element);
 		assert element != null;
-		Node<Vertex> newNode = new Node<>(element);
+		Node<T> newNode = new Node<>(element);
 		if (head == null)
 			head = newNode;
 		else
@@ -27,23 +27,23 @@ public abstract class AbstractDependencies extends AbstractSnapshot<Vertex> impl
 	}
 
 	@Override
-	public boolean remove(Vertex generic) {
+	public boolean remove(T generic) {
 		assert generic != null : "generic is null";
 		assert head != null : "head is null";
 
-		Node<Vertex> currentNode = head;
+		Node<T> currentNode = head;
 
-		Vertex currentContent = currentNode.content;
+		T currentContent = currentNode.content;
 		if (generic.equals(currentContent)) {
-			Node<Vertex> next = currentNode.next;
+			Node<T> next = currentNode.next;
 			head = next != null ? next : null;
 			return true;
 		}
 
-		Node<Vertex> nextNode = currentNode.next;
+		Node<T> nextNode = currentNode.next;
 		while (nextNode != null) {
-			Vertex nextGeneric = nextNode.content;
-			Node<Vertex> nextNextNode = nextNode.next;
+			T nextGeneric = nextNode.content;
+			Node<T> nextNextNode = nextNode.next;
 			if (generic.equals(nextGeneric)) {
 				nextNode.content = null;
 				if (nextNextNode == null)
@@ -57,11 +57,11 @@ public abstract class AbstractDependencies extends AbstractSnapshot<Vertex> impl
 		return false;
 	}
 
-	public Iterator<Vertex> iterator(long ts) {
+	public Iterator<T> iterator(long ts) {
 		return new InternalIterator(ts);
 	}
 
-	private class InternalIterator extends AbstractGeneralAwareIterator<Node<Vertex>, Vertex> {
+	private class InternalIterator extends AbstractGeneralAwareIterator<Node<T>, T> {
 
 		private final long ts;
 
@@ -72,7 +72,7 @@ public abstract class AbstractDependencies extends AbstractSnapshot<Vertex> impl
 		@Override
 		protected void advance() {
 			do {
-				Node<Vertex> nextNode = (next == null) ? head : next.next;
+				Node<T> nextNode = (next == null) ? head : next.next;
 				if (nextNode == null) {
 					LifeManager lifeManager = getLifeManager();
 					lifeManager.readLock();
@@ -92,7 +92,7 @@ public abstract class AbstractDependencies extends AbstractSnapshot<Vertex> impl
 		}
 
 		@Override
-		protected Vertex project() {
+		protected T project() {
 			return next.content;
 		}
 	}
