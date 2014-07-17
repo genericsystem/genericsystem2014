@@ -30,9 +30,10 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		return Objects.hashCode(getValue());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public T plug() {
-		return getRoot().setGenericInSystemCache(wrap(unwrap().plug()));
+		return (T) getRoot().setGenericInCache(wrap(unwrap().plug()));
 	}
 
 	@Override
@@ -44,14 +45,14 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	@SuppressWarnings("unchecked")
 	protected T wrap(V vertex) {
 		U engine = getRoot();
-		T cachedGeneric = engine.getGenericOfVertexFromSystemCache(vertex);
+		T cachedGeneric = (T) engine.getGenericFromCache(vertex);
 		if (cachedGeneric != null)
 			return cachedGeneric;
 		if (vertex.isRoot())
 			return (T) getRoot();
 		V alive = vertex.getAlive();
 		T meta = wrap(alive.getMeta());
-		return getRoot().setGenericInSystemCache(
+		return (T) getRoot().setGenericInCache(
 				meta.newT().init(alive.isThrowExistException(), meta, alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList())));
 	}
 
@@ -65,9 +66,10 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		return alive.buildInstance(isThrowExistException(), getSupersStream().map(T::unwrap).collect(Collectors.toList()), getValue(), getComponentsStream().map(T::unwrap).collect(Collectors.toList()));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected T bindInstance(boolean throwExistException, List<T> overrides, Serializable value, T... components) {
-		return getRoot().setGenericInSystemCache(super.bindInstance(throwExistException, overrides, value, components));
+		return (T) getRoot().setGenericInCache(super.bindInstance(throwExistException, overrides, value, components));
 	}
 
 	protected V getVertex() {
