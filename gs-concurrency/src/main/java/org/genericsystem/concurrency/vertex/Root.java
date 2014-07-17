@@ -12,7 +12,7 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 
 	private final TsGenerator generator = new TsGenerator();
 
-	private final SystemCache<Vertex> systemCache;
+	private final SystemCache<Vertex> systemCache = new SystemCache<Vertex>(this);
 
 	public Root(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
@@ -24,8 +24,8 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 
 	public Root(Serializable value, SystemCache<Vertex> systemCache, Class<?>... userClasses) {
 		init(false, null, Collections.emptyList(), value, Collections.emptyList());
-		lifeManager = buildLifeManager();
-		this.systemCache = systemCache != null ? systemCache : new SystemCache<Vertex>(this);
+		long ts = getRoot().pickNewTs();
+		restore(ts, ts, 0L, Long.MAX_VALUE);
 		this.systemCache.init(userClasses);
 	}
 

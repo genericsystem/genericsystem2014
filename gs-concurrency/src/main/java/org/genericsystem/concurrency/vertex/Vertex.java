@@ -34,10 +34,7 @@ public class Vertex extends AbstractVertex<Vertex, Root> implements VertexServic
 
 	@Override
 	public Vertex newT() {
-		// TODO KK
-		Vertex vertexConcurrency = new Vertex();
-		vertexConcurrency.lifeManager = buildLifeManager();
-		return vertexConcurrency;
+		return new Vertex().restore(getRoot().pickNewTs(), 0L, 0L, Long.MAX_VALUE);
 	}
 
 	@Override
