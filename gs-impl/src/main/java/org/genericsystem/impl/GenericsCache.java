@@ -2,6 +2,7 @@ package org.genericsystem.impl;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.genericsystem.kernel.services.AncestorsService;
 
@@ -31,7 +32,7 @@ public class GenericsCache<T extends GenericService<T, U>, U extends EngineServi
 
 			@Override
 			public int hashCode() {
-				return vertexOrGeneric.hashCode();
+				return Objects.hashCode(vertexOrGeneric.getValue());
 			}
 
 			@Override
