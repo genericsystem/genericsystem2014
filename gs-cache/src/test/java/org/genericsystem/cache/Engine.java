@@ -3,6 +3,7 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
@@ -22,9 +23,8 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 	}
 
 	public Engine(Serializable rootValue, Serializable engineValue) {
-		super(false);
 		root = buildRoot(rootValue);
-		init(null, Collections.emptyList(), Statics.ENGINE_VALUE, Collections.emptyList());
+		init(false, null, Collections.emptyList(), Statics.ENGINE_VALUE, Collections.emptyList());
 		cacheLocal.set(buildCache(new Transaction<>(this)));
 	}
 

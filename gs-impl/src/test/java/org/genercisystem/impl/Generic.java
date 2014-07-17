@@ -7,13 +7,9 @@ import org.genericsystem.kernel.Vertex;
 
 public class Generic extends AbstractGeneric<Generic, Engine, Vertex, Root> implements GenericService<Generic, Engine> {
 
-	public Generic(boolean throwExistException) {
-		super(throwExistException);
-	}
-
 	@Override
-	public Generic newT(boolean throwExistException) {
-		return new Generic(throwExistException);
+	public Generic newT() {
+		return new Generic();
 	}
 
 	@Override

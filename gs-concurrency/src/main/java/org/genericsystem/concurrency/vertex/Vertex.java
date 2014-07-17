@@ -1,19 +1,16 @@
 package org.genericsystem.concurrency.vertex;
 
 import java.util.Iterator;
+
 import org.genericsystem.kernel.Dependencies;
 
 public class Vertex extends AbstractVertex<Vertex, Root> implements VertexService<Vertex, Root> {
 
 	// TODO KK FIN KK
 
-	public Vertex(boolean throwExistException) {
-		super(throwExistException);
-	}
-
 	@Override
-	public Vertex newT(boolean throwExistException) {
-		Vertex vertexConcurrency = new Vertex(throwExistException);
+	public Vertex newT() {
+		Vertex vertexConcurrency = new Vertex();
 		vertexConcurrency.lifeManager = buildLifeManager();
 		return vertexConcurrency;
 	}

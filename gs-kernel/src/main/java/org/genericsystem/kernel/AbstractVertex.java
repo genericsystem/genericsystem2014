@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.AbstractDependenciesComputer.DependenciesComputer;
 import org.genericsystem.kernel.AbstractDependenciesComputer.PotentialDependenciesComputer;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
@@ -26,15 +27,10 @@ import org.genericsystem.kernel.services.VertexService;
 public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends RootService<T, U>> extends Signature<T, U> implements VertexService<T, U> {
 
 	protected List<T> supers;
-	protected final boolean throwExistException;
-
-	public AbstractVertex(boolean throwExistException) {
-		this.throwExistException = throwExistException;
-	}
 
 	@SuppressWarnings("unchecked")
-	protected T init(T meta, List<T> supers, Serializable value, List<T> components) {
-		super.init(meta, value, components);
+	protected T init(boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
+		super.init(throwExistException, meta, value, components);
 		this.supers = supers;
 		checkDependsMetaComponents();
 		checkSupers(supers);
@@ -70,10 +66,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	@Override
 	public List<T> getSupers() {
 		return supers;
-	}
-
-	public boolean isThrowExistException() {
-		return throwExistException;
 	}
 
 	@SuppressWarnings("static-method")
@@ -222,7 +214,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		return () -> new InheritanceComputer<>((T) AbstractVertex.this, origin, level).inheritanceIterator();
 	}
 
-	abstract protected T newT(boolean throwExistException);
+	abstract protected T newT();
 
 	abstract protected T[] newTArray(int dim);
 
@@ -242,7 +234,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		components.forEach(x -> ((Signature) x).checkIsAlive());
 		List<T> supers = new ArrayList<T>(new SupersComputer(level, this, overrides, value, components));
 		checkOverridesAreReached(overrides, supers);
-		return ((T) ((AbstractVertex) newT(throwExistException).init((T) this, supers, value, components)));
+		return ((T) ((AbstractVertex) newT().init(throwExistException, (T) this, supers, value, components)));
 	}
 
 	private boolean allOverridesAreReached(List<T> overrides, List<T> supers) {

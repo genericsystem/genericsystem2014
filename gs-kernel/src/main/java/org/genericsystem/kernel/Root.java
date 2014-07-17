@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.Collections;
+
 import org.genericsystem.kernel.services.ApiService;
 import org.genericsystem.kernel.services.RootService;
 import org.slf4j.Logger;
@@ -18,8 +19,7 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 	}
 
 	public Root(Serializable value, Class<?>... userClasses) {
-		super(false);
-		init(null, Collections.emptyList(), value, Collections.emptyList());
+		init(false, null, Collections.emptyList(), value, Collections.emptyList());
 		systemCache.init(userClasses);
 	}
 
@@ -52,6 +52,7 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 	// @SystemGeneric
 	// @Components(Root.class)
 	// @StringValue(Statics.ENGINE_VALUE)
-	public static class MetaAttribute {}
+	public static class MetaAttribute {
+	}
 
 }

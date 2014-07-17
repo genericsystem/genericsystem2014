@@ -3,8 +3,10 @@ package org.genericsystem.concurrency;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Objects;
+
 import org.genericsystem.concurrency.vertex.Root;
 import org.genericsystem.concurrency.vertex.Vertex;
+import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.ApiService;
@@ -20,10 +22,9 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 	}
 
 	public Engine(Serializable rootValue, Serializable engineValue) {
-		super(false);
 		root = buildRoot(rootValue);
 		cacheLocal.set(buildCache(new Transaction<Generic, Engine, Vertex, Root>(this)));
-		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
+		init(false, null, Collections.emptyList(), engineValue, Collections.emptyList());
 	}
 
 	public Root buildRoot(Serializable value) {

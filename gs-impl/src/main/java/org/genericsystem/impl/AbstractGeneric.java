@@ -2,6 +2,7 @@ package org.genericsystem.impl;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
@@ -10,10 +11,6 @@ import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.RootService;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends AbstractVertex<T, U> implements GenericService<T, U> {
-
-	public AbstractGeneric(boolean throwExistException) {
-		super(throwExistException);
-	}
 
 	@Override
 	public boolean equals(Object obj) {
@@ -53,7 +50,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		V alive = vertex.getAlive();
 		T meta = wrap(alive.getMeta());
 		return getRoot().setGenericInSystemCache(
-				meta.newT(alive.isThrowExistException()).init(meta, alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList())));
+				meta.newT().init(alive.isThrowExistException(), meta, alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList())));
 	}
 
 	protected V unwrap() {

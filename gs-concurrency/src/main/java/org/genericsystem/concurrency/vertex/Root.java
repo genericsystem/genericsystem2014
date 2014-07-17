@@ -3,6 +3,7 @@ package org.genericsystem.concurrency.vertex;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
+
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.SystemCache;
 import org.genericsystem.kernel.services.ApiService;
@@ -18,7 +19,7 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 	}
 
 	public Root(Serializable value, Class<?>... userClasses) {
-		init(null, Collections.emptyList(), value, Collections.emptyList());
+		init(false, null, Collections.emptyList(), value, Collections.emptyList());
 		systemCache.init(userClasses);
 	}
 
@@ -48,7 +49,7 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 	}
 
 	@Override
-	public Root newT(boolean throwExistException) {
+	public Root newT() {
 		Root rootConcurrency = new Root();
 		rootConcurrency.lifeManager = buildLifeManager();
 		return rootConcurrency;

@@ -3,6 +3,7 @@ package org.genercisystem.impl;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.genericsystem.impl.EngineService;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Root;
@@ -21,9 +22,8 @@ public class Engine extends Generic implements EngineService<Generic, Engine> {
 	}
 
 	public Engine(Serializable engineValue) {
-		super(false);
 		root = buildRoot(engineValue);
-		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
+		init(false, null, Collections.emptyList(), engineValue, Collections.emptyList());
 	}
 
 	@SuppressWarnings("static-method")

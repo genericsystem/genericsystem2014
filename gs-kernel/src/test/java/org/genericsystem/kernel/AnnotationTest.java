@@ -256,10 +256,6 @@ public class AnnotationTest extends AbstractTest {
 	@SystemGeneric
 	@Meta(Games.class)
 	public static class MyGames2 extends Vertex {
-
-		public MyGames2() {
-			super(false);
-		}
 	}
 
 	@SystemGeneric

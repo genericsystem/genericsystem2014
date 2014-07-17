@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.genericsystem.kernel.services.RootService;
 import org.genericsystem.kernel.services.VertexService;
@@ -13,9 +14,11 @@ public abstract class Signature<T extends Signature<T, U>, U extends RootService
 	private T meta;
 	private List<T> components;
 	private Serializable value;
+	protected boolean throwExistException;
 
 	@SuppressWarnings("unchecked")
-	protected T init(T meta, Serializable value, List<T> components) {
+	protected T init(boolean throwExistException, T meta, Serializable value, List<T> components) {
+		this.throwExistException = throwExistException;
 		if (meta != null) {
 			meta.checkIsAlive();
 			this.meta = meta;
@@ -37,6 +40,10 @@ public abstract class Signature<T extends Signature<T, U>, U extends RootService
 	public void checkIsAlive() {
 		if (!this.isAlive())
 			rollbackAndThrowException(new NotAliveException(info()));
+	}
+
+	public boolean isThrowExistException() {
+		return throwExistException;
 	}
 
 	@Override
