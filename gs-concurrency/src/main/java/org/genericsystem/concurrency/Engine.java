@@ -15,7 +15,7 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 
 	private final ThreadLocal<Cache<Generic, Engine, Vertex, Root>> cacheLocal = new ThreadLocal<>();
 
-	private final GenericsCache<Generic, Engine> genericSystemCache = new GenericsCache<Generic, Engine>(this);
+	private final GenericsCache<Generic, Engine> genericSystemCache = new GenericsCache<Generic, Engine>();
 
 	private final Root root;
 
