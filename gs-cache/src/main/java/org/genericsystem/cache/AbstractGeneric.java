@@ -1,6 +1,8 @@
 package org.genericsystem.cache;
 
+import java.io.Serializable;
 import java.util.LinkedHashSet;
+import java.util.List;
 
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Snapshot;
@@ -38,6 +40,11 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		if (cachedGeneric != null)
 			return cachedGeneric;
 		return root.setGenericInSystemCache(super.wrap(vertex));
+	}
+
+	@Override
+	protected T bindInstance(boolean throwExistException, List<T> overrides, Serializable value, T... components) {
+		return getRoot().setGenericInSystemCache(super.bindInstance(throwExistException, overrides, value, components));
 	}
 
 	@Override

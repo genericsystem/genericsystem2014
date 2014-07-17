@@ -1,5 +1,7 @@
 package org.genericsystem.impl;
 
+import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -61,6 +63,11 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		if (!alive.isAlive())
 			throw new IllegalStateException("Not Alive" + alive.info() + alive.getMeta().getInstances());
 		return alive.buildInstance(isThrowExistException(), getSupersStream().map(T::unwrap).collect(Collectors.toList()), getValue(), getComponentsStream().map(T::unwrap).collect(Collectors.toList()));
+	}
+
+	@Override
+	protected T bindInstance(boolean throwExistException, List<T> overrides, Serializable value, T... components) {
+		return getRoot().setGenericInSystemCache(super.bindInstance(throwExistException, overrides, value, components));
 	}
 
 	protected V getVertex() {

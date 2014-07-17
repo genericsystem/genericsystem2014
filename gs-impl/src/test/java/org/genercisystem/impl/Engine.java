@@ -2,6 +2,7 @@ package org.genercisystem.impl;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.genericsystem.impl.EngineService;
@@ -9,6 +10,7 @@ import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
+import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.ApiService;
 
 public class Engine extends Generic implements EngineService<Generic, Engine> {
@@ -78,7 +80,22 @@ public class Engine extends Generic implements EngineService<Generic, Engine> {
 	public Generic getGenericOfVertexFromSystemCache(AbstractVertex<?, ?> vertex) {
 		if (vertex.isRoot())
 			return this;
-		return generics.get(vertex);
-	}
+		Object key = new Object() {
+			@Override
+			public int hashCode() {
+				return Objects.hashCode(vertex.getValue());
+			}
 
+			@Override
+			public boolean equals(Object obj) {
+				if (vertex == obj)
+					return true;
+				if (!(obj instanceof AncestorsService))
+					return false;
+				AncestorsService<?, ?> service = (AncestorsService<?, ?>) obj;
+				return vertex.equiv(service);
+			}
+		};
+		return generics.get(key);
+	}
 }
