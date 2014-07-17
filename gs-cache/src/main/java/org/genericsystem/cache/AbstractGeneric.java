@@ -33,7 +33,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		return super.unwrap();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected T wrap(V vertex) {
 		U root = getRoot();

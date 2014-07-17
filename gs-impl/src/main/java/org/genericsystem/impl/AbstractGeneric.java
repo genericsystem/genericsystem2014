@@ -30,7 +30,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		return Objects.hashCode(getValue());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public T plug() {
 		return getRoot().getGenericFromCache(wrap(unwrap().plug()));

@@ -1,24 +1,25 @@
 package org.genericsystem.impl;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.genericsystem.kernel.services.AncestorsService;
 
 public class GenericsCache<T extends GenericService<T, U>, U extends EngineService<T, U>> {
 
-	private final ThreadLocal<ConcurrentHashMap<GenericService<T, U>, GenericService<T, U>>> generics = new ThreadLocal<ConcurrentHashMap<GenericService<T, U>, GenericService<T, U>>>();
+	private final ThreadLocal<Map<GenericService<T, U>, GenericService<T, U>>> generics = new ThreadLocal<>();
 	private final EngineService<T, U> engine;
 
 	public GenericsCache(EngineService<T, U> engine) {
 		this.engine = engine;
-		generics.set(new ConcurrentHashMap<>());
+		generics.set(new HashMap<>());
 	}
 
 	@SuppressWarnings("unchecked")
 	public T getGenericFromCache(AncestorsService<?, ?> vertex) {
 		if (vertex.isRoot())
 			return (T) engine;
-		Object key = new Object() {
+		T result = (T) generics.get().get(new Object() {
 			@Override
 			public int hashCode() {
 				return vertex.hashCode();
@@ -26,15 +27,11 @@ public class GenericsCache<T extends GenericService<T, U>, U extends EngineServi
 
 			@Override
 			public boolean equals(Object obj) {
-				if (vertex == obj)
-					return true;
 				if (!(obj instanceof AncestorsService))
 					return false;
-				AncestorsService<?, ?> service = (AncestorsService<?, ?>) obj;
-				return vertex.equiv(service);
+				return vertex.equiv((AncestorsService<?, ?>) obj);
 			}
-		};
-		T result = (T) generics.get().get(key);
+		});
 		if (result != null)
 			return result;
 		if (vertex instanceof GenericService) {
@@ -43,4 +40,4 @@ public class GenericsCache<T extends GenericService<T, U>, U extends EngineServi
 		}
 		return null;
 	}
-};
+}
