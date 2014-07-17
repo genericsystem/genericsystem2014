@@ -3,17 +3,17 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.Collections;
 
-import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
+import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.ApiService;
 
 public class Engine extends Generic implements EngineService<Generic, Engine, Vertex, Root> {
 
 	private final ThreadLocal<Cache<Generic, Engine, Vertex, Root>> cacheLocal = new ThreadLocal<>();
 
-	private final GenericsCacheImpl<Generic, Engine, Vertex, Root> genericSystemCache = new GenericsCacheImpl<Generic, Engine, Vertex, Root>(this);
+	private final GenericsCache<Generic, Engine, Vertex, Root> genericSystemCache = new GenericsCache<Generic, Engine, Vertex, Root>(this);
 
 	private final Root root;
 
@@ -84,13 +84,13 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 		return EngineService.super.isRoot();
 	}
 
-	@Override
-	public GenericService<Generic, Engine, Vertex, Root> setGenericInCache(Generic generic) {
-		return genericSystemCache.setGenericInCache(generic);
-	}
+	// @Override
+	// public GenericService<Generic, Engine, Vertex, Root> setGenericInCache(Generic generic) {
+	// return genericSystemCache.setGenericInCache(generic);
+	// }
 
 	@Override
-	public GenericService<Generic, Engine, Vertex, Root> getGenericFromCache(AbstractVertex<?, ?> vertex) {
+	public Generic getGenericFromCache(AncestorsService<?, ?> vertex) {
 		return genericSystemCache.getGenericFromSystemCache(vertex);
 	}
 

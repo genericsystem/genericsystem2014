@@ -1,6 +1,7 @@
 package org.genericsystem.cache;
 
 import org.genericsystem.kernel.AbstractVertex;
+import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.RootService;
 
 public interface EngineService<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends GenericService<T, U, V, W>, org.genericsystem.impl.EngineService<T, U> {
@@ -23,8 +24,6 @@ public interface EngineService<T extends AbstractGeneric<T, U, V, W>, U extends 
 	public Cache<T, U, V, W> getCurrentCache();
 
 	@Override
-	public GenericService<T, U, V, W> getGenericFromCache(AbstractVertex<?, ?> vertex);
+	public T getGenericFromCache(AncestorsService<?, ?> vertex);
 
-	@Override
-	public GenericService<T, U, V, W> setGenericInCache(T generic);
 }

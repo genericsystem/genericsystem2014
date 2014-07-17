@@ -1,9 +1,7 @@
 package org.genericsystem.impl;
 
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.services.AncestorsService;
 
 public class GenericsCache<T extends GenericService<T, U>, U extends EngineService<T, U>> {
@@ -16,19 +14,14 @@ public class GenericsCache<T extends GenericService<T, U>, U extends EngineServi
 		generics.set(new ConcurrentHashMap<>());
 	}
 
-	public GenericService<T, U> setGenericInCache(GenericService<T, U> generic) {
-		assert generic != null;
-		GenericService<T, U> result = generics.get().putIfAbsent(generic, generic);
-		return result != null ? result : generic;
-	}
-
-	public GenericService<T, U> getGenericFromCache(AbstractVertex<?, ?> vertex) {
+	@SuppressWarnings("unchecked")
+	public T getGenericFromCache(AncestorsService<?, ?> vertex) {
 		if (vertex.isRoot())
-			return engine;
+			return (T) engine;
 		Object key = new Object() {
 			@Override
 			public int hashCode() {
-				return Objects.hashCode(vertex.getValue());
+				return vertex.hashCode();
 			}
 
 			@Override
@@ -41,6 +34,13 @@ public class GenericsCache<T extends GenericService<T, U>, U extends EngineServi
 				return vertex.equiv(service);
 			}
 		};
-		return generics.get().get(key);
+		T result = (T) generics.get().get(key);
+		if (result != null)
+			return result;
+		if (vertex instanceof GenericService) {
+			result = (T) generics.get().putIfAbsent((GenericService<T, U>) vertex, (GenericService<T, U>) vertex);
+			return result != null ? (T) result : (T) vertex;
+		}
+		return null;
 	}
 };
