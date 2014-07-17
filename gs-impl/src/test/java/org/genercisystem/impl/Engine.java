@@ -15,7 +15,7 @@ public class Engine extends Generic implements EngineService<Generic, Engine> {
 
 	private final Root root;
 
-	private final GenericsCache<Generic, Engine> genericSystemCache = new GenericsCache<Generic, Engine>(this);
+	private final GenericsCache<Generic, Engine> genericSystemCache = new GenericsCache<Generic, Engine>();
 
 	public Engine() {
 		this(Statics.ENGINE_VALUE);
