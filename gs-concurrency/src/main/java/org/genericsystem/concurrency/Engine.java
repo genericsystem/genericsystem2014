@@ -82,12 +82,12 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 	}
 
 	@Override
-	public Generic getGenericOfVertexFromSystemCache(AbstractVertex<?, ?> vertex) {
+	public Generic getGenericFromCache(AbstractVertex<?, ?> vertex) {
 		return null;
 	}
 
 	@Override
-	public Generic setGenericInSystemCache(Generic generic) {
+	public Generic setGenericInCache(Generic generic) {
 		return null;
 	}
 

@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Collections;
 
 import org.genericsystem.impl.EngineService;
+import org.genericsystem.impl.GenericService;
+import org.genericsystem.impl.GenericsCache;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
@@ -14,7 +16,7 @@ public class Engine extends Generic implements EngineService<Generic, Engine> {
 
 	private final Root root;
 
-	private final GenericsCache genericSystemCache = new GenericsCacheImpl(this);
+	private final GenericsCache<Generic, Engine> genericSystemCache = new GenericsCache<Generic, Engine>(this);
 
 	public Engine() {
 		this(Statics.ENGINE_VALUE);
@@ -61,12 +63,12 @@ public class Engine extends Generic implements EngineService<Generic, Engine> {
 	}
 
 	@Override
-	public Generic setGenericInSystemCache(Generic generic) {
-		return genericSystemCache.setGenericInSystemCache(generic);
+	public GenericService<Generic, Engine> setGenericInCache(Generic generic) {
+		return genericSystemCache.setGenericInCache(generic);
 	}
 
 	@Override
-	public Generic getGenericOfVertexFromSystemCache(AbstractVertex<?, ?> vertex) {
-		return genericSystemCache.getGenericOfVertexFromSystemCache(vertex);
+	public GenericService<Generic, Engine> getGenericFromCache(AbstractVertex<?, ?> vertex) {
+		return genericSystemCache.getGenericFromCache(vertex);
 	}
 }

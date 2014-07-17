@@ -23,8 +23,8 @@ public interface EngineService<T extends AbstractGeneric<T, U, V, W>, U extends 
 	public Cache<T, U, V, W> getCurrentCache();
 
 	@Override
-	public T getGenericOfVertexFromSystemCache(AbstractVertex<?, ?> vertex);
+	public GenericService<T, U, V, W> getGenericFromCache(AbstractVertex<?, ?> vertex);
 
 	@Override
-	public T setGenericInSystemCache(T generic);
+	public GenericService<T, U, V, W> setGenericInCache(T generic);
 }

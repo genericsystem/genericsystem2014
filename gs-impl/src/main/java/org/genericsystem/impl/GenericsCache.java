@@ -1,4 +1,4 @@
-package org.genericsystem.cache;
+package org.genericsystem.impl;
 
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -6,24 +6,23 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.services.AncestorsService;
 
-public class GenericsCacheImpl implements GenericsCache {
+public class GenericsCache<T extends GenericService<T, U>, U extends EngineService<T, U>> {
 
-	private final ThreadLocal<ConcurrentHashMap<Generic, Generic>> generics = new ThreadLocal<ConcurrentHashMap<Generic, Generic>>();
-	private final Engine engine;
+	private final ThreadLocal<ConcurrentHashMap<GenericService<T, U>, GenericService<T, U>>> generics = new ThreadLocal<ConcurrentHashMap<GenericService<T, U>, GenericService<T, U>>>();
+	private final EngineService<T, U> engine;
 
-	public GenericsCacheImpl(Engine engine) {
+	public GenericsCache(EngineService<T, U> engine) {
 		this.engine = engine;
 		generics.set(new ConcurrentHashMap<>());
 	}
 
-	@Override
-	public Generic setGenericInSystemCache(Generic generic) {
-		Generic result = generics.get().putIfAbsent(generic, generic);
+	public GenericService<T, U> setGenericInCache(GenericService<T, U> generic) {
+		assert generic != null;
+		GenericService<T, U> result = generics.get().putIfAbsent(generic, generic);
 		return result != null ? result : generic;
 	}
 
-	@Override
-	public Generic getGenericOfVertexFromSystemCache(AbstractVertex<?, ?> vertex) {
+	public GenericService<T, U> getGenericFromCache(AbstractVertex<?, ?> vertex) {
 		if (vertex.isRoot())
 			return engine;
 		Object key = new Object() {

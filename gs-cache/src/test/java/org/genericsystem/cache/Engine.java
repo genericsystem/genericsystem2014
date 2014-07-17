@@ -13,7 +13,7 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 
 	private final ThreadLocal<Cache<Generic, Engine, Vertex, Root>> cacheLocal = new ThreadLocal<>();
 
-	private final GenericsCache genericSystemCache = new GenericsCacheImpl(this);
+	private final GenericsCacheImpl<Generic, Engine, Vertex, Root> genericSystemCache = new GenericsCacheImpl<Generic, Engine, Vertex, Root>(this);
 
 	private final Root root;
 
@@ -85,13 +85,13 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 	}
 
 	@Override
-	public Generic setGenericInSystemCache(Generic generic) {
-		return genericSystemCache.setGenericInSystemCache(generic);
+	public GenericService<Generic, Engine, Vertex, Root> setGenericInCache(Generic generic) {
+		return genericSystemCache.setGenericInCache(generic);
 	}
 
 	@Override
-	public Generic getGenericOfVertexFromSystemCache(AbstractVertex<?, ?> vertex) {
-		return genericSystemCache.getGenericOfVertexFromSystemCache(vertex);
+	public GenericService<Generic, Engine, Vertex, Root> getGenericFromCache(AbstractVertex<?, ?> vertex) {
+		return genericSystemCache.getGenericFromSystemCache(vertex);
 	}
 
 }
