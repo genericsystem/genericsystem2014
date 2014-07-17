@@ -4,12 +4,11 @@ import java.io.Serializable;
 import java.util.Collections;
 
 import org.genericsystem.impl.EngineService;
-import org.genericsystem.impl.GenericService;
 import org.genericsystem.impl.GenericsCache;
-import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
+import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.ApiService;
 
 public class Engine extends Generic implements EngineService<Generic, Engine> {
@@ -63,12 +62,7 @@ public class Engine extends Generic implements EngineService<Generic, Engine> {
 	}
 
 	@Override
-	public GenericService<Generic, Engine> setGenericInCache(Generic generic) {
-		return genericSystemCache.setGenericInCache(generic);
-	}
-
-	@Override
-	public GenericService<Generic, Engine> getGenericFromCache(AbstractVertex<?, ?> vertex) {
+	public Generic getGenericFromCache(AncestorsService<?, ?> vertex) {
 		return genericSystemCache.getGenericFromCache(vertex);
 	}
 }
