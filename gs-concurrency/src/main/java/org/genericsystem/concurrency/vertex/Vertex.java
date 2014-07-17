@@ -9,8 +9,8 @@ public class Vertex extends AbstractVertex<Vertex, Root> implements VertexServic
 
 	private final Dependencies<Vertex> instances = buildDependencies();
 	private final Dependencies<Vertex> inheritings = buildDependencies();
-	private final Dependencies<DependenciesEntry<Vertex>> superComposites = buildDependencies();
-	private final Dependencies<DependenciesEntry<Vertex>> metaComposites = buildDependencies();
+	private final Dependencies<DependenciesEntry<Vertex>> superComposites = builMultidDependencies();
+	private final Dependencies<DependenciesEntry<Vertex>> metaComposites = builMultidDependencies();
 
 	@Override
 	protected Dependencies<Vertex> getInstancesDependencies() {
@@ -48,7 +48,7 @@ public class Vertex extends AbstractVertex<Vertex, Root> implements VertexServic
 	@SuppressWarnings("unchecked")
 	@Override
 	protected <U> Dependencies<U> buildDependencies() {
-		return (Dependencies<U>) new AbstractDependencies() {
+		return (Dependencies<U>) new AbstractDependencies<Vertex>() {
 
 			@Override
 			public LifeManager getLifeManager() {
@@ -60,6 +60,10 @@ public class Vertex extends AbstractVertex<Vertex, Root> implements VertexServic
 				return iterator(0L);
 			}
 		};
+	}
+
+	protected <U> Dependencies<U> builMultidDependencies() {
+		return super.buildDependencies();
 	}
 
 }
