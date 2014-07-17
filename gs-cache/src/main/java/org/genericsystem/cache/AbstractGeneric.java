@@ -6,7 +6,12 @@ import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.services.RootService;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends org.genericsystem.impl.AbstractGeneric<T, U, V, W> implements
-GenericService<T, U, V, W> {
+		GenericService<T, U, V, W> {
+
+	public AbstractGeneric(boolean throwExistException) {
+		super(throwExistException);
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public T plug() {
@@ -31,7 +36,11 @@ GenericService<T, U, V, W> {
 
 	@Override
 	protected T wrap(V vertex) {
-		return super.wrap(vertex);
+		U root = getRoot();
+		T cachedGeneric = root.getGenericOfVertexFromSystemCache(vertex);
+		if (cachedGeneric != null)
+			return cachedGeneric;
+		return root.setGenericInSystemCache(super.wrap(vertex));
 	}
 
 	@Override

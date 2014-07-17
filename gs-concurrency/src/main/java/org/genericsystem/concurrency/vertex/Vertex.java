@@ -7,9 +7,13 @@ public class Vertex extends AbstractVertex<Vertex, Root> implements VertexServic
 
 	// TODO KK FIN KK
 
+	public Vertex(boolean throwExistException) {
+		super(throwExistException);
+	}
+
 	@Override
-	public Vertex newT() {
-		Vertex vertexConcurrency = new Vertex();
+	public Vertex newT(boolean throwExistException) {
+		Vertex vertexConcurrency = new Vertex(throwExistException);
 		vertexConcurrency.lifeManager = buildLifeManager();
 		return vertexConcurrency;
 	}

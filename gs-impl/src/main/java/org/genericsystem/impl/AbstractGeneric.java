@@ -11,6 +11,10 @@ import org.genericsystem.kernel.services.RootService;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends AbstractVertex<T, U> implements GenericService<T, U> {
 
+	public AbstractGeneric(boolean throwExistException) {
+		super(throwExistException);
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -29,7 +33,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 
 	@Override
 	public T plug() {
-		return wrap(unwrap().plug());
+		return getRoot().setGenericInSystemCache(wrap(unwrap().plug()));
 	}
 
 	@Override
@@ -40,11 +44,16 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 
 	@SuppressWarnings("unchecked")
 	protected T wrap(V vertex) {
+		U engine = getRoot();
+		T cachedGeneric = engine.getGenericOfVertexFromSystemCache(vertex);
+		if (cachedGeneric != null)
+			return cachedGeneric;
 		if (vertex.isRoot())
 			return (T) getRoot();
 		V alive = vertex.getAlive();
 		T meta = wrap(alive.getMeta());
-		return meta.newT().init(meta, alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList()));
+		return getRoot().setGenericInSystemCache(
+				meta.newT(alive.isThrowExistException()).init(meta, alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList())));
 	}
 
 	protected V unwrap() {
@@ -54,7 +63,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		alive = getMeta().unwrap();
 		if (!alive.isAlive())
 			throw new IllegalStateException("Not Alive" + alive.info() + alive.getMeta().getInstances());
-		return alive.buildInstance(getSupersStream().map(T::unwrap).collect(Collectors.toList()), getValue(), getComponentsStream().map(T::unwrap).collect(Collectors.toList()));
+		return alive.buildInstance(isThrowExistException(), getSupersStream().map(T::unwrap).collect(Collectors.toList()), getValue(), getComponentsStream().map(T::unwrap).collect(Collectors.toList()));
 	}
 
 	protected V getVertex() {

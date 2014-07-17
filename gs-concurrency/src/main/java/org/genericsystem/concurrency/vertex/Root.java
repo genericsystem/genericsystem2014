@@ -48,8 +48,10 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 	}
 
 	@Override
-	public Root newT() {
-		return new Root();
+	public Root newT(boolean throwExistException) {
+		Root rootConcurrency = new Root();
+		rootConcurrency.lifeManager = buildLifeManager();
+		return rootConcurrency;
 	}
 
 	@Override

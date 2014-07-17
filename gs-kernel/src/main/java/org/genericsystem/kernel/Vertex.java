@@ -34,9 +34,13 @@ public class Vertex extends AbstractVertex<Vertex, Root> implements VertexServic
 		return superComposites;
 	}
 
+	public Vertex(boolean throwExistException) {
+		super(throwExistException);
+	}
+
 	@Override
-	public Vertex newT() {
-		return new Vertex();
+	public Vertex newT(boolean throwExistException) {
+		return new Vertex(throwExistException);
 	}
 
 	@Override

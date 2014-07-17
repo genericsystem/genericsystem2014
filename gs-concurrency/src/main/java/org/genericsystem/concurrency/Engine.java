@@ -20,6 +20,7 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 	}
 
 	public Engine(Serializable rootValue, Serializable engineValue) {
+		super(false);
 		root = buildRoot(rootValue);
 		cacheLocal.set(buildCache(new Transaction<Generic, Engine, Vertex, Root>(this)));
 		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
@@ -77,6 +78,16 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 	@Override
 	public Generic getAlive() {
 		return EngineService.super.getAlive();
+	}
+
+	@Override
+	public Generic getGenericOfVertexFromSystemCache(AbstractVertex<?, ?> vertex) {
+		return null;
+	}
+
+	@Override
+	public Generic setGenericInSystemCache(Generic generic) {
+		return null;
 	}
 
 }

@@ -3,6 +3,7 @@ package org.genercisystem.impl;
 import java.util.Arrays;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.testng.annotations.Test;
@@ -139,6 +140,8 @@ public class InstanciationTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic car = engine.addInstance("Car");
 		Generic robot = engine.addInstance("Robot");
+		assert car != null;
+		assert robot != null;
 		Generic transformer = engine.addInstance(Arrays.asList(car, robot), "Transformer");
 
 		// log.info(car.info());
@@ -190,7 +193,7 @@ public class InstanciationTest extends AbstractTest {
 
 		assert engine.getSupersStream().count() == 0;
 		assert vehicle.getSupersStream().count() == 0;
-		assert car.getSupersStream().count() == 1;
+		assert car.getSupersStream().count() == 1 : car;
 		assert device.getSupersStream().count() == 0;
 		assert robot.getSupersStream().count() == 1;
 		assert transformer.getSupersStream().count() == 2;

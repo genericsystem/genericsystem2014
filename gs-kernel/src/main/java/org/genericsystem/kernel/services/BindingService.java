@@ -11,6 +11,9 @@ public interface BindingService<T extends VertexService<T, U>, U extends RootSer
 
 	@Override
 	default void checkSameEngine(List<T> components) {
+		assert getRoot() != null;
+		assert components.stream().allMatch(component -> component != null) : components;
+		components.stream().filter(component -> component.getRoot() == null).forEach(component -> component.log());
 		if (components.stream().anyMatch(component -> !component.getRoot().equals(getRoot())))
 			rollbackAndThrowException(new CrossEnginesAssignementsException());
 	}
