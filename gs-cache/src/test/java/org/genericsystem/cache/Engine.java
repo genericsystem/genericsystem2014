@@ -94,13 +94,6 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 		return result != null ? result : generic;
 	}
 
-	public Generic getGenericOfVertexFromSystemCache(Generic vertex) {
-		assert false;
-		if (vertex.isRoot())
-			return this;
-		return generics.get(vertex);
-	}
-
 	@Override
 	public Generic getGenericOfVertexFromSystemCache(AbstractVertex<?, ?> vertex) {
 		if (vertex.isRoot())
