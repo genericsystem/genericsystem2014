@@ -16,28 +16,34 @@ public class GenericsCache<T extends GenericService<T, U>, U extends EngineServi
 	}
 
 	@SuppressWarnings("unchecked")
-	public T getGenericFromCache(AncestorsService<?, ?> vertex) {
-		if (vertex.isRoot())
+	public T getGenericFromCache(AncestorsService<?, ?> vertexOrGeneric) {
+		if (vertexOrGeneric instanceof GenericService) {
+			T result = internalGet(vertexOrGeneric);
+			if (result != null)
+				return result;
+			result = (T) generics.get().putIfAbsent((GenericService<T, U>) vertexOrGeneric, (GenericService<T, U>) vertexOrGeneric);
+			return result != null ? (T) result : (T) vertexOrGeneric;
+		}
+		return internalGet(vertexOrGeneric);
+	}
+
+	@SuppressWarnings("unchecked")
+	private T internalGet(AncestorsService<?, ?> vertexOrGeneric) {
+		if (vertexOrGeneric.isRoot())
 			return (T) engine;
-		T result = (T) generics.get().get(new Object() {
+		return (T) generics.get().get(new Object() {
+
 			@Override
 			public int hashCode() {
-				return vertex.hashCode();
+				return vertexOrGeneric.hashCode();
 			}
 
 			@Override
 			public boolean equals(Object obj) {
 				if (!(obj instanceof AncestorsService))
 					return false;
-				return vertex.equiv((AncestorsService<?, ?>) obj);
+				return vertexOrGeneric.equiv((AncestorsService<?, ?>) obj);
 			}
 		});
-		if (result != null)
-			return result;
-		if (vertex instanceof GenericService) {
-			result = (T) generics.get().putIfAbsent((GenericService<T, U>) vertex, (GenericService<T, U>) vertex);
-			return result != null ? (T) result : (T) vertex;
-		}
-		return null;
 	}
 }
