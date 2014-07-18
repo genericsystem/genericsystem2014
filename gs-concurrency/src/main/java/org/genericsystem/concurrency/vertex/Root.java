@@ -60,14 +60,14 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 	}
 
 	static class TsGenerator {
-		private final long startTime = System.currentTimeMillis() * Statics.MILLI_TO_NANOSECONDS - System.nanoTime();
+		private final long startTime = System.nanoTime();
 		private final AtomicLong lastTime = new AtomicLong(0L);
 
 		long pickNewTs() {
 			long nanoTs;
 			long current;
 			for (;;) {
-				nanoTs = startTime + System.nanoTime();
+				nanoTs = startTime - System.nanoTime();
 				current = lastTime.get();
 				if (nanoTs - current > 0)
 					if (lastTime.compareAndSet(current, nanoTs))
