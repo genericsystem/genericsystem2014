@@ -24,7 +24,7 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 
 	@Override
 	public boolean isAlive(T generic) {
-		return generic.getLifeManager().isAlive(getTs());
+		return generic.getVertex() != null && generic.getLifeManager().isAlive(getTs());
 	}
 
 }

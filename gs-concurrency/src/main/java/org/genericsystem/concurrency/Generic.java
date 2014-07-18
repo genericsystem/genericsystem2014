@@ -18,7 +18,6 @@ public class Generic extends AbstractGeneric<Generic, Engine, Vertex, Root> impl
 
 	@Override
 	public LifeManager getLifeManager() {
-		// TODO kk
-		return unwrap().getLifeManager();
+		return getVertex().getLifeManager();
 	}
 }
