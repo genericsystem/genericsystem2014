@@ -69,7 +69,7 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 			for (;;) {
 				nanoTs = startTime + System.nanoTime();
 				current = lastTime.get();
-				if (nanoTs > current)
+				if (nanoTs - current > 0)
 					if (lastTime.compareAndSet(current, nanoTs))
 						return nanoTs;
 			}
