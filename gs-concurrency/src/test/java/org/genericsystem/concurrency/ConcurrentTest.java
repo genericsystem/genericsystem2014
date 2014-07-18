@@ -1,5 +1,6 @@
 package org.genericsystem.concurrency;
 
+import org.genericsystem.cache.Cache;
 import org.genericsystem.concurrency.vertex.Root;
 import org.genericsystem.concurrency.vertex.Vertex;
 import org.testng.annotations.Test;
@@ -7,44 +8,42 @@ import org.testng.annotations.Test;
 @Test
 public class ConcurrentTest extends AbstractTest {
 
-	// TODO: To CacheTest
 	public void testNonFlushedModificationsStillAliveInCache() {
 		Engine engine = new Engine();
 		Generic car = engine.addInstance("Car");
-		Cache<Generic, Engine, Vertex, Root> cache = engine.getCurrentCache().mountNewCache();
+		Cache<Generic, Engine, Vertex, Root> cache = engine.getCurrentCache();
 
 		assert cache.isAlive(car);
 		assert engine.getInstances().contains(car);
 	}
 
-	// public void testFlushedModificationsAvailableInNewCacheOk() {
-	// Engine engine = GenericSystem.newInMemoryEngine();
-	// Cache cache = engine.newCache().start();
-	// Generic car = cache.addType("Car");
-	// cache.flush();
-	//
-	// assert cache.isAlive(car);
-	// assert engine.getInheritings().contains(car);
-	//
-	// Cache cache2 = engine.newCache().start();
-	//
-	// assert cache2.isAlive(car);
-	// assert engine.getInheritings().contains(car);
-	// }
-	//
-	// public void testNonFlushedModificationsAreNotAvailableInNewCacheOk() {
-	// Engine engine = GenericSystem.newInMemoryEngine();
-	// Cache cache = engine.newCache().start();
-	// Generic car = cache.addType("Car");
-	//
-	// assert cache.isAlive(car);
-	// assert engine.getInheritings().contains(car);
-	//
-	// Cache cache2 = engine.newCache().start();
-	//
-	// assert !cache2.isAlive(car);
-	// assert !engine.getInheritings().contains(car);
-	// }
+	public void testFlushedModificationsAvailableInNewCacheOk() {
+		Engine engine = new Engine();
+		Cache<Generic, Engine, Vertex, Root> cache = engine.getCurrentCache();
+		Generic car = engine.addInstance("Car");
+		cache.flush();
+
+		assert cache.isAlive(car);
+		assert engine.getInstances().contains(car);
+
+		Cache<Generic, Engine, Vertex, Root> cache2 = engine.newCache().start();
+
+		assert cache2.isAlive(car);
+		assert engine.getInstances().contains(car);
+	}
+
+	public void testNonFlushedModificationsAreNotAvailableInNewCacheOk() {
+		Engine engine = new Engine();
+		Cache<Generic, Engine, Vertex, Root> cache = engine.getCurrentCache();
+		Generic car = engine.addInstance("Car");
+
+		assert cache.isAlive(car);
+		assert engine.getInstances().contains(car);
+
+		Cache<Generic, Engine, Vertex, Root> cache2 = engine.newCache().start();
+		assert !cache2.isAlive(car);
+		assert !engine.getInstances().contains(car);
+	}
 	//
 	// // TODO: to CacheTest
 	// public void testRemoveIntegrityConstraintViolation() {
