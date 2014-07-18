@@ -14,7 +14,7 @@ public class ConcurrentTest extends AbstractTest {
 		Cache<Generic, Engine, Vertex, Root> cache = engine.getCurrentCache().mountNewCache();
 
 		assert cache.isAlive(car);
-		assert engine.getInheritings().contains(car);
+		assert engine.getInstances().contains(car);
 	}
 
 	// public void testFlushedModificationsAvailableInNewCacheOk() {
