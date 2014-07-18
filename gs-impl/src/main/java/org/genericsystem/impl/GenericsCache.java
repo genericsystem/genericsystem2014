@@ -27,7 +27,7 @@ public class GenericsCache<T extends GenericService<T, U>, U extends EngineServi
 	}
 
 	@SuppressWarnings("unchecked")
-	protected T internalGet(AncestorsService<?, ?> vertexOrGeneric) {
+	private T internalGet(AncestorsService<?, ?> vertexOrGeneric) {
 		return (T) generics.get().get(new Object() {
 
 			@Override
