@@ -1,5 +1,6 @@
 package org.genericsystem.concurrency;
 
+import org.genericsystem.concurrency.vertex.Root;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.services.RootService;
 
@@ -8,8 +9,7 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 	private transient long ts;
 
 	public Transaction(U engine) {
-		// TODO KK pickTs
-		this(0L, engine);
+		this(((Root) ((Engine) engine).getVertex()).pickNewTs(), engine);
 	}
 
 	public Transaction(long ts, U engine) {
