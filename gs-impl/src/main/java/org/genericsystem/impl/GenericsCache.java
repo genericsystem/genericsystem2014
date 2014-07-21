@@ -1,46 +1,46 @@
 package org.genericsystem.impl;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 
-import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.services.AncestorsService;
 
 public class GenericsCache<T extends GenericService<T, U>, U extends EngineService<T, U>> {
 
-	private final ThreadLocal<ConcurrentHashMap<GenericService<T, U>, GenericService<T, U>>> generics = new ThreadLocal<ConcurrentHashMap<GenericService<T, U>, GenericService<T, U>>>();
-	private final EngineService<T, U> engine;
+	private final ThreadLocal<Map<GenericService<T, U>, GenericService<T, U>>> generics = new ThreadLocal<>();
 
-	public GenericsCache(EngineService<T, U> engine) {
-		this.engine = engine;
-		generics.set(new ConcurrentHashMap<>());
+	public GenericsCache() {
+		generics.set(new HashMap<>());
 	}
 
-	public GenericService<T, U> setGenericInCache(GenericService<T, U> generic) {
-		assert generic != null;
-		GenericService<T, U> result = generics.get().putIfAbsent(generic, generic);
-		return result != null ? result : generic;
+	@SuppressWarnings("unchecked")
+	public T getGenericFromCache(AncestorsService<?, ?> vertexOrGeneric) {
+		T result = internalGet(vertexOrGeneric);
+		if (vertexOrGeneric instanceof GenericService) {
+			if (result != null)
+				return result;
+			result = (T) generics.get().putIfAbsent((GenericService<T, U>) vertexOrGeneric, (GenericService<T, U>) vertexOrGeneric);
+			return result != null ? (T) result : (T) vertexOrGeneric;
+		}
+		return result;
 	}
 
-	public GenericService<T, U> getGenericFromCache(AbstractVertex<?, ?> vertex) {
-		if (vertex.isRoot())
-			return engine;
-		Object key = new Object() {
+	@SuppressWarnings("unchecked")
+	private T internalGet(AncestorsService<?, ?> vertexOrGeneric) {
+		return (T) generics.get().get(new Object() {
+
 			@Override
 			public int hashCode() {
-				return Objects.hashCode(vertex.getValue());
+				return Objects.hashCode(vertexOrGeneric.getValue());
 			}
 
 			@Override
 			public boolean equals(Object obj) {
-				if (vertex == obj)
-					return true;
 				if (!(obj instanceof AncestorsService))
 					return false;
-				AncestorsService<?, ?> service = (AncestorsService<?, ?>) obj;
-				return vertex.equiv(service);
+				return vertexOrGeneric.equiv((AncestorsService<?, ?>) obj);
 			}
-		};
-		return generics.get().get(key);
+		});
 	}
-};
+}

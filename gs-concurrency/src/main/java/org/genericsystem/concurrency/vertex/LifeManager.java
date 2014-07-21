@@ -13,9 +13,9 @@ public class LifeManager {
 
 	private final long designTs;
 	private long birthTs;
-	private AtomicLong lastReadTs;
+	private final AtomicLong lastReadTs;
 	private long deathTs;
-	private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
 	public LifeManager(long designTs, long birthTs, long lastReadTs, long deathTs) {
 		this.designTs = designTs;
@@ -82,10 +82,11 @@ public class LifeManager {
 	}
 
 	public void atomicAdjustLastReadTs(long contextTs) {
+		long current = lastReadTs.get();
+		if (contextTs <= current)
+			return;
 		for (;;) {
-			long current = lastReadTs.get();
-			if (contextTs <= current)
-				break;
+			current = lastReadTs.get();
 			if (lastReadTs.compareAndSet(current, contextTs))
 				break;
 		}

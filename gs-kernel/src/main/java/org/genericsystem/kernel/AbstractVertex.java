@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.AbstractDependenciesComputer.DependenciesComputer;
 import org.genericsystem.kernel.AbstractDependenciesComputer.PotentialDependenciesComputer;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
@@ -77,7 +76,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		computeDependencies().forEach(this::simpleRemove);
 	}
 
-	void simpleRemove(T vertex) {
+	private void simpleRemove(T vertex) {
 		if (!vertex.isAlive())
 			rollbackAndThrowException(new AliveConstraintViolationException(vertex.info() + " is not alive"));
 		if (!vertex.getInstances().isEmpty() || !vertex.getInheritings().isEmpty() || !vertex.getComposites().isEmpty())
