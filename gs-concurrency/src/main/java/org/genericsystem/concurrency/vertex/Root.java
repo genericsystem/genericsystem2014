@@ -3,7 +3,7 @@ package org.genericsystem.concurrency.vertex;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
-
+import org.genericsystem.concurrency.EngineService;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.SystemCache;
 import org.genericsystem.kernel.services.ApiService;
@@ -13,20 +13,18 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 	private final TsGenerator generator = new TsGenerator();
 
 	private final SystemCache<Vertex> systemCache = new SystemCache<Vertex>(this);
+	private final EngineService<?, ?, Vertex, Root> engine;
 
-	public Root(Class<?>... userClasses) {
-		this(Statics.ENGINE_VALUE, userClasses);
+	public Root(EngineService<?, ?, Vertex, Root> engine, Class<?>... userClasses) {
+		this(engine, Statics.ENGINE_VALUE, userClasses);
 	}
 
-	public Root(Serializable value, Class<?>... userClasses) {
-		this(Statics.ENGINE_VALUE, null, userClasses);
-	}
-
-	public Root(Serializable value, SystemCache<Vertex> systemCache, Class<?>... userClasses) {
+	public Root(EngineService<?, ?, Vertex, Root> engine, Serializable value, Class<?>... userClasses) {
+		this.engine = engine;
 		init(false, null, Collections.emptyList(), value, Collections.emptyList());
 		long ts = getRoot().pickNewTs();
 		restore(ts, ts, 0L, Long.MAX_VALUE);
-		this.systemCache.init(userClasses);
+		systemCache.init(userClasses);
 	}
 
 	@Override
@@ -57,6 +55,11 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 	@Override
 	public long pickNewTs() {
 		return generator.pickNewTs();
+	}
+
+	@Override
+	public EngineService<?, ?, Vertex, Root> getEngine() {
+		return engine;
 	}
 
 	static class TsGenerator {

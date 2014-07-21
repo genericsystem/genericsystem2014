@@ -7,7 +7,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
-
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Snapshot;
@@ -152,7 +151,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 		return subContext;
 	}
 
-	public Snapshot<T> getDependencies(Map<T, Dependencies<T>> multiMap, Supplier<Iterator<T>> subIteratorSupplier, T generic) {
+	private Snapshot<T> getDependencies(Map<T, Dependencies<T>> multiMap, Supplier<Iterator<T>> subIteratorSupplier, T generic) {
 		return () -> {
 			Dependencies<T> dependencies = multiMap.get(generic);
 			return dependencies == null ? subIteratorSupplier.get() : dependencies.iterator();

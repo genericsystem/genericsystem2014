@@ -22,6 +22,7 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 
 	@Override
 	public void simpleAdd(T generic) {
+		// Here we have to do smething with ts
 		V vertex = generic.getMeta().getVertex();
 		vertex.addInstance(generic.getSupersStream().map(g -> g.unwrap()).collect(Collectors.toList()), generic.getValue(), vertex.coerceToArray(generic.getComponentsStream().map(T::unwrap).toArray()));
 	}

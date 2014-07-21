@@ -3,7 +3,6 @@ package org.genericsystem.concurrency;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Objects;
-
 import org.genericsystem.concurrency.vertex.Root;
 import org.genericsystem.concurrency.vertex.Vertex;
 import org.genericsystem.impl.GenericsCache;
@@ -30,7 +29,7 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 	}
 
 	public Root buildRoot(Serializable value) {
-		return new Root(value);
+		return new Root(this, value);
 	}
 
 	@Override
