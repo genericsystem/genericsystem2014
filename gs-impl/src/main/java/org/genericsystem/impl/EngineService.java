@@ -2,7 +2,6 @@ package org.genericsystem.impl;
 
 import java.util.Objects;
 
-import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.ApiService;
 import org.genericsystem.kernel.services.RootService;
@@ -49,7 +48,6 @@ public interface EngineService<T extends GenericService<T, U>, U extends EngineS
 		return Objects.equals(getValue(), service.getValue()) && AncestorsService.equivComponents(getComponents(), service.getComponents());
 	}
 
-	public GenericService<T, U> getGenericFromCache(AbstractVertex<?, ?> vertex);
+	public T getGenericFromCache(AncestorsService<?, ?> vertex);
 
-	public GenericService<T, U> setGenericInCache(T generic);
 }

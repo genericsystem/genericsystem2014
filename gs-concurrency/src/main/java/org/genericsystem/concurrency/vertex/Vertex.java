@@ -1,7 +1,6 @@
 package org.genericsystem.concurrency.vertex;
 
 import java.util.Iterator;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 
@@ -34,10 +33,7 @@ public class Vertex extends AbstractVertex<Vertex, Root> implements VertexServic
 
 	@Override
 	public Vertex newT() {
-		// TODO KK
-		Vertex vertexConcurrency = new Vertex();
-		vertexConcurrency.lifeManager = buildLifeManager();
-		return vertexConcurrency;
+		return new Vertex().restore(getRoot().pickNewTs(), 0L, 0L, Long.MAX_VALUE);
 	}
 
 	@Override
@@ -57,7 +53,7 @@ public class Vertex extends AbstractVertex<Vertex, Root> implements VertexServic
 
 			@Override
 			public Iterator<Vertex> iterator() {
-				return iterator(0L);
+				return iterator(getRoot().getEngine().getCurrentCache().getTs());
 			}
 		};
 	}

@@ -3,10 +3,9 @@ package org.genericsystem.concurrency;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Objects;
-
 import org.genericsystem.concurrency.vertex.Root;
 import org.genericsystem.concurrency.vertex.Vertex;
-import org.genericsystem.kernel.AbstractVertex;
+import org.genericsystem.impl.GenericsCache;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.ApiService;
@@ -14,6 +13,8 @@ import org.genericsystem.kernel.services.ApiService;
 public class Engine extends Generic implements EngineService<Generic, Engine, Vertex, Root> {
 
 	private final ThreadLocal<Cache<Generic, Engine, Vertex, Root>> cacheLocal = new ThreadLocal<>();
+
+	private final GenericsCache<Generic, Engine> genericSystemCache = new GenericsCache<Generic, Engine>();
 
 	private final Root root;
 
@@ -28,7 +29,7 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 	}
 
 	public Root buildRoot(Serializable value) {
-		return new Root(value);
+		return new Root(this, value);
 	}
 
 	@Override
@@ -82,13 +83,8 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 	}
 
 	@Override
-	public Generic getGenericFromCache(AbstractVertex<?, ?> vertex) {
-		return null;
-	}
-
-	@Override
-	public Generic setGenericInCache(Generic generic) {
-		return null;
+	public Generic getGenericFromCache(AncestorsService<?, ?> vertex) {
+		return genericSystemCache.getGenericFromCache(vertex);
 	}
 
 }

@@ -10,6 +10,10 @@ public interface EngineService<T extends AbstractGeneric<T, U, V, W>, U extends 
 		return new Cache<T, U, V, W>(subContext);
 	}
 
+	default Cache<T, U, V, W> newCache() {
+		return buildCache(new Transaction<T, U, V, W>(getRoot()));
+	}
+
 	@Override
 	Cache<T, U, V, W> start(org.genericsystem.cache.Cache<T, U, V, W> cache);
 

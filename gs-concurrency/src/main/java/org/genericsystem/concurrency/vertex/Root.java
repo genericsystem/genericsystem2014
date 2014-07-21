@@ -3,7 +3,7 @@ package org.genericsystem.concurrency.vertex;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
-
+import org.genericsystem.concurrency.EngineService;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.SystemCache;
 import org.genericsystem.kernel.services.ApiService;
@@ -12,21 +12,19 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 
 	private final TsGenerator generator = new TsGenerator();
 
-	private final SystemCache<Vertex> systemCache;
+	private final SystemCache<Vertex> systemCache = new SystemCache<Vertex>(this);
+	private final EngineService<?, ?, Vertex, Root> engine;
 
-	public Root(Class<?>... userClasses) {
-		this(Statics.ENGINE_VALUE, userClasses);
+	public Root(EngineService<?, ?, Vertex, Root> engine, Class<?>... userClasses) {
+		this(engine, Statics.ENGINE_VALUE, userClasses);
 	}
 
-	public Root(Serializable value, Class<?>... userClasses) {
-		this(Statics.ENGINE_VALUE, null, userClasses);
-	}
-
-	public Root(Serializable value, SystemCache<Vertex> systemCache, Class<?>... userClasses) {
+	public Root(EngineService<?, ?, Vertex, Root> engine, Serializable value, Class<?>... userClasses) {
+		this.engine = engine;
 		init(false, null, Collections.emptyList(), value, Collections.emptyList());
-		lifeManager = buildLifeManager();
-		this.systemCache = systemCache != null ? systemCache : new SystemCache<Vertex>(this);
-		this.systemCache.init(userClasses);
+		long ts = getRoot().pickNewTs();
+		restore(ts, ts, 0L, Long.MAX_VALUE);
+		systemCache.init(userClasses);
 	}
 
 	@Override
@@ -59,6 +57,11 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 		return generator.pickNewTs();
 	}
 
+	@Override
+	public EngineService<?, ?, Vertex, Root> getEngine() {
+		return engine;
+	}
+
 	static class TsGenerator {
 		private final long startTime = System.currentTimeMillis() * Statics.MILLI_TO_NANOSECONDS - System.nanoTime();
 		private final AtomicLong lastTime = new AtomicLong(0L);
@@ -69,7 +72,7 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 			for (;;) {
 				nanoTs = startTime + System.nanoTime();
 				current = lastTime.get();
-				if (nanoTs > current)
+				if (nanoTs - current > 0)
 					if (lastTime.compareAndSet(current, nanoTs))
 						return nanoTs;
 			}

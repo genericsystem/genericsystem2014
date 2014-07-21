@@ -4,12 +4,4 @@ public interface VertexService<T extends AbstractVertex<T, U>, U extends RootSer
 
 	LifeManager getLifeManager();
 
-	default LifeManager buildLifeManager(Long designTs, long birthTs, long lastReadTs, long deathTs) {
-		return new LifeManager(designTs == null ? getRoot().pickNewTs() : designTs, birthTs, lastReadTs, deathTs);
-	}
-
-	default LifeManager buildLifeManager() {
-		return new LifeManager(getRoot().pickNewTs(), getRoot().pickNewTs(), 0L, Long.MAX_VALUE);
-	}
-
 }

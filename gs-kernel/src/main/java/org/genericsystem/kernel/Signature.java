@@ -38,7 +38,7 @@ public abstract class Signature<T extends Signature<T, U>, U extends RootService
 	}
 
 	public void checkIsAlive() {
-		if (!this.isAlive())
+		if (!isAlive())
 			rollbackAndThrowException(new NotAliveException(info()));
 	}
 
