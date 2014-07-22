@@ -1,28 +1,25 @@
 package org.genericsystem.concurrency;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.stream.Collectors;
-import org.genericsystem.kernel.Snapshot;
+
 import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 import org.genericsystem.kernel.exceptions.OptimisticLockConstraintViolationException;
 
-public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends org.genericsystem.kernel.AbstractVertex<V, W>, W extends org.genericsystem.kernel.services.RootService<V, W>> extends
-org.genericsystem.cache.Transaction<T, U, V, W> implements Context<T, U, V, W> {
+public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends org.genericsystem.cache.Transaction<T, U, V, W> {
 
 	private transient long ts;
 
-	public Transaction(U engine) {
+	protected Transaction(U engine) {
 		this(((Engine) engine).getVertex().pickNewTs(), engine);
 	}
 
-	public Transaction(long ts, U engine) {
+	protected Transaction(long ts, U engine) {
 		super(engine);
 		this.ts = ts;
 	}
 
-	@Override
 	public long getTs() {
 		return ts;
 	}
@@ -38,7 +35,7 @@ org.genericsystem.cache.Transaction<T, U, V, W> implements Context<T, U, V, W> {
 	}
 
 	@Override
-	public void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
+	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
 		synchronized (getEngine()) {
 			LockedLifeManager lockedLifeManager = new LockedLifeManager();
 			try {
@@ -50,17 +47,15 @@ org.genericsystem.cache.Transaction<T, U, V, W> implements Context<T, U, V, W> {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public void simpleAdd(T generic) {
+	protected void simpleAdd(T generic) {
 		V vertex = generic.getMeta().getVertex();
 		vertex.addInstance(generic.getSupersStream().map(g -> g.unwrap()).collect(Collectors.toList()), generic.getValue(), vertex.coerceToArray(generic.getComponentsStream().map(T::unwrap).toArray()));
-		((org.genericsystem.concurrency.AbstractVertex<Vertex, Root>) vertex).getLifeManager().beginLife(getTs());
+		vertex.getLifeManager().beginLife(getTs());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public boolean simpleRemove(T generic) {
+	protected boolean simpleRemove(T generic) {
 		getLifeManager(generic).kill(getTs());
 		getEngine().getVertex().getGarbageCollector().add(generic.getVertex());
 		return true;
@@ -96,25 +91,4 @@ org.genericsystem.cache.Transaction<T, U, V, W> implements Context<T, U, V, W> {
 				lifeManager.writeUnlock();
 		}
 	}
-
-	@Override
-	public Snapshot<T> getInheritings(T generic) {
-		return () -> generic.getVertex() != null ? generic.unwrap().getInheritings().stream().map(generic::wrap).iterator() : Collections.emptyIterator();
-	}
-
-	@Override
-	public Snapshot<T> getInstances(T generic) {
-		return () -> generic.getVertex() != null ? generic.unwrap().getInstances().stream().map(generic::wrap).iterator() : Collections.emptyIterator();
-	}
-
-	@Override
-	public Snapshot<T> getMetaComposites(T generic, T meta) {
-		return () -> generic.getVertex() != null ? generic.unwrap().getMetaComposites(meta.unwrap()).stream().map(generic::wrap).iterator() : Collections.emptyIterator();
-	}
-
-	@Override
-	public Snapshot<T> getSuperComposites(T generic, T superT) {
-		return () -> generic.getVertex() != null ? generic.unwrap().getSuperComposites(superT.unwrap()).stream().map(generic::wrap).iterator() : Collections.emptyIterator();
-
-	};
 }

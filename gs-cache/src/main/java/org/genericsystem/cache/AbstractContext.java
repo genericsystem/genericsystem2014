@@ -14,19 +14,19 @@ public abstract class AbstractContext<T extends AbstractGeneric<T, U, V, W>, U e
 
 	public abstract U getEngine();
 
-	protected abstract boolean isAlive(T generic);
+	public abstract boolean isAlive(T generic);
 
 	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
 		removeAll(removes);
 		addAll(adds);
 	}
 
-	protected void addAll(Iterable<T> generics) {
+	void addAll(Iterable<T> generics) {
 		for (T generic : generics)
 			simpleAdd(generic);
 	}
 
-	protected void removeAll(Iterable<T> generics) {
+	void removeAll(Iterable<T> generics) {
 		for (T generic : generics)
 			simpleRemove(generic);
 	}
@@ -35,12 +35,12 @@ public abstract class AbstractContext<T extends AbstractGeneric<T, U, V, W>, U e
 
 	protected abstract boolean simpleRemove(T generic);
 
-	protected abstract Snapshot<T> getInheritings(T generic);
+	abstract Snapshot<T> getInheritings(T generic);
 
-	protected abstract Snapshot<T> getInstances(T generic);
+	abstract Snapshot<T> getInstances(T generic);
 
-	protected abstract Snapshot<T> getMetaComposites(T generic, T meta);
+	abstract Snapshot<T> getMetaComposites(T generic, T meta);
 
-	protected abstract Snapshot<T> getSuperComposites(T generic, T superT);
+	abstract Snapshot<T> getSuperComposites(T generic, T superT);
 
 }

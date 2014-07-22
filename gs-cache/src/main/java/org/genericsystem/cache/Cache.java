@@ -20,7 +20,7 @@ import org.genericsystem.kernel.services.RootService;
 
 public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends AbstractContext<T, U, V, W> {
 
-	protected AbstractContext<T, U, V, W> subContext;
+	private AbstractContext<T, U, V, W> subContext;
 
 	private transient Map<T, Dependencies<T>> inheritingsDependenciesMap;
 	private transient Map<T, Dependencies<T>> instancesDependenciesMap;
@@ -39,11 +39,11 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 		removes = new LinkedHashSet<>();
 	}
 
-	public Cache(U engine) {
+	protected Cache(U engine) {
 		this(new Transaction<>(engine));
 	}
 
-	public Cache(AbstractContext<T, U, V, W> subContext) {
+	protected Cache(AbstractContext<T, U, V, W> subContext) {
 		this.subContext = subContext;
 		clear();
 	}
@@ -75,7 +75,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 		getEngine().stop(this);
 	}
 
-	public T insert(T generic) throws RollbackException {
+	T insert(T generic) throws RollbackException {
 		try {
 			add(generic);
 			return generic;
@@ -109,7 +109,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 	}
 
 	@Override
-	public void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
+	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
 		for (T remove : removes)
 			unplug(remove);
 		for (T add : adds)
@@ -123,14 +123,14 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 	}
 
 	@Override
-	public void simpleAdd(T generic) {
+	protected void simpleAdd(T generic) {
 		if (!removes.remove(generic))
 			adds.add(generic);
 
 	}
 
 	@Override
-	public boolean simpleRemove(T generic) {
+	protected boolean simpleRemove(T generic) {
 		if (!isAlive(generic))
 			rollback(new IllegalStateException(generic + " is not alive"));
 		if (!adds.remove(generic))
@@ -148,7 +148,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 		return subContext.getEngine();
 	}
 
-	public AbstractContext<T, U, V, W> getSubContext() {
+	protected AbstractContext<T, U, V, W> getSubContext() {
 		return subContext;
 	}
 
@@ -160,12 +160,12 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 	}
 
 	@Override
-	public Snapshot<T> getInstances(T generic) {
+	Snapshot<T> getInstances(T generic) {
 		return getDependencies(instancesDependenciesMap, () -> subContext.getInstances(generic).iterator(), generic);
 	}
 
 	@Override
-	public Snapshot<T> getInheritings(T generic) {
+	Snapshot<T> getInheritings(T generic) {
 		return getDependencies(inheritingsDependenciesMap, () -> subContext.getInheritings(generic).iterator(), generic);
 	}
 
@@ -199,7 +199,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 		return unIndex(inheritingsDependenciesMap, () -> subContext.getInheritings(generic).iterator(), generic, inheriting);
 	}
 
-	public Snapshot<T> getComposites(T generic) {
+	Snapshot<T> getComposites(T generic) {
 		return () -> {
 			Map<T, Dependencies<T>> dependencies = metaCompositesDependenciesMap.get(generic);
 			return dependencies == null ? Collections.emptyIterator() : Statics.concat(metaCompositesDependenciesMap.get(generic).entrySet().stream(), x -> x.getValue().stream()).iterator();
@@ -207,12 +207,12 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 	}
 
 	@Override
-	public Snapshot<T> getMetaComposites(T generic, T meta) {
+	Snapshot<T> getMetaComposites(T generic, T meta) {
 		return getIndex(metaCompositesDependenciesMap, () -> subContext.getMetaComposites(generic, meta).iterator(), generic, meta);
 	}
 
 	@Override
-	public Snapshot<T> getSuperComposites(T generic, T superT) {
+	Snapshot<T> getSuperComposites(T generic, T superT) {
 		return getIndex(superCompositesDependenciesMap, () -> subContext.getSuperComposites(generic, superT).iterator(), generic, superT);
 	}
 
@@ -264,7 +264,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 		return dependenciesByIndex.remove(composite);
 	}
 
-	public T plug(T generic) {
+	T plug(T generic) {
 		T t = indexInstance(generic.getMeta(), generic);
 		generic.getSupersStream().forEach(superGeneric -> indexInheriting(superGeneric, generic));
 		generic.getComponentsStream().forEach(component -> indexByMeta(component, generic.getMeta(), generic));
@@ -273,7 +273,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 		return t;
 	}
 
-	public boolean unplug(T generic) {
+	boolean unplug(T generic) {
 		boolean result = unIndexInstance(generic.getMeta(), generic);
 		if (!result)
 			generic.rollbackAndThrowException(new NotFoundException(generic.info()));
