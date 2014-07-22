@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import org.genericsystem.kernel.Root.MetaAttribute;
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Meta;
@@ -14,24 +13,24 @@ import org.genericsystem.kernel.annotations.value.StringValue;
 import org.genericsystem.kernel.services.MapService.SystemMap;
 import org.genericsystem.kernel.services.VertexService;
 
-public class SystemCache<T extends VertexService<T, ?>> extends HashMap<Class<?>, T> {
+public class SystemCache<V extends VertexService<V, ?>> extends HashMap<Class<?>, V> {
 
 	private static final long serialVersionUID = 1150085123612887245L;
 
 	private boolean startupTime = true;
 
-	private final T thisT;
+	private final V root;
 
-	public SystemCache(T thisT) {
-		this.thisT = thisT;
-		put(Root.class, thisT);
+	public SystemCache(V root) {
+		this.root = root;
+		put(Root.class, root);
 	}
 
 	public void init(Class<?>... userClasses) {
-		T metaAttribute = thisT.setInstance(thisT, thisT.getValue(), thisT.coerceToArray(thisT));
+		V metaAttribute = root.setInstance(root, root.getValue(), root.coerceToArray(root));
 		put(MetaAttribute.class, metaAttribute);
 
-		T map = thisT.setInstance(SystemMap.class, thisT.coerceToArray(thisT));
+		V map = root.setInstance(SystemMap.class, root.coerceToArray(root));
 		put(SystemMap.class, map);
 		map.enablePropertyConstraint();
 		for (Class<?> clazz : userClasses)
@@ -39,8 +38,8 @@ public class SystemCache<T extends VertexService<T, ?>> extends HashMap<Class<?>
 		startupTime = false;
 	}
 
-	public T get(Class<?> clazz) {
-		T systemProperty = super.get(clazz);
+	public V get(Class<?> clazz) {
+		V systemProperty = super.get(clazz);
 		if (systemProperty != null) {
 			assert systemProperty.isAlive();
 			return systemProperty;
@@ -48,27 +47,26 @@ public class SystemCache<T extends VertexService<T, ?>> extends HashMap<Class<?>
 		return null;
 	}
 
-	private T set(Class<?> clazz) {
+	private V set(Class<?> clazz) {
 		if (!startupTime)
 			throw new IllegalStateException("Class : " + clazz + " has not been built at startup");
-		T systemProperty = super.get(clazz);
+		V systemProperty = super.get(clazz);
 		if (systemProperty != null) {
 			assert systemProperty.isAlive();
 			return systemProperty;
 		}
-		T result;
-		put(clazz, result = setMeta(clazz).setInstance(setOverrides(clazz), findValue(clazz), setComponents(clazz)));
+		V result = setMeta(clazz).setInstance(setOverrides(clazz), findValue(clazz), setComponents(clazz));
+		put(clazz, result);
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
-	private T setMeta(Class<?> clazz) {
+	private V setMeta(Class<?> clazz) {
 		Meta meta = clazz.getAnnotation(Meta.class);
-		return meta == null ? (T) thisT.getRoot() : set(meta.value());
+		return meta == null ? (V) root : set(meta.value());
 	}
 
-	private List<T> setOverrides(Class<?> clazz) {
-		List<T> overridesVertices = new ArrayList<>();
+	private List<V> setOverrides(Class<?> clazz) {
+		List<V> overridesVertices = new ArrayList<>();
 		org.genericsystem.kernel.annotations.Supers supersAnnotation = clazz.getAnnotation(org.genericsystem.kernel.annotations.Supers.class);
 		if (supersAnnotation != null)
 			for (Class<?> overrideClass : supersAnnotation.value())
@@ -76,7 +74,7 @@ public class SystemCache<T extends VertexService<T, ?>> extends HashMap<Class<?>
 		return overridesVertices;
 	}
 
-	private Serializable findValue(Class<?> clazz) {
+	private static Serializable findValue(Class<?> clazz) {
 		BooleanValue booleanValue = clazz.getAnnotation(BooleanValue.class);
 		if (booleanValue != null)
 			return booleanValue.value();
@@ -92,12 +90,12 @@ public class SystemCache<T extends VertexService<T, ?>> extends HashMap<Class<?>
 		return clazz;
 	}
 
-	private T[] setComponents(Class<?> clazz) {
-		List<T> components = new ArrayList<>();
+	private V[] setComponents(Class<?> clazz) {
+		List<V> components = new ArrayList<>();
 		Components componentsAnnotation = clazz.getAnnotation(Components.class);
 		if (componentsAnnotation != null)
 			for (Class<?> componentClass : componentsAnnotation.value())
 				components.add(set(componentClass));
-		return thisT.coerceToArray(components.toArray());
+		return root.coerceToArray(components.toArray());
 	}
 }

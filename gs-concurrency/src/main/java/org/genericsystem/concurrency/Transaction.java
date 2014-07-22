@@ -2,7 +2,6 @@ package org.genericsystem.concurrency;
 
 import java.util.HashSet;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 import org.genericsystem.kernel.exceptions.OptimisticLockConstraintViolationException;
@@ -12,7 +11,7 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 	private transient long ts;
 
 	protected Transaction(U engine) {
-		this(((Engine) engine).getVertex().pickNewTs(), engine);
+		this(engine.getVertex().pickNewTs(), engine);
 	}
 
 	protected Transaction(long ts, U engine) {

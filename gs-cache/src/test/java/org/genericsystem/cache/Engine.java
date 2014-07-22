@@ -22,9 +22,9 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 	}
 
 	public Engine(Serializable rootValue, Serializable engineValue) {
-		root = buildRoot(rootValue);
 		init(false, null, Collections.emptyList(), Statics.ENGINE_VALUE, Collections.emptyList());
 		cacheLocal.set(buildCache(new Transaction<>(this)));
+		root = buildRoot(rootValue);
 	}
 
 	@SuppressWarnings("static-method")
