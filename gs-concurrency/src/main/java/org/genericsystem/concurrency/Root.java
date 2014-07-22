@@ -15,6 +15,8 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 	private final SystemCache<Vertex> systemCache = new SystemCache<Vertex>(this);
 	private final EngineService<?, ?, Vertex, Root> engine;
 
+	private final GarbageCollector<Vertex, Root> garbageCollector;
+
 	public Root(EngineService<?, ?, Vertex, Root> engine, Class<?>... userClasses) {
 		this(engine, Statics.ENGINE_VALUE, userClasses);
 	}
@@ -25,6 +27,7 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 		long ts = getRoot().pickNewTs();
 		restore(ts, ts, 0L, Long.MAX_VALUE);
 		systemCache.init(userClasses);
+		garbageCollector = new GarbageCollector<>(this);
 	}
 
 	@Override
@@ -60,6 +63,11 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 	@Override
 	public EngineService<?, ?, Vertex, Root> getEngine() {
 		return engine;
+	}
+
+	@Override
+	public GarbageCollector<Vertex, Root> getGarbageCollector() {
+		return garbageCollector;
 	}
 
 	static class TsGenerator {

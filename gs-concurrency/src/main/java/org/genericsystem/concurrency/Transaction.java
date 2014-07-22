@@ -74,10 +74,12 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 
 	// TODO : check performance
 	// remove should return a boolean.
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean simpleRemove(T generic) {
 		getLifeManager(generic).kill(getTs());
-		getEngine().getRoot().getGarbageCollectorManager().add(generic);
+		// TODO KK
+		((Root) ((AbstractGeneric<T, U, V, W>) getEngine()).getVertex()).getGarbageCollector().add((Root) generic.getVertex());
 		return true;
 	}
 

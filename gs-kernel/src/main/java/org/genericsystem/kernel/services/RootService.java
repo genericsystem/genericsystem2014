@@ -33,7 +33,8 @@ public interface RootService<T extends VertexService<T, U>, U extends RootServic
 		return Objects.equals(getValue(), service.getValue()) && AncestorsService.equivComponents(getComponents(), service.getComponents());
 	}
 
-	default void rollback() {};
+	default void rollback() {
+	};
 
 	T find(Class<?> clazz);
 }
