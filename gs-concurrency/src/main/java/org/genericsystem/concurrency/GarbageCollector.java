@@ -1,22 +1,21 @@
-package org.genericsystem.concurrency.vertex;
+package org.genericsystem.concurrency;
 
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import org.genericsystem.concurrency.AbstractGeneric;
-import org.genericsystem.concurrency.EngineService;
+
 import org.genericsystem.kernel.Statics;
 
-public class GarbageCollector<T extends AbstractGeneric<T, U, ?, ?>, U extends EngineService<T, U, ?, ?>> extends LinkedHashSet<T> {
+public class GarbageCollector<T extends AbstractVertex<T, U>, U extends RootService<T, U>> extends LinkedHashSet<T> {
 
 	private static final long serialVersionUID = -2021341943811568201L;
 	private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-	private EngineService<T, U, ?, ?> engine;
+	private final RootService<T, U> root;
 
-	public GarbageCollector(EngineService<T, U, ?, ?> engine) {
-		this.engine = engine;
+	public GarbageCollector(RootService<T, U> root) {
+		this.root = root;
 	}
 
 	public void startScheduler() {
@@ -29,13 +28,13 @@ public class GarbageCollector<T extends AbstractGeneric<T, U, ?, ?>, U extends E
 	}
 
 	public void runGarbage(long timeOut) {
-		long ts = engine.pickNewTs();
-		synchronized (engine) {
+		long ts = root.pickNewTs();
+		synchronized (root) {
 			Iterator<T> iterator = GarbageCollector.this.iterator();
 			while (iterator.hasNext()) {
-				T generic = iterator.next();
-				if (ts - generic.getDeathTs() >= timeOut) {
-					generic.unplug();
+				T vertex = iterator.next();
+				if (ts - vertex.getLifeManager().getDeathTs() >= timeOut) {
+					vertex.unplug();
 					iterator.remove();
 				}
 			}

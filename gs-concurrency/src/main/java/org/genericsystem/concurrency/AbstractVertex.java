@@ -1,6 +1,5 @@
-package org.genericsystem.concurrency.vertex;
+package org.genericsystem.concurrency;
 
-import org.genericsystem.concurrency.LifeManager;
 
 public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends RootService<T, U>> extends org.genericsystem.kernel.AbstractVertex<T, U> implements VertexService<T, U> {
 

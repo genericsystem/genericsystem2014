@@ -1,8 +1,6 @@
 package org.genericsystem.concurrency;
 
 import org.genericsystem.cache.Cache;
-import org.genericsystem.concurrency.vertex.Root;
-import org.genericsystem.concurrency.vertex.Vertex;
 import org.testng.annotations.Test;
 
 @Test

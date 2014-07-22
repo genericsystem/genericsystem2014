@@ -1,8 +1,8 @@
-package org.genericsystem.concurrency.vertex;
+package org.genericsystem.concurrency;
 
 import java.io.Serializable;
 import java.util.Iterator;
-import org.genericsystem.concurrency.LifeManager;
+
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Snapshot.AbstractSnapshot;
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;

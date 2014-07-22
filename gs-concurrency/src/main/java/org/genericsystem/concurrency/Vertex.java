@@ -1,7 +1,7 @@
-package org.genericsystem.concurrency.vertex;
+package org.genericsystem.concurrency;
 
 import java.util.Iterator;
-import org.genericsystem.concurrency.LifeManager;
+
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 

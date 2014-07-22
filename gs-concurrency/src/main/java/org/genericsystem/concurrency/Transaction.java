@@ -3,7 +3,7 @@ package org.genericsystem.concurrency;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.stream.Collectors;
-import org.genericsystem.concurrency.vertex.Root;
+
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
@@ -42,7 +42,12 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 
 	@Override
 	public boolean isAlive(T generic) {
-		return generic.getVertex() != null && generic.getLifeManager().isAlive(getTs());
+		return generic.getVertex() != null && getLifeManager(generic).isAlive(getTs());
+	}
+
+	@SuppressWarnings("unchecked")
+	private LifeManager getLifeManager(T generic) {
+		return ((org.genericsystem.concurrency.AbstractVertex<Vertex, Root>) generic.getVertex()).getLifeManager();
 	}
 
 	@Override
@@ -59,18 +64,19 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 	}
 
 	// TODO Apply with checkMvcc...
+	@SuppressWarnings("unchecked")
 	@Override
 	public void simpleAdd(T generic) {
 		V vertex = generic.getMeta().getVertex();
 		vertex.addInstance(generic.getSupersStream().map(g -> g.unwrap()).collect(Collectors.toList()), generic.getValue(), vertex.coerceToArray(generic.getComponentsStream().map(T::unwrap).toArray()));
-		vertex.getLifeManager().beginLife(getTs());
+		((org.genericsystem.concurrency.AbstractVertex<Vertex, Root>) vertex).getLifeManager().beginLife(getTs());
 	}
 
 	// TODO : check performance
 	// remove should return a boolean.
 	@Override
 	public boolean simpleRemove(T generic) {
-		generic.getVertex().getLifeManager().kill(getTs());
+		getLifeManager(generic).kill(getTs());
 		getEngine().getRoot().getGarbageCollectorManager().add(generic);
 		return true;
 	}
@@ -81,14 +87,14 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 
 		private void writeLockAllAndCheckMvcc(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
 			for (T generic : removes)
-				writeLockAndCheckMvcc(generic.getLifeManager());
+				writeLockAndCheckMvcc(getLifeManager(generic));
 			for (T generic : adds) {
-				writeLockAndCheckMvcc(generic.getMeta().getLifeManager());
+				writeLockAndCheckMvcc(getLifeManager(generic.getMeta()));
 				for (T effectiveSuper : generic.getSupers())
-					writeLockAndCheckMvcc(effectiveSuper.getLifeManager());
+					writeLockAndCheckMvcc(getLifeManager(effectiveSuper));
 				for (T component : generic.getComponents())
-					writeLockAndCheckMvcc(component.getLifeManager());
-				writeLockAndCheckMvcc(generic.getLifeManager());
+					writeLockAndCheckMvcc(getLifeManager(component));
+				writeLockAndCheckMvcc(getLifeManager(generic));
 			}
 		}
 

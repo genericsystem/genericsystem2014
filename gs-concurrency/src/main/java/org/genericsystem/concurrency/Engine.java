@@ -3,8 +3,7 @@ package org.genericsystem.concurrency;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Objects;
-import org.genericsystem.concurrency.vertex.Root;
-import org.genericsystem.concurrency.vertex.Vertex;
+
 import org.genericsystem.impl.GenericsCache;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.services.AncestorsService;

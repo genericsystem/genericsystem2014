@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.services.RootService;
 import org.genericsystem.kernel.services.VertexService;
 import org.slf4j.Logger;
@@ -34,6 +35,9 @@ public class Statics {
 	public static final int ATTRIBUTE_SIZE = 1;
 	public static final int RELATION_SIZE = 2;
 	public static final int TERNARY_RELATION_SIZE = 3;
+	public static final long GARBAGE_PERIOD = 1000L;
+	public static final long GARBAGE_INITIAL_DELAY = 1000L;
+	public static final long LIFE_TIMEOUT = 1386174608777L;// 30 minutes
 
 	public static <T> Stream<T> concat(Stream<T>[] array) {
 		return Arrays.stream(array).flatMap(x -> x);

@@ -1,7 +1,5 @@
 package org.genericsystem.concurrency;
 
-import org.genericsystem.concurrency.vertex.Root;
-import org.genericsystem.concurrency.vertex.Vertex;
 
 public class Generic extends AbstractGeneric<Generic, Engine, Vertex, Root> implements GenericService<Generic, Engine, Vertex, Root> {
 
