@@ -7,11 +7,11 @@ public interface EngineService<T extends AbstractGeneric<T, U, V, W>, U extends 
 
 	@Override
 	default Cache<T, U, V, W> buildCache(org.genericsystem.cache.Context<T, U, V, W> subContext) {
-		return new Cache<T, U, V, W>(subContext);
+		return new Cache<>(subContext);
 	}
 
 	default Cache<T, U, V, W> newCache() {
-		return buildCache(new Transaction<T, U, V, W>(getRoot()));
+		return buildCache(new Transaction<>(getRoot()));
 	}
 
 	@Override
@@ -37,6 +37,8 @@ public interface EngineService<T extends AbstractGeneric<T, U, V, W>, U extends 
 	default U getRoot() {
 		return (U) this;
 	}
+
+	abstract W getVertex();
 
 	@Override
 	public Cache<T, U, V, W> getCurrentCache();

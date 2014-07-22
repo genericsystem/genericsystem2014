@@ -3,31 +3,18 @@ package org.genericsystem.concurrency;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.stream.Collectors;
-
-import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 import org.genericsystem.kernel.exceptions.OptimisticLockConstraintViolationException;
-import org.genericsystem.kernel.services.RootService;
 
-public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends org.genericsystem.cache.Transaction<T, U, V, W> implements Context<T, U, V, W> {
+public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends org.genericsystem.kernel.AbstractVertex<V, W>, W extends org.genericsystem.kernel.services.RootService<V, W>> extends
+org.genericsystem.cache.Transaction<T, U, V, W> implements Context<T, U, V, W> {
 
 	private transient long ts;
 
-	// private ExecutorService service = Executors.newSingleThreadExecutor(r -> new GsThread(r, getTs()));
-
-	// private <R> R callWithTs(Callable<R> callable) {
-	// try {
-	// return service.submit(callable).get();
-	// } catch (InterruptedException | ExecutionException e) {
-	// getEngine().rollbackAndThrowException(e);
-	// return null;
-	// }
-	// }
-
 	public Transaction(U engine) {
-		this(((Root) ((Engine) engine).getVertex()).pickNewTs(), engine);
+		this(((Engine) engine).getVertex().pickNewTs(), engine);
 	}
 
 	public Transaction(long ts, U engine) {
@@ -63,7 +50,6 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 		}
 	}
 
-	// TODO Apply with checkMvcc...
 	@SuppressWarnings("unchecked")
 	@Override
 	public void simpleAdd(T generic) {
@@ -72,14 +58,11 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 		((org.genericsystem.concurrency.AbstractVertex<Vertex, Root>) vertex).getLifeManager().beginLife(getTs());
 	}
 
-	// TODO : check performance
-	// remove should return a boolean.
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean simpleRemove(T generic) {
 		getLifeManager(generic).kill(getTs());
-		// TODO KK
-		((Root) ((AbstractGeneric<T, U, V, W>) getEngine()).getVertex()).getGarbageCollector().add((Root) generic.getVertex());
+		getEngine().getVertex().getGarbageCollector().add(generic.getVertex());
 		return true;
 	}
 

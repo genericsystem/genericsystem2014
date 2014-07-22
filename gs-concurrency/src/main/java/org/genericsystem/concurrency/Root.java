@@ -3,7 +3,6 @@ package org.genericsystem.concurrency;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
-
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.SystemCache;
 import org.genericsystem.kernel.services.ApiService;
@@ -12,7 +11,7 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 
 	private final TsGenerator generator = new TsGenerator();
 
-	private final SystemCache<Vertex> systemCache = new SystemCache<Vertex>(this);
+	private final SystemCache<Vertex> systemCache = new SystemCache<>(this);
 	private final EngineService<?, ?, Vertex, Root> engine;
 
 	private final GarbageCollector<Vertex, Root> garbageCollector;

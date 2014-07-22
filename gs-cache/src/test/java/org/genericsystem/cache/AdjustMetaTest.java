@@ -9,6 +9,7 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test001_AdjustMeta_MetaLevel_metaAttribut_NoComponent() {
 		Engine engine = new Engine();
+
 		engine.setInstance(engine.getValue(), engine);
 		assert engine == engine.adjustMeta(Collections.emptyList(), "Power", Collections.emptyList());
 	}

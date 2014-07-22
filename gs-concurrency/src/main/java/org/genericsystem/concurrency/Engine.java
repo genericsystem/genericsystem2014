@@ -3,7 +3,6 @@ package org.genericsystem.concurrency;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Objects;
-
 import org.genericsystem.impl.GenericsCache;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.services.AncestorsService;
@@ -32,7 +31,7 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 	}
 
 	@Override
-	public Vertex getVertex() {
+	public Root getVertex() {
 		return root;
 	}
 

@@ -2,7 +2,6 @@ package org.genericsystem.cache;
 
 import java.io.Serializable;
 import java.util.Collections;
-
 import org.genericsystem.impl.GenericsCache;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
@@ -34,7 +33,7 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 	}
 
 	@Override
-	public Vertex getVertex() {
+	public Root getVertex() {
 		return root;
 	}
 
