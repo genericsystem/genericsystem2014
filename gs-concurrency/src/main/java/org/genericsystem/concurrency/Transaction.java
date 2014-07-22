@@ -61,18 +61,17 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 	// TODO Apply with checkMvcc...
 	@Override
 	public void simpleAdd(T generic) {
-		generic.getLifeManager().beginLife(getTs());
 		V vertex = generic.getMeta().getVertex();
 		vertex.addInstance(generic.getSupersStream().map(g -> g.unwrap()).collect(Collectors.toList()), generic.getValue(), vertex.coerceToArray(generic.getComponentsStream().map(T::unwrap).toArray()));
+		vertex.getLifeManager().beginLife(getTs());
 	}
 
 	// TODO : check performance
 	// remove should return a boolean.
 	@Override
 	public boolean simpleRemove(T generic) {
-		generic.getLifeManager().kill(getTs());
-		getEngine().getGarbageCollectorManager().add(generic);
-		// generic.getVertex().remove();
+		generic.getVertex().getLifeManager().kill(getTs());
+		getEngine().getRoot().getGarbageCollectorManager().add(generic);
 		return true;
 	}
 

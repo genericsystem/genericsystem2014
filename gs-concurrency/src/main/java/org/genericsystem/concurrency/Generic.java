@@ -14,9 +14,4 @@ public class Generic extends AbstractGeneric<Generic, Engine, Vertex, Root> impl
 	public Generic[] newTArray(int dim) {
 		return new Generic[dim];
 	}
-
-	@Override
-	public LifeManager getLifeManager() {
-		return getVertex().getLifeManager();
-	}
 }

@@ -1,10 +1,12 @@
-package org.genericsystem.concurrency;
+package org.genericsystem.concurrency.vertex;
 
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import org.genericsystem.concurrency.AbstractGeneric;
+import org.genericsystem.concurrency.EngineService;
 import org.genericsystem.kernel.Statics;
 
 public class GarbageCollector<T extends AbstractGeneric<T, U, ?, ?>, U extends EngineService<T, U, ?, ?>> extends LinkedHashSet<T> {
