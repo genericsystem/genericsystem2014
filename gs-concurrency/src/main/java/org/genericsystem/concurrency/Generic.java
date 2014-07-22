@@ -1,6 +1,5 @@
 package org.genericsystem.concurrency;
 
-import org.genericsystem.concurrency.vertex.LifeManager;
 import org.genericsystem.concurrency.vertex.Root;
 import org.genericsystem.concurrency.vertex.Vertex;
 

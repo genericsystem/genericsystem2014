@@ -39,7 +39,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 	}
 
 	public Cache(U engine) {
-		this(new Transaction<T, U, V, W>(engine));
+		this(new Transaction<>(engine));
 	}
 
 	public Cache(Context<T, U, V, W> subContext) {

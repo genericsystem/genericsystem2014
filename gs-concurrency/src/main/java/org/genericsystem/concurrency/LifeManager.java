@@ -1,8 +1,7 @@
-package org.genericsystem.concurrency.vertex;
+package org.genericsystem.concurrency;
 
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-
 import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.OptimisticLockConstraintViolationException;
 import org.slf4j.Logger;

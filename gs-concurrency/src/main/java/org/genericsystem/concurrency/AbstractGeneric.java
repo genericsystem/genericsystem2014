@@ -2,7 +2,6 @@ package org.genericsystem.concurrency;
 
 import org.genericsystem.cache.EngineService;
 import org.genericsystem.cache.GenericService;
-import org.genericsystem.concurrency.vertex.LifeManager;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.services.RootService;
 
