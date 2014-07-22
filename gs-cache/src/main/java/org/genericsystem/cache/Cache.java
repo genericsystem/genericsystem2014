@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
+
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Snapshot;
@@ -17,9 +18,9 @@ import org.genericsystem.kernel.exceptions.NotFoundException;
 import org.genericsystem.kernel.exceptions.RollbackException;
 import org.genericsystem.kernel.services.RootService;
 
-public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> implements Context<T, U, V, W> {
+public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends AbstractContext<T, U, V, W> {
 
-	protected Context<T, U, V, W> subContext;
+	protected AbstractContext<T, U, V, W> subContext;
 
 	private transient Map<T, Dependencies<T>> inheritingsDependenciesMap;
 	private transient Map<T, Dependencies<T>> instancesDependenciesMap;
@@ -42,7 +43,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 		this(new Transaction<>(engine));
 	}
 
-	public Cache(Context<T, U, V, W> subContext) {
+	public Cache(AbstractContext<T, U, V, W> subContext) {
 		this.subContext = subContext;
 		clear();
 	}
@@ -147,7 +148,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 		return subContext.getEngine();
 	}
 
-	public Context<T, U, V, W> getSubContext() {
+	public AbstractContext<T, U, V, W> getSubContext() {
 		return subContext;
 	}
 
