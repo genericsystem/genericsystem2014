@@ -11,7 +11,7 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 
 	private transient final U engine;
 
-	public Transaction(U engine) {
+	protected Transaction(U engine) {
 		this.engine = engine;
 	}
 
@@ -22,7 +22,7 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 	}
 
 	@Override
-	public void simpleAdd(T generic) {
+	protected void simpleAdd(T generic) {
 		V vertex = generic.getMeta().getVertex();
 		vertex.addInstance(generic.getSupersStream().map(g -> g.unwrap()).collect(Collectors.toList()), generic.getValue(), vertex.coerceToArray(generic.getComponentsStream().map(T::unwrap).toArray()));
 	}
@@ -30,7 +30,7 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 	// TODO : check performance
 	// remove should return a boolean.
 	@Override
-	public boolean simpleRemove(T generic) {
+	protected boolean simpleRemove(T generic) {
 		generic.getVertex().remove();
 		return true;
 	}
@@ -41,23 +41,23 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 	}
 
 	@Override
-	public Snapshot<T> getInheritings(T generic) {
+	Snapshot<T> getInheritings(T generic) {
 		return () -> generic.getVertex() != null ? generic.unwrap().getInheritings().stream().map(generic::wrap).iterator() : Collections.emptyIterator();
 	}
 
 	@Override
-	public Snapshot<T> getInstances(T generic) {
+	Snapshot<T> getInstances(T generic) {
 		return () -> generic.getVertex() != null ? generic.unwrap().getInstances().stream().map(generic::wrap).iterator() : Collections.emptyIterator();
 	}
 
 	@Override
-	public Snapshot<T> getMetaComposites(T generic, T meta) {
+	Snapshot<T> getMetaComposites(T generic, T meta) {
 		return () -> generic.getVertex() != null ? generic.unwrap().getMetaComposites(meta.unwrap()).stream().map(generic::wrap).iterator() : Collections.emptyIterator();
 	}
 
 	@Override
-	public Snapshot<T> getSuperComposites(T generic, T superT) {
+	Snapshot<T> getSuperComposites(T generic, T superT) {
 		return () -> generic.getVertex() != null ? generic.unwrap().getSuperComposites(superT.unwrap()).stream().map(generic::wrap).iterator() : Collections.emptyIterator();
-	};
+	}
 
 }
