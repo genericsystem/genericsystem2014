@@ -21,9 +21,9 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 	}
 
 	public Engine(Serializable rootValue, Serializable engineValue) {
-		root = buildRoot(rootValue);
-		cacheLocal.set(buildCache(new Transaction<Generic, Engine, Vertex, Root>(this)));
 		init(false, null, Collections.emptyList(), engineValue, Collections.emptyList());
+		cacheLocal.set(buildCache(new Transaction<Generic, Engine, Vertex, Root>(this)));
+		root = buildRoot(rootValue);
 	}
 
 	public Root buildRoot(Serializable value) {
@@ -54,7 +54,7 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 	public Cache<Generic, Engine, Vertex, Root> getCurrentCache() {
 		Cache<Generic, Engine, Vertex, Root> currentCache = cacheLocal.get();
 		if (currentCache == null)
-			throw new IllegalStateException();
+			throw new IllegalStateException("Unable to find the current cache. Did you miss to call start() method on it ?");
 		return currentCache;
 	}
 
