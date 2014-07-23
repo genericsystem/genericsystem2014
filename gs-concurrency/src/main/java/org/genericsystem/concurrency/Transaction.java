@@ -2,6 +2,7 @@ package org.genericsystem.concurrency;
 
 import java.util.HashSet;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 import org.genericsystem.kernel.exceptions.OptimisticLockConstraintViolationException;
@@ -28,9 +29,9 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 		return generic.getVertex() != null && getLifeManager(generic).isAlive(getTs());
 	}
 
-	@SuppressWarnings("unchecked")
 	private LifeManager getLifeManager(T generic) {
-		return ((org.genericsystem.concurrency.AbstractVertex<Vertex, Root>) generic.getVertex()).getLifeManager();
+		// TODO KK
+		return generic.getVertex().getLifeManager();
 	}
 
 	@Override
