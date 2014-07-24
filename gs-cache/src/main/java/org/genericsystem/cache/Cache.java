@@ -7,7 +7,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
-
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Snapshot;
@@ -30,7 +29,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 	private Set<T> adds = new LinkedHashSet<>();
 	private Set<T> removes = new LinkedHashSet<>();
 
-	void clear() {
+	protected void clear() {
 		inheritingsDependenciesMap = new HashMap<>();
 		instancesDependenciesMap = new HashMap<>();
 		metaCompositesDependenciesMap = new HashMap<>();

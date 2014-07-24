@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
-
-import org.genericsystem.concurrency.Root.RootFactory;
 import org.genericsystem.impl.GenericsCache;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.services.AncestorsService;
@@ -26,12 +24,14 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 	public Engine(Serializable rootValue, Serializable engineValue) {
 		init(false, null, Collections.emptyList(), engineValue, Collections.emptyList());
 		root = buildRoot(rootValue);
-		cacheLocal.set(buildCache(new Transaction<Generic, Engine, Vertex, Root>(this)));
+		Cache<Generic, Engine, Vertex, Root> cache = newCache().start();
 		root.init(rootValue);
+		cache.flush();
+		// cacheLocal.set(buildCache(new Transaction<Generic, Engine, Vertex, Root>(this)));
 	}
 
-	public Root buildRoot(Serializable value) {
-		return RootFactory.buildRoot(this, value);
+	Root buildRoot(Serializable value) {
+		return new Root(this, Statics.ENGINE_VALUE);
 	}
 
 	@Override

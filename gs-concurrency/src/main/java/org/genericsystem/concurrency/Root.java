@@ -3,7 +3,6 @@ package org.genericsystem.concurrency;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
-
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.SystemCache;
 import org.genericsystem.kernel.services.ApiService;
@@ -17,22 +16,22 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 
 	private final GarbageCollector<Vertex, Root> garbageCollector;
 
-	private Root(EngineService<?, ?, Vertex, Root> engine, Serializable value, Class<?>... userClasses) {
+	Root(EngineService<?, ?, Vertex, Root> engine, Serializable value, Class<?>... userClasses) {
 		this.engine = engine;
 		long ts = pickNewTs();
-		restore(ts, ts, 0L, Long.MAX_VALUE);
+		restore(ts, 0L, 0L, Long.MAX_VALUE);
 		garbageCollector = new GarbageCollector<>(this);
 	}
 
-	public static class RootFactory {
-		public static Root buildRoot(EngineService<?, ?, Vertex, Root> engine, Serializable value, Class<?>... userClasses) {
-			return new Root(engine, Statics.ENGINE_VALUE, userClasses);
-		}
-
-		public static Root buildAndInitRoot(EngineService<?, ?, Vertex, Root> engine, Serializable value, Class<?>... userClasses) {
-			return buildRoot(engine, value, userClasses).init(value, userClasses);
-		}
-	}
+	// public static class RootFactory {
+	// public static Root buildRoot(EngineService<?, ?, Vertex, Root> engine, Serializable value, Class<?>... userClasses) {
+	// return new Root(engine, Statics.ENGINE_VALUE, userClasses);
+	// }
+	//
+	// public static Root buildAndInitRoot(EngineService<?, ?, Vertex, Root> engine, Serializable value, Class<?>... userClasses) {
+	// return buildRoot(engine, value, userClasses).init(value, userClasses);
+	// }
+	// }
 
 	protected Root init(Serializable value, Class<?>... userClasses) {
 		init(false, null, Collections.emptyList(), value, Collections.emptyList());

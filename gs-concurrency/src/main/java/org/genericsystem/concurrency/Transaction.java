@@ -2,7 +2,6 @@ package org.genericsystem.concurrency;
 
 import java.util.HashSet;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 import org.genericsystem.kernel.exceptions.OptimisticLockConstraintViolationException;
@@ -30,8 +29,8 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 	}
 
 	private LifeManager getLifeManager(T generic) {
-		// TODO KK
-		return generic.getVertex().getLifeManager();
+		V vertex = generic.getVertex();
+		return vertex != null ? vertex.getLifeManager() : null;
 	}
 
 	@Override
@@ -50,8 +49,8 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 	@Override
 	protected void simpleAdd(T generic) {
 		V vertex = generic.getMeta().getVertex();
-		vertex.addInstance(generic.getSupersStream().map(g -> g.unwrap()).collect(Collectors.toList()), generic.getValue(), vertex.coerceToArray(generic.getComponentsStream().map(T::unwrap).toArray()));
-		vertex.getLifeManager().beginLife(getTs());
+		V result = vertex.addInstance(generic.getSupersStream().map(g -> g.unwrap()).collect(Collectors.toList()), generic.getValue(), vertex.coerceToArray(generic.getComponentsStream().map(T::unwrap).toArray()));
+		result.getLifeManager().beginLife(getTs());
 	}
 
 	@Override
@@ -79,7 +78,7 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 		}
 
 		private void writeLockAndCheckMvcc(LifeManager manager) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
-			if (!contains(manager)) {
+			if (manager != null && !contains(manager)) {
 				manager.writeLock();
 				add(manager);
 				manager.checkMvcc(getTs());

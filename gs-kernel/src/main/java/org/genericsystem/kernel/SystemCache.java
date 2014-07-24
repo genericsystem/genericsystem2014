@@ -36,12 +36,13 @@ public class SystemCache<V extends VertexService<V, ?>> extends HashMap<Class<?>
 		for (Class<?> clazz : userClasses)
 			set(clazz);
 		startupTime = false;
+		assert map.isAlive();
 	}
 
 	public V get(Class<?> clazz) {
 		V systemProperty = super.get(clazz);
 		if (systemProperty != null) {
-			assert systemProperty.isAlive();
+			assert systemProperty.isAlive() : systemProperty.info();
 			return systemProperty;
 		}
 		return null;
