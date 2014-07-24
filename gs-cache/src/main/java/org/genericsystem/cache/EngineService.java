@@ -26,6 +26,6 @@ public interface EngineService<T extends AbstractGeneric<T, U, V, W>, U extends 
 	@Override
 	public T getGenericFromCache(AncestorsService<?, ?> vertex);
 
-	abstract W getVertex();
+	W getVertex();
 
 }

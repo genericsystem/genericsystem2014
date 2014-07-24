@@ -3,6 +3,7 @@ package org.genericsystem.concurrency;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 import org.genericsystem.impl.GenericsCache;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.services.AncestorsService;
@@ -22,12 +23,15 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 
 	public Engine(Serializable rootValue, Serializable engineValue) {
 		init(false, null, Collections.emptyList(), engineValue, Collections.emptyList());
-		cacheLocal.set(buildCache(new Transaction<Generic, Engine, Vertex, Root>(this)));
 		root = buildRoot(rootValue);
+		Cache<Generic, Engine, Vertex, Root> cache = newCache().start();
+		root.init(rootValue);
+		cache.flush();
+		// cacheLocal.set(buildCache(new Transaction<Generic, Engine, Vertex, Root>(this)));
 	}
 
-	public Root buildRoot(Serializable value) {
-		return new Root(this, value);
+	Root buildRoot(Serializable value) {
+		return new Root(this, Statics.ENGINE_VALUE);
 	}
 
 	@Override
@@ -83,6 +87,23 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 	@Override
 	public Generic getGenericFromCache(AncestorsService<?, ?> vertex) {
 		return genericSystemCache.getGenericFromCache(vertex);
+	}
+
+	static class TsGenerator {
+		private final long startTime = System.currentTimeMillis() * Statics.MILLI_TO_NANOSECONDS - System.nanoTime();
+		private final AtomicLong lastTime = new AtomicLong(0L);
+
+		long pickNewTs() {
+			long nanoTs;
+			long current;
+			for (;;) {
+				nanoTs = startTime + System.nanoTime();
+				current = lastTime.get();
+				if (nanoTs - current > 0)
+					if (lastTime.compareAndSet(current, nanoTs))
+						return nanoTs;
+			}
+		}
 	}
 
 }
