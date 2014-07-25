@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Root.MetaAttribute;
 import org.genericsystem.kernel.annotations.Components;
@@ -38,7 +39,6 @@ public class SystemCache<T extends VertexService<T, ?>> extends HashMap<Class<?>
 			set(clazz);
 		initialized = true;
 		assert map.isAlive();
-		assert false;
 	}
 
 	public T get(Class<?> clazz) {
