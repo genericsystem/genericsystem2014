@@ -31,7 +31,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 
 	@Override
 	public T plug() {
-		return getRoot().getGenericFromCache(wrap(unwrap().plug()));
+		return wrap(unwrap().plug());
 	}
 
 	@Override
@@ -42,16 +42,11 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 
 	@SuppressWarnings("unchecked")
 	protected T wrap(V vertex) {
-		U engine = getRoot();
-		T cachedGeneric = engine.getGenericFromCache(vertex);
-		if (cachedGeneric != null)
-			return cachedGeneric;
 		if (vertex.isRoot())
 			return (T) getRoot();
 		V alive = vertex.getAlive();
 		T meta = wrap(alive.getMeta());
-		return getRoot().getGenericFromCache(
-				meta.newT().init(alive.isThrowExistException(), meta, alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList())));
+		return meta.newT().init(alive.isThrowExistException(), meta, alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList()));
 	}
 
 	protected V unwrap() {
@@ -67,7 +62,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	@SuppressWarnings("unchecked")
 	@Override
 	protected T bindInstance(boolean throwExistException, List<T> overrides, Serializable value, T... components) {
-		return getRoot().getGenericFromCache(super.bindInstance(throwExistException, overrides, value, components));
+		return super.bindInstance(throwExistException, overrides, value, components);
 	}
 
 	protected V getVertex() {

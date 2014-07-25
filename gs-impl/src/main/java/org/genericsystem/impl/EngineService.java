@@ -1,6 +1,5 @@
 package org.genericsystem.impl;
 
-import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.RootService;
 
 public interface EngineService<T extends GenericService<T, U>, U extends EngineService<T, U>> extends RootService<T, U>, GenericService<T, U> {
@@ -45,7 +44,7 @@ public interface EngineService<T extends GenericService<T, U>, U extends EngineS
 	// return Objects.equals(getValue(), service.getValue()) && AncestorsService.equivComponents(getComponents(), service.getComponents());
 	// }
 
-	T getGenericFromCache(AncestorsService<?, ?> vertex);
+	// T getGenericFromCache(AncestorsService<?, ?> vertex);
 
 	T find(Class<?> clazz);
 

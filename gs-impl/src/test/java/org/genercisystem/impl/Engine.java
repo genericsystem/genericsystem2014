@@ -3,19 +3,15 @@ package org.genercisystem.impl;
 import java.io.Serializable;
 import java.util.Collections;
 import org.genericsystem.impl.EngineService;
-import org.genericsystem.impl.GenericsCache;
 import org.genericsystem.impl.SystemCache;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
-import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.ApiService;
 
 public class Engine extends Generic implements EngineService<Generic, Engine> {
 
 	private final Root root;
-
-	private final GenericsCache<Generic, Engine> genericSystemCache = new GenericsCache<>();
 
 	private final SystemCache<Generic> systemCache = new SystemCache<>(this);
 
@@ -63,10 +59,5 @@ public class Engine extends Generic implements EngineService<Generic, Engine> {
 	public Generic find(Class<?> clazz) {
 		return systemCache.get(clazz);
 		// return wrap(root.find(clazz));
-	}
-
-	@Override
-	public Generic getGenericFromCache(AncestorsService<?, ?> vertex) {
-		return genericSystemCache.getGenericFromCache(vertex);
 	}
 }
