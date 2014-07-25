@@ -68,4 +68,81 @@ public interface WriteService<T extends VertexService<T, U>, U extends RootServi
 
 	@Override
 	T[] coerceToArray(Object... array);
+
+	@SuppressWarnings("unchecked")
+	@Override
+	T[] targetsToComponents(T... targets);
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T addAttribute(Serializable value, T... targets) {
+		return addAttribute(Collections.emptyList(), value, targets);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T setAttribute(Serializable value, T... targets) {
+		return setAttribute(Collections.emptyList(), value, targets);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T addHolder(T attribute, Serializable value, T... targets) {
+		return attribute.addInstance(attribute, value, targetsToComponents(targets));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T setHolder(T attribute, Serializable value, T... targets) {
+		return attribute.setInstance(attribute, value, targetsToComponents(targets));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T addAttribute(T superT, Serializable value, T... targets) {
+		return addAttribute(Collections.singletonList(superT), value, targets);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T setAttribute(T superT, Serializable value, T... targets) {
+		return setAttribute(Collections.singletonList(superT), value, targets);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T addHolder(T attribute, T superT, Serializable value, T... targets) {
+		return attribute.addInstance(superT, value, targetsToComponents(targets));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T setHolder(T attribute, T superT, Serializable value, T... targets) {
+		return attribute.setInstance(superT, value, targetsToComponents(targets));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T addAttribute(List<T> overrides, Serializable value, T... targets) {
+		return getRoot().addInstance(overrides, value, targetsToComponents(targets));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T setAttribute(List<T> overrides, Serializable value, T... targets) {
+		return getRoot().setInstance(overrides, value, targetsToComponents(targets));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T addHolder(T attribute, List<T> overrides, Serializable value, T... targets) {
+		return attribute.addInstance(overrides, value, targetsToComponents(targets));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T setHolder(T attribute, List<T> overrides, Serializable value, T... targets) {
+		return attribute.setInstance(overrides, value, targetsToComponents(targets));
+	}
+
 }

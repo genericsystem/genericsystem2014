@@ -226,6 +226,15 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public T[] targetsToComponents(T... targets) {
+		T[] components = newTArray(targets.length + 1);
+		components[0] = (T) this;
+		System.arraycopy(targets, 0, components, 1, targets.length);
+		return components;
+	}
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public T buildInstance(boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
 		int level = getLevel() == 0 && Objects.equals(getValue(), getRoot().getValue()) && getComponentsStream().allMatch(c -> c.isRoot()) && Objects.equals(value, getRoot().getValue()) && components.stream().allMatch(c -> c.isRoot()) ? 0 : getLevel() + 1;

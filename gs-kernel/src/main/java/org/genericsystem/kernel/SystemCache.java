@@ -18,7 +18,7 @@ public class SystemCache<V extends VertexService<V, ?>> extends HashMap<Class<?>
 
 	private static final long serialVersionUID = 1150085123612887245L;
 
-	private boolean startupTime = true;
+	protected boolean startupTime = true;
 
 	private final V root;
 
@@ -49,7 +49,7 @@ public class SystemCache<V extends VertexService<V, ?>> extends HashMap<Class<?>
 		return null;
 	}
 
-	private V set(Class<?> clazz) {
+	protected V set(Class<?> clazz) {
 		if (!startupTime)
 			throw new IllegalStateException("Class : " + clazz + " has not been built at startup");
 		V systemProperty = super.get(clazz);
