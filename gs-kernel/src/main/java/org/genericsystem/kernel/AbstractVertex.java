@@ -39,6 +39,10 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	}
 
 	private void checkDependsMetaComponents() {
+		Serializable value = getValue();
+		// TODO KK
+		if (value.equals(SystemMap.class) || (value instanceof AxedPropertyClass && ((AxedPropertyClass) value).getClazz().equals(PropertyConstraint.class)))
+			return;
 		assert getMeta().getComponents() != null;
 		if (!(getMeta().componentsDepends(getComponents(), getMeta().getComponents())))
 			rollbackAndThrowException(new IllegalStateException("Inconsistant components : " + getComponents() + " " + getMeta().getComponents()));
