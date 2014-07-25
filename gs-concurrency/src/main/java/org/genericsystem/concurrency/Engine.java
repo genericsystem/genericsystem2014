@@ -23,11 +23,16 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 
 	public Engine(Serializable rootValue, Serializable engineValue) {
 		init(false, null, Collections.emptyList(), engineValue, Collections.emptyList());
-		root = buildRoot(rootValue);
+		root = buildRoot(rootValue).init(false, null, Collections.emptyList(), rootValue, Collections.emptyList());
+
 		Cache<Generic, Engine, Vertex, Root> cache = newCache().start();
-		root.init(rootValue);
-		cache.flush();
-		// cacheLocal.set(buildCache(new Transaction<Generic, Engine, Vertex, Root>(this)));
+		Generic metaAttribute = setInstance(this, getValue(), coerceToArray(this));
+		Generic map = setInstance(SystemMap.class, coerceToArray(this));
+		map.enablePropertyConstraint();
+
+		assert map.isAlive();
+		cache.flushAndUnmount();
+		assert map.isAlive();
 	}
 
 	Root buildRoot(Serializable value) {
@@ -71,7 +76,8 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 
 	@Override
 	public Generic find(Class<?> clazz) {
-		return wrap(root.find(clazz));
+		Vertex vertex = root.find(clazz);
+		return vertex != null ? wrap(vertex) : null;
 	}
 
 	@Override

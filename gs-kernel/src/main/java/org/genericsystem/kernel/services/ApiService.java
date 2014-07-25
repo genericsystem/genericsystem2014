@@ -54,6 +54,9 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 
 	T[] coerceToArray(Object... array);
 
+	@SuppressWarnings("unchecked")
+	T[] targetsToComponents(T... targets);
+
 	void rollbackAndThrowException(Exception exception) throws RollbackException;
 
 	int getLevel();
@@ -220,5 +223,41 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 
 	@SuppressWarnings("unchecked")
 	T addInstance(List<T> overrides, Serializable value, T... components);
+
+	@SuppressWarnings("unchecked")
+	T addAttribute(Serializable value, T... targets);
+
+	@SuppressWarnings("unchecked")
+	T setAttribute(Serializable value, T... targets);
+
+	@SuppressWarnings("unchecked")
+	T addHolder(T attribute, Serializable value, T... targets);
+
+	@SuppressWarnings("unchecked")
+	T setHolder(T attribute, Serializable value, T... targets);
+
+	@SuppressWarnings("unchecked")
+	T addAttribute(T superT, Serializable value, T... targets);
+
+	@SuppressWarnings("unchecked")
+	T setAttribute(T superT, Serializable value, T... targets);
+
+	@SuppressWarnings("unchecked")
+	T addHolder(T superT, T attribute, Serializable value, T... targets);
+
+	@SuppressWarnings("unchecked")
+	T setHolder(T superT, T attribute, Serializable value, T... targets);
+
+	@SuppressWarnings("unchecked")
+	T addAttribute(List<T> overrides, Serializable value, T... targets);
+
+	@SuppressWarnings("unchecked")
+	T setAttribute(List<T> overrides, Serializable value, T... targets);
+
+	@SuppressWarnings("unchecked")
+	T addHolder(T attribute, List<T> overrides, Serializable value, T... targets);
+
+	@SuppressWarnings("unchecked")
+	T setHolder(T attribute, List<T> overrides, Serializable value, T... targets);
 
 }
