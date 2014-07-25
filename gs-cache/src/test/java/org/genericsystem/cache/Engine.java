@@ -7,7 +7,6 @@ import org.genericsystem.impl.SystemCache;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
-import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.ApiService;
 
 public class Engine extends Generic implements EngineService<Generic, Engine, Vertex, Root> {
@@ -83,16 +82,6 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 	@Override
 	public boolean isRoot() {
 		return EngineService.super.isRoot();
-	}
-
-	// @Override
-	// public GenericService<Generic, Engine, Vertex, Root> setGenericInCache(Generic generic) {
-	// return genericSystemCache.setGenericInCache(generic);
-	// }
-
-	@Override
-	public Generic getGenericFromCache(AncestorsService<?, ?> vertex) {
-		return genericSystemCache.getGenericFromCache(vertex);
 	}
 
 }
