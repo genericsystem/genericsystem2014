@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.AbstractDependenciesComputer.DependenciesComputer;
 import org.genericsystem.kernel.AbstractDependenciesComputer.PotentialDependenciesComputer;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
@@ -50,7 +51,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		if (!supers.stream().allMatch(superVertex -> getMeta().inheritsFrom(superVertex.getMeta())))
 			rollbackAndThrowException(new IllegalStateException("Inconsistant supers : " + getSupers()));
 		if (!supers.stream().noneMatch(this::equals))
-			rollbackAndThrowException(new IllegalStateException("Supers loop detected : " + this.info()));
+			rollbackAndThrowException(new IllegalStateException("Supers loop detected : " + info()));
 	}
 
 	private void checkDependsSuperComponents(List<T> supers) {
