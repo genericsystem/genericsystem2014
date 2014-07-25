@@ -2,9 +2,9 @@ package org.genercisystem.impl;
 
 import java.io.Serializable;
 import java.util.Collections;
-
 import org.genericsystem.impl.EngineService;
 import org.genericsystem.impl.GenericsCache;
+import org.genericsystem.impl.SystemCache;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
@@ -15,15 +15,18 @@ public class Engine extends Generic implements EngineService<Generic, Engine> {
 
 	private final Root root;
 
-	private final GenericsCache<Generic, Engine> genericSystemCache = new GenericsCache<Generic, Engine>();
+	private final GenericsCache<Generic, Engine> genericSystemCache = new GenericsCache<>();
 
-	public Engine() {
-		this(Statics.ENGINE_VALUE);
+	private final SystemCache<Generic> systemCache = new SystemCache<>(this);
+
+	public Engine(Class<?>... userClasses) {
+		this(Statics.ENGINE_VALUE, userClasses);
 	}
 
-	public Engine(Serializable engineValue) {
+	public Engine(Serializable engineValue, Class<?>... userClasses) {
 		root = buildRoot(engineValue);
 		init(false, null, Collections.emptyList(), engineValue, Collections.emptyList());
+		systemCache.init(userClasses);
 	}
 
 	@SuppressWarnings("static-method")
@@ -58,7 +61,8 @@ public class Engine extends Generic implements EngineService<Generic, Engine> {
 
 	@Override
 	public Generic find(Class<?> clazz) {
-		return wrap(root.find(clazz));
+		return systemCache.get(clazz);
+		// return wrap(root.find(clazz));
 	}
 
 	@Override

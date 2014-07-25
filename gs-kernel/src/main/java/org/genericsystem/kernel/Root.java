@@ -2,7 +2,6 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.Collections;
-
 import org.genericsystem.kernel.services.ApiService;
 import org.genericsystem.kernel.services.RootService;
 import org.slf4j.Logger;
@@ -12,7 +11,7 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 
 	protected final static Logger log = LoggerFactory.getLogger(Root.class);
 
-	private final SystemCache<Vertex> systemCache = new SystemCache<>(this);
+	// private final SystemCache<Vertex> systemCache = new SystemCache<>(this);
 
 	public Root(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
@@ -20,12 +19,11 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 
 	public Root(Serializable value, Class<?>... userClasses) {
 		init(false, null, Collections.emptyList(), value, Collections.emptyList());
-		systemCache.init(userClasses);
-	}
-
-	@Override
-	public Vertex find(Class<?> clazz) {
-		return systemCache.get(clazz);
+		Root root = getRoot();
+		Vertex metaAttribute = root.setInstance(root, root.getValue(), coerceToArray(root));
+		Vertex map = root.setInstance(SystemMap.class, root.coerceToArray(root));
+		map.enablePropertyConstraint();
+		assert map.isAlive();
 	}
 
 	@Override
@@ -52,7 +50,6 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 	// @SystemGeneric
 	// @Components(Root.class)
 	// @StringValue(Statics.ENGINE_VALUE)
-	public static class MetaAttribute {
-	}
+	public static class MetaAttribute {}
 
 }

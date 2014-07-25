@@ -2,9 +2,6 @@ package org.genericsystem.kernel;
 
 import java.util.Arrays;
 import java.util.Collections;
-
-import org.genericsystem.kernel.Root.MetaAttribute;
-import org.genericsystem.kernel.services.MapService.SystemMap;
 import org.testng.annotations.Test;
 
 @Test
@@ -12,8 +9,8 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test001_AdjustMeta_SystemMap() {
 		Root engine = new Root();
-		Vertex metaAttribute = engine.find(MetaAttribute.class);
-		Vertex systemMap = engine.find(SystemMap.class);
+		Vertex metaAttribute = engine.getMetaAttribute();
+		Vertex systemMap = engine.getMap();
 		assert systemMap.getMeta().equals(metaAttribute);
 	}
 

@@ -1,5 +1,6 @@
-package org.genericsystem.kernel;
+package org.genercisystem.impl;
 
+import org.genericsystem.kernel.AbstractTest;
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Meta;
 import org.genericsystem.kernel.annotations.Supers;
@@ -10,21 +11,21 @@ import org.testng.annotations.Test;
 @Test
 public class AnnotationTest extends AbstractTest {
 
-	public void test001_Vertex() {
-		Root engine = new Root(Vehicle.class, Human.class, Myck.class);
-		Vertex vehicle = engine.find(Vehicle.class);
-		Vertex human = engine.find(Human.class);
-		Vertex myck = engine.find(Myck.class);
+	public void test001_Generic() {
+		Engine engine = new Engine(Vehicle.class, Human.class, Myck.class);
+		Generic vehicle = engine.find(Vehicle.class);
+		Generic human = engine.find(Human.class);
+		Generic myck = engine.find(Myck.class);
 		assert vehicle.isStructural();
 		assert human.isStructural();
 		assert myck.isConcrete();
 	}
 
-	public void test002_SuperVertex() {
-		Root engine = new Root(Vehicle.class, Car.class, myCar.class);
-		Vertex vehicle = engine.find(Vehicle.class);
-		Vertex car = engine.find(Car.class);
-		Vertex myCar = engine.find(myCar.class);
+	public void test002_SuperGeneric() {
+		Engine engine = new Engine(Vehicle.class, Car.class, myCar.class);
+		Generic vehicle = engine.find(Vehicle.class);
+		Generic car = engine.find(Car.class);
+		Generic myCar = engine.find(myCar.class);
 
 		assert vehicle.isStructural();
 		assert car.isStructural();
@@ -36,83 +37,83 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	public void test003_Attribute() {
-		Root engine = new Root(Vehicle.class, Power.class);
-		Vertex vehicle = engine.find(Vehicle.class);
-		Vertex power = engine.find(Power.class);
+		Engine engine = new Engine(Vehicle.class, Power.class);
+		Generic vehicle = engine.find(Vehicle.class);
+		Generic power = engine.find(Power.class);
 		assert power.isStructural();
 		assert vehicle.getAttributes(engine).contains(power) : vehicle.getAttributes(engine);
 	}
 
 	public void test004_AttributeValue() {
-		Root engine = new Root(V123.class);
-		Vertex myVehicle = engine.find(MyVehicle.class);
+		Engine engine = new Engine(V123.class);
+		Generic myVehicle = engine.find(MyVehicle.class);
 		engine.find(V123.class);
 		assert myVehicle.getValues(engine.find(Power.class)).size() == 1;
 		assert myVehicle.getValues(engine.find(Power.class)).contains(new Integer(123)) : myVehicle.getValues(engine.find(Power.class));
 	}
 
 	public void test005_SuperAttribute() {
-		Root engine = new Root(Car.class, ElectrikPower.class);
-		Vertex car = engine.find(Car.class);
-		Vertex electrikPowerCar = engine.find(ElectrikPower.class);
+		Engine engine = new Engine(Car.class, ElectrikPower.class);
+		Generic car = engine.find(Car.class);
+		Generic electrikPowerCar = engine.find(ElectrikPower.class);
 		assert car.getAttributes(engine).contains(electrikPowerCar) : car.getAttributes(engine);
 	}
 
 	public void test006_AttributeOnAttribute() {
-		Root engine = new Root(ElectrikPower.class, Unit.class);
-		Vertex electrikPowerCar = engine.find(ElectrikPower.class);
-		Vertex unit = engine.find(Unit.class);
+		Engine engine = new Engine(ElectrikPower.class, Unit.class);
+		Generic electrikPowerCar = engine.find(ElectrikPower.class);
+		Generic unit = engine.find(Unit.class);
 		assert unit.isAttributeOf(electrikPowerCar);
 		assert unit.isStructural();
 		assert electrikPowerCar.getAttributes(engine).contains(unit);
 	}
 
 	public void test007_Relation() {
-		Root engine = new Root(Vehicle.class, Human.class, HumanPossessVehicle.class);
+		Engine engine = new Engine(Vehicle.class, Human.class, HumanPossessVehicle.class);
 		engine.find(Vehicle.class);
-		Vertex human = engine.find(Human.class);
-		Vertex possess = engine.find(HumanPossessVehicle.class);
+		Generic human = engine.find(Human.class);
+		Generic possess = engine.find(HumanPossessVehicle.class);
 		assert human.getAttributes().contains(possess);
 	}
 
 	public void test008_SubRelation() {
-		Root engine = new Root(Car.class, Human.class, HumanPossessVehicle.class, HumanPossessCar.class);
+		Engine engine = new Engine(Car.class, Human.class, HumanPossessVehicle.class, HumanPossessCar.class);
 		engine.find(Car.class);
-		Vertex human = engine.find(Human.class);
-		Vertex possessVehicle = engine.find(HumanPossessVehicle.class);
-		Vertex possessCar = engine.find(HumanPossessCar.class);
+		Generic human = engine.find(Human.class);
+		Generic possessVehicle = engine.find(HumanPossessVehicle.class);
+		Generic possessCar = engine.find(HumanPossessCar.class);
 		assert possessCar.inheritsFrom(possessVehicle);
 		assert human.getAttributes().contains(possessCar) : human.getAttributes();
 
 	}
 
 	public void test009_SymetricSuperRelation() {
-		Root engine = new Root(Car.class, Human.class, Man.class, HumanPossessVehicle.class, ManPossessCar.class);
+		Engine engine = new Engine(Car.class, Human.class, Man.class, HumanPossessVehicle.class, ManPossessCar.class);
 		engine.find(Car.class);
-		Vertex human = engine.find(Human.class);
-		Vertex man = engine.find(Man.class);
-		Vertex humanPossessVehicle = engine.find(HumanPossessVehicle.class);
-		Vertex manPossessCar = engine.find(ManPossessCar.class);
+		Generic human = engine.find(Human.class);
+		Generic man = engine.find(Man.class);
+		Generic humanPossessVehicle = engine.find(HumanPossessVehicle.class);
+		Generic manPossessCar = engine.find(ManPossessCar.class);
 		assert human.getAttributes().contains(humanPossessVehicle);
 		assert man.getAttributes().contains(manPossessCar) : man.getAttributes();
 		assert manPossessCar.inheritsFrom(humanPossessVehicle);
 	}
 
 	public void test010_TernaryRelation() {
-		Root engine = new Root(Vehicle.class, Human.class, Time.class, HumanPossessVehicleTime.class);
+		Engine engine = new Engine(Vehicle.class, Human.class, Time.class, HumanPossessVehicleTime.class);
 		engine.find(Vehicle.class);
-		Vertex human = engine.find(Human.class);
+		Generic human = engine.find(Human.class);
 		engine.find(Time.class);
-		Vertex possess = engine.find(HumanPossessVehicleTime.class);
+		Generic possess = engine.find(HumanPossessVehicleTime.class);
 		assert human.getAttributes().contains(possess);
 	}
 
-	public void test011_getDirectSubVertexsWithDiamondProblem() {
-		Root engine = new Root(GraphicComponent.class, Window.class, Selectable.class, SelectableWindow.class);
-		Vertex graphicComponent = engine.find(GraphicComponent.class);
-		Vertex window = engine.find(Window.class);
-		Vertex selectable = engine.find(Selectable.class);
-		Vertex selectableWindow = engine.find(SelectableWindow.class);
+	public void test011_getDirectSubGenericsWithDiamondProblem() {
+		Engine engine = new Engine(GraphicComponent.class, Window.class, Selectable.class, SelectableWindow.class);
+		Generic graphicComponent = engine.find(GraphicComponent.class);
+		Generic window = engine.find(Window.class);
+		Generic selectable = engine.find(Selectable.class);
+		Generic selectableWindow = engine.find(SelectableWindow.class);
 
 		assert selectableWindow.getSupers().size() == 2 : selectableWindow.getSupers();
 		assert selectableWindow.getSupers().contains(selectable) : selectableWindow.getSupers();
@@ -134,16 +135,16 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	public void test012_Value() {
-		Root engine = new Root(SelectableWindow.class, Size.class, Selected.class, MySelectableWindow.class);
-		Vertex selectableWindow = engine.find(SelectableWindow.class);
-		Vertex size = engine.find(Size.class);
-		Vertex selectedSelectable = engine.find(Selected.class);
-		Vertex mySelectableWindow = engine.find(MySelectableWindow.class);
+		Engine engine = new Engine(SelectableWindow.class, Size.class, Selected.class, MySelectableWindow.class);
+		Generic selectableWindow = engine.find(SelectableWindow.class);
+		Generic size = engine.find(Size.class);
+		Generic selectedSelectable = engine.find(Selected.class);
+		Generic mySelectableWindow = engine.find(MySelectableWindow.class);
 		assert mySelectableWindow.isInstanceOf(selectableWindow) : mySelectableWindow.info() + selectableWindow.info();
 
 		assert engine.find(Selectable.class).isAncestorOf(mySelectableWindow);
-		Vertex vTrue = selectedSelectable.addInstance(true, selectedSelectable.getComponents().toArray(new Vertex[1]));
-		Vertex v12 = size.addInstance(12, size.getComponents().toArray(new Vertex[1]));
+		Generic vTrue = selectedSelectable.addInstance(true, selectedSelectable.getComponents().toArray(new Generic[1]));
+		Generic v12 = size.addInstance(12, size.getComponents().toArray(new Generic[1]));
 
 		assert selectableWindow.getInstances().size() == 1 : selectableWindow.getInstances();
 		assert selectableWindow.getInstances().contains(mySelectableWindow);
@@ -154,14 +155,14 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	public void test013_MultiInheritanceComplexStructural() {
-		Root engine = new Root(Games.class, Children.class, Vehicle.class, Human.class, ChildrenGames.class, Transformer.class, TransformerChildrenGames.class);
-		Vertex games = engine.find(Games.class);
-		Vertex children = engine.find(Children.class);
-		Vertex vehicle = engine.find(Vehicle.class);
-		Vertex human = engine.find(Human.class);
-		Vertex childrenGames = engine.find(ChildrenGames.class);
-		Vertex transformer = engine.find(Transformer.class);
-		Vertex transformerChildrenGames = engine.find(TransformerChildrenGames.class);
+		Engine engine = new Engine(Games.class, Children.class, Vehicle.class, Human.class, ChildrenGames.class, Transformer.class, TransformerChildrenGames.class);
+		Generic games = engine.find(Games.class);
+		Generic children = engine.find(Children.class);
+		Generic vehicle = engine.find(Vehicle.class);
+		Generic human = engine.find(Human.class);
+		Generic childrenGames = engine.find(ChildrenGames.class);
+		Generic transformer = engine.find(Transformer.class);
+		Generic transformerChildrenGames = engine.find(TransformerChildrenGames.class);
 
 		assert transformerChildrenGames.inheritsFrom(games);
 		assert transformerChildrenGames.inheritsFrom(children);
@@ -186,17 +187,17 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	public void test014_MultiInheritanceComplexValue() {
-		Root engine = new Root(MyGames.class, MyChildren.class, MyVehicle.class, Myck.class, MyChildrenGames.class, ChildrenGames.class, MyTransformer.class, Transformer.class, TransformerChildrenGames.class, MyTransformerChildrenGames.class);
-		Vertex myGames = engine.find(MyGames.class);
-		Vertex myChildren = engine.find(MyChildren.class);
-		Vertex myVehicle = engine.find(MyVehicle.class);
-		Vertex myck = engine.find(Myck.class);
-		Vertex myChildrenGames = engine.find(MyChildrenGames.class);
-		Vertex childrenGames = engine.find(ChildrenGames.class);
-		Vertex myTransformer = engine.find(MyTransformer.class);
-		Vertex transformer = engine.find(Transformer.class);
-		Vertex transformerChildrenGames = engine.find(TransformerChildrenGames.class);
-		Vertex myTransformerChildrenGames = engine.find(MyTransformerChildrenGames.class);
+		Engine engine = new Engine(MyGames.class, MyChildren.class, MyVehicle.class, Myck.class, MyChildrenGames.class, ChildrenGames.class, MyTransformer.class, Transformer.class, TransformerChildrenGames.class, MyTransformerChildrenGames.class);
+		Generic myGames = engine.find(MyGames.class);
+		Generic myChildren = engine.find(MyChildren.class);
+		Generic myVehicle = engine.find(MyVehicle.class);
+		Generic myck = engine.find(Myck.class);
+		Generic myChildrenGames = engine.find(MyChildrenGames.class);
+		Generic childrenGames = engine.find(ChildrenGames.class);
+		Generic myTransformer = engine.find(MyTransformer.class);
+		Generic transformer = engine.find(Transformer.class);
+		Generic transformerChildrenGames = engine.find(TransformerChildrenGames.class);
+		Generic myTransformerChildrenGames = engine.find(MyTransformerChildrenGames.class);
 
 		assert myTransformerChildrenGames.isInstanceOf(transformerChildrenGames) : myTransformerChildrenGames.info() + transformerChildrenGames.info();
 
@@ -245,57 +246,46 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	public static class Games {
-	}
+	public static class Games {}
 
 	@SystemGeneric
 	@Meta(Games.class)
-	public static class MyGames {
-	}
+	public static class MyGames {}
 
 	@SystemGeneric
 	@Meta(Games.class)
-	public static class MyGames2 extends Vertex {
-	}
+	public static class MyGames2 extends Generic {}
 
 	@SystemGeneric
-	public static class Children {
-	}
+	public static class Children {}
 
 	@SystemGeneric
 	@Meta(Children.class)
-	public static class MyChildren {
-	}
+	public static class MyChildren {}
 
 	@SystemGeneric
 	@Supers({ Games.class, Children.class })
-	public static class ChildrenGames {
-	}
+	public static class ChildrenGames {}
 
 	@SystemGeneric
 	@Meta(ChildrenGames.class)
-	public static class MyChildrenGames {
-	}
+	public static class MyChildrenGames {}
 
 	@SystemGeneric
 	@Supers({ Human.class, Vehicle.class })
-	public static class Transformer {
-	}
+	public static class Transformer {}
 
 	@SystemGeneric
 	@Meta(Transformer.class)
-	public static class MyTransformer {
-	}
+	public static class MyTransformer {}
 
 	@SystemGeneric
 	@Supers({ Transformer.class, ChildrenGames.class })
-	public static class TransformerChildrenGames {
-	}
+	public static class TransformerChildrenGames {}
 
 	@SystemGeneric
 	@Meta(TransformerChildrenGames.class)
-	public static class MyTransformerChildrenGames {
-	}
+	public static class MyTransformerChildrenGames {}
 
 	@SystemGeneric
 	public static class GraphicComponent {
@@ -345,8 +335,7 @@ public class AnnotationTest extends AbstractTest {
 
 	@SystemGeneric
 	@Meta(Vehicle.class)
-	public static class MyVehicle {
-	}
+	public static class MyVehicle {}
 
 	@SystemGeneric
 	@Components(Vehicle.class)
@@ -370,8 +359,7 @@ public class AnnotationTest extends AbstractTest {
 
 	@SystemGeneric
 	@Meta(Car.class)
-	public static class myCar {
-	}
+	public static class myCar {}
 
 	@SystemGeneric
 	@Components(Car.class)
@@ -387,42 +375,34 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	public static class Human {
-	}
+	public static class Human {}
 
 	@SystemGeneric
-	public static class Man extends Human {
-	}
+	public static class Man extends Human {}
 
 	@SystemGeneric
 	@Meta(Human.class)
-	public static class Myck {
-	}
+	public static class Myck {}
 
 	@SystemGeneric
-	public static class Time {
-	}
+	public static class Time {}
 
 	@SystemGeneric
 	@Components({ Human.class, Vehicle.class })
-	public static class HumanPossessVehicle {
-	}
+	public static class HumanPossessVehicle {}
 
 	@SystemGeneric
 	@Components({ Human.class, Car.class })
 	@Supers(HumanPossessVehicle.class)
-	public static class HumanPossessCar extends HumanPossessVehicle {
-	}
+	public static class HumanPossessCar extends HumanPossessVehicle {}
 
 	@SystemGeneric
 	@Components({ Man.class, Car.class })
 	@Supers(HumanPossessVehicle.class)
-	public static class ManPossessCar extends HumanPossessVehicle {
-	}
+	public static class ManPossessCar extends HumanPossessVehicle {}
 
 	@SystemGeneric
 	@Components({ Human.class, Vehicle.class, Time.class })
-	public static class HumanPossessVehicleTime {
-	}
+	public static class HumanPossessVehicleTime {}
 
 }

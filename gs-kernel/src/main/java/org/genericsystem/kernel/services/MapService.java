@@ -25,7 +25,12 @@ public interface MapService<T extends VertexService<T, U>, U extends RootService
 
 	@Override
 	default T getMap() {
-		return getRoot().find(SystemMap.class);
+		U root = getRoot();
+		return root.getInstance(SystemMap.class, root.coerceToArray(root));
+	}
+
+	public static class SystemMap {
+
 	}
 
 	@Override
@@ -41,5 +46,5 @@ public interface MapService<T extends VertexService<T, U>, U extends RootService
 		return getKeys().filter(x -> x.getValue().equals(property)).findFirst();
 	}
 
-	public static class SystemMap {}
+	// public static class SystemMap {}
 }

@@ -38,8 +38,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	}
 
 	private void checkDependsMetaComponents() {
-		if (getValue().toString().equals(SystemMap.class.toString()) || getValue().toString().contains("PropertyConstraint"))
-			return;
 		assert getMeta().getComponents() != null;
 		if (!(getMeta().componentsDepends(getComponents(), getMeta().getComponents())))
 			rollbackAndThrowException(new IllegalStateException("Inconsistant components : " + getComponents() + " " + getMeta().getComponents()));

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 import org.genericsystem.impl.GenericsCache;
+import org.genericsystem.impl.SystemCache;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.ApiService;
@@ -15,20 +16,23 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 
 	private final GenericsCache<Generic, Engine> genericSystemCache = new GenericsCache<Generic, Engine>();
 
+	private final SystemCache<Generic> systemCache = new SystemCache<>(this);
 	private final Root root;
 
-	public Engine() {
-		this(Statics.ENGINE_VALUE, Statics.ENGINE_VALUE);
+	public Engine(Class<?>... userClasses) {
+		this(Statics.ENGINE_VALUE, userClasses);
 	}
 
-	public Engine(Serializable rootValue, Serializable engineValue) {
+	public Engine(Serializable engineValue, Class<?>... userClasses) {
 		init(false, null, Collections.emptyList(), engineValue, Collections.emptyList());
-		root = buildRoot(rootValue).init(false, null, Collections.emptyList(), rootValue, Collections.emptyList());
+		root = buildRoot(engineValue).init(false, null, Collections.emptyList(), engineValue, Collections.emptyList());
 
 		Cache<Generic, Engine, Vertex, Root> cache = newCache().start();
 		Generic metaAttribute = setInstance(this, getValue(), coerceToArray(this));
 		Generic map = setInstance(SystemMap.class, coerceToArray(this));
 		map.enablePropertyConstraint();
+		for (Class<?> clazz : userClasses)
+			systemCache.set(clazz);
 
 		assert map.isAlive();
 		cache.flushAndUnmount();
@@ -76,8 +80,7 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 
 	@Override
 	public Generic find(Class<?> clazz) {
-		Vertex vertex = root.find(clazz);
-		return vertex != null ? wrap(vertex) : null;
+		return systemCache.get(clazz);
 	}
 
 	@Override

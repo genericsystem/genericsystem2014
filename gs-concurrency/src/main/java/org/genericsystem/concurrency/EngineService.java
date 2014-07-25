@@ -17,12 +17,6 @@ public interface EngineService<T extends AbstractGeneric<T, U, V, W>, U extends 
 	@Override
 	void stop(org.genericsystem.cache.Cache<T, U, V, W> cache);
 
-	@Override
-	// TODO necessary for eclipse ?
-	default T getMap() {
-		return find(SystemMap.class);
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	default T getAlive() {
