@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.genericsystem.kernel.services.RootService;
 import org.genericsystem.kernel.services.VertexService;
 
@@ -35,11 +33,6 @@ public abstract class Signature<T extends Signature<T, U>, U extends RootService
 				this.components.set(i, (T) this);
 		}
 		return (T) this;
-	}
-
-	public void checkIsAlive() {
-		if (!isAlive())
-			rollbackAndThrowException(new NotAliveException(info()));
 	}
 
 	public boolean isThrowExistException() {

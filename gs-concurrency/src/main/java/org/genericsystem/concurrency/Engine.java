@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
-import org.genericsystem.impl.GenericsCache;
 import org.genericsystem.impl.SystemCache;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.services.AncestorsService;
@@ -13,8 +12,6 @@ import org.genericsystem.kernel.services.ApiService;
 public class Engine extends Generic implements EngineService<Generic, Engine, Vertex, Root> {
 
 	private final ThreadLocal<Cache<Generic, Engine, Vertex, Root>> cacheLocal = new ThreadLocal<>();
-
-	private final GenericsCache<Generic, Engine> genericSystemCache = new GenericsCache<Generic, Engine>();
 
 	private final SystemCache<Generic> systemCache = new SystemCache<>(this);
 	private final Root root;
@@ -30,6 +27,8 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 		Cache<Generic, Engine, Vertex, Root> cache = newCache().start();
 		Generic metaAttribute = setInstance(this, getValue(), coerceToArray(this));
 		Generic map = setInstance(SystemMap.class, coerceToArray(this));
+		assert metaAttribute.isAlive();
+		assert map.isAlive();
 		map.enablePropertyConstraint();
 		for (Class<?> clazz : userClasses)
 			systemCache.set(clazz);
@@ -91,11 +90,6 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 	@Override
 	public Generic getAlive() {
 		return EngineService.super.getAlive();
-	}
-
-	@Override
-	public Generic getGenericFromCache(AncestorsService<?, ?> vertex) {
-		return genericSystemCache.getGenericFromCache(vertex);
 	}
 
 	static class TsGenerator {

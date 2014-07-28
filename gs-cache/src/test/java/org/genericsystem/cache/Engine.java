@@ -17,14 +17,28 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 
 	private final Root root;
 
-	public Engine() {
-		this(Statics.ENGINE_VALUE, Statics.ENGINE_VALUE);
+	public Engine(Class<?>... userClasses) {
+		this(Statics.ENGINE_VALUE, userClasses);
 	}
 
-	public Engine(Serializable rootValue, Serializable engineValue) {
-		init(false, null, Collections.emptyList(), Statics.ENGINE_VALUE, Collections.emptyList());
-		cacheLocal.set(buildCache(new Transaction<>(this)));
-		root = buildRoot(rootValue);
+	public Engine(Serializable engineValue, Class<?>... userClasses) {
+		init(false, null, Collections.emptyList(), engineValue, Collections.emptyList());
+		root = buildRoot(engineValue);
+
+		Cache<Generic, Engine, Vertex, Root> cache = newCache().start();
+		Generic metaAttribute = setInstance(this, getValue(), coerceToArray(this));
+		Generic map = setInstance(SystemMap.class, coerceToArray(this));
+		map.enablePropertyConstraint();
+		for (Class<?> clazz : userClasses)
+			systemCache.set(clazz);
+
+		assert getMetaAttribute().isAlive();
+		assert map.isAlive();
+		cache.flushAndUnmount();
+		assert metaAttribute.isAlive();
+
+		assert getMetaAttribute().isAlive();
+		assert getMap().isAlive();
 	}
 
 	@SuppressWarnings("static-method")

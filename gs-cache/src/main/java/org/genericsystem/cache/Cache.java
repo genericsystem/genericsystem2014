@@ -7,7 +7,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
-
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Snapshot;
@@ -20,15 +19,15 @@ import org.genericsystem.kernel.services.RootService;
 
 public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends AbstractContext<T, U, V, W> {
 
-	private AbstractContext<T, U, V, W> subContext;
+	protected AbstractContext<T, U, V, W> subContext;
 
 	private transient Map<T, Dependencies<T>> inheritingsDependenciesMap;
 	private transient Map<T, Dependencies<T>> instancesDependenciesMap;
 	private transient Map<T, Map<T, Dependencies<T>>> metaCompositesDependenciesMap;
 	private transient Map<T, Map<T, Dependencies<T>>> superCompositesDependenciesMap;
 
-	private Set<T> adds = new LinkedHashSet<>();
-	private Set<T> removes = new LinkedHashSet<>();
+	protected Set<T> adds = new LinkedHashSet<>();
+	protected Set<T> removes = new LinkedHashSet<>();
 
 	public void clear() {
 		inheritingsDependenciesMap = new HashMap<>();
@@ -80,32 +79,22 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 			add(generic);
 			return generic;
 		} catch (ConstraintViolationException e) {
-			rollback(e);
+			generic.rollbackAndThrowException(e);
 		}
 		throw new IllegalStateException();
 	}
 
 	public void flush() throws RollbackException {
-		Throwable cause = null;
-		for (int attempt = 0; attempt < Statics.ATTEMPTS; attempt++)
-			try {
-				// if (getEngine().pickNewTs() - getTs() >= timeOut)
-				// throw new ConcurrencyControlException("The timestamp cache (" + getTs() + ") is begger than the life time out : " + Statics.LIFE_TIMEOUT);
-				// checkConstraints();
-				getSubContext().apply(adds, removes);
-				clear();
-				return;
-			} catch (ConcurrencyControlException e) {
-				cause = e;
-				try {
-					Thread.sleep(Statics.ATTEMPT_SLEEP);
-				} catch (InterruptedException ex) {
-					throw new IllegalStateException(ex);
-				}
-			} catch (Exception e) {
-				rollback(e);
-			}
-		rollback(cause);
+		try {
+			internalFlush();
+		} catch (Exception e) {
+			getEngine().rollbackAndThrowException(e);
+		}
+		clear();
+	}
+
+	protected void internalFlush() throws ConcurrencyControlException, ConstraintViolationException {
+		getSubContext().apply(adds, removes);
 	}
 
 	@Override
@@ -132,15 +121,10 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 	@Override
 	protected boolean simpleRemove(T generic) {
 		if (!isAlive(generic))
-			rollback(new IllegalStateException(generic + " is not alive"));
+			generic.rollbackAndThrowException(new IllegalStateException(generic + " is not alive"));
 		if (!adds.remove(generic))
 			return removes.add(generic);
 		return true;
-	}
-
-	void rollback(Throwable e) throws RollbackException {
-		clear();
-		throw new RollbackException(e);
 	}
 
 	@Override
@@ -282,4 +266,10 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 		generic.getSupersStream().forEach(superGeneric -> generic.getComponentsStream().forEach(component -> unIndexBySuper(component, superGeneric, generic)));
 		return result && simpleRemove(generic);
 	}
+
+	@Override
+	V getVertex(T generic) {
+		return getSubContext().getVertex(generic);
+	}
+
 }

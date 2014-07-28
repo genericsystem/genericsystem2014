@@ -8,7 +8,7 @@ import org.genericsystem.kernel.exceptions.OptimisticLockConstraintViolationExce
 
 public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends org.genericsystem.cache.Transaction<T, U, V, W> {
 
-	private transient long ts;
+	private final long ts;
 
 	protected Transaction(U engine) {
 		this(engine.getVertex().pickNewTs(), engine);
@@ -29,13 +29,15 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 	}
 
 	private LifeManager getLifeManager(T generic) {
-		V vertex = generic.getVertex();
+		V vertex = getVertex(generic);
 		return vertex != null ? vertex.getLifeManager() : null;
 	}
 
 	@Override
 	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
+
 		synchronized (getEngine()) {
+
 			LockedLifeManager lockedLifeManager = new LockedLifeManager();
 			try {
 				lockedLifeManager.writeLockAllAndCheckMvcc(adds, removes);
@@ -50,11 +52,13 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 	protected void simpleAdd(T generic) {
 		V vertex = generic.getMeta().getVertex();
 		V result = vertex.addInstance(generic.getSupersStream().map(g -> g.unwrap()).collect(Collectors.toList()), generic.getValue(), vertex.coerceToArray(generic.getComponentsStream().map(T::unwrap).toArray()));
-		result.getLifeManager().beginLife(getTs());
+		result.getLifeManager().beginLifeIfNecessary(getTs());
 	}
 
 	@Override
 	protected boolean simpleRemove(T generic) {
+		// assert generic.checkAncestorsAreAlive();
+		// assert generic.checkHasNoDependencies();
 		getLifeManager(generic).kill(getTs());
 		getEngine().getVertex().getGarbageCollector().add(generic.getVertex());
 		return true;

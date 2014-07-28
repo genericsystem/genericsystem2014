@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.AbstractDependenciesComputer.DependenciesComputer;
 import org.genericsystem.kernel.AbstractDependenciesComputer.PotentialDependenciesComputer;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
@@ -138,9 +137,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 
 	@SuppressWarnings("unchecked")
 	@Override
-	// TODO consider bindInstance with throwExistException argument here
 	public T update(List<T> supersToAdd, Serializable newValue, T... newComponents) {
-		if (newComponents.length != getComponents().size())
+		return update(supersToAdd, newValue, Arrays.asList(newComponents));
+	}
+
+	protected T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
+		if (newComponents.size() != getComponents().size())
 			rollbackAndThrowException(new IllegalArgumentException());
 		return rebuildAll(() -> getMeta().bindInstance(isThrowExistException(), new Supers<T, U>(getSupers(), supersToAdd), newValue, newComponents), computeDependencies());
 	}
@@ -171,11 +173,10 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		return new PotentialDependenciesComputer<>(meta, value, components);
 	}
 
-	@SuppressWarnings("unchecked")
-	protected T bindInstance(boolean throwExistException, List<T> overrides, Serializable value, T... components) {
-		checkSameEngine(Arrays.asList(components));
+	public T bindInstance(boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
+		checkSameEngine(components);
 		checkSameEngine(overrides);
-		T nearestMeta = adjustMeta(overrides, value, Arrays.asList(components));
+		T nearestMeta = adjustMeta(overrides, value, components);
 		if (nearestMeta != this)
 			return nearestMeta.bindInstance(throwExistException, overrides, value, components);
 		T weakInstance = getWeakInstance(value, components);
@@ -183,8 +184,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 			if (throwExistException)
 				rollbackAndThrowException(new ExistsException("Attempts to add an already existing instance : " + weakInstance.info()));
 			else
-				return weakInstance.equiv(this, value, Arrays.asList(components)) ? weakInstance : weakInstance.update(overrides, value, components);
-		return rebuildAll(() -> buildInstance(throwExistException, overrides, value, Arrays.asList(components)).plug(), computePotentialDependencies(nearestMeta, value, Arrays.asList(components)));
+				return weakInstance.equiv(this, value, components) ? weakInstance : weakInstance.update(overrides, value, components);
+		return rebuildAll(() -> buildInstance(throwExistException, overrides, value, components).plug(), computePotentialDependencies(nearestMeta, value, components));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -201,13 +202,13 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	@Override
 	@SuppressWarnings("unchecked")
 	public T addInstance(List<T> overrides, Serializable value, T... components) {
-		return bindInstance(true, overrides, value, components);
+		return bindInstance(true, overrides, value, Arrays.asList(components));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public T setInstance(List<T> overrides, Serializable value, T... components) {
-		return bindInstance(false, overrides, value, components);
+		return bindInstance(false, overrides, value, Arrays.asList(components));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -258,7 +259,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	}
 
 	@Override
-	public void rollbackAndThrowException(Exception exception) throws RollbackException {
+	public void rollbackAndThrowException(Throwable exception) throws RollbackException {
 		getRoot().rollback();
 		throw new RollbackException(exception);
 	}

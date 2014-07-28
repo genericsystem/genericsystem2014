@@ -11,7 +11,6 @@ public interface BindingService<T extends VertexService<T, U>, U extends RootSer
 
 	@Override
 	default void checkSameEngine(List<T> components) {
-		assert getRoot() != null;
 		assert components.stream().allMatch(component -> component != null) : components;
 		components.stream().filter(component -> component.getRoot() == null).forEach(component -> component.log());
 		if (components.stream().anyMatch(component -> !component.getRoot().equals(getRoot())))
@@ -49,17 +48,32 @@ public interface BindingService<T extends VertexService<T, U>, U extends RootSer
 		return null;
 	}
 
+	// @Override
+	// @SuppressWarnings("unchecked")
+	// default T getWeakInstance(Serializable value, T... components) {
+	// T meta = getAlive();
+	// if (meta == null)
+	// return null;
+	// meta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
+	// if (meta != this)
+	// return meta.getWeakInstance(value, components);
+	// for (T instance : meta.getInstances())
+	// if (instance.weakEquiv(meta, value, Arrays.asList(components)))
+	// return instance;
+	// return null;
+	// }
+
 	@Override
 	@SuppressWarnings("unchecked")
-	default T getWeakInstance(Serializable value, T... components) {
+	default T getWeakInstance(Serializable value, List<T> components) {
 		T meta = getAlive();
 		if (meta == null)
 			return null;
-		meta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
+		meta = adjustMeta(Collections.emptyList(), value, components);
 		if (meta != this)
 			return meta.getWeakInstance(value, components);
 		for (T instance : meta.getInstances())
-			if (instance.weakEquiv(meta, value, Arrays.asList(components)))
+			if (instance.weakEquiv(meta, value, components))
 				return instance;
 		return null;
 	}
