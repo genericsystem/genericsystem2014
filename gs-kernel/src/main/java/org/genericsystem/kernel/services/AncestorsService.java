@@ -7,8 +7,8 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +29,14 @@ public interface AncestorsService<T extends VertexService<T, U>, U extends RootS
 	@Override
 	default boolean isAlive() {
 		return equals(getAlive());
+	}
+
+	@Override
+	default T checkIsAlive() {
+		T result = getAlive();
+		if (!equals(getAlive()))
+			rollbackAndThrowException(new NotAliveException(info()));
+		return result;
 	}
 
 	@Override

@@ -1,10 +1,7 @@
 package org.genericsystem.impl;
 
-import java.io.Serializable;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
@@ -53,17 +50,13 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	protected V unwrap() {
 		V alive = getVertex();
 		if (alive != null)
-			return alive;
+			return alive.checkIsAlive();
 		alive = getMeta().unwrap();
-		if (!alive.isAlive())
-			throw new IllegalStateException("Not Alive" + alive.info() + alive.getMeta().getInstances());
-		return alive.buildInstance(isThrowExistException(), getSupersStream().map(T::unwrap).collect(Collectors.toList()), getValue(), getComponentsStream().map(T::unwrap).collect(Collectors.toList()));
-	}
+		alive.checkIsAlive();
+		V result = alive.bindInstance(isThrowExistException(), getSupersStream().map(T::unwrap).collect(Collectors.toList()), getValue(), getComponentsStream().map(T::unwrap).collect(Collectors.toList()));
+		assert result.isAlive() : result.info();
+		return result;
 
-	@SuppressWarnings("unchecked")
-	@Override
-	protected T bindInstance(boolean throwExistException, List<T> overrides, Serializable value, T... components) {
-		return super.bindInstance(throwExistException, overrides, value, components);
 	}
 
 	protected V getVertex() {

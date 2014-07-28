@@ -27,6 +27,8 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 
 	boolean isAlive();
 
+	T checkIsAlive();
+
 	T getAlive();
 
 	T getWeakAlive();
@@ -57,7 +59,7 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 	@SuppressWarnings("unchecked")
 	T[] targetsToComponents(T... targets);
 
-	void rollbackAndThrowException(Exception exception) throws RollbackException;
+	void rollbackAndThrowException(Throwable exception) throws RollbackException;
 
 	int getLevel();
 
@@ -88,8 +90,10 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 	@SuppressWarnings("unchecked")
 	T getInstance(Serializable value, T... components);
 
-	@SuppressWarnings("unchecked")
-	T getWeakInstance(Serializable value, T... components);
+	// @SuppressWarnings("unchecked")
+	// T getWeakInstance(Serializable value, T... components);
+
+	T getWeakInstance(Serializable value, List<T> components);
 
 	@SuppressWarnings("unchecked")
 	T getInstance(List<T> supers, Serializable value, T... components);
