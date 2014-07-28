@@ -29,13 +29,19 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 
 	@Override
 	public T plug() {
-		return wrap(unwrap().plug());
+		V vertex = unwrap();
+		if (vertex != null)
+			return wrap(vertex);
+		vertex = getMeta().unwrap();
+		vertex.checkIsAlive();
+		V result = vertex.bindInstance(isThrowExistException(), getSupersStream().map(T::unwrap).collect(Collectors.toList()), getValue(), getComponentsStream().map(T::unwrap).collect(Collectors.toList()));
+		return wrap(result);
 	}
 
 	@Override
 	public boolean unplug() {
-		AbstractVertex<?, ?> vertex = getVertex();
-		return vertex != null && getVertex().unplug();
+		V vertex = unwrap();
+		return vertex != null && unwrap().unplug();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -48,22 +54,10 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	}
 
 	protected V unwrap() {
-		V alive = getVertex();
-		if (alive != null)
-			return alive.checkIsAlive();
-		alive = getMeta().unwrap();
-		alive.checkIsAlive();
-		V result = alive.bindInstance(isThrowExistException(), getSupersStream().map(T::unwrap).collect(Collectors.toList()), getValue(), getComponentsStream().map(T::unwrap).collect(Collectors.toList()));
-		assert result.isAlive() : result.info();
-		return result;
-
-	}
-
-	protected V getVertex() {
-		V pluggedMeta = getMeta().getVertex();
-		if (pluggedMeta == null)
+		V metaVertex = getMeta().unwrap();
+		if (metaVertex == null)
 			return null;
-		for (V instance : pluggedMeta.getInstances())
+		for (V instance : metaVertex.getInstances())
 			if (equiv(instance))
 				return instance;
 		return null;
@@ -71,39 +65,27 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 
 	@Override
 	public Snapshot<T> getInstances() {
-		return () -> getVertex().getInstances().stream().map(this::wrap).iterator();
+		return () -> unwrap().getInstances().stream().map(this::wrap).iterator();
 	}
 
 	@Override
 	public Snapshot<T> getInheritings() {
-		return () -> getVertex().getInheritings().stream().map(this::wrap).iterator();
+		return () -> unwrap().getInheritings().stream().map(this::wrap).iterator();
 	}
-
-	// @Override
-	// @SuppressWarnings("unchecked")
-	// public T getInstance(Serializable value, T... components) {
-	// Vertex vertex = getVertex();
-	// if (vertex == null)
-	// return null;
-	// vertex = vertex.getInstance(value, Arrays.asList(components).stream().map(AbstractGeneric::unwrap).collect(Collectors.toList()).toArray(new Vertex[components.length]));
-	// if (vertex == null)
-	// return null;
-	// return wrap(vertex);
-	// }
 
 	@Override
 	public Snapshot<T> getComposites() {
-		return () -> getVertex().getComposites().stream().map(this::wrap).iterator();
+		return () -> unwrap().getComposites().stream().map(this::wrap).iterator();
 	}
 
 	@Override
 	public Snapshot<T> getMetaComposites(T meta) {
-		return () -> getVertex().getMetaComposites(meta.getVertex()).stream().map(this::wrap).iterator();
+		return () -> unwrap().getMetaComposites(meta.unwrap()).stream().map(this::wrap).iterator();
 	}
 
 	@Override
 	public Snapshot<T> getSuperComposites(T superT) {
-		return () -> getVertex().getSuperComposites(superT.getVertex()).stream().map(this::wrap).iterator();
+		return () -> unwrap().getSuperComposites(superT.unwrap()).stream().map(this::wrap).iterator();
 	}
 
 	@Override

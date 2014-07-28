@@ -7,7 +7,7 @@ import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.services.RootService;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends org.genericsystem.impl.AbstractGeneric<T, U, V, W> implements
-		GenericService<T, U, V, W> {
+GenericService<T, U, V, W> {
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -23,14 +23,8 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected V getVertex() {
-		// return super.getVertex();
-		return getCurrentCache().getVertex((T) this);
-	}
-
-	@Override
 	protected V unwrap() {
-		return super.unwrap();
+		return getCurrentCache().unwrap((T) this);
 	}
 
 	@Override
@@ -72,18 +66,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		return getCurrentCache().getSuperComposites((T) this, superVertex);
 	}
 
-	// @SuppressWarnings("unchecked")
-	// @Override
-	// public T getInstance(Serializable value, T... components) {
-	// T nearestMeta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
-	// if (!equals(nearestMeta))
-	// return nearestMeta.getInstance(value, components);
-	// for (T instance : getCurrentCache().getInstances(nearestMeta))
-	// if (instance.equiv(this, value, Arrays.asList(components)))
-	// return instance;
-	// return null;
-	// }
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public Snapshot<T> getComposites() {
@@ -94,5 +76,4 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	protected LinkedHashSet<T> computeDependencies() {
 		return super.computeDependencies();
 	}
-
 }

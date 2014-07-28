@@ -1,6 +1,5 @@
 package org.genericsystem.concurrency;
 
-
 public interface EngineService<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends org.genericsystem.cache.EngineService<T, U, V, W>, GenericService<T, U, V, W> {
 
 	@Override
@@ -30,9 +29,6 @@ public interface EngineService<T extends AbstractGeneric<T, U, V, W>, U extends 
 	default U getRoot() {
 		return (U) this;
 	}
-
-	@Override
-	abstract W getVertex();
 
 	@Override
 	public Cache<T, U, V, W> getCurrentCache();

@@ -26,7 +26,7 @@ public interface EngineService<T extends AbstractGeneric<T, U, V, W>, U extends 
 	@Override
 	public Cache<T, U, V, W> getCurrentCache();
 
-	W getVertex();
+	W unwrap();
 
 	@Override
 	default void rollback() {

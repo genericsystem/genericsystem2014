@@ -9,17 +9,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		GenericService<T, U, V, W> {
 
 	@Override
-	protected V getVertex() {
-		return super.getVertex();
-	}
-
-	@Override
 	protected T wrap(V vertex) {
 		return super.wrap(vertex);
-	}
-
-	@Override
-	protected V unwrap() {
-		return super.unwrap();
 	}
 }

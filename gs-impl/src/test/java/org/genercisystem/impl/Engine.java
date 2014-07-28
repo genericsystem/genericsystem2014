@@ -31,7 +31,7 @@ public class Engine extends Generic implements EngineService<Generic, Engine> {
 	}
 
 	@Override
-	protected Vertex getVertex() {
+	protected Vertex unwrap() {
 		return root;
 	}
 

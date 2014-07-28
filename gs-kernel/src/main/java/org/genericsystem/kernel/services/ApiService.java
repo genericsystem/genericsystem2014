@@ -192,6 +192,7 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 
 	}
 
+	// TODO should return a boolean, or throw an exception, or twice ???
 	void remove();
 
 	T updateValue(Serializable newValue);

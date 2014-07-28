@@ -47,7 +47,7 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 	}
 
 	@Override
-	public Root getVertex() {
+	public Root unwrap() {
 		return root;
 	}
 

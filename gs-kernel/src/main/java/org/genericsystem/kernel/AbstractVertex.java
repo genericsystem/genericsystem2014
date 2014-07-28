@@ -27,6 +27,14 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 
 	protected List<T> supers;
 
+	protected abstract Dependencies<T> getInstancesDependencies();
+
+	protected abstract Dependencies<T> getInheritingsDependencies();
+
+	protected abstract Dependencies<DependenciesEntry<T>> getMetaComposites();
+
+	protected abstract Dependencies<DependenciesEntry<T>> getSuperComposites();
+
 	@SuppressWarnings("unchecked")
 	protected T init(boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
 		super.init(throwExistException, meta, value, components);
@@ -240,7 +248,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public T buildInstance(boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
+	T buildInstance(boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
 		int level = getLevel() == 0 && Objects.equals(getValue(), getRoot().getValue()) && getComponentsStream().allMatch(c -> c.isRoot()) && Objects.equals(value, getRoot().getValue()) && components.stream().allMatch(c -> c.isRoot()) ? 0 : getLevel() + 1;
 		overrides.forEach(x -> ((Signature) x).checkIsAlive());
 		components.forEach(x -> ((Signature) x).checkIsAlive());
@@ -321,10 +329,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	public Snapshot<T> getComposites() {
 		return () -> getMetaComposites().stream().map(entry -> entry.getValue().stream()).flatMap(x -> x).iterator();
 	}
-
-	protected abstract Dependencies<DependenciesEntry<T>> getMetaComposites();
-
-	protected abstract Dependencies<DependenciesEntry<T>> getSuperComposites();
 
 	@Override
 	public Snapshot<T> getMetaComposites(T meta) {
@@ -417,10 +421,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	public Snapshot<T> getInheritings() {
 		return getInheritingsDependencies();
 	}
-
-	protected abstract Dependencies<T> getInstancesDependencies();
-
-	protected abstract Dependencies<T> getInheritingsDependencies();
 
 	private T indexInstance(T instance) {
 		return index(getInstancesDependencies(), instance);

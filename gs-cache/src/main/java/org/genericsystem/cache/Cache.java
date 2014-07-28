@@ -268,8 +268,8 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 	}
 
 	@Override
-	V getVertex(T generic) {
-		return getSubContext().getVertex(generic);
+	V unwrap(T generic) {
+		return getSubContext().unwrap(generic);
 	}
 
 }

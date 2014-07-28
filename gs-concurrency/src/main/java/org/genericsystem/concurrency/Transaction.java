@@ -1,7 +1,6 @@
 package org.genericsystem.concurrency;
 
 import java.util.HashSet;
-import java.util.stream.Collectors;
 import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 import org.genericsystem.kernel.exceptions.OptimisticLockConstraintViolationException;
@@ -11,7 +10,7 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 	private final long ts;
 
 	protected Transaction(U engine) {
-		this(engine.getVertex().pickNewTs(), engine);
+		this(engine.unwrap().pickNewTs(), engine);
 	}
 
 	protected Transaction(long ts, U engine) {
@@ -25,19 +24,13 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 
 	@Override
 	public boolean isAlive(T generic) {
-		return generic.getVertex() != null && getLifeManager(generic).isAlive(getTs());
-	}
-
-	private LifeManager getLifeManager(T generic) {
-		V vertex = getVertex(generic);
-		return vertex != null ? vertex.getLifeManager() : null;
+		V vertex = unwrap(generic);
+		return vertex != null && vertex.getLifeManager().isAlive(getTs());
 	}
 
 	@Override
 	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
-
 		synchronized (getEngine()) {
-
 			LockedLifeManager lockedLifeManager = new LockedLifeManager();
 			try {
 				lockedLifeManager.writeLockAllAndCheckMvcc(adds, removes);
@@ -49,18 +42,10 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 	}
 
 	@Override
-	protected void simpleAdd(T generic) {
-		V vertex = generic.getMeta().getVertex();
-		V result = vertex.addInstance(generic.getSupersStream().map(g -> g.unwrap()).collect(Collectors.toList()), generic.getValue(), vertex.coerceToArray(generic.getComponentsStream().map(T::unwrap).toArray()));
-		result.getLifeManager().beginLifeIfNecessary(getTs());
-	}
-
-	@Override
 	protected boolean simpleRemove(T generic) {
-		// assert generic.checkAncestorsAreAlive();
-		// assert generic.checkHasNoDependencies();
-		getLifeManager(generic).kill(getTs());
-		getEngine().getVertex().getGarbageCollector().add(generic.getVertex());
+		unwrap(generic).getLifeManager().kill(getTs());
+		getEngine().unwrap().getGarbageCollector().add(unwrap(generic));
+		vertices.put(generic, null);
 		return true;
 	}
 
@@ -69,23 +54,27 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 		private static final long serialVersionUID = -8771313495837238881L;
 
 		private void writeLockAllAndCheckMvcc(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
-			for (T generic : removes)
-				writeLockAndCheckMvcc(getLifeManager(generic));
-			for (T generic : adds) {
-				writeLockAndCheckMvcc(getLifeManager(generic.getMeta()));
-				for (T effectiveSuper : generic.getSupers())
-					writeLockAndCheckMvcc(getLifeManager(effectiveSuper));
-				for (T component : generic.getComponents())
-					writeLockAndCheckMvcc(getLifeManager(component));
-				writeLockAndCheckMvcc(getLifeManager(generic));
+			for (T remove : removes)
+				writeLockAndCheckMvcc(remove);
+			for (T add : adds) {
+				writeLockAndCheckMvcc(add.getMeta());
+				for (T superT : add.getSupers())
+					writeLockAndCheckMvcc(superT);
+				for (T component : add.getComponents())
+					writeLockAndCheckMvcc(component);
+				writeLockAndCheckMvcc(add);
 			}
 		}
 
-		private void writeLockAndCheckMvcc(LifeManager manager) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
-			if (manager != null && !contains(manager)) {
-				manager.writeLock();
-				add(manager);
-				manager.checkMvcc(getTs());
+		private void writeLockAndCheckMvcc(T generic) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
+			V vertex = unwrap(generic);
+			if (vertex != null) {
+				LifeManager manager = vertex.getLifeManager();
+				if (!contains(manager)) {
+					manager.writeLock();
+					add(manager);
+					manager.checkMvcc(getTs());
+				}
 			}
 		}
 
