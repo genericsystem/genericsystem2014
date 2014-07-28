@@ -1,15 +1,13 @@
 package org.genericsystem.cache;
 
-import java.io.Serializable;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.stream.Collectors;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.services.RootService;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends org.genericsystem.impl.AbstractGeneric<T, U, V, W> implements
-GenericService<T, U, V, W> {
+		GenericService<T, U, V, W> {
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -23,9 +21,11 @@ GenericService<T, U, V, W> {
 		return getCurrentCache().unplug((T) this);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected V getVertex() {
-		return super.getVertex();
+		// return super.getVertex();
+		return getCurrentCache().getVertex((T) this);
 	}
 
 	@Override
@@ -41,12 +41,6 @@ GenericService<T, U, V, W> {
 		V alive = vertex.getAlive();
 		T meta = wrap(alive.getMeta());
 		return meta.newT().init(alive.isThrowExistException(), meta, alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList()));
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	protected T bindInstance(boolean throwExistException, List<T> overrides, Serializable value, T... components) {
-		return super.bindInstance(throwExistException, overrides, value, components);
 	}
 
 	@Override
