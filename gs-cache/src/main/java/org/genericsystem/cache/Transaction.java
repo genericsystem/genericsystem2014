@@ -63,8 +63,6 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 		};
 	}
 
-	// TODO KK getVertex() is called two times...
-
 	@Override
 	Snapshot<T> getMetaComposites(T generic, T meta) {
 		return () -> {
@@ -119,6 +117,5 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 	@Override
 	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
 		super.apply(adds, removes);
-
 	}
 }
