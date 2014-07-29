@@ -26,7 +26,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 	public void pickNewTs() throws RollbackException {
 		if (getSubContext() instanceof Cache) {
 			((Cache<?, ?, ?, ?>) getSubContext()).pickNewTs();
-			cleanChanges();
+			cleanDifferential();
 		} else {
 			long ts = getTs();
 			subContext = new Transaction<>(getEngine());
@@ -34,7 +34,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 		}
 	}
 
-	private void cleanChanges() {
+	private void cleanDifferential() {
 		Iterator<T> iterator = adds.iterator();
 		while (iterator.hasNext()) {
 			T next = iterator.next();

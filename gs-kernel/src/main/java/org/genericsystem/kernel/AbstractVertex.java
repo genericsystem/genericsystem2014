@@ -78,8 +78,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	}
 
 	@SuppressWarnings("static-method")
-	protected <U> Dependencies<U> buildDependencies() {
-		return new DependenciesImpl<U>();
+	protected <H> Dependencies<H> buildDependencies() {
+		return new DependenciesImpl<>();
 	}
 
 	protected void forceRemove() {
@@ -125,7 +125,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	}
 
 	private Iterable<T> reverseLinkedHashSet(LinkedHashSet<T> linkedHashSet) {
-		List<T> dependencies = new ArrayList<T>(linkedHashSet);
+		List<T> dependencies = new ArrayList<>(linkedHashSet);
 		Collections.reverse(dependencies);
 		return dependencies;
 	}
@@ -152,7 +152,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	protected T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
 		if (newComponents.size() != getComponents().size())
 			rollbackAndThrowException(new IllegalArgumentException());
-		return rebuildAll(() -> getMeta().bindInstance(isThrowExistException(), new Supers<T, U>(getSupers(), supersToAdd), newValue, newComponents), computeDependencies());
+		return rebuildAll(() -> getMeta().bindInstance(isThrowExistException(), new Supers<>(getSupers(), supersToAdd), newValue, newComponents), computeDependencies());
 	}
 
 	private static class ConvertMap<T extends AbstractVertex<T, U>, U extends RootService<T, U>> extends HashMap<T, T> {
@@ -385,7 +385,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 
 		Dependencies<T> dependencies = composite.buildDependencies();
 		T result = dependencies.set(composite);
-		multimap.set(new DependenciesEntry<T>(index, dependencies));
+		multimap.set(new DependenciesEntry<>(index, dependencies));
 		return result;
 	}
 
