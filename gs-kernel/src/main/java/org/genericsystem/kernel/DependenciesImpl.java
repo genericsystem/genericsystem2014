@@ -13,7 +13,7 @@ class DependenciesImpl<T> extends AbstractSnapshot<T> implements Dependencies<T>
 	public void add(T element) {
 		assert !this.contains(element);
 		assert element != null;
-		Node<T> newNode = new Node<T>(element);
+		Node<T> newNode = new Node<>(element);
 		if (head == null)
 			head = newNode;
 		else

@@ -28,6 +28,14 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 
 	protected List<T> supers;
 
+	protected abstract Dependencies<T> getInstancesDependencies();
+
+	protected abstract Dependencies<T> getInheritingsDependencies();
+
+	protected abstract Dependencies<DependenciesEntry<T>> getMetaComposites();
+
+	protected abstract Dependencies<DependenciesEntry<T>> getSuperComposites();
+
 	@SuppressWarnings("unchecked")
 	protected T init(boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
 		super.init(throwExistException, meta, value, components);
@@ -71,8 +79,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	}
 
 	@SuppressWarnings("static-method")
-	protected <U> Dependencies<U> buildDependencies() {
-		return new DependenciesImpl<U>();
+	protected <H> Dependencies<H> buildDependencies() {
+		return new DependenciesImpl<>();
 	}
 
 	protected void forceRemove() {
@@ -118,7 +126,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	}
 
 	private Iterable<T> reverseLinkedHashSet(LinkedHashSet<T> linkedHashSet) {
-		List<T> dependencies = new ArrayList<T>(linkedHashSet);
+		List<T> dependencies = new ArrayList<>(linkedHashSet);
 		Collections.reverse(dependencies);
 		return dependencies;
 	}
@@ -145,7 +153,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	protected T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
 		if (newComponents.size() != getComponents().size())
 			rollbackAndThrowException(new IllegalArgumentException());
-		return rebuildAll(() -> getMeta().bindInstance(isThrowExistException(), new Supers<T, U>(getSupers(), supersToAdd), newValue, newComponents), computeDependencies());
+		return rebuildAll(() -> getMeta().bindInstance(isThrowExistException(), new Supers<>(getSupers(), supersToAdd), newValue, newComponents), computeDependencies());
 	}
 
 	private static class ConvertMap<T extends AbstractVertex<T, U>, U extends RootService<T, U>> extends HashMap<T, T> {
@@ -241,13 +249,13 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public T buildInstance(boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
+	T buildInstance(boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
 		int level = getLevel() == 0 && Objects.equals(getValue(), getRoot().getValue()) && getComponentsStream().allMatch(c -> c.isRoot()) && Objects.equals(value, getRoot().getValue()) && components.stream().allMatch(c -> c.isRoot()) ? 0 : getLevel() + 1;
 		overrides.forEach(x -> ((Signature) x).checkIsAlive());
 		components.forEach(x -> ((Signature) x).checkIsAlive());
-		List<T> supers = new ArrayList<T>(new SupersComputer(level, this, overrides, value, components));
+		List<T> supers = new ArrayList<>(new SupersComputer(level, this, overrides, value, components));
 		checkOverridesAreReached(overrides, supers);
-		return ((T) ((AbstractVertex) newT().init(throwExistException, (T) this, supers, value, components)));
+		return newT().init(throwExistException, (T) this, supers, value, components);
 	}
 
 	private boolean allOverridesAreReached(List<T> overrides, List<T> supers) {
@@ -323,10 +331,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		return () -> getMetaComposites().stream().map(entry -> entry.getValue().stream()).flatMap(x -> x).iterator();
 	}
 
-	protected abstract Dependencies<DependenciesEntry<T>> getMetaComposites();
-
-	protected abstract Dependencies<DependenciesEntry<T>> getSuperComposites();
-
 	@Override
 	public Snapshot<T> getMetaComposites(T meta) {
 		return () -> {
@@ -382,7 +386,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 
 		Dependencies<T> dependencies = composite.buildDependencies();
 		T result = dependencies.set(composite);
-		multimap.set(new DependenciesEntry<T>(index, dependencies));
+		multimap.set(new DependenciesEntry<>(index, dependencies));
 		return result;
 	}
 
@@ -418,10 +422,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	public Snapshot<T> getInheritings() {
 		return getInheritingsDependencies();
 	}
-
-	protected abstract Dependencies<T> getInstancesDependencies();
-
-	protected abstract Dependencies<T> getInheritingsDependencies();
 
 	private T indexInstance(T instance) {
 		return index(getInstancesDependencies(), instance);

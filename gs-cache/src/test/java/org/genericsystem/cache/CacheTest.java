@@ -13,7 +13,7 @@ public class CacheTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		assert vehicle.isAlive();
-		assert vehicle.getVertex() == null;
+		assert vehicle.unwrap() == null;
 		Generic car = engine.addInstance(vehicle, "Car");
 
 		assert vehicle.getInheritings().stream().anyMatch(car::equals);
@@ -23,7 +23,7 @@ public class CacheTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		assert vehicle.isAlive();
-		assert vehicle.getVertex() == null;
+		assert vehicle.unwrap() == null;
 		assert engine.getInstances().stream().anyMatch(g -> g.equals(vehicle));
 	}
 
@@ -67,13 +67,13 @@ public class CacheTest extends AbstractTest {
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic car = engine.addInstance(vehicle, "Car");
 		assert vehicle.isAlive();
-		assert vehicle.getVertex() == null;
+		assert vehicle.unwrap() == null;
 		engine.getCurrentCache().flush();
 		assert vehicle.isAlive();
 		assert vehicle.getMeta().isAlive();
-		assert vehicle.getMeta().getVertex() != null;
-		assert vehicle.getVertex() != null;
-		assert vehicle.getVertex().getInheritings().stream().anyMatch(car.getVertex()::equals);
+		assert vehicle.getMeta().unwrap() != null;
+		assert vehicle.unwrap() != null;
+		assert vehicle.unwrap().getInheritings().stream().anyMatch(car.unwrap()::equals);
 	}
 
 	public void test002_clear() {
@@ -90,9 +90,9 @@ public class CacheTest extends AbstractTest {
 		assert mountNewCache.getSubContext() == currentCache;
 		Generic vehicle = engine.addInstance("Vehicle");
 		assert currentCache == mountNewCache.flushAndUnmount();
-		assert ((AbstractGeneric<Generic, Engine, Vertex, Root>) vehicle).getVertex() == null;
+		assert ((AbstractGeneric<Generic, Engine, Vertex, Root>) vehicle).unwrap() == null;
 		currentCache.flush();
-		assert vehicle.getVertex() != null;
+		assert vehicle.unwrap() != null;
 	}
 
 	public void test004_TwoCompositesWithSameMetaInDifferentCaches() {

@@ -43,6 +43,8 @@ public abstract class AbstractContext<T extends AbstractGeneric<T, U, V, W>, U e
 
 	abstract Snapshot<T> getSuperComposites(T generic, T superT);
 
-	abstract V getVertex(T generic);
+	abstract V unwrap(T generic);
+
+	abstract T wrap(V vertex);
 
 }

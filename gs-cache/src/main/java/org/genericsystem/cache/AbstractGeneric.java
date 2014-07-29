@@ -1,7 +1,8 @@
 package org.genericsystem.cache;
 
+import java.io.Serializable;
 import java.util.LinkedHashSet;
-import java.util.stream.Collectors;
+import java.util.List;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.services.RootService;
@@ -23,24 +24,13 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected V getVertex() {
-		// return super.getVertex();
-		return getCurrentCache().getVertex((T) this);
-	}
-
-	@Override
 	protected V unwrap() {
-		return super.unwrap();
+		return getCurrentCache().unwrap((T) this);
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	protected T wrap(V vertex) {
-		if (vertex.isRoot())
-			return (T) getRoot();
-		V alive = vertex.getAlive();
-		T meta = wrap(alive.getMeta());
-		return meta.newT().init(alive.isThrowExistException(), meta, alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList()));
+		return getCurrentCache().wrap(vertex);
 	}
 
 	@Override
@@ -72,18 +62,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		return getCurrentCache().getSuperComposites((T) this, superVertex);
 	}
 
-	// @SuppressWarnings("unchecked")
-	// @Override
-	// public T getInstance(Serializable value, T... components) {
-	// T nearestMeta = adjustMeta(Collections.emptyList(), value, Arrays.asList(components));
-	// if (!equals(nearestMeta))
-	// return nearestMeta.getInstance(value, components);
-	// for (T instance : getCurrentCache().getInstances(nearestMeta))
-	// if (instance.equiv(this, value, Arrays.asList(components)))
-	// return instance;
-	// return null;
-	// }
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public Snapshot<T> getComposites() {
@@ -95,4 +73,11 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		return super.computeDependencies();
 	}
 
+	@Override
+	protected abstract T newT();
+
+	@Override
+	protected T init(boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
+		return super.init(throwExistException, meta, supers, value, components);
+	}
 }

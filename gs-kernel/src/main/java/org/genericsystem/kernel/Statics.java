@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.services.RootService;
 import org.genericsystem.kernel.services.VertexService;
 import org.slf4j.Logger;
@@ -16,7 +15,7 @@ public class Statics {
 
 	private static Logger log = LoggerFactory.getLogger(Statics.class);
 
-	private static ThreadLocal<Long> threadDebugged = new ThreadLocal<Long>();
+	private static ThreadLocal<Long> threadDebugged = new ThreadLocal<>();
 
 	public static final int NO_POSITION = -1;
 	public static final int BASE_POSITION = 0;

@@ -23,12 +23,12 @@ public class LifeManager {
 		this.deathTs = deathTs;
 	}
 
-	public void beginLifeIfNecessary(long birthTs) {
-		if (this.birthTs == Long.MAX_VALUE)
-			this.birthTs = birthTs;
-		else
-			assert this.birthTs < birthTs : "Generic is already marked as borned but later";
-	}
+	// public void beginLifeIfNecessary(long birthTs) {
+	// if (this.birthTs == Long.MAX_VALUE)
+	// this.birthTs = birthTs;
+	// else
+	// assert this.birthTs < birthTs : "Generic is already marked as borned but later";
+	// }
 
 	public void beginLife(long birthTs) {
 		assert isWriteLockedByCurrentThread();

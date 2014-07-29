@@ -8,7 +8,7 @@ import org.genericsystem.kernel.Vertex;
 public class Generic extends AbstractGeneric<Generic, Engine, Vertex, Root> implements GenericService<Generic, Engine> {
 
 	@Override
-	public Generic newT() {
+	protected Generic newT() {
 		return new Generic();
 	}
 
