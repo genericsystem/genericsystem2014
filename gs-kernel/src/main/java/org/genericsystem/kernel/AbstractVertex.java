@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.AbstractDependenciesComputer.DependenciesComputer;
 import org.genericsystem.kernel.AbstractDependenciesComputer.PotentialDependenciesComputer;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
@@ -83,7 +84,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 			rollbackAndThrowException(new AliveConstraintViolationException(vertex.info() + " is not alive"));
 		if (!vertex.getInstances().isEmpty() || !vertex.getInheritings().isEmpty() || !vertex.getComposites().isEmpty())
 			rollbackAndThrowException(new IllegalStateException(vertex.info() + " has dependencies"));
-		/* if (!(automatics.remove(vertex) || adds.remove(vertex))) removes.add(vertex); */
 		vertex.unplug();
 	}
 
@@ -96,6 +96,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 				visit(restructoratorService);
 			}
 
+			// TODO clean
 			public void visit(T generic) throws ReferentialIntegrityConstraintViolationException {
 				if (add(generic)) {// protect from loop
 					if (!generic.getInheritings().isEmpty() || !generic.getInstances().isEmpty())
@@ -334,7 +335,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 					return entry.getValue().iterator();
 			return Collections.emptyIterator();
 		};
-	};
+	}
 
 	@Override
 	public Snapshot<T> getSuperComposites(T superT) {

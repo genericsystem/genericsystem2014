@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
+
 import org.genericsystem.impl.SystemCache;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.services.AncestorsService;
@@ -22,7 +23,7 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 
 	public Engine(Serializable engineValue, Class<?>... userClasses) {
 		init(false, null, Collections.emptyList(), engineValue, Collections.emptyList());
-		root = buildRoot(engineValue).init(false, null, Collections.emptyList(), engineValue, Collections.emptyList());
+		root = buildRoot(engineValue);
 
 		Cache<Generic, Engine, Vertex, Root> cache = newCache().start();
 		Generic metaAttribute = setInstance(this, getValue(), coerceToArray(this));

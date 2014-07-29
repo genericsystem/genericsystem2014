@@ -2,6 +2,7 @@ package org.genericsystem.impl;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
@@ -79,18 +80,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	public Snapshot<T> getInheritings() {
 		return () -> getVertex().getInheritings().stream().map(this::wrap).iterator();
 	}
-
-	// @Override
-	// @SuppressWarnings("unchecked")
-	// public T getInstance(Serializable value, T... components) {
-	// Vertex vertex = getVertex();
-	// if (vertex == null)
-	// return null;
-	// vertex = vertex.getInstance(value, Arrays.asList(components).stream().map(AbstractGeneric::unwrap).collect(Collectors.toList()).toArray(new Vertex[components.length]));
-	// if (vertex == null)
-	// return null;
-	// return wrap(vertex);
-	// }
 
 	@Override
 	public Snapshot<T> getComposites() {
