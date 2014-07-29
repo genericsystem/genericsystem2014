@@ -74,16 +74,6 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 		getEngine().stop(this);
 	}
 
-	T insert(T generic) throws RollbackException {
-		try {
-			add(generic);
-			return generic;
-		} catch (ConstraintViolationException e) {
-			generic.rollbackAndThrowException(e);
-		}
-		throw new IllegalStateException();
-	}
-
 	public void flush() throws RollbackException {
 		try {
 			internalFlush();
@@ -104,6 +94,16 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 		for (T add : adds)
 			plug(add);
 
+	}
+
+	T insert(T generic) throws RollbackException {
+		try {
+			add(generic);
+			return generic;
+		} catch (ConstraintViolationException e) {
+			generic.rollbackAndThrowException(e);
+		}
+		throw new IllegalStateException();
 	}
 
 	private void add(T generic) throws ConstraintViolationException {
