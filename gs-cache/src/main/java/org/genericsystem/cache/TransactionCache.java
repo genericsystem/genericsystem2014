@@ -9,7 +9,7 @@ public class TransactionCache<T extends AbstractGeneric<T, ?, V, ?>, V extends A
 
 	private static final long serialVersionUID = -2571113223711253002L;
 
-	private Map<V, T> reverseMap = new HashMap<>();
+	private final Map<V, T> reverseMap = new HashMap<>();
 
 	public TransactionCache(T engine) {
 		assert engine.unwrap() != null;

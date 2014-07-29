@@ -1,7 +1,9 @@
 package org.genericsystem.concurrency;
 
+import java.util.Iterator;
 import org.genericsystem.cache.AbstractContext;
 import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.exceptions.AliveConstraintViolationException;
 import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 import org.genericsystem.kernel.exceptions.RollbackException;
@@ -9,7 +11,7 @@ import org.genericsystem.kernel.exceptions.RollbackException;
 public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends org.genericsystem.cache.Cache<T, U, V, W> {
 
 	protected Cache(U engine) {
-		this(new Transaction<T, U, V, W>(engine));
+		this(new Transaction<>(engine));
 	}
 
 	protected Cache(org.genericsystem.cache.AbstractContext<T, U, V, W> subContext) {
@@ -22,13 +24,30 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 	}
 
 	public void pickNewTs() throws RollbackException {
-		if (getSubContext() instanceof Cache)
+		if (getSubContext() instanceof Cache) {
 			((Cache<?, ?, ?, ?>) getSubContext()).pickNewTs();
-		else {
+			cleanChanges();
+		} else {
 			long ts = getTs();
 			subContext = new Transaction<>(getEngine());
 			assert getTs() > ts;
 		}
+	}
+
+	private void cleanChanges() {
+		Iterator<T> iterator = adds.iterator();
+		while (iterator.hasNext()) {
+			T next = iterator.next();
+			if (subContext.isAlive(next))
+				iterator.remove();
+		}
+		iterator = removes.iterator();
+		while (iterator.hasNext()) {
+			T next = iterator.next();
+			if (!subContext.isAlive(next))
+				next.rollbackAndThrowException(new AliveConstraintViolationException(next.info()));
+		}
+
 	}
 
 	@Override
