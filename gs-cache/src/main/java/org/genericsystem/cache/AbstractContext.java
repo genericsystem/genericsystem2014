@@ -45,4 +45,6 @@ public abstract class AbstractContext<T extends AbstractGeneric<T, U, V, W>, U e
 
 	abstract V unwrap(T generic);
 
+	abstract T wrap(V vertex);
+
 }

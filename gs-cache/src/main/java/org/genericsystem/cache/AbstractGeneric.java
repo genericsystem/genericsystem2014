@@ -1,7 +1,8 @@
 package org.genericsystem.cache;
 
+import java.io.Serializable;
 import java.util.LinkedHashSet;
-import java.util.stream.Collectors;
+import java.util.List;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.services.RootService;
@@ -28,13 +29,8 @@ GenericService<T, U, V, W> {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	protected T wrap(V vertex) {
-		if (vertex.isRoot())
-			return (T) getRoot();
-		V alive = vertex.getAlive();
-		T meta = wrap(alive.getMeta());
-		return meta.newT().init(alive.isThrowExistException(), meta, alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList()));
+		return getCurrentCache().wrap(vertex);
 	}
 
 	@Override
@@ -75,5 +71,13 @@ GenericService<T, U, V, W> {
 	@Override
 	protected LinkedHashSet<T> computeDependencies() {
 		return super.computeDependencies();
+	}
+
+	@Override
+	protected abstract T newT();
+
+	@Override
+	protected T init(boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
+		return super.init(throwExistException, meta, supers, value, components);
 	}
 }

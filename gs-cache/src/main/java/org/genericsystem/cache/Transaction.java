@@ -2,6 +2,7 @@ package org.genericsystem.cache;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Snapshot;
@@ -84,6 +85,8 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 
 		private static final long serialVersionUID = -2571113223711253002L;
 
+		private Map<V, T> reverseMap = new HashMap<>();
+
 		public VerticesMap(T engine) {
 			assert engine.unwrap() != null;
 			put(engine, engine.unwrap());
@@ -106,6 +109,31 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 			}
 			return result;
 		}
+
+		@Override
+		public V put(T key, V value) {
+			V old = super.put(key, value);
+			reverseMap.put(value, key);
+			if (old != null) {
+				assert !old.isAlive();
+				reverseMap.put(old, null);
+			}
+			return old;
+		}
+
+		T getByValue(V vertex) {
+			assert vertex.isAlive();
+			V alive = vertex.getAlive();
+			T result = reverseMap.get(alive);
+			if (result == null) {
+				assert alive.getMeta() != alive : this;
+				T meta = getByValue(alive.getMeta());
+				result = meta.newT().init(alive.isThrowExistException(), meta, alive.getSupersStream().map(this::getByValue).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::getByValue).collect(Collectors.toList()));
+				put(result, alive);
+			}
+			return result;
+		}
+
 	};
 
 	@Override
@@ -116,5 +144,10 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 	@Override
 	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
 		super.apply(adds, removes);
+	}
+
+	@Override
+	T wrap(V vertex) {
+		return vertices.getByValue(vertex);
 	}
 }
