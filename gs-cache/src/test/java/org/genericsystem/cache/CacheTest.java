@@ -2,8 +2,7 @@ package org.genericsystem.cache;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
-import org.genericsystem.kernel.Root;
-import org.genericsystem.kernel.Vertex;
+
 import org.testng.annotations.Test;
 
 @Test

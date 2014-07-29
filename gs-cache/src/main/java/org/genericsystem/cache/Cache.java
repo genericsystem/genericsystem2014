@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
+
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Snapshot;
@@ -15,7 +16,6 @@ import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 import org.genericsystem.kernel.exceptions.RollbackException;
-import org.genericsystem.kernel.services.RootService;
 
 public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends AbstractContext<T, U, V, W> {
 
@@ -101,7 +101,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 			add(generic);
 			return generic;
 		} catch (ConstraintViolationException e) {
-			generic.rollbackAndThrowException(e);
+			getEngine().rollbackAndThrowException(e);
 		}
 		throw new IllegalStateException();
 	}
@@ -121,7 +121,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 	@Override
 	protected boolean simpleRemove(T generic) {
 		if (!isAlive(generic))
-			generic.rollbackAndThrowException(new IllegalStateException(generic + " is not alive"));
+			getEngine().rollbackAndThrowException(new IllegalStateException(generic + " is not alive"));
 		if (!adds.remove(generic))
 			return removes.add(generic);
 		return true;
@@ -260,7 +260,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 	boolean unplug(T generic) {
 		boolean result = unIndexInstance(generic.getMeta(), generic);
 		if (!result)
-			generic.rollbackAndThrowException(new NotFoundException(generic.info()));
+			getEngine().rollbackAndThrowException(new NotFoundException(generic.info()));
 		generic.getSupersStream().forEach(superGeneric -> unIndexInheriting(superGeneric, generic));
 		generic.getComponentsStream().forEach(component -> unIndexByMeta(component, generic.getMeta(), generic));
 		generic.getSupersStream().forEach(superGeneric -> generic.getComponentsStream().forEach(component -> unIndexBySuper(component, superGeneric, generic)));

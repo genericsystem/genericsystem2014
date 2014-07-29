@@ -1,8 +1,9 @@
 package org.genericsystem.concurrency;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
+
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.services.ApiService;
 
@@ -15,15 +16,11 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 	private final GarbageCollector<Vertex, Root> garbageCollector;
 
 	Root(EngineService<?, ?, Vertex, Root> engine, Serializable value) {
+		init(false, null, Collections.emptyList(), value, Collections.emptyList());
 		this.engine = engine;
 		long ts = pickNewTs();
 		restore(ts, 0L, 0L, Long.MAX_VALUE);
 		garbageCollector = new GarbageCollector<>(this);
-	}
-
-	@Override
-	protected Root init(boolean throwExistException, Vertex meta, List<Vertex> supers, Serializable value, List<Vertex> components) {
-		return (Root) super.init(throwExistException, meta, supers, value, components);
 	}
 
 	@Override

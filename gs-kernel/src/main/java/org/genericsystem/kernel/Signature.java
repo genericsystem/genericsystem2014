@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
 import org.genericsystem.kernel.services.RootService;
 import org.genericsystem.kernel.services.VertexService;
 
@@ -53,12 +54,6 @@ public abstract class Signature<T extends Signature<T, U>, U extends RootService
 	public Serializable getValue() {
 		return value;
 	}
-
-	// TODO clean
-	// @Override
-	// public Stream<T> getComponentsStream() {
-	// return components.stream();
-	// }
 
 	@Override
 	public String toString() {

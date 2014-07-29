@@ -4,17 +4,16 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
 import org.genericsystem.kernel.exceptions.AmbiguousSelectionException;
 import org.genericsystem.kernel.exceptions.CrossEnginesAssignementsException;
 
 public interface BindingService<T extends VertexService<T, U>, U extends RootService<T, U>> extends ApiService<T, U> {
 
 	@Override
-	default void checkSameEngine(List<T> components) {
-		assert components.stream().allMatch(component -> component != null) : components;
-		components.stream().filter(component -> component.getRoot() == null).forEach(component -> component.log());
-		if (components.stream().anyMatch(component -> !component.getRoot().equals(getRoot())))
-			rollbackAndThrowException(new CrossEnginesAssignementsException());
+	default void checkSameEngine(List<T> generics) {
+		if (generics.stream().anyMatch(generic -> !generic.getRoot().equals(getRoot())))
+			getRoot().rollbackAndThrowException(new CrossEnginesAssignementsException());
 	}
 
 	@Override
@@ -28,7 +27,7 @@ public interface BindingService<T extends VertexService<T, U>, U extends RootSer
 				if (result == null)
 					result = directInheriting;
 				else
-					rollbackAndThrowException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
+					getRoot().rollbackAndThrowException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
 		}
 		return result == null ? (T) this : result.adjustMeta(overrides, subValue, subComponents);
 	}

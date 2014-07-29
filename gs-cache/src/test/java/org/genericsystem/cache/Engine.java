@@ -2,18 +2,17 @@ package org.genericsystem.cache;
 
 import java.io.Serializable;
 import java.util.Collections;
-import org.genericsystem.impl.GenericsCache;
+
 import org.genericsystem.impl.SystemCache;
-import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
-import org.genericsystem.kernel.Vertex;
 import org.genericsystem.kernel.services.ApiService;
 
 public class Engine extends Generic implements EngineService<Generic, Engine, Vertex, Root> {
 
 	private final ThreadLocal<Cache<Generic, Engine, Vertex, Root>> cacheLocal = new ThreadLocal<>();
 	private final SystemCache<Generic> systemCache = new SystemCache<>(this);
-	private final GenericsCache<Generic, Engine> genericSystemCache = new GenericsCache<>();
+	// TODO clean ?
+	// private final GenericsCache<Generic, Engine> genericSystemCache = new GenericsCache<>();
 
 	private final Root root;
 
@@ -43,7 +42,7 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 
 	@SuppressWarnings("static-method")
 	public Root buildRoot(Serializable value) {
-		return new Root(value);
+		return new Root(this, value);
 	}
 
 	@Override

@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Snapshot;
-import org.genericsystem.kernel.exceptions.RollbackException;
 import org.genericsystem.kernel.services.SystemPropertiesService.AxedPropertyClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +59,8 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 	@SuppressWarnings("unchecked")
 	T[] targetsToComponents(T... targets);
 
-	void rollbackAndThrowException(Throwable exception) throws RollbackException;
+	// TODO clean
+	// void rollbackAndThrowException(Throwable exception) throws RollbackException;
 
 	int getLevel();
 

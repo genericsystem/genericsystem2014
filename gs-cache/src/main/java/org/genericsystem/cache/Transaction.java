@@ -2,11 +2,11 @@ package org.genericsystem.cache;
 
 import java.util.Collections;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
-import org.genericsystem.kernel.services.RootService;
 
 public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends AbstractContext<T, U, V, W> {
 

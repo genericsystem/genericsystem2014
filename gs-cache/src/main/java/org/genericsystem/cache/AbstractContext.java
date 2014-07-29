@@ -4,7 +4,6 @@ import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
-import org.genericsystem.kernel.services.RootService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

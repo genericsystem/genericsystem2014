@@ -3,6 +3,7 @@ package org.genericsystem.cache;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.AbstractVertex;
 
 public class TransactionCache<T extends AbstractGeneric<T, ?, V, ?>, V extends AbstractVertex<V, ?>> extends HashMap<T, V> {

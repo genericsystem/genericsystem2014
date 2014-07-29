@@ -29,25 +29,11 @@ public class SystemCache<T extends VertexService<T, ?>> extends HashMap<Class<?>
 	}
 
 	public void init(Class<?>... userClasses) {
-		T metaAttribute = root.setInstance(root, root.getValue(), root.coerceToArray(root));
-		put(MetaAttribute.class, metaAttribute);
-
-		T map = metaAttribute.setInstance(SystemMap.class, root.coerceToArray(root));
-		put(SystemMap.class, map);
-		map.enablePropertyConstraint();
+		put(MetaAttribute.class, root.setInstance(root, root.getValue(), root.coerceToArray(root)));
+		put(SystemMap.class, root.setInstance(SystemMap.class, root.coerceToArray(root)).enablePropertyConstraint());
 		for (Class<?> clazz : userClasses)
 			set(clazz);
 		initialized = true;
-		assert map.isAlive();
-	}
-
-	public T get(Class<?> clazz) {
-		T systemProperty = super.get(clazz);
-		if (systemProperty != null) {
-			assert systemProperty.isAlive() : systemProperty.info();
-			return systemProperty;
-		}
-		return null;
 	}
 
 	public T set(Class<?> clazz) {

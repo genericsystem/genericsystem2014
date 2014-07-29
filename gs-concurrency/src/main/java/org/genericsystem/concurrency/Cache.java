@@ -1,6 +1,7 @@
 package org.genericsystem.concurrency;
 
 import java.util.Iterator;
+
 import org.genericsystem.cache.AbstractContext;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.exceptions.AliveConstraintViolationException;
@@ -45,7 +46,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 		while (iterator.hasNext()) {
 			T next = iterator.next();
 			if (!subContext.isAlive(next))
-				next.rollbackAndThrowException(new AliveConstraintViolationException(next.info()));
+				getEngine().rollbackAndThrowException(new AliveConstraintViolationException(next.info()));
 		}
 
 	}
