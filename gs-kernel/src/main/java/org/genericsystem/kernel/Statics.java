@@ -16,9 +16,11 @@ public class Statics {
 	private static Logger log = LoggerFactory.getLogger(Statics.class);
 
 	private static ThreadLocal<Long> threadDebugged = new ThreadLocal<>();
-
 	public static final int NO_POSITION = -1;
 	public static final int BASE_POSITION = 0;
+	public static final int TARGET_POSITION = 1;
+	public static final int TERNARY_POSITION = 2;
+
 	public final static String ENGINE_VALUE = "Engine";
 	public static final long MILLI_TO_NANOSECONDS = 1000000L;
 
