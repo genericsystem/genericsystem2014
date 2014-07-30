@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import org.genericsystem.kernel.AbstractDependenciesComputer.DependenciesComputer;
-import org.genericsystem.kernel.AbstractDependenciesComputer.PotentialDependenciesComputer;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Statics.Supers;
 import org.genericsystem.kernel.exceptions.AliveConstraintViolationException;
@@ -175,13 +173,27 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	protected LinkedHashSet<T> computeDependencies() {
-		return new DependenciesComputer<>((T) this);
+		return new DependenciesComputer<T, U>() {
+			private static final long serialVersionUID = 4116681784718071815L;
+
+			@Override
+			boolean checkDependency(T node) {
+				return isAncestorOf(node);
+			}
+		}.visit(getMeta());
 	}
 
-	protected LinkedHashSet<T> computePotentialDependencies(T meta, Serializable value, List<T> components) {
-		return new PotentialDependenciesComputer<>(meta, value, components);
+	@SuppressWarnings("unchecked")
+	protected LinkedHashSet<T> computePotentialDependencies(Serializable value, List<T> components) {
+		return new DependenciesComputer<T, U>() {
+			private static final long serialVersionUID = -3611136800445783634L;
+
+			@Override
+			boolean checkDependency(T node) {
+				return node.dependsFrom((T) AbstractVertex.this, value, components);
+			}
+		}.visit((T) this);
 	}
 
 	public T bindInstance(boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
@@ -196,7 +208,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 				getRoot().discardWithException(new ExistsException("Attempts to add an already existing instance : " + weakInstance.info()));
 			else
 				return weakInstance.equiv(this, value, components) ? weakInstance : weakInstance.update(overrides, value, components);
-		return rebuildAll(() -> buildInstance(throwExistException, overrides, value, components).plug(), computePotentialDependencies(nearestMeta, value, components));
+		return rebuildAll(() -> buildInstance(throwExistException, overrides, value, components).plug(), nearestMeta.computePotentialDependencies(value, components));
 	}
 
 	@SuppressWarnings("unchecked")
