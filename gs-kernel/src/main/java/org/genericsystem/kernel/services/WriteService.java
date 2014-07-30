@@ -38,7 +38,8 @@ public interface WriteService<T extends VertexService<T, U>, U extends RootServi
 	}
 
 	@Override
-	default T setInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
+	@SuppressWarnings("unchecked")
+	default T setInstance(Serializable value, T... components) {
 		return setInstance(Collections.emptyList(), value, components);
 	}
 

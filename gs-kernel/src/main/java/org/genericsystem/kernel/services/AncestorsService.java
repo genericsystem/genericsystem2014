@@ -7,7 +7,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.slf4j.Logger;
@@ -36,17 +35,18 @@ public interface AncestorsService<T extends VertexService<T, U>, U extends RootS
 	default T checkIsAlive() {
 		T result = getAlive();
 		if (!equals(getAlive()))
-			getRoot().rollbackAndThrowException(new NotAliveException(info()));
+			getRoot().discardWithException(new NotAliveException(info()));
 		return result;
 	}
 
 	@Override
 	default T getAlive() {
+		// TODO KK pb avec le serviceEquals ...
 		T pluggedMeta = getMeta().getAlive();
 		if (pluggedMeta == null)
 			return null;
 		for (T instance : pluggedMeta.getInstances())
-			if (equiv(instance))
+			if (serviceEquals(instance))
 				return instance;
 		return null;
 	}
@@ -63,20 +63,25 @@ public interface AncestorsService<T extends VertexService<T, U>, U extends RootS
 	}
 
 	@Override
-	default boolean equiv(ApiService<? extends ApiService<?, ?>, ?> service) {
-		return service == null ? false : equiv(service.getMeta(), service.getValue(), service.getComponents());
+	default boolean serviceEquals(ApiService<? extends ApiService<?, ?>, ?> service) {
+		return equals(service.getMeta(), service.getSupers(), service.getValue(), service.getComponents());
 	}
 
 	@Override
 	default boolean equiv(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components) {
-		return getMeta().equiv(meta) && Objects.equals(getValue(), value) && equivComponents(getComponents(), components);
+		return getMeta().serviceEquals(meta) && Objects.equals(getValue(), value) && listsEquals(getComponents(), components);
 	}
 
-	static boolean equivComponents(List<? extends ApiService<?, ?>> components, List<? extends ApiService<?, ?>> otherComponents) {
+	@Override
+	default boolean equals(ApiService<?, ?> meta, List<? extends ApiService<?, ?>> supers, Serializable value, List<? extends ApiService<?, ?>> components) {
+		return getMeta().serviceEquals(meta) && Objects.equals(getValue(), value) && listsEquals(getSupers(), supers) && listsEquals(getComponents(), components);
+	}
+
+	static boolean listsEquals(List<? extends ApiService<?, ?>> components, List<? extends ApiService<?, ?>> otherComponents) {
 		if (otherComponents.size() != components.size())
 			return false;
 		Iterator<? extends ApiService<?, ?>> otherComponentsIt = otherComponents.iterator();
-		return components.stream().allMatch(x -> x.equiv(otherComponentsIt.next()));
+		return components.stream().allMatch(x -> x.serviceEquals(otherComponentsIt.next()));
 	}
 
 	@Override

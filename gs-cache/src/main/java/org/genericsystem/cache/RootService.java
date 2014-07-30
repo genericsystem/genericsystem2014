@@ -7,8 +7,4 @@ public interface RootService<T extends AbstractVertex<T, U>, U extends RootServi
 
 	EngineService<?, ?, T, U> getEngine();
 
-	@Override
-	default void rollback() {
-		getEngine().getCurrentCache().clear();
-	}
 }

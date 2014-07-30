@@ -7,7 +7,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
-
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Snapshot;
@@ -61,7 +60,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 		return subContext instanceof Cache ? ((Cache<T, U, V, W>) subContext).start() : this;
 	}
 
-	public Cache<T, U, V, W> discardAndUnmount() {
+	public Cache<T, U, V, W> clearAndUnmount() {
 		clear();
 		return subContext instanceof Cache ? ((Cache<T, U, V, W>) subContext).start() : this;
 	}
@@ -78,9 +77,14 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 		try {
 			internalFlush();
 		} catch (Exception e) {
-			getEngine().rollbackAndThrowException(e);
+			getEngine().discardWithException(e);
 		}
 		clear();
+	}
+
+	protected void rollbackWithException(Throwable exception) throws RollbackException {
+		clear();
+		throw new RollbackException(exception);
 	}
 
 	protected void internalFlush() throws ConcurrencyControlException, ConstraintViolationException {
@@ -101,7 +105,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 			add(generic);
 			return generic;
 		} catch (ConstraintViolationException e) {
-			getEngine().rollbackAndThrowException(e);
+			getEngine().discardWithException(e);
 		}
 		throw new IllegalStateException();
 	}
@@ -121,7 +125,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 	@Override
 	protected boolean simpleRemove(T generic) {
 		if (!isAlive(generic))
-			getEngine().rollbackAndThrowException(new IllegalStateException(generic + " is not alive"));
+			getEngine().discardWithException(new IllegalStateException(generic + " is not alive"));
 		if (!adds.remove(generic))
 			return removes.add(generic);
 		return true;
@@ -260,7 +264,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 	boolean unplug(T generic) {
 		boolean result = unIndexInstance(generic.getMeta(), generic);
 		if (!result)
-			getEngine().rollbackAndThrowException(new NotFoundException(generic.info()));
+			getEngine().discardWithException(new NotFoundException(generic.info()));
 		generic.getSupersStream().forEach(superGeneric -> unIndexInheriting(superGeneric, generic));
 		generic.getComponentsStream().forEach(component -> unIndexByMeta(component, generic.getMeta(), generic));
 		generic.getSupersStream().forEach(superGeneric -> generic.getComponentsStream().forEach(component -> unIndexBySuper(component, superGeneric, generic)));

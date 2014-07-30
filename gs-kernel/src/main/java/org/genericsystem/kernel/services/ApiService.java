@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.services.SystemPropertiesService.AxedPropertyClass;
 import org.slf4j.Logger;
@@ -33,9 +32,11 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 
 	T getWeakAlive();
 
-	boolean equiv(ApiService<? extends ApiService<?, ?>, ?> service);
+	boolean serviceEquals(ApiService<? extends ApiService<?, ?>, ?> service);
 
 	boolean equiv(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components);
+
+	boolean equals(ApiService<?, ?> meta, List<? extends ApiService<?, ?>> supers, Serializable value, List<? extends ApiService<?, ?>> components);
 
 	boolean weakEquiv(ApiService<? extends ApiService<?, ?>, ?> service);
 

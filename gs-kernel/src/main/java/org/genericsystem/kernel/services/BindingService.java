@@ -13,7 +13,7 @@ public interface BindingService<T extends VertexService<T, U>, U extends RootSer
 	@Override
 	default void checkSameEngine(List<T> generics) {
 		if (generics.stream().anyMatch(generic -> !generic.getRoot().equals(getRoot())))
-			getRoot().rollbackAndThrowException(new CrossEnginesAssignementsException());
+			getRoot().discardWithException(new CrossEnginesAssignementsException());
 	}
 
 	@Override
@@ -27,7 +27,7 @@ public interface BindingService<T extends VertexService<T, U>, U extends RootSer
 				if (result == null)
 					result = directInheriting;
 				else
-					getRoot().rollbackAndThrowException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
+					getRoot().discardWithException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
 		}
 		return result == null ? (T) this : result.adjustMeta(overrides, subValue, subComponents);
 	}

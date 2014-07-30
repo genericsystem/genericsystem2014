@@ -1,7 +1,6 @@
 package org.genericsystem.kernel.services;
 
 import java.util.Objects;
-
 import org.genericsystem.kernel.exceptions.RollbackException;
 
 public interface RootService<T extends VertexService<T, U>, U extends RootService<T, U>> extends VertexService<T, U> {
@@ -29,18 +28,14 @@ public interface RootService<T extends VertexService<T, U>, U extends RootServic
 	}
 
 	@Override
-	default boolean equiv(ApiService<? extends ApiService<?, ?>, ?> service) {
+	default boolean serviceEquals(ApiService<? extends ApiService<?, ?>, ?> service) {
 		if (this == service)
 			return true;
-		return Objects.equals(getValue(), service.getValue()) && AncestorsService.equivComponents(getComponents(), service.getComponents());
+		return Objects.equals(getValue(), service.getValue()) && AncestorsService.listsEquals(getComponents(), service.getComponents());
 	}
 
-	default void rollbackAndThrowException(Throwable exception) throws RollbackException {
-		rollback();
+	default void discardWithException(Throwable exception) throws RollbackException {
 		throw new RollbackException(exception);
-	}
-
-	default void rollback() {
 	}
 
 }

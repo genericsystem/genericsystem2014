@@ -2,7 +2,6 @@ package org.genericsystem.impl;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
@@ -19,7 +18,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		if (!(obj instanceof AncestorsService))
 			return false;
 		AncestorsService<?, ?> service = (AncestorsService<?, ?>) obj;
-		return equiv(service);
+		return serviceEquals(service);
 	}
 
 	@Override
@@ -51,7 +50,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 			return (T) getRoot();
 		V alive = vertex.getAlive();
 		T meta = wrap(alive.getMeta());
-		return meta.newT().init(alive.isThrowExistException(), meta, alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList()));
+		return meta.newT(alive.isThrowExistException(), meta, alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList()));
 	}
 
 	protected V unwrap() {
@@ -59,7 +58,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		if (metaVertex == null)
 			return null;
 		for (V instance : metaVertex.getInstances())
-			if (equiv(instance))
+			if (serviceEquals(instance))
 				return instance;
 		return null;
 	}

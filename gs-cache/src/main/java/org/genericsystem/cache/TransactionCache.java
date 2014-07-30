@@ -3,7 +3,6 @@ package org.genericsystem.cache;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.AbstractVertex;
 
 public class TransactionCache<T extends AbstractGeneric<T, ?, V, ?>, V extends AbstractVertex<V, ?>> extends HashMap<T, V> {
@@ -26,7 +25,7 @@ public class TransactionCache<T extends AbstractGeneric<T, ?, V, ?>, V extends A
 			V pluggedMeta = get(generic.getMeta());
 			if (pluggedMeta != null)
 				for (V instance : pluggedMeta.getInstances())
-					if (generic.equiv(instance)) {
+					if (generic.serviceEquals(instance)) {
 						put(generic, instance);
 						return instance;
 					}
@@ -53,7 +52,7 @@ public class TransactionCache<T extends AbstractGeneric<T, ?, V, ?>, V extends A
 		if (result == null) {
 			assert alive.getMeta() != alive : this;
 			T meta = getByValue(alive.getMeta());
-			result = meta.newT().init(alive.isThrowExistException(), meta, alive.getSupersStream().map(this::getByValue).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::getByValue).collect(Collectors.toList()));
+			result = meta.newT(alive.isThrowExistException(), meta, alive.getSupersStream().map(this::getByValue).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::getByValue).collect(Collectors.toList()));
 			put(result, alive);
 		}
 		return result;

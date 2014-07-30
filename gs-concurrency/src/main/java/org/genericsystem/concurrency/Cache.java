@@ -1,7 +1,6 @@
 package org.genericsystem.concurrency;
 
 import java.util.Iterator;
-
 import org.genericsystem.cache.AbstractContext;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.exceptions.AliveConstraintViolationException;
@@ -27,7 +26,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 	public void pickNewTs() throws RollbackException {
 		if (getSubContext() instanceof Cache) {
 			((Cache<?, ?, ?, ?>) getSubContext()).pickNewTs();
-			cleanDifferential();
+			clean();
 		} else {
 			long ts = getTs();
 			subContext = new Transaction<>(getEngine());
@@ -35,7 +34,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 		}
 	}
 
-	private void cleanDifferential() {
+	private void clean() {
 		Iterator<T> iterator = adds.iterator();
 		while (iterator.hasNext()) {
 			T next = iterator.next();
@@ -46,9 +45,8 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 		while (iterator.hasNext()) {
 			T next = iterator.next();
 			if (!subContext.isAlive(next))
-				getEngine().rollbackAndThrowException(new AliveConstraintViolationException(next.info()));
+				rollbackWithException(new AliveConstraintViolationException(next.info()));
 		}
-
 	}
 
 	@Override
@@ -63,7 +61,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 	}
 
 	@Override
-	public Cache<T, U, V, W> discardAndUnmount() {
+	public Cache<T, U, V, W> clearAndUnmount() {
 		clear();
 		return getSubContext() instanceof Cache ? ((Cache<T, U, V, W>) getSubContext()).start() : this;
 	}
@@ -98,8 +96,8 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 					throw new IllegalStateException(ex);
 				}
 			} catch (Exception e) {
-				getEngine().rollbackAndThrowException(e);
+				rollbackWithException(e);
 			}
-		getEngine().rollbackAndThrowException(cause);
+		rollbackWithException(cause);
 	}
 }

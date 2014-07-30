@@ -35,8 +35,8 @@ public class GenericTest extends AbstractTest {
 		Generic vehicle = engine.getInstances().filter(g -> g.getValue().equals("Vehicle")).stream().findFirst().get();
 		// Generic metaAttribut = engine.getInstances().filter(g -> g.getValue().equals("Engine") && g.getComponentsStream().count() == 1).stream().findFirst().get();
 		Generic powerVehicle = engine.getMetaAttribute().getInstances().filter(g -> g.getValue().equals("Power")).stream().findFirst().get();
-		assert vehicle.getAlive().equiv(vehicleVertex) : engine.getInstances();
-		assert powerVehicle.getAlive().equiv(powerVehicleVertex) : engine.getInstances();
+		assert vehicle.getAlive().serviceEquals(vehicleVertex) : engine.getInstances();
+		assert powerVehicle.getAlive().serviceEquals(powerVehicleVertex) : engine.getInstances();
 	}
 
 	public void testAddInstance() {

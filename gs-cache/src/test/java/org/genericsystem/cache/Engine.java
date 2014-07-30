@@ -2,19 +2,18 @@ package org.genericsystem.cache;
 
 import java.io.Serializable;
 import java.util.Collections;
-
+import java.util.List;
 import org.genericsystem.impl.SystemCache;
 import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.exceptions.RollbackException;
 import org.genericsystem.kernel.services.ApiService;
 
 public class Engine extends Generic implements EngineService<Generic, Engine, Vertex, Root> {
 
 	private final ThreadLocal<Cache<Generic, Engine, Vertex, Root>> cacheLocal = new ThreadLocal<>();
 	private final SystemCache<Generic> systemCache = new SystemCache<>(this);
-	// TODO clean ?
-	// private final GenericsCache<Generic, Engine> genericSystemCache = new GenericsCache<>();
-
 	private final Root root;
+	private final GenericsCache<Generic> genericsCache = new GenericsCache<>();
 
 	public Engine(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
@@ -40,7 +39,11 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 		assert getMap().isAlive();
 	}
 
-	@SuppressWarnings("static-method")
+	@Override
+	public Generic getOrBuildT(boolean throwExistException, Generic meta, List<Generic> supers, Serializable value, List<Generic> components) {
+		return genericsCache.getOrBuildT(throwExistException, meta, supers, value, components);
+	}
+
 	public Root buildRoot(Serializable value) {
 		return new Root(this, value);
 	}
@@ -88,13 +91,18 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 	}
 
 	@Override
-	public boolean equiv(ApiService<? extends ApiService<?, ?>, ?> service) {
-		return EngineService.super.equiv(service);
+	public boolean serviceEquals(ApiService<? extends ApiService<?, ?>, ?> service) {
+		return EngineService.super.serviceEquals(service);
 	}
 
 	@Override
 	public boolean isRoot() {
 		return EngineService.super.isRoot();
+	}
+
+	@Override
+	public void discardWithException(Throwable exception) throws RollbackException {
+		EngineService.super.discardWithException(exception);
 	}
 
 }

@@ -8,7 +8,7 @@ public class Generic extends AbstractGeneric<Generic, Engine, Vertex, Root> impl
 	}
 
 	@Override
-	public Generic[] newTArray(int dim) {
+	protected Generic[] newTArray(int dim) {
 		return new Generic[dim];
 	}
 

@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.testng.annotations.Test;
 
 @Test
@@ -207,8 +206,8 @@ public class UpdatableServiceTest extends AbstractTest {
 		Generic car = engine.addInstance("Car");
 
 		// when
-		car.updateSupers(vehicle);
-
+		Generic result = car.updateSupers(vehicle);
+		assert result.isAlive();
 		// then
 		assert engine.isAlive();
 		assert vehicle.isAlive();
@@ -217,7 +216,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		// assert engine.getAllInstances().count() == 2;
 
 		Generic newVehicle = engine.getInstance("Vehicle");
-		assert newVehicle.getInheritings().size() == 1;
+		assert newVehicle.getInheritings().size() == 1 : newVehicle.getInheritings().stream().collect(Collectors.toList()) + result.info();
 		assert engine.getInstance("Car").getSupersStream().count() == 1;
 	}
 

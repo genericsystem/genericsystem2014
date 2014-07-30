@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.AbstractDependenciesComputer.DependenciesComputer;
 import org.genericsystem.kernel.AbstractDependenciesComputer.PotentialDependenciesComputer;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
@@ -45,6 +44,10 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		return (T) this;
 	}
 
+	protected T newT(boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
+		return newT().init(throwExistException, meta, supers, value, components);
+	}
+
 	private void checkDependsMetaComponents() {
 		Serializable value = getValue();
 		// TODO KK
@@ -52,23 +55,23 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 			return;
 		assert getMeta().getComponents() != null;
 		if (!(getMeta().componentsDepends(getComponents(), getMeta().getComponents())))
-			getRoot().rollbackAndThrowException(new IllegalStateException("Inconsistant components : " + getComponents() + " " + getMeta().getComponents()));
+			getRoot().discardWithException(new IllegalStateException("Inconsistant components : " + getComponents() + " " + getMeta().getComponents()));
 	}
 
 	private void checkSupers(List<T> supers) {
 		supers.forEach(Signature::checkIsAlive);
 		if (!supers.stream().allMatch(superVertex -> superVertex.getLevel() == getLevel()))
-			getRoot().rollbackAndThrowException(new IllegalStateException("Inconsistant supers : " + getSupers()));
+			getRoot().discardWithException(new IllegalStateException("Inconsistant supers : " + getSupers()));
 		if (!supers.stream().allMatch(superVertex -> getMeta().inheritsFrom(superVertex.getMeta())))
-			getRoot().rollbackAndThrowException(new IllegalStateException("Inconsistant supers : " + getSupers()));
+			getRoot().discardWithException(new IllegalStateException("Inconsistant supers : " + getSupers()));
 		if (!supers.stream().noneMatch(this::equals))
-			getRoot().rollbackAndThrowException(new IllegalStateException("Supers loop detected : " + info()));
+			getRoot().discardWithException(new IllegalStateException("Supers loop detected : " + info()));
 	}
 
 	private void checkDependsSuperComponents(List<T> supers) {
 		getSupersStream().forEach(superVertex -> {
 			if (!superVertex.isSuperOf(getMeta(), supers, getValue(), getComponents()))
-				getRoot().rollbackAndThrowException(new IllegalStateException("Inconsistant components : " + getComponentsStream().collect(Collectors.toList())));
+				getRoot().discardWithException(new IllegalStateException("Inconsistant components : " + getComponentsStream().collect(Collectors.toList())));
 		});
 	}
 
@@ -88,9 +91,9 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 
 	private void simpleRemove(T vertex) {
 		if (!vertex.isAlive())
-			getRoot().rollbackAndThrowException(new AliveConstraintViolationException(vertex.info() + " is not alive"));
+			getRoot().discardWithException(new AliveConstraintViolationException(vertex.info() + " is not alive"));
 		if (!vertex.getInstances().isEmpty() || !vertex.getInheritings().isEmpty() || !vertex.getComposites().isEmpty())
-			getRoot().rollbackAndThrowException(new IllegalStateException(vertex.info() + " has dependencies"));
+			getRoot().discardWithException(new IllegalStateException(vertex.info() + " has dependencies"));
 		vertex.unplug();
 	}
 
@@ -139,7 +142,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		try {
 			getOrderedDependenciesToRemove().forEach(x -> this.simpleRemove(x));
 		} catch (ConstraintViolationException e) {
-			getRoot().rollbackAndThrowException(e);
+			getRoot().discardWithException(e);
 		}
 	}
 
@@ -151,7 +154,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 
 	protected T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
 		if (newComponents.size() != getComponents().size())
-			getRoot().rollbackAndThrowException(new IllegalArgumentException());
+			getRoot().discardWithException(new IllegalArgumentException());
 		return rebuildAll(() -> getMeta().bindInstance(isThrowExistException(), new Supers<>(getSupers(), supersToAdd), newValue, newComponents), computeDependencies());
 	}
 
@@ -190,7 +193,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		T weakInstance = getWeakInstance(value, components);
 		if (weakInstance != null)
 			if (throwExistException)
-				getRoot().rollbackAndThrowException(new ExistsException("Attempts to add an already existing instance : " + weakInstance.info()));
+				getRoot().discardWithException(new ExistsException("Attempts to add an already existing instance : " + weakInstance.info()));
 			else
 				return weakInstance.equiv(this, value, components) ? weakInstance : weakInstance.update(overrides, value, components);
 		return rebuildAll(() -> buildInstance(throwExistException, overrides, value, components).plug(), computePotentialDependencies(nearestMeta, value, components));
@@ -254,16 +257,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		components.forEach(x -> ((Signature) x).checkIsAlive());
 		List<T> supers = new ArrayList<>(new SupersComputer(level, this, overrides, value, components));
 		checkOverridesAreReached(overrides, supers);
-		return newT().init(throwExistException, (T) this, supers, value, components);
+		return newT(throwExistException, (T) this, supers, value, components);
 	}
 
-	private boolean allOverridesAreReached(List<T> overrides, List<T> supers) {
-		return overrides.stream().allMatch(override -> supers.stream().anyMatch(superVertex -> superVertex.inheritsFrom(override)));
-	}
-
-	private void checkOverridesAreReached(List<T> overrides, List<T> supers) {
-		if (!allOverridesAreReached(overrides, supers))
-			getRoot().rollbackAndThrowException(new IllegalStateException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
+	public void checkOverridesAreReached(List<T> overrides, List<T> supers) {
+		if (!Statics.areOverridesReached(overrides, supers))
+			getRoot().discardWithException(new IllegalStateException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
 	}
 
 	static <T extends VertexService<T, U>, U extends RootService<T, U>> boolean componentsDepends(SingularsLazyCache singulars, List<T> subComponents, List<T> superComponents) {
@@ -357,7 +356,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	public boolean unplug() {
 		boolean result = ((AbstractVertex<T, U>) getMeta()).unIndexInstance((T) this);
 		if (!result)
-			getRoot().rollbackAndThrowException(new NotFoundException(this.info()));
+			getRoot().discardWithException(new NotFoundException(this.info()));
 		getSupersStream().forEach(superGeneric -> ((AbstractVertex<T, U>) superGeneric).unIndexInheriting((T) this));
 		getComponentsStream().forEach(component -> ((AbstractVertex<T, U>) component).unIndexByMeta(getMeta(), (T) this));
 		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> ((AbstractVertex<T, U>) component).unIndexBySuper(superGeneric, (T) this)));

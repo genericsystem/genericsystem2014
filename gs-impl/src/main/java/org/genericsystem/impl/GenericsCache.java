@@ -39,7 +39,7 @@ public class GenericsCache<T extends GenericService<T, U>, U extends EngineServi
 			public boolean equals(Object obj) {
 				if (!(obj instanceof AncestorsService))
 					return false;
-				return vertexOrGeneric.equiv((AncestorsService<?, ?>) obj);
+				return vertexOrGeneric.serviceEquals((AncestorsService<?, ?>) obj);
 			}
 		});
 	}

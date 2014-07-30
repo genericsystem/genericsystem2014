@@ -2,9 +2,10 @@ package org.genericsystem.concurrency;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
-
+import org.genericsystem.cache.GenericsCache;
 import org.genericsystem.impl.SystemCache;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.services.AncestorsService;
@@ -14,6 +15,7 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 
 	private final ThreadLocal<Cache<Generic, Engine, Vertex, Root>> cacheLocal = new ThreadLocal<>();
 
+	private final GenericsCache<Generic> genericsCache = new GenericsCache<>();
 	private final SystemCache<Generic> systemCache = new SystemCache<>(this);
 	private final Root root;
 
@@ -49,6 +51,11 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 	}
 
 	@Override
+	public Generic getOrBuildT(boolean throwExistException, Generic meta, List<Generic> supers, Serializable value, List<Generic> components) {
+		return genericsCache.getOrBuildT(throwExistException, meta, supers, value, components);
+	}
+
+	@Override
 	public Cache<Generic, Engine, Vertex, Root> start(org.genericsystem.cache.Cache<Generic, Engine, Vertex, Root> cache) {
 		if (!equals(cache.getEngine()))
 			throw new IllegalStateException();
@@ -75,7 +82,7 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 	public boolean equiv(ApiService<?, ?> service) {
 		if (this == service)
 			return true;
-		return Objects.equals(getValue(), service.getValue()) && AncestorsService.equivComponents(getComponents(), service.getComponents());
+		return Objects.equals(getValue(), service.getValue()) && AncestorsService.listsEquals(getComponents(), service.getComponents());
 	}
 
 	@Override

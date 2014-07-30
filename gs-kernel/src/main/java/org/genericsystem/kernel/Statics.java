@@ -159,4 +159,8 @@ public class Statics {
 		}
 	}
 
+	public static <T extends AbstractVertex<T, ?>> boolean areOverridesReached(List<T> overrides, List<T> supers) {
+		return overrides.stream().allMatch(override -> supers.stream().anyMatch(superVertex -> superVertex.inheritsFrom(override)));
+	}
+
 }

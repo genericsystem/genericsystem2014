@@ -35,7 +35,7 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 
 	@Override
 	public boolean equiv(ApiService<? extends ApiService<?, ?>, ?> service) {
-		return RootService.super.equiv(service);
+		return RootService.super.serviceEquals(service);
 	}
 
 	@Override

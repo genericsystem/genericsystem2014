@@ -46,8 +46,8 @@ public class Engine extends Generic implements EngineService<Generic, Engine> {
 	}
 
 	@Override
-	public boolean equiv(ApiService<? extends ApiService<?, ?>, ?> service) {
-		return EngineService.super.equiv(service);
+	public boolean serviceEquals(ApiService<? extends ApiService<?, ?>, ?> service) {
+		return EngineService.super.serviceEquals(service);
 	}
 
 	@Override
