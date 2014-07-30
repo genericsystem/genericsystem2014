@@ -7,7 +7,6 @@ import org.genericsystem.impl.SystemCache;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
-import org.genericsystem.kernel.services.ApiService;
 
 public class Engine extends Generic implements EngineService<Generic, Engine> {
 
@@ -43,11 +42,6 @@ public class Engine extends Generic implements EngineService<Generic, Engine> {
 	@Override
 	public Engine getAlive() {
 		return (Engine) EngineService.super.getAlive();
-	}
-
-	@Override
-	public boolean serviceEquals(ApiService<? extends ApiService<?, ?>, ?> service) {
-		return EngineService.super.serviceEquals(service);
 	}
 
 	@Override

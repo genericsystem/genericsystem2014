@@ -25,7 +25,7 @@ public class TransactionCache<T extends AbstractGeneric<T, ?, V, ?>, V extends A
 			V pluggedMeta = get(generic.getMeta());
 			if (pluggedMeta != null)
 				for (V instance : pluggedMeta.getInstances())
-					if (generic.serviceEquals(instance)) {
+					if (generic.equals(instance)) {
 						put(generic, instance);
 						return instance;
 					}

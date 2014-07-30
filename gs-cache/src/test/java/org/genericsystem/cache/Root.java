@@ -3,8 +3,6 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.Collections;
 
-import org.genericsystem.kernel.services.ApiService;
-
 public class Root extends Vertex implements RootService<Vertex, Root> {
 
 	private final EngineService<?, ?, Vertex, Root> engine;
@@ -22,11 +20,6 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 	@Override
 	public Root getAlive() {
 		return (Root) RootService.super.getAlive();
-	}
-
-	@Override
-	public boolean serviceEquals(ApiService<? extends ApiService<?, ?>, ?> service) {
-		return RootService.super.serviceEquals(service);
 	}
 
 	@Override

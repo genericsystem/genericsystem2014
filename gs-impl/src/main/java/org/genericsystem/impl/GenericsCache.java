@@ -3,7 +3,6 @@ package org.genericsystem.impl;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-
 import org.genericsystem.kernel.services.AncestorsService;
 
 public class GenericsCache<T extends GenericService<T, U>, U extends EngineService<T, U>> {
@@ -39,7 +38,7 @@ public class GenericsCache<T extends GenericService<T, U>, U extends EngineServi
 			public boolean equals(Object obj) {
 				if (!(obj instanceof AncestorsService))
 					return false;
-				return vertexOrGeneric.serviceEquals((AncestorsService<?, ?>) obj);
+				return vertexOrGeneric.equals(obj);
 			}
 		});
 	}

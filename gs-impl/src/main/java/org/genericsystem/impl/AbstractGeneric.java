@@ -18,7 +18,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		if (!(obj instanceof AncestorsService))
 			return false;
 		AncestorsService<?, ?> service = (AncestorsService<?, ?>) obj;
-		return serviceEquals(service);
+		return equals(service.getMeta(), service.getSupers(), service.getValue(), service.getComponents());
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		if (metaVertex == null)
 			return null;
 		for (V instance : metaVertex.getInstances())
-			if (serviceEquals(instance))
+			if (equals(instance))
 				return instance;
 		return null;
 	}

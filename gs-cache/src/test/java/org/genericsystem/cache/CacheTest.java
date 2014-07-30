@@ -2,7 +2,6 @@ package org.genericsystem.cache;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
-
 import org.testng.annotations.Test;
 
 @Test
@@ -56,7 +55,7 @@ public class CacheTest extends AbstractTest {
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		Generic vehicle256 = powerVehicle.addInstance("256", vehicle);
 		Generic myVehicle123 = powerVehicle.addInstance("123", myVehicle);
-		assert !vehicle256.serviceEquals(myVehicle123);
+		assert !vehicle256.equals(myVehicle123);
 		assert myVehicle123.inheritsFrom(vehicle256);
 		assert myVehicle.getSuperComposites(vehicle256).contains(myVehicle123);
 	}

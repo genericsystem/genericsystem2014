@@ -41,16 +41,21 @@ public class SupersComputer<T extends VertexService<T, U>, U extends RootService
 			return false;
 		}
 		boolean selectable = true;
-		for (T inheriting : candidate.getInheritings())
+		for (T inheriting : candidate.getInheritings()) {
+			assert !inheriting.equals(candidate);
+			assert !candidate.equals(inheriting) : candidate.info() + inheriting.info();// Pas symétrique
 			if (visit(inheriting))
 				selectable = false;
+		}
 		if (isMeta)
-			for (T instance : candidate.getInstances())
+			for (T instance : candidate.getInstances()) {
+				assert !instance.equals(candidate);
+				assert !candidate.equals(instance);
 				if (visit(instance))
 					selectable = false;
-
+			}
 		result = alreadyComputed.put(candidate, selectable);
-		assert result == null;
+		assert result == null : candidate.info();
 		if (selectable && candidate.getLevel() == level && !candidate.equiv(meta, value, components))
 			add(candidate);
 		return selectable;

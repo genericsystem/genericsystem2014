@@ -10,7 +10,7 @@ public interface DependenciesService<T extends VertexService<T, U>, U extends Ro
 
 	@Override
 	default boolean isAncestorOf(T dependency) {
-		return serviceEquals(dependency) || (!dependency.isRoot() && isAncestorOf(dependency.getMeta())) || dependency.getSupersStream().anyMatch(this::isAncestorOf)
+		return equals(dependency) || (!dependency.isRoot() && isAncestorOf(dependency.getMeta())) || dependency.getSupersStream().anyMatch(this::isAncestorOf)
 				|| dependency.getComponentsStream().filter(component -> !dependency.equals(component)).anyMatch(this::isAncestorOf);
 	}
 

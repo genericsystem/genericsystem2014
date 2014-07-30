@@ -3,9 +3,7 @@ package org.genericsystem.concurrency;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
-
 import org.genericsystem.kernel.Statics;
-import org.genericsystem.kernel.services.ApiService;
 
 public class Root extends Vertex implements RootService<Vertex, Root> {
 
@@ -31,11 +29,6 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 	@Override
 	public Root getAlive() {
 		return (Root) RootService.super.getAlive();
-	}
-
-	@Override
-	public boolean equiv(ApiService<? extends ApiService<?, ?>, ?> service) {
-		return RootService.super.serviceEquals(service);
 	}
 
 	@Override

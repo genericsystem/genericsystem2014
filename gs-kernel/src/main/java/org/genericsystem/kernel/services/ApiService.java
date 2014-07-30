@@ -32,7 +32,9 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 
 	T getWeakAlive();
 
-	boolean serviceEquals(ApiService<? extends ApiService<?, ?>, ?> service);
+	boolean equiv(ApiService<? extends ApiService<?, ?>, ?> service);
+
+	// boolean serviceEquals(ApiService<? extends ApiService<?, ?>, ?> service);
 
 	boolean equiv(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components);
 

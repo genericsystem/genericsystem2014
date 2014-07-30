@@ -46,7 +46,7 @@ public interface AncestorsService<T extends VertexService<T, U>, U extends RootS
 		if (pluggedMeta == null)
 			return null;
 		for (T instance : pluggedMeta.getInstances())
-			if (serviceEquals(instance))
+			if (equiv(instance))
 				return instance;
 		return null;
 	}
@@ -63,25 +63,32 @@ public interface AncestorsService<T extends VertexService<T, U>, U extends RootS
 	}
 
 	@Override
-	default boolean serviceEquals(ApiService<? extends ApiService<?, ?>, ?> service) {
-		return equals(service.getMeta(), service.getSupers(), service.getValue(), service.getComponents());
+	default boolean equiv(ApiService<? extends ApiService<?, ?>, ?> service) {
+		return equiv(service.getMeta(), service.getValue(), service.getComponents());
 	}
 
 	@Override
 	default boolean equiv(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components) {
-		return getMeta().serviceEquals(meta) && Objects.equals(getValue(), value) && listsEquals(getComponents(), components);
+		return (isRoot() || getMeta().equiv(meta)) && Objects.equals(getValue(), value) && listsEquiv(getComponents(), components);
 	}
 
 	@Override
 	default boolean equals(ApiService<?, ?> meta, List<? extends ApiService<?, ?>> supers, Serializable value, List<? extends ApiService<?, ?>> components) {
-		return getMeta().serviceEquals(meta) && Objects.equals(getValue(), value) && listsEquals(getSupers(), supers) && listsEquals(getComponents(), components);
+		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && listsEquals(getSupers(), supers) && listsEquals(getComponents(), components);
 	}
 
 	static boolean listsEquals(List<? extends ApiService<?, ?>> components, List<? extends ApiService<?, ?>> otherComponents) {
 		if (otherComponents.size() != components.size())
 			return false;
 		Iterator<? extends ApiService<?, ?>> otherComponentsIt = otherComponents.iterator();
-		return components.stream().allMatch(x -> x.serviceEquals(otherComponentsIt.next()));
+		return components.stream().allMatch(x -> x.equals(otherComponentsIt.next()));
+	}
+
+	static boolean listsEquiv(List<? extends ApiService<?, ?>> components, List<? extends ApiService<?, ?>> otherComponents) {
+		if (otherComponents.size() != components.size())
+			return false;
+		Iterator<? extends ApiService<?, ?>> otherComponentsIt = otherComponents.iterator();
+		return components.stream().allMatch(x -> x.equiv(otherComponentsIt.next()));
 	}
 
 	@Override
