@@ -2,7 +2,6 @@ package org.genericsystem.kernel;
 
 import java.util.Arrays;
 import java.util.Collections;
-
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.testng.annotations.Test;
 
@@ -325,6 +324,6 @@ public class VertexTest extends AbstractTest {
 		assert v233.isAlive();
 		assert !car233.isAncestorOf(v233);
 		assert v233.dependsFrom(vehiclePower, 233, Arrays.asList(car));
-		assert car233.computePotentialDependencies(vehiclePower, 233, Arrays.asList(car)).contains(v233);
+		assert vehiclePower.computePotentialDependencies(233, Arrays.asList(car)).contains(v233);
 	}
 }
