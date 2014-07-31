@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 import org.genericsystem.kernel.services.RootService;
 
+//TODO KK
+
 abstract class AbstractDependenciesComputer<T extends AbstractVertex<T, U>, U extends RootService<T, U>> extends LinkedHashSet<T> {
 	private static final long serialVersionUID = -5970021419012502402L;
 	private final Set<T> alreadyVisited = new HashSet<>();
