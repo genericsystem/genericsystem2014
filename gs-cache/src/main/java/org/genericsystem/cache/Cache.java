@@ -1,9 +1,11 @@
 package org.genericsystem.cache;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -279,6 +281,12 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 	@Override
 	T wrap(V vertex) {
 		return getSubContext().wrap(vertex);
+	}
+
+	private final GenericsCache<T> genericsCache = new GenericsCache<>();
+
+	public T getOrBuildT(boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
+		return genericsCache.getOrBuildT(throwExistException, meta, supers, value, components);
 	}
 
 }

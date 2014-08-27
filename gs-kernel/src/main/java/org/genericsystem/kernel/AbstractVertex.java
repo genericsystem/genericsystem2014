@@ -160,7 +160,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		private static final long serialVersionUID = 5003546962293036021L;
 
 		T convert(T dependency) {
-			if (dependency.isAlive())
+			if (dependency.isAlive())// KK ?
 				return dependency;
 			T newDependency = get(dependency);
 			if (newDependency == null) {
@@ -168,6 +168,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 				newDependency = meta.buildInstance(dependency.isThrowExistException(), dependency.getSupersStream().map(x -> convert(x)).collect(Collectors.toList()), dependency.getValue(),
 						dependency.getComponentsStream().map(x -> x.equals(this) ? null : convert(x)).collect(Collectors.toList())).plug();
 				put(dependency, newDependency);
+				// muteOldDependency(newDependency);
 			}
 			return newDependency;
 		}
@@ -265,8 +266,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	T buildInstance(boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
 		int level = getLevel() == 0 && Objects.equals(getValue(), getRoot().getValue()) && getComponentsStream().allMatch(c -> c.isRoot()) && Objects.equals(value, getRoot().getValue()) && components.stream().allMatch(c -> c.isRoot()) ? 0 : getLevel() + 1;
-		overrides.forEach(x -> ((Signature) x).checkIsAlive());
-		components.forEach(x -> ((Signature) x).checkIsAlive());
+		overrides.forEach(Signature::checkIsAlive);
+		components.forEach(Signature::checkIsAlive);
 		List<T> supers = new ArrayList<>(new SupersComputer(level, this, overrides, value, components));
 		checkOverridesAreReached(overrides, supers);
 		return newT(throwExistException, (T) this, supers, value, components);

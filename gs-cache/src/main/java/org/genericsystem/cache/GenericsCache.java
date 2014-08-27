@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import org.genericsystem.kernel.services.ApiService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,9 +24,9 @@ public class GenericsCache<T extends AbstractGeneric<T, ?, ?, ?>> {
 			@SuppressWarnings("unchecked")
 			@Override
 			public boolean equals(Object obj) {
-				if (!(obj instanceof ApiService))
+				if (!(obj instanceof AbstractGeneric))
 					return false;
-				return ((ApiService<T, ?>) obj).equals(meta, supers, value, components);
+				return ((AbstractGeneric<T, ?, ?, ?>) obj).equals(meta, supers, value, components);
 			}
 		});
 		if (result == null) {
