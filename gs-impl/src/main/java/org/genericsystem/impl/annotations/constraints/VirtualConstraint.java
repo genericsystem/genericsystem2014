@@ -1,4 +1,4 @@
-package org.genericsystem.kernel.annotations;
+package org.genericsystem.impl.annotations.constraints;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,18 +6,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The class of the generic instances.
- *
+ * This constraint represent the abstract.
+ * 
  * @author Nicolas Feybesse
+ * @author Michael Ory
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
-public @interface InstanceGenericClass {
-
-	/**
-	 * Define the class of the instance.
-	 *
-	 * @return the class of the components.
-	 */
-	Class<?> value();
+public @interface VirtualConstraint {
 }

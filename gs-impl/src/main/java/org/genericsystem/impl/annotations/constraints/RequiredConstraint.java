@@ -1,26 +1,24 @@
-package org.genericsystem.kernel.annotations;
+package org.genericsystem.impl.annotations.constraints;
 
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Used to declare the dependencies of generic.
+ * The System Property to mandatory attribute.
  * 
  * @author Nicolas Feybesse
  * @author Michael Ory
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
-@Inherited
-public @interface Dependencies {
+public @interface RequiredConstraint {
 
 	/**
-	 * Returns the class of the dependencies.
+	 * Returns the positions of the components.
 	 * 
-	 * @return An array of class of the dependencies.
+	 * @return An array of component position.
 	 */
-	Class<?>[] value();
+	int[] value() default {};
 }

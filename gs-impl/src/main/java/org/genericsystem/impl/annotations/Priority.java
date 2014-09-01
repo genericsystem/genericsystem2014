@@ -1,24 +1,25 @@
-package org.genericsystem.kernel.annotations.constraints;
+package org.genericsystem.impl.annotations;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This constraint represent the links size for an attribute.
+ * Priority of the contraints.
  * 
  * @author Nicolas Feybesse
  * @author Michael Ory
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
-public @interface SizeConstraint {
+@Inherited
+public @interface Priority {
 
 	/**
-	 * Returns the positions of the components.
 	 * 
-	 * @return An array of component position.
+	 * @return The priority value.
 	 */
-	int[] value() default { 0 };
+	int value();
 }

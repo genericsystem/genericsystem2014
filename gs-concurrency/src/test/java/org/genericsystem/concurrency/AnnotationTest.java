@@ -1,10 +1,10 @@
 package org.genericsystem.concurrency;
 
-import org.genericsystem.kernel.annotations.Components;
-import org.genericsystem.kernel.annotations.Meta;
-import org.genericsystem.kernel.annotations.Supers;
-import org.genericsystem.kernel.annotations.SystemGeneric;
-import org.genericsystem.kernel.annotations.value.IntValue;
+import org.genericsystem.impl.annotations.Components;
+import org.genericsystem.impl.annotations.Meta;
+import org.genericsystem.impl.annotations.Supers;
+import org.genericsystem.impl.annotations.SystemGeneric;
+import org.genericsystem.impl.annotations.value.IntValue;
 import org.testng.annotations.Test;
 
 @Test

@@ -1,25 +1,23 @@
-package org.genericsystem.kernel.annotations;
+package org.genericsystem.impl.annotations.value;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import org.genericsystem.kernel.Root;
 
 /**
- * Used to declare the Extends of generic. A generic inherits directly of the supers.
- *
+ * The value is a integer value.
+ * 
  * @author Nicolas Feybesse
  * @author Michael Ory
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
-public @interface Meta {
+public @interface IntValue {
 
 	/**
-	 * The meta class
-	 *
-	 * @return meta class
+	 * 
+	 * @return Return the integer.
 	 */
-	Class<?> value() default Root.class;
+	int value();
 }

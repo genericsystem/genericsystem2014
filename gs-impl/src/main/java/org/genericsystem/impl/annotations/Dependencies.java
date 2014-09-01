@@ -1,23 +1,26 @@
-package org.genericsystem.kernel.annotations.value;
+package org.genericsystem.impl.annotations;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The value is a string value.
+ * Used to declare the dependencies of generic.
  * 
  * @author Nicolas Feybesse
  * @author Michael Ory
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
-public @interface StringValue {
+@Inherited
+public @interface Dependencies {
 
 	/**
+	 * Returns the class of the dependencies.
 	 * 
-	 * @return Return the string.
+	 * @return An array of class of the dependencies.
 	 */
-	String value();
+	Class<?>[] value();
 }

@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.genericsystem.impl.annotations.Components;
+import org.genericsystem.impl.annotations.Meta;
+import org.genericsystem.impl.annotations.value.BooleanValue;
+import org.genericsystem.impl.annotations.value.IntValue;
+import org.genericsystem.impl.annotations.value.StringValue;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Root.MetaAttribute;
-import org.genericsystem.kernel.annotations.Components;
-import org.genericsystem.kernel.annotations.Meta;
-import org.genericsystem.kernel.annotations.value.BooleanValue;
-import org.genericsystem.kernel.annotations.value.IntValue;
-import org.genericsystem.kernel.annotations.value.StringValue;
 import org.genericsystem.kernel.services.MapService.SystemMap;
 import org.genericsystem.kernel.services.VertexService;
 
@@ -57,7 +57,7 @@ public class SystemCache<T extends VertexService<T, ?>> extends HashMap<Class<?>
 
 	private List<T> setOverrides(Class<?> clazz) {
 		List<T> overridesVertices = new ArrayList<>();
-		org.genericsystem.kernel.annotations.Supers supersAnnotation = clazz.getAnnotation(org.genericsystem.kernel.annotations.Supers.class);
+		org.genericsystem.impl.annotations.Supers supersAnnotation = clazz.getAnnotation(org.genericsystem.impl.annotations.Supers.class);
 		if (supersAnnotation != null)
 			for (Class<?> overrideClass : supersAnnotation.value())
 				overridesVertices.add(set(overrideClass));

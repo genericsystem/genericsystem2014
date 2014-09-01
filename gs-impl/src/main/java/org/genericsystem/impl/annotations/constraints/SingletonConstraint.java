@@ -1,4 +1,4 @@
-package org.genericsystem.kernel.annotations;
+package org.genericsystem.impl.annotations.constraints;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,12 +6,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The System Property to disallow inheritance.
+ * This constraint represent the singleton notion.
  * 
  * @author Nicolas Feybesse
+ * @author Michael Ory
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
-public @interface NoInheritance {
+public @interface SingletonConstraint {
 
 }

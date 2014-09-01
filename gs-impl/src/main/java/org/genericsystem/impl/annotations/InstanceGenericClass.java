@@ -1,4 +1,4 @@
-package org.genericsystem.kernel.annotations.constraints;
+package org.genericsystem.impl.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,13 +6,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This constraint represent the singleton notion.
- * 
+ * The class of the generic instances.
+ *
  * @author Nicolas Feybesse
- * @author Michael Ory
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
-public @interface SingletonConstraint {
+public @interface InstanceGenericClass {
 
+	/**
+	 * Define the class of the instance.
+	 *
+	 * @return the class of the components.
+	 */
+	Class<?> value();
 }

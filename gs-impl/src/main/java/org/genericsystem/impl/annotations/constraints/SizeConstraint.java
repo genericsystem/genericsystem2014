@@ -1,27 +1,24 @@
-package org.genericsystem.kernel.annotations.constraints;
+package org.genericsystem.impl.annotations.constraints;
 
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The System Property to constrain the type of a value.
+ * This constraint represent the links size for an attribute.
  * 
  * @author Nicolas Feybesse
  * @author Michael Ory
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
-@Inherited
-public @interface InstanceValueClassConstraint {
+public @interface SizeConstraint {
 
 	/**
-	 * Returns the class of type constrained.
+	 * Returns the positions of the components.
 	 * 
-	 * @return The class.
+	 * @return An array of component position.
 	 */
-	Class<?> value();
-
+	int[] value() default { 0 };
 }

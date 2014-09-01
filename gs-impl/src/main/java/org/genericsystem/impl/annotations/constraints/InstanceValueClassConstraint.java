@@ -1,4 +1,4 @@
-package org.genericsystem.kernel.annotations;
+package org.genericsystem.impl.annotations.constraints;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Priority of the contraints.
+ * The System Property to constrain the type of a value.
  * 
  * @author Nicolas Feybesse
  * @author Michael Ory
@@ -15,11 +15,13 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
 @Inherited
-public @interface Priority {
+public @interface InstanceValueClassConstraint {
 
 	/**
+	 * Returns the class of type constrained.
 	 * 
-	 * @return The priority value.
+	 * @return The class.
 	 */
-	int value();
+	Class<?> value();
+
 }

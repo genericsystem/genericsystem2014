@@ -1,4 +1,4 @@
-package org.genericsystem.kernel.annotations.value;
+package org.genericsystem.impl.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,18 +6,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The value is a boolean value.
+ * The components of a generic.
  * 
  * @author Nicolas Feybesse
  * @author Michael Ory
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
-public @interface BooleanValue {
+public @interface Components {
 
 	/**
+	 * Returns the class of the components.
 	 * 
-	 * @return Return the boolean.
+	 * @return An array of class of the components.
 	 */
-	boolean value();
+	Class<?>[] value();
 }

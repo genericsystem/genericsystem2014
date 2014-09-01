@@ -1,4 +1,4 @@
-package org.genericsystem.kernel.annotations;
+package org.genericsystem.impl.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,19 +6,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The components of a generic.
+ * The System Property to disallow inheritance.
  * 
  * @author Nicolas Feybesse
- * @author Michael Ory
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
-public @interface Components {
+public @interface NoInheritance {
 
-	/**
-	 * Returns the class of the components.
-	 * 
-	 * @return An array of class of the components.
-	 */
-	Class<?>[] value();
 }
