@@ -15,6 +15,7 @@ import org.genericsystem.kernel.services.RootService;
 public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends AbstractVertex<T, U> implements GenericService<T, U> {
 
 	@Override
+	// coucou
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -25,7 +26,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	}
 
 	@Override
-	// coucou
 	public int hashCode() {
 		// TODO introduce : meta and components length
 		return Objects.hashCode(getValue());
