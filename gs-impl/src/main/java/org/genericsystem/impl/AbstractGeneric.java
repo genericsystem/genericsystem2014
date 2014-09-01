@@ -34,7 +34,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		return super.update(supersToAdd, newValue, newComponents);
 	}
 
-	// coucou2
 	@Override
 	public T plug() {
 		V vertex = getMeta().unwrap();
