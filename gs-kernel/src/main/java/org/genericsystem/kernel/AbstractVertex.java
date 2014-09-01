@@ -229,7 +229,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	@Override
 	@SuppressWarnings("unchecked")
 	public <subT extends T> subT addInstance(List<T> overrides, Serializable value, T... components) {
-		return bindInstance(isRoot() ? null : getClass(), true, overrides, value, Arrays.asList(components));
+		return bindInstance(null, true, overrides, value, Arrays.asList(components));
 	}
 
 	@Override

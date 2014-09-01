@@ -24,9 +24,6 @@ public class AnnotationTest extends AbstractTest {
 		Engine engine = new Engine(Vehicle.class);
 		assert engine.find(Vehicle.class) instanceof Vehicle;
 		Vehicle vehicle = engine.find(Vehicle.class);
-		assert vehicle.addInstance("myBmw") instanceof Vehicle;
-		Vehicle myBmw = vehicle.setInstance("myBmw");
-		assert myBmw.isInstanceOf(vehicle);
 	}
 
 	public void test002_SuperGeneric() {

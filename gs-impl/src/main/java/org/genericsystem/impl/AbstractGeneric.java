@@ -30,14 +30,8 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		return Objects.hashCode(getValue());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	protected T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
-		return super.update(supersToAdd, newValue, newComponents);
-	}
-
-	@Override
-	protected T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
+	protected <subT extends T> subT update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
 		return super.update(supersToAdd, newValue, newComponents);
 	}
 
