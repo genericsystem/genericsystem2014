@@ -64,6 +64,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	@Override
 	public T plug() {
 		V vertex = getMeta().unwrap();
+
 		vertex.checkIsAlive();
 		vertex.bindInstance(null, isThrowExistException(), getSupersStream().map(T::unwrap).collect(Collectors.toList()), getValue(), getComponentsStream().map(T::unwrap).collect(Collectors.toList()));
 		return (T) this;
