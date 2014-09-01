@@ -13,7 +13,6 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 	private final ThreadLocal<Cache<Generic, Engine, Vertex, Root>> cacheLocal = new ThreadLocal<>();
 	private final SystemCache<Generic> systemCache = new SystemCache<>(this);
 	private final Root root;
-	private final GenericsCache<Generic> genericsCache = new GenericsCache<>();
 
 	public Engine(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
@@ -38,6 +37,8 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 		assert getMetaAttribute().isAlive();
 		assert getMap().isAlive();
 	}
+
+	private final GenericsCache<Generic> genericsCache = new GenericsCache<>();
 
 	@Override
 	public <subT extends Generic> subT getOrBuildT(Class<?> clazz, boolean throwExistException, Generic meta, List<Generic> supers, Serializable value, List<Generic> components) {
