@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +14,7 @@ public class GenericsCache<T extends AbstractGeneric<T, ?, ?, ?>> {
 	private final Map<T, T> map = new ConcurrentHashMap<>();
 	static Logger log = LoggerFactory.getLogger(GenericsCache.class);
 
-	public T getOrBuildT(boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
+	public <subT extends T> subT getOrBuildT(Class<?> clazz, boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
 		log.info("start find generic : " + meta + " " + value + " with supers " + supers);
 		T result = map.get(new Object() {
 			@Override
@@ -31,7 +32,7 @@ public class GenericsCache<T extends AbstractGeneric<T, ?, ?, ?>> {
 		});
 		if (result == null) {
 			log.info("Not found");
-			result = meta.newT().init(throwExistException, meta, supers, value, components);
+			result = meta.newT(clazz).init(throwExistException, meta, supers, value, components);
 			T alreadyPresent = map.putIfAbsent(result, result);
 			if (alreadyPresent != null) {
 				result = alreadyPresent;
@@ -41,6 +42,6 @@ public class GenericsCache<T extends AbstractGeneric<T, ?, ?, ?>> {
 		} else
 			log.info("found generic : " + result.info() + " with supers " + supers);
 		assert result != null;
-		return result;
+		return (subT) result;
 	}
 }

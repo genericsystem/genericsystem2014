@@ -2,6 +2,7 @@ package org.genercisystem.impl;
 
 import java.io.Serializable;
 import java.util.Collections;
+
 import org.genericsystem.impl.EngineService;
 import org.genericsystem.impl.SystemCache;
 import org.genericsystem.kernel.Root;
@@ -49,9 +50,9 @@ public class Engine extends Generic implements EngineService<Generic, Engine> {
 		return EngineService.super.isRoot();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Generic find(Class<?> clazz) {
-		return systemCache.get(clazz);
-		// return wrap(root.find(clazz));
+	public <subT extends Generic> subT find(Class<?> clazz) {
+		return (subT) systemCache.get(clazz);
 	}
 }

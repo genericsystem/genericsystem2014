@@ -64,7 +64,7 @@ public interface BindingService<T extends VertexService<T, U>, U extends RootSer
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T getWeakInstance(Serializable value, List<T> components) {
+	default <subT extends T> subT getWeakInstance(Serializable value, List<T> components) {
 		T meta = getAlive();
 		if (meta == null)
 			return null;
@@ -73,7 +73,7 @@ public interface BindingService<T extends VertexService<T, U>, U extends RootSer
 			return meta.getWeakInstance(value, components);
 		for (T instance : meta.getInstances())
 			if (instance.weakEquiv(meta, value, components))
-				return instance;
+				return (subT) instance;
 		return null;
 	}
 

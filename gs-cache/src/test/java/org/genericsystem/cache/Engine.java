@@ -3,6 +3,7 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+
 import org.genericsystem.impl.SystemCache;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.exceptions.RollbackException;
@@ -40,8 +41,8 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 	private final GenericsCache<Generic> genericsCache = new GenericsCache<>();
 
 	@Override
-	public Generic getOrBuildT(boolean throwExistException, Generic meta, List<Generic> supers, Serializable value, List<Generic> components) {
-		return genericsCache.getOrBuildT(throwExistException, meta, supers, value, components);
+	public <subT extends Generic> subT getOrBuildT(Class<?> clazz, boolean throwExistException, Generic meta, List<Generic> supers, Serializable value, List<Generic> components) {
+		return genericsCache.getOrBuildT(clazz, throwExistException, meta, supers, value, components);
 	}
 
 	public Root buildRoot(Serializable value) {
@@ -75,9 +76,10 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 		return currentCache;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Generic find(Class<?> clazz) {
-		return systemCache.get(clazz);
+	public <subT extends Generic> subT find(Class<?> clazz) {
+		return (subT) systemCache.get(clazz);
 	}
 
 	@Override

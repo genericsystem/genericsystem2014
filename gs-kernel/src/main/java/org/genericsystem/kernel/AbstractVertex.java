@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Statics.Supers;
 import org.genericsystem.kernel.exceptions.AliveConstraintViolationException;
@@ -33,17 +34,17 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	protected abstract Dependencies<DependenciesEntry<T>> getSuperComposites();
 
 	@SuppressWarnings("unchecked")
-	protected T init(boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
+	protected <subT extends T> subT init(boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
 		super.init(throwExistException, meta, value, components);
 		this.supers = supers;
 		checkDependsMetaComponents();
 		checkSupers(supers);
 		checkDependsSuperComponents(supers);
-		return (T) this;
+		return (subT) this;
 	}
 
-	protected T newT(boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
-		return newT().init(throwExistException, meta, supers, value, components);
+	protected <subT extends T> subT newT(Class<?> clazz, boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
+		return newT(clazz).init(throwExistException, meta, supers, value, components);
 	}
 
 	private void checkDependsMetaComponents() {
@@ -150,10 +151,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		return update(supersToAdd, newValue, Arrays.asList(newComponents));
 	}
 
-	protected T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
+	protected <subT extends T> subT update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
 		if (newComponents.size() != getComponents().size())
 			getRoot().discardWithException(new IllegalArgumentException());
-		return rebuildAll(() -> getMeta().bindInstance(isThrowExistException(), new Supers<>(getSupers(), supersToAdd), newValue, newComponents), computeDependencies());
+		// TODO null is kk ?
+		return rebuildAll(() -> getMeta().bindInstance(null, isThrowExistException(), new Supers<>(getSupers(), supersToAdd), newValue, newComponents), computeDependencies());
 	}
 
 	private static class ConvertMap<T extends AbstractVertex<T, U>, U extends RootService<T, U>> extends HashMap<T, T> {
@@ -165,7 +167,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 			T newDependency = get(dependency);
 			if (newDependency == null) {
 				T meta = (dependency.isRoot()) ? dependency : convert(dependency.getMeta());
-				newDependency = meta.buildInstance(dependency.isThrowExistException(), dependency.getSupersStream().map(x -> convert(x)).collect(Collectors.toList()), dependency.getValue(),
+				newDependency = meta.buildInstance(null, dependency.isThrowExistException(), dependency.getSupersStream().map(x -> convert(x)).collect(Collectors.toList()), dependency.getValue(),
 						dependency.getComponentsStream().map(x -> x.equals(this) ? null : convert(x)).collect(Collectors.toList())).plug();
 				put(dependency, newDependency);
 				// muteOldDependency(newDependency);
@@ -197,26 +199,27 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		}.visit((T) this);
 	}
 
-	public T bindInstance(boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
+	@Override
+	public <subT extends T> subT bindInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
 		checkSameEngine(components);
 		checkSameEngine(overrides);
 		T nearestMeta = adjustMeta(overrides, value, components);
 		if (nearestMeta != this)
-			return nearestMeta.bindInstance(throwExistException, overrides, value, components);
-		T weakInstance = getWeakInstance(value, components);
+			return nearestMeta.bindInstance(clazz, throwExistException, overrides, value, components);
+		subT weakInstance = getWeakInstance(value, components);
 		if (weakInstance != null)
 			if (throwExistException)
 				getRoot().discardWithException(new ExistsException("Attempts to add an already existing instance : " + weakInstance.info()));
 			else
 				return weakInstance.equiv(this, value, components) ? weakInstance : weakInstance.update(overrides, value, components);
-		return rebuildAll(() -> buildInstance(throwExistException, overrides, value, components).plug(), nearestMeta.computePotentialDependencies(value, components));
+		return rebuildAll(() -> buildInstance(clazz, throwExistException, overrides, value, components).plug(), nearestMeta.computePotentialDependencies(value, components));
 	}
 
 	@SuppressWarnings("unchecked")
-	private T rebuildAll(Supplier<T> rebuilder, LinkedHashSet<T> dependenciesToRebuild) {
+	private <subT extends T> subT rebuildAll(Supplier<subT> rebuilder, LinkedHashSet<T> dependenciesToRebuild) {
 		ConvertMap<T, U> convertMap = new ConvertMap<>();
 		dependenciesToRebuild.forEach(this::simpleRemove);
-		T build = rebuilder.get();
+		subT build = rebuilder.get();
 		dependenciesToRebuild.remove(this);
 		convertMap.put((T) this, build);
 		dependenciesToRebuild.forEach(x -> convertMap.convert(x));
@@ -225,14 +228,14 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public T addInstance(List<T> overrides, Serializable value, T... components) {
-		return bindInstance(true, overrides, value, Arrays.asList(components));
+	public <subT extends T> subT addInstance(List<T> overrides, Serializable value, T... components) {
+		return bindInstance(null, true, overrides, value, Arrays.asList(components));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public T setInstance(List<T> overrides, Serializable value, T... components) {
-		return bindInstance(false, overrides, value, Arrays.asList(components));
+	public <subT extends T> subT setInstance(List<T> overrides, Serializable value, T... components) {
+		return bindInstance(null, false, overrides, value, Arrays.asList(components));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -241,9 +244,9 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		return () -> new InheritanceComputer<>((T) AbstractVertex.this, origin, level).inheritanceIterator();
 	}
 
-	abstract protected T newT();
+	abstract protected <subT extends T> subT newT(Class<?> clazz);
 
-	abstract protected T[] newTArray(int dim);
+	abstract protected <subT extends T> subT[] newTArray(int dim);
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -264,16 +267,16 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	T buildInstance(boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
+	<subT extends T> subT buildInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
 		int level = getLevel() == 0 && Objects.equals(getValue(), getRoot().getValue()) && getComponentsStream().allMatch(c -> c.isRoot()) && Objects.equals(value, getRoot().getValue()) && components.stream().allMatch(c -> c.isRoot()) ? 0 : getLevel() + 1;
 		overrides.forEach(Signature::checkIsAlive);
 		components.forEach(Signature::checkIsAlive);
 		List<T> supers = new ArrayList<>(new SupersComputer(level, this, overrides, value, components));
 		checkOverridesAreReached(overrides, supers);
-		return newT(throwExistException, (T) this, supers, value, components);
+		return newT(clazz, throwExistException, (T) this, supers, value, components);
 	}
 
-	public void checkOverridesAreReached(List<T> overrides, List<T> supers) {
+	void checkOverridesAreReached(List<T> overrides, List<T> supers) {
 		if (!Statics.areOverridesReached(overrides, supers))
 			getRoot().discardWithException(new IllegalStateException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
 	}
@@ -357,12 +360,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	}
 
 	@SuppressWarnings("unchecked")
-	public T plug() {
+	public <subT extends T> subT plug() {
 		T result = ((AbstractVertex<T, U>) getMeta()).indexInstance((T) this);
 		getSupersStream().forEach(superGeneric -> ((AbstractVertex<T, U>) superGeneric).indexInheriting((T) this));
 		getComponentsStream().forEach(component -> ((AbstractVertex<T, U>) component).indexByMeta(getMeta(), (T) this));
 		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> ((AbstractVertex<T, U>) component).indexBySuper(superGeneric, (T) this)));
-		return result;
+		return (subT) result;
 	}
 
 	@SuppressWarnings("unchecked")

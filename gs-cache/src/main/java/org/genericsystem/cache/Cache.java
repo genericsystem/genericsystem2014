@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
+
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Snapshot;
@@ -285,8 +286,8 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends EngineServic
 
 	private final GenericsCache<T> genericsCache = new GenericsCache<>();
 
-	public T getOrBuildT(boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
-		return genericsCache.getOrBuildT(throwExistException, meta, supers, value, components);
+	public <subT extends T> subT getOrBuildT(Class<?> clazz, boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
+		return genericsCache.getOrBuildT(clazz, throwExistException, meta, supers, value, components);
 	}
 
 }

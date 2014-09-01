@@ -39,13 +39,13 @@ public interface WriteService<T extends VertexService<T, U>, U extends RootServi
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T setInstance(Serializable value, T... components) {
+	default <subT extends T> subT setInstance(Serializable value, T... components) {
 		return setInstance(Collections.emptyList(), value, components);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T setInstance(T override, Serializable value, T... components) {
+	default <subT extends T> subT setInstance(T override, Serializable value, T... components) {
 		return setInstance(Collections.singletonList(override), value, components);
 	}
 
@@ -57,13 +57,13 @@ public interface WriteService<T extends VertexService<T, U>, U extends RootServi
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T addInstance(Serializable value, T... components) {
+	default <subT extends T> subT addInstance(Serializable value, T... components) {
 		return addInstance(Collections.emptyList(), value, components);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T addInstance(T superGeneric, Serializable value, T... components) {
+	default <subT extends T> subT addInstance(T superGeneric, Serializable value, T... components) {
 		return addInstance(Collections.singletonList(superGeneric), value, components);
 	}
 

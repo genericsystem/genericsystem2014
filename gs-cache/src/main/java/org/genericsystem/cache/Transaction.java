@@ -28,7 +28,8 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Engine
 	@Override
 	protected void simpleAdd(T generic) {
 		V vertex = unwrap(generic.getMeta());
-		V result = vertex.bindInstance(generic.isThrowExistException(), generic.getSupersStream().map(this::unwrap).collect(Collectors.toList()), generic.getValue(), generic.getComponentsStream().map(this::unwrap).collect(Collectors.toList()));
+		// TODO null is KK
+		V result = vertex.bindInstance(null, generic.isThrowExistException(), generic.getSupersStream().map(this::unwrap).collect(Collectors.toList()), generic.getValue(), generic.getComponentsStream().map(this::unwrap).collect(Collectors.toList()));
 		vertices.put(generic, result);
 	}
 
