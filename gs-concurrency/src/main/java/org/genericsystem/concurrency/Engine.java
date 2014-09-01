@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
+
 import org.genericsystem.cache.GenericsCache;
 import org.genericsystem.impl.SystemCache;
 import org.genericsystem.kernel.Statics;
@@ -51,8 +52,8 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 	}
 
 	@Override
-	public Generic getOrBuildT(boolean throwExistException, Generic meta, List<Generic> supers, Serializable value, List<Generic> components) {
-		return genericsCache.getOrBuildT(throwExistException, meta, supers, value, components);
+	public <subT extends Generic> subT getOrBuildT(Class<?> clazz, boolean throwExistException, Generic meta, List<Generic> supers, Serializable value, List<Generic> components) {
+		return genericsCache.getOrBuildT(clazz, throwExistException, meta, supers, value, components);
 	}
 
 	@Override
@@ -86,8 +87,8 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 	}
 
 	@Override
-	public Generic find(Class<?> clazz) {
-		return systemCache.get(clazz);
+	public <subT extends Generic> subT find(Class<?> clazz) {
+		return (subT) systemCache.get(clazz);
 	}
 
 	@Override

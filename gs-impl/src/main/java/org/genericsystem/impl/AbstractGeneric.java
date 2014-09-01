@@ -1,7 +1,10 @@
 package org.genericsystem.impl;
 
+import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
@@ -27,21 +30,24 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		return Objects.hashCode(getValue());
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	protected T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
+		return super.update(supersToAdd, newValue, newComponents);
+	}
+
 	@Override
 	public T plug() {
-		V vertex = unwrap();
-		if (vertex != null)
-			return wrap(vertex);
-		vertex = getMeta().unwrap();
+		V vertex = getMeta().unwrap();
 		vertex.checkIsAlive();
-		V result = vertex.bindInstance(isThrowExistException(), getSupersStream().map(T::unwrap).collect(Collectors.toList()), getValue(), getComponentsStream().map(T::unwrap).collect(Collectors.toList()));
-		return wrap(result);
+		vertex.bindInstance(null, isThrowExistException(), getSupersStream().map(T::unwrap).collect(Collectors.toList()), getValue(), getComponentsStream().map(T::unwrap).collect(Collectors.toList()));
+		return (T) this;
 	}
 
 	@Override
 	public boolean unplug() {
 		V vertex = unwrap();
-		return vertex != null && unwrap().unplug();
+		return vertex != null && vertex.unplug();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -50,7 +56,8 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 			return (T) getRoot();
 		V alive = vertex.getAlive();
 		T meta = wrap(alive.getMeta());
-		return meta.newT(alive.isThrowExistException(), meta, alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList()));
+		// TODO null is kk ?
+		return meta.newT(null, alive.isThrowExistException(), meta, alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList()));
 	}
 
 	protected V unwrap() {

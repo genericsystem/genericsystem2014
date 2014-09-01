@@ -1,4 +1,4 @@
-package org.genercisystem.impl;
+package org.genericsystem.cache;
 
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Meta;

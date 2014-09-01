@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.services.SystemPropertiesService.AxedPropertyClass;
 import org.slf4j.Logger;
@@ -95,7 +96,7 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 	// @SuppressWarnings("unchecked")
 	// T getWeakInstance(Serializable value, T... components);
 
-	T getWeakInstance(Serializable value, List<T> components);
+	<subT extends T> subT getWeakInstance(Serializable value, List<T> components);
 
 	@SuppressWarnings("unchecked")
 	T getInstance(List<T> supers, Serializable value, T... components);
@@ -212,24 +213,26 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 	T update(Serializable newValue, T... newComponents);
 
 	@SuppressWarnings("unchecked")
-	T setInstance(Serializable value, T... components);
+	<subT extends T> subT setInstance(Serializable value, T... components);
 
 	@SuppressWarnings("unchecked")
-	T setInstance(T override, Serializable value, T... components);
+	<subT extends T> subT setInstance(T override, Serializable value, T... components);
 
 	@SuppressWarnings("unchecked")
-	T setInstance(List<T> overrides, Serializable value, T... components);
+	<subT extends T> subT setInstance(List<T> overrides, Serializable value, T... components);
+
+	<subT extends T> subT bindInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components);
 
 	T getMetaAttribute();
 
 	@SuppressWarnings("unchecked")
-	T addInstance(Serializable value, T... components);
+	<subT extends T> subT addInstance(Serializable value, T... components);
 
 	@SuppressWarnings("unchecked")
-	T addInstance(T superGeneric, Serializable value, T... components);
+	<subT extends T> subT addInstance(T superGeneric, Serializable value, T... components);
 
 	@SuppressWarnings("unchecked")
-	T addInstance(List<T> overrides, Serializable value, T... components);
+	<subT extends T> subT addInstance(List<T> overrides, Serializable value, T... components);
 
 	@SuppressWarnings("unchecked")
 	T addAttribute(Serializable value, T... targets);
