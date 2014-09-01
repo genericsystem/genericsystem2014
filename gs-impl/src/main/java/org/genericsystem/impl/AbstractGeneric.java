@@ -24,7 +24,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	}
 
 	@Override
-	// coucou
 	public int hashCode() {
 		// TODO introduce : meta and components length
 		return Objects.hashCode(getValue());
