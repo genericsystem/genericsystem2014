@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
 import org.genercisystem.impl.Generic;
 import org.genericsystem.impl.annotations.InstanceClass;
 import org.genericsystem.kernel.AbstractVertex;
