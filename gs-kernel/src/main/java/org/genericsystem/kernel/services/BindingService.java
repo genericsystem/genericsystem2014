@@ -47,6 +47,7 @@ public interface BindingService<T extends VertexService<T, U>, U extends RootSer
 		return null;
 	}
 
+	// TODO clean
 	// @Override
 	// @SuppressWarnings("unchecked")
 	// default T getWeakInstance(Serializable value, T... components) {

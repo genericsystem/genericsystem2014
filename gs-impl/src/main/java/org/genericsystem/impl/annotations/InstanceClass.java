@@ -5,6 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.genercisystem.impl.Generic;
+
 /**
  * The class of the generic instances.
  *
@@ -12,12 +14,12 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
-public @interface InstanceGenericClass {
+public @interface InstanceClass {
 
 	/**
 	 * Define the class of the instance.
 	 *
 	 * @return the class of the components.
 	 */
-	Class<?> value();
+	Class<? extends Generic> value();
 }

@@ -1,9 +1,12 @@
 package org.genericsystem.impl;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import org.genercisystem.impl.Generic;
+import org.genericsystem.impl.annotations.InstanceClass;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
@@ -12,6 +15,29 @@ import org.genericsystem.kernel.services.AncestorsService;
 import org.genericsystem.kernel.services.RootService;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends AbstractVertex<T, U> implements GenericService<T, U> {
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <subT extends T> subT addInstance(List<T> overrides, Serializable value, T... components) {
+		return bindInstance(specializeInstanceClass(), true, overrides, value, Arrays.asList(components));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <subT extends T> subT setInstance(List<T> overrides, Serializable value, T... components) {
+		return bindInstance(specializeInstanceClass(), false, overrides, value, Arrays.asList(components));
+	}
+
+	Class<?> specializeInstanceClass() {
+		InstanceClass instanceClass = getClass().getAnnotation(InstanceClass.class);
+		Class<? extends Generic> typeClass = (Class<? extends Generic>) getClass();
+		if (instanceClass != null)
+			// if (typeClass.isAssignableFrom(instanceClass.value()))
+			return instanceClass.value();
+		// else
+		// assert instanceClass.value().isAssignableFrom(typeClass);
+		return typeClass;
+	}
 
 	@Override
 	public boolean equals(Object obj) {

@@ -1,6 +1,8 @@
 package org.genercisystem.impl;
 
+import org.genercisystem.impl.AnnotationTest.VehicleType.VehicleInstance;
 import org.genericsystem.impl.annotations.Components;
+import org.genericsystem.impl.annotations.InstanceClass;
 import org.genericsystem.impl.annotations.Meta;
 import org.genericsystem.impl.annotations.Supers;
 import org.genericsystem.impl.annotations.SystemGeneric;
@@ -24,6 +26,27 @@ public class AnnotationTest extends AbstractTest {
 		Engine engine = new Engine(Vehicle.class);
 		assert engine.find(Vehicle.class) instanceof Vehicle;
 		Vehicle vehicle = engine.find(Vehicle.class);
+	}
+
+	public void test002_instanceof() {
+		Engine engine = new Engine(VehicleType.class);
+		assert engine.find(VehicleType.class) instanceof VehicleType;
+		VehicleType vehicle = engine.find(VehicleType.class);
+		// assert
+		// vehicle.addInstance("myBmw").log();
+		vehicle.setInstance("myBmw").log();
+		vehicle.setInstance("myBmw").log();
+		// instanceof VehicleInstance;
+		// VehicleInstance myBmw = vehicle.setInstance("myBmw");
+	}
+
+	@SystemGeneric
+	@InstanceClass(VehicleInstance.class)
+	public static class VehicleType extends Generic {
+
+		public static class VehicleInstance extends Generic {
+
+		}
 	}
 
 	public void test002_SuperGeneric() {
