@@ -20,5 +20,5 @@ public @interface Supers {
 	 * 
 	 * @return An array of supers classes.
 	 */
-	Class<?>[] value() default {};
+	Class<?>[] value();
 }

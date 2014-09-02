@@ -4,7 +4,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import org.genericsystem.kernel.Root;
 
 /**
  * Used to declare the Extends of generic. A generic inherits directly of the supers.
@@ -21,5 +20,5 @@ public @interface Meta {
 	 *
 	 * @return meta class
 	 */
-	Class<?> value() default Root.class;
+	Class<?> value();
 }

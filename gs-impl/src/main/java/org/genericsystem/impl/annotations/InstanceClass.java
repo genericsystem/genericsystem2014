@@ -5,8 +5,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.genercisystem.impl.Generic;
-
 /**
  * The class of the generic instances.
  *
@@ -21,5 +19,5 @@ public @interface InstanceClass {
 	 *
 	 * @return the class of the components.
 	 */
-	Class<? extends Generic> value();
+	Class<?> value();
 }

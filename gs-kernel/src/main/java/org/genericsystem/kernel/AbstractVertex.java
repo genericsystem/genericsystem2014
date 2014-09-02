@@ -212,7 +212,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 				getRoot().discardWithException(new ExistsException("Attempts to add an already existing instance : " + weakInstance.info()));
 			else
 				return weakInstance.equiv(this, value, components) ? weakInstance : weakInstance.update(overrides, value, components);
-		return rebuildAll(() -> buildInstance(clazz, throwExistException, overrides, value, components).plug(), nearestMeta.computePotentialDependencies(value, components));
+		return rebuildAll(() -> buildInstance(specializeInstanceClass(clazz), throwExistException, overrides, value, components).plug(), nearestMeta.computePotentialDependencies(value, components));
+	}
+
+	protected Class<?> specializeInstanceClass(Class<?> clazz) {
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -229,13 +233,13 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	@Override
 	@SuppressWarnings("unchecked")
 	public <subT extends T> subT addInstance(List<T> overrides, Serializable value, T... components) {
-		return bindInstance(null, true, overrides, value, Arrays.asList(components));
+		return bindInstance(specializeInstanceClass(null), true, overrides, value, Arrays.asList(components));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public <subT extends T> subT setInstance(List<T> overrides, Serializable value, T... components) {
-		return bindInstance(null, false, overrides, value, Arrays.asList(components));
+		return bindInstance(specializeInstanceClass(null), false, overrides, value, Arrays.asList(components));
 	}
 
 	@SuppressWarnings("unchecked")

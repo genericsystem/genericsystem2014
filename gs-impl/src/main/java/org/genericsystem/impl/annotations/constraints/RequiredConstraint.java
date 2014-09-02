@@ -20,5 +20,5 @@ public @interface RequiredConstraint {
 	 * 
 	 * @return An array of component position.
 	 */
-	int[] value() default {};
+	int[] value() default { 0 };
 }

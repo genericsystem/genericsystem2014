@@ -1,13 +1,12 @@
 package org.genericsystem.impl;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.genercisystem.impl.Generic;
 import org.genericsystem.impl.annotations.InstanceClass;
+import org.genericsystem.impl.annotations.Meta;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
@@ -18,26 +17,14 @@ import org.genericsystem.kernel.services.RootService;
 public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends AbstractVertex<T, U> implements GenericService<T, U> {
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <subT extends T> subT addInstance(List<T> overrides, Serializable value, T... components) {
-		return bindInstance(specializeInstanceClass(), true, overrides, value, Arrays.asList(components));
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public <subT extends T> subT setInstance(List<T> overrides, Serializable value, T... components) {
-		return bindInstance(specializeInstanceClass(), false, overrides, value, Arrays.asList(components));
-	}
-
-	Class<?> specializeInstanceClass() {
+	protected Class<?> specializeInstanceClass(Class<?> specializationClass) {
 		InstanceClass instanceClass = getClass().getAnnotation(InstanceClass.class);
-		Class<? extends Generic> typeClass = (Class<? extends Generic>) getClass();
 		if (instanceClass != null)
-			// if (typeClass.isAssignableFrom(instanceClass.value()))
-			return instanceClass.value();
-		// else
-		// assert instanceClass.value().isAssignableFrom(typeClass);
-		return typeClass;
+			if (specializationClass == null || specializationClass.isAssignableFrom(instanceClass.value()) || specializationClass.getAnnotation(Meta.class).value().isAssignableFrom(getClass()))
+				specializationClass = instanceClass.value();
+			else
+				assert instanceClass.value().isAssignableFrom(specializationClass) : "instanceClass " + instanceClass.value() + " / specializationClass " + specializationClass + " / " + specializationClass.getAnnotation(Meta.class).value();
+		return specializationClass;
 	}
 
 	@Override
@@ -64,7 +51,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	@Override
 	public T plug() {
 		V vertex = getMeta().unwrap();
-
 		vertex.checkIsAlive();
 		vertex.bindInstance(null, isThrowExistException(), getSupersStream().map(T::unwrap).collect(Collectors.toList()), getValue(), getComponentsStream().map(T::unwrap).collect(Collectors.toList()));
 		return (T) this;
@@ -82,8 +68,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 			return (T) getRoot();
 		V alive = vertex.getAlive();
 		T meta = wrap(alive.getMeta());
-		// TODO null is kk ?
-		return meta.newT(null, alive.isThrowExistException(), meta, alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList()));
+		return meta.newT(specializeInstanceClass(null), alive.isThrowExistException(), meta, alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList()));
 	}
 
 	protected V unwrap() {

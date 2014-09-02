@@ -1,5 +1,7 @@
 package org.genercisystem.impl;
 
+import org.genercisystem.impl.AnnotationTest.VehicleType.MyAudi;
+import org.genercisystem.impl.AnnotationTest.VehicleType.MyBmw;
 import org.genercisystem.impl.AnnotationTest.VehicleType.VehicleInstance;
 import org.genericsystem.impl.annotations.Components;
 import org.genericsystem.impl.annotations.InstanceClass;
@@ -25,19 +27,25 @@ public class AnnotationTest extends AbstractTest {
 	public void test001_instanceof() {
 		Engine engine = new Engine(Vehicle.class);
 		assert engine.find(Vehicle.class) instanceof Vehicle;
-		Vehicle vehicle = engine.find(Vehicle.class);
 	}
 
 	public void test002_instanceof() {
 		Engine engine = new Engine(VehicleType.class);
 		assert engine.find(VehicleType.class) instanceof VehicleType;
 		VehicleType vehicle = engine.find(VehicleType.class);
-		// assert
-		// vehicle.addInstance("myBmw").log();
-		vehicle.setInstance("myBmw").log();
-		vehicle.setInstance("myBmw").log();
-		// instanceof VehicleInstance;
-		// VehicleInstance myBmw = vehicle.setInstance("myBmw");
+		assert vehicle.addInstance("myBmw") instanceof VehicleInstance;
+		assert vehicle.setInstance("myBmw") instanceof VehicleInstance;
+		assert vehicle.setInstance("myBmw") instanceof VehicleInstance;
+	}
+
+	public void test003_instanceof() {
+		Engine engine = new Engine(MyAudi.class);
+		assert engine.find(MyAudi.class) instanceof VehicleInstance : engine.find(MyAudi.class).getClass();
+	}
+
+	public void test004_instanceof() {
+		Engine engine = new Engine(MyBmw.class);
+		assert engine.find(MyBmw.class) instanceof VehicleInstance : engine.find(MyBmw.class).getClass();
 	}
 
 	@SystemGeneric
@@ -46,6 +54,16 @@ public class AnnotationTest extends AbstractTest {
 
 		public static class VehicleInstance extends Generic {
 
+		}
+
+		@SystemGeneric
+		@Meta(VehicleType.class)
+		public static class MyAudi {
+		}
+
+		@SystemGeneric
+		@Meta(VehicleType.class)
+		public static class MyBmw extends Generic {
 		}
 	}
 
