@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Statics.Supers;
 import org.genericsystem.kernel.exceptions.AliveConstraintViolationException;
@@ -151,7 +150,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		return update(supersToAdd, newValue, Arrays.asList(newComponents));
 	}
 
-	protected <subT extends T> subT update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
+	protected T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
 		if (newComponents.size() != getComponents().size())
 			getRoot().discardWithException(new IllegalArgumentException());
 		// TODO null is kk ?
@@ -200,13 +199,13 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	}
 
 	@Override
-	public <subT extends T> subT bindInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
+	public T bindInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
 		checkSameEngine(components);
 		checkSameEngine(overrides);
 		T nearestMeta = adjustMeta(overrides, value, components);
 		if (nearestMeta != this)
 			return nearestMeta.bindInstance(clazz, throwExistException, overrides, value, components);
-		subT weakInstance = getWeakInstance(value, components);
+		T weakInstance = getWeakInstance(value, components);
 		if (weakInstance != null)
 			if (throwExistException)
 				getRoot().discardWithException(new ExistsException("Attempts to add an already existing instance : " + weakInstance.info()));
@@ -232,14 +231,14 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <subT extends T> subT addInstance(List<T> overrides, Serializable value, T... components) {
-		return bindInstance(specializeInstanceClass(null), true, overrides, value, Arrays.asList(components));
+	public T addInstance(List<T> overrides, Serializable value, T... components) {
+		return bindInstance(null, true, overrides, value, Arrays.asList(components));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <subT extends T> subT setInstance(List<T> overrides, Serializable value, T... components) {
-		return bindInstance(specializeInstanceClass(null), false, overrides, value, Arrays.asList(components));
+	public T setInstance(List<T> overrides, Serializable value, T... components) {
+		return bindInstance(null, false, overrides, value, Arrays.asList(components));
 	}
 
 	@SuppressWarnings("unchecked")
