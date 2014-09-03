@@ -2,7 +2,6 @@ package org.genercisystem.impl;
 
 import java.io.Serializable;
 import java.util.Collections;
-
 import org.genericsystem.impl.EngineService;
 import org.genericsystem.impl.SystemCache;
 import org.genericsystem.kernel.Root;
@@ -52,7 +51,7 @@ public class Engine extends Generic implements EngineService<Generic, Engine> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <subT extends Generic> subT find(Class<?> clazz) {
-		return (subT) systemCache.get(clazz);
+	public <T extends Generic> T find(Class<?> clazz) {
+		return (T) systemCache.get(clazz);
 	}
 }

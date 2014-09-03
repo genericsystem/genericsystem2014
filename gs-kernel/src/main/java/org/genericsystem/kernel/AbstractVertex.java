@@ -33,16 +33,16 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	protected abstract Dependencies<DependenciesEntry<T>> getSuperComposites();
 
 	@SuppressWarnings("unchecked")
-	protected <subT extends T> subT init(boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
+	protected T init(boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
 		super.init(throwExistException, meta, value, components);
 		this.supers = supers;
 		checkDependsMetaComponents();
 		checkSupers(supers);
 		checkDependsSuperComponents(supers);
-		return (subT) this;
+		return (T) this;
 	}
 
-	protected <subT extends T> subT newT(Class<?> clazz, boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
+	protected T newT(Class<?> clazz, boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
 		return newT(clazz).init(throwExistException, meta, supers, value, components);
 	}
 
@@ -198,6 +198,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		}.visit((T) this);
 	}
 
+	// TODO should not be public
 	@Override
 	public T bindInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
 		checkSameEngine(components);
@@ -219,10 +220,10 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	}
 
 	@SuppressWarnings("unchecked")
-	private <subT extends T> subT rebuildAll(Supplier<subT> rebuilder, LinkedHashSet<T> dependenciesToRebuild) {
+	private T rebuildAll(Supplier<T> rebuilder, LinkedHashSet<T> dependenciesToRebuild) {
 		ConvertMap<T, U> convertMap = new ConvertMap<>();
 		dependenciesToRebuild.forEach(this::simpleRemove);
-		subT build = rebuilder.get();
+		T build = rebuilder.get();
 		dependenciesToRebuild.remove(this);
 		convertMap.put((T) this, build);
 		dependenciesToRebuild.forEach(x -> convertMap.convert(x));
@@ -247,9 +248,9 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		return () -> new InheritanceComputer<>((T) AbstractVertex.this, origin, level).inheritanceIterator();
 	}
 
-	abstract protected <subT extends T> subT newT(Class<?> clazz);
+	abstract protected T newT(Class<?> clazz);
 
-	abstract protected <subT extends T> subT[] newTArray(int dim);
+	abstract protected T[] newTArray(int dim);
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -270,7 +271,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	<subT extends T> subT buildInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
+	T buildInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
 		int level = getLevel() == 0 && Objects.equals(getValue(), getRoot().getValue()) && getComponentsStream().allMatch(c -> c.isRoot()) && Objects.equals(value, getRoot().getValue()) && components.stream().allMatch(c -> c.isRoot()) ? 0 : getLevel() + 1;
 		overrides.forEach(Signature::checkIsAlive);
 		components.forEach(Signature::checkIsAlive);

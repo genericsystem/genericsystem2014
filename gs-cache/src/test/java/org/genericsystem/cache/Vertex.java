@@ -33,13 +33,13 @@ public class Vertex extends AbstractVertex<Vertex, Root> implements VertexServic
 	}
 
 	@Override
-	public <subT extends Vertex> subT newT(Class<?> clazz) {
-		return (subT) new Vertex();
+	public Vertex newT(Class<?> clazz) {
+		return new Vertex();
 	}
 
 	@Override
-	public <subT extends Vertex> subT[] newTArray(int dim) {
-		return (subT[]) new Vertex[dim];
+	public Vertex[] newTArray(int dim) {
+		return new Vertex[dim];
 	}
 
 }
