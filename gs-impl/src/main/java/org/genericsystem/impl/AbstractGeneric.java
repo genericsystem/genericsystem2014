@@ -30,7 +30,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	}
 
 	@Override
-	protected <subT extends T> subT update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
+	protected T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
 		return super.update(supersToAdd, newValue, newComponents);
 	}
 
