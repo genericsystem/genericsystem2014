@@ -8,9 +8,11 @@ import org.genericsystem.kernel.Vertex;
 public class Generic extends AbstractGeneric<Generic, Engine, Vertex, Root> implements GenericService<Generic, Engine> {
 
 	@Override
-	protected Generic newT(Class<?> clazz) {
+	protected Generic newT() {
 		try {
-			return clazz != null && Generic.class.isAssignableFrom(clazz) ? (Generic) clazz.newInstance() : new Generic();
+			// return clazz != null && Generic.class.isAssignableFrom(clazz) ? (Generic) clazz.newInstance() : new Generic();
+			return !isRoot() && Generic.class.isAssignableFrom(getClass()) ? (Generic) getClass().newInstance() : new Generic();
+			// return new Generic();
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
 			throw new IllegalStateException(e);
 		}

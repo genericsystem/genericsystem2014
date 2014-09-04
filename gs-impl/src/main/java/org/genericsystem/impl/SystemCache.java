@@ -44,8 +44,7 @@ public class SystemCache<T extends VertexService<T, ?>> extends HashMap<Class<?>
 			assert systemProperty.isAlive();
 			return systemProperty;
 		}
-		// TODO KK
-		T result = setMeta(clazz).bindInstance(clazz, false, setOverrides(clazz), findValue(clazz), setComponents(clazz));
+		T result = setMeta(clazz).setInstance(setOverrides(clazz), findValue(clazz), setComponents(clazz));
 		put(clazz, result);
 		return result;
 	}
@@ -80,13 +79,13 @@ public class SystemCache<T extends VertexService<T, ?>> extends HashMap<Class<?>
 		return clazz;
 	}
 
-	private List<T> setComponents(Class<?> clazz) {
+	private T[] setComponents(Class<?> clazz) {
 		List<T> components = new ArrayList<>();
 		Components componentsAnnotation = clazz.getAnnotation(Components.class);
 		if (componentsAnnotation != null)
 			for (Class<?> componentClass : componentsAnnotation.value())
 				components.add(set(componentClass));
-		return components;// TODO old version => root.coerceToArray(components.toArray());
+		return root.coerceToArray(components.toArray());
 	}
 
 }

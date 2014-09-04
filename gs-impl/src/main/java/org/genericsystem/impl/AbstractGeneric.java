@@ -48,11 +48,15 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		return super.update(supersToAdd, newValue, newComponents);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public T plug() {
 		V vertex = getMeta().unwrap();
 		vertex.checkIsAlive();
-		vertex.bindInstance(null, isThrowExistException(), getSupersStream().map(T::unwrap).collect(Collectors.toList()), getValue(), getComponentsStream().map(T::unwrap).collect(Collectors.toList()));
+		if (isThrowExistException())
+			vertex.addInstance(getSupersStream().map(T::unwrap).collect(Collectors.toList()), getValue(), vertex.coerceToArray(getComponentsStream().map(T::unwrap).toArray()));
+		else
+			vertex.setInstance(getSupersStream().map(T::unwrap).collect(Collectors.toList()), getValue(), vertex.coerceToArray(getComponentsStream().map(T::unwrap).toArray()));
 		return (T) this;
 	}
 
@@ -68,7 +72,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 			return (T) getRoot();
 		V alive = vertex.getAlive();
 		T meta = wrap(alive.getMeta());
-		return meta.newT(specializeInstanceClass(null), alive.isThrowExistException(), meta, alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList()));
+		return meta.newT(alive.isThrowExistException(), meta, alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList()));
 	}
 
 	protected V unwrap() {
