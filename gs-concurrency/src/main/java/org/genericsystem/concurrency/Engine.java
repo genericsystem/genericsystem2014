@@ -3,13 +3,10 @@ package org.genericsystem.concurrency;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 import org.genericsystem.cache.GenericsCache;
 import org.genericsystem.impl.SystemCache;
 import org.genericsystem.kernel.Statics;
-import org.genericsystem.kernel.services.AncestorsService;
-import org.genericsystem.kernel.services.ApiService;
 
 public class Engine extends Generic implements EngineService<Generic, Engine, Vertex, Root> {
 
@@ -78,16 +75,10 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 		return currentCache;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public boolean equiv(ApiService<?, ?> service) {
-		if (this == service)
-			return true;
-		return Objects.equals(getValue(), service.getValue()) && AncestorsService.listsEquals(getComponents(), service.getComponents());
-	}
-
-	@Override
-	public <subT extends Generic> subT find(Class<?> clazz) {
-		return (subT) systemCache.get(clazz);
+	public <T extends Generic> T find(Class<?> clazz) {
+		return (T) systemCache.get(clazz);
 	}
 
 	@Override

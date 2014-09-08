@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Statics.Supers;
 import org.genericsystem.kernel.exceptions.AliveConstraintViolationException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
+import org.genericsystem.kernel.exceptions.CrossEnginesAssignementsException;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 import org.genericsystem.kernel.exceptions.ReferentialIntegrityConstraintViolationException;
@@ -205,13 +205,18 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		T nearestMeta = adjustMeta(overrides, value, components);
 		if (nearestMeta != this)
 			return nearestMeta.bindInstance(clazz, throwExistException, overrides, value, components);
-		T weakInstance = getWeakInstance(value, components);
+		T weakInstance = getEquivInstance(value, components);
 		if (weakInstance != null)
 			if (throwExistException)
 				getRoot().discardWithException(new ExistsException("Attempts to add an already existing instance : " + weakInstance.info()));
 			else
-				return weakInstance.equiv(this, value, components) ? weakInstance : weakInstance.update(overrides, value, components);
+				return weakInstance.equals(this, value, components) ? weakInstance : weakInstance.update(overrides, value, components);
 		return rebuildAll(() -> buildInstance(clazz, throwExistException, overrides, value, components).plug(), nearestMeta.computePotentialDependencies(value, components));
+	}
+
+	private void checkSameEngine(List<T> generics) {
+		if (generics.stream().anyMatch(generic -> !generic.getRoot().equals(getRoot())))
+			getRoot().discardWithException(new CrossEnginesAssignementsException());
 	}
 
 	@SuppressWarnings("unchecked")

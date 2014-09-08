@@ -165,8 +165,7 @@ public class GenericTest extends AbstractTest {
 		Generic radio = engine.addInstance("Radio", vehicle);
 		// Root root = (Root) engine.getVertex();
 		// Vertex color = root.addInstance("Color", vehicleVertex);
-		vehicle.log();
-		vehicle.getMetaComposites(engine).forEach(mc -> mc.log());
+
 		// vehicleVertex.log();
 		// vehicleVertex.getMetaComposites(root).forEach(mc -> mc.log());
 	}

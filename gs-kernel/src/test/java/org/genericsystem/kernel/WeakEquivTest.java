@@ -17,7 +17,7 @@ public class WeakEquivTest extends AbstractTest {
 		Vertex green = color.addInstance("green");
 		Vertex myBmwGreen = carColor.addInstance("myBmwGreen", myBmw, green);
 		Vertex yellow = color.addInstance("yellow");
-		assert !myBmwGreen.weakEquiv(carColor, "myBmwYellow", Arrays.asList(myBmw, yellow));
+		assert !myBmwGreen.equiv(carColor, "myBmwYellow", Arrays.asList(myBmw, yellow));
 	}
 
 	public void test002_weakEquiv_Relation_SingularConstraintAndReferencialIntegrity() {
@@ -31,7 +31,7 @@ public class WeakEquivTest extends AbstractTest {
 		Vertex green = color.addInstance("green");
 		Vertex yellow = color.addInstance("yellow");
 		Vertex myBmwGreen = carColor.addInstance("myBmwGreen", myBmw, green);
-		assert myBmwGreen.weakEquiv(carColor, "myBmwYellow", Arrays.asList(myBmw, yellow));
+		assert myBmwGreen.equiv(carColor, "myBmwYellow", Arrays.asList(myBmw, yellow));
 	}
 
 	public void test003_weakEquiv_Relation_SingularConstraintAndReferencialIntegrity_axeOne() {
@@ -45,7 +45,7 @@ public class WeakEquivTest extends AbstractTest {
 		Vertex green = color.addInstance("green");
 		Vertex yellow = color.addInstance("yellow");
 		Vertex myBmwGreen = carColor.addInstance("myBmwGreen", myBmw, green);
-		assert !myBmwGreen.weakEquiv(carColor, "myBmwYellow", Arrays.asList(myBmw, yellow));
+		assert !myBmwGreen.equiv(carColor, "myBmwYellow", Arrays.asList(myBmw, yellow));
 	}
 
 	public void test004_weakEquiv_Relation_SingularConstraintAndReferencialIntegrity_supers() {
@@ -94,6 +94,6 @@ public class WeakEquivTest extends AbstractTest {
 		Vertex myBmw = engine.addInstance(car, "myBmw");
 		Vertex green = color.addInstance("green");
 		Vertex myBmwGreen = carColor.addInstance("myBmwGreen", myBmw, green);
-		assert myBmwGreen.weakEquiv(carColor, "myBmwYellow", Arrays.asList(myBmw, defaultColor));
+		assert myBmwGreen.equiv(carColor, "myBmwYellow", Arrays.asList(myBmw, defaultColor));
 	}
 }

@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
 import org.genericsystem.impl.annotations.InstanceClass;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
@@ -44,7 +43,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		if (!(obj instanceof AncestorsService))
 			return false;
 		AncestorsService<?, ?> service = (AncestorsService<?, ?>) obj;
-		return equals(service.getMeta(), service.getSupers(), service.getValue(), service.getComponents());
+		return equals(service.getMeta(), service.getValue(), service.getComponents());
 	}
 
 	@Override

@@ -10,16 +10,6 @@ public interface DisplayService<T extends VertexService<T, U>, U extends RootSer
 	}
 
 	@Override
-	default void log() {
-		log.info(detailedInfo());
-	}
-
-	@Override
-	default void log(String prefix) {
-		log.info(prefix + detailedInfo());
-	}
-
-	@Override
 	default String detailedInfo() {
 		String s = "\n\n*******************************" + System.identityHashCode(this) + "******************************\n";
 		s += " Value       : " + getValue() + "\n";

@@ -6,7 +6,7 @@ public class TestDefaultMethods extends AbstractTest {
 
 	private static interface INode<T> {
 		default T test() {
-			log.info("INode");
+			// log.info("INode");
 			return null;
 		}
 	}
@@ -15,7 +15,7 @@ public class TestDefaultMethods extends AbstractTest {
 
 		@Override
 		default Node test() {
-			log.info("IRoot");
+			// log.info("IRoot");
 			return null;
 		}
 	}
