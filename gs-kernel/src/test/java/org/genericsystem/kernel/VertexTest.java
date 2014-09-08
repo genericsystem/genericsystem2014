@@ -320,7 +320,7 @@ public class VertexTest extends AbstractTest {
 		assert car.isAncestorOf(v233);
 		assert vehiclePower.isAncestorOf(v233);
 		assert vehicle.isAncestorOf(v233);
-		Vertex car233 = vehiclePower.buildInstance(false, Collections.emptyList(), 233, Arrays.asList(car));
+		Vertex car233 = vehiclePower.buildInstance(null, false, Collections.emptyList(), 233, Arrays.asList(car));
 		assert !car233.isAlive();
 		assert v233.isAlive();
 		assert !car233.isAncestorOf(v233);

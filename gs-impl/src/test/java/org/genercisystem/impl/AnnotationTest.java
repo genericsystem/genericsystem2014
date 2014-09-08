@@ -2,6 +2,7 @@ package org.genercisystem.impl;
 
 import org.genercisystem.impl.AnnotationTest.VehicleType.MyAudi;
 import org.genercisystem.impl.AnnotationTest.VehicleType.MyBmw;
+import org.genercisystem.impl.AnnotationTest.VehicleType.MyMercedes;
 import org.genercisystem.impl.AnnotationTest.VehicleType.VehicleInstance;
 import org.genericsystem.impl.annotations.Components;
 import org.genericsystem.impl.annotations.InstanceClass;
@@ -31,8 +32,8 @@ public class AnnotationTest extends AbstractTest {
 
 	public void test002_instanceof() {
 		Engine engine = new Engine(VehicleType.class);
-		// assert engine.find(VehicleType.class) instanceof VehicleType;
-		Generic vehicle = engine.find(VehicleType.class);
+		assert engine.find(VehicleType.class) instanceof VehicleType;
+		VehicleType vehicle = engine.find(VehicleType.class);
 		VehicleInstance vi = (VehicleInstance) vehicle.addInstance("myBmw");
 		assert vehicle.setInstance("myBmw") instanceof VehicleInstance;
 		assert vehicle.setInstance("myBmw") instanceof VehicleInstance;
@@ -41,11 +42,24 @@ public class AnnotationTest extends AbstractTest {
 	public void test003_instanceof() {
 		Engine engine = new Engine(MyAudi.class);
 		assert engine.find(MyAudi.class) instanceof VehicleInstance : engine.find(MyAudi.class).getClass();
+		assert engine.find(MyAudi.class) instanceof MyAudi : engine.find(MyAudi.class).getClass();
 	}
 
 	public void test004_instanceof() {
-		Engine engine = new Engine(MyBmw.class);
-		assert engine.find(MyBmw.class) instanceof VehicleInstance : engine.find(MyBmw.class).getClass();
+		new RollbackCatcher() {
+
+			@Override
+			public void intercept() {
+				new Engine(MyBmw.class);
+			}
+		}.assertIsCausedBy(InstantiationException.class);
+		new RollbackCatcher() {
+
+			@Override
+			public void intercept() {
+				new Engine(MyMercedes.class);
+			}
+		}.assertIsCausedBy(InstantiationException.class);
 	}
 
 	@SystemGeneric
@@ -58,12 +72,17 @@ public class AnnotationTest extends AbstractTest {
 
 		@SystemGeneric
 		@Meta(VehicleType.class)
-		public static class MyAudi {
+		public static class MyAudi extends VehicleInstance {
 		}
 
 		@SystemGeneric
 		@Meta(VehicleType.class)
 		public static class MyBmw extends Generic {
+		}
+
+		@SystemGeneric
+		@Meta(VehicleType.class)
+		public static class MyMercedes {
 		}
 	}
 

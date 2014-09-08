@@ -10,6 +10,7 @@ import org.genericsystem.impl.annotations.Meta;
 import org.genericsystem.impl.annotations.value.BooleanValue;
 import org.genericsystem.impl.annotations.value.IntValue;
 import org.genericsystem.impl.annotations.value.StringValue;
+import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Root.MetaAttribute;
 import org.genericsystem.kernel.services.MapService.SystemMap;
@@ -44,7 +45,7 @@ public class SystemCache<T extends VertexService<T, ?>> extends HashMap<Class<?>
 			assert systemProperty.isAlive();
 			return systemProperty;
 		}
-		T result = setMeta(clazz).setInstance(setOverrides(clazz), findValue(clazz), setComponents(clazz));
+		T result = (T) ((AbstractVertex) setMeta(clazz)).bindInstance(clazz, false, setOverrides(clazz), findValue(clazz), setComponents(clazz));
 		put(clazz, result);
 		return result;
 	}
@@ -79,13 +80,13 @@ public class SystemCache<T extends VertexService<T, ?>> extends HashMap<Class<?>
 		return clazz;
 	}
 
-	private T[] setComponents(Class<?> clazz) {
+	private List<T> setComponents(Class<?> clazz) {
 		List<T> components = new ArrayList<>();
 		Components componentsAnnotation = clazz.getAnnotation(Components.class);
 		if (componentsAnnotation != null)
 			for (Class<?> componentClass : componentsAnnotation.value())
 				components.add(set(componentClass));
-		return root.coerceToArray(components.toArray());
+		return components;// root.coerceToArray(components.toArray());
 	}
 
 }

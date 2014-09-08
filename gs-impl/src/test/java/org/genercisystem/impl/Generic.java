@@ -9,13 +9,7 @@ public class Generic extends AbstractGeneric<Generic, Engine, Vertex, Root> impl
 
 	@Override
 	protected Generic newT() {
-		try {
-			// return clazz != null && Generic.class.isAssignableFrom(clazz) ? (Generic) clazz.newInstance() : new Generic();
-			return !isRoot() && Generic.class.isAssignableFrom(getClass()) ? (Generic) getClass().newInstance() : new Generic();
-			// return new Generic();
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
-			throw new IllegalStateException(e);
-		}
+		return new Generic();
 	}
 
 	@Override

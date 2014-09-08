@@ -6,7 +6,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.genericsystem.impl.annotations.InstanceClass;
-import org.genericsystem.impl.annotations.Meta;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
@@ -17,14 +16,25 @@ import org.genericsystem.kernel.services.RootService;
 public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends AbstractVertex<T, U> implements GenericService<T, U> {
 
 	@Override
-	protected Class<?> specializeInstanceClass(Class<?> specializationClass) {
-		InstanceClass instanceClass = getClass().getAnnotation(InstanceClass.class);
-		if (instanceClass != null)
-			if (specializationClass == null || specializationClass.isAssignableFrom(instanceClass.value()) || specializationClass.getAnnotation(Meta.class).value().isAssignableFrom(getClass()))
-				specializationClass = instanceClass.value();
-			else
-				assert instanceClass.value().isAssignableFrom(specializationClass) : "instanceClass " + instanceClass.value() + " / specializationClass " + specializationClass + " / " + specializationClass.getAnnotation(Meta.class).value();
-		return specializationClass;
+	protected T newT(Class<?> clazz, boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
+		return newInstance(clazz).init(throwExistException, meta, supers, value, components);
+	}
+
+	@SuppressWarnings("unchecked")
+	public T newInstance(Class<?> annotedClazz) {
+		try {
+			InstanceClass instanceClassAnnot = getClass().getAnnotation(InstanceClass.class);
+			if (instanceClassAnnot != null)
+				if (annotedClazz == null || annotedClazz.isAssignableFrom(instanceClassAnnot.value()))
+					annotedClazz = instanceClassAnnot.value();
+				else if (!instanceClassAnnot.value().isAssignableFrom(annotedClazz))
+					getRoot().discardWithException(new InstantiationException(annotedClazz + " must extends " + instanceClassAnnot.value()));
+			T newT = newT();
+			return annotedClazz != null && newT.getClass().isAssignableFrom(annotedClazz) ? (T) annotedClazz.newInstance() : newT;
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
+			getRoot().discardWithException(e);
+			return null;
+		}
 	}
 
 	@Override
@@ -71,8 +81,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		if (vertex.isRoot())
 			return (T) getRoot();
 		V alive = vertex.getAlive();
-		T meta = wrap(alive.getMeta());
-		return meta.newT(alive.isThrowExistException(), meta, alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList()));
+		return newT(null, alive.isThrowExistException(), wrap(alive.getMeta()), alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList()));
 	}
 
 	protected V unwrap() {
