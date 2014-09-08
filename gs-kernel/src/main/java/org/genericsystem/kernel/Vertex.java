@@ -35,7 +35,7 @@ public class Vertex extends AbstractVertex<Vertex, Root> implements VertexServic
 	}
 
 	@Override
-	public Vertex newT(Class<?> clazz) {
+	public Vertex newT() {
 		return new Vertex();
 	}
 

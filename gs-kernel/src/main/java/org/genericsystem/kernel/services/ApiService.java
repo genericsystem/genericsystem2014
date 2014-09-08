@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.services.SystemPropertiesService.AxedPropertyClass;
 import org.slf4j.Logger;
@@ -218,8 +219,6 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 
 	@SuppressWarnings("unchecked")
 	T setInstance(List<T> overrides, Serializable value, T... components);
-
-	T bindInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components);
 
 	T getMetaAttribute();
 

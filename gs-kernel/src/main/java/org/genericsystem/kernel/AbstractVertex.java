@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Statics.Supers;
 import org.genericsystem.kernel.exceptions.AliveConstraintViolationException;
@@ -43,7 +44,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	}
 
 	protected T newT(Class<?> clazz, boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
-		return newT(clazz).init(throwExistException, meta, supers, value, components);
+		return newT().init(throwExistException, meta, supers, value, components);
 	}
 
 	private void checkDependsMetaComponents() {
@@ -198,8 +199,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		}.visit((T) this);
 	}
 
-	// TODO should not be public
-	@Override
 	public T bindInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
 		checkSameEngine(components);
 		checkSameEngine(overrides);
@@ -212,11 +211,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 				getRoot().discardWithException(new ExistsException("Attempts to add an already existing instance : " + weakInstance.info()));
 			else
 				return weakInstance.equiv(this, value, components) ? weakInstance : weakInstance.update(overrides, value, components);
-		return rebuildAll(() -> buildInstance(specializeInstanceClass(clazz), throwExistException, overrides, value, components).plug(), nearestMeta.computePotentialDependencies(value, components));
-	}
-
-	protected Class<?> specializeInstanceClass(Class<?> clazz) {
-		return null;
+		return rebuildAll(() -> buildInstance(clazz, throwExistException, overrides, value, components).plug(), nearestMeta.computePotentialDependencies(value, components));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -248,7 +243,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		return () -> new InheritanceComputer<>((T) AbstractVertex.this, origin, level).inheritanceIterator();
 	}
 
-	abstract protected T newT(Class<?> clazz);
+	abstract protected T newT();
 
 	abstract protected T[] newTArray(int dim);
 
@@ -270,7 +265,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		return components;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	T buildInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
 		int level = getLevel() == 0 && Objects.equals(getValue(), getRoot().getValue()) && getComponentsStream().allMatch(c -> c.isRoot()) && Objects.equals(value, getRoot().getValue()) && components.stream().allMatch(c -> c.isRoot()) ? 0 : getLevel() + 1;
 		overrides.forEach(Signature::checkIsAlive);

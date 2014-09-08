@@ -3,11 +3,12 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.List;
+
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Snapshot;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends org.genericsystem.impl.AbstractGeneric<T, U, V, W> implements
-GenericService<T, U, V, W> {
+		GenericService<T, U, V, W> {
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -78,7 +79,7 @@ GenericService<T, U, V, W> {
 	}
 
 	@Override
-	protected abstract T newT(Class<?> clazz);
+	protected abstract T newT();
 
 	@Override
 	protected T init(boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {

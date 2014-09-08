@@ -32,7 +32,7 @@ public class GenericsCache<T extends AbstractGeneric<T, ?, ?, ?>> {
 		});
 		if (result == null) {
 			log.info("Not found");
-			result = meta.newT(clazz).init(throwExistException, meta, supers, value, components);
+			result = meta.newInstance(clazz).init(throwExistException, meta, supers, value, components);
 			T alreadyPresent = map.putIfAbsent(result, result);
 			if (alreadyPresent != null) {
 				result = alreadyPresent;
