@@ -3,9 +3,7 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.exceptions.NotAliveException;
@@ -93,37 +91,24 @@ public interface AncestorsService<T extends VertexService<T, U>, U extends RootS
 
 	@Override
 	default boolean weakEquiv(ApiService<? extends ApiService<?, ?>, ?> service) {
-		return service == this ? true : weakEquiv(service.getMeta(), service.getValue(), service.getComponents());
+		return equals(service) ? true : weakEquiv(service.getMeta(), service.getValue(), service.getComponents());
 	}
 
 	@Override
 	default boolean weakEquiv(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components) {
 		if (!getMeta().weakEquiv(meta))
 			return false;
-
-		for (int i = 0; i < getComponents().size(); i++) {
-			ApiService<?, ?> apiService = getComponents().get(i);
-			if (isReferentialIntegrityConstraintEnabled(i) && isSingularConstraintEnabled(i))
+		if (getComponents().size() != components.size())
+			return false;// for the moment, no weak equiv when component size is different
+		for (int i = 0; i < getComponents().size(); i++)
+			if (isReferentialIntegrityConstraintEnabled(i) && isSingularConstraintEnabled(i) && getComponents().get(i).equals(components.get(i)))
 				return true;
-			if (i >= components.size() || !apiService.weakEquiv(components.get(i)))
+		for (int i = 0; i < getComponents().size(); i++)
+			if (!getComponents().get(i).equals(components.get(i)))
 				return false;
-
-		}
-		// if (!weakEquiv(getComponents(), components))
-		// return false;
 		if (!meta.isPropertyConstraintEnabled())
 			return Objects.equals(getValue(), value);
 		return true;
-		// if (singularOrReferential(getComponents(), components) || (weakEquiv(getComponents(), components) && getValuesBiPredicate().test(getValue(), value)))
-		// ;
-	}
-
-	@Override
-	default boolean weakEquiv(List<? extends ApiService<?, ?>> components, List<? extends ApiService<?, ?>> otherComponents) {
-		if (!(components.size() == otherComponents.size()))
-			return false;
-		Iterator<? extends ApiService<?, ?>> otherComponentsIt = otherComponents.iterator();
-		return components.stream().allMatch(x -> x.weakEquiv(otherComponentsIt.next()));
 	}
 
 	@Override
@@ -136,19 +121,6 @@ public interface AncestorsService<T extends VertexService<T, U>, U extends RootS
 		}
 		return false;
 	}
-
-	public static BiPredicate<Serializable, Serializable> VALUE_EQUALS = (X, Y) -> Objects.equals(X, Y);
-	public static BiPredicate<Serializable, Serializable> VALUE_IGNORED = (X, Y) -> true;
-	public static BiPredicate<Serializable, Serializable> KEY_EQUALS = (X, Y) -> (X instanceof Entry) && (Y instanceof Entry) && Objects.equals(((Entry<?, ?>) X).getKey(), ((Entry<?, ?>) Y).getKey());
-
-	public static BiPredicate<List<? extends AncestorsService<?, ?>>, List<? extends AncestorsService<?, ?>>> SIZE_EQUALS = (X, Y) -> {
-		return X.size() == Y.size();
-	};
-
-	// @Override
-	// default BiPredicate<Serializable, Serializable> getValuesBiPredicate() {
-	// return isPropertyConstraintEnabled() ? VALUE_IGNORED : VALUE_EQUALS.or(KEY_EQUALS);
-	// }
 
 	@Override
 	default int getLevel() {

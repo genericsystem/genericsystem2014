@@ -1,7 +1,6 @@
 package org.genericsystem.kernel;
 
 import java.util.Arrays;
-
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.testng.annotations.Test;
 
@@ -46,7 +45,7 @@ public class WeakEquivTest extends AbstractTest {
 		Vertex green = color.addInstance("green");
 		Vertex yellow = color.addInstance("yellow");
 		Vertex myBmwGreen = carColor.addInstance("myBmwGreen", myBmw, green);
-		assert myBmwGreen.weakEquiv(carColor, "myBmwYellow", Arrays.asList(myBmw, yellow));
+		assert !myBmwGreen.weakEquiv(carColor, "myBmwYellow", Arrays.asList(myBmw, yellow));
 	}
 
 	public void test004_weakEquiv_Relation_SingularConstraintAndReferencialIntegrity_supers() {

@@ -45,7 +45,7 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 
 	boolean singularOrReferential(List<? extends ApiService<?, ?>> components, List<? extends ApiService<?, ?>> otherComponents);
 
-	boolean weakEquiv(List<? extends ApiService<?, ?>> components, List<? extends ApiService<?, ?>> otherComponents);
+	// boolean weakEquiv(List<? extends ApiService<?, ?>> components, List<? extends ApiService<?, ?>> otherComponents);
 
 	// BiPredicate<Serializable, Serializable> getValuesBiPredicate();
 
