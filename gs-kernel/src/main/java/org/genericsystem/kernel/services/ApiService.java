@@ -3,7 +3,6 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.services.SystemPropertiesService.AxedPropertyClass;
@@ -42,13 +41,13 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 
 	boolean weakEquiv(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components);
 
-	WeakPredicate getWeakPredicate();
+	// WeakPredicate getWeakPredicate();
 
 	boolean singularOrReferential(List<? extends ApiService<?, ?>> components, List<? extends ApiService<?, ?>> otherComponents);
 
 	boolean weakEquiv(List<? extends ApiService<?, ?>> components, List<? extends ApiService<?, ?>> otherComponents);
 
-	BiPredicate<Serializable, Serializable> getValuesBiPredicate();
+	// BiPredicate<Serializable, Serializable> getValuesBiPredicate();
 
 	@FunctionalInterface
 	public interface WeakPredicate {

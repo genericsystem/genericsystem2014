@@ -98,12 +98,32 @@ public interface AncestorsService<T extends VertexService<T, U>, U extends RootS
 
 	@Override
 	default boolean weakEquiv(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components) {
-		return getMeta().weakEquiv(meta) && getMeta().getWeakPredicate().test(getValue(), getComponents(), value, components);
+		if (!getMeta().weakEquiv(meta))
+			return false;
+
+		for (int i = 0; i < getComponents().size(); i++) {
+			ApiService<?, ?> apiService = getComponents().get(i);
+			if (isReferentialIntegrityConstraintEnabled(i) && isSingularConstraintEnabled(i))
+				return true;
+			if (i >= components.size() || !apiService.weakEquiv(components.get(i)))
+				return false;
+
+		}
+		// if (!weakEquiv(getComponents(), components))
+		// return false;
+		if (!meta.isPropertyConstraintEnabled())
+			return Objects.equals(getValue(), value);
+		return true;
+		// if (singularOrReferential(getComponents(), components) || (weakEquiv(getComponents(), components) && getValuesBiPredicate().test(getValue(), value)))
+		// ;
 	}
 
 	@Override
-	default WeakPredicate getWeakPredicate() {
-		return (value, components, otherValue, otherComponents) -> singularOrReferential(components, otherComponents) || (weakEquiv(components, otherComponents) && getValuesBiPredicate().test(value, otherValue));
+	default boolean weakEquiv(List<? extends ApiService<?, ?>> components, List<? extends ApiService<?, ?>> otherComponents) {
+		if (!(components.size() == otherComponents.size()))
+			return false;
+		Iterator<? extends ApiService<?, ?>> otherComponentsIt = otherComponents.iterator();
+		return components.stream().allMatch(x -> x.weakEquiv(otherComponentsIt.next()));
 	}
 
 	@Override
@@ -125,18 +145,10 @@ public interface AncestorsService<T extends VertexService<T, U>, U extends RootS
 		return X.size() == Y.size();
 	};
 
-	@Override
-	default boolean weakEquiv(List<? extends ApiService<?, ?>> components, List<? extends ApiService<?, ?>> otherComponents) {
-		if (!(components.size() == otherComponents.size()))
-			return false;
-		Iterator<? extends ApiService<?, ?>> otherComponentsIt = otherComponents.iterator();
-		return components.stream().allMatch(x -> x.weakEquiv(otherComponentsIt.next()));
-	}
-
-	@Override
-	default BiPredicate<Serializable, Serializable> getValuesBiPredicate() {
-		return isPropertyConstraintEnabled() ? VALUE_IGNORED : VALUE_EQUALS.or(KEY_EQUALS);
-	}
+	// @Override
+	// default BiPredicate<Serializable, Serializable> getValuesBiPredicate() {
+	// return isPropertyConstraintEnabled() ? VALUE_IGNORED : VALUE_EQUALS.or(KEY_EQUALS);
+	// }
 
 	@Override
 	default int getLevel() {

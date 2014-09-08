@@ -335,7 +335,9 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 			return false;
 		if (!subMeta.componentsDepends(subComponents, superComponents))
 			return false;
-		return subMeta.getValuesBiPredicate().test(subValue, superValue);
+		if (!subMeta.isPropertyConstraintEnabled())
+			return Objects.equals(subValue, superValue);
+		return true;
 	}
 
 	@Override
