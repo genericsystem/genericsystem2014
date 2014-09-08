@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
 import org.genericsystem.impl.annotations.InstanceClass;
 import org.genericsystem.impl.annotations.Meta;
 import org.genericsystem.kernel.AbstractVertex;
@@ -24,7 +23,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 				specializationClass = instanceClass.value();
 			else
 				assert instanceClass.value().isAssignableFrom(specializationClass) : "instanceClass " + instanceClass.value() + " / specializationClass " + specializationClass + " / " + specializationClass.getAnnotation(Meta.class).value();
-		return specializationClass;
+				return specializationClass;
 	}
 
 	@Override
@@ -34,7 +33,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		if (!(obj instanceof AncestorsService))
 			return false;
 		AncestorsService<?, ?> service = (AncestorsService<?, ?>) obj;
-		return equals(service.getMeta(), service.getSupers(), service.getValue(), service.getComponents());
+		return equals(service.getMeta(), service.getValue(), service.getComponents());
 	}
 
 	@Override

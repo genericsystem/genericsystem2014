@@ -39,40 +39,29 @@ public interface AncestorsService<T extends VertexService<T, U>, U extends RootS
 
 	@Override
 	default T getAlive() {
-		// TODO KK pb avec le serviceEquals ...
 		T pluggedMeta = getMeta().getAlive();
 		if (pluggedMeta == null)
 			return null;
 		for (T instance : pluggedMeta.getInstances())
-			if (equiv(instance))
+			if (equals(instance))
 				return instance;
 		return null;
 	}
 
-	@Override
-	default T getWeakAlive() {
-		T pluggedMeta = getMeta().getAlive();
-		if (pluggedMeta == null)
-			return null;
-		for (T instance : pluggedMeta.getInstances())
-			if (weakEquiv(instance))
-				return instance;
-		return null;
-	}
+	// @Override
+	// default T getWeakAlive() {
+	// T pluggedMeta = getMeta().getWeakAlive();
+	// if (pluggedMeta == null)
+	// return null;
+	// for (T instance : pluggedMeta.getInstances())
+	// if (weakEquiv(instance))
+	// return instance;
+	// return null;
+	// }
 
 	@Override
-	default boolean equiv(ApiService<? extends ApiService<?, ?>, ?> service) {
-		return equiv(service.getMeta(), service.getValue(), service.getComponents());
-	}
-
-	@Override
-	default boolean equiv(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components) {
-		return (isRoot() || getMeta().equiv(meta)) && Objects.equals(getValue(), value) && listsEquiv(getComponents(), components);
-	}
-
-	@Override
-	default boolean equals(ApiService<?, ?> meta, List<? extends ApiService<?, ?>> supers, Serializable value, List<? extends ApiService<?, ?>> components) {
-		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && listsEquals(getSupers(), supers) && listsEquals(getComponents(), components);
+	default boolean equals(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components) {
+		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && listsEquals(getComponents(), components);
 	}
 
 	static boolean listsEquals(List<? extends ApiService<?, ?>> components, List<? extends ApiService<?, ?>> otherComponents) {
@@ -82,44 +71,26 @@ public interface AncestorsService<T extends VertexService<T, U>, U extends RootS
 		return components.stream().allMatch(x -> x.equals(otherComponentsIt.next()));
 	}
 
-	static boolean listsEquiv(List<? extends ApiService<?, ?>> components, List<? extends ApiService<?, ?>> otherComponents) {
-		if (otherComponents.size() != components.size())
-			return false;
-		Iterator<? extends ApiService<?, ?>> otherComponentsIt = otherComponents.iterator();
-		return components.stream().allMatch(x -> x.equiv(otherComponentsIt.next()));
+	@Override
+	default boolean equiv(ApiService<? extends ApiService<?, ?>, ?> service) {
+		return equals(service) ? true : equiv(service.getMeta(), service.getValue(), service.getComponents());
 	}
 
 	@Override
-	default boolean weakEquiv(ApiService<? extends ApiService<?, ?>, ?> service) {
-		return equals(service) ? true : weakEquiv(service.getMeta(), service.getValue(), service.getComponents());
-	}
-
-	@Override
-	default boolean weakEquiv(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components) {
-		if (!getMeta().weakEquiv(meta))
+	default boolean equiv(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components) {
+		if (!getMeta().equiv(meta))
 			return false;
 		if (getComponents().size() != components.size())
 			return false;// for the moment, no weak equiv when component size is different
 		for (int i = 0; i < getComponents().size(); i++)
-			if (isReferentialIntegrityConstraintEnabled(i) && isSingularConstraintEnabled(i) && getComponents().get(i).equals(components.get(i)))
+			if (isReferentialIntegrityConstraintEnabled(i) && isSingularConstraintEnabled(i) && getComponents().get(i).equiv(components.get(i)))
 				return true;
 		for (int i = 0; i < getComponents().size(); i++)
-			if (!getComponents().get(i).equals(components.get(i)))
+			if (!getComponents().get(i).equiv(components.get(i)))
 				return false;
 		if (!meta.isPropertyConstraintEnabled())
 			return Objects.equals(getValue(), value);
 		return true;
-	}
-
-	@Override
-	default boolean singularOrReferential(List<? extends ApiService<?, ?>> components, List<? extends ApiService<?, ?>> otherComponents) {
-		if (!(components.size() == otherComponents.size()))
-			return false;
-		for (int i = 0; i < otherComponents.size(); ++i) {
-			if (isReferentialIntegrityConstraintEnabled(i) && isSingularConstraintEnabled(i))
-				return true;
-		}
-		return false;
 	}
 
 	@Override

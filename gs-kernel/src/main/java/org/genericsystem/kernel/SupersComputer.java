@@ -56,7 +56,7 @@ public class SupersComputer<T extends VertexService<T, U>, U extends RootService
 			}
 		result = alreadyComputed.put(candidate, selectable);
 		assert result == null : candidate.info();
-		if (selectable && candidate.getLevel() == level && !candidate.equiv(meta, value, components))
+		if (selectable && candidate.getLevel() == level && !candidate.equals(meta, value, components))
 			add(candidate);
 		return selectable;
 	}

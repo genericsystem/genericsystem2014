@@ -3,7 +3,6 @@ package org.genericsystem.kernel;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.testng.annotations.Test;
 
 @Test
@@ -446,13 +445,12 @@ public class UpdatableServiceTest extends AbstractTest {
 
 	public void test021_AddInstance_AttributeWithSameNameAlreadyExisting() {
 		Root engine = new Root();
-		Vertex car = engine.addInstance("Car", engine);
+		Vertex car = engine.addInstance("Car");
 		Vertex carPower = engine.setInstance("Power", car);
 		Vertex power = engine.addInstance("Power");
 
 		assert !carPower.isAlive();
 		assert power.isAlive();
-
-		assert car.getAttributes(engine).contains(carPower.getAlive());
+		assert !car.getAttributes(engine).contains(carPower);
 	}
 }

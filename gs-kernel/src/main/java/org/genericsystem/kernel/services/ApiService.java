@@ -29,38 +29,16 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 
 	T getAlive();
 
-	T getWeakAlive();
+	boolean equals(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components);
 
 	boolean equiv(ApiService<? extends ApiService<?, ?>, ?> service);
 
 	boolean equiv(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components);
 
-	boolean equals(ApiService<?, ?> meta, List<? extends ApiService<?, ?>> supers, Serializable value, List<? extends ApiService<?, ?>> components);
-
-	boolean weakEquiv(ApiService<? extends ApiService<?, ?>, ?> service);
-
-	boolean weakEquiv(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components);
-
-	// WeakPredicate getWeakPredicate();
-
-	boolean singularOrReferential(List<? extends ApiService<?, ?>> components, List<? extends ApiService<?, ?>> otherComponents);
-
-	// boolean weakEquiv(List<? extends ApiService<?, ?>> components, List<? extends ApiService<?, ?>> otherComponents);
-
-	// BiPredicate<Serializable, Serializable> getValuesBiPredicate();
-
-	@FunctionalInterface
-	public interface WeakPredicate {
-		boolean test(Serializable value, List<? extends ApiService<?, ?>> components, Serializable otherValue, List<? extends ApiService<?, ?>> otherComponents);
-	}
-
 	T[] coerceToArray(Object... array);
 
 	@SuppressWarnings("unchecked")
 	T[] targetsToComponents(T... targets);
-
-	// TODO clean
-	// void rollbackAndThrowException(Throwable exception) throws RollbackException;
 
 	int getLevel();
 
@@ -84,20 +62,16 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 
 	boolean isAttributeOf(T vertex);
 
-	void checkSameEngine(List<T> components);
-
 	T adjustMeta(List<T> overrides, Serializable subValue, List<T> subComponents);
 
 	@SuppressWarnings("unchecked")
 	T getInstance(Serializable value, T... components);
 
-	// @SuppressWarnings("unchecked")
-	// T getWeakInstance(Serializable value, T... components);
-
-	<subT extends T> subT getWeakInstance(Serializable value, List<T> components);
-
 	@SuppressWarnings("unchecked")
 	T getInstance(List<T> supers, Serializable value, T... components);
+
+	@SuppressWarnings("unchecked")
+	T getEquivInstance(Serializable value, List<T> components);
 
 	Snapshot<T> getInheritings(final T origin, final int level);
 

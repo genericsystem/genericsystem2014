@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +26,7 @@ public class GenericsCache<T extends AbstractGeneric<T, ?, ?, ?>> {
 			public boolean equals(Object obj) {
 				if (!(obj instanceof AbstractGeneric))
 					return false;
-				return ((AbstractGeneric<T, ?, ?, ?>) obj).equals(meta, supers, value, components);
+				return ((AbstractGeneric<T, ?, ?, ?>) obj).equals(meta, value, components);
 			}
 		});
 		if (result == null) {
