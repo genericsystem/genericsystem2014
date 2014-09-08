@@ -154,7 +154,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	protected T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
 		if (newComponents.size() != getComponents().size())
 			getRoot().discardWithException(new IllegalArgumentException());
-		// TODO null is kk ?
 		return rebuildAll(() -> getMeta().bindInstance(null, isThrowExistException(), new Supers<>(getSupers(), supersToAdd), newValue, newComponents), computeDependencies());
 	}
 
@@ -170,7 +169,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 				newDependency = meta.buildInstance(null, dependency.isThrowExistException(), dependency.getSupersStream().map(x -> convert(x)).collect(Collectors.toList()), dependency.getValue(),
 						dependency.getComponentsStream().map(x -> x.equals(this) ? null : convert(x)).collect(Collectors.toList())).plug();
 				put(dependency, newDependency);
-				// muteOldDependency(newDependency);
 			}
 			return newDependency;
 		}

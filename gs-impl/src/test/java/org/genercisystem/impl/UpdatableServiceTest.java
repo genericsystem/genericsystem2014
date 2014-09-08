@@ -312,7 +312,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert green.isAlive();
 		assert blue.isAlive();
 		assert vehicleColor.isAlive();
-		assert !myCarRed.isAlive();
+		assert myCarRed.isAlive();
 		assert myVehicleGreen.isAlive();
 		assert fourWheels.isAlive();
 
