@@ -1,11 +1,12 @@
 package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
+
 import org.genericsystem.kernel.Statics;
 
 public interface SystemPropertiesService<T extends VertexService<T, U>, U extends RootService<T, U>> extends ApiService<T, U> {
 
-	// We have to introduce the method restoreInheritancePropertyValue
+	// TODO We have to introduce the method restoreInheritancePropertyValue
 
 	@Override
 	@SuppressWarnings("unchecked")

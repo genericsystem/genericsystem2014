@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.services.SystemPropertiesService.AxedPropertyClass;
 
@@ -25,11 +26,13 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 
 	T getAlive();
 
-	boolean equals(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components);
+	@SuppressWarnings("unchecked")
+	<V extends ApiService<?, ?>> boolean equals(ApiService<?, ?> meta, Serializable value, V... components);
 
 	boolean equiv(ApiService<? extends ApiService<?, ?>, ?> service);
 
-	boolean equiv(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components);
+	@SuppressWarnings("unchecked")
+	<V extends ApiService<?, ?>> boolean equiv(ApiService<?, ?> meta, Serializable value, V... components);
 
 	T[] coerceToArray(Object... array);
 
@@ -58,16 +61,17 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 
 	boolean isAttributeOf(T vertex);
 
-	T adjustMeta(List<T> overrides, Serializable subValue, List<T> subComponents);
-
 	@SuppressWarnings("unchecked")
 	T getInstance(Serializable value, T... components);
+
+	@SuppressWarnings("unchecked")
+	T getInstance(T superT, Serializable value, T... components);
 
 	@SuppressWarnings("unchecked")
 	T getInstance(List<T> supers, Serializable value, T... components);
 
 	@SuppressWarnings("unchecked")
-	T getEquivInstance(Serializable value, List<T> components);
+	T getEquivInstance(Serializable value, T... components);
 
 	Snapshot<T> getInheritings(final T origin, final int level);
 
@@ -90,12 +94,6 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 	Snapshot<T> getComposites();
 
 	boolean isAncestorOf(final T dependency);
-
-	boolean isSuperOf(T subMeta, List<T> overrides, Serializable subValue, List<T> subComponents);
-
-	boolean inheritsFrom(T superMeta, Serializable superValue, List<T> superComponents);
-
-	boolean componentsDepends(List<T> subComponents, List<T> superComponents);
 
 	Snapshot<T> getAllInheritings();
 
@@ -176,6 +174,17 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 	@SuppressWarnings("unchecked")
 	T update(Serializable newValue, T... newComponents);
 
+	T getMetaAttribute();
+
+	@SuppressWarnings("unchecked")
+	T addInstance(Serializable value, T... components);
+
+	@SuppressWarnings("unchecked")
+	T addInstance(T override, Serializable value, T... components);
+
+	@SuppressWarnings("unchecked")
+	T addInstance(List<T> overrides, Serializable value, T... components);
+
 	@SuppressWarnings("unchecked")
 	T setInstance(Serializable value, T... components);
 
@@ -185,49 +194,38 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 	@SuppressWarnings("unchecked")
 	T setInstance(List<T> overrides, Serializable value, T... components);
 
-	T getMetaAttribute();
-
-	@SuppressWarnings("unchecked")
-	T addInstance(Serializable value, T... components);
-
-	@SuppressWarnings("unchecked")
-	T addInstance(T superGeneric, Serializable value, T... components);
-
-	@SuppressWarnings("unchecked")
-	T addInstance(List<T> overrides, Serializable value, T... components);
-
 	@SuppressWarnings("unchecked")
 	T addAttribute(Serializable value, T... targets);
 
 	@SuppressWarnings("unchecked")
-	T setAttribute(Serializable value, T... targets);
-
-	@SuppressWarnings("unchecked")
-	T addHolder(T attribute, Serializable value, T... targets);
-
-	@SuppressWarnings("unchecked")
-	T setHolder(T attribute, Serializable value, T... targets);
-
-	@SuppressWarnings("unchecked")
-	T addAttribute(T superT, Serializable value, T... targets);
-
-	@SuppressWarnings("unchecked")
-	T setAttribute(T superT, Serializable value, T... targets);
-
-	@SuppressWarnings("unchecked")
-	T addHolder(T superT, T attribute, Serializable value, T... targets);
-
-	@SuppressWarnings("unchecked")
-	T setHolder(T superT, T attribute, Serializable value, T... targets);
+	T addAttribute(T override, Serializable value, T... targets);
 
 	@SuppressWarnings("unchecked")
 	T addAttribute(List<T> overrides, Serializable value, T... targets);
 
 	@SuppressWarnings("unchecked")
+	T setAttribute(Serializable value, T... targets);
+
+	@SuppressWarnings("unchecked")
+	T setAttribute(T override, Serializable value, T... targets);
+
+	@SuppressWarnings("unchecked")
 	T setAttribute(List<T> overrides, Serializable value, T... targets);
 
 	@SuppressWarnings("unchecked")
+	T addHolder(T attribute, Serializable value, T... targets);
+
+	@SuppressWarnings("unchecked")
+	T addHolder(T attribute, T override, Serializable value, T... targets);
+
+	@SuppressWarnings("unchecked")
 	T addHolder(T attribute, List<T> overrides, Serializable value, T... targets);
+
+	@SuppressWarnings("unchecked")
+	T setHolder(T attribute, Serializable value, T... targets);
+
+	@SuppressWarnings("unchecked")
+	T setHolder(T attribute, T override, Serializable value, T... targets);
 
 	@SuppressWarnings("unchecked")
 	T setHolder(T attribute, List<T> overrides, Serializable value, T... targets);

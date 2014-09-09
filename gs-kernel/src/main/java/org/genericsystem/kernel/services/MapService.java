@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.services.SystemPropertiesService.AxedPropertyClass;
 
 public interface MapService<T extends VertexService<T, U>, U extends RootService<T, U>> extends ApiService<T, U> {
@@ -47,5 +48,6 @@ public interface MapService<T extends VertexService<T, U>, U extends RootService
 		return getKeys().filter(x -> x.getValue().equals(property)).findFirst();
 	}
 
-	public static class SystemMap {}
+	public static class SystemMap {
+	}
 }
