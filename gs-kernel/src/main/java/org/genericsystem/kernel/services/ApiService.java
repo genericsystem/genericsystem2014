@@ -25,14 +25,15 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 
 	T getAlive();
 
-	boolean equalsAnySupers(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components);
+	boolean equalsRegardlessSupers(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components);
 
 	boolean equals(ApiService<?, ?> meta, List<? extends ApiService<?, ?>> supers, Serializable value, List<? extends ApiService<?, ?>> components);
 
-	boolean equiv(ApiService<? extends ApiService<?, ?>, ?> service);
+	boolean equiv(ApiService<?, ?> service);
 
-	@SuppressWarnings("unchecked")
-	<V extends ApiService<?, ?>> boolean equiv(ApiService<?, ?> meta, Serializable value, V... components);
+	boolean equiv(ApiService<?, ?> meta, Serializable value, ApiService<?, ?>... components);
+
+	boolean equiv(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components);
 
 	T[] coerceToArray(Object... array);
 

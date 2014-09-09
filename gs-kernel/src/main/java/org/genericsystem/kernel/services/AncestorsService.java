@@ -54,7 +54,7 @@ public interface AncestorsService<T extends VertexService<T, U>, U extends RootS
 	}
 
 	@Override
-	default boolean equalsAnySupers(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components) {
+	default boolean equalsRegardlessSupers(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComponents().equals(components);
 	}
 
@@ -64,10 +64,11 @@ public interface AncestorsService<T extends VertexService<T, U>, U extends RootS
 	}
 
 	@Override
-	default <V extends ApiService<?, ?>> boolean equiv(ApiService<?, ?> meta, Serializable value, @SuppressWarnings("unchecked") V... components) {
+	default boolean equiv(ApiService<?, ?> meta, Serializable value, ApiService<?, ?>... components) {
 		return equiv(meta, value, Arrays.asList(components));
 	}
 
+	@Override
 	default boolean equiv(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components) {
 		if (!getMeta().equiv(meta))
 			return false;

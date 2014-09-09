@@ -202,7 +202,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	public T adjustMeta(Serializable subValue, List<T> subComponents) {
 		T result = null;
 		for (T directInheriting : getInheritings()) {
-			if (directInheriting.equalsAnySupers(this, subValue, subComponents))
+			if (directInheriting.equalsRegardlessSupers(this, subValue, subComponents))
 				return (T) this;
 			if (isSpecializationOf(getMeta()) && componentsDepends(subComponents, directInheriting.getComponents()))
 				if (result == null)
@@ -224,7 +224,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 			if (throwExistException)
 				getRoot().discardWithException(new ExistsException("Attempts to add an already existing instance : " + weakInstance.info()));
 			else
-				return weakInstance.equalsAnySupers(this, value, components) && Statics.areOverridesReached(overrides, weakInstance.getSupers()) ? weakInstance : weakInstance.update(overrides, value, components);
+				return weakInstance.equalsRegardlessSupers(this, value, components) && Statics.areOverridesReached(overrides, weakInstance.getSupers()) ? weakInstance : weakInstance.update(overrides, value, components);
 		return rebuildAll(() -> buildInstance(clazz, throwExistException, overrides, value, components).plug(), nearestMeta.computePotentialDependencies(value, components));
 	}
 
@@ -249,7 +249,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		if (meta != this)
 			return meta.getInstance(value, components);
 		for (T instance : meta.getInstances())
-			if (instance.equalsAnySupers(meta, value, Arrays.asList(components)) && Statics.areOverridesReached(overrides, instance.getSupers()))
+			if (instance.equalsRegardlessSupers(meta, value, Arrays.asList(components)) && Statics.areOverridesReached(overrides, instance.getSupers()))
 				return instance;
 		return null;
 	}
@@ -288,7 +288,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	protected T adjustMeta(List<T> overrides, Serializable subValue, List<T> subComponents) {
 		T result = null;
 		for (T directInheriting : getInheritings()) {
-			if (directInheriting.equalsAnySupers(this, subValue, subComponents))
+			if (directInheriting.equalsRegardlessSupers(this, subValue, subComponents))
 				return (T) this;
 			if (isSpecializationOf(getMeta()) && this.componentsDepends(subComponents, directInheriting.getComponents()))
 				if (result == null)
