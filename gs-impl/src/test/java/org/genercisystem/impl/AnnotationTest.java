@@ -25,6 +25,18 @@ public class AnnotationTest extends AbstractTest {
 		assert myck.isConcrete();
 	}
 
+	public void test001_remove() {
+		Engine engine = new Engine(Vehicle.class);
+		Generic vehicle = engine.find(Vehicle.class);
+		new RollbackCatcher() {
+
+			@Override
+			public void intercept() {
+				vehicle.remove();
+			}
+		}.assertIsCausedBy(IllegalAccessException.class);
+	}
+
 	public void test001_instanceof() {
 		Engine engine = new Engine(Vehicle.class);
 		assert engine.find(Vehicle.class) instanceof Vehicle;
@@ -318,12 +330,12 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	public static class Games {
+	public static class Games extends Generic {
 	}
 
 	@SystemGeneric
 	@Meta(Games.class)
-	public static class MyGames {
+	public static class MyGames extends Generic {
 	}
 
 	@SystemGeneric
@@ -332,52 +344,52 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	public static class Children {
+	public static class Children extends Generic {
 	}
 
 	@SystemGeneric
 	@Meta(Children.class)
-	public static class MyChildren {
+	public static class MyChildren extends Generic {
 	}
 
 	@SystemGeneric
 	@Supers({ Games.class, Children.class })
-	public static class ChildrenGames {
+	public static class ChildrenGames extends Generic {
 	}
 
 	@SystemGeneric
 	@Meta(ChildrenGames.class)
-	public static class MyChildrenGames {
+	public static class MyChildrenGames extends Generic {
 	}
 
 	@SystemGeneric
 	@Supers({ Human.class, Vehicle.class })
-	public static class Transformer {
+	public static class Transformer extends Generic {
 	}
 
 	@SystemGeneric
 	@Meta(Transformer.class)
-	public static class MyTransformer {
+	public static class MyTransformer extends Generic {
 	}
 
 	@SystemGeneric
 	@Supers({ Transformer.class, ChildrenGames.class })
-	public static class TransformerChildrenGames {
+	public static class TransformerChildrenGames extends Generic {
 	}
 
 	@SystemGeneric
 	@Meta(TransformerChildrenGames.class)
-	public static class MyTransformerChildrenGames {
+	public static class MyTransformerChildrenGames extends Generic {
 	}
 
 	@SystemGeneric
-	public static class GraphicComponent {
+	public static class GraphicComponent extends Generic {
 
 	}
 
 	@SystemGeneric
 	@Components(GraphicComponent.class)
-	public static class Size {
+	public static class Size extends Generic {
 
 	}
 
@@ -389,25 +401,25 @@ public class AnnotationTest extends AbstractTest {
 
 	@SystemGeneric
 	@Supers(GraphicComponent.class)
-	public static class Selectable {
+	public static class Selectable extends Generic {
 
 	}
 
 	@SystemGeneric
 	@Components(Selectable.class)
-	public static class Selected {
+	public static class Selected extends Generic {
 
 	}
 
 	@SystemGeneric
 	@Supers({ Selectable.class, Window.class })
-	public static class SelectableWindow {
+	public static class SelectableWindow extends Generic {
 
 	}
 
 	@SystemGeneric
 	@Meta(SelectableWindow.class)
-	public static class MySelectableWindow {
+	public static class MySelectableWindow extends Generic {
 
 	}
 
@@ -418,12 +430,12 @@ public class AnnotationTest extends AbstractTest {
 
 	@SystemGeneric
 	@Meta(Vehicle.class)
-	public static class MyVehicle {
+	public static class MyVehicle extends Generic {
 	}
 
 	@SystemGeneric
 	@Components(Vehicle.class)
-	public static class Power {
+	public static class Power extends Generic {
 
 	}
 
@@ -431,36 +443,36 @@ public class AnnotationTest extends AbstractTest {
 	@Meta(Power.class)
 	@Components(MyVehicle.class)
 	@IntValue(123)
-	public static class V123 {
+	public static class V123 extends Generic {
 
 	}
 
 	@SystemGeneric
 	@Supers(Vehicle.class)
-	public static class Car {
+	public static class Car extends Generic {
 
 	}
 
 	@SystemGeneric
 	@Meta(Car.class)
-	public static class myCar {
+	public static class myCar extends Generic {
 	}
 
 	@SystemGeneric
 	@Components(Car.class)
 	@Supers(Power.class)
-	public static class ElectrikPower {
+	public static class ElectrikPower extends Generic {
 
 	}
 
 	@SystemGeneric
 	@Components(ElectrikPower.class)
-	public static class Unit {
+	public static class Unit extends Generic {
 
 	}
 
 	@SystemGeneric
-	public static class Human {
+	public static class Human extends Generic {
 	}
 
 	@SystemGeneric
@@ -469,16 +481,16 @@ public class AnnotationTest extends AbstractTest {
 
 	@SystemGeneric
 	@Meta(Human.class)
-	public static class Myck {
+	public static class Myck extends Generic {
 	}
 
 	@SystemGeneric
-	public static class Time {
+	public static class Time extends Generic {
 	}
 
 	@SystemGeneric
 	@Components({ Human.class, Vehicle.class })
-	public static class HumanPossessVehicle {
+	public static class HumanPossessVehicle extends Generic {
 	}
 
 	@SystemGeneric
@@ -495,7 +507,7 @@ public class AnnotationTest extends AbstractTest {
 
 	@SystemGeneric
 	@Components({ Human.class, Vehicle.class, Time.class })
-	public static class HumanPossessVehicleTime {
+	public static class HumanPossessVehicleTime extends Generic {
 	}
 
 }

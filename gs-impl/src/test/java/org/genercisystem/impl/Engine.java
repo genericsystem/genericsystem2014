@@ -50,8 +50,9 @@ public class Engine extends Generic implements EngineService<Generic, Engine> {
 		return EngineService.super.isRoot();
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
-	public <T extends Generic> T find(Class<?> clazz) {
-		return (T) systemCache.get(clazz);
+	public <subT extends Generic> subT find(Class<subT> clazz) {
+		return (subT) systemCache.get(clazz);
 	}
 }

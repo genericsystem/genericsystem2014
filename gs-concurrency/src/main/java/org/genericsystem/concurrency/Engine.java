@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+
 import org.genericsystem.cache.GenericsCache;
 import org.genericsystem.impl.SystemCache;
 import org.genericsystem.kernel.Statics;
@@ -77,8 +78,8 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends Generic> T find(Class<?> clazz) {
-		return (T) systemCache.get(clazz);
+	public <subT extends Generic> subT find(Class<subT> clazz) {
+		return (subT) systemCache.get(clazz);
 	}
 
 	@Override

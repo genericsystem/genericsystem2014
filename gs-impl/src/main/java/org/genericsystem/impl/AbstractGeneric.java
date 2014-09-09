@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
 import org.genericsystem.impl.annotations.InstanceClass;
+import org.genericsystem.impl.annotations.SystemGeneric;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
@@ -44,6 +46,13 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 			return false;
 		AncestorsService<?, ?> service = (AncestorsService<?, ?>) obj;
 		return equals(service.getMeta(), service.getValue(), service.getComponents());
+	}
+
+	@Override
+	public void remove() {
+		if (getClass().getAnnotation(SystemGeneric.class) != null)
+			getRoot().discardWithException(new IllegalAccessException("SystemGeneric Annoted class can't be deleted"));
+		super.remove();
 	}
 
 	@Override
