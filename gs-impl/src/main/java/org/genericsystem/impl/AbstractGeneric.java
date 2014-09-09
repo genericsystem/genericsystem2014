@@ -20,16 +20,16 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	}
 
 	@SuppressWarnings("unchecked")
-	public T newInstance(Class<?> annotedClazz) {
+	protected T newInstance(Class<?> clazz) {
 		try {
 			InstanceClass instanceClassAnnot = getClass().getAnnotation(InstanceClass.class);
 			if (instanceClassAnnot != null)
-				if (annotedClazz == null || annotedClazz.isAssignableFrom(instanceClassAnnot.value()))
-					annotedClazz = instanceClassAnnot.value();
-				else if (!instanceClassAnnot.value().isAssignableFrom(annotedClazz))
-					getRoot().discardWithException(new InstantiationException(annotedClazz + " must extends " + instanceClassAnnot.value()));
+				if (clazz == null || clazz.isAssignableFrom(instanceClassAnnot.value()))
+					clazz = instanceClassAnnot.value();
+				else if (!instanceClassAnnot.value().isAssignableFrom(clazz))
+					getRoot().discardWithException(new InstantiationException(clazz + " must extends " + instanceClassAnnot.value()));
 			T newT = newT();
-			return annotedClazz != null && newT.getClass().isAssignableFrom(annotedClazz) ? (T) annotedClazz.newInstance() : newT;
+			return clazz != null && newT.getClass().isAssignableFrom(clazz) ? (T) clazz.newInstance() : newT;
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
 			getRoot().discardWithException(e);
 			return null;

@@ -3,7 +3,6 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.List;
-
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Snapshot;
 
@@ -84,5 +83,10 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	@Override
 	protected T init(boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
 		return super.init(throwExistException, meta, supers, value, components);
+	}
+
+	@Override
+	protected T newInstance(Class<?> annotedClazz) {
+		return super.newInstance(annotedClazz);
 	}
 }

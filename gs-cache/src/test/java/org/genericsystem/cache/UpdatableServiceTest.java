@@ -202,6 +202,7 @@ public class UpdatableServiceTest extends AbstractTest {
 
 		// when
 		Generic result = car.updateSupers(vehicle);
+		assert !car.equals(result);
 		assert false : result.info();
 		assert result.isAlive();
 		// then
