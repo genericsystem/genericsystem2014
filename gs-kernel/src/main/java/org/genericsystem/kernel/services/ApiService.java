@@ -31,7 +31,8 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 
 	boolean equiv(ApiService<? extends ApiService<?, ?>, ?> service);
 
-	boolean equiv(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components);
+	@SuppressWarnings("unchecked")
+	<V extends ApiService<?, ?>> boolean equiv(ApiService<?, ?> meta, Serializable value, V... components);
 
 	T[] coerceToArray(Object... array);
 

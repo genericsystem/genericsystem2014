@@ -48,5 +48,6 @@ public interface MapService<T extends VertexService<T, U>, U extends RootService
 		return getKeys().filter(x -> x.getValue().equals(property)).findFirst();
 	}
 
-	public static class SystemMap {}
+	public static class SystemMap {
+	}
 }

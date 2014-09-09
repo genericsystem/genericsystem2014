@@ -1,6 +1,7 @@
 package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
+
 import org.genericsystem.kernel.Snapshot;
 
 public interface CompositesInheritanceService<T extends VertexService<T, U>, U extends RootService<T, U>> extends ApiService<T, U> {

@@ -1,6 +1,7 @@
 package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -63,6 +64,10 @@ public interface AncestorsService<T extends VertexService<T, U>, U extends RootS
 	}
 
 	@Override
+	default <V extends ApiService<?, ?>> boolean equiv(ApiService<?, ?> meta, Serializable value, @SuppressWarnings("unchecked") V... components) {
+		return equiv(meta, value, Arrays.asList(components));
+	}
+
 	default boolean equiv(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components) {
 		if (!getMeta().equiv(meta))
 			return false;

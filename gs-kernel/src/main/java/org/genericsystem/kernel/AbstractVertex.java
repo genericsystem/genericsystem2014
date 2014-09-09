@@ -213,41 +213,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		return result == null ? (T) this : result.adjustMeta(subValue, subComponents);
 	}
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public T getInstance(Serializable value, T... components) {
-		return getInstance(Collections.emptyList(), value, components);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public T getInstance(List<T> overrides, Serializable value, T... components) {
-		T meta = getAlive();
-		if (meta == null)
-			return null;
-		meta = adjustMeta(value, Arrays.asList(components));
-		if (meta != this)
-			return meta.getInstance(value, components);
-		for (T instance : meta.getInstances())
-			if (instance.equalsAnySupers(meta, value, Arrays.asList(components)) && Statics.areOverridesReached(overrides, instance.getSupers()))
-				return instance;
-		return null;
-	}
-
-	@SuppressWarnings("unchecked")
-	T getEquivInstance(Serializable value, List<T> components) {
-		T meta = getAlive();
-		if (meta == null)
-			return null;
-		meta = adjustMeta(value, components);
-		if (meta != this)
-			return meta.getEquivInstance(value, components);
-		for (T instance : meta.getInstances())
-			if (instance.equiv(meta, value, components))
-				return instance;
-		return null;
-	}
-
 	public T bindInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
 		checkSameEngine(components);
 		checkSameEngine(overrides);
@@ -269,7 +234,29 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	}
 
 	@Override
-	public T getEquivInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
+	@SuppressWarnings("unchecked")
+	public T getInstance(Serializable value, T... components) {
+		return getInstance(Collections.emptyList(), value, components);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public T getInstance(List<T> overrides, Serializable value, T... components) {
+		T meta = getAlive();
+		if (meta == null)
+			return null;
+		meta = adjustMeta(value, Arrays.asList(components));
+		if (meta != this)
+			return meta.getInstance(value, components);
+		for (T instance : meta.getInstances())
+			if (instance.equalsAnySupers(meta, value, Arrays.asList(components)) && Statics.areOverridesReached(overrides, instance.getSupers()))
+				return instance;
+		return null;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public T getEquivInstance(Serializable value, T... components) {
 		return getEquivInstance(value, Arrays.asList(components));
 	}
 
@@ -277,6 +264,39 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		// TODO perhaps we have to adjust meta here
 		return this.inheritsFrom(meta, value, components) || getComponentsStream().filter(component -> component != null && component != this).anyMatch(component -> component.dependsFrom(meta, value, components))
 				|| (!isRoot() && getMeta().dependsFrom(meta, value, components));
+	}
+
+	@SuppressWarnings("unchecked")
+	T getEquivInstance(Serializable value, List<T> components) {
+		T meta = getAlive();
+		if (meta == null)
+			return null;
+		meta = adjustMeta(value, components);
+		if (meta != this)
+			return meta.getEquivInstance(value, components);
+		for (T instance : meta.getInstances())
+			if (instance.equiv(meta, value, components))
+				return instance;
+		return null;
+	}
+
+	public T adjustMeta(List<T> overrides, Serializable subValue, @SuppressWarnings("unchecked") T... subComponents) {
+		return adjustMeta(overrides, subValue, Arrays.asList(subComponents));
+	}
+
+	@SuppressWarnings("unchecked")
+	protected T adjustMeta(List<T> overrides, Serializable subValue, List<T> subComponents) {
+		T result = null;
+		for (T directInheriting : getInheritings()) {
+			if (directInheriting.equalsAnySupers(this, subValue, subComponents))
+				return (T) this;
+			if (isSpecializationOf(getMeta()) && this.componentsDepends(subComponents, directInheriting.getComponents()))
+				if (result == null)
+					result = directInheriting;
+				else
+					getRoot().discardWithException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
+		}
+		return result == null ? (T) this : result.adjustMeta(overrides, subValue, subComponents);
 	}
 
 	private void checkSameEngine(List<T> generics) {

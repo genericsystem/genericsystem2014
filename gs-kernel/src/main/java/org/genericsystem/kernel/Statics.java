@@ -8,7 +8,6 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import org.genericsystem.kernel.services.ApiService;
 import org.genericsystem.kernel.services.RootService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

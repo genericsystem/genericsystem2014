@@ -63,8 +63,8 @@ public interface WriteService<T extends VertexService<T, U>, U extends RootServi
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T addInstance(T superGeneric, Serializable value, T... components) {
-		return addInstance(Collections.singletonList(superGeneric), value, components);
+	default T addInstance(T override, Serializable value, T... components) {
+		return addInstance(Collections.singletonList(override), value, components);
 	}
 
 	@Override
@@ -100,26 +100,26 @@ public interface WriteService<T extends VertexService<T, U>, U extends RootServi
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T addAttribute(T superT, Serializable value, T... targets) {
-		return addAttribute(Collections.singletonList(superT), value, targets);
+	default T addAttribute(T override, Serializable value, T... targets) {
+		return addAttribute(Collections.singletonList(override), value, targets);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T setAttribute(T superT, Serializable value, T... targets) {
-		return setAttribute(Collections.singletonList(superT), value, targets);
+	default T setAttribute(T override, Serializable value, T... targets) {
+		return setAttribute(Collections.singletonList(override), value, targets);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T addHolder(T attribute, T superT, Serializable value, T... targets) {
-		return attribute.addInstance(superT, value, targetsToComponents(targets));
+	default T addHolder(T attribute, T override, Serializable value, T... targets) {
+		return attribute.addInstance(override, value, targetsToComponents(targets));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T setHolder(T attribute, T superT, Serializable value, T... targets) {
-		return attribute.setInstance(superT, value, targetsToComponents(targets));
+	default T setHolder(T attribute, T override, Serializable value, T... targets) {
+		return attribute.setInstance(override, value, targetsToComponents(targets));
 	}
 
 	@Override
