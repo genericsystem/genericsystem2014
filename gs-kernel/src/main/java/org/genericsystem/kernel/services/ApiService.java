@@ -25,7 +25,7 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 
 	T getAlive();
 
-	boolean equals(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components);
+	boolean equals(ApiService<?, ?> meta, List<? extends ApiService<?, ?>> supers, Serializable value, List<? extends ApiService<?, ?>> components);
 
 	boolean equiv(ApiService<? extends ApiService<?, ?>, ?> service);
 
@@ -64,7 +64,7 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 	T getInstance(Serializable value, T... components);
 
 	@SuppressWarnings("unchecked")
-	T getInstance(List<T> supers, Serializable value, T... components);
+	T getInstance(List<T> overrides, Serializable value, T... components);
 
 	@SuppressWarnings("unchecked")
 	T getEquivInstance(Serializable value, List<T> components);
