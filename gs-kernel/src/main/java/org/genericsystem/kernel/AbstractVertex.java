@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Statics.Supers;
 import org.genericsystem.kernel.exceptions.AliveConstraintViolationException;
+import org.genericsystem.kernel.exceptions.AmbiguousSelectionException;
 import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 import org.genericsystem.kernel.exceptions.CrossEnginesAssignementsException;
 import org.genericsystem.kernel.exceptions.ExistsException;
@@ -197,6 +198,58 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		}.visit((T) this);
 	}
 
+	@Override
+	@SuppressWarnings("unchecked")
+	T adjustMeta(List<T> overrides, Serializable subValue, List<T> subComponents) {
+		T result = null;
+		for (T directInheriting : getInheritings()) {
+			if (directInheriting.equalsAnySupers(this, subValue, subComponents))
+				return (T) this;
+			if (isSpecializationOf(getMeta()) && componentsDepends(subComponents, directInheriting.getComponents()))
+				if (result == null)
+					result = directInheriting;
+				else
+					getRoot().discardWithException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
+		}
+		return result == null ? (T) this : result.adjustMeta(overrides, subValue, subComponents);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	T getInstance(Serializable value, T... components) {
+		return getInstance(Collections.emptyList(), value, components);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	T getInstance(List<T> overrides, Serializable value, T... components) {
+		T meta = getAlive();
+		if (meta == null)
+			return null;
+		meta = adjustMeta(overrides, value, Arrays.asList(components));
+		if (meta != this)
+			return meta.getInstance(value, components);
+		for (T instance : meta.getInstances())
+			if (instance.equalsAnySupers(meta, value, Arrays.asList(components)) && Statics.areOverridesReached(overrides, instance.getSupers()))
+				return instance;
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	T getEquivInstance(Serializable value, List<T> components) {
+		T meta = getAlive();
+		if (meta == null)
+			return null;
+		meta = adjustMeta(Collections.emptyList(), value, components);
+		if (meta != this)
+			return meta.getEquivInstance(value, components);
+		for (T instance : meta.getInstances())
+			if (instance.equiv(meta, value, components))
+				return instance;
+		return null;
+	}
+
 	public T bindInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
 		checkSameEngine(components);
 		checkSameEngine(overrides);
@@ -208,8 +261,29 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 			if (throwExistException)
 				getRoot().discardWithException(new ExistsException("Attempts to add an already existing instance : " + weakInstance.info()));
 			else
-				return weakInstance.equals(this, value, components) ? weakInstance : weakInstance.update(overrides, value, components);
+				return weakInstance.equalsAnySupers(this, value, components) && Statics.areOverridesReached(overrides, weakInstance.getSupers()) ? weakInstance : weakInstance.update(overrides, value, components);
 		return rebuildAll(() -> buildInstance(clazz, throwExistException, overrides, value, components).plug(), nearestMeta.computePotentialDependencies(value, components));
+	}
+
+	public T adjustMeta(List<T> overrides, Serializable subValue, @SuppressWarnings("unchecked") T... subComponents) {
+		return adjustMeta(overrides, subValue, Arrays.asList(subComponents));
+	}
+
+	@Override
+	public T getInstance(T superT, Serializable value, @SuppressWarnings("unchecked") T... components) {
+		return getInstance(Collections.singletonList(superT), value, components);
+	}
+
+	@Override
+	public T getEquivInstance(Serializable value, @SuppressWarnings("unchecked") T... components) {
+		return getEquivInstance(value, Arrays.asList(components));
+	}
+
+	@Override
+	protected boolean dependsFrom(T meta, Serializable value, List<T> components) {
+		// TODO perhaps we have to adjust meta here
+		return this.inheritsFrom(meta, value, components) || getComponentsStream().filter(component -> component != null && component != this).anyMatch(component -> component.dependsFrom(meta, value, components))
+				|| (!isRoot() && getMeta().dependsFrom(meta, value, components));
 	}
 
 	private void checkSameEngine(List<T> generics) {
@@ -283,7 +357,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 			getRoot().discardWithException(new IllegalStateException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
 	}
 
-	static <T extends VertexService<T, U>, U extends RootService<T, U>> boolean componentsDepends(SingularsLazyCache singulars, List<T> subComponents, List<T> superComponents) {
+	static <T extends AbstractVertex<T, U>, U extends RootService<T, U>> boolean componentsDepends(SingularsLazyCache singulars, List<T> subComponents, List<T> superComponents) {
 		int subIndex = 0;
 		loop: for (T superComponent : superComponents) {
 			for (; subIndex < subComponents.size(); subIndex++) {
@@ -304,8 +378,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		boolean get(int i);
 	}
 
-	@Override
-	public boolean componentsDepends(List<T> subComponents, List<T> superComponents) {
+	public boolean componentsDepends(List<T> subComponents, @SuppressWarnings("unchecked") T... superComponents) {
+		return componentsDepends(subComponents, Arrays.asList(superComponents));
+	}
+
+	protected boolean componentsDepends(List<T> subComponents, List<T> superComponents) {
 		class SingularsLazyCacheImpl implements SingularsLazyCache {
 			private final Boolean[] singulars = new Boolean[subComponents.size()];
 
@@ -317,14 +394,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		return componentsDepends(new SingularsLazyCacheImpl(), subComponents, superComponents);
 	}
 
-	@Override
 	@SuppressWarnings("unchecked")
-	public boolean isSuperOf(T subMeta, List<T> overrides, Serializable subValue, List<T> subComponents) {
+	protected boolean isSuperOf(T subMeta, List<T> overrides, Serializable subValue, List<T> subComponents) {
 		return overrides.stream().anyMatch(override -> override.inheritsFrom((T) this)) || isSuperOf(subMeta, subValue, subComponents, getMeta(), getValue(), getComponents());
 	}
 
-	@Override
-	public boolean inheritsFrom(T superMeta, Serializable superValue, List<T> superComponents) {
+	protected boolean inheritsFrom(T superMeta, Serializable superValue, List<T> superComponents) {
 		return isSuperOf(getMeta(), getValue(), getComponents(), superMeta, superValue, superComponents);
 	}
 

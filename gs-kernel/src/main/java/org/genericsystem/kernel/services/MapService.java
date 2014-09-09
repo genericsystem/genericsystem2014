@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.services.SystemPropertiesService.AxedPropertyClass;
 
 public interface MapService<T extends VertexService<T, U>, U extends RootService<T, U>> extends ApiService<T, U> {
@@ -28,7 +29,7 @@ public interface MapService<T extends VertexService<T, U>, U extends RootService
 	default T getMap() {
 		T metaAttribute = getMetaAttribute();
 		for (T instance : metaAttribute.getInstances())
-			if (instance.equals(metaAttribute, SystemMap.class, Collections.singletonList(getRoot())))
+			if (instance.equals(metaAttribute, Collections.emptyList(), SystemMap.class, Collections.singletonList(getRoot())))
 				return instance;
 		return null;
 

@@ -1,9 +1,11 @@
 package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.slf4j.Logger;
@@ -47,28 +49,19 @@ public interface AncestorsService<T extends VertexService<T, U>, U extends RootS
 		return null;
 	}
 
-	// @Override
-	// default T getWeakAlive() {
-	// T pluggedMeta = getMeta().getWeakAlive();
-	// if (pluggedMeta == null)
-	// return null;
-	// for (T instance : pluggedMeta.getInstances())
-	// if (weakEquiv(instance))
-	// return instance;
-	// return null;
-	// }
-
 	@Override
+	default <V extends ApiService<?, ?>> boolean equals(ApiService<?, ?> meta, Serializable value, @SuppressWarnings("unchecked") V... components) {
+		return equals(meta, value, Arrays.asList(components));
+	}
+
 	default boolean equals(ApiService<?, ?> meta, List<? extends ApiService<?, ?>> supers, Serializable value, List<? extends ApiService<?, ?>> components) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComponents().equals(components) && getSupers().equals(supers);
 	}
 
-	// static boolean listsEquals(List<? extends ApiService<?, ?>> components, List<? extends ApiService<?, ?>> otherComponents) {
-	// if (otherComponents.size() != components.size())
-	// return false;
-	// Iterator<? extends ApiService<?, ?>> otherComponentsIt = otherComponents.iterator();
-	// return components.stream().allMatch(x -> x.equals(otherComponentsIt.next()));
-	// }
+	@Override
+	default boolean equalsAnySupers(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components) {
+		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComponents().equals(components);
+	}
 
 	@Override
 	default boolean equiv(ApiService<? extends ApiService<?, ?>, ?> service) {
@@ -76,6 +69,10 @@ public interface AncestorsService<T extends VertexService<T, U>, U extends RootS
 	}
 
 	@Override
+	default <V extends ApiService<?, ?>> boolean equiv(ApiService<?, ?> meta, Serializable value, @SuppressWarnings("unchecked") V... components) {
+		return equiv(meta, value, Arrays.asList(components));
+	}
+
 	default boolean equiv(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components) {
 		if (!getMeta().equiv(meta))
 			return false;

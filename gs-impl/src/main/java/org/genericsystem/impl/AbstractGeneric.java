@@ -9,7 +9,7 @@ import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Snapshot;
-import org.genericsystem.kernel.services.AncestorsService;
+import org.genericsystem.kernel.services.ApiService;
 import org.genericsystem.kernel.services.RootService;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends AbstractVertex<T, U> implements GenericService<T, U> {
@@ -40,10 +40,10 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!(obj instanceof AncestorsService))
+		if (!(obj instanceof ApiService<?, ?>))
 			return false;
-		AncestorsService<?, ?> service = (AncestorsService<?, ?>) obj;
-		return equals(service.getMeta(), service.getValue(), service.getComponents());
+		ApiService<?, ?> service = (ApiService<?, ?>) obj;
+		return equals(service.getMeta(), service.getSupers(), service.getValue(), service.getComponents());
 	}
 
 	@Override

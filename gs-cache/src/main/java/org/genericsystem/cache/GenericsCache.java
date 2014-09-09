@@ -3,7 +3,6 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,23 +14,11 @@ public class GenericsCache<T extends AbstractGeneric<T, ?, ?, ?>> {
 
 	public <subT extends T> subT getOrBuildT(Class<?> clazz, boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
 		log.info("start find generic : " + meta + " " + value + " with supers " + supers);
-		T result = map.get(new Object() {
-			@Override
-			public int hashCode() {
-				return Objects.hashCode(value);
-			}
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public boolean equals(Object obj) {
-				if (!(obj instanceof AbstractGeneric))
-					return false;
-				return ((AbstractGeneric<T, ?, ?, ?>) obj).equals(meta, value, components);
-			}
-		});
+		T disposable = meta.newInstance(clazz).init(throwExistException, meta, supers, value, components);
+		T result = map.get(disposable);
 		if (result == null) {
 			log.info("Not found");
-			result = meta.newInstance(clazz).init(throwExistException, meta, supers, value, components);
+			result = disposable;
 			T alreadyPresent = map.putIfAbsent(result, result);
 			if (alreadyPresent != null) {
 				result = alreadyPresent;
