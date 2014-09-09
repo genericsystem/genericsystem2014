@@ -1,11 +1,9 @@
 package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.exceptions.NotAliveException;
 import org.slf4j.Logger;
@@ -50,10 +48,6 @@ public interface AncestorsService<T extends VertexService<T, U>, U extends RootS
 	}
 
 	@Override
-	default <V extends ApiService<?, ?>> boolean equals(ApiService<?, ?> meta, Serializable value, @SuppressWarnings("unchecked") V... components) {
-		return equals(meta, value, Arrays.asList(components));
-	}
-
 	default boolean equals(ApiService<?, ?> meta, List<? extends ApiService<?, ?>> supers, Serializable value, List<? extends ApiService<?, ?>> components) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComponents().equals(components) && getSupers().equals(supers);
 	}
@@ -69,10 +63,6 @@ public interface AncestorsService<T extends VertexService<T, U>, U extends RootS
 	}
 
 	@Override
-	default <V extends ApiService<?, ?>> boolean equiv(ApiService<?, ?> meta, Serializable value, @SuppressWarnings("unchecked") V... components) {
-		return equiv(meta, value, Arrays.asList(components));
-	}
-
 	default boolean equiv(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components) {
 		if (!getMeta().equiv(meta))
 			return false;

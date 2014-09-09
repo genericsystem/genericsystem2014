@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.services.SystemPropertiesService.AxedPropertyClass;
 
@@ -26,14 +25,13 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 
 	T getAlive();
 
-		
-	boolean  equalsAnySupers(ApiService<?, ?> meta, Serializable value, ApiService<?, ?>... components);
+	boolean equalsAnySupers(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components);
 
-	boolean equals(ApiService<?, ?> meta, List<? extends ApiService<?, ?>> supers, Serializable value, ApiService<?, ?>... components);
+	boolean equals(ApiService<?, ?> meta, List<? extends ApiService<?, ?>> supers, Serializable value, List<? extends ApiService<?, ?>> components);
 
 	boolean equiv(ApiService<? extends ApiService<?, ?>, ?> service);
 
-	boolean equiv(ApiService<?, ?> meta, Serializable value, ApiService<?, ?>... components);
+	boolean equiv(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components);
 
 	T[] coerceToArray(Object... array);
 

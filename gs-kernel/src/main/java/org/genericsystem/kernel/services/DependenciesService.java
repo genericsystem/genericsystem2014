@@ -1,7 +1,5 @@
 package org.genericsystem.kernel.services;
 
-import java.io.Serializable;
-import java.util.List;
 import java.util.stream.Stream;
 import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
@@ -12,12 +10,6 @@ public interface DependenciesService<T extends VertexService<T, U>, U extends Ro
 	default boolean isAncestorOf(T dependency) {
 		return equals(dependency) || (!dependency.isRoot() && isAncestorOf(dependency.getMeta())) || dependency.getSupersStream().anyMatch(this::isAncestorOf)
 				|| dependency.getComponentsStream().filter(component -> !dependency.equals(component)).anyMatch(this::isAncestorOf);
-	}
-
-	default boolean dependsFrom(T meta, Serializable value, List<T> components) {
-		// perhaps we have to adjust meta here
-		return inheritsFrom(meta, value, components) || getComponentsStream().filter(component -> component != null && component != this).anyMatch(component -> component.dependsFrom(meta, value, components))
-				|| (!isRoot() && getMeta().dependsFrom(meta, value, components));
 	}
 
 	@SuppressWarnings("unchecked")

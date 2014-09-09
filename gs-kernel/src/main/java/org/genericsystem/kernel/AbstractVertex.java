@@ -198,9 +198,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		}.visit((T) this);
 	}
 
-	@Override
 	@SuppressWarnings("unchecked")
-	T adjustMeta(List<T> overrides, Serializable subValue, List<T> subComponents) {
+	public T adjustMeta(Serializable subValue, List<T> subComponents) {
 		T result = null;
 		for (T directInheriting : getInheritings()) {
 			if (directInheriting.equalsAnySupers(this, subValue, subComponents))
@@ -211,22 +210,22 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 				else
 					getRoot().discardWithException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
 		}
-		return result == null ? (T) this : result.adjustMeta(overrides, subValue, subComponents);
+		return result == null ? (T) this : result.adjustMeta(subValue, subComponents);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	T getInstance(Serializable value, T... components) {
+	public T getInstance(Serializable value, T... components) {
 		return getInstance(Collections.emptyList(), value, components);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	T getInstance(List<T> overrides, Serializable value, T... components) {
+	public T getInstance(List<T> overrides, Serializable value, T... components) {
 		T meta = getAlive();
 		if (meta == null)
 			return null;
-		meta = adjustMeta(overrides, value, Arrays.asList(components));
+		meta = adjustMeta(value, Arrays.asList(components));
 		if (meta != this)
 			return meta.getInstance(value, components);
 		for (T instance : meta.getInstances())
@@ -236,12 +235,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
 	T getEquivInstance(Serializable value, List<T> components) {
 		T meta = getAlive();
 		if (meta == null)
 			return null;
-		meta = adjustMeta(Collections.emptyList(), value, components);
+		meta = adjustMeta(value, components);
 		if (meta != this)
 			return meta.getEquivInstance(value, components);
 		for (T instance : meta.getInstances())
@@ -253,7 +251,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 	public T bindInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
 		checkSameEngine(components);
 		checkSameEngine(overrides);
-		T nearestMeta = adjustMeta(overrides, value, components);
+		T nearestMeta = adjustMeta(value, components);
 		if (nearestMeta != this)
 			return nearestMeta.bindInstance(clazz, throwExistException, overrides, value, components);
 		T weakInstance = getEquivInstance(value, components);
@@ -263,10 +261,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 			else
 				return weakInstance.equalsAnySupers(this, value, components) && Statics.areOverridesReached(overrides, weakInstance.getSupers()) ? weakInstance : weakInstance.update(overrides, value, components);
 		return rebuildAll(() -> buildInstance(clazz, throwExistException, overrides, value, components).plug(), nearestMeta.computePotentialDependencies(value, components));
-	}
-
-	public T adjustMeta(List<T> overrides, Serializable subValue, @SuppressWarnings("unchecked") T... subComponents) {
-		return adjustMeta(overrides, subValue, Arrays.asList(subComponents));
 	}
 
 	@Override
@@ -279,7 +273,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		return getEquivInstance(value, Arrays.asList(components));
 	}
 
-	@Override
 	protected boolean dependsFrom(T meta, Serializable value, List<T> components) {
 		// TODO perhaps we have to adjust meta here
 		return this.inheritsFrom(meta, value, components) || getComponentsStream().filter(component -> component != null && component != this).anyMatch(component -> component.dependsFrom(meta, value, components))
