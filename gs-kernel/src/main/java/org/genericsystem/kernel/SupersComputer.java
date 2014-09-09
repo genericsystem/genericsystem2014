@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import org.genericsystem.kernel.services.RootService;
-import org.genericsystem.kernel.services.VertexService;
 
-public class SupersComputer<T extends VertexService<T, U>, U extends RootService<T, U>> extends LinkedHashSet<T> {
+import org.genericsystem.kernel.services.RootService;
+
+public class SupersComputer<T extends AbstractVertex<T, U>, U extends RootService<T, U>> extends LinkedHashSet<T> {
 
 	private static final long serialVersionUID = -1078004898524170057L;
 
@@ -43,7 +43,7 @@ public class SupersComputer<T extends VertexService<T, U>, U extends RootService
 		boolean selectable = true;
 		for (T inheriting : candidate.getInheritings()) {
 			assert !inheriting.equals(candidate);
-			assert !candidate.equals(inheriting) : candidate.info() + inheriting.info();// Pas symétrique
+			assert !candidate.equals(inheriting) : candidate.info() + inheriting.info();// TODO Pas symétrique
 			if (visit(inheriting))
 				selectable = false;
 		}
