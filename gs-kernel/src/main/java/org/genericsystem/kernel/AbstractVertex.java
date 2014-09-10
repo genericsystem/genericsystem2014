@@ -249,7 +249,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	}
 
 	@SuppressWarnings("unchecked")
-	public T adjustMeta(Serializable subValue, List<T> subComponents) {
+	T adjustMeta(Serializable subValue, List<T> subComponents) {
 		T result = null;
 		for (T directInheriting : getInheritings()) {
 			if (directInheriting.equalsRegardlessSupers(this, subValue, subComponents))
@@ -275,6 +275,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		return result != null && Statics.areOverridesReached(overrides, result.getSupers()) ? result : null;
 	}
 
+	// KK should be protected
 	public T bindInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
 		checkSameEngine(components);
 		checkSameEngine(overrides);

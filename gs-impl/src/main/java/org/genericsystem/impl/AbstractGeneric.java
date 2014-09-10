@@ -139,4 +139,10 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	protected Dependencies<DependenciesEntry<T>> getSuperComposites() {
 		throw new UnsupportedOperationException();
 	}
+
+	// @Override
+	// protected T bindInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
+	// return super.bindInstance(clazz, throwExistException, overrides, value, components);
+	// }
+
 }

@@ -9,7 +9,6 @@ import org.genericsystem.impl.annotations.Meta;
 import org.genericsystem.impl.annotations.value.BooleanValue;
 import org.genericsystem.impl.annotations.value.IntValue;
 import org.genericsystem.impl.annotations.value.StringValue;
-import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.AbstractVertex.SystemMap;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Root.MetaAttribute;
@@ -43,7 +42,7 @@ public class SystemCache<T extends AbstractGeneric<T, ?, ?, ?>> extends HashMap<
 			assert systemProperty.isAlive();
 			return systemProperty;
 		}
-		T result = (T) ((AbstractVertex) setMeta(clazz)).bindInstance(clazz, false, setOverrides(clazz), findValue(clazz), setComponents(clazz));
+		T result = setMeta(clazz).bindInstance(clazz, false, setOverrides(clazz), findValue(clazz), setComponents(clazz));
 		put(clazz, result);
 		return result;
 	}
