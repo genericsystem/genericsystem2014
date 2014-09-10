@@ -3,6 +3,7 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+
 import org.genericsystem.impl.SystemCache;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.exceptions.RollbackException;
@@ -77,7 +78,7 @@ public class Engine extends Generic implements IEngine<Generic, Engine, Vertex, 
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <subT extends Generic> subT find(Class<?> clazz) {
+	public <subT extends Generic> subT find(Class<subT> clazz) {
 		return (subT) systemCache.get(clazz);
 	}
 
