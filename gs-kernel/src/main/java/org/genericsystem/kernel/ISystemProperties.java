@@ -1,30 +1,47 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
+import java.util.Optional;
 import org.genericsystem.kernel.services.IVertexBase;
 
 public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
 
-	// TODO We have to introduce the method restoreInheritancePropertyValue
+	@Override
+	default Serializable getSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos) {
+		Optional<T> key = ((AbstractVertex<T, U>) this).getKey(new AxedPropertyClass(propertyClass, pos));
+		if (key.isPresent()) {
+			Optional<Serializable> result = getValues(key.get()).stream().findFirst();
+			if (result.isPresent())
+				return result.get();
+		}
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default void setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value) {
+		T map = ((AbstractVertex<T, U>) this).getMap();
+		map.getMeta().setInstance(map, new AxedPropertyClass(propertyClass, pos), (T[]) ((AbstractVertex<?, ?>) this).coerceToArray(getRoot())).setInstance(value, (T[]) ((AbstractVertex<?, ?>) this).coerceToArray(this));
+	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T enableSystemProperty(Class<?> propertyClass, int pos) {
+	default T enableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos) {
 		assert isStructural();
-		setSystemPropertyValue((Class<T>) propertyClass, pos, Boolean.TRUE);
+		setSystemPropertyValue(propertyClass, pos, Boolean.TRUE);
 		return (T) this;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T disableSystemProperty(Class<?> propertyClass, int pos) {
+	default T disableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos) {
 		assert isStructural();
-		setSystemPropertyValue((Class<T>) propertyClass, pos, Boolean.FALSE);
+		setSystemPropertyValue(propertyClass, pos, Boolean.FALSE);
 		return (T) this;
 	}
 
 	@Override
-	default boolean isSystemPropertyEnabled(Class<?> propertyClass, int pos) {
+	default boolean isSystemPropertyEnabled(Class<? extends SystemProperty> propertyClass, int pos) {
 		Serializable value = getSystemPropertyValue(propertyClass, pos);
 		return value != null && !Boolean.FALSE.equals(value);
 	}
@@ -102,14 +119,6 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 	@Override
 	default boolean isCascadeRemove(int pos) {
 		return isSystemPropertyEnabled(CascadeRemoveProperty.class, pos);
-	}
-
-	public static interface SystemProperty {
-
-	}
-
-	public static interface Constraint extends SystemProperty {
-
 	}
 
 	public static class ReferentialIntegrityConstraint implements Constraint {

@@ -50,10 +50,11 @@ public interface IWritable<T extends AbstractVertex<T, U>, U extends IRoot<T, U>
 		return setInstance(Collections.singletonList(override), value, components);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default T getMetaAttribute() {
-		U root = getRoot();
-		return root.getInstance(root.getValue(), coerceToArray(root));
+		T root = (T) getRoot();
+		return ((AbstractVertex<T, U>) root).getDirectInstance(root.getValue(), Collections.singletonList(root));
 	}
 
 	@Override

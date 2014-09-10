@@ -40,10 +40,10 @@ public interface IDependencies<T extends AbstractVertex<T, U>, U extends IRoot<T
 	@Override
 	@SuppressWarnings("unchecked")
 	default T getInstance(List<T> overrides, Serializable value, T... components) {
-		T meta = (T) ((AbstractVertex) this).adjustMeta(value, Arrays.asList(components));
+		T meta = ((AbstractVertex<T, U>) this).adjustMeta(value, Arrays.asList(components));
 		if (meta != this)
 			return meta.getInstance(value, components);
-		return (T) ((AbstractVertex) this).getDirectInstance(overrides, value, Arrays.asList(components));
+		return ((AbstractVertex<T, U>) this).getDirectInstance(overrides, value, Arrays.asList(components));
 	}
 
 }

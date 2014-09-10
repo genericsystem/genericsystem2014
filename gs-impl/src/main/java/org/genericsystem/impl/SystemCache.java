@@ -10,7 +10,7 @@ import org.genericsystem.impl.annotations.value.BooleanValue;
 import org.genericsystem.impl.annotations.value.IntValue;
 import org.genericsystem.impl.annotations.value.StringValue;
 import org.genericsystem.kernel.AbstractVertex;
-import org.genericsystem.kernel.IMap.SystemMap;
+import org.genericsystem.kernel.AbstractVertex.SystemMap;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Root.MetaAttribute;
 

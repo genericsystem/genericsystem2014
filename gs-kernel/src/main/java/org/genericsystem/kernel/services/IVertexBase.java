@@ -91,15 +91,23 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 
 	String detailedInfo();
 
-	Serializable getSystemPropertyValue(Class<?> propertyClass, int pos);
+	public static interface SystemProperty {
 
-	void setSystemPropertyValue(Class<T> propertyClass, int pos, Serializable value);
+	}
 
-	T enableSystemProperty(Class<?> propertyClass, int pos);
+	public static interface Constraint extends SystemProperty {
 
-	T disableSystemProperty(Class<?> propertyClass, int pos);
+	}
 
-	boolean isSystemPropertyEnabled(Class<?> propertyClass, int pos);
+	Serializable getSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos);
+
+	void setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value);
+
+	T enableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos);
+
+	T disableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos);
+
+	boolean isSystemPropertyEnabled(Class<? extends SystemProperty> propertyClass, int pos);
 
 	T enableReferentialIntegrity(int pos);
 
@@ -131,15 +139,6 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 
 	boolean isCascadeRemove(int pos);
 
-	public static interface SystemProperty {
-
-	}
-
-	public static interface Constraint extends SystemProperty {
-
-	}
-
-	// TODO should return a boolean, or throw an exception, or twice ???
 	void remove();
 
 	T updateValue(Serializable newValue);

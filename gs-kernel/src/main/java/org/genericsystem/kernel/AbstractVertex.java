@@ -8,8 +8,10 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Statics.Supers;
 import org.genericsystem.kernel.exceptions.AliveConstraintViolationException;
@@ -26,7 +28,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	private T meta;
 	private List<T> components;
 	private Serializable value;
-	protected boolean throwExistException;
+	private boolean throwExistException;
 
 	@SuppressWarnings("unchecked")
 	protected T init(boolean throwExistException, T meta, Serializable value, List<T> components) {
@@ -440,11 +442,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		boolean get(int i);
 	}
 
-	public boolean componentsDepends(List<T> subComponents, @SuppressWarnings("unchecked") T... superComponents) {
+	boolean componentsDepends(List<T> subComponents, @SuppressWarnings("unchecked") T... superComponents) {
 		return componentsDepends(subComponents, Arrays.asList(superComponents));
 	}
 
-	protected boolean componentsDepends(List<T> subComponents, List<T> superComponents) {
+	boolean componentsDepends(List<T> subComponents, List<T> superComponents) {
 		class SingularsLazyCacheImpl implements SingularsLazyCache {
 			private final Boolean[] singulars = new Boolean[subComponents.size()];
 
@@ -590,6 +592,26 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 
 	boolean equalsRegardlessSupers(IVertexBase<?, ?> meta, Serializable value, List<? extends IVertexBase<?, ?>> components) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComponents().equals(components);
+	}
+
+	@SuppressWarnings("unchecked")
+	T getMap() {
+		return getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
+	}
+
+	public static class SystemMap {}
+
+	protected boolean equals(IVertexBase<?, ?> meta, List<? extends IVertexBase<?, ?>> supers, Serializable value, List<? extends IVertexBase<?, ?>> components) {
+		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComponents().equals(components) && getSupers().equals(supers);
+	}
+
+	Stream<T> getKeys() {
+		T map = this.getMap();
+		return map != null ? getAttributes(map).stream() : Stream.empty();
+	}
+
+	Optional<T> getKey(AxedPropertyClass property) {
+		return getKeys().filter(x -> Objects.equals(x.getValue(), property)).findFirst();
 	}
 
 }
