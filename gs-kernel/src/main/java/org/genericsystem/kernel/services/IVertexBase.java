@@ -3,6 +3,7 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Snapshot;
 
 public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<T, U>> {
@@ -139,7 +140,6 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 
 	}
 
-	// TODO should return a boolean, or throw an exception, or twice ???
 	void remove();
 
 	T updateValue(Serializable newValue);

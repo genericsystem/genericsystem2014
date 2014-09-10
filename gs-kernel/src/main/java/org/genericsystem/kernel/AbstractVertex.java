@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Statics.Supers;
 import org.genericsystem.kernel.exceptions.AliveConstraintViolationException;
 import org.genericsystem.kernel.exceptions.AmbiguousSelectionException;
-import org.genericsystem.kernel.exceptions.ConstraintViolationException;
 import org.genericsystem.kernel.exceptions.CrossEnginesAssignementsException;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
@@ -147,38 +147,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		if (!vertex.isAlive())
 			getRoot().discardWithException(new AliveConstraintViolationException(vertex.info() + " is not alive"));
 		if (!vertex.getInstances().isEmpty() || !vertex.getInheritings().isEmpty() || !vertex.getComposites().isEmpty())
-			getRoot().discardWithException(new IllegalStateException(vertex.info() + " has dependencies"));
+			getRoot().discardWithException(new ReferentialIntegrityConstraintViolationException(vertex.info() + " has dependencies"));
 		vertex.unplug();
-	}
-
-	private LinkedHashSet<T> buildOrderedDependenciesToRemove() throws ReferentialIntegrityConstraintViolationException {
-		@SuppressWarnings("unchecked")
-		T restructoratorService = (T) this;
-		return new LinkedHashSet<T>() {
-			private static final long serialVersionUID = -3610035019789480505L;
-			{
-				visit(restructoratorService);
-			}
-
-			// TODO clean
-			public void visit(T generic) throws ReferentialIntegrityConstraintViolationException {
-				if (add(generic)) {// protect from loop
-					if (!generic.getInheritings().isEmpty() || !generic.getInstances().isEmpty())
-						throw new ReferentialIntegrityConstraintViolationException("Ancestor : " + generic + " has an inheritance or instance dependency");
-
-					for (T composite : generic.getComposites())
-						if (!generic.equals(composite)) {
-							for (int componentPos = 0; componentPos < composite.getComponents().size(); componentPos++)
-								if (!/* compositeDependency.isAutomatic() && */composite.getComponents().get(componentPos).equals(generic) && !contains(composite) && composite.isReferentialIntegrityConstraintEnabled(componentPos))
-									throw new ReferentialIntegrityConstraintViolationException(composite + " is Referential Integrity for ancestor " + generic + " by component position : " + componentPos);
-							visit(composite);
-						}
-					for (int axe = 0; axe < generic.getComponents().size(); axe++)
-						if (generic.isCascadeRemove(axe))
-							visit(generic.getComponents().get(axe));
-				}
-			}
-		};
 	}
 
 	private Iterable<T> reverseLinkedHashSet(LinkedHashSet<T> linkedHashSet) {
@@ -187,17 +157,13 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		return dependencies;
 	}
 
-	private Iterable<T> getOrderedDependenciesToRemove() throws ConstraintViolationException {
+	private Iterable<T> getOrderedDependenciesToRemove() {
 		return reverseLinkedHashSet(buildOrderedDependenciesToRemove());
 	}
 
 	@Override
 	public void remove() {
-		try {
-			getOrderedDependenciesToRemove().forEach(x -> this.simpleRemove(x));
-		} catch (ConstraintViolationException e) {
-			getRoot().discardWithException(e);
-		}
+		getOrderedDependenciesToRemove().forEach(x -> simpleRemove(x));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -238,6 +204,35 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 				return isAncestorOf(node);
 			}
 		}.visit(getMeta());
+	}
+
+	@SuppressWarnings("unchecked")
+	private LinkedHashSet<T> buildOrderedDependenciesToRemove() {
+		return new LinkedHashSet<T>() {
+			private static final long serialVersionUID = -3610035019789480505L;
+			{
+				visit((T) AbstractVertex.this);
+			}
+
+			// TODO clean
+			public void visit(T generic) {
+				if (add(generic)) {// protect from loop
+					if (!generic.getInheritings().isEmpty() || !generic.getInstances().isEmpty())
+						getRoot().discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + generic + " has an inheritance or instance dependency"));
+
+					for (T composite : generic.getComposites())
+						if (!generic.equals(composite)) {
+							for (int componentPos = 0; componentPos < composite.getComponents().size(); componentPos++)
+								if (/* !compositeDependency.isAutomatic() && */composite.getComponents().get(componentPos).equals(generic) && !contains(composite) && composite.isReferentialIntegrityConstraintEnabled(componentPos))
+									getRoot().discardWithException(new ReferentialIntegrityConstraintViolationException(composite + " is Referential Integrity for ancestor " + generic + " by component position : " + componentPos));
+							visit(composite);
+						}
+					for (int axe = 0; axe < generic.getComponents().size(); axe++)
+						if (generic.isCascadeRemove(axe))
+							visit(generic.getComponents().get(axe));
+				}
+			}
+		};
 	}
 
 	@SuppressWarnings("unchecked")
