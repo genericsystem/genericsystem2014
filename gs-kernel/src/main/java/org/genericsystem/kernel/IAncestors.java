@@ -1,18 +1,15 @@
-package org.genericsystem.kernel.services;
+package org.genericsystem.kernel;
 
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
-import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.exceptions.NotAliveException;
+import org.genericsystem.kernel.services.IGeneric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public interface AncestorsService<T extends VertexService<T, U>, U extends RootService<T, U>> extends ApiService<T, U> {
+public interface IAncestors<T extends IVertex<T, U>, U extends IRoot<T, U>> extends IGeneric<T, U> {
 
-	static Logger log = LoggerFactory.getLogger(AncestorsService.class);
+	static Logger log = LoggerFactory.getLogger(IAncestors.class);
 
 	@Override
 	default Stream<T> getComponentsStream() {
@@ -54,35 +51,13 @@ public interface AncestorsService<T extends VertexService<T, U>, U extends RootS
 	// }
 
 	@Override
-	default boolean equiv(ApiService<? extends ApiService<?, ?>, ?> service) {
-		return equals(service) ? true : equiv(service.getMeta(), service.getValue(), service.getComponents());
-	}
-
-	@Override
-	default boolean equiv(ApiService<?, ?> meta, Serializable value, ApiService<?, ?>... components) {
-		return equiv(meta, value, Arrays.asList(components));
-	}
-
-	@Override
-	default boolean equiv(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components) {
-		if (!getMeta().equiv(meta))
-			return false;
-		if (getComponents().size() != components.size())
-			return false;// for the moment, no weak equiv when component size is different
-		for (int i = 0; i < getComponents().size(); i++)
-			if (isReferentialIntegrityConstraintEnabled(i) && isSingularConstraintEnabled(i) && getComponents().get(i).equiv(components.get(i)))
-				return true;
-		for (int i = 0; i < getComponents().size(); i++)
-			if (!getComponents().get(i).equiv(components.get(i)))
-				return false;
-		if (!meta.isPropertyConstraintEnabled())
-			return Objects.equals(getValue(), value);
-		return true;
+	default boolean equiv(IGeneric<? extends IGeneric<?, ?>, ?> service) {
+		return equals(service) ? true : ((AbstractVertex<?, ?>) this).equiv(service.getMeta(), service.getValue(), service.getComponents());
 	}
 
 	@Override
 	default int getLevel() {
-		return isRoot() || getValue().equals(getRoot().getValue()) || getComponentsStream().allMatch(c -> c.isRoot()) ? 0 : getMeta().getLevel() + 1;
+		return isRoot() || Objects.equals(getValue(), getRoot().getValue()) || getComponentsStream().allMatch(c -> c.isRoot()) ? 0 : getMeta().getLevel() + 1;
 	}
 
 	@Override

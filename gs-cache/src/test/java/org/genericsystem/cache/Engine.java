@@ -7,7 +7,7 @@ import org.genericsystem.impl.SystemCache;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.exceptions.RollbackException;
 
-public class Engine extends Generic implements EngineService<Generic, Engine, Vertex, Root> {
+public class Engine extends Generic implements IEngine<Generic, Engine, Vertex, Root> {
 
 	private final ThreadLocal<Cache<Generic, Engine, Vertex, Root>> cacheLocal = new ThreadLocal<>();
 	private final SystemCache<Generic> systemCache = new SystemCache<>(this);
@@ -83,22 +83,22 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 
 	@Override
 	public Engine getRoot() {
-		return EngineService.super.getRoot();
+		return IEngine.super.getRoot();
 	}
 
 	@Override
 	public Engine getAlive() {
-		return (Engine) EngineService.super.getAlive();
+		return (Engine) IEngine.super.getAlive();
 	}
 
 	@Override
 	public boolean isRoot() {
-		return EngineService.super.isRoot();
+		return IEngine.super.isRoot();
 	}
 
 	@Override
 	public void discardWithException(Throwable exception) throws RollbackException {
-		EngineService.super.discardWithException(exception);
+		IEngine.super.discardWithException(exception);
 	}
 
 }

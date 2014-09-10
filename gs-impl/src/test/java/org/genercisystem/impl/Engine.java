@@ -3,13 +3,13 @@ package org.genercisystem.impl;
 import java.io.Serializable;
 import java.util.Collections;
 
-import org.genericsystem.impl.EngineService;
+import org.genericsystem.impl.IEngine;
 import org.genericsystem.impl.SystemCache;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
 
-public class Engine extends Generic implements EngineService<Generic, Engine> {
+public class Engine extends Generic implements IEngine<Generic, Engine> {
 
 	private final Root root;
 
@@ -37,17 +37,17 @@ public class Engine extends Generic implements EngineService<Generic, Engine> {
 
 	@Override
 	public Engine getRoot() {
-		return EngineService.super.getRoot();
+		return IEngine.super.getRoot();
 	}
 
 	@Override
 	public Engine getAlive() {
-		return (Engine) EngineService.super.getAlive();
+		return (Engine) IEngine.super.getAlive();
 	}
 
 	@Override
 	public boolean isRoot() {
-		return EngineService.super.isRoot();
+		return IEngine.super.isRoot();
 	}
 
 	@SuppressWarnings("unchecked")

@@ -5,10 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.genericsystem.kernel.services.RootService;
-import org.genericsystem.kernel.services.VertexService;
-
-public abstract class Signature<T extends Signature<T, U>, U extends RootService<T, U>> implements VertexService<T, U> {
+public abstract class Signature<T extends Signature<T, U>, U extends IRoot<T, U>> implements IVertex<T, U> {
 
 	private T meta;
 	private List<T> components;

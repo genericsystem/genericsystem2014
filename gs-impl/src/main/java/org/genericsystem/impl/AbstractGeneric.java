@@ -8,11 +8,10 @@ import org.genericsystem.impl.annotations.InstanceClass;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
+import org.genericsystem.kernel.IRoot;
 import org.genericsystem.kernel.Snapshot;
-import org.genericsystem.kernel.services.ApiService;
-import org.genericsystem.kernel.services.RootService;
 
-public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends AbstractVertex<T, U> implements GenericService<T, U> {
+public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends AbstractVertex<T, U> implements IGeneric<T, U> {
 
 	@Override
 	protected T newT(Class<?> clazz, boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
@@ -40,9 +39,9 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!(obj instanceof ApiService<?, ?>))
+		if (!(obj instanceof IGeneric<?, ?>))
 			return false;
-		ApiService<?, ?> service = (ApiService<?, ?>) obj;
+		IGeneric<?, ?> service = (IGeneric<?, ?>) obj;
 		return equals(service.getMeta(), service.getSupers(), service.getValue(), service.getComponents());
 	}
 

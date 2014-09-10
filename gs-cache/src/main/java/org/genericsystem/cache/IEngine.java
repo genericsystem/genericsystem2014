@@ -5,7 +5,7 @@ import java.util.List;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.exceptions.RollbackException;
 
-public interface EngineService<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends GenericService<T, U, V, W>, org.genericsystem.impl.EngineService<T, U> {
+public interface IEngine<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends IGeneric<T, U, V, W>, org.genericsystem.impl.IEngine<T, U> {
 
 	default Cache<T, U, V, W> newCache() {
 		return buildCache(new Transaction<>(getRoot()));

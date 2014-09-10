@@ -3,32 +3,32 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.Collections;
 
-public class Root extends Vertex implements RootService<Vertex, Root> {
+public class Root extends Vertex implements IRoot<Vertex, Root> {
 
-	private final EngineService<?, ?, Vertex, Root> engine;
+	private final IEngine<?, ?, Vertex, Root> engine;
 
-	Root(EngineService<?, ?, Vertex, Root> engine, Serializable value) {
+	Root(IEngine<?, ?, Vertex, Root> engine, Serializable value) {
 		init(false, null, Collections.emptyList(), value, Collections.emptyList());
 		this.engine = engine;
 	}
 
 	@Override
 	public Root getRoot() {
-		return RootService.super.getRoot();
+		return IRoot.super.getRoot();
 	}
 
 	@Override
 	public Root getAlive() {
-		return (Root) RootService.super.getAlive();
+		return (Root) IRoot.super.getAlive();
 	}
 
 	@Override
 	public boolean isRoot() {
-		return RootService.super.isRoot();
+		return IRoot.super.isRoot();
 	}
 
 	@Override
-	public EngineService<?, ?, Vertex, Root> getEngine() {
+	public IEngine<?, ?, Vertex, Root> getEngine() {
 		return engine;
 	}
 

@@ -1,10 +1,9 @@
-package org.genericsystem.kernel.services;
+package org.genericsystem.kernel;
 
 import java.util.stream.Stream;
-import org.genericsystem.kernel.Snapshot;
-import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.services.IGeneric;
 
-public interface DependenciesService<T extends VertexService<T, U>, U extends RootService<T, U>> extends ApiService<T, U> {
+public interface IDependencies<T extends IVertex<T, U>, U extends IRoot<T, U>> extends IGeneric<T, U> {
 
 	@Override
 	default boolean isAncestorOf(T dependency) {

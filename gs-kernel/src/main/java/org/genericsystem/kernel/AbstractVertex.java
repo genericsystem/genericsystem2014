@@ -19,11 +19,9 @@ import org.genericsystem.kernel.exceptions.CrossEnginesAssignementsException;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 import org.genericsystem.kernel.exceptions.ReferentialIntegrityConstraintViolationException;
-import org.genericsystem.kernel.services.ApiService;
-import org.genericsystem.kernel.services.RootService;
-import org.genericsystem.kernel.services.VertexService;
+import org.genericsystem.kernel.services.IGeneric;
 
-public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends RootService<T, U>> extends Signature<T, U> implements VertexService<T, U> {
+public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends Signature<T, U> implements IVertex<T, U> {
 
 	protected List<T> supers;
 
@@ -159,7 +157,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		return rebuildAll(() -> getMeta().bindInstance(null, isThrowExistException(), new Supers<>(getSupers(), supersToAdd), newValue, newComponents), computeDependencies());
 	}
 
-	private static class ConvertMap<T extends AbstractVertex<T, U>, U extends RootService<T, U>> extends HashMap<T, T> {
+	private static class ConvertMap<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends HashMap<T, T> {
 		private static final long serialVersionUID = 5003546962293036021L;
 
 		T convert(T dependency) {
@@ -280,6 +278,22 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		return null;
 	}
 
+	boolean equiv(IGeneric<?, ?> meta, Serializable value, List<? extends IGeneric<?, ?>> components) {
+		if (!getMeta().equiv(meta))
+			return false;
+		if (getComponents().size() != components.size())
+			return false;// for the moment, no weak equiv when component size is different
+		for (int i = 0; i < getComponents().size(); i++)
+			if (isReferentialIntegrityConstraintEnabled(i) && isSingularConstraintEnabled(i) && getComponents().get(i).equiv(components.get(i)))
+				return true;
+		for (int i = 0; i < getComponents().size(); i++)
+			if (!getComponents().get(i).equiv(components.get(i)))
+				return false;
+		if (!meta.isPropertyConstraintEnabled())
+			return Objects.equals(getValue(), value);
+		return true;
+	}
+
 	public T adjustMeta(List<T> overrides, Serializable subValue, @SuppressWarnings("unchecked") T... subComponents) {
 		return adjustMeta(overrides, subValue, Arrays.asList(subComponents));
 	}
@@ -337,8 +351,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 
 	abstract protected T[] newTArray(int dim);
 
-	@Override
 	@SuppressWarnings("unchecked")
+	@Override
 	public T[] coerceToArray(Object... array) {
 		T[] result = newTArray(array.length);
 		for (int i = 0; i < array.length; i++)
@@ -348,7 +362,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public T[] targetsToComponents(T... targets) {
+	public T[] addThisToTargets(T... targets) {
 		T[] components = newTArray(targets.length + 1);
 		components[0] = (T) this;
 		System.arraycopy(targets, 0, components, 1, targets.length);
@@ -370,7 +384,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 			getRoot().discardWithException(new IllegalStateException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
 	}
 
-	static <T extends AbstractVertex<T, U>, U extends RootService<T, U>> boolean componentsDepends(SingularsLazyCache singulars, List<T> subComponents, List<T> superComponents) {
+	static <T extends AbstractVertex<T, U>, U extends IRoot<T, U>> boolean componentsDepends(SingularsLazyCache singulars, List<T> subComponents, List<T> superComponents) {
 		int subIndex = 0;
 		loop: for (T superComponent : superComponents) {
 			for (; subIndex < subComponents.size(); subIndex++) {
@@ -416,7 +430,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		return isSuperOf(getMeta(), getValue(), getComponents(), superMeta, superValue, superComponents);
 	}
 
-	private static <T extends AbstractVertex<T, U>, U extends RootService<T, U>> boolean isSuperOf(T subMeta, Serializable subValue, List<T> subComponents, T superMeta, Serializable superValue, List<T> superComponents) {
+	private static <T extends AbstractVertex<T, U>, U extends IRoot<T, U>> boolean isSuperOf(T subMeta, Serializable subValue, List<T> subComponents, T superMeta, Serializable superValue, List<T> superComponents) {
 		if (!subMeta.inheritsFrom(superMeta))
 			return false;
 		if (!subMeta.componentsDepends(subComponents, superComponents))
@@ -479,7 +493,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		return index(getSuperComposites(), superVertex, composite);
 	}
 
-	private static <T extends AbstractVertex<T, U>, U extends RootService<T, U>> T index(Dependencies<DependenciesEntry<T>> multimap, T index, T composite) {
+	private static <T extends AbstractVertex<T, U>, U extends IRoot<T, U>> T index(Dependencies<DependenciesEntry<T>> multimap, T index, T composite) {
 		for (DependenciesEntry<T> entry : multimap)
 			if (index.equals(entry.getKey()))
 				return entry.getValue().set(composite);
@@ -539,7 +553,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 		return unIndex(getInheritingsDependencies(), inheriting);
 	}
 
-	boolean equalsRegardlessSupers(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components) {
+	boolean equalsRegardlessSupers(IGeneric<?, ?> meta, Serializable value, List<? extends IGeneric<?, ?>> components) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComponents().equals(components);
 	}
 

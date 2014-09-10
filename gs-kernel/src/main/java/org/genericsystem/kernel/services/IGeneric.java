@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import org.genericsystem.kernel.Snapshot;
 
-public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, U>> {
+public interface IGeneric<T extends IGeneric<T, U>, U extends IGeneric<T, U>> {
 
 	T getMeta();
 
@@ -23,18 +23,12 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 
 	T getAlive();
 
-	// boolean equals(ApiService<?, ?> meta, List<? extends ApiService<?, ?>> supers, Serializable value, List<? extends ApiService<?, ?>> components);
-
-	boolean equiv(ApiService<?, ?> service);
-
-	boolean equiv(ApiService<?, ?> meta, Serializable value, ApiService<?, ?>... components);
-
-	boolean equiv(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components);
+	boolean equiv(IGeneric<?, ?> service);
 
 	T[] coerceToArray(Object... array);
 
 	@SuppressWarnings("unchecked")
-	T[] targetsToComponents(T... targets);
+	T[] addThisToTargets(T... targets);
 
 	int getLevel();
 

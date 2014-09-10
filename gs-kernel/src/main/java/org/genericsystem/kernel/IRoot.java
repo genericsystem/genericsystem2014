@@ -1,8 +1,8 @@
-package org.genericsystem.kernel.services;
+package org.genericsystem.kernel;
 
 import org.genericsystem.kernel.exceptions.RollbackException;
 
-public interface RootService<T extends VertexService<T, U>, U extends RootService<T, U>> extends VertexService<T, U> {
+public interface IRoot<T extends IVertex<T, U>, U extends IRoot<T, U>> extends IVertex<T, U> {
 
 	@Override
 	default int getLevel() {

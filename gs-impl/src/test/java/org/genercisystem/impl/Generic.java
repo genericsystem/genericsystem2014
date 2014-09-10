@@ -1,11 +1,11 @@
 package org.genercisystem.impl;
 
 import org.genericsystem.impl.AbstractGeneric;
-import org.genericsystem.impl.GenericService;
+import org.genericsystem.impl.IGeneric;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Vertex;
 
-public class Generic extends AbstractGeneric<Generic, Engine, Vertex, Root> implements GenericService<Generic, Engine> {
+public class Generic extends AbstractGeneric<Generic, Engine, Vertex, Root> implements IGeneric<Generic, Engine> {
 
 	@Override
 	protected Generic newT() {

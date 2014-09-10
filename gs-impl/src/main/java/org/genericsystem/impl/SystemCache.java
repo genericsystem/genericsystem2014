@@ -11,11 +11,11 @@ import org.genericsystem.impl.annotations.value.IntValue;
 import org.genericsystem.impl.annotations.value.StringValue;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Root;
+import org.genericsystem.kernel.IVertex;
+import org.genericsystem.kernel.IMap.SystemMap;
 import org.genericsystem.kernel.Root.MetaAttribute;
-import org.genericsystem.kernel.services.MapService.SystemMap;
-import org.genericsystem.kernel.services.VertexService;
 
-public class SystemCache<T extends VertexService<T, ?>> extends HashMap<Class<?>, T> {
+public class SystemCache<T extends IVertex<T, ?>> extends HashMap<Class<?>, T> {
 
 	private static final long serialVersionUID = 1150085123612887245L;
 

@@ -6,9 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.genericsystem.kernel.services.RootService;
-
-public class SupersComputer<T extends AbstractVertex<T, U>, U extends RootService<T, U>> extends LinkedHashSet<T> {
+public class SupersComputer<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends LinkedHashSet<T> {
 
 	private static final long serialVersionUID = -1078004898524170057L;
 

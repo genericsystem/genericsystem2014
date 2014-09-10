@@ -1,10 +1,9 @@
-package org.genericsystem.kernel.services;
+package org.genericsystem.kernel;
 
 import java.io.Serializable;
+import org.genericsystem.kernel.services.IGeneric;
 
-import org.genericsystem.kernel.Snapshot;
-
-public interface CompositesInheritanceService<T extends VertexService<T, U>, U extends RootService<T, U>> extends ApiService<T, U> {
+public interface ICompositesInheritance<T extends IVertex<T, U>, U extends IRoot<T, U>> extends IGeneric<T, U> {
 
 	@Override
 	default Snapshot<T> getAttributes(T attribute) {

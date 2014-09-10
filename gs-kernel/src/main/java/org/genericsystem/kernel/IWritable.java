@@ -1,11 +1,12 @@
-package org.genericsystem.kernel.services;
+package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.genericsystem.kernel.services.IGeneric;
 
-public interface WriteService<T extends VertexService<T, U>, U extends RootService<T, U>> extends ApiService<T, U> {
+public interface IWritable<T extends IVertex<T, U>, U extends IRoot<T, U>> extends IGeneric<T, U> {
 
 	@Override
 	void remove();
@@ -70,10 +71,6 @@ public interface WriteService<T extends VertexService<T, U>, U extends RootServi
 	@Override
 	T[] coerceToArray(Object... array);
 
-	@SuppressWarnings("unchecked")
-	@Override
-	T[] targetsToComponents(T... targets);
-
 	@Override
 	@SuppressWarnings("unchecked")
 	default T addAttribute(Serializable value, T... targets) {
@@ -89,13 +86,13 @@ public interface WriteService<T extends VertexService<T, U>, U extends RootServi
 	@Override
 	@SuppressWarnings("unchecked")
 	default T addHolder(T attribute, Serializable value, T... targets) {
-		return attribute.addInstance(attribute, value, targetsToComponents(targets));
+		return attribute.addInstance(attribute, value, addThisToTargets(targets));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	default T setHolder(T attribute, Serializable value, T... targets) {
-		return attribute.setInstance(attribute, value, targetsToComponents(targets));
+		return attribute.setInstance(attribute, value, addThisToTargets(targets));
 	}
 
 	@Override
@@ -113,37 +110,37 @@ public interface WriteService<T extends VertexService<T, U>, U extends RootServi
 	@Override
 	@SuppressWarnings("unchecked")
 	default T addHolder(T attribute, T override, Serializable value, T... targets) {
-		return attribute.addInstance(override, value, targetsToComponents(targets));
+		return attribute.addInstance(override, value, addThisToTargets(targets));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	default T setHolder(T attribute, T override, Serializable value, T... targets) {
-		return attribute.setInstance(override, value, targetsToComponents(targets));
+		return attribute.setInstance(override, value, addThisToTargets(targets));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	default T addAttribute(List<T> overrides, Serializable value, T... targets) {
-		return getRoot().addInstance(overrides, value, targetsToComponents(targets));
+		return getRoot().addInstance(overrides, value, addThisToTargets(targets));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	default T setAttribute(List<T> overrides, Serializable value, T... targets) {
-		return getRoot().setInstance(overrides, value, targetsToComponents(targets));
+		return getRoot().setInstance(overrides, value, addThisToTargets(targets));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	default T addHolder(T attribute, List<T> overrides, Serializable value, T... targets) {
-		return attribute.addInstance(overrides, value, targetsToComponents(targets));
+		return attribute.addInstance(overrides, value, addThisToTargets(targets));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	default T setHolder(T attribute, List<T> overrides, Serializable value, T... targets) {
-		return attribute.setInstance(overrides, value, targetsToComponents(targets));
+		return attribute.setInstance(overrides, value, addThisToTargets(targets));
 	}
 
 }

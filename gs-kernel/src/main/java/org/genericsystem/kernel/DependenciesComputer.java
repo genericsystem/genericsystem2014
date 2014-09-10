@@ -3,9 +3,8 @@ package org.genericsystem.kernel;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import org.genericsystem.kernel.services.RootService;
 
-abstract class DependenciesComputer<T extends AbstractVertex<T, U>, U extends RootService<T, U>> extends LinkedHashSet<T> {
+abstract class DependenciesComputer<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends LinkedHashSet<T> {
 	private static final long serialVersionUID = -5970021419012502402L;
 	private final Set<T> alreadyVisited = new HashSet<>();
 

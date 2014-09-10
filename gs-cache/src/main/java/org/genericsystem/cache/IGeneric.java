@@ -2,7 +2,7 @@ package org.genericsystem.cache;
 
 import org.genericsystem.kernel.AbstractVertex;
 
-public interface GenericService<T extends AbstractGeneric<T, U, V, W>, U extends EngineService<T, U, V, W>, V extends AbstractVertex<V, W>, W extends RootService<V, W>> extends org.genericsystem.impl.GenericService<T, U> {
+public interface IGeneric<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends org.genericsystem.impl.IGeneric<T, U> {
 
 	@SuppressWarnings("unchecked")
 	@Override

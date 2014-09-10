@@ -2,12 +2,10 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.Collections;
-
-import org.genericsystem.kernel.services.RootService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Root extends Vertex implements RootService<Vertex, Root> {
+public class Root extends Vertex implements IRoot<Vertex, Root> {
 
 	protected final static Logger log = LoggerFactory.getLogger(Root.class);
 

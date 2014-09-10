@@ -1,7 +1,9 @@
-package org.genericsystem.kernel.services;
+package org.genericsystem.kernel;
+
+import org.genericsystem.kernel.services.IGeneric;
 
 
-public interface BindingService<T extends VertexService<T, U>, U extends RootService<T, U>> extends ApiService<T, U> {
+public interface BindingService<T extends IVertex<T, U>, U extends IRoot<T, U>> extends IGeneric<T, U> {
 
 	// @Override
 	// default T adjustMeta(List<T> overrides, Serializable subValue, @SuppressWarnings("unchecked") T... subComponents) {

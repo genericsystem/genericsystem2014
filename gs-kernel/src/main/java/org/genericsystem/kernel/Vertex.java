@@ -1,11 +1,10 @@
 package org.genericsystem.kernel;
 
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
-import org.genericsystem.kernel.services.VertexService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Vertex extends AbstractVertex<Vertex, Root> implements VertexService<Vertex, Root> {
+public class Vertex extends AbstractVertex<Vertex, Root> implements IVertex<Vertex, Root> {
 
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 
