@@ -10,6 +10,7 @@ import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.IRoot;
 import org.genericsystem.kernel.Snapshot;
+import org.genericsystem.kernel.services.IVertexBase;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends AbstractVertex<T, U> implements IGeneric<T, U> {
 
@@ -39,9 +40,9 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!(obj instanceof IGeneric<?, ?>))
+		if (!(obj instanceof IVertexBase<?, ?>))
 			return false;
-		IGeneric<?, ?> service = (IGeneric<?, ?>) obj;
+		IVertexBase<?, ?> service = (IVertexBase<?, ?>) obj;
 		return equals(service.getMeta(), service.getSupers(), service.getValue(), service.getComponents());
 	}
 
@@ -89,9 +90,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		for (V instance : metaVertex.getInstances())
 			if (equals(instance))
 				return instance;
-			else {
-				log.info("ZZZZZZZZZZ : " + instance.info() + " " + this.info());
-			}
 		return null;
 	}
 
