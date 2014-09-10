@@ -67,9 +67,8 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public T plug() {
+	protected T plug() {
 		V vertex = getMeta().unwrap();
-		vertex.checkIsAlive();
 		if (isThrowExistException())
 			vertex.addInstance(getSupersStream().map(T::unwrap).collect(Collectors.toList()), getValue(), vertex.coerceToArray(getComponentsStream().map(T::unwrap).toArray()));
 		else
@@ -78,9 +77,9 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	}
 
 	@Override
-	public boolean unplug() {
-		V vertex = unwrap();
-		return vertex != null && vertex.unplug();
+	protected boolean unplug() {
+		unwrap().remove();
+		return true;
 	}
 
 	@SuppressWarnings("unchecked")

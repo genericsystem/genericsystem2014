@@ -5,7 +5,6 @@ import java.util.LinkedHashSet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
 import org.genericsystem.kernel.Statics;
 
 public class GarbageCollector<T extends AbstractVertex<T, U>, U extends RootService<T, U>> extends LinkedHashSet<T> {
@@ -34,7 +33,7 @@ public class GarbageCollector<T extends AbstractVertex<T, U>, U extends RootServ
 			while (iterator.hasNext()) {
 				T vertex = iterator.next();
 				if (ts - vertex.getLifeManager().getDeathTs() >= timeOut) {
-					vertex.unplug();
+					vertex.remove();
 					iterator.remove();
 				}
 			}

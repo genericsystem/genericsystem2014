@@ -503,7 +503,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	}
 
 	@SuppressWarnings("unchecked")
-	public <subT extends T> subT plug() {
+	protected <subT extends T> subT plug() {
 		T result = ((AbstractVertex<T, U>) getMeta()).indexInstance((T) this);
 		getSupersStream().forEach(superGeneric -> ((AbstractVertex<T, U>) superGeneric).indexInheriting((T) this));
 		getComponentsStream().forEach(component -> ((AbstractVertex<T, U>) component).indexByMeta(getMeta(), (T) this));
@@ -512,7 +512,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	}
 
 	@SuppressWarnings("unchecked")
-	public boolean unplug() {
+	protected boolean unplug() {
 		boolean result = ((AbstractVertex<T, U>) getMeta()).unIndexInstance((T) this);
 		if (!result)
 			getRoot().discardWithException(new NotFoundException(this.info()));
