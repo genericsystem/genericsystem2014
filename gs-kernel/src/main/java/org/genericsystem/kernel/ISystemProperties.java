@@ -3,7 +3,7 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import org.genericsystem.kernel.services.IVertexBase;
 
-public interface ISystemProperties<T extends IVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
+public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
 
 	// TODO We have to introduce the method restoreInheritancePropertyValue
 

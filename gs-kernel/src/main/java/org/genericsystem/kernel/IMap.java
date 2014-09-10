@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 import org.genericsystem.kernel.ISystemProperties.AxedPropertyClass;
 import org.genericsystem.kernel.services.IVertexBase;
 
-public interface IMap<T extends IVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
+public interface IMap<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
 
 	@Override
 	default Serializable getSystemPropertyValue(Class<?> propertyClass, int pos) {
@@ -28,13 +28,9 @@ public interface IMap<T extends IVertex<T, U>, U extends IRoot<T, U>> extends IV
 		getMap().getMeta().setInstance(getMap(), new AxedPropertyClass(propertyClass, pos), (T[]) ((AbstractVertex<?, ?>) this).coerceToArray(getRoot())).setInstance(value, (T[]) ((AbstractVertex<?, ?>) this).coerceToArray(this));
 	}
 
+	@SuppressWarnings("unchecked")
 	default T getMap() {
-		T metaAttribute = getMetaAttribute();
-		for (T instance : metaAttribute.getInstances())
-			if (instance.equals(metaAttribute, Collections.emptyList(), SystemMap.class, Collections.singletonList(getRoot())))
-				return instance;
-		return null;
-
+		return getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
 	default boolean equals(IVertexBase<?, ?> meta, List<? extends IVertexBase<?, ?>> supers, Serializable value, List<? extends IVertexBase<?, ?>> components) {

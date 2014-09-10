@@ -7,7 +7,7 @@ import org.genericsystem.kernel.services.IVertexBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public interface IAncestors<T extends IVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
+public interface IAncestors<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
 
 	static Logger log = LoggerFactory.getLogger(IAncestors.class);
 

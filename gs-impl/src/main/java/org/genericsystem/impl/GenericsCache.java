@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 import org.genericsystem.kernel.IAncestors;
 
-public class GenericsCache<T extends IGeneric<T, U>, U extends IEngine<T, U>> {
+public class GenericsCache<T extends AbstractGeneric<T, U, ?, ?>, U extends IEngine<T, U>> {
 
 	private final ThreadLocal<Map<IGeneric<T, U>, IGeneric<T, U>>> generics = new ThreadLocal<>();
 

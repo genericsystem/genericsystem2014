@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import org.genericsystem.kernel.services.IVertexBase;
 
-public interface IWritable<T extends IVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
+public interface IWritable<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
 
 	@Override
 	void remove();

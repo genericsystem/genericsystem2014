@@ -21,7 +21,62 @@ import org.genericsystem.kernel.exceptions.NotFoundException;
 import org.genericsystem.kernel.exceptions.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.kernel.services.IVertexBase;
 
-public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends Signature<T, U> implements IVertex<T, U> {
+public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> implements IVertex<T, U> {
+
+	private T meta;
+	private List<T> components;
+	private Serializable value;
+	protected boolean throwExistException;
+
+	@SuppressWarnings("unchecked")
+	protected T init(boolean throwExistException, T meta, Serializable value, List<T> components) {
+		this.throwExistException = throwExistException;
+		if (meta != null) {
+			meta.checkIsAlive();
+			this.meta = meta;
+		} else
+			this.meta = (T) this;
+		this.value = value;
+		this.components = new ArrayList<>(components);
+		for (int i = 0; i < components.size(); i++) {
+			T component = components.get(i);
+			if (component != null) {
+				component.checkIsAlive();
+				this.components.set(i, component);
+			} else
+				this.components.set(i, (T) this);
+		}
+		return (T) this;
+	}
+
+	public boolean isThrowExistException() {
+		return throwExistException;
+	}
+
+	@Override
+	public T getMeta() {
+		return meta;
+	}
+
+	@Override
+	public List<T> getComponents() {
+		return components;
+	}
+
+	@Override
+	public Serializable getValue() {
+		return value;
+	}
+
+	@Override
+	public String toString() {
+		return Objects.toString(getValue());
+	}
+
+	@Override
+	public int getLevel() {
+		return (isRoot() || components.stream().allMatch(c -> c.isRoot()) && Objects.equals(getValue(), getRoot().getValue())) ? 0 : meta.getLevel() + 1;
+	}
 
 	protected List<T> supers;
 
@@ -35,7 +90,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 
 	@SuppressWarnings("unchecked")
 	protected T init(boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
-		super.init(throwExistException, meta, value, components);
+		init(throwExistException, meta, value, components);
 		this.supers = supers;
 		checkDependsMetaComponents();
 		checkSupers(supers);
@@ -58,7 +113,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	}
 
 	private void checkSupers(List<T> supers) {
-		supers.forEach(Signature::checkIsAlive);
+		supers.forEach(AbstractVertex::checkIsAlive);
 		if (!supers.stream().allMatch(superVertex -> superVertex.getLevel() == getLevel()))
 			getRoot().discardWithException(new IllegalStateException("Inconsistant supers : " + getSupers()));
 		if (!supers.stream().allMatch(superVertex -> getMeta().inheritsFrom(superVertex.getMeta())))
@@ -212,54 +267,34 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		return result == null ? (T) this : result.adjustMeta(subValue, subComponents);
 	}
 
+	T getDirectInstance(Serializable value, List<T> components) {
+		for (T instance : getInstances())
+			if (((AbstractVertex<?, ?>) instance).equalsRegardlessSupers(this, value, components))
+				return instance;
+		return null;
+	}
+
+	T getDirectInstance(List<T> overrides, Serializable value, List<T> components) {
+		T result = getDirectInstance(value, components);
+		return result != null && Statics.areOverridesReached(overrides, result.getSupers()) ? result : null;
+	}
+
 	public T bindInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
 		checkSameEngine(components);
 		checkSameEngine(overrides);
 		T nearestMeta = adjustMeta(value, components);
 		if (nearestMeta != this)
 			return nearestMeta.bindInstance(clazz, throwExistException, overrides, value, components);
-		T weakInstance = getEquivInstance(value, components);
-		if (weakInstance != null)
+		T equivInstance = getEquivInstance(value, components);
+		if (equivInstance != null)
 			if (throwExistException)
-				getRoot().discardWithException(new ExistsException("Attempts to add an already existing instance : " + weakInstance.info()));
+				getRoot().discardWithException(new ExistsException("Attempts to add an already existing instance : " + equivInstance.info()));
 			else
-				return weakInstance.equalsRegardlessSupers(this, value, components) && Statics.areOverridesReached(overrides, weakInstance.getSupers()) ? weakInstance : weakInstance.update(overrides, value, components);
+				return equivInstance.equalsRegardlessSupers(this, value, components) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : equivInstance.update(overrides, value, components);
 		return rebuildAll(() -> buildInstance(clazz, throwExistException, overrides, value, components).plug(), nearestMeta.computePotentialDependencies(value, components));
 	}
 
-	@Override
-	public T getInstance(T superT, Serializable value, @SuppressWarnings("unchecked") T... components) {
-		return getInstance(Collections.singletonList(superT), value, components);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public T getInstance(Serializable value, T... components) {
-		return getInstance(Collections.emptyList(), value, components);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public T getInstance(List<T> overrides, Serializable value, T... components) {
-		T meta = getAlive();
-		if (meta == null)
-			return null;
-		meta = adjustMeta(value, Arrays.asList(components));
-		if (meta != this)
-			return meta.getInstance(value, components);
-		for (T instance : meta.getInstances())
-			if (instance.equalsRegardlessSupers(meta, value, Arrays.asList(components)) && Statics.areOverridesReached(overrides, instance.getSupers()))
-				return instance;
-		return null;
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public T getEquivInstance(Serializable value, T... components) {
-		return getEquivInstance(value, Arrays.asList(components));
-	}
-
-	protected boolean dependsFrom(T meta, Serializable value, List<T> components) {
+	boolean dependsFrom(T meta, Serializable value, List<T> components) {
 		// TODO perhaps we have to adjust meta here
 		return this.inheritsFrom(meta, value, components) || getComponentsStream().filter(component -> component != null && component != this).anyMatch(component -> component.dependsFrom(meta, value, components))
 				|| (!isRoot() && getMeta().dependsFrom(meta, value, components));
@@ -372,8 +407,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	T buildInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
 		int level = getLevel() == 0 && Objects.equals(getValue(), getRoot().getValue()) && getComponentsStream().allMatch(c -> c.isRoot()) && Objects.equals(value, getRoot().getValue()) && components.stream().allMatch(c -> c.isRoot()) ? 0 : getLevel() + 1;
-		overrides.forEach(Signature::checkIsAlive);
-		components.forEach(Signature::checkIsAlive);
+		overrides.forEach(AbstractVertex::checkIsAlive);
+		components.forEach(AbstractVertex::checkIsAlive);
 		List<T> supers = new ArrayList<>(new SupersComputer(level, this, overrides, value, components));
 		checkOverridesAreReached(overrides, supers);
 		return newT(clazz, throwExistException, (T) this, supers, value, components);
