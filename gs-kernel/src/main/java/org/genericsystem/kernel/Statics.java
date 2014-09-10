@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
-import org.genericsystem.kernel.services.IGeneric;
+import org.genericsystem.kernel.services.IVertexBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -160,7 +160,7 @@ public class Statics {
 		}
 	}
 
-	public static <T extends IGeneric<T, ?>> boolean areOverridesReached(List<T> overrides, List<T> supers) {
+	public static <T extends IVertexBase<T, ?>> boolean areOverridesReached(List<T> overrides, List<T> supers) {
 		return overrides.stream().allMatch(override -> supers.stream().anyMatch(superVertex -> superVertex.inheritsFrom(override)));
 	}
 

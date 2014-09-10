@@ -1,9 +1,8 @@
 package org.genericsystem.kernel;
 
-import org.genericsystem.kernel.services.IGeneric;
+import org.genericsystem.kernel.services.IVertexBase;
 
-
-public interface BindingService<T extends IVertex<T, U>, U extends IRoot<T, U>> extends IGeneric<T, U> {
+public interface IBinding<T extends IVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
 
 	// @Override
 	// default T adjustMeta(List<T> overrides, Serializable subValue, @SuppressWarnings("unchecked") T... subComponents) {

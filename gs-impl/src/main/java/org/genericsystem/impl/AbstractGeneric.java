@@ -89,6 +89,9 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		for (V instance : metaVertex.getInstances())
 			if (equals(instance))
 				return instance;
+			else {
+				log.info("ZZZZZZZZZZ : " + instance.info() + " " + this.info());
+			}
 		return null;
 	}
 

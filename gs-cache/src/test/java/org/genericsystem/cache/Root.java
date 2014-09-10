@@ -14,17 +14,17 @@ public class Root extends Vertex implements IRoot<Vertex, Root> {
 
 	@Override
 	public Root getRoot() {
-		return IRoot.super.getRoot();
+		return this;
 	}
 
 	@Override
 	public Root getAlive() {
-		return (Root) IRoot.super.getAlive();
+		return this;
 	}
 
 	@Override
 	public boolean isRoot() {
-		return IRoot.super.isRoot();
+		return true;
 	}
 
 	@Override

@@ -23,17 +23,17 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 
 	@Override
 	public Root getRoot() {
-		return RootService.super.getRoot();
+		return this;
 	}
 
 	@Override
 	public Root getAlive() {
-		return (Root) RootService.super.getAlive();
+		return this;
 	}
 
 	@Override
 	public boolean isRoot() {
-		return RootService.super.isRoot();
+		return true;
 	}
 
 	@Override

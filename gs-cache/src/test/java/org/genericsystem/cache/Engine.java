@@ -83,17 +83,17 @@ public class Engine extends Generic implements IEngine<Generic, Engine, Vertex, 
 
 	@Override
 	public Engine getRoot() {
-		return IEngine.super.getRoot();
+		return this;
 	}
 
 	@Override
 	public Engine getAlive() {
-		return (Engine) IEngine.super.getAlive();
+		return this;
 	}
 
 	@Override
 	public boolean isRoot() {
-		return IEngine.super.isRoot();
+		return true;
 	}
 
 	@Override

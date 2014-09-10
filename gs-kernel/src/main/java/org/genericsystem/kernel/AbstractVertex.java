@@ -19,7 +19,7 @@ import org.genericsystem.kernel.exceptions.CrossEnginesAssignementsException;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 import org.genericsystem.kernel.exceptions.ReferentialIntegrityConstraintViolationException;
-import org.genericsystem.kernel.services.IGeneric;
+import org.genericsystem.kernel.services.IVertexBase;
 
 public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends Signature<T, U> implements IVertex<T, U> {
 
@@ -278,7 +278,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		return null;
 	}
 
-	boolean equiv(IGeneric<?, ?> meta, Serializable value, List<? extends IGeneric<?, ?>> components) {
+	boolean equiv(IVertexBase<?, ?> meta, Serializable value, List<? extends IVertexBase<?, ?>> components) {
 		if (!getMeta().equiv(meta))
 			return false;
 		if (getComponents().size() != components.size())
@@ -553,7 +553,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		return unIndex(getInheritingsDependencies(), inheriting);
 	}
 
-	boolean equalsRegardlessSupers(IGeneric<?, ?> meta, Serializable value, List<? extends IGeneric<?, ?>> components) {
+	boolean equalsRegardlessSupers(IVertexBase<?, ?> meta, Serializable value, List<? extends IVertexBase<?, ?>> components) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComponents().equals(components);
 	}
 

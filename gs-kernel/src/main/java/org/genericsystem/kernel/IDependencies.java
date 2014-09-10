@@ -1,9 +1,9 @@
 package org.genericsystem.kernel;
 
 import java.util.stream.Stream;
-import org.genericsystem.kernel.services.IGeneric;
+import org.genericsystem.kernel.services.IVertexBase;
 
-public interface IDependencies<T extends IVertex<T, U>, U extends IRoot<T, U>> extends IGeneric<T, U> {
+public interface IDependencies<T extends IVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
 
 	@Override
 	default boolean isAncestorOf(T dependency) {
@@ -12,13 +12,9 @@ public interface IDependencies<T extends IVertex<T, U>, U extends IRoot<T, U>> e
 	}
 
 	@SuppressWarnings("unchecked")
-	default Stream<T> select() {
-		return Stream.of((T) this);
-	}
-
 	@Override
 	default Snapshot<T> getAllInheritings() {
-		return () -> (Stream.concat(select(), Statics.concat(getInheritings().stream(), inheriting -> inheriting.getAllInheritings().stream()).distinct())).iterator();
+		return () -> (Stream.concat(Stream.of((T) this), Statics.concat(getInheritings().stream(), inheriting -> inheriting.getAllInheritings().stream()).distinct())).iterator();
 	}
 
 	@Override

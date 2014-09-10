@@ -3,11 +3,11 @@ package org.genericsystem.kernel;
 import java.util.Objects;
 import java.util.stream.Stream;
 import org.genericsystem.kernel.exceptions.NotAliveException;
-import org.genericsystem.kernel.services.IGeneric;
+import org.genericsystem.kernel.services.IVertexBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public interface IAncestors<T extends IVertex<T, U>, U extends IRoot<T, U>> extends IGeneric<T, U> {
+public interface IAncestors<T extends IVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
 
 	static Logger log = LoggerFactory.getLogger(IAncestors.class);
 
@@ -51,7 +51,7 @@ public interface IAncestors<T extends IVertex<T, U>, U extends IRoot<T, U>> exte
 	// }
 
 	@Override
-	default boolean equiv(IGeneric<? extends IGeneric<?, ?>, ?> service) {
+	default boolean equiv(IVertexBase<? extends IVertexBase<?, ?>, ?> service) {
 		return equals(service) ? true : ((AbstractVertex<?, ?>) this).equiv(service.getMeta(), service.getValue(), service.getComponents());
 	}
 

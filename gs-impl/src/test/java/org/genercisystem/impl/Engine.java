@@ -2,7 +2,6 @@ package org.genercisystem.impl;
 
 import java.io.Serializable;
 import java.util.Collections;
-
 import org.genericsystem.impl.IEngine;
 import org.genericsystem.impl.SystemCache;
 import org.genericsystem.kernel.Root;
@@ -37,19 +36,20 @@ public class Engine extends Generic implements IEngine<Generic, Engine> {
 
 	@Override
 	public Engine getRoot() {
-		return IEngine.super.getRoot();
+		return this;
 	}
 
 	@Override
 	public Engine getAlive() {
-		return (Engine) IEngine.super.getAlive();
+		return this;
 	}
 
 	@Override
 	public boolean isRoot() {
-		return IEngine.super.isRoot();
+		return true;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends Generic> T find(Class<?> clazz) {
 		return (T) systemCache.get(clazz);

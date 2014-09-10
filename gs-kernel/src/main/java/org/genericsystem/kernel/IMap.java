@@ -7,9 +7,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.genericsystem.kernel.ISystemProperties.AxedPropertyClass;
-import org.genericsystem.kernel.services.IGeneric;
+import org.genericsystem.kernel.services.IVertexBase;
 
-public interface IMap<T extends IVertex<T, U>, U extends IRoot<T, U>> extends IGeneric<T, U> {
+public interface IMap<T extends IVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
 
 	@Override
 	default Serializable getSystemPropertyValue(Class<?> propertyClass, int pos) {
@@ -37,8 +37,7 @@ public interface IMap<T extends IVertex<T, U>, U extends IRoot<T, U>> extends IG
 
 	}
 
-	// TODO remove
-	default boolean equals(IGeneric<?, ?> meta, List<? extends IGeneric<?, ?>> supers, Serializable value, List<? extends IGeneric<?, ?>> components) {
+	default boolean equals(IVertexBase<?, ?> meta, List<? extends IVertexBase<?, ?>> supers, Serializable value, List<? extends IVertexBase<?, ?>> components) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComponents().equals(components) && getSupers().equals(supers);
 	}
 

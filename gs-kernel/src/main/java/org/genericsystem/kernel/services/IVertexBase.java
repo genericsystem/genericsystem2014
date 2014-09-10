@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import org.genericsystem.kernel.Snapshot;
 
-public interface IGeneric<T extends IGeneric<T, U>, U extends IGeneric<T, U>> {
+public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<T, U>> {
 
 	T getMeta();
 
@@ -23,7 +23,7 @@ public interface IGeneric<T extends IGeneric<T, U>, U extends IGeneric<T, U>> {
 
 	T getAlive();
 
-	boolean equiv(IGeneric<?, ?> service);
+	boolean equiv(IVertexBase<?, ?> service);
 
 	T[] coerceToArray(Object... array);
 

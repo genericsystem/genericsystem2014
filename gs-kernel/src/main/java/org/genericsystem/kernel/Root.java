@@ -20,7 +20,21 @@ public class Root extends Vertex implements IRoot<Vertex, Root> {
 		assert map.isAlive();
 	}
 
-	public static class MetaAttribute {
+	@Override
+	public Root getAlive() {
+		return this;
 	}
+
+	@Override
+	public Root getRoot() {
+		return this;
+	}
+
+	@Override
+	public boolean isRoot() {
+		return true;
+	}
+
+	public static class MetaAttribute {}
 
 }

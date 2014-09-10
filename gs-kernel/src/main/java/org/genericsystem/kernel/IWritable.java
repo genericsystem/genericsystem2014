@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.genericsystem.kernel.services.IGeneric;
+import org.genericsystem.kernel.services.IVertexBase;
 
-public interface IWritable<T extends IVertex<T, U>, U extends IRoot<T, U>> extends IGeneric<T, U> {
+public interface IWritable<T extends IVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
 
 	@Override
 	void remove();
