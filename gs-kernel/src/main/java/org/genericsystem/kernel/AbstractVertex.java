@@ -202,13 +202,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public T update(List<T> supersToAdd, Serializable newValue, T... newComponents) {
-		return update(supersToAdd, newValue, Arrays.asList(newComponents));
-	}
-
-	protected T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
+	T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
 		if (newComponents.size() != getComponents().size())
 			getRoot().discardWithException(new IllegalArgumentException());
 		return rebuildAll(() -> getMeta().bindInstance(null, isThrowExistException(), new Supers<>(getSupers(), supersToAdd), newValue, newComponents), computeDependencies());
@@ -284,16 +278,14 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	public T bindInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
 		checkSameEngine(components);
 		checkSameEngine(overrides);
-		T nearestMeta = adjustMeta(value, components);
-		if (nearestMeta != this)
-			return nearestMeta.bindInstance(clazz, throwExistException, overrides, value, components);
-		T equivInstance = getEquivInstance(value, components);
+		T adjustedMeta = adjustMeta(value, components);
+		T equivInstance = adjustedMeta.getDirectEquivInstance(value, components);
 		if (equivInstance != null)
 			if (throwExistException)
 				getRoot().discardWithException(new ExistsException("Attempts to add an already existing instance : " + equivInstance.info()));
 			else
-				return equivInstance.equalsRegardlessSupers(this, value, components) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : equivInstance.update(overrides, value, components);
-		return rebuildAll(() -> buildInstance(clazz, throwExistException, overrides, value, components).plug(), nearestMeta.computePotentialDependencies(value, components));
+				return equivInstance.equalsRegardlessSupers(adjustedMeta, value, components) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : equivInstance.update(overrides, value, components);
+		return adjustedMeta.rebuildAll(() -> adjustedMeta.buildInstance(clazz, throwExistException, overrides, value, components).plug(), adjustedMeta.computePotentialDependencies(value, components));
 	}
 
 	boolean dependsFrom(T meta, Serializable value, List<T> components) {
@@ -302,13 +294,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 				|| (!isRoot() && getMeta().dependsFrom(meta, value, components));
 	}
 
-	T getEquivInstance(Serializable value, List<T> components) {
-		T meta = getAlive();
-		if (meta == null)
-			return null;
-		meta = adjustMeta(value, components);
-		if (meta != this)
-			return meta.getEquivInstance(value, components);
+	T getDirectEquivInstance(Serializable value, List<T> components) {
 		for (T instance : meta.getInstances())
 			if (instance.equiv(meta, value, components))
 				return instance;
@@ -356,7 +342,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	}
 
 	@SuppressWarnings("unchecked")
-	private T rebuildAll(Supplier<T> rebuilder, LinkedHashSet<T> dependenciesToRebuild) {
+	T rebuildAll(Supplier<T> rebuilder, LinkedHashSet<T> dependenciesToRebuild) {
 		ConvertMap<T, U> convertMap = new ConvertMap<>();
 		dependenciesToRebuild.forEach(this::simpleRemove);
 		T build = rebuilder.get();
@@ -366,21 +352,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		return build;
 	}
 
-	@Override
 	@SuppressWarnings("unchecked")
-	public T addInstance(List<T> overrides, Serializable value, T... components) {
-		return bindInstance(null, true, overrides, value, Arrays.asList(components));
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public T setInstance(List<T> overrides, Serializable value, T... components) {
-		return bindInstance(null, false, overrides, value, Arrays.asList(components));
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public Snapshot<T> getInheritings(final T origin, final int level) {
+	Snapshot<T> getInheritings(final T origin, final int level) {
 		return () -> new InheritanceComputer<>((T) AbstractVertex.this, origin, level).inheritanceIterator();
 	}
 

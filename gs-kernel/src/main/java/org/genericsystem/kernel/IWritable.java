@@ -28,9 +28,11 @@ public interface IWritable<T extends AbstractVertex<T, U>, U extends IRoot<T, U>
 		return update(getSupers(), getValue(), newComponents);
 	}
 
-	@Override
 	@SuppressWarnings("unchecked")
-	T update(List<T> supersToAdd, Serializable newValue, T... newComponents);
+	@Override
+	default T update(List<T> supersToAdd, Serializable newValue, T... newComponents) {
+		return ((T) this).update(supersToAdd, newValue, Arrays.asList(newComponents));
+	}
 
 	@Override
 	@SuppressWarnings("unchecked")

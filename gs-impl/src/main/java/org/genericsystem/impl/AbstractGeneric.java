@@ -60,11 +60,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		return Objects.hashCode(getValue());
 	}
 
-	@Override
-	protected T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
-		return super.update(supersToAdd, newValue, newComponents);
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	protected T plug() {

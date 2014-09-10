@@ -18,12 +18,24 @@ public interface IDependencies<T extends AbstractVertex<T, U>, U extends IRoot<T
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getAllInheritings() {
-		return () -> (Stream.concat(Stream.of((T) this), Statics.concat(getInheritings().stream(), inheriting -> inheriting.getAllInheritings().stream()).distinct())).iterator();
+		return () -> Stream.concat(Stream.of((T) this), Statics.concat(getInheritings().stream(), inheriting -> inheriting.getAllInheritings().stream()).distinct()).iterator();
 	}
 
 	@Override
 	default Snapshot<T> getAllInstances() {
 		return () -> getAllInheritings().stream().map(inheriting -> inheriting.getInstances().stream()).flatMap(x -> x).iterator();// .reduce(Stream.empty(), Stream::concat);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T addInstance(List<T> overrides, Serializable value, T... components) {
+		return ((T) this).bindInstance(null, true, overrides, value, Arrays.asList(components));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T setInstance(List<T> overrides, Serializable value, T... components) {
+		return ((T) this).bindInstance(null, false, overrides, value, Arrays.asList(components));
 	}
 
 	@Override
@@ -40,10 +52,8 @@ public interface IDependencies<T extends AbstractVertex<T, U>, U extends IRoot<T
 	@Override
 	@SuppressWarnings("unchecked")
 	default T getInstance(List<T> overrides, Serializable value, T... components) {
-		T meta = ((AbstractVertex<T, U>) this).adjustMeta(value, Arrays.asList(components));
-		if (meta != this)
-			return meta.getInstance(value, components);
-		return ((AbstractVertex<T, U>) this).getDirectInstance(overrides, value, Arrays.asList(components));
+		T adjustedMeta = ((T) this).adjustMeta(value, Arrays.asList(components));
+		return adjustedMeta.getDirectInstance(overrides, value, Arrays.asList(components));
 	}
 
 }

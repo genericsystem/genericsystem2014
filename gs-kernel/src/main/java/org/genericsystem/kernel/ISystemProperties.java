@@ -6,9 +6,10 @@ import org.genericsystem.kernel.services.IVertexBase;
 
 public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default Serializable getSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos) {
-		Optional<T> key = ((AbstractVertex<T, U>) this).getKey(new AxedPropertyClass(propertyClass, pos));
+		Optional<T> key = ((T) this).getKey(new AxedPropertyClass(propertyClass, pos));
 		if (key.isPresent()) {
 			Optional<Serializable> result = getValues(key.get()).stream().findFirst();
 			if (result.isPresent())
@@ -20,8 +21,8 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 	@SuppressWarnings("unchecked")
 	@Override
 	default void setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value) {
-		T map = ((AbstractVertex<T, U>) this).getMap();
-		map.getMeta().setInstance(map, new AxedPropertyClass(propertyClass, pos), (T[]) ((AbstractVertex<?, ?>) this).coerceToArray(getRoot())).setInstance(value, (T[]) ((AbstractVertex<?, ?>) this).coerceToArray(this));
+		T map = ((T) this).getMap();
+		map.getMeta().setInstance(map, new AxedPropertyClass(propertyClass, pos), ((T) this).coerceToArray(getRoot())).setInstance(value, ((T) this).coerceToArray(this));
 	}
 
 	@Override

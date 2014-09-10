@@ -61,8 +61,6 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	@SuppressWarnings("unchecked")
 	T getInstance(List<T> overrides, Serializable value, T... components);
 
-	Snapshot<T> getInheritings(final T origin, final int level);
-
 	Snapshot<T> getMetaComposites(T meta);
 
 	Snapshot<T> getSuperComposites(T superVertex);

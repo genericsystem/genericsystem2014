@@ -45,11 +45,6 @@ public interface IAncestors<T extends AbstractVertex<T, U>, U extends IRoot<T, U
 		return null;
 	}
 
-	// @Override
-	// default boolean equalsRegardlessSupers(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components) {
-	// return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComponents().equals(components);
-	// }
-
 	@Override
 	default boolean equiv(IVertexBase<? extends IVertexBase<?, ?>, ?> service) {
 		return equals(service) ? true : ((AbstractVertex<?, ?>) this).equiv(service.getMeta(), service.getValue(), service.getComponents());

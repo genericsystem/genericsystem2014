@@ -5,19 +5,22 @@ import org.genericsystem.kernel.services.IVertexBase;
 
 public interface ICompositesInheritance<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getAttributes(T attribute) {
-		return getInheritings(attribute, 1);
+		return ((T) this).getInheritings(attribute, 1);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getAttributes() {
-		return getInheritings(getMetaAttribute(), 1);
+		return ((T) this).getInheritings(getMetaAttribute(), 1);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getHolders(T attribute) {
-		return getInheritings(attribute, 2);
+		return ((T) this).getInheritings(attribute, 2);
 	}
 
 	@Override
