@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
-
 import org.genericsystem.cache.GenericsCache;
 import org.genericsystem.impl.SystemCache;
 import org.genericsystem.kernel.Statics;
@@ -83,13 +82,18 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 	}
 
 	@Override
-	public Engine getRoot() {
-		return EngineService.super.getRoot();
+	public boolean isRoot() {
+		return true;
 	}
 
 	@Override
-	public Generic getAlive() {
-		return EngineService.super.getAlive();
+	public Engine getRoot() {
+		return this;
+	}
+
+	@Override
+	public Engine getAlive() {
+		return this;
 	}
 
 	static class TsGenerator {

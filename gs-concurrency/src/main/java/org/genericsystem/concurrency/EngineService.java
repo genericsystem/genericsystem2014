@@ -18,18 +18,6 @@ public interface EngineService<T extends AbstractGeneric<T, U, V, W>, U extends 
 	@Override
 	void stop(org.genericsystem.cache.Cache<T, U, V, W> cache);
 
-	@SuppressWarnings("unchecked")
-	@Override
-	default T getAlive() {
-		return (T) this;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	default U getRoot() {
-		return (U) this;
-	}
-
 	@Override
 	public Cache<T, U, V, W> getCurrentCache();
 

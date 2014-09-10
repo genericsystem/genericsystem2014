@@ -19,12 +19,6 @@ public interface IEngine<T extends AbstractGeneric<T, U, V, W>, U extends IEngin
 
 	void stop(Cache<T, U, V, W> cache);
 
-	@SuppressWarnings("unchecked")
-	@Override
-	default T getAlive() {
-		return (T) this;
-	}
-
 	@Override
 	public Cache<T, U, V, W> getCurrentCache();
 
