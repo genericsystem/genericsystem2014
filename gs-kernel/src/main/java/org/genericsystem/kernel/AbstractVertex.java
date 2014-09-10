@@ -286,7 +286,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 				getRoot().discardWithException(new ExistsException("Attempts to add an already existing instance : " + equivInstance.info()));
 			else
 				return equivInstance.equalsRegardlessSupers(adjustedMeta, value, components) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : equivInstance.update(overrides, value, components);
-		return adjustedMeta.rebuildAll(() -> adjustedMeta.buildInstance(clazz, throwExistException, overrides, value, components).plug(), adjustedMeta.computePotentialDependencies(value, components));
+		return rebuildAll(() -> adjustedMeta.buildInstance(clazz, throwExistException, overrides, value, components).plug(), adjustedMeta.computePotentialDependencies(value, components));
 	}
 
 	boolean dependsFrom(T meta, Serializable value, List<T> components) {
@@ -296,8 +296,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	}
 
 	T getDirectEquivInstance(Serializable value, List<T> components) {
-		for (T instance : meta.getInstances())
-			if (instance.equiv(meta, value, components))
+		for (T instance : getInstances())
+			if (instance.equiv(this, value, components))
 				return instance;
 		return null;
 	}
