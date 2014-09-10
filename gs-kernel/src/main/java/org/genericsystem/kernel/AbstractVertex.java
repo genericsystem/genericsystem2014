@@ -19,6 +19,7 @@ import org.genericsystem.kernel.exceptions.CrossEnginesAssignementsException;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 import org.genericsystem.kernel.exceptions.ReferentialIntegrityConstraintViolationException;
+import org.genericsystem.kernel.services.ApiService;
 import org.genericsystem.kernel.services.RootService;
 import org.genericsystem.kernel.services.VertexService;
 
@@ -266,7 +267,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 				|| (!isRoot() && getMeta().dependsFrom(meta, value, components));
 	}
 
-	@SuppressWarnings("unchecked")
 	T getEquivInstance(Serializable value, List<T> components) {
 		T meta = getAlive();
 		if (meta == null)
@@ -537,6 +537,10 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends R
 
 	private boolean unIndexInheriting(T inheriting) {
 		return unIndex(getInheritingsDependencies(), inheriting);
+	}
+
+	boolean equalsRegardlessSupers(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components) {
+		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComponents().equals(components);
 	}
 
 }

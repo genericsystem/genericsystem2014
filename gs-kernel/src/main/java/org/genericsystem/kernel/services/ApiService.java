@@ -2,10 +2,8 @@ package org.genericsystem.kernel.services;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 import org.genericsystem.kernel.Snapshot;
-import org.genericsystem.kernel.services.SystemPropertiesService.AxedPropertyClass;
 
 public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, U>> {
 
@@ -25,9 +23,7 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 
 	T getAlive();
 
-	boolean equalsRegardlessSupers(ApiService<?, ?> meta, Serializable value, List<? extends ApiService<?, ?>> components);
-
-	boolean equals(ApiService<?, ?> meta, List<? extends ApiService<?, ?>> supers, Serializable value, List<? extends ApiService<?, ?>> components);
+	// boolean equals(ApiService<?, ?> meta, List<? extends ApiService<?, ?>> supers, Serializable value, List<? extends ApiService<?, ?>> components);
 
 	boolean equiv(ApiService<?, ?> service);
 
@@ -104,12 +100,6 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 
 	String detailedInfo();
 
-	T getMap();
-
-	Stream<T> getKeys();
-
-	Optional<T> getKey(AxedPropertyClass property);
-
 	Serializable getSystemPropertyValue(Class<?> propertyClass, int pos);
 
 	void setSystemPropertyValue(Class<T> propertyClass, int pos, Serializable value);
@@ -170,7 +160,7 @@ public interface ApiService<T extends ApiService<T, U>, U extends ApiService<T, 
 	T updateComponents(T... newComponents);
 
 	@SuppressWarnings("unchecked")
-	T update(List<T> supersToAdd, Serializable newValue, T... newComponents);
+	T update(List<T> overrides, Serializable newValue, T... newComponents);
 
 	@SuppressWarnings("unchecked")
 	T update(Serializable newValue, T... newComponents);
