@@ -36,12 +36,11 @@ public interface IAncestors<T extends AbstractVertex<T, U>, U extends IRoot<T, U
 
 	@Override
 	default T getAlive() {
-		T pluggedMeta = getMeta().getAlive();
-		if (pluggedMeta == null)
-			return null;
-		for (T instance : pluggedMeta.getInstances())
-			if (equals(instance))
-				return instance;
+		T aliveMeta = getMeta().getAlive();
+		if (aliveMeta != null)
+			for (T instance : aliveMeta.getInstances())
+				if (equals(instance))
+					return instance;
 		return null;
 	}
 
