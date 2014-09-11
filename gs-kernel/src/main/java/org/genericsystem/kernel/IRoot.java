@@ -8,4 +8,17 @@ public interface IRoot<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> ex
 		throw new RollbackException(exception);
 	}
 
+	//
+	// These signatures force Engine to re-implement methods
+	//
+
+	@Override
+	boolean isRoot();
+
+	@Override
+	public U getRoot();
+
+	@Override
+	public T getAlive();
+
 }
