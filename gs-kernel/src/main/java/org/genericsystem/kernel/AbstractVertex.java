@@ -94,9 +94,10 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	protected T init(boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
 		init(throwExistException, meta, value, components);
 		this.supers = supers;
-		checkDependsMetaComponents();
+		// checkDependsMetaComponents();
 		checkSupers(supers);
 		checkDependsSuperComponents(supers);
+		// assert isRoot() || !getMeta().getValue().equals("Engine") || getMeta().getComponents().size() != 1 || !getValue().equals("Engine") : this.info() + "  " + this.getMeta().info();
 		return (T) this;
 	}
 
@@ -104,15 +105,15 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		return newT().init(throwExistException, meta, supers, value, components);
 	}
 
-	private void checkDependsMetaComponents() {
-		Serializable value = getValue();
-		// TODO KK
-		if (value.equals(SystemMap.class) || (value instanceof AxedPropertyClass && ((AxedPropertyClass) value).getClazz().equals(PropertyConstraint.class)))
-			return;
-		assert getMeta().getComponents() != null;
-		if (!(getMeta().componentsDepends(getComponents(), getMeta().getComponents())))
-			getRoot().discardWithException(new IllegalStateException("Inconsistant components : " + getComponents() + " " + getMeta().getComponents()));
-	}
+	// private void checkDependsMetaComponents() {
+	// Serializable value = getValue();
+	// // TODO KK
+	// if (value.equals(SystemMap.class) || (value instanceof AxedPropertyClass && ((AxedPropertyClass) value).getClazz().equals(PropertyConstraint.class)))
+	// return;
+	// assert getMeta().getComponents() != null;
+	// if (!(getMeta().componentsDepends(getComponents(), getMeta().getComponents())))
+	// getRoot().discardWithException(new IllegalStateException("Inconsistant components : " + getComponents() + " " + getMeta().getComponents()));
+	// }
 
 	private void checkSupers(List<T> supers) {
 		supers.forEach(AbstractVertex::checkIsAlive);
@@ -248,17 +249,23 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		}.visit((T) this);
 	}
 
+	public T adjustMeta(Serializable subValue, @SuppressWarnings("unchecked") T... subComponents) {
+		return adjustMeta(subValue, Arrays.asList(subComponents));
+	}
+
 	@SuppressWarnings("unchecked")
 	T adjustMeta(Serializable subValue, List<T> subComponents) {
 		T result = null;
+		log.info("this : " + info() + "             value : " + subValue + " components : " + subComponents);
 		for (T directInheriting : getInheritings()) {
-			if (directInheriting.equalsRegardlessSupers(this, subValue, subComponents))
-				return (T) this;
-			if (isSpecializationOf(getMeta()) && componentsDepends(subComponents, directInheriting.getComponents()))
+			log.info("		directInheriting : " + directInheriting.info());
+			if (!directInheriting.equalsRegardlessSupers(this, subValue, subComponents) && Objects.equals(getValue(), directInheriting.getValue()) && componentsDepends(subComponents, directInheriting.getComponents())) {
+				log.info("					 OKKK ");
 				if (result == null)
 					result = directInheriting;
 				else
 					getRoot().discardWithException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
+			}
 		}
 		return result == null ? (T) this : result.adjustMeta(subValue, subComponents);
 	}
@@ -286,6 +293,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 				getRoot().discardWithException(new ExistsException("Attempts to add an already existing instance : " + equivInstance.info()));
 			else
 				return equivInstance.equalsRegardlessSupers(adjustedMeta, value, components) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : equivInstance.update(overrides, value, components);
+
+		log.info("ZZZZZZZZZZZZZZ : " + adjustedMeta.info() + this.info());
 		return rebuildAll(() -> adjustedMeta.buildInstance(clazz, throwExistException, overrides, value, components).plug(), adjustedMeta.computePotentialDependencies(value, components));
 	}
 
@@ -318,25 +327,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		return true;
 	}
 
-	public T adjustMeta(List<T> overrides, Serializable subValue, @SuppressWarnings("unchecked") T... subComponents) {
-		return adjustMeta(overrides, subValue, Arrays.asList(subComponents));
-	}
-
-	@SuppressWarnings("unchecked")
-	protected T adjustMeta(List<T> overrides, Serializable subValue, List<T> subComponents) {
-		T result = null;
-		for (T directInheriting : getInheritings()) {
-			if (directInheriting.equalsRegardlessSupers(this, subValue, subComponents))
-				return (T) this;
-			if (isSpecializationOf(getMeta()) && this.componentsDepends(subComponents, directInheriting.getComponents()))
-				if (result == null)
-					result = directInheriting;
-				else
-					getRoot().discardWithException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
-		}
-		return result == null ? (T) this : result.adjustMeta(overrides, subValue, subComponents);
-	}
-
 	private void checkSameEngine(List<T> generics) {
 		if (generics.stream().anyMatch(generic -> !generic.getRoot().equals(getRoot())))
 			getRoot().discardWithException(new CrossEnginesAssignementsException());
@@ -364,7 +354,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public T[] coerceToArray(Object... array) {
+	public T[] coerceToTArray(Object... array) {
 		T[] result = newTArray(array.length);
 		for (int i = 0; i < array.length; i++)
 			result[i] = (T) array[i];
