@@ -101,22 +101,22 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		return newT().init(throwExistException, meta, supers, value, components);
 	}
 
-	protected void checkDependsMetaComponents() {
+	void checkDependsMetaComponents() {
 		if (!(getMeta().componentsDepends(getComponents(), getMeta().getComponents())))
 			getRoot().discardWithException(new IllegalStateException("Inconsistant components : " + getComponents() + " " + getMeta().getComponents()));
 	}
 
-	protected void checkSupers(List<T> supers) {
+	void checkSupers() {
 		supers.forEach(AbstractVertex::checkIsAlive);
 		if (!supers.stream().allMatch(superVertex -> superVertex.getLevel() == getLevel()))
-			getRoot().discardWithException(new IllegalStateException("Inconsistant supers : " + getSupers()));
+			getRoot().discardWithException(new IllegalStateException("Inconsistant supers : " + supers));
 		if (!supers.stream().allMatch(superVertex -> getMeta().inheritsFrom(superVertex.getMeta())))
-			getRoot().discardWithException(new IllegalStateException("Inconsistant supers : " + getSupers()));
+			getRoot().discardWithException(new IllegalStateException("Inconsistant supers : " + supers));
 		if (!supers.stream().noneMatch(this::equals))
 			getRoot().discardWithException(new IllegalStateException("Supers loop detected : " + info()));
 	}
 
-	protected void checkDependsSuperComponents(List<T> supers) {
+	void checkDependsSuperComponents() {
 		getSupersStream().forEach(superVertex -> {
 			if (!superVertex.isSuperOf(getMeta(), supers, getValue(), getComponents()))
 				getRoot().discardWithException(new IllegalStateException("Inconsistant components : " + getComponentsStream().collect(Collectors.toList())));
@@ -463,12 +463,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		getSupersStream().forEach(superGeneric -> ((AbstractVertex<T, U>) superGeneric).indexInheriting((T) this));
 		getComponentsStream().forEach(component -> ((AbstractVertex<T, U>) component).indexByMeta(getMeta(), (T) this));
 		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> ((AbstractVertex<T, U>) component).indexBySuper(superGeneric, (T) this)));
-		// getRoot().raiseEvent(GsEvent.PLUGGED,this);
-		assert result == this;
-		log.info("zzzzzz plug : " + info());
-		checkDependsMetaComponents();
-		checkSupers(supers);
-		checkDependsSuperComponents(supers);
+		getRoot().check(result);
 		return (subT) result;
 	}
 

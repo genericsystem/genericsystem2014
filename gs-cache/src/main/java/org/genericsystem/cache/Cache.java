@@ -254,15 +254,12 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U
 
 	T plug(T generic) {
 		T result = indexInstance(generic.getMeta(), generic);
+		assert result == generic;
 		generic.getSupersStream().forEach(superGeneric -> indexInheriting(superGeneric, generic));
 		generic.getComponentsStream().forEach(component -> indexByMeta(component, generic.getMeta(), generic));
 		generic.getSupersStream().forEach(superGeneric -> generic.getComponentsStream().forEach(component -> indexBySuper(component, superGeneric, generic)));
 		insert(generic);
-		// getRoot().raiseEvent(GsEvent.PLUGGED,this);
-		assert result == generic;
-		result.checkDependsMetaComponents();
-		result.checkSupers(result.getSupers());
-		result.checkDependsSuperComponents(result.getSupers());
+		getEngine().check(result);
 		return result;
 	}
 

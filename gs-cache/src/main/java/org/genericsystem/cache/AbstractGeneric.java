@@ -89,18 +89,4 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		return super.newInstance(annotedClazz);
 	}
 
-	@Override
-	protected void checkDependsMetaComponents() {
-		super.checkDependsMetaComponents();
-	}
-
-	@Override
-	protected void checkSupers(List<T> supers) {
-		super.checkSupers(supers);
-	}
-
-	@Override
-	protected void checkDependsSuperComponents(List<T> supers) {
-		super.checkDependsSuperComponents(supers);
-	}
 }

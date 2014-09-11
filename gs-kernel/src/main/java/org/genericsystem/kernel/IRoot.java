@@ -8,6 +8,12 @@ public interface IRoot<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> ex
 		throw new RollbackException(exception);
 	}
 
+	default void check(T plugged) throws RollbackException {
+		plugged.checkDependsMetaComponents();
+		plugged.checkSupers();
+		plugged.checkDependsSuperComponents();
+	}
+
 	//
 	// These signatures force Engine to re-implement methods
 	//
