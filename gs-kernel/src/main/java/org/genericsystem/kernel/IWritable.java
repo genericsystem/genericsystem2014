@@ -13,13 +13,13 @@ public interface IWritable<T extends AbstractVertex<T, U>, U extends IRoot<T, U>
 
 	@Override
 	default T updateValue(Serializable newValue) {
-		return update(getSupers(), newValue, coerceToArray(getComponents().toArray()));
+		return update(getSupers(), newValue, coerceToTArray(getComponents().toArray()));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	default T updateSupers(T... supersToAdd) {
-		return update(Arrays.asList(supersToAdd), getValue(), coerceToArray(getComponents().toArray()));
+		return update(Arrays.asList(supersToAdd), getValue(), coerceToTArray(getComponents().toArray()));
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public interface IWritable<T extends AbstractVertex<T, U>, U extends IRoot<T, U>
 	}
 
 	@Override
-	T[] coerceToArray(Object... array);
+	T[] coerceToTArray(Object... array);
 
 	@Override
 	@SuppressWarnings("unchecked")

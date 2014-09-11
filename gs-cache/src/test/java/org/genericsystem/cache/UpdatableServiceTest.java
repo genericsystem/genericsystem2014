@@ -434,10 +434,13 @@ public class UpdatableServiceTest extends AbstractTest {
 			@Override
 			public void intercept() {
 				// when
-				myCarRed.update("MyCarBlue", green, blue);
+				Generic result = myCarRed.update("MyCarBlue", green, blue);
+				assert result != myCarRed;
+				assert result.isAlive();
+				assert vehicleColor.equals(result.getMeta());
+				assert false : result.info();
 			}
 			// then
 		}.assertIsCausedBy(IllegalStateException.class);
 	}
-
 }

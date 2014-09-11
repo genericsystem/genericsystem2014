@@ -22,7 +22,7 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 	@Override
 	default void setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value) {
 		T map = ((T) this).getMap();
-		map.getMeta().setInstance(map, new AxedPropertyClass(propertyClass, pos), ((T) this).coerceToArray(getRoot())).setInstance(value, ((T) this).coerceToArray(this));
+		map.getMeta().setInstance(map, new AxedPropertyClass(propertyClass, pos), ((T) this).coerceToTArray(getRoot())).setInstance(value, ((T) this).coerceToTArray(this));
 	}
 
 	@Override

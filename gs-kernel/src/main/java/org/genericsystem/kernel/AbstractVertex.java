@@ -94,10 +94,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	protected T init(boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
 		init(throwExistException, meta, value, components);
 		this.supers = supers;
-		// checkDependsMetaComponents();
-		checkSupers(supers);
-		checkDependsSuperComponents(supers);
-		// assert isRoot() || !getMeta().getValue().equals("Engine") || getMeta().getComponents().size() != 1 || !getValue().equals("Engine") : this.info() + "  " + this.getMeta().info();
 		return (T) this;
 	}
 
@@ -105,17 +101,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		return newT().init(throwExistException, meta, supers, value, components);
 	}
 
-	// private void checkDependsMetaComponents() {
-	// Serializable value = getValue();
-	// // TODO KK
-	// if (value.equals(SystemMap.class) || (value instanceof AxedPropertyClass && ((AxedPropertyClass) value).getClazz().equals(PropertyConstraint.class)))
-	// return;
-	// assert getMeta().getComponents() != null;
-	// if (!(getMeta().componentsDepends(getComponents(), getMeta().getComponents())))
-	// getRoot().discardWithException(new IllegalStateException("Inconsistant components : " + getComponents() + " " + getMeta().getComponents()));
-	// }
+	protected void checkDependsMetaComponents() {
+		if (!(getMeta().componentsDepends(getComponents(), getMeta().getComponents())))
+			getRoot().discardWithException(new IllegalStateException("Inconsistant components : " + getComponents() + " " + getMeta().getComponents()));
+	}
 
-	private void checkSupers(List<T> supers) {
+	protected void checkSupers(List<T> supers) {
 		supers.forEach(AbstractVertex::checkIsAlive);
 		if (!supers.stream().allMatch(superVertex -> superVertex.getLevel() == getLevel()))
 			getRoot().discardWithException(new IllegalStateException("Inconsistant supers : " + getSupers()));
@@ -125,7 +116,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 			getRoot().discardWithException(new IllegalStateException("Supers loop detected : " + info()));
 	}
 
-	private void checkDependsSuperComponents(List<T> supers) {
+	protected void checkDependsSuperComponents(List<T> supers) {
 		getSupersStream().forEach(superVertex -> {
 			if (!superVertex.isSuperOf(getMeta(), supers, getValue(), getComponents()))
 				getRoot().discardWithException(new IllegalStateException("Inconsistant components : " + getComponentsStream().collect(Collectors.toList())));
@@ -203,7 +194,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		}
 	}
 
-	T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
+	final T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
 		if (newComponents.size() != getComponents().size())
 			getRoot().discardWithException(new IllegalArgumentException());
 		return rebuildAll(() -> getMeta().bindInstance(null, isThrowExistException(), new Supers<>(getSupers(), supersToAdd), newValue, newComponents), computeDependencies());
@@ -256,11 +247,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	@SuppressWarnings("unchecked")
 	T adjustMeta(Serializable subValue, List<T> subComponents) {
 		T result = null;
-		log.info("this : " + info() + "             value : " + subValue + " components : " + subComponents);
+		// log.info("this : " + info() + "             value : " + subValue + " components : " + subComponents);
 		for (T directInheriting : getInheritings()) {
-			log.info("		directInheriting : " + directInheriting.info());
-			if (!directInheriting.equalsRegardlessSupers(this, subValue, subComponents) && Objects.equals(getValue(), directInheriting.getValue()) && componentsDepends(subComponents, directInheriting.getComponents())) {
-				log.info("					 OKKK ");
+			// log.info("		directInheriting : " + directInheriting.info());
+			if (!directInheriting.equalsRegardlessSupers(this, subValue, subComponents) /* && Objects.equals(getValue(), directInheriting.getValue()) */&& componentsDepends(subComponents, directInheriting.getComponents())) {
+				// log.info("					 OKKK ");
 				if (result == null)
 					result = directInheriting;
 				else
@@ -283,7 +274,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	}
 
 	// KK should be protected
-	public T bindInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
+	public final T bindInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
 		checkSameEngine(components);
 		checkSameEngine(overrides);
 		T adjustedMeta = adjustMeta(value, components);
@@ -472,6 +463,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		getSupersStream().forEach(superGeneric -> ((AbstractVertex<T, U>) superGeneric).indexInheriting((T) this));
 		getComponentsStream().forEach(component -> ((AbstractVertex<T, U>) component).indexByMeta(getMeta(), (T) this));
 		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> ((AbstractVertex<T, U>) component).indexBySuper(superGeneric, (T) this)));
+		// getRoot().raiseEvent(GsEvent.PLUGGED,this);
+		assert result == this;
+		log.info("zzzzzz plug : " + info());
+		checkDependsMetaComponents();
+		checkSupers(supers);
+		checkDependsSuperComponents(supers);
 		return (subT) result;
 	}
 

@@ -25,8 +25,8 @@ public class Engine extends Generic implements EngineService<Generic, Engine, Ve
 		root = buildRoot(engineValue);
 
 		Cache<Generic, Engine, Vertex, Root> cache = newCache().start();
-		Generic metaAttribute = setInstance(this, getValue(), coerceToArray(this));
-		Generic map = setInstance(SystemMap.class, coerceToArray(this));
+		Generic metaAttribute = setInstance(this, getValue(), coerceToTArray(this));
+		Generic map = setInstance(SystemMap.class, coerceToTArray(this));
 		assert metaAttribute.isAlive();
 		assert map.isAlive();
 		map.enablePropertyConstraint();

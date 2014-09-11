@@ -22,8 +22,8 @@ public class Engine extends Generic implements IEngine<Generic, Engine, Vertex, 
 		root = buildRoot(engineValue);
 
 		Cache<Generic, Engine, Vertex, Root> cache = newCache().start();
-		Generic metaAttribute = setInstance(this, getValue(), coerceToArray(this));
-		Generic map = setInstance(SystemMap.class, coerceToArray(this));
+		Generic metaAttribute = setInstance(this, getValue(), coerceToTArray(this));
+		Generic map = setInstance(SystemMap.class, coerceToTArray(this));
 		map.enablePropertyConstraint();
 		for (Class<?> clazz : userClasses)
 			systemCache.set(clazz);

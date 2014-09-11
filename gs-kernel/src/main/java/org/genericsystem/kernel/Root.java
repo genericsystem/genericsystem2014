@@ -15,8 +15,8 @@ public class Root extends Vertex implements IRoot<Vertex, Root> {
 
 	public Root(Serializable value, Class<?>... userClasses) {
 		init(false, null, Collections.emptyList(), value, Collections.emptyList());
-		setInstance(this, getValue(), coerceToArray(this));
-		Vertex map = setInstance(SystemMap.class, coerceToArray(this)).enablePropertyConstraint();
+		setInstance(this, getValue(), coerceToTArray(this));
+		Vertex map = setInstance(SystemMap.class, coerceToTArray(this)).enablePropertyConstraint();
 		assert map.isAlive();
 	}
 

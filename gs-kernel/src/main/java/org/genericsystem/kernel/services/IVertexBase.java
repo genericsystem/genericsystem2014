@@ -17,6 +17,8 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 
 	boolean isRoot();
 
+	U getRoot();
+
 	boolean isAlive();
 
 	T checkIsAlive();
@@ -25,14 +27,12 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 
 	boolean equiv(IVertexBase<?, ?> service);
 
-	T[] coerceToArray(Object... array);
+	T[] coerceToTArray(Object... array);
 
 	@SuppressWarnings("unchecked")
 	T[] addThisToTargets(T... targets);
 
 	int getLevel();
-
-	U getRoot();
 
 	boolean isMeta();
 
@@ -142,7 +142,7 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	T updateValue(Serializable newValue);
 
 	@SuppressWarnings("unchecked")
-	T updateSupers(T... supersToAdd);
+	T updateSupers(T... overrides);
 
 	@SuppressWarnings("unchecked")
 	T updateComponents(T... newComponents);

@@ -65,9 +65,9 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	protected T plug() {
 		V vertex = getMeta().unwrap();
 		if (isThrowExistException())
-			vertex.addInstance(getSupersStream().map(T::unwrap).collect(Collectors.toList()), getValue(), vertex.coerceToArray(getComponentsStream().map(T::unwrap).toArray()));
+			vertex.addInstance(getSupersStream().map(T::unwrap).collect(Collectors.toList()), getValue(), vertex.coerceToTArray(getComponentsStream().map(T::unwrap).toArray()));
 		else
-			vertex.setInstance(getSupersStream().map(T::unwrap).collect(Collectors.toList()), getValue(), vertex.coerceToArray(getComponentsStream().map(T::unwrap).toArray()));
+			vertex.setInstance(getSupersStream().map(T::unwrap).collect(Collectors.toList()), getValue(), vertex.coerceToTArray(getComponentsStream().map(T::unwrap).toArray()));
 		return (T) this;
 	}
 

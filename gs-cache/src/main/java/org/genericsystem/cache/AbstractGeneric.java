@@ -6,18 +6,17 @@ import java.util.List;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Snapshot;
 
-public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends org.genericsystem.impl.AbstractGeneric<T, U, V, W> implements
-		IGeneric<T, U, V, W> {
+public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends org.genericsystem.impl.AbstractGeneric<T, U, V, W> implements IGeneric<T, U, V, W> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public T plug() {
+	protected T plug() {
 		return getCurrentCache().plug((T) this);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean unplug() {
+	protected boolean unplug() {
 		return getCurrentCache().unplug((T) this);
 	}
 
@@ -88,5 +87,20 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	@Override
 	protected T newInstance(Class<?> annotedClazz) {
 		return super.newInstance(annotedClazz);
+	}
+
+	@Override
+	protected void checkDependsMetaComponents() {
+		super.checkDependsMetaComponents();
+	}
+
+	@Override
+	protected void checkSupers(List<T> supers) {
+		super.checkSupers(supers);
+	}
+
+	@Override
+	protected void checkDependsSuperComponents(List<T> supers) {
+		super.checkDependsSuperComponents(supers);
 	}
 }

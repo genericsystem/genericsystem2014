@@ -27,8 +27,8 @@ public class SystemCache<T extends AbstractGeneric<T, ?, ?, ?>> extends HashMap<
 	}
 
 	public void init(Class<?>... userClasses) {
-		put(MetaAttribute.class, root.setInstance(root, root.getValue(), root.coerceToArray(root)));
-		put(SystemMap.class, root.setInstance(SystemMap.class, root.coerceToArray(root)).enablePropertyConstraint());
+		put(MetaAttribute.class, root.setInstance(root, root.getValue(), root.coerceToTArray(root)));
+		put(SystemMap.class, root.setInstance(SystemMap.class, root.coerceToTArray(root)).enablePropertyConstraint());
 		for (Class<?> clazz : userClasses)
 			set(clazz);
 		initialized = true;

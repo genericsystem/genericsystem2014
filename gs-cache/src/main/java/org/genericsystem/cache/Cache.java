@@ -1,15 +1,12 @@
 package org.genericsystem.cache;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
-
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Snapshot;
@@ -256,12 +253,17 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U
 	}
 
 	T plug(T generic) {
-		T t = indexInstance(generic.getMeta(), generic);
+		T result = indexInstance(generic.getMeta(), generic);
 		generic.getSupersStream().forEach(superGeneric -> indexInheriting(superGeneric, generic));
 		generic.getComponentsStream().forEach(component -> indexByMeta(component, generic.getMeta(), generic));
 		generic.getSupersStream().forEach(superGeneric -> generic.getComponentsStream().forEach(component -> indexBySuper(component, superGeneric, generic)));
 		insert(generic);
-		return t;
+		// getRoot().raiseEvent(GsEvent.PLUGGED,this);
+		assert result == generic;
+		result.checkDependsMetaComponents();
+		result.checkSupers(result.getSupers());
+		result.checkDependsSuperComponents(result.getSupers());
+		return result;
 	}
 
 	boolean unplug(T generic) {
@@ -283,11 +285,4 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U
 	T wrap(V vertex) {
 		return getSubContext().wrap(vertex);
 	}
-
-	private final GenericsCache<T> genericsCache = new GenericsCache<>();
-
-	public <subT extends T> subT getOrBuildT(Class<?> clazz, boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
-		return genericsCache.getOrBuildT(clazz, throwExistException, meta, supers, value, components);
-	}
-
 }
