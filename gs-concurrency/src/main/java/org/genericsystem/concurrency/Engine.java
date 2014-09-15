@@ -8,7 +8,7 @@ import org.genericsystem.cache.GenericsCache;
 import org.genericsystem.impl.SystemCache;
 import org.genericsystem.kernel.Statics;
 
-public class Engine extends Generic implements EngineService<Generic, Engine, Vertex, Root> {
+public class Engine extends Generic implements IEngine<Generic, Engine, Vertex, Root> {
 
 	private final ThreadLocal<Cache<Generic, Engine, Vertex, Root>> cacheLocal = new ThreadLocal<>();
 

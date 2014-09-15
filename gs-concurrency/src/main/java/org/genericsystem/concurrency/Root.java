@@ -5,15 +5,15 @@ import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
 import org.genericsystem.kernel.Statics;
 
-public class Root extends Vertex implements RootService<Vertex, Root> {
+public class Root extends Vertex implements IRoot<Vertex, Root> {
 
 	private final TsGenerator generator = new TsGenerator();
 
-	private final EngineService<?, ?, Vertex, Root> engine;
+	private final IEngine<?, ?, Vertex, Root> engine;
 
 	private final GarbageCollector<Vertex, Root> garbageCollector;
 
-	Root(EngineService<?, ?, Vertex, Root> engine, Serializable value) {
+	Root(IEngine<?, ?, Vertex, Root> engine, Serializable value) {
 		init(false, null, Collections.emptyList(), value, Collections.emptyList());
 		this.engine = engine;
 		long ts = pickNewTs();
@@ -42,7 +42,7 @@ public class Root extends Vertex implements RootService<Vertex, Root> {
 	}
 
 	@Override
-	public EngineService<?, ?, Vertex, Root> getEngine() {
+	public IEngine<?, ?, Vertex, Root> getEngine() {
 		return engine;
 	}
 

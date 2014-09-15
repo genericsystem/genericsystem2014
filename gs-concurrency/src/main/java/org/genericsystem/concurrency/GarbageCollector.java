@@ -7,13 +7,13 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import org.genericsystem.kernel.Statics;
 
-public class GarbageCollector<T extends AbstractVertex<T, U>, U extends RootService<T, U>> extends LinkedHashSet<T> {
+public class GarbageCollector<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends LinkedHashSet<T> {
 
 	private static final long serialVersionUID = -2021341943811568201L;
 	private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-	private final RootService<T, U> root;
+	private final IRoot<T, U> root;
 
-	public GarbageCollector(RootService<T, U> root) {
+	public GarbageCollector(IRoot<T, U> root) {
 		this.root = root;
 	}
 
