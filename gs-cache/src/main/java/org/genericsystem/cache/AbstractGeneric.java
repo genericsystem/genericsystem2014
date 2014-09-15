@@ -85,8 +85,8 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	}
 
 	@Override
-	protected T newInstance(Class<?> annotedClazz) {
-		return super.newInstance(annotedClazz);
+	protected T newT(Class<?> clazz) {
+		return super.newT(clazz);
 	}
 
 }

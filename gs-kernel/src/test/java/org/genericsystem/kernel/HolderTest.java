@@ -11,19 +11,20 @@ public class HolderTest extends AbstractTest {
 		Vertex vehicle = root.addInstance("Vehicle");
 		Vertex power = root.addInstance("Power", vehicle);
 		int powerValue = 1;
-		Vertex v1 = power.addInstance(powerValue, vehicle);
-		assert v1.isThrowExistException();
-		assert v1.isInstanceOf(power);
+		Vertex holder = power.addInstance(powerValue, vehicle);
+		assert holder.isThrowExistException();
+		assert holder.isInstanceOf(power);
 		assert vehicle.getHolders(power) != null;
 		assert vehicle.getHolders(power).size() == 1 : vehicle.getHolders(power);
-		assert vehicle.getHolders(power).contains(v1) : vehicle.getHolders(power);
+		assert vehicle.getHolders(power).contains(holder) : vehicle.getHolders(power);
 		assert power.getInstances() != null;
 		assert power.getInstances().size() == 1;
-		assert power.getInstances().contains(v1);
+		assert power.getInstances().contains(holder);
 		assert power.getInstance(powerValue, vehicle) != null;
-		assert power.getInstance(powerValue, vehicle).equals(v1);
+		assert power.getInstance(powerValue, vehicle).equals(holder);
 		assert power.isAlive();
-		assert v1.isAlive();
+		assert holder.isAlive();
+		assert false : vehicle.toPrettyString();
 	}
 
 	public void testHolder1AttributWith2LevelsInheritance1AttributOnParent() {

@@ -1,7 +1,5 @@
 package org.genericsystem.impl;
 
-import java.io.Serializable;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.genericsystem.impl.annotations.InstanceClass;
@@ -16,25 +14,48 @@ import org.genericsystem.kernel.services.IVertexBase;
 public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends AbstractVertex<T, U> implements IGeneric<T, U> {
 
 	@Override
-	protected T newT(Class<?> clazz, boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
-		return newInstance(clazz).init(throwExistException, meta, supers, value, components);
+	protected T newT(Class<?> clazz) {
+		InstanceClass metaAnnotation = getClass().getAnnotation(InstanceClass.class);
+		if (metaAnnotation != null)
+			if (clazz == null || clazz.isAssignableFrom(metaAnnotation.value()))
+				clazz = metaAnnotation.value();
+			else if (!metaAnnotation.value().isAssignableFrom(clazz))
+				getRoot().discardWithException(new InstantiationException(clazz + " must extends " + metaAnnotation.value()));
+		T newT = newT();// Instantiates T in all cases...
+
+		if (clazz == null || clazz.isAssignableFrom(newT.getClass()))
+			return newT;
+		if (newT.getClass().isAssignableFrom(clazz))
+			try {
+				return (T) clazz.newInstance();
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
+				getRoot().discardWithException(e);
+			}
+		else
+			getRoot().discardWithException(new InstantiationException(clazz + " must extends " + newT.getClass()));
+		return null; // Not reached
 	}
 
 	@SuppressWarnings("unchecked")
-	protected T newInstance(Class<?> clazz) {
-		try {
-			InstanceClass instanceClassAnnot = getClass().getAnnotation(InstanceClass.class);
-			if (instanceClassAnnot != null)
-				if (clazz == null || clazz.isAssignableFrom(instanceClassAnnot.value()))
-					clazz = instanceClassAnnot.value();
-				else if (!instanceClassAnnot.value().isAssignableFrom(clazz))
-					getRoot().discardWithException(new InstantiationException(clazz + " must extends " + instanceClassAnnot.value()));
-			T newT = newT();
-			return clazz != null && newT.getClass().isAssignableFrom(clazz) ? (T) clazz.newInstance() : newT;
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
-			getRoot().discardWithException(e);
-			return null;
-		}
+	private T newInstance(Class<?> clazz) {
+		InstanceClass metaAnnotation = getClass().getAnnotation(InstanceClass.class);
+		if (metaAnnotation != null)
+			if (clazz == null || clazz.isAssignableFrom(metaAnnotation.value()))
+				clazz = metaAnnotation.value();
+			else if (!metaAnnotation.value().isAssignableFrom(clazz))
+				getRoot().discardWithException(new InstantiationException(clazz + " must extends " + metaAnnotation.value()));
+		T newT = newT();// Instantiates T in all cases...
+		if (clazz == null || clazz.isAssignableFrom(newT.getClass()))
+			return newT;
+		if (newT.getClass().isAssignableFrom(clazz))
+			try {
+				return (T) clazz.newInstance();
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
+				getRoot().discardWithException(e);
+			}
+		else
+			getRoot().discardWithException(new InstantiationException(clazz + " must extends " + newT.getClass()));
+		return null; // Not reached
 	}
 
 	@Override

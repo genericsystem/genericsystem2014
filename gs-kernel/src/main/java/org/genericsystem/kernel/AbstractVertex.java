@@ -98,7 +98,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	}
 
 	protected T newT(Class<?> clazz, boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
-		return newT().init(throwExistException, meta, supers, value, components);
+		return newT(clazz).init(throwExistException, meta, supers, value, components);
+	}
+
+	protected T newT(Class<?> clazz) {
+		return newT();
 	}
 
 	void checkDependsMetaComponents() {
@@ -247,11 +251,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	@SuppressWarnings("unchecked")
 	T adjustMeta(Serializable subValue, List<T> subComponents) {
 		T result = null;
-		// log.info("this : " + info() + "             value : " + subValue + " components : " + subComponents);
 		for (T directInheriting : getInheritings()) {
-			// log.info("		directInheriting : " + directInheriting.info());
 			if (!directInheriting.equalsRegardlessSupers(this, subValue, subComponents) /* && Objects.equals(getValue(), directInheriting.getValue()) */&& componentsDepends(subComponents, directInheriting.getComponents())) {
-				// log.info("					 OKKK ");
 				if (result == null)
 					result = directInheriting;
 				else

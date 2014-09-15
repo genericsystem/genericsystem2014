@@ -3,6 +3,7 @@ package org.genericsystem.kernel.services;
 import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Stream;
+import javax.json.JsonObject;
 import org.genericsystem.kernel.Snapshot;
 
 public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<T, U>> {
@@ -88,6 +89,12 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	String info();
 
 	String detailedInfo();
+
+	String toPrettyString();
+
+	JsonObject toJSonId();
+
+	JsonObject toPrettyJSon();
 
 	public static interface SystemProperty {
 

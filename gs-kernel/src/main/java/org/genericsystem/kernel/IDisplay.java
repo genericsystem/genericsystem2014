@@ -1,5 +1,14 @@
 package org.genericsystem.kernel;
 
+import java.io.StringWriter;
+import java.util.HashMap;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonValue;
+import javax.json.JsonWriter;
+import javax.json.stream.JsonGenerator;
 import org.genericsystem.kernel.services.IVertexBase;
 
 public interface IDisplay<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
@@ -23,19 +32,60 @@ public interface IDisplay<T extends AbstractVertex<T, U>, U extends IRoot<T, U>>
 		for (T component : getComponents())
 			s += " Component   : " + component + " (" + System.identityHashCode(component) + ")\n";
 		s += "**********************************************************************\n";
-
-		// for (Attribute attribute : getAttributes())
-		// if (!(attribute.getValue() instanceof Class) /* || !Constraint.class.isAssignableFrom((Class<?>) attribute.getValue()) */) {
-		// s += ((GenericImpl) attribute).getCategoryString() + "   : " + attribute + " (" + System.identityHashCode(attribute) + ")\n";
-		// for (Holder holder : getHolders(attribute))
-		// s += "                          ----------> " + ((GenericImpl) holder).getCategoryString() + " : " + holder + "\n";
-		// }
 		// s += "**********************************************************************\n";
 		// s += "design date : " + new SimpleDateFormat(Statics.LOG_PATTERN).format(new Date(getDesignTs() / Statics.MILLI_TO_NANOSECONDS)) + "\n";
 		// s += "birth date  : " + new SimpleDateFormat(Statics.LOG_PATTERN).format(new Date(getBirthTs() / Statics.MILLI_TO_NANOSECONDS)) + "\n";
 		// s += "death date  : " + new SimpleDateFormat(Statics.LOG_PATTERN).format(new Date(getDeathTs() / Statics.MILLI_TO_NANOSECONDS)) + "\n";
 		// s += "**********************************************************************\n";
-
 		return s;
+	}
+
+	@Override
+	default String toPrettyString() {
+		StringWriter writer = new StringWriter();
+		JsonWriter jsonWriter = Json.createWriterFactory(new HashMap<String, JsonValue>() {
+			private static final long serialVersionUID = -8719498570554805477L;
+			{
+				put(JsonGenerator.PRETTY_PRINTING, JsonValue.TRUE);
+			}
+		}).createWriter(writer);
+		// jsonWriter.write(toPrettyJSon());
+		jsonWriter.write(toJSonId());
+		jsonWriter.close();
+		return writer.toString();
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default JsonObject toPrettyJSon() {
+		JsonObjectBuilder builder = Json.createObjectBuilder();
+		builder.add("Value", toString());
+		for (T attribute : getAttributes()) {
+			JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+			for (T holder : getHolders(attribute)) {
+				if (holder.getComponents().get(0).isSpecializationOf((T) this))
+					arrayBuilder.add(holder.toPrettyJSon());
+				builder.add(attribute.toString(), arrayBuilder);
+			}
+		}
+		return builder.build();
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default JsonObject toJSonId() {
+		JsonObjectBuilder builder = Json.createObjectBuilder();
+		builder.add("Id", System.identityHashCode(this));
+		builder.add("Value", toString());
+		builder.add("Meta", System.identityHashCode(getMeta()));
+		JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+		for (T superVertex : getSupers())
+			arrayBuilder.add(System.identityHashCode(superVertex));
+		builder.add("Supers", arrayBuilder);
+
+		for (T component : getComponents())
+			arrayBuilder.add(System.identityHashCode(component));
+		builder.add("Components", arrayBuilder);
+		return builder.build();
 	}
 }
