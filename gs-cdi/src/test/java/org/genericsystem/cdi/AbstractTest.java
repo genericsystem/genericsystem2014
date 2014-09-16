@@ -3,9 +3,9 @@ package org.genericsystem.cdi;
 import javax.enterprise.inject.spi.Extension;
 import javax.inject.Inject;
 
+import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.cache.Engine;
 import org.genericsystem.cdi.event.EventLauncher;
-import org.genericsystem.kernel.exceptions.RollbackException;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.testenricher.cdi.container.CDIExtension;
 import org.jboss.arquillian.testng.Arquillian;
