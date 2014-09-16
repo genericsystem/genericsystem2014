@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Stream;
 import javax.json.JsonObject;
+import org.genericsystem.api.exception.RollbackException;
 
 /**
  * @author Nicolas Feybesse
@@ -32,7 +33,7 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	Stream<T> getComponentsStream();
 
 	/**
-	 * Returns if this signature is the root of the graph
+	 * Indicates whether this vertex is the root of the graph
 	 *
 	 * @return true if this signature is the root of the graph
 	 */
@@ -46,10 +47,12 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	U getRoot();
 
 	/**
-	 * Returns true if this signature is alive<br>
-	 * It means as appropriate this exact instance should be directly reachable from the graph and not killed at a given moment
 	 *
-	 * @return true if this signature is reachable in from graph and not killed at a given moment
+	 * Indicates whether this signature is alive
+	 *
+	 * It means, as appropriate, this exact instance should be directly reachable from the graph and not killed at a given moment
+	 *
+	 * @return true if this signature is alive
 	 */
 	boolean isAlive();
 
@@ -62,38 +65,85 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	void checkIsAlive();
 
 	/**
-	 * Returns the alive instance if it exists<br>
+	 * Returns the alive reference if it exists<br>
 	 *
-	 * @return the alive instance if it exists null otherwise
+	 * @return the alive instance if it exists, null otherwise
 	 *
 	 */
 	T getAlive();
 
 	/**
-	 * Returns true if this instance is equivalent of the vertex<br>
+	 * Indicates whether this vertex is equivalent to another<br>
 	 *
 	 * @param vertex
-	 *            the vertex to be tested for the equivalence
+	 *            the vertex reference to be tested for the equivalence
 	 * @return true if this instance is equivalent of the service
 	 *
 	 */
 	boolean equiv(IVertexBase<?, ?> vertex);
 
+	/**
+	 * Technical method for create a real array of T implementation for passing safe varags parameter
+	 *
+	 * @param an
+	 *            array of object
+	 * @return an array of T
+	 */
 	T[] coerceToTArray(Object... array);
 
+	/**
+	 * Utility method for create a real array of T implementation with this in first position and targets after
+	 *
+	 * @return the array of T
+	 */
 	@SuppressWarnings("unchecked")
 	T[] addThisToTargets(T... targets);
 
+	/**
+	 * Returns the meta level of this vertex
+	 *
+	 *
+	 * @return the meta level : 0 for META level, 1 for STRUCTURAL and 2 for CONCRETE.
+	 */
 	int getLevel();
 
+	/**
+	 * Returns if the meta level of this vertex is META
+	 *
+	 * @return true if the meta level of this vertex is 0
+	 */
 	boolean isMeta();
 
+	/**
+	 * Returns if the meta level of this vertex is STRUCTURAL
+	 *
+	 * @return true if the meta level of this vertex is 1
+	 */
 	boolean isStructural();
 
+	/**
+	 * Returns if the meta level of this vertex is CONCRETE
+	 *
+	 * @return true if the meta level of this vertex is 2
+	 */
 	boolean isConcrete();
 
+	/**
+	 * Indicates whether this vertex "inherits from" another.
+	 *
+	 * @param superVertex
+	 *            * the vertex reference to be tested for the inheritance
+	 * @return true if this vertex inherits from superVertex
+	 */
 	boolean inheritsFrom(T superVertex);
 
+	/**
+	 * Indicates whether this vertex "is instance of" another.
+	 *
+	 * @param metaVertex
+	 *            * the vertex reference to be tested for the inheritance
+	 * @return true if this vertex is instance of metaVertex
+	 */
 	boolean isInstanceOf(T metaVertex);
 
 	boolean isSpecializationOf(T supra);

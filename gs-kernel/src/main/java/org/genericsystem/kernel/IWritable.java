@@ -72,9 +72,6 @@ public interface IWritable<T extends AbstractVertex<T, U>, U extends IRoot<T, U>
 	}
 
 	@Override
-	T[] coerceToTArray(Object... array);
-
-	@Override
 	@SuppressWarnings("unchecked")
 	default T addAttribute(Serializable value, T... targets) {
 		return addAttribute(Collections.emptyList(), value, targets);

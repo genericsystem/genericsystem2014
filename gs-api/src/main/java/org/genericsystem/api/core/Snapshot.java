@@ -60,6 +60,7 @@ public interface Snapshot<T> extends Iterable<T> {
 				public Iterator<T> iterator() {
 					return Collections.emptyIterator();
 				}
+
 			};
 		}
 
