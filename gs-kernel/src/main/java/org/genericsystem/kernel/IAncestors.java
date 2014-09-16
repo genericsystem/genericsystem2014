@@ -2,8 +2,8 @@ package org.genericsystem.kernel;
 
 import java.util.Objects;
 import java.util.stream.Stream;
-import org.genericsystem.kernel.exceptions.NotAliveException;
-import org.genericsystem.kernel.services.IVertexBase;
+import org.genericsystem.api.core.IVertexBase;
+import org.genericsystem.api.exception.NotAliveException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,11 +27,9 @@ public interface IAncestors<T extends AbstractVertex<T, U>, U extends IRoot<T, U
 	}
 
 	@Override
-	default T checkIsAlive() {
-		T result = getAlive();
+	default void checkIsAlive() {
 		if (!equals(getAlive()))
 			getRoot().discardWithException(new NotAliveException(info()));
-		return result;
 	}
 
 	@Override
@@ -46,7 +44,7 @@ public interface IAncestors<T extends AbstractVertex<T, U>, U extends IRoot<T, U
 
 	@Override
 	default boolean equiv(IVertexBase<? extends IVertexBase<?, ?>, ?> service) {
-		return equals(service) ? true : ((AbstractVertex<?, ?>) this).equiv(service.getMeta(), service.getValue(), service.getComponents());
+		return equals(service) || ((AbstractVertex<?, ?>) this).equiv(service.getMeta(), service.getValue(), service.getComponents());
 	}
 
 	@Override

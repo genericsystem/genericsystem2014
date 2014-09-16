@@ -1,7 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.util.Iterator;
-import org.genericsystem.kernel.Snapshot.AbstractSnapshot;
+import org.genericsystem.api.core.Snapshot.AbstractSnapshot;
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
 class DependenciesImpl<T> extends AbstractSnapshot<T> implements Dependencies<T> {

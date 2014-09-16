@@ -24,7 +24,7 @@ public class HolderTest extends AbstractTest {
 		assert power.getInstance(powerValue, vehicle).equals(holder);
 		assert power.isAlive();
 		assert holder.isAlive();
-		assert false : vehicle.toPrettyString();
+		// assert false : vehicle.toPrettyString();
 	}
 
 	public void testHolder1AttributWith2LevelsInheritance1AttributOnParent() {

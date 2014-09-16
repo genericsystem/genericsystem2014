@@ -1,13 +1,13 @@
 package org.genericsystem.api.exception;
 
 /**
- * <p>
- * Constraints can be implicitly or explicitly positioned. Restricts the use of the elements on which there are positioned during runtime.
- * </p>
+ * The general exception.
+ * 
+ * @author Nicolas Feybesse
  */
-public abstract class ConstraintViolationException extends RuntimeException {
+public abstract class ConstraintViolationException extends Exception {
 
-	private static final long serialVersionUID = 3329692268513553709L;
+	private static final long serialVersionUID = 4647517844227534027L;
 
 	public ConstraintViolationException() {
 	};

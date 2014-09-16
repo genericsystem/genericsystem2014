@@ -1,28 +1,83 @@
-package org.genericsystem.kernel.services;
+package org.genericsystem.api.core;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Stream;
 import javax.json.JsonObject;
-import org.genericsystem.kernel.Snapshot;
 
+/**
+ * @author Nicolas Feybesse
+ *
+ * @param <T>
+ *            the implementation of IVertexBase
+ * @param <U>
+ *            the implementation of IVertexBase
+ */
 public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<T, U>> extends ISignature<T> {
 
-	Stream<T> getComponentsStream();
-
+	/**
+	 * Returns the supers stream of this signature
+	 *
+	 * @return the components stream of this signature<br>
+	 *         this is equivalent of getSupers().stream()
+	 */
 	Stream<T> getSupersStream();
 
+	/**
+	 * Returns the components stream of this signature
+	 *
+	 * @return the components stream of this signature<br>
+	 *         this is equivalent of getComponents().stream()
+	 */
+	Stream<T> getComponentsStream();
+
+	/**
+	 * Returns if this signature is the root of the graph
+	 *
+	 * @return true if this signature is the root of the graph
+	 */
 	boolean isRoot();
 
+	/**
+	 * Returns the signature of the root of the graph
+	 *
+	 * @return the signature of the root of the graph
+	 */
 	U getRoot();
 
+	/**
+	 * Returns true if this signature is alive<br>
+	 * It means as appropriate this exact instance should be directly reachable from the graph and not killed at a given moment
+	 *
+	 * @return true if this signature is reachable in from graph and not killed at a given moment
+	 */
 	boolean isAlive();
 
-	T checkIsAlive();
+	/**
+	 * Checks if this instance is alive. If not the discardAndRollback() method is called on graph's root. *
+	 *
+	 * @throws RollbackException
+	 *             if this signature is not alive
+	 */
+	void checkIsAlive();
 
+	/**
+	 * Returns the alive instance if it exists<br>
+	 *
+	 * @return the alive instance if it exists null otherwise
+	 *
+	 */
 	T getAlive();
 
-	boolean equiv(IVertexBase<?, ?> service);
+	/**
+	 * Returns true if this instance is equivalent of the vertex<br>
+	 *
+	 * @param vertex
+	 *            the vertex to be tested for the equivalence
+	 * @return true if this instance is equivalent of the service
+	 *
+	 */
+	boolean equiv(IVertexBase<?, ?> vertex);
 
 	T[] coerceToTArray(Object... array);
 

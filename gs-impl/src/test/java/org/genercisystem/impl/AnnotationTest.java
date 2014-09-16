@@ -4,6 +4,8 @@ import org.genercisystem.impl.AnnotationTest.VehicleType.MyAudi;
 import org.genercisystem.impl.AnnotationTest.VehicleType.MyBmw;
 import org.genercisystem.impl.AnnotationTest.VehicleType.MyMercedes;
 import org.genercisystem.impl.AnnotationTest.VehicleType.VehicleInstance;
+import org.genericsystem.impl.Engine;
+import org.genericsystem.impl.Generic;
 import org.genericsystem.impl.annotations.Components;
 import org.genericsystem.impl.annotations.InstanceClass;
 import org.genericsystem.impl.annotations.Meta;

@@ -10,7 +10,7 @@
 	<artifactId>gs-api</artifactId>
 	<name>Generic System API</name>
 	<packaging>jar</packaging>
-	
+
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		<plugins>
@@ -29,4 +29,12 @@
 			</plugin>
 		</plugins>
 	</build>
+	<dependencies>
+		
+		<dependency>
+			<groupId>javax.json</groupId>
+			<artifactId>javax.json-api</artifactId>
+			<version>1.0</version>
+		</dependency>
+	</dependencies>
 </project>

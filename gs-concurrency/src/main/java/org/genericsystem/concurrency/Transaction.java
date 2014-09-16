@@ -1,10 +1,9 @@
 package org.genericsystem.concurrency;
 
 import java.util.HashSet;
-
-import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
-import org.genericsystem.kernel.exceptions.ConstraintViolationException;
-import org.genericsystem.kernel.exceptions.OptimisticLockConstraintViolationException;
+import org.genericsystem.api.exception.ConcurrencyControlException;
+import org.genericsystem.api.exception.ConstraintViolationException;
+import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
 
 public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends org.genericsystem.cache.Transaction<T, U, V, W> {
 

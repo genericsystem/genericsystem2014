@@ -1,6 +1,6 @@
 package org.genericsystem.kernel;
 
-import org.genericsystem.kernel.exceptions.RollbackException;
+import org.genericsystem.api.exception.RollbackException;
 
 public interface IRoot<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends IVertex<T, U> {
 

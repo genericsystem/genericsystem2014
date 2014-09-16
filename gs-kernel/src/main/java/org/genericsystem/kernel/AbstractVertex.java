@@ -12,17 +12,18 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.genericsystem.api.core.ISignature;
+import org.genericsystem.api.core.IVertexBase;
+import org.genericsystem.api.core.Snapshot;
+import org.genericsystem.api.exception.AliveConstraintViolationException;
+import org.genericsystem.api.exception.AmbiguousSelectionException;
+import org.genericsystem.api.exception.ConstraintViolationException;
+import org.genericsystem.api.exception.CrossEnginesAssignementsException;
+import org.genericsystem.api.exception.ExistsException;
+import org.genericsystem.api.exception.NotFoundException;
+import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Statics.Supers;
-import org.genericsystem.kernel.exceptions.AliveConstraintViolationException;
-import org.genericsystem.kernel.exceptions.AmbiguousSelectionException;
-import org.genericsystem.kernel.exceptions.ConstraintViolationException;
-import org.genericsystem.kernel.exceptions.CrossEnginesAssignementsException;
-import org.genericsystem.kernel.exceptions.ExistsException;
-import org.genericsystem.kernel.exceptions.NotFoundException;
-import org.genericsystem.kernel.exceptions.ReferentialIntegrityConstraintViolationException;
-import org.genericsystem.kernel.services.ISignature;
-import org.genericsystem.kernel.services.IVertexBase;
 
 public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> implements IVertex<T, U> {
 
@@ -308,7 +309,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		if (!getMeta().equiv(meta))
 			return false;
 		if (getComponents().size() != components.size())
-			return false;// for the moment, no weak equiv when component size is different
+			return false;// for the moment, not equivalent when component size is different
 		for (int i = 0; i < getComponents().size(); i++)
 			if (isReferentialIntegrityConstraintEnabled(i) && isSingularConstraintEnabled(i) && getComponents().get(i).equiv(components.get(i)))
 				return true;

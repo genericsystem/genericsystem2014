@@ -1,5 +1,7 @@
 package org.genercisystem.impl;
 
+import org.genericsystem.impl.Engine;
+import org.genericsystem.impl.Generic;
 import org.testng.annotations.Test;
 
 @Test

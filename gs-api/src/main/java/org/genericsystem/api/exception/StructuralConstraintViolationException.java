@@ -1,4 +1,4 @@
-package org.genericsystem.kernel.exceptions;
+package org.genericsystem.api.exception;
 
 /**
  * @author middleware

@@ -2,6 +2,8 @@ package org.genercisystem.impl;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.genericsystem.impl.Engine;
+import org.genericsystem.impl.Generic;
 import org.testng.annotations.Test;
 
 @Test

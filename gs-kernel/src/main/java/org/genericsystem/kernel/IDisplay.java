@@ -9,7 +9,7 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import javax.json.JsonWriter;
 import javax.json.stream.JsonGenerator;
-import org.genericsystem.kernel.services.IVertexBase;
+import org.genericsystem.api.core.IVertexBase;
 
 public interface IDisplay<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
 

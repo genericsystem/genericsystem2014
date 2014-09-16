@@ -1,6 +1,6 @@
 package org.genericsystem.kernel;
 
-import org.genericsystem.kernel.exceptions.ReferentialIntegrityConstraintViolationException;
+import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test

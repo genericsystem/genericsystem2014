@@ -1,7 +1,5 @@
-package org.genercisystem.impl;
+package org.genericsystem.impl;
 
-import org.genericsystem.impl.AbstractGeneric;
-import org.genericsystem.impl.IGeneric;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Vertex;
 

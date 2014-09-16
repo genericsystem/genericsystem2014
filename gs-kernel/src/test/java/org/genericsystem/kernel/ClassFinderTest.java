@@ -2,8 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.Arrays;
 import java.util.Collections;
-
-import org.genericsystem.kernel.exceptions.NotAliveException;
+import org.genericsystem.api.exception.NotAliveException;
 import org.testng.annotations.Test;
 
 @Test

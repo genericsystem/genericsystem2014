@@ -1,13 +1,11 @@
-package org.genericsystem.kernel;
+package org.genericsystem.api.core;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import org.genericsystem.kernel.iterator.AbstractFilterIterator;
 
 public interface Snapshot<T> extends Iterable<T> {
 
@@ -20,39 +18,6 @@ public interface Snapshot<T> extends Iterable<T> {
 		}
 		return size;
 	}
-
-	@FunctionalInterface
-	public interface Filter<T> {
-		boolean isSelected(T candidate);
-	}
-
-	default Snapshot<T> filter(final Predicate<T> filter) {
-		return new AbstractSnapshot<T>() {
-			@Override
-			public Iterator<T> iterator() {
-				return new AbstractFilterIterator<T>(Snapshot.this.iterator()) {
-					@Override
-					public boolean isSelected() {
-						return filter.test(next);
-					}
-				};
-			}
-		};
-	}
-
-	// default <E> Snapshot<E> project(final Function<T, E> function) {
-	// return new AbstractSnapshot<E>() {
-	// @Override
-	// public Iterator<E> iterator() {
-	// return new AbstractProjectionIterator<T, E>(Snapshot.this.iterator()) {
-	// @Override
-	// public E project(T t) {
-	// return function.apply(t);
-	// }
-	// };
-	// }
-	// };
-	// }
 
 	default boolean isEmpty() {
 		return !iterator().hasNext();

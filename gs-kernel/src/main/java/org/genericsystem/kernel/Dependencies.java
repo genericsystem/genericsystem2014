@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.AbstractMap;
 import java.util.Iterator;
+import org.genericsystem.api.core.Snapshot;
 
 public interface Dependencies<T> extends Snapshot<T> {
 

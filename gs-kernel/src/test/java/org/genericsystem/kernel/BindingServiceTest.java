@@ -1,6 +1,6 @@
 package org.genericsystem.kernel;
 
-import org.genericsystem.kernel.exceptions.ExistsException;
+import org.genericsystem.api.exception.ExistsException;
 import org.testng.annotations.Test;
 
 @Test

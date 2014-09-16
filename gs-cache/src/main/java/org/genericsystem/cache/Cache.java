@@ -7,14 +7,14 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
+import org.genericsystem.api.core.Snapshot;
+import org.genericsystem.api.exception.ConcurrencyControlException;
+import org.genericsystem.api.exception.ConstraintViolationException;
+import org.genericsystem.api.exception.NotFoundException;
+import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
-import org.genericsystem.kernel.Snapshot;
 import org.genericsystem.kernel.Statics;
-import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
-import org.genericsystem.kernel.exceptions.ConstraintViolationException;
-import org.genericsystem.kernel.exceptions.NotFoundException;
-import org.genericsystem.kernel.exceptions.RollbackException;
 
 public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends AbstractContext<T, U, V, W> {
 

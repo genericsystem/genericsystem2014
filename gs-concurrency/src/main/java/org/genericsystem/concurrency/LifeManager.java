@@ -2,9 +2,8 @@ package org.genericsystem.concurrency;
 
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-
-import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
-import org.genericsystem.kernel.exceptions.OptimisticLockConstraintViolationException;
+import org.genericsystem.api.exception.ConcurrencyControlException;
+import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -2,8 +2,8 @@ package org.genericsystem.cache;
 
 import java.io.Serializable;
 import java.util.List;
+import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.AbstractVertex;
-import org.genericsystem.kernel.exceptions.RollbackException;
 
 public interface IEngine<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends IGeneric<T, U, V, W>, org.genericsystem.impl.IEngine<T, U> {
 

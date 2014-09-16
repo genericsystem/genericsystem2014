@@ -1,7 +1,7 @@
 package org.genericsystem.cache;
 
-import org.genericsystem.kernel.exceptions.NotAliveException;
-import org.genericsystem.kernel.exceptions.ReferentialIntegrityConstraintViolationException;
+import org.genericsystem.api.exception.NotAliveException;
+import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test

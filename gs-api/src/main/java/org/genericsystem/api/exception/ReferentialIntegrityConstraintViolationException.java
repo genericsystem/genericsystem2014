@@ -1,16 +1,14 @@
 package org.genericsystem.api.exception;
 
 /**
- * <p>
- * Thrown when a connection from one element to another (that is <tt>Attribute</tt>, <tt>Relation</tt> or any instance of those) is broken.
- * </p>
+ * @author middleware
  */
 public class ReferentialIntegrityConstraintViolationException extends ConstraintViolationException {
 
-	private static final long serialVersionUID = -1892289381598641871L;
+	private static final long serialVersionUID = -4066409595001566155L;
 
-	public ReferentialIntegrityConstraintViolationException(String msg) {
-		super(msg);
+	public ReferentialIntegrityConstraintViolationException(String message) {
+		super(message);
 	}
 
 }

@@ -1,12 +1,12 @@
 package org.genericsystem.concurrency;
 
 import java.util.Iterator;
+import org.genericsystem.api.exception.AliveConstraintViolationException;
+import org.genericsystem.api.exception.ConcurrencyControlException;
+import org.genericsystem.api.exception.ConstraintViolationException;
+import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.cache.AbstractContext;
 import org.genericsystem.kernel.Statics;
-import org.genericsystem.kernel.exceptions.AliveConstraintViolationException;
-import org.genericsystem.kernel.exceptions.ConcurrencyControlException;
-import org.genericsystem.kernel.exceptions.ConstraintViolationException;
-import org.genericsystem.kernel.exceptions.RollbackException;
 
 public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends org.genericsystem.cache.Cache<T, U, V, W> {
 

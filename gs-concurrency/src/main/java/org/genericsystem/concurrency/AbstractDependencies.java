@@ -2,9 +2,8 @@ package org.genericsystem.concurrency;
 
 import java.io.Serializable;
 import java.util.Iterator;
-
+import org.genericsystem.api.core.Snapshot.AbstractSnapshot;
 import org.genericsystem.kernel.Dependencies;
-import org.genericsystem.kernel.Snapshot.AbstractSnapshot;
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
 public abstract class AbstractDependencies<T extends AbstractVertex<?, ?>> extends AbstractSnapshot<T> implements Dependencies<T> {

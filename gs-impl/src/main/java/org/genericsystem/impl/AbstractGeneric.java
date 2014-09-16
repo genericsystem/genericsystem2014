@@ -2,14 +2,14 @@ package org.genericsystem.impl;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
+import org.genericsystem.api.core.ISignature;
+import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.impl.annotations.InstanceClass;
 import org.genericsystem.impl.annotations.SystemGeneric;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
-import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.IRoot;
-import org.genericsystem.kernel.Snapshot;
-import org.genericsystem.kernel.services.ISignature;
+import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends AbstractVertex<T, U> implements IGeneric<T, U> {
 
