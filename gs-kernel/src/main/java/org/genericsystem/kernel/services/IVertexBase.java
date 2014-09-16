@@ -6,15 +6,11 @@ import java.util.stream.Stream;
 import javax.json.JsonObject;
 import org.genericsystem.kernel.Snapshot;
 
-public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<T, U>> {
-
-	T getMeta();
-
-	Serializable getValue();
-
-	List<T> getComponents();
+public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<T, U>> extends ISignature<T> {
 
 	Stream<T> getComponentsStream();
+
+	Stream<T> getSupersStream();
 
 	boolean isRoot();
 
@@ -40,10 +36,6 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	boolean isStructural();
 
 	boolean isConcrete();
-
-	List<T> getSupers();
-
-	Stream<T> getSupersStream();
 
 	boolean inheritsFrom(T superVertex);
 
@@ -91,8 +83,6 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	String detailedInfo();
 
 	String toPrettyString();
-
-	JsonObject toJSonId();
 
 	JsonObject toPrettyJSon();
 

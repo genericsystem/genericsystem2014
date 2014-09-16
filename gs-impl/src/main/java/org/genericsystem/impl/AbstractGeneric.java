@@ -9,10 +9,11 @@ import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.IRoot;
 import org.genericsystem.kernel.Snapshot;
-import org.genericsystem.kernel.services.IVertexBase;
+import org.genericsystem.kernel.services.ISignature;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends AbstractVertex<T, U> implements IGeneric<T, U> {
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected T newT(Class<?> clazz) {
 		InstanceClass metaAnnotation = getClass().getAnnotation(InstanceClass.class);
@@ -36,35 +37,13 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		return null; // Not reached
 	}
 
-	@SuppressWarnings("unchecked")
-	private T newInstance(Class<?> clazz) {
-		InstanceClass metaAnnotation = getClass().getAnnotation(InstanceClass.class);
-		if (metaAnnotation != null)
-			if (clazz == null || clazz.isAssignableFrom(metaAnnotation.value()))
-				clazz = metaAnnotation.value();
-			else if (!metaAnnotation.value().isAssignableFrom(clazz))
-				getRoot().discardWithException(new InstantiationException(clazz + " must extends " + metaAnnotation.value()));
-		T newT = newT();// Instantiates T in all cases...
-		if (clazz == null || clazz.isAssignableFrom(newT.getClass()))
-			return newT;
-		if (newT.getClass().isAssignableFrom(clazz))
-			try {
-				return (T) clazz.newInstance();
-			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
-				getRoot().discardWithException(e);
-			}
-		else
-			getRoot().discardWithException(new InstantiationException(clazz + " must extends " + newT.getClass()));
-		return null; // Not reached
-	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!(obj instanceof IVertexBase<?, ?>))
+		if (!(obj instanceof ISignature<?>))
 			return false;
-		IVertexBase<?, ?> service = (IVertexBase<?, ?>) obj;
+		ISignature<?> service = (ISignature<?>) obj;
 		return equals(service.getMeta(), service.getSupers(), service.getValue(), service.getComponents());
 	}
 

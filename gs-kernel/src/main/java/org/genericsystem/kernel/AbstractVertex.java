@@ -21,6 +21,7 @@ import org.genericsystem.kernel.exceptions.CrossEnginesAssignementsException;
 import org.genericsystem.kernel.exceptions.ExistsException;
 import org.genericsystem.kernel.exceptions.NotFoundException;
 import org.genericsystem.kernel.exceptions.ReferentialIntegrityConstraintViolationException;
+import org.genericsystem.kernel.services.ISignature;
 import org.genericsystem.kernel.services.IVertexBase;
 
 public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> implements IVertex<T, U> {
@@ -558,7 +559,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 
 	public static class SystemMap {}
 
-	protected boolean equals(IVertexBase<?, ?> meta, List<? extends IVertexBase<?, ?>> supers, Serializable value, List<? extends IVertexBase<?, ?>> components) {
+	protected boolean equals(ISignature<?> meta, List<? extends ISignature<?>> supers, Serializable value, List<? extends ISignature<?>> components) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComponents().equals(components) && getSupers().equals(supers);
 	}
 

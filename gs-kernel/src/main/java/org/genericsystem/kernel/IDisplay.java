@@ -50,7 +50,7 @@ public interface IDisplay<T extends AbstractVertex<T, U>, U extends IRoot<T, U>>
 			}
 		}).createWriter(writer);
 		// jsonWriter.write(toPrettyJSon());
-		jsonWriter.write(toJSonId());
+		jsonWriter.write(toPrettyJSon());
 		jsonWriter.close();
 		return writer.toString();
 	}
