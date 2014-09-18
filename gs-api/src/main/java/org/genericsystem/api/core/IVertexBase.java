@@ -10,16 +10,16 @@ import org.genericsystem.api.exception.RollbackException;
  * @author Nicolas Feybesse
  *
  * @param <T>
- *            the implementation of IVertexBase
+ *            the implementation of IVertexBase used for all nodes
  * @param <U>
- *            the implementation of IVertexBase
+ *            the implementation of IVertexBase used for root node
  */
 public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<T, U>> extends ISignature<T> {
 
 	/**
 	 * Returns the supers stream of this signature
 	 *
-	 * @return the components stream of this signature<br>
+	 * @return the supers stream of this signature<br>
 	 *         this is equivalent of getSupers().stream()
 	 */
 	Stream<T> getSupersStream();
@@ -83,7 +83,7 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	boolean equiv(IVertexBase<?, ?> vertex);
 
 	/**
-	 * Technical method for create a real array of T implementation for passing safe varags parameter
+	 * Technical method for create a real array of T implementation for passing safe varags parameter and avoid heap pollution
 	 *
 	 * @param an
 	 *            array of object
@@ -141,13 +141,27 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 * Indicates whether this vertex "is instance of" another.
 	 *
 	 * @param metaVertex
-	 *            * the vertex reference to be tested for the inheritance
+	 *            the vertex reference to be tested for the instantiation
 	 * @return true if this vertex is instance of metaVertex
 	 */
 	boolean isInstanceOf(T metaVertex);
 
+	/**
+	 * Indicates whether this vertex "inherits from" or "is instance of" or "is instance of instance of" another.
+	 *
+	 * @param supra
+	 *            the vertex reference to be tested for the specialization
+	 * @return true if this vertex is instance of metaVertex
+	 */
 	boolean isSpecializationOf(T supra);
 
+	/**
+	 * Indicates whether this vertex has a components that inherits from vertex. It becomes then an "attribute of" the vertex
+	 *
+	 * @param vertex
+	 *            the vertex reference to be tested for the attribution.
+	 * @return true if this vertex is instance of metaVertex
+	 */
 	boolean isAttributeOf(T vertex);
 
 	@SuppressWarnings("unchecked")
