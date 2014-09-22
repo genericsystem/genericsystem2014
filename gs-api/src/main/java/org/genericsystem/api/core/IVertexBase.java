@@ -284,12 +284,33 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 */
 	boolean isAncestorOf(final T dependency);
 
+	/**
+	 * Returns a String representation of this vertex in the format : <br/>
+	 * (meta)[supers]value[composites]
+	 *
+	 * @return the string representation of this vertex
+	 */
 	String info();
 
+	/**
+	 * Returns a String detailed representation of this vertex
+	 *
+	 * @return the string representation of this vertex
+	 */
 	String detailedInfo();
 
+	/**
+	 * Returns a String pretty representation of the components of this vertex
+	 *
+	 * @return the string representation of this vertex
+	 */
 	String toPrettyString();
 
+	/**
+	 * Returns a JSon representation of the components of this vertex
+	 *
+	 * @return the string representation of this vertex
+	 */
 	JsonObject toPrettyJSon();
 
 	public static interface SystemProperty {
@@ -300,44 +321,259 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 
 	}
 
+	/**
+	 *
+	 * Returns the property value of this vertex for the specified system property and the specified position.
+	 *
+	 * @param propertyClass
+	 *            the class of the property
+	 * @param pos
+	 *            the position of this vertex in composites of components to consider.<br/>
+	 *            for example : Statics.NO_POSITION, Statics.FIRST_POSITION, Statics.SECOND_POSITION ...
+	 * @return the property value
+	 */
 	Serializable getSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos);
 
-	void setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value);
+	/**
+	 *
+	 * Set the property value of this vertex for the specified system property and the specified position.
+	 *
+	 * @param propertyClass
+	 *            the class of the system property
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 *
+	 * @Return this
+	 */
+	T setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value);
 
+	/**
+	 *
+	 * Enable this vertex for the specified boolean system property and the specified position.
+	 *
+	 * @param propertyClass
+	 *            the class of the boolean system property
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 *
+	 * @Return this
+	 */
 	T enableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos);
 
+	/**
+	 *
+	 * Disable this vertex for the specified boolean system property and the specified position.
+	 *
+	 * @param propertyClass
+	 *            the class of the boolean system property
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 *
+	 * @Return this
+	 */
 	T disableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos);
 
+	/**
+	 *
+	 * Indicates whether this vertex is enabled for the specified boolean system property and the specified position.
+	 *
+	 * @param propertyClass
+	 *            the class of the boolean system property
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 */
 	boolean isSystemPropertyEnabled(Class<? extends SystemProperty> propertyClass, int pos);
 
+	/**
+	 *
+	 * Enable the referential constraint of this vertex for the specified position.
+	 *
+	 * @param propertyClass
+	 *            the class of the boolean system property
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 *
+	 * @Return this
+	 */
 	T enableReferentialIntegrity(int pos);
 
+	/**
+	 *
+	 * Disable the referential constraint of this vertex for the specified position.
+	 *
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 *
+	 * @Return this
+	 */
 	T disableReferentialIntegrity(int pos);
 
+	/**
+	 *
+	 * Indicates whether this vertex is referential integrity for the specified position.
+	 *
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 * @Return true if this vertex is referential integrity
+	 */
 	boolean isReferentialIntegrityConstraintEnabled(int pos);
 
+	/**
+	 *
+	 * Enable the singular constraint of this vertex for the specified position.
+	 *
+	 * @param propertyClass
+	 *            the class of the boolean system property
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 *
+	 * @Return this
+	 */
 	T enableSingularConstraint(int pos);
 
+	/**
+	 *
+	 * Disable the singular constraint of this vertex for the specified position.
+	 *
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 *
+	 * @Return this
+	 */
 	T disableSingularConstraint(int pos);
 
+	/**
+	 *
+	 * Indicates whether this vertex is singular constraint for the specified position.
+	 *
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 * @Return true if this vertex is singular constraint
+	 */
 	boolean isSingularConstraintEnabled(int pos);
 
+	/**
+	 *
+	 * Enable the property constraint of this vertex.
+	 *
+	 * @param propertyClass
+	 *            the class of the boolean system property
+	 *
+	 * @Return this
+	 */
 	T enablePropertyConstraint();
 
+	/**
+	 *
+	 * Disable the property constraint of this vertex.
+	 *
+	 * @Return this
+	 */
 	T disablePropertyConstraint();
 
+	/**
+	 *
+	 * Indicates whether this vertex is property constraint.
+	 *
+	 *
+	 * @Return true if this vertex is property constraint
+	 */
 	boolean isPropertyConstraintEnabled();
 
+	/**
+	 *
+	 * Enable the required constraint of this vertex for the specified position.<br/>
+	 *
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 *
+	 * @Return this
+	 */
 	T enableRequiredConstraint(int pos);
 
+	/**
+	 *
+	 * Disable the required constraint of this vertex for the specified position.<br/>
+	 *
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 *
+	 * @Return this
+	 */
 	T disableRequiredConstraint(int pos);
 
+	/**
+	 *
+	 * Indicates whether this vertex is required constraint for the specified position.
+	 *
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 * @Return true if this vertex is required constraint
+	 */
 	boolean isRequiredConstraintEnabled(int pos);
 
+	/**
+	 *
+	 * Enable the cascade remove property of this vertex for the specified position.<br/>
+	 *
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 *
+	 * @Return this
+	 */
 	T enableCascadeRemove(int pos);
 
+	/**
+	 *
+	 * Disable the cascade remove property of this vertex for the specified position.<br/>
+	 *
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 *
+	 * @Return this
+	 */
 	T disableCascadeRemove(int pos);
 
+	/**
+	 *
+	 * Indicates whether this cascade remove property is set for the specified position.
+	 *
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 * @Return true if the cascade remove property is set
+	 */
 	boolean isCascadeRemove(int pos);
 
 	void remove();
