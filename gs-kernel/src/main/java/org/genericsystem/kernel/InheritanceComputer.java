@@ -52,14 +52,14 @@ class InheritanceComputer<T extends AbstractVertex<T, U>, U extends IRoot<T, U>>
 		}
 
 		private Stream<T> baseSupersStream() {
-			return localBase.getSupersStream().filter(next -> /* base.getMeta().equals(next.getMeta()) && */origin.isAttributeOf(next));
+			return localBase.getSupersStream().filter(next -> /* base.getMeta().equals(next.getMeta()) && */origin.isComponentOf(next));
 		}
 
 		private Stream<T> fromAboveStream() {
-			if (!origin.isAttributeOf(localBase))
+			if (!origin.isComponentOf(localBase))
 				return Stream.empty();
 			if (baseSupersStream().count() == 0)
-				return localBase.isRoot() || !origin.isAttributeOf(localBase.getMeta()) ? Stream.of(origin) : getInheringsStream(localBase.getMeta());
+				return localBase.isRoot() || !origin.isComponentOf(localBase.getMeta()) ? Stream.of(origin) : getInheringsStream(localBase.getMeta());
 			return Statics.concat(baseSupersStream(), superVertex -> getInheringsStream(superVertex)).distinct();
 		}
 

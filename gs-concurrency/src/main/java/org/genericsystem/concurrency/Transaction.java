@@ -60,7 +60,7 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends IEngin
 				writeLockAndCheckMvcc(add.getMeta());
 				for (T superT : add.getSupers())
 					writeLockAndCheckMvcc(superT);
-				for (T component : add.getComponents())
+				for (T component : add.getComposites())
 					writeLockAndCheckMvcc(component);
 				writeLockAndCheckMvcc(add);
 			}

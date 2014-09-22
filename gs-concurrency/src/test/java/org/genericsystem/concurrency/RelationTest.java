@@ -77,7 +77,7 @@ public class RelationTest {
 		Generic caravane = vehicle.addInstance("Caravane");
 		Generic vehicleHaveSameOwnerAsVehicle = Engine.addInstance("VehicleHaveSameOwnerAsVehicle", vehicle, vehicle);
 		Generic myVehicleHaveSameOwnerAsVehicle = vehicleHaveSameOwnerAsVehicle.addInstance("myVehicleHaveSameOwnerAsVehicle", car, caravane);
-		List<Generic> components = myVehicleHaveSameOwnerAsVehicle.getComponents();
+		List<Generic> components = myVehicleHaveSameOwnerAsVehicle.getComposites();
 		assert components.size() == 2 : components.size();
 		assert components.contains(caravane) : components;
 		assert components.contains(car) : components;
@@ -92,7 +92,7 @@ public class RelationTest {
 		Generic vehicleHaveSameOwnerAsVehicle = Engine.addInstance("VehicleHaveSameOwnerAsVehicle", vehicle, vehicle);
 		assert vehicleHaveSameOwnerAsVehicle.isInstanceOf(metaRelation);
 		Generic myVehicleHaveSameOwnerAsVehicle = vehicleHaveSameOwnerAsVehicle.addInstance("myVehicleHaveSameOwnerAsVehicle", car, caravane);
-		List<Generic> components = myVehicleHaveSameOwnerAsVehicle.getComponents();
+		List<Generic> components = myVehicleHaveSameOwnerAsVehicle.getComposites();
 		assert components.size() == 2 : components.size();
 		assert components.contains(caravane) : components;
 		assert components.contains(car) : components;

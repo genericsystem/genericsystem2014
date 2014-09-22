@@ -15,7 +15,7 @@ public interface IDisplay<T extends AbstractVertex<T, U>, U extends IRoot<T, U>>
 
 	@Override
 	default String info() {
-		return "(" + getMeta().getValue() + ")" + getSupers() + this + getComponents() + " ";
+		return "(" + getMeta().getValue() + ")" + getSupers() + this + getComposites() + " ";
 	}
 
 	@Override
@@ -24,12 +24,12 @@ public interface IDisplay<T extends AbstractVertex<T, U>, U extends IRoot<T, U>>
 		s += " Value       : " + getValue() + "\n";
 		s += " Meta        : " + getMeta() + " (" + System.identityHashCode(getMeta()) + ")\n";
 		s += " MetaLevel   : " + Statics.getMetaLevelString(getLevel()) + "\n";
-		s += " Category    : " + Statics.getCategoryString(getLevel(), getComponents().size()) + "\n";
+		s += " Category    : " + Statics.getCategoryString(getLevel(), getComposites().size()) + "\n";
 		s += " Class       : " + getClass().getName() + "\n";
 		s += "**********************************************************************\n";
 		for (T superGeneric : getSupers())
 			s += " Super       : " + superGeneric + " (" + System.identityHashCode(superGeneric) + ")\n";
-		for (T component : getComponents())
+		for (T component : getComposites())
 			s += " Component   : " + component + " (" + System.identityHashCode(component) + ")\n";
 		s += "**********************************************************************\n";
 		// s += "**********************************************************************\n";
@@ -63,7 +63,7 @@ public interface IDisplay<T extends AbstractVertex<T, U>, U extends IRoot<T, U>>
 		for (T attribute : getAttributes()) {
 			JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
 			for (T holder : getHolders(attribute)) {
-				if (holder.getComponents().get(0).isSpecializationOf((T) this))
+				if (holder.getComposites().get(0).isSpecializationOf((T) this))
 					arrayBuilder.add(holder.toPrettyJSon());
 				builder.add(attribute.toString(), arrayBuilder);
 			}
@@ -83,7 +83,7 @@ public interface IDisplay<T extends AbstractVertex<T, U>, U extends IRoot<T, U>>
 			arrayBuilder.add(System.identityHashCode(superVertex));
 		builder.add("Supers", arrayBuilder);
 
-		for (T component : getComponents())
+		for (T component : getComposites())
 			arrayBuilder.add(System.identityHashCode(component));
 		builder.add("Components", arrayBuilder);
 		return builder.build();

@@ -141,7 +141,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		// assert engine.computeDependencies().contains(newVehicle);
 		Generic newPower = engine.getInstance("Power", newVehicle);
 		assert newPower.getComponentsStream().count() == 1;
-		Generic componentOfPower = newPower.getComponents().get(0);
+		Generic componentOfPower = newPower.getComposites().get(0);
 		assert newVehicle.getValue().equals(componentOfPower.getValue());
 		assert engine.equals(componentOfPower.getMeta());
 	}
@@ -167,28 +167,28 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert vehicle.equals(car.getMeta());
 
 		assert "NewMachine".equals(newMachine.getValue());
-		assert newMachine.getComponents().size() == 0;
+		assert newMachine.getComposites().size() == 0;
 		assert newMachine.getSupersStream().count() == 0;
 		assert newMachine.getInstances().size() == 0;
 		assert newMachine.getInheritings().size() == 1 : newMachine.getInheritings().stream().collect(Collectors.toList());
 
 		Generic newVehicle = engine.getInstance("Vehicle");
 		assert newVehicle != null;
-		assert newVehicle.getComponents().size() == 0;
+		assert newVehicle.getComposites().size() == 0;
 		assert newVehicle.getSupersStream().count() == 1;
 		assert newVehicle.getInstances().size() == 1;
 		assert newVehicle.getInheritings().size() == 0;
 
 		Generic newPower = engine.getInstance("Power", newVehicle);
 		assert newPower != null;
-		assert newPower.getComponents().size() == 1;
+		assert newPower.getComposites().size() == 1;
 		assert newPower.getSupersStream().count() == 0;
 		assert newPower.getInstances().size() == 0;
 		assert newPower.getInheritings().size() == 0;
 
 		Generic newCar = newVehicle.getInstance("Car");
 		assert newCar != null;
-		assert newCar.getComponents().size() == 0;
+		assert newCar.getComposites().size() == 0;
 		assert newCar.getSupersStream().count() == 0;
 		assert newCar.getInstances().size() == 0;
 		assert newCar.getInheritings().size() == 0;
@@ -368,7 +368,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert myVehicleGreen.isAlive();
 
 		Generic newCarBlue = vehicleColor.getInstance("MyCarRed", myCar, blue);
-		List<Generic> newCarBlueComponents = newCarBlue.getComponents();
+		List<Generic> newCarBlueComponents = newCarBlue.getComposites();
 		assert newCarBlueComponents.size() == 2;
 	}
 
@@ -414,7 +414,7 @@ public class UpdatableServiceTest extends AbstractTest {
 
 		Generic newCarBlue = vehicleColor.getInstance("MyCarBlue", myCar, blue);
 		// assert newCarBlue.computeDependencies().size() == 1;
-		List<Generic> newCarBlueComponents = newCarBlue.getComponents();
+		List<Generic> newCarBlueComponents = newCarBlue.getComposites();
 		assert newCarBlueComponents.size() == 2;
 	}
 

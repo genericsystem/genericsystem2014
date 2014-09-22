@@ -42,13 +42,13 @@ public interface ISignature<T extends ISignature<T>> {
 	Serializable getValue();
 
 	/**
-	 * Returns the components of this signature
+	 * Returns the composites of this signature
 	 *
-	 * @return Returns the value of this signature<br>
+	 * @return Returns the composites of this signature<br>
 	 *         This value can be null
 	 *
 	 */
-	List<T> getComponents();
+	List<T> getComposites();
 
 	/**
 	 * Returns the JSonId of this signature
@@ -66,9 +66,9 @@ public interface ISignature<T extends ISignature<T>> {
 			supersBuilder.add(System.identityHashCode(superVertex));
 		builder.add("Supers", supersBuilder);
 		JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
-		for (T component : getComponents())
+		for (T component : getComposites())
 			arrayBuilder.add(System.identityHashCode(component));
-		builder.add("Components", arrayBuilder);
+		builder.add("Composites", arrayBuilder);
 		return builder.build();
 	}
 

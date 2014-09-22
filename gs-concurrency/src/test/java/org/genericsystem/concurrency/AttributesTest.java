@@ -17,7 +17,7 @@ public class AttributesTest extends AbstractTest {
 		// assert Engine.selectInstances("Power").count() == 1;
 		// assert Engine.selectInstances("Power").anyMatch(x -> x.equals(power));
 		assert power.getComponentsStream().count() == 1;
-		assert vehicle.equals(power.getComponents().get(0));
+		assert vehicle.equals(power.getComposites().get(0));
 		assert power.isAlive();
 	}
 
@@ -32,7 +32,7 @@ public class AttributesTest extends AbstractTest {
 		// assert Engine.selectInstances("Power").anyMatch(x -> x.equals(powerType));
 		// assert Engine.selectInstances("Power").anyMatch(x -> x.equals(power));
 		assert power.getComponentsStream().count() == 1;
-		assert vehicle.equals(power.getComponents().get(0));
+		assert vehicle.equals(power.getComposites().get(0));
 		assert power.isAlive();
 	}
 

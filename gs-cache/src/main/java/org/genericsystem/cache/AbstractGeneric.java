@@ -62,7 +62,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Snapshot<T> getComposites() {
+	public Snapshot<T> getComponents() {
 		return getCurrentCache().getComposites((T) this);
 	}
 

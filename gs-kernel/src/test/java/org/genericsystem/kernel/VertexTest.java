@@ -126,7 +126,7 @@ public class VertexTest extends AbstractTest {
 		assert myBmw.getHolders(power).contains(v233) : myBmw.getHolders(power);
 		assert myBmw.getHolders(power).size() == 1 : myBmw.getHolders(power);
 		assert myBmw.getValues(power).contains(233);
-		assert engine.isAttributeOf(myBmw);
+		assert engine.isComponentOf(myBmw);
 
 		// assert car.getAttributes(engine).equals(myBmw.getAttributes(engine)) : car.getAttributes(engine) + " " + myBmw.getAttributes(engine);
 	}

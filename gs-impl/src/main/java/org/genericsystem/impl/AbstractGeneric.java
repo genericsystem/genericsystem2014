@@ -44,7 +44,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		if (!(obj instanceof ISignature<?>))
 			return false;
 		ISignature<?> service = (ISignature<?>) obj;
-		return equals(service.getMeta(), service.getSupers(), service.getValue(), service.getComponents());
+		return equals(service.getMeta(), service.getSupers(), service.getValue(), service.getComposites());
 	}
 
 	@Override
@@ -106,8 +106,8 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	}
 
 	@Override
-	public Snapshot<T> getComposites() {
-		return () -> unwrap().getComposites().stream().map(this::wrap).iterator();
+	public Snapshot<T> getComponents() {
+		return () -> unwrap().getComponents().stream().map(this::wrap).iterator();
 	}
 
 	@Override

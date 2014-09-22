@@ -147,7 +147,7 @@ public class AnnotationTest extends AbstractTest {
 		Engine engine = new Engine(ElectrikPower.class, Unit.class);
 		Generic electrikPowerCar = engine.find(ElectrikPower.class);
 		Generic unit = engine.find(Unit.class);
-		assert unit.isAttributeOf(electrikPowerCar);
+		assert unit.isComponentOf(electrikPowerCar);
 		assert unit.isStructural();
 		assert electrikPowerCar.getAttributes(engine).contains(unit);
 	}
@@ -227,8 +227,8 @@ public class AnnotationTest extends AbstractTest {
 		assert mySelectableWindow.isInstanceOf(selectableWindow) : mySelectableWindow.info() + selectableWindow.info();
 
 		assert engine.find(Selectable.class).isAncestorOf(mySelectableWindow);
-		Generic vTrue = selectedSelectable.addInstance(true, selectedSelectable.getComponents().toArray(new Generic[1]));
-		Generic v12 = size.addInstance(12, size.getComponents().toArray(new Generic[1]));
+		Generic vTrue = selectedSelectable.addInstance(true, selectedSelectable.getComposites().toArray(new Generic[1]));
+		Generic v12 = size.addInstance(12, size.getComposites().toArray(new Generic[1]));
 
 		assert selectableWindow.getInstances().size() == 1 : selectableWindow.getInstances();
 		assert selectableWindow.getInstances().contains(mySelectableWindow);
@@ -257,17 +257,17 @@ public class AnnotationTest extends AbstractTest {
 		assert transformerChildrenGames.getSupers().contains(childrenGames) : transformerChildrenGames.info();
 		assert transformerChildrenGames.getSupers().contains(transformer);
 		assert transformerChildrenGames.getInheritings().size() == 0;
-		assert transformerChildrenGames.getComposites().size() == 0;
+		assert transformerChildrenGames.getComponents().size() == 0;
 
 		assert childrenGames.getSupers().contains(games);
 		assert childrenGames.getSupers().contains(children);
 		assert childrenGames.getInheritings().contains(transformerChildrenGames);
-		assert childrenGames.getComposites().size() == 0;
+		assert childrenGames.getComponents().size() == 0;
 
 		assert transformer.getSupers().contains(vehicle);
 		assert transformer.getSupers().contains(human);
 		assert transformer.getInheritings().contains(transformerChildrenGames);
-		assert transformer.getComposites().size() == 0;
+		assert transformer.getComponents().size() == 0;
 	}
 
 	public void test014_MultiInheritanceComplexValue() {
@@ -293,7 +293,7 @@ public class AnnotationTest extends AbstractTest {
 		assert !myTransformerChildrenGames.inheritsFrom(myTransformer);
 		assert myTransformerChildrenGames.getSupers().size() == 0;
 		assert myTransformerChildrenGames.getInheritings().size() == 0;
-		assert myTransformerChildrenGames.getComposites().size() == 0;
+		assert myTransformerChildrenGames.getComponents().size() == 0;
 
 		assert transformer.getSupers().size() == 2;
 		assert transformer.getSupers().contains(engine.find(Human.class));
@@ -310,7 +310,7 @@ public class AnnotationTest extends AbstractTest {
 		assert !myChildrenGames.inheritsFrom(myChildren);
 		assert myChildrenGames.getSupers().size() == 0;// .contains(childrenGames);
 		assert myChildrenGames.getInheritings().size() == 0;
-		assert myChildrenGames.getComposites().size() == 0;
+		assert myChildrenGames.getComponents().size() == 0;
 
 		assert childrenGames.getSupers().size() == 2;
 		assert childrenGames.getSupers().contains(engine.find(Games.class));
@@ -323,7 +323,7 @@ public class AnnotationTest extends AbstractTest {
 		assert !myTransformer.inheritsFrom(myck);
 		assert myTransformer.getSupers().size() == 0;// .contains(transformer);
 		assert myTransformer.getInheritings().size() == 0;
-		assert myTransformer.getComposites().size() == 0;
+		assert myTransformer.getComponents().size() == 0;
 
 		assert transformer.getInstances().contains(myTransformer);
 		assert myTransformer.isInstanceOf(transformer);

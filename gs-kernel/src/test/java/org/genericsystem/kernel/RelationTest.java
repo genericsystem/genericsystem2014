@@ -76,7 +76,7 @@ public class RelationTest {
 		Vertex caravane = vehicle.addInstance("Caravane");
 		Vertex vehicleHaveSameOwnerAsVehicle = root.addInstance("VehicleHaveSameOwnerAsVehicle", vehicle, vehicle);
 		Vertex myVehicleHaveSameOwnerAsVehicle = vehicleHaveSameOwnerAsVehicle.addInstance("myVehicleHaveSameOwnerAsVehicle", car, caravane);
-		List<Vertex> components = myVehicleHaveSameOwnerAsVehicle.getComponents();
+		List<Vertex> components = myVehicleHaveSameOwnerAsVehicle.getComposites();
 		assert components.size() == 2 : components.size();
 		assert components.contains(caravane) : components;
 		assert components.contains(car) : components;
@@ -91,7 +91,7 @@ public class RelationTest {
 		Vertex vehicleHaveSameOwnerAsVehicle = root.addInstance("VehicleHaveSameOwnerAsVehicle", vehicle, vehicle);
 		assert vehicleHaveSameOwnerAsVehicle.isInstanceOf(metaRelation);
 		Vertex myVehicleHaveSameOwnerAsVehicle = vehicleHaveSameOwnerAsVehicle.addInstance("myVehicleHaveSameOwnerAsVehicle", car, caravane);
-		List<Vertex> components = myVehicleHaveSameOwnerAsVehicle.getComponents();
+		List<Vertex> components = myVehicleHaveSameOwnerAsVehicle.getComposites();
 		assert components.size() == 2 : components.size();
 		assert components.contains(caravane) : components;
 		assert components.contains(car) : components;

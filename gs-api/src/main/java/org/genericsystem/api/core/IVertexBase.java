@@ -151,9 +151,9 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 *
 	 * @param supra
 	 *            the vertex reference to be tested for the specialization
-	 * @return true if this vertex is a specialization of metaVertex
+	 * @return true if this vertex is a specialization of the specified vertex
 	 */
-	boolean isSpecializationOf(T supra);
+	boolean isSpecializationOf(T vertex);
 
 	/**
 	 *
@@ -199,33 +199,90 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	T getInstance(List<T> supers, Serializable value, T... components);
 
 	/**
-	 * Indicates whether this vertex has a components that inherits from vertex. It becomes then an "attribute of" the vertex
+	 * Indicates whether this vertex has a composite that is a specialization of vertex.<br/>
 	 *
 	 * @param vertex
 	 *            the vertex reference to be tested for the attribution.
 	 * @return true if this vertex is instance of metaVertex
 	 */
-	boolean isAttributeOf(T vertex);
+	boolean isComponentOf(T vertex);
 
+	/**
+	 * Returns the attributes of this vertex (directly if this vertex is a type, the attributes of its type if this vertex is an instance) *
+	 *
+	 * @return the attributes of this vertex
+	 */
 	Snapshot<T> getAttributes();
 
+	/**
+	 * Returns the attributes of this vertex that inherit from the specified attribute. *
+	 *
+	 * @return the attributes of this vertex
+	 */
 	Snapshot<T> getAttributes(T attribute);
 
+	/**
+	 * Returns the holders of this vertex that are instances of the specified attribute. *
+	 *
+	 * @return the attributes of this vertex
+	 */
 	Snapshot<T> getHolders(T attribute);
 
+	/**
+	 * Returns values for each holder that is instances of the specified attribute. *
+	 *
+	 * @return values for each holder that is instances of the specified attribute
+	 */
 	Snapshot<Serializable> getValues(T attribute);
 
+	/**
+	 * Returns vertices that have this vertex for meta.<br/>
+	 * To get all vertices that are instance of this vertex, consider getAllInstances()
+	 *
+	 * @return the vertices that have this vertex for meta
+	 */
 	Snapshot<T> getInstances();
 
+	/**
+	 * Returns vertices that are instance of this vertex.
+	 *
+	 * @return the vertices that are instance of this vertex
+	 */
+	Snapshot<T> getAllInstances();
+
+	/**
+	 * Returns vertices that have this vertex for super.<br/>
+	 * To get all vertices that inherits from this vertex, consider getAllInheritings()
+	 *
+	 * @return the vertices that have this vertex for super
+	 */
 	Snapshot<T> getInheritings();
 
-	Snapshot<T> getComposites();
-
-	boolean isAncestorOf(final T dependency);
-
+	/**
+	 * Returns vertices that inherits from this vertex.
+	 *
+	 * @return the vertices that inherits from this vertex
+	 */
 	Snapshot<T> getAllInheritings();
 
-	Snapshot<T> getAllInstances();
+	/**
+	 * Returns component vertices for which this vertex is a composite.
+	 *
+	 * @return the component vertices
+	 */
+	Snapshot<T> getComponents();
+
+	/**
+	 * Indicates whether this vertex is ancestor of the specified dependency.<br/>
+	 * The ancestors of a node are recursively :<br/>
+	 * its meta,<br/>
+	 * its supers,<br/>
+	 * its composites.<br/>
+	 *
+	 * @param dependency
+	 * @return true if this vertex is ancestor of the specified dependency
+	 */
+	boolean isAncestorOf(final T dependency);
 
 	String info();
 
