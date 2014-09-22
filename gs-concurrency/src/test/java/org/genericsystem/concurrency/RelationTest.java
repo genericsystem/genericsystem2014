@@ -1,10 +1,9 @@
 package org.genericsystem.concurrency;
 
 import java.util.List;
-
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.NotAliveException;
-import org.genericsystem.kernel.AbstractTest.RollbackCatcher;
+import org.genericsystem.concurrency.AbstractTest.RollbackCatcher;
 import org.testng.annotations.Test;
 
 @Test
