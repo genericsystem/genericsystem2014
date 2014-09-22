@@ -12,7 +12,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.IVertexBase;
 import org.genericsystem.api.core.Snapshot;
@@ -435,7 +434,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		return () -> getMetaComposites().stream().map(entry -> entry.getValue().stream()).flatMap(x -> x).iterator();
 	}
 
-	@Override
 	public Snapshot<T> getMetaComposites(T meta) {
 		return () -> {
 			for (DependenciesEntry<T> entry : getMetaComposites())
@@ -445,7 +443,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		};
 	}
 
-	@Override
 	public Snapshot<T> getSuperComposites(T superT) {
 		return () -> {
 			for (DependenciesEntry<T> entry : getSuperComposites())
@@ -553,8 +550,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		return getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {
-	}
+	public static class SystemMap {}
 
 	protected boolean equals(ISignature<?> meta, List<? extends ISignature<?>> supers, Serializable value, List<? extends ISignature<?>> components) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComponents().equals(components) && getSupers().equals(supers);

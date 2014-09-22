@@ -151,9 +151,52 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 *
 	 * @param supra
 	 *            the vertex reference to be tested for the specialization
-	 * @return true if this vertex is instance of metaVertex
+	 * @return true if this vertex is a specialization of metaVertex
 	 */
 	boolean isSpecializationOf(T supra);
+
+	/**
+	 *
+	 * Returns the vertex if exists of this (meta) vertex that has the specified value and components
+	 *
+	 * @param value
+	 *            the value of returned vertex
+	 * @param components
+	 *            the components of returned vertex
+	 * @return a vertex if exists, null otherwise
+	 */
+	@SuppressWarnings("unchecked")
+	T getInstance(Serializable value, T... components);
+
+	/**
+	 * Returns an instance if exists of this (meta) vertex. The returned vertex satisfies the specified value, super and components.<br>
+	 * Note that the returned vertex if any, inherits from the super specified but can have more or more precise in an undefined order.
+	 *
+	 * @param value
+	 *            the value of returned vertex
+	 * @param superT
+	 *            the super of returned vertex
+	 * @param components
+	 *            the components of returned vertex
+	 * @return a vertex if exists, null otherwise
+	 */
+	@SuppressWarnings("unchecked")
+	T getInstance(T superT, Serializable value, T... components);
+
+	/**
+	 * Returns an instance if exists of this (meta) vertex. The returned vertex satisfies the specified value, supers and components.<br>
+	 * Note that the returned vertex if any, inherits from any vertex specified in supers list but can have more or more precise in an undefined order.
+	 *
+	 * @param supers
+	 *            the supers list of returned vertex
+	 * @param value
+	 *            the value of returned vertex
+	 * @param components
+	 *            the components of vertex to return
+	 * @return a vertex if exists, null otherwise
+	 */
+	@SuppressWarnings("unchecked")
+	T getInstance(List<T> supers, Serializable value, T... components);
 
 	/**
 	 * Indicates whether this vertex has a components that inherits from vertex. It becomes then an "attribute of" the vertex
@@ -163,19 +206,6 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 * @return true if this vertex is instance of metaVertex
 	 */
 	boolean isAttributeOf(T vertex);
-
-	@SuppressWarnings("unchecked")
-	T getInstance(Serializable value, T... components);
-
-	@SuppressWarnings("unchecked")
-	T getInstance(T superT, Serializable value, T... components);
-
-	@SuppressWarnings("unchecked")
-	T getInstance(List<T> overrides, Serializable value, T... components);
-
-	Snapshot<T> getMetaComposites(T meta);
-
-	Snapshot<T> getSuperComposites(T superVertex);
 
 	Snapshot<T> getAttributes();
 
