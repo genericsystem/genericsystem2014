@@ -540,7 +540,7 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 
 	/**
 	 *
-	 * Enable the cascade remove property of this vertex for the specified position.<br/>
+	 * Enable the cascade remove property of this vertex for the specified position.
 	 *
 	 * @param pos
 	 *            the position of this vertex in composites to consider for axed properties.<br/>
@@ -553,7 +553,7 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 
 	/**
 	 *
-	 * Disable the cascade remove property of this vertex for the specified position.<br/>
+	 * Disable the cascade remove property of this vertex for the specified position.
 	 *
 	 * @param pos
 	 *            the position of this vertex in composites to consider for axed properties.<br/>
