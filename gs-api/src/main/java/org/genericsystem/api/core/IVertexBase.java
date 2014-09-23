@@ -646,7 +646,7 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 * Returns an existing or a new instance of this type that satisfies the specified override, value and composites
 	 *
 	 * @param override
-	 *            vertex reference from which the returned instance shall inherit
+	 *            a vertex reference from which the returned instance shall inherit
 	 * @param value
 	 *            the expected value
 	 * @param composites
@@ -670,21 +670,83 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	@SuppressWarnings("unchecked")
 	T setInstance(List<T> overrides, Serializable value, T... composites);
 
+	/**
+	 * Returns a new attribute on this type that satisfies the specified value and targets
+	 *
+	 * @param value
+	 *            the expected value
+	 * @param targets
+	 *            the expected targets references
+	 * @return a new attribute
+	 */
 	@SuppressWarnings("unchecked")
 	T addAttribute(Serializable value, T... targets);
 
+	/**
+	 * Returns a new attribute on this type that satisfies the specified override, value and targets
+	 *
+	 * @param override
+	 *            a vertex reference from which the returned attribute shall inherit
+	 * @param value
+	 *            the expected value
+	 * @param targets
+	 *            the expected targets references
+	 * @return a new attribute
+	 */
 	@SuppressWarnings("unchecked")
 	T addAttribute(T override, Serializable value, T... targets);
 
+	/**
+	 * Returns a new attribute on this type that satisfies the specified overrides, value and targets
+	 *
+	 * @param overrides
+	 *            vertex references from which the returned attribute shall inherit
+	 * @param value
+	 *            the expected value
+	 * @param targets
+	 *            the expected targets references
+	 * @return the new attribute
+	 */
 	@SuppressWarnings("unchecked")
 	T addAttribute(List<T> overrides, Serializable value, T... targets);
 
+	/**
+	 * Returns a new or the existing attribute that satisfies the specified value and targets
+	 *
+	 * @param value
+	 *            the expected value
+	 * @param targets
+	 *            the expected targets references
+	 * @return a new or the existing attribute
+	 */
 	@SuppressWarnings("unchecked")
 	T setAttribute(Serializable value, T... targets);
 
+	/**
+	 * Returns a new or the existing attribute that satisfies the specified override, value and targets
+	 *
+	 * @param override
+	 *            a vertex reference from which the returned attribute shall inherit
+	 * @param value
+	 *            the expected value
+	 * @param targets
+	 *            the expected targets references
+	 * @return a new or the existing attribute
+	 */
 	@SuppressWarnings("unchecked")
 	T setAttribute(T override, Serializable value, T... targets);
 
+	/**
+	 * Returns a new or the existing attribute that satisfies the specified overrides, value and targets
+	 *
+	 * @param overrides
+	 *            vertex references from which the returned attribute shall inherit
+	 * @param value
+	 *            the expected value
+	 * @param targets
+	 *            the expected targets references
+	 * @return a new or the existing attribute
+	 */
 	@SuppressWarnings("unchecked")
 	T setAttribute(List<T> overrides, Serializable value, T... targets);
 
