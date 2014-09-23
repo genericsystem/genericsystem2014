@@ -157,46 +157,46 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 
 	/**
 	 *
-	 * Returns the vertex if exists of this (meta) vertex. The returned vertex satisfies the specified value and components
+	 * Returns the vertex if exists of this (meta) vertex. The returned vertex satisfies the specified value and composites
 	 *
 	 * @param value
 	 *            the value of returned vertex
-	 * @param components
-	 *            the components of returned vertex
+	 * @param composites
+	 *            the composites of returned vertex
 	 * @return a vertex if exists, null otherwise
 	 */
 	@SuppressWarnings("unchecked")
-	T getInstance(Serializable value, T... components);
+	T getInstance(Serializable value, T... composites);
 
 	/**
-	 * Returns an instance if exists of this (meta) vertex. The returned vertex satisfies the specified value, super and components.<br>
+	 * Returns an instance if exists of this (meta) vertex. The returned vertex satisfies the specified value, super and composites.<br>
 	 * Note that the returned vertex if any, inherits from the super specified but can have more or more precise in an undefined order.
 	 *
 	 * @param value
 	 *            the value of returned vertex
 	 * @param superT
 	 *            the super of returned vertex
-	 * @param components
-	 *            the components of returned vertex
+	 * @param composites
+	 *            the composites of returned vertex
 	 * @return a vertex if exists, null otherwise
 	 */
 	@SuppressWarnings("unchecked")
-	T getInstance(T superT, Serializable value, T... components);
+	T getInstance(T superT, Serializable value, T... composites);
 
 	/**
-	 * Returns an instance if exists of this (meta) vertex. The returned vertex satisfies the specified value, supers and components.<br>
+	 * Returns an instance if exists of this (meta) vertex. The returned vertex satisfies the specified value, supers and composites.<br>
 	 * Note that the returned vertex if any, inherits from any vertex specified in supers list but can have more or more precise supers in an undefined order.
 	 *
 	 * @param supers
 	 *            the supers list of returned vertex
 	 * @param value
 	 *            the value of returned vertex
-	 * @param components
-	 *            the components of vertex to return
+	 * @param composites
+	 *            the composites of vertex to return
 	 * @return a vertex if exists, null otherwise
 	 */
 	@SuppressWarnings("unchecked")
-	T getInstance(List<T> supers, Serializable value, T... components);
+	T getInstance(List<T> supers, Serializable value, T... composites);
 
 	/**
 	 * Indicates whether this vertex has a composite that is a specialization of vertex.<br/>
@@ -705,13 +705,13 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 *            the expected value
 	 * @param targets
 	 *            the expected targets references
-	 * @return the new attribute
+	 * @return a new attribute
 	 */
 	@SuppressWarnings("unchecked")
 	T addAttribute(List<T> overrides, Serializable value, T... targets);
 
 	/**
-	 * Returns a new or the existing attribute that satisfies the specified value and targets
+	 * Returns a new or the existing attribute on this type that satisfies the specified value and targets
 	 *
 	 * @param value
 	 *            the expected value
@@ -723,7 +723,7 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	T setAttribute(Serializable value, T... targets);
 
 	/**
-	 * Returns a new or the existing attribute that satisfies the specified override, value and targets
+	 * Returns a new or the existing attribute on this type that satisfies the specified override, value and targets
 	 *
 	 * @param override
 	 *            a vertex reference from which the returned attribute shall inherit
@@ -737,7 +737,7 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	T setAttribute(T override, Serializable value, T... targets);
 
 	/**
-	 * Returns a new or the existing attribute that satisfies the specified overrides, value and targets
+	 * Returns a new or the existing attribute on this type that satisfies the specified overrides, value and targets
 	 *
 	 * @param overrides
 	 *            vertex references from which the returned attribute shall inherit
