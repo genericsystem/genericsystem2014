@@ -157,7 +157,7 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 
 	/**
 	 *
-	 * Returns the vertex if exists of this (meta) vertex that has the specified value and components
+	 * Returns the vertex if exists of this (meta) vertex. The returned vertex satisfies the specified value and components
 	 *
 	 * @param value
 	 *            the value of returned vertex
@@ -185,7 +185,7 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 
 	/**
 	 * Returns an instance if exists of this (meta) vertex. The returned vertex satisfies the specified value, supers and components.<br>
-	 * Note that the returned vertex if any, inherits from any vertex specified in supers list but can have more or more precise in an undefined order.
+	 * Note that the returned vertex if any, inherits from any vertex specified in supers list but can have more or more precise supers in an undefined order.
 	 *
 	 * @param supers
 	 *            the supers list of returned vertex
