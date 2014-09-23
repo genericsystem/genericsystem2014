@@ -8,13 +8,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.Snapshot;
+import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
+import org.genericsystem.kernel.IRoot.CheckingType;
 import org.genericsystem.kernel.Statics;
 
 public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends AbstractContext<T, U, V, W> {
@@ -89,6 +92,8 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U
 	}
 
 	protected void internalFlush() throws ConcurrencyControlException, ConstraintViolationException {
+		adds.forEach(x -> x.check(CheckingType.CHECK_ON_ADD_NODE, true));
+		removes.forEach(x -> x.check(CheckingType.CHECK_ON_REMOVE_NODE, true));
 		getSubContext().apply(adds, removes);
 	}
 
@@ -126,7 +131,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U
 	@Override
 	protected boolean simpleRemove(T generic) {
 		if (!isAlive(generic))
-			getEngine().discardWithException(new IllegalStateException(generic + " is not alive"));
+			getEngine().discardWithException(new AliveConstraintViolationException(generic + " is not alive"));
 		if (!adds.remove(generic))
 			return removes.add(generic);
 		return true;
@@ -260,7 +265,6 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U
 		generic.getComponentsStream().forEach(component -> indexByMeta(component, generic.getMeta(), generic));
 		generic.getSupersStream().forEach(superGeneric -> generic.getComponentsStream().forEach(component -> indexBySuper(component, superGeneric, generic)));
 		insert(generic);
-		getEngine().check(result);
 		return result;
 	}
 

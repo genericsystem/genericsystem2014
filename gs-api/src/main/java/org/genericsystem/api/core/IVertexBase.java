@@ -57,7 +57,7 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	boolean isAlive();
 
 	/**
-	 * Checks if this instance is alive. If not the discardAndRollback() method is called on graph's root. *
+	 * Checks if this instance is alive. If not the discardAndRollback() method is called on graph's root.
 	 *
 	 * @throws RollbackException
 	 *             if this signature is not alive
@@ -157,46 +157,46 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 
 	/**
 	 *
-	 * Returns the vertex if exists of this (meta) vertex that has the specified value and components
+	 * Returns the vertex if exists of this (meta) vertex. The returned vertex satisfies the specified value and composites
 	 *
 	 * @param value
 	 *            the value of returned vertex
-	 * @param components
-	 *            the components of returned vertex
+	 * @param composites
+	 *            the composites of returned vertex
 	 * @return a vertex if exists, null otherwise
 	 */
 	@SuppressWarnings("unchecked")
-	T getInstance(Serializable value, T... components);
+	T getInstance(Serializable value, T... composites);
 
 	/**
-	 * Returns an instance if exists of this (meta) vertex. The returned vertex satisfies the specified value, super and components.<br>
+	 * Returns an instance if exists of this (meta) vertex. The returned vertex satisfies the specified value, super and composites.<br>
 	 * Note that the returned vertex if any, inherits from the super specified but can have more or more precise in an undefined order.
 	 *
 	 * @param value
 	 *            the value of returned vertex
 	 * @param superT
 	 *            the super of returned vertex
-	 * @param components
-	 *            the components of returned vertex
+	 * @param composites
+	 *            the composites of returned vertex
 	 * @return a vertex if exists, null otherwise
 	 */
 	@SuppressWarnings("unchecked")
-	T getInstance(T superT, Serializable value, T... components);
+	T getInstance(T superT, Serializable value, T... composites);
 
 	/**
-	 * Returns an instance if exists of this (meta) vertex. The returned vertex satisfies the specified value, supers and components.<br>
-	 * Note that the returned vertex if any, inherits from any vertex specified in supers list but can have more or more precise in an undefined order.
+	 * Returns an instance if exists of this (meta) vertex. The returned vertex satisfies the specified value, supers and composites.<br>
+	 * Note that the returned vertex if any, inherits from any vertex specified in supers list but can have more or more precise supers in an undefined order.
 	 *
 	 * @param supers
 	 *            the supers list of returned vertex
 	 * @param value
 	 *            the value of returned vertex
-	 * @param components
-	 *            the components of vertex to return
+	 * @param composites
+	 *            the composites of vertex to return
 	 * @return a vertex if exists, null otherwise
 	 */
 	@SuppressWarnings("unchecked")
-	T getInstance(List<T> supers, Serializable value, T... components);
+	T getInstance(List<T> supers, Serializable value, T... composites);
 
 	/**
 	 * Indicates whether this vertex has a composite that is a specialization of vertex.<br/>
@@ -284,12 +284,33 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 */
 	boolean isAncestorOf(final T dependency);
 
+	/**
+	 * Returns a String representation of this vertex in the format : <br/>
+	 * (meta)[supers]value[composites]
+	 *
+	 * @return the string representation of this vertex
+	 */
 	String info();
 
+	/**
+	 * Returns a String detailed representation of this vertex
+	 *
+	 * @return the string representation of this vertex
+	 */
 	String detailedInfo();
 
+	/**
+	 * Returns a String pretty representation of the components of this vertex
+	 *
+	 * @return the string representation of this vertex
+	 */
 	String toPrettyString();
 
+	/**
+	 * Returns a JSon representation of the components of this vertex
+	 *
+	 * @return the string representation of this vertex
+	 */
 	JsonObject toPrettyJSon();
 
 	public static interface SystemProperty {
@@ -300,97 +321,432 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 
 	}
 
+	/**
+	 *
+	 * Returns the property value of this vertex for the specified system property and the specified position.
+	 *
+	 * @param propertyClass
+	 *            the class of the property
+	 * @param pos
+	 *            the position of this vertex in composites of components to consider.<br/>
+	 *            for example : Statics.NO_POSITION, Statics.FIRST_POSITION, Statics.SECOND_POSITION ...
+	 * @return the property value
+	 */
 	Serializable getSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos);
 
-	void setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value);
+	/**
+	 *
+	 * Set the property value of this vertex for the specified system property and the specified position.
+	 *
+	 * @param propertyClass
+	 *            the class of the system property
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 *
+	 * @Return this
+	 */
+	T setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value);
 
+	/**
+	 *
+	 * Enable this vertex for the specified boolean system property and the specified position.
+	 *
+	 * @param propertyClass
+	 *            the class of the boolean system property
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 *
+	 * @Return this
+	 */
 	T enableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos);
 
+	/**
+	 *
+	 * Disable this vertex for the specified boolean system property and the specified position.
+	 *
+	 * @param propertyClass
+	 *            the class of the boolean system property
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 *
+	 * @Return this
+	 */
 	T disableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos);
 
+	/**
+	 *
+	 * Indicates whether this vertex is enabled for the specified boolean system property and the specified position.
+	 *
+	 * @param propertyClass
+	 *            the class of the boolean system property
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 */
 	boolean isSystemPropertyEnabled(Class<? extends SystemProperty> propertyClass, int pos);
 
+	/**
+	 *
+	 * Enable the referential constraint of this vertex for the specified position.
+	 *
+	 * @param propertyClass
+	 *            the class of the boolean system property
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 *
+	 * @Return this
+	 */
 	T enableReferentialIntegrity(int pos);
 
+	/**
+	 *
+	 * Disable the referential constraint of this vertex for the specified position.
+	 *
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 *
+	 * @Return this
+	 */
 	T disableReferentialIntegrity(int pos);
 
+	/**
+	 *
+	 * Indicates whether this vertex is referential integrity for the specified position.
+	 *
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 * @Return true if this vertex is referential integrity
+	 */
 	boolean isReferentialIntegrityConstraintEnabled(int pos);
 
+	/**
+	 *
+	 * Enable the singular constraint of this vertex for the specified position.
+	 *
+	 * @param propertyClass
+	 *            the class of the boolean system property
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 *
+	 * @Return this
+	 */
 	T enableSingularConstraint(int pos);
 
+	/**
+	 *
+	 * Disable the singular constraint of this vertex for the specified position.
+	 *
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 *
+	 * @Return this
+	 */
 	T disableSingularConstraint(int pos);
 
+	/**
+	 *
+	 * Indicates whether this vertex is singular constraint for the specified position.
+	 *
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 * @Return true if this vertex is singular constraint
+	 */
 	boolean isSingularConstraintEnabled(int pos);
 
+	/**
+	 *
+	 * Enable the property constraint of this vertex.
+	 *
+	 * @param propertyClass
+	 *            the class of the boolean system property
+	 *
+	 * @Return this
+	 */
 	T enablePropertyConstraint();
 
+	/**
+	 *
+	 * Disable the property constraint of this vertex.
+	 *
+	 * @Return this
+	 */
 	T disablePropertyConstraint();
 
+	/**
+	 *
+	 * Indicates whether this vertex is property constraint.
+	 *
+	 *
+	 * @Return true if this vertex is property constraint
+	 */
 	boolean isPropertyConstraintEnabled();
 
+	/**
+	 *
+	 * Enable the required constraint of this vertex for the specified position.<br/>
+	 *
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 *
+	 * @Return this
+	 */
 	T enableRequiredConstraint(int pos);
 
+	/**
+	 *
+	 * Disable the required constraint of this vertex for the specified position.<br/>
+	 *
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 *
+	 * @Return this
+	 */
 	T disableRequiredConstraint(int pos);
 
+	/**
+	 *
+	 * Indicates whether this vertex is required constraint for the specified position.
+	 *
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 * @Return true if this vertex is required constraint
+	 */
 	boolean isRequiredConstraintEnabled(int pos);
 
+	/**
+	 *
+	 * Enable the cascade remove property of this vertex for the specified position.
+	 *
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 *
+	 * @Return this
+	 */
 	T enableCascadeRemove(int pos);
 
+	/**
+	 *
+	 * Disable the cascade remove property of this vertex for the specified position.
+	 *
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 *
+	 * @Return this
+	 */
 	T disableCascadeRemove(int pos);
 
+	/**
+	 *
+	 * Indicates whether this cascade remove property is set for the specified position.
+	 *
+	 * @param pos
+	 *            the position of this vertex in composites to consider for axed properties.<br/>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            Use Statics.NO_POSITION for no axed properties.
+	 * @Return true if the cascade remove property is set
+	 */
 	boolean isCascadeRemove(int pos);
 
+	/**
+	 * Removes this vertex.
+	 *
+	 * @throws RollbackException
+	 *             if vertex is not alive<br/>
+	 *             if the operation violates an integrity constraint
+	 *
+	 */
 	void remove();
 
-	T updateValue(Serializable newValue);
-
+	/**
+	 * Returns a new instance of this type that satisfies the specified value and composites
+	 *
+	 * @param value
+	 *            the expected value
+	 * @param composites
+	 *            the expected composite references
+	 * @return the new instance
+	 *
+	 * @throws RollbackException
+	 *             if the instance already exists
+	 */
 	@SuppressWarnings("unchecked")
-	T updateSupers(T... overrides);
+	T addInstance(Serializable value, T... composites);
 
+	/**
+	 * Returns a new instance of this type that satisfies the specified override, value and composites.
+	 *
+	 * @param override
+	 *            a vertex reference from which the returned instance shall inherit
+	 * @param value
+	 *            the expected value
+	 * @param composites
+	 *            the expected composite references
+	 * @return the new instance
+	 */
 	@SuppressWarnings("unchecked")
-	T updateComponents(T... newComponents);
+	T addInstance(T override, Serializable value, T... composites);
 
+	/**
+	 * Returns a new instance of this type that satisfies the specified overrides, value and composites.
+	 *
+	 * @param overrides
+	 *            vertex references from which the returned instance shall inherit
+	 *
+	 * @param value
+	 *            the expected value
+	 * @param composites
+	 *            the expected composite references
+	 * @return the new instance
+	 */
 	@SuppressWarnings("unchecked")
-	T update(List<T> overrides, Serializable newValue, T... newComponents);
+	T addInstance(List<T> overrides, Serializable value, T... composites);
 
+	/**
+	 * Returns an existing or a new instance of this type that satisfies the specified value and composites
+	 *
+	 * @param value
+	 *            the expected value
+	 * @param composites
+	 *            the expected composite references
+	 * @return a new instance or the existing instance that satisfies the specified value and composites
+	 */
 	@SuppressWarnings("unchecked")
-	T update(Serializable newValue, T... newComponents);
+	T setInstance(Serializable value, T... composites);
 
-	T getMetaAttribute();
-
+	/**
+	 * Returns an existing or a new instance of this type that satisfies the specified override, value and composites
+	 *
+	 * @param override
+	 *            a vertex reference from which the returned instance shall inherit
+	 * @param value
+	 *            the expected value
+	 * @param composites
+	 *            the expected composite references
+	 * @return a new instance or the existing instance that satisfies the specified override, value and composites
+	 */
 	@SuppressWarnings("unchecked")
-	T addInstance(Serializable value, T... components);
+	T setInstance(T override, Serializable value, T... composites);
 
+	/**
+	 * Returns an existing or a new instance of this type that satisfies the specified overrides, value and composites
+	 *
+	 * @param overrides
+	 *            vertex references from which the returned instance shall inherit
+	 * @param value
+	 *            the expected value
+	 * @param composites
+	 *            the expected composite references
+	 * @return a new instance or the existing instance that satisfies the specified overrides, value and composites
+	 */
 	@SuppressWarnings("unchecked")
-	T addInstance(T override, Serializable value, T... components);
+	T setInstance(List<T> overrides, Serializable value, T... composites);
 
-	@SuppressWarnings("unchecked")
-	T addInstance(List<T> overrides, Serializable value, T... components);
-
-	@SuppressWarnings("unchecked")
-	T setInstance(Serializable value, T... components);
-
-	@SuppressWarnings("unchecked")
-	T setInstance(T override, Serializable value, T... components);
-
-	@SuppressWarnings("unchecked")
-	T setInstance(List<T> overrides, Serializable value, T... components);
-
+	/**
+	 * Returns a new attribute on this type that satisfies the specified value and targets
+	 *
+	 * @param value
+	 *            the expected value
+	 * @param targets
+	 *            the expected targets references
+	 * @return a new attribute
+	 */
 	@SuppressWarnings("unchecked")
 	T addAttribute(Serializable value, T... targets);
 
+	/**
+	 * Returns a new attribute on this type that satisfies the specified override, value and targets
+	 *
+	 * @param override
+	 *            a vertex reference from which the returned attribute shall inherit
+	 * @param value
+	 *            the expected value
+	 * @param targets
+	 *            the expected targets references
+	 * @return a new attribute
+	 */
 	@SuppressWarnings("unchecked")
 	T addAttribute(T override, Serializable value, T... targets);
 
+	/**
+	 * Returns a new attribute on this type that satisfies the specified overrides, value and targets
+	 *
+	 * @param overrides
+	 *            vertex references from which the returned attribute shall inherit
+	 * @param value
+	 *            the expected value
+	 * @param targets
+	 *            the expected targets references
+	 * @return a new attribute
+	 */
 	@SuppressWarnings("unchecked")
 	T addAttribute(List<T> overrides, Serializable value, T... targets);
 
+	/**
+	 * Returns a new or the existing attribute on this type that satisfies the specified value and targets
+	 *
+	 * @param value
+	 *            the expected value
+	 * @param targets
+	 *            the expected targets references
+	 * @return a new or the existing attribute
+	 */
 	@SuppressWarnings("unchecked")
 	T setAttribute(Serializable value, T... targets);
 
+	/**
+	 * Returns a new or the existing attribute on this type that satisfies the specified override, value and targets
+	 *
+	 * @param override
+	 *            a vertex reference from which the returned attribute shall inherit
+	 * @param value
+	 *            the expected value
+	 * @param targets
+	 *            the expected targets references
+	 * @return a new or the existing attribute
+	 */
 	@SuppressWarnings("unchecked")
 	T setAttribute(T override, Serializable value, T... targets);
 
+	/**
+	 * Returns a new or the existing attribute on this type that satisfies the specified overrides, value and targets
+	 *
+	 * @param overrides
+	 *            vertex references from which the returned attribute shall inherit
+	 * @param value
+	 *            the expected value
+	 * @param targets
+	 *            the expected targets references
+	 * @return a new or the existing attribute
+	 */
 	@SuppressWarnings("unchecked")
 	T setAttribute(List<T> overrides, Serializable value, T... targets);
 
@@ -411,5 +767,19 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 
 	@SuppressWarnings("unchecked")
 	T setHolder(T attribute, List<T> overrides, Serializable value, T... targets);
+
+	T updateValue(Serializable newValue);
+
+	@SuppressWarnings("unchecked")
+	T updateSupers(T... overrides);
+
+	@SuppressWarnings("unchecked")
+	T updateComponents(T... newComponents);
+
+	@SuppressWarnings("unchecked")
+	T update(List<T> overrides, Serializable newValue, T... newComponents);
+
+	@SuppressWarnings("unchecked")
+	T update(Serializable newValue, T... newComponents);
 
 }

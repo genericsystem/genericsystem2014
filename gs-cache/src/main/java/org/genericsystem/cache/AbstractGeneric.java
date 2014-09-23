@@ -3,21 +3,25 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.List;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.kernel.AbstractVertex;
+import org.genericsystem.kernel.IRoot.CheckingType;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends org.genericsystem.impl.AbstractGeneric<T, U, V, W> implements IGeneric<T, U, V, W> {
 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected T plug() {
-		return getCurrentCache().plug((T) this);
+		return getCurrentCache().plug((T) this).check(CheckingType.CHECK_ON_ADD_NODE, false);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected boolean unplug() {
-		return getCurrentCache().unplug((T) this);
+		boolean unplug = getCurrentCache().unplug((T) this);
+		check(CheckingType.CHECK_ON_REMOVE_NODE, false);
+		return unplug;
 	}
 
 	@SuppressWarnings("unchecked")

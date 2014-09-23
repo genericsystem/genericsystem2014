@@ -147,7 +147,7 @@ public class UpdatableServiceTest extends AbstractTest {
 	}
 
 	public void test060_setValue_Type_Inheritance_Component() {
-		Generic engine = new Engine();
+		Engine engine = new Engine();
 		Generic machine = engine.addInstance("Machine");
 		Generic vehicle = engine.addInstance(machine, "Vehicle");
 		Generic power = engine.addInstance("Power", vehicle);

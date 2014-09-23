@@ -547,7 +547,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 
 	@SuppressWarnings("unchecked")
 	T getMap() {
-		return getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
+		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
 	public static class SystemMap {

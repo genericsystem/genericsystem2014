@@ -20,9 +20,10 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default void setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value) {
+	default T setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value) {
 		T map = ((T) this).getMap();
 		map.getMeta().setInstance(map, new AxedPropertyClass(propertyClass, pos), ((T) this).coerceToTArray(getRoot())).setInstance(value, ((T) this).coerceToTArray(this));
+		return (T) this;
 	}
 
 	@Override
