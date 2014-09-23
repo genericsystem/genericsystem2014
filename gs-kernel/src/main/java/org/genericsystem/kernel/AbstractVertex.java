@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.IVertexBase;
 import org.genericsystem.api.core.Snapshot;
@@ -22,6 +23,7 @@ import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
+import org.genericsystem.kernel.IRoot.CheckingType;
 import org.genericsystem.kernel.Statics.Supers;
 
 public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> implements IVertex<T, U> {
@@ -281,8 +283,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 				getRoot().discardWithException(new ExistsException("Attempts to add an already existing instance : " + equivInstance.info()));
 			else
 				return equivInstance.equalsRegardlessSupers(adjustedMeta, value, components) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : equivInstance.update(overrides, value, components);
-
-		log.info("ZZZZZZZZZZZZZZ : " + adjustedMeta.info() + this.info());
 		return rebuildAll(() -> adjustedMeta.buildInstance(clazz, throwExistException, overrides, value, components).plug(), adjustedMeta.computePotentialDependencies(value, components));
 	}
 
@@ -458,8 +458,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		getSupersStream().forEach(superGeneric -> ((AbstractVertex<T, U>) superGeneric).indexInheriting((T) this));
 		getComponentsStream().forEach(component -> ((AbstractVertex<T, U>) component).indexByMeta(getMeta(), (T) this));
 		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> ((AbstractVertex<T, U>) component).indexBySuper(superGeneric, (T) this)));
-		getRoot().check(result);
-		return (subT) result;
+		return (subT) result.check(CheckingType.CHECK_ON_ADD_NODE, true);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -470,6 +469,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		getSupersStream().forEach(superGeneric -> ((AbstractVertex<T, U>) superGeneric).unIndexInheriting((T) this));
 		getComponentsStream().forEach(component -> ((AbstractVertex<T, U>) component).unIndexByMeta(getMeta(), (T) this));
 		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> ((AbstractVertex<T, U>) component).unIndexBySuper(superGeneric, (T) this)));
+		check(CheckingType.CHECK_ON_REMOVE_NODE, true);
 		return result;
 	}
 
@@ -550,7 +550,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		return getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {}
+	public static class SystemMap {
+	}
 
 	protected boolean equals(ISignature<?> meta, List<? extends ISignature<?>> supers, Serializable value, List<? extends ISignature<?>> components) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComposites().equals(components) && getSupers().equals(supers);
