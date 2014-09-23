@@ -79,7 +79,9 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U
 
 	public void flush() throws RollbackException {
 		try {
-			internalFlush();
+			adds.forEach(x -> x.check(CheckingType.CHECK_ON_ADD_NODE, true));
+			removes.forEach(x -> x.check(CheckingType.CHECK_ON_REMOVE_NODE, true));
+			getSubContext().apply(adds, removes);
 		} catch (Exception e) {
 			getEngine().discardWithException(e);
 		}
@@ -91,34 +93,10 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U
 		throw new RollbackException(exception);
 	}
 
-	protected void internalFlush() throws ConcurrencyControlException, ConstraintViolationException {
-		adds.forEach(x -> x.check(CheckingType.CHECK_ON_ADD_NODE, true));
-		removes.forEach(x -> x.check(CheckingType.CHECK_ON_REMOVE_NODE, true));
-		getSubContext().apply(adds, removes);
-	}
-
 	@Override
-	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
-		for (T remove : removes)
-			unplug(remove);
-		for (T add : adds)
-			plug(add);
-
-	}
-
-	T insert(T generic) throws RollbackException {
-		try {
-			add(generic);
-			return generic;
-		} catch (ConstraintViolationException e) {
-			getEngine().discardWithException(e);
-		}
-		throw new IllegalStateException();
-	}
-
-	private void add(T generic) throws ConstraintViolationException {
-		simpleAdd(generic);
-		// check(CheckingType.CHECK_ON_ADD_NODE, false, generic);
+	public void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
+		removes.forEach(this::unplug);
+		adds.forEach(this::plug);
 	}
 
 	@Override
@@ -264,7 +242,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U
 		generic.getSupersStream().forEach(superGeneric -> indexInheriting(superGeneric, generic));
 		generic.getComponentsStream().forEach(component -> indexByMeta(component, generic.getMeta(), generic));
 		generic.getSupersStream().forEach(superGeneric -> generic.getComponentsStream().forEach(component -> indexBySuper(component, superGeneric, generic)));
-		insert(generic);
+		simpleAdd(generic);
 		return result;
 	}
 

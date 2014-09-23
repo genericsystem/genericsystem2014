@@ -2,6 +2,7 @@ package org.genericsystem.cache;
 
 import java.util.Collections;
 import java.util.stream.Collectors;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
@@ -85,7 +86,7 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends IEngin
 	}
 
 	@Override
-	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
+	public void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
 		super.apply(adds, removes);
 	}
 

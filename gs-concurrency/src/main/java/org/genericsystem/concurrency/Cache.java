@@ -1,11 +1,12 @@
 package org.genericsystem.concurrency;
 
 import java.util.Iterator;
+
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.ConcurrencyControlException;
-import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.cache.AbstractContext;
+import org.genericsystem.kernel.IRoot.CheckingType;
 import org.genericsystem.kernel.Statics;
 
 public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends org.genericsystem.cache.Cache<T, U, V, W> {
@@ -72,19 +73,15 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U
 	}
 
 	@Override
-	protected void internalFlush() throws ConcurrencyControlException, ConstraintViolationException {
-		super.internalFlush();
-	}
-
-	@Override
 	public void flush() throws RollbackException {
 		Throwable cause = null;
 		for (int attempt = 0; attempt < Statics.ATTEMPTS; attempt++)
 			try {
 				// if (getEngine().pickNewTs() - getTs() >= timeOut)
 				// throw new ConcurrencyControlException("The timestamp cache (" + getTs() + ") is begger than the life time out : " + Statics.LIFE_TIMEOUT);
-				// checkConstraints();
-				internalFlush();
+				adds.forEach(x -> x.check(CheckingType.CHECK_ON_ADD_NODE, true));
+				removes.forEach(x -> x.check(CheckingType.CHECK_ON_REMOVE_NODE, true));
+				getSubContext().apply(adds, removes);
 				clear();
 				return;
 			} catch (ConcurrencyControlException e) {
