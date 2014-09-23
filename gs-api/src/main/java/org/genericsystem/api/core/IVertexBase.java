@@ -580,29 +580,95 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 * Removes this vertex.
 	 *
 	 * @throws RollbackException
+	 *             if vertex is not alive<br/>
 	 *             if the operation violates an integrity constraint
+	 *
 	 */
 	void remove();
 
-	// T getMetaAttribute();
-
+	/**
+	 * Returns a new instance of this type that satisfies the specified value and composites
+	 *
+	 * @param value
+	 *            the expected value
+	 * @param composites
+	 *            the expected composite references
+	 * @return the new instance
+	 *
+	 * @throws RollbackException
+	 *             if the instance already exists
+	 */
 	@SuppressWarnings("unchecked")
-	T addInstance(Serializable value, T... components);
+	T addInstance(Serializable value, T... composites);
 
+	/**
+	 * Returns a new instance of this type that satisfies the specified override, value and composites.
+	 *
+	 * @param override
+	 *            a vertex reference from which the returned instance shall inherit
+	 * @param value
+	 *            the expected value
+	 * @param composites
+	 *            the expected composite references
+	 * @return the new instance
+	 */
 	@SuppressWarnings("unchecked")
-	T addInstance(T override, Serializable value, T... components);
+	T addInstance(T override, Serializable value, T... composites);
 
+	/**
+	 * Returns a new instance of this type that satisfies the specified overrides, value and composites.
+	 *
+	 * @param overrides
+	 *            vertex references from which the returned instance shall inherit
+	 *
+	 * @param value
+	 *            the expected value
+	 * @param composites
+	 *            the expected composite references
+	 * @return the new instance
+	 */
 	@SuppressWarnings("unchecked")
-	T addInstance(List<T> overrides, Serializable value, T... components);
+	T addInstance(List<T> overrides, Serializable value, T... composites);
 
+	/**
+	 * Returns an existing or a new instance of this type that satisfies the specified value and composites
+	 *
+	 * @param value
+	 *            the expected value
+	 * @param composites
+	 *            the expected composite references
+	 * @return a new instance or the existing instance that satisfies the specified value and composites
+	 */
 	@SuppressWarnings("unchecked")
-	T setInstance(Serializable value, T... components);
+	T setInstance(Serializable value, T... composites);
 
+	/**
+	 * Returns an existing or a new instance of this type that satisfies the specified override, value and composites
+	 *
+	 * @param override
+	 *            vertex reference from which the returned instance shall inherit
+	 * @param value
+	 *            the expected value
+	 * @param composites
+	 *            the expected composite references
+	 * @return a new instance or the existing instance that satisfies the specified override, value and composites
+	 */
 	@SuppressWarnings("unchecked")
-	T setInstance(T override, Serializable value, T... components);
+	T setInstance(T override, Serializable value, T... composites);
 
+	/**
+	 * Returns an existing or a new instance of this type that satisfies the specified overrides, value and composites
+	 *
+	 * @param overrides
+	 *            vertex references from which the returned instance shall inherit
+	 * @param value
+	 *            the expected value
+	 * @param composites
+	 *            the expected composite references
+	 * @return a new instance or the existing instance that satisfies the specified overrides, value and composites
+	 */
 	@SuppressWarnings("unchecked")
-	T setInstance(List<T> overrides, Serializable value, T... components);
+	T setInstance(List<T> overrides, Serializable value, T... composites);
 
 	@SuppressWarnings("unchecked")
 	T addAttribute(Serializable value, T... targets);
