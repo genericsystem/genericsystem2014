@@ -57,7 +57,7 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	boolean isAlive();
 
 	/**
-	 * Checks if this instance is alive. If not the discardAndRollback() method is called on graph's root. *
+	 * Checks if this instance is alive. If not the discardAndRollback() method is called on graph's root.
 	 *
 	 * @throws RollbackException
 	 *             if this signature is not alive
