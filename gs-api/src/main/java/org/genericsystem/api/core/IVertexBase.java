@@ -576,23 +576,15 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 */
 	boolean isCascadeRemove(int pos);
 
+	/**
+	 * Removes this vertex.
+	 *
+	 * @throws RollbackException
+	 *             if the operation violates an integrity constraint
+	 */
 	void remove();
 
-	T updateValue(Serializable newValue);
-
-	@SuppressWarnings("unchecked")
-	T updateSupers(T... overrides);
-
-	@SuppressWarnings("unchecked")
-	T updateComponents(T... newComponents);
-
-	@SuppressWarnings("unchecked")
-	T update(List<T> overrides, Serializable newValue, T... newComponents);
-
-	@SuppressWarnings("unchecked")
-	T update(Serializable newValue, T... newComponents);
-
-	T getMetaAttribute();
+	// T getMetaAttribute();
 
 	@SuppressWarnings("unchecked")
 	T addInstance(Serializable value, T... components);
@@ -647,5 +639,19 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 
 	@SuppressWarnings("unchecked")
 	T setHolder(T attribute, List<T> overrides, Serializable value, T... targets);
+
+	T updateValue(Serializable newValue);
+
+	@SuppressWarnings("unchecked")
+	T updateSupers(T... overrides);
+
+	@SuppressWarnings("unchecked")
+	T updateComponents(T... newComponents);
+
+	@SuppressWarnings("unchecked")
+	T update(List<T> overrides, Serializable newValue, T... newComponents);
+
+	@SuppressWarnings("unchecked")
+	T update(Serializable newValue, T... newComponents);
 
 }

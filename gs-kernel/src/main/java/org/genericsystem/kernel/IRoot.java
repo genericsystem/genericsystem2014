@@ -1,5 +1,6 @@
 package org.genericsystem.kernel;
 
+import java.util.Collections;
 import org.genericsystem.api.exception.RollbackException;
 
 public interface IRoot<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends IVertex<T, U> {
@@ -12,6 +13,11 @@ public interface IRoot<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> ex
 		plugged.checkDependsMetaComponents();
 		plugged.checkSupers();
 		plugged.checkDependsSuperComponents();
+	}
+
+	@SuppressWarnings("unchecked")
+	default T getMetaAttribute() {
+		return ((T) this).getDirectInstance(getValue(), Collections.singletonList((T) this));
 	}
 
 	//

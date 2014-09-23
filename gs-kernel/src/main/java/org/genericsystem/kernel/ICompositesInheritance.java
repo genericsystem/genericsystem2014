@@ -15,7 +15,7 @@ public interface ICompositesInheritance<T extends AbstractVertex<T, U>, U extend
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getAttributes() {
-		return ((T) this).getInheritings(getMetaAttribute(), 1);
+		return ((T) this).getInheritings(getRoot().getMetaAttribute(), 1);
 	}
 
 	@SuppressWarnings("unchecked")

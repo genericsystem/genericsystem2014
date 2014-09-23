@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import org.genericsystem.api.core.IVertexBase;
 
 public interface IWritable<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
@@ -52,13 +51,6 @@ public interface IWritable<T extends AbstractVertex<T, U>, U extends IRoot<T, U>
 	@SuppressWarnings("unchecked")
 	default T setInstance(T override, Serializable value, T... components) {
 		return setInstance(Collections.singletonList(override), value, components);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	default T getMetaAttribute() {
-		T root = (T) getRoot();
-		return ((AbstractVertex<T, U>) root).getDirectInstance(root.getValue(), Collections.singletonList(root));
 	}
 
 	@Override
