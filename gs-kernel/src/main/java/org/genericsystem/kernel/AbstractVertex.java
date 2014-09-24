@@ -22,6 +22,7 @@ import org.genericsystem.api.exception.CrossEnginesAssignementsException;
 import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
+import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.IRoot.CheckingType;
 import org.genericsystem.kernel.Statics.Supers;
@@ -51,6 +52,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 			} else
 				this.components.set(i, (T) this);
 		}
+		return (T) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	protected T check(CheckingType checkingType, boolean isFlushTime) throws RollbackException {
+		getRoot().check(checkingType, isFlushTime, (T) this);
 		return (T) this;
 	}
 

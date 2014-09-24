@@ -15,7 +15,7 @@ public abstract class AbstractContext<T extends AbstractGeneric<T, U, V, W>, U e
 
 	public abstract boolean isAlive(T generic);
 
-	public void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
+	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
 		removes.forEach(this::simpleRemove);
 		adds.forEach(this::simpleAdd);
 	}

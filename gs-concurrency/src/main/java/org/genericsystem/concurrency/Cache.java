@@ -81,7 +81,11 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U
 				// throw new ConcurrencyControlException("The timestamp cache (" + getTs() + ") is begger than the life time out : " + Statics.LIFE_TIMEOUT);
 				adds.forEach(x -> x.check(CheckingType.CHECK_ON_ADD_NODE, true));
 				removes.forEach(x -> x.check(CheckingType.CHECK_ON_REMOVE_NODE, true));
-				getSubContext().apply(adds, removes);
+				AbstractContext<T, U, V, W> context = getSubContext();
+				if (context instanceof Transaction)
+					((Transaction<T, U, V, W>) context).apply(adds, removes);
+				else
+					((Cache<T, U, V, W>) context).apply(adds, removes);
 				clear();
 				return;
 			} catch (ConcurrencyControlException e) {
