@@ -7,6 +7,29 @@ import org.testng.annotations.Test;
 @Test
 public class AdjustMetaTest extends AbstractTest {
 
+	public void test000_AdjustMeta() {
+		Root engine = new Root();
+		Vertex type1 = engine.addInstance("Type1");
+		Vertex type2 = engine.addInstance(type1, "Type2");
+		Vertex type3 = engine.addInstance(type1, "Type3");
+
+		Vertex instance = type1.addInstance("instance");
+		assert instance.getMeta().equals(type1);
+		assert instance.equals(type1.getInstance("instance"));
+	}
+
+	public void test001_AdjustMeta() {
+		Root engine = new Root();
+		Vertex type1 = engine.addInstance("Type1");
+		Vertex type2 = engine.addInstance(type1, "Type2");
+		Vertex type3 = engine.addInstance(type1, "Type3");
+
+		Vertex instance = type2.addInstance("instance");
+		assert instance.getMeta().equals(type2);
+		assert instance.equals(type2.getInstance("instance"));
+		assert instance.equals(type1.getInstance("instance"));
+	}
+
 	public void test001_AdjustMeta_SystemMap() {
 		Root engine = new Root();
 		Vertex metaAttribute = engine.getMetaAttribute();

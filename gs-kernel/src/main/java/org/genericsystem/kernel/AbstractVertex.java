@@ -12,7 +12,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.IVertexBase;
 import org.genericsystem.api.core.Snapshot;
@@ -51,6 +50,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 			} else
 				this.components.set(i, (T) this);
 		}
+		return (T) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	protected T check(CheckingType checkingType, boolean isFlushTime) throws RollbackException {
+		getRoot().check(checkingType, isFlushTime, (T) this);
 		return (T) this;
 	}
 
@@ -256,7 +261,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	T adjustMeta(Serializable subValue, List<T> subComponents) {
 		T result = null;
 		for (T directInheriting : getInheritings()) {
-			if (!directInheriting.equalsRegardlessSupers(this, subValue, subComponents) /* && Objects.equals(getValue(), directInheriting.getValue()) */&& componentsDepends(subComponents, directInheriting.getComposites())) {
+			if (!directInheriting.equalsRegardlessSupers(this, subValue, subComponents) /* && Objects.equals(getValue(), directInheriting.getValue()) */&& !subComponents.isEmpty() && componentsDepends(subComponents, directInheriting.getComposites())) {
 				if (result == null)
 					result = directInheriting;
 				else
@@ -556,8 +561,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {
-	}
+	public static class SystemMap {}
 
 	protected boolean equals(ISignature<?> meta, List<? extends ISignature<?>> supers, Serializable value, List<? extends ISignature<?>> components) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComposites().equals(components) && getSupers().equals(supers);
