@@ -2,10 +2,13 @@ package org.genericsystem.impl;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
+
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
+import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.impl.annotations.InstanceClass;
 import org.genericsystem.impl.annotations.SystemGeneric;
+import org.genericsystem.impl.constraints.AbstractConstraintImpl.CheckingType;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
@@ -35,6 +38,12 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		else
 			getRoot().discardWithException(new InstantiationException(clazz + " must extends " + newT.getClass()));
 		return null; // Not reached
+	}
+
+	@SuppressWarnings("unchecked")
+	protected T check(CheckingType checkingType, boolean isFlushTime) throws RollbackException {
+		getRoot().check(checkingType, isFlushTime, (T) this);
+		return (T) this;
 	}
 
 	@Override
@@ -68,12 +77,14 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 			vertex.addInstance(getSupersStream().map(T::unwrap).collect(Collectors.toList()), getValue(), vertex.coerceToTArray(getComponentsStream().map(T::unwrap).toArray()));
 		else
 			vertex.setInstance(getSupersStream().map(T::unwrap).collect(Collectors.toList()), getValue(), vertex.coerceToTArray(getComponentsStream().map(T::unwrap).toArray()));
+		check(CheckingType.CHECK_ON_ADD_NODE, true);
 		return (T) this;
 	}
 
 	@Override
 	protected boolean unplug() {
 		unwrap().remove();
+		check(CheckingType.CHECK_ON_REMOVE_NODE, true);
 		return true;
 	}
 

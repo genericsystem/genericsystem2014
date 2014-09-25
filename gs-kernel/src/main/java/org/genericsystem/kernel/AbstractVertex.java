@@ -24,7 +24,6 @@ import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
-import org.genericsystem.kernel.IRoot.CheckingType;
 import org.genericsystem.kernel.Statics.Supers;
 
 public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> implements IVertex<T, U> {
@@ -56,8 +55,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	}
 
 	@SuppressWarnings("unchecked")
-	protected T check(CheckingType checkingType, boolean isFlushTime) throws RollbackException {
-		getRoot().check(checkingType, isFlushTime, (T) this);
+	protected T check() throws RollbackException {
+		getRoot().check((T) this);
 		return (T) this;
 	}
 
@@ -465,7 +464,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		getSupersStream().forEach(superGeneric -> ((AbstractVertex<T, U>) superGeneric).indexInheriting((T) this));
 		getComponentsStream().forEach(component -> ((AbstractVertex<T, U>) component).indexByMeta(getMeta(), (T) this));
 		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> ((AbstractVertex<T, U>) component).indexBySuper(superGeneric, (T) this)));
-		return (subT) result.check(CheckingType.CHECK_ON_ADD_NODE, true);
+		return (subT) result.check();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -476,7 +475,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		getSupersStream().forEach(superGeneric -> ((AbstractVertex<T, U>) superGeneric).unIndexInheriting((T) this));
 		getComponentsStream().forEach(component -> ((AbstractVertex<T, U>) component).unIndexByMeta(getMeta(), (T) this));
 		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> ((AbstractVertex<T, U>) component).unIndexBySuper(superGeneric, (T) this)));
-		check(CheckingType.CHECK_ON_REMOVE_NODE, true);
+		check();
 		return result;
 	}
 
