@@ -5,10 +5,16 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.genericsystem.api.core.Snapshot;
+import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.IRoot.CheckingType;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends org.genericsystem.impl.AbstractGeneric<T, U, V, W> implements IGeneric<T, U, V, W> {
+
+	@Override
+	protected T check(CheckingType checkingType, boolean isFlushTime) throws RollbackException {
+		return super.check(checkingType, isFlushTime);
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
