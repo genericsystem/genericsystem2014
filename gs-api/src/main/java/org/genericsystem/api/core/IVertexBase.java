@@ -750,21 +750,85 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	@SuppressWarnings("unchecked")
 	T setAttribute(List<T> overrides, Serializable value, T... targets);
 
+	/**
+	 * Returns a new holder on this instance that satisfies the specified value and targets
+	 *
+	 * @param value
+	 *            the expected value
+	 * @param targets
+	 *            the expected targets references
+	 * @return a new holder
+	 */
 	@SuppressWarnings("unchecked")
 	T addHolder(T attribute, Serializable value, T... targets);
 
+	/**
+	 * Returns a new holder on this instance that satisfies the specified override, value and targets
+	 *
+	 * @param override
+	 *            a vertex reference from which the returned holder shall inherit
+	 * @param value
+	 *            the expected value
+	 * @param targets
+	 *            the expected targets references
+	 * @return a new holder
+	 */
 	@SuppressWarnings("unchecked")
 	T addHolder(T attribute, T override, Serializable value, T... targets);
 
+	/**
+	 * Returns a new holder on this instance that satisfies the specified overrides, value and targets
+	 *
+	 * @param overrides
+	 *            vertex references from which the returned holder shall inherit
+	 * @param value
+	 *            the expected value
+	 * @param targets
+	 *            the expected targets references
+	 * @return a new holder
+	 */
 	@SuppressWarnings("unchecked")
 	T addHolder(T attribute, List<T> overrides, Serializable value, T... targets);
 
+	/**
+	 * Returns a new or the existing holder on this type that satisfies the specified overrides, value and targets
+	 *
+	 * @param overrides
+	 *            vertex references from which the returned holder shall inherit
+	 * @param value
+	 *            the expected value
+	 * @param targets
+	 *            the expected targets references
+	 * @return a new or the existing holder
+	 */
 	@SuppressWarnings("unchecked")
 	T setHolder(T attribute, Serializable value, T... targets);
 
+	/**
+	 * Returns a new or the existing holder on this type that satisfies the specified overrides, value and targets
+	 *
+	 * @param overrides
+	 *            vertex references from which the returned attribute shall inherit
+	 * @param value
+	 *            the expected value
+	 * @param targets
+	 *            the expected targets references
+	 * @return a new or the existing holder
+	 */
 	@SuppressWarnings("unchecked")
 	T setHolder(T attribute, T override, Serializable value, T... targets);
 
+	/**
+	 * Returns a new or the existing attribute on this type that satisfies the specified overrides, value and targets
+	 *
+	 * @param overrides
+	 *            vertex references from which the returned attribute shall inherit
+	 * @param value
+	 *            the expected value
+	 * @param targets
+	 *            the expected targets references
+	 * @return a new or the existing attribute
+	 */
 	@SuppressWarnings("unchecked")
 	T setHolder(T attribute, List<T> overrides, Serializable value, T... targets);
 

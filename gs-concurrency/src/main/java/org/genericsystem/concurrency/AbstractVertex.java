@@ -10,6 +10,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		return (T) this;
 	}
 
+	//
 	@Override
 	public LifeManager getLifeManager() {
 		return lifeManager;
