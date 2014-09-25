@@ -86,7 +86,7 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends IEngin
 	}
 
 	@Override
-	public void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
+	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
 		super.apply(adds, removes);
 	}
 
