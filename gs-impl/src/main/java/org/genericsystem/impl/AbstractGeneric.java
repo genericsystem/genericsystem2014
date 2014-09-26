@@ -115,6 +115,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		return () -> unwrap().getInheritings().stream().map(this::wrap).iterator();
 	}
 
+	// TODO remove this method ?
 	@Override
 	public Snapshot<T> getComponents() {
 		return () -> unwrap().getComponents().stream().map(this::wrap).iterator();

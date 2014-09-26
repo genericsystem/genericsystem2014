@@ -13,7 +13,7 @@ public class GenericTest extends AbstractTest {
 	public void testEngine() {
 		Engine engine = new Engine();
 		assert engine.getAlive() != null;
-		assert engine.getComponents().isEmpty();
+		assert engine.getComposites().isEmpty();
 		// assert engine.getInheritings().stream().count() == 0;
 		// assert engine.getInstances().stream().count() == 0;
 		assert engine.getLevel() == 0;

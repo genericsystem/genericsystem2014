@@ -14,7 +14,7 @@ public class InstanciationTest extends AbstractTest {
 		Engine engine = new Engine();
 		assert engine.getMeta().equals(engine);
 		assert engine.getSupers().isEmpty();
-		assert engine.getComponents().isEmpty();
+		assert engine.getComposites().isEmpty();
 		assert Statics.ENGINE_VALUE.equals(engine.getValue());
 		assert engine.isAlive();
 		assert engine.isMeta();
@@ -26,7 +26,7 @@ public class InstanciationTest extends AbstractTest {
 
 		assert car.getMeta().equals(engine);
 		assert car.getSupers().isEmpty();
-		assert car.getComponents().isEmpty();
+		assert car.getComposites().isEmpty();
 		assert "Car".equals(car.getValue());
 		assert car.isAlive();
 		assert car.isStructural();
@@ -41,7 +41,7 @@ public class InstanciationTest extends AbstractTest {
 
 		assert car.getMeta().equals(engine);
 		assert car.getSupers().isEmpty();
-		assert car.getComponents().isEmpty();
+		assert car.getComposites().isEmpty();
 		assert "Car".equals(car.getValue());
 		assert car.isAlive();
 		assert car.isStructural();
@@ -83,7 +83,7 @@ public class InstanciationTest extends AbstractTest {
 		assert car.equals(car2);
 		assert car.getMeta().equals(engine);
 		assert car.getSupers().isEmpty();
-		assert car.getComponents().isEmpty();
+		assert car.getComposites().isEmpty();
 		assert "Car".equals(car.getValue());
 		assert car.isAlive();
 		assert car.isStructural();
@@ -157,9 +157,9 @@ public class InstanciationTest extends AbstractTest {
 		assert transformer.getSupers().stream().anyMatch(car::equals); // isAlive test
 		assert transformer.getSupers().stream().anyMatch(robot::equals);
 		//
-		assert car.getComponents().isEmpty();
-		assert robot.getComponents().isEmpty();
-		assert transformer.getComponents().isEmpty();
+		assert car.getComposites().isEmpty();
+		assert robot.getComposites().isEmpty();
+		assert transformer.getComposites().isEmpty();
 		//
 		assert engine.isAlive();
 		assert car.isAlive();
