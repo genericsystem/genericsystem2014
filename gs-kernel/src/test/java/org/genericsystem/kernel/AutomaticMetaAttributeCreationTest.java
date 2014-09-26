@@ -43,7 +43,7 @@ public class AutomaticMetaAttributeCreationTest extends AbstractTest {
 
 		assert power2.getMeta() == metaAttribute;
 		assert power2.isInstanceOf(metaAttribute) : power2.info();
-		assert power2.getSupersStream().anyMatch(superVertex -> superVertex.equals(power)) : power2.info();
+		assert power2.getSupers().stream().anyMatch(superVertex -> superVertex.equals(power)) : power2.info();
 	}
 
 	public void test005_setInstance_metaAttribute_engine() {
@@ -83,6 +83,6 @@ public class AutomaticMetaAttributeCreationTest extends AbstractTest {
 
 		assert power2.getMeta() == metaAttribute;
 		assert power2.isInstanceOf(metaAttribute) : power2.info();
-		assert power2.getSupersStream().anyMatch(superVertex -> superVertex.equals(power)) : power2.info();
+		assert power2.getSupers().stream().anyMatch(superVertex -> superVertex.equals(power)) : power2.info();
 	}
 }

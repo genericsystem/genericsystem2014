@@ -143,7 +143,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert engine.equals(newVehicle.getMeta());
 		assert engine.computeDependencies().contains(newVehicle);
 		Vertex newPower = engine.getInstance("Power", newVehicle);
-		assert newPower.getComponentsStream().count() == 1;
+		assert newPower.getComposites().size() == 1;
 		Vertex componentOfPower = newPower.getComposites().get(0);
 		assert newVehicle.getValue().equals(componentOfPower.getValue());
 		assert engine.equals(componentOfPower.getMeta());
@@ -174,28 +174,28 @@ public class UpdatableServiceTest extends AbstractTest {
 
 		assert newValue.equals(newMachine.getValue());
 		assert newMachine.getComposites().size() == 0;
-		assert newMachine.getSupersStream().count() == 0;
+		assert newMachine.getSupers().isEmpty();
 		assert newMachine.getInstances().size() == 0;
 		assert newMachine.getInheritings().size() == 1;
 
 		Vertex newVehicle = engine.getInstance("Vehicle");
 		assert newVehicle != null;
 		assert newVehicle.getComposites().size() == 0;
-		assert newVehicle.getSupersStream().count() == 1;
+		assert newVehicle.getSupers().size() == 1;
 		assert newVehicle.getInstances().size() == 1;
 		assert newVehicle.getInheritings().size() == 0;
 
 		Vertex newPower = engine.getInstance("Power", newVehicle);
 		assert newPower != null;
 		assert newPower.getComposites().size() == 1;
-		assert newPower.getSupersStream().count() == 0;
+		assert newPower.getSupers().size() == 0;
 		assert newPower.getInstances().size() == 0;
 		assert newPower.getInheritings().size() == 0;
 
 		Vertex newCar = newVehicle.getInstance("Car");
 		assert newCar != null;
 		assert newCar.getComposites().size() == 0;
-		assert newCar.getSupersStream().count() == 0;
+		assert newCar.getSupers().size() == 0;
 		assert newCar.getInstances().size() == 0;
 		assert newCar.getInheritings().size() == 0;
 	}
@@ -218,7 +218,7 @@ public class UpdatableServiceTest extends AbstractTest {
 
 		Vertex newVehicle = engine.getInstance("Vehicle");
 		assert newVehicle.getInheritings().size() == 1;
-		assert engine.getInstance("Car").getSupersStream().count() == 1;
+		assert engine.getInstance("Car").getSupers().size() == 1;
 	}
 
 	public void test101_addSuper_TypeBetweenTwoTypes() {
@@ -249,11 +249,11 @@ public class UpdatableServiceTest extends AbstractTest {
 		LinkedHashSet<Vertex> newFourWheelsDependencies = newFourWheels.computeDependencies();
 		assert newFourWheelsDependencies.size() == 2;
 		assert newFourWheels.getInheritings().size() == 1;
-		assert newFourWheels.getSupersStream().count() == 1;
+		assert newFourWheels.getSupers().size() == 1;
 
 		Vertex newCar = engine.getInstance("Car");
 		assert newCar.computeDependencies().size() == 1;
-		assert newCar.getSupersStream().count() == 1;
+		assert newCar.getSupers().size() == 1;
 	}
 
 	public void test102_addSuper_AlreadySuper() {
@@ -281,7 +281,7 @@ public class UpdatableServiceTest extends AbstractTest {
 
 		Vertex newCar = engine.getInstance("Car");
 		assert newCar.computeDependencies().size() == 1;
-		assert newCar.getSupersStream().count() == 1;
+		assert newCar.getSupers().size() == 1;
 	}
 
 	public void test103_addSuper_NoRegressionOnDataModel() {
@@ -330,11 +330,11 @@ public class UpdatableServiceTest extends AbstractTest {
 		Vertex newFourWheels = engine.getInstance("FourWheels");
 		assert newFourWheels.computeDependencies().size() == 5;
 		assert newFourWheels.getInheritings().size() == 1;
-		assert newFourWheels.getSupersStream().count() == 1;
+		assert newFourWheels.getSupers().size() == 1;
 
 		Vertex newCar = engine.getInstance("Car");
 		assert newCar.computeDependencies().size() == 4;
-		assert newCar.getSupersStream().count() == 1;
+		assert newCar.getSupers().size() == 1;
 	}
 
 	public void test200_replaceComponent() {

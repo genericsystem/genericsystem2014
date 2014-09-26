@@ -2,7 +2,6 @@ package org.genericsystem.impl;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.RollbackException;
@@ -74,9 +73,9 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	protected T plug() {
 		V vertex = getMeta().unwrap();
 		if (isThrowExistException())
-			vertex.addInstance(getSupersStream().map(T::unwrap).collect(Collectors.toList()), getValue(), vertex.coerceToTArray(getComponentsStream().map(T::unwrap).toArray()));
+			vertex.addInstance(getSupers().stream().map(T::unwrap).collect(Collectors.toList()), getValue(), vertex.coerceToTArray(getComposites().stream().map(T::unwrap).toArray()));
 		else
-			vertex.setInstance(getSupersStream().map(T::unwrap).collect(Collectors.toList()), getValue(), vertex.coerceToTArray(getComponentsStream().map(T::unwrap).toArray()));
+			vertex.setInstance(getSupers().stream().map(T::unwrap).collect(Collectors.toList()), getValue(), vertex.coerceToTArray(getComposites().stream().map(T::unwrap).toArray()));
 		check(CheckingType.CHECK_ON_ADD_NODE, true);
 		return (T) this;
 	}
@@ -93,7 +92,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		if (vertex.isRoot())
 			return (T) getRoot();
 		V alive = vertex.getAlive();
-		return newT(null, alive.isThrowExistException(), wrap(alive.getMeta()), alive.getSupersStream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComponentsStream().map(this::wrap).collect(Collectors.toList()));
+		return newT(null, alive.isThrowExistException(), wrap(alive.getMeta()), alive.getSupers().stream().map(this::wrap).collect(Collectors.toList()), alive.getValue(), alive.getComposites().stream().map(this::wrap).collect(Collectors.toList()));
 	}
 
 	protected V unwrap() {
@@ -122,13 +121,13 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	}
 
 	@Override
-	public Snapshot<T> getMetaComposites(T meta) {
-		return () -> unwrap().getMetaComposites(meta.unwrap()).stream().map(this::wrap).iterator();
+	public Snapshot<T> getMetaComponents(T meta) {
+		return () -> unwrap().getMetaComponents(meta.unwrap()).stream().map(this::wrap).iterator();
 	}
 
 	@Override
-	public Snapshot<T> getSuperComposites(T superT) {
-		return () -> unwrap().getSuperComposites(superT.unwrap()).stream().map(this::wrap).iterator();
+	public Snapshot<T> getSuperComponents(T superT) {
+		return () -> unwrap().getSuperComponents(superT.unwrap()).stream().map(this::wrap).iterator();
 	}
 
 	@Override
@@ -142,12 +141,12 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	}
 
 	@Override
-	protected Dependencies<DependenciesEntry<T>> getMetaComposites() {
+	protected Dependencies<DependenciesEntry<T>> getMetaComponentsDependencies() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	protected Dependencies<DependenciesEntry<T>> getSuperComposites() {
+	protected Dependencies<DependenciesEntry<T>> getSuperComponentsDependencies() {
 		throw new UnsupportedOperationException();
 	}
 

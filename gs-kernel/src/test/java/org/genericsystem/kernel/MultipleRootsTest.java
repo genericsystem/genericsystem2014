@@ -12,13 +12,13 @@ public class MultipleRootsTest extends AbstractTest {
 		String nameOfsecondEngine = "SecondEngine";
 		Root engine2 = new Root(nameOfsecondEngine);
 		assert engine1.getMeta().equals(engine1);
-		assert engine1.getSupersStream().count() == 0;
-		assert engine1.getComponentsStream().count() == 0;
+		assert engine1.getSupers().isEmpty();
+		assert engine1.getComposites().isEmpty();
 		assert Statics.ENGINE_VALUE.equals(engine1.getValue());
 		assert engine1.isAlive();
 		assert engine2.getMeta().equals(engine2);
-		assert engine2.getSupersStream().count() == 0;
-		assert engine2.getComponentsStream().count() == 0;
+		assert engine2.getSupers().isEmpty();
+		assert engine2.getComposites().isEmpty();
 		assert engine2.getValue().equals(nameOfsecondEngine);
 		assert engine2.isAlive();
 	}

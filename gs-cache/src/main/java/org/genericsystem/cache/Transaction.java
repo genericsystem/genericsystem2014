@@ -2,7 +2,6 @@ package org.genericsystem.cache;
 
 import java.util.Collections;
 import java.util.stream.Collectors;
-
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
@@ -29,7 +28,7 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends IEngin
 	protected void simpleAdd(T generic) {
 		V vertex = unwrap(generic.getMeta());
 		// TODO null is KK
-		V result = vertex.bindInstance(null, generic.isThrowExistException(), generic.getSupersStream().map(this::unwrap).collect(Collectors.toList()), generic.getValue(), generic.getComponentsStream().map(this::unwrap).collect(Collectors.toList()));
+		V result = vertex.bindInstance(null, generic.isThrowExistException(), generic.getSupers().stream().map(this::unwrap).collect(Collectors.toList()), generic.getValue(), generic.getComposites().stream().map(this::unwrap).collect(Collectors.toList()));
 		vertices.put(generic, result);
 	}
 
@@ -63,20 +62,20 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends IEngin
 	}
 
 	@Override
-	Snapshot<T> getMetaComposites(T generic, T meta) {
+	Snapshot<T> getMetaComponents(T generic, T meta) {
 		return () -> {
 			V genericVertex = unwrap(generic);
 			V metaVertex = unwrap(meta);
-			return genericVertex != null && metaVertex != null ? genericVertex.getMetaComposites(metaVertex).stream().map(generic::wrap).iterator() : Collections.emptyIterator();
+			return genericVertex != null && metaVertex != null ? genericVertex.getMetaComponents(metaVertex).stream().map(generic::wrap).iterator() : Collections.emptyIterator();
 		};
 	}
 
 	@Override
-	Snapshot<T> getSuperComposites(T generic, T superT) {
+	Snapshot<T> getSuperComponents(T generic, T superT) {
 		return () -> {
 			V genericVertex = unwrap(generic);
 			V superVertex = unwrap(superT);
-			return genericVertex != null && superVertex != null ? genericVertex.getSuperComposites(superVertex).stream().map(generic::wrap).iterator() : Collections.emptyIterator();
+			return genericVertex != null && superVertex != null ? genericVertex.getSuperComponents(superVertex).stream().map(generic::wrap).iterator() : Collections.emptyIterator();
 		};
 	}
 

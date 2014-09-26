@@ -1,7 +1,6 @@
 package org.genericsystem.concurrency;
 
 import java.util.Arrays;
-
 import org.testng.annotations.Test;
 
 @Test
@@ -16,7 +15,7 @@ public class AttributesTest extends AbstractTest {
 		assert Engine.getInstance("Power", vehicle) == power;
 		// assert Engine.selectInstances("Power").count() == 1;
 		// assert Engine.selectInstances("Power").anyMatch(x -> x.equals(power));
-		assert power.getComponentsStream().count() == 1;
+		assert power.getComposites().size() == 1;
 		assert vehicle.equals(power.getComposites().get(0));
 		assert power.isAlive();
 	}
@@ -31,7 +30,7 @@ public class AttributesTest extends AbstractTest {
 		// assert Engine.selectInstances("Power").count() == 2;
 		// assert Engine.selectInstances("Power").anyMatch(x -> x.equals(powerType));
 		// assert Engine.selectInstances("Power").anyMatch(x -> x.equals(power));
-		assert power.getComponentsStream().count() == 1;
+		assert power.getComposites().size() == 1;
 		assert vehicle.equals(power.getComposites().get(0));
 		assert power.isAlive();
 	}

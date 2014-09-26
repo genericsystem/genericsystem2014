@@ -60,20 +60,20 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Snapshot<T> getMetaComposites(T meta) {
-		return getCurrentCache().getMetaComposites((T) this, meta);
+	public Snapshot<T> getMetaComponents(T meta) {
+		return getCurrentCache().getMetaComponents((T) this, meta);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Snapshot<T> getSuperComposites(T superVertex) {
-		return getCurrentCache().getSuperComposites((T) this, superVertex);
+	public Snapshot<T> getSuperComponents(T superVertex) {
+		return getCurrentCache().getSuperComponents((T) this, superVertex);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Snapshot<T> getComponents() {
-		return getCurrentCache().getComposites((T) this);
+		return getCurrentCache().getComponents((T) this);
 	}
 
 	@Override

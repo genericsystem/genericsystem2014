@@ -28,12 +28,12 @@ import org.genericsystem.kernel.Statics.Supers;
 public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> implements IVertex<T, U> {
 
 	private T meta;
-	private List<T> components;
+	private List<T> composites;
 	private Serializable value;
 	private boolean throwExistException;
 
 	@SuppressWarnings("unchecked")
-	protected T init(boolean throwExistException, T meta, Serializable value, List<T> components) {
+	protected T init(boolean throwExistException, T meta, Serializable value, List<T> composites) {
 		this.throwExistException = throwExistException;
 		if (meta != null) {
 			meta.checkIsAlive();
@@ -41,14 +41,14 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		} else
 			this.meta = (T) this;
 		this.value = value;
-		this.components = new ArrayList<>(components);
-		for (int i = 0; i < components.size(); i++) {
-			T component = components.get(i);
-			if (component != null) {
-				component.checkIsAlive();
-				this.components.set(i, component);
+		this.composites = new ArrayList<>(composites);
+		for (int i = 0; i < composites.size(); i++) {
+			T composite = composites.get(i);
+			if (composite != null) {
+				composite.checkIsAlive();
+				this.composites.set(i, composite);
 			} else
-				this.components.set(i, (T) this);
+				this.composites.set(i, (T) this);
 		}
 		return (T) this;
 	}
@@ -70,7 +70,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 
 	@Override
 	public List<T> getComposites() {
-		return components;
+		return composites;
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 
 	@Override
 	public int getLevel() {
-		return (isRoot() || components.stream().allMatch(c -> c.isRoot()) && Objects.equals(getValue(), getRoot().getValue())) ? 0 : meta.getLevel() + 1;
+		return (isRoot() || composites.stream().allMatch(c -> c.isRoot()) && Objects.equals(getValue(), getRoot().getValue())) ? 0 : meta.getLevel() + 1;
 	}
 
 	protected List<T> supers;
@@ -94,9 +94,9 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 
 	protected abstract Dependencies<T> getInheritingsDependencies();
 
-	protected abstract Dependencies<DependenciesEntry<T>> getMetaComposites();
+	protected abstract Dependencies<DependenciesEntry<T>> getMetaComponentsDependencies();
 
-	protected abstract Dependencies<DependenciesEntry<T>> getSuperComposites();
+	protected abstract Dependencies<DependenciesEntry<T>> getSuperComponentsDependencies();
 
 	@SuppressWarnings("unchecked")
 	protected T init(boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
@@ -128,10 +128,10 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 			getRoot().discardWithException(new IllegalStateException("Supers loop detected : " + info()));
 	}
 
-	void checkDependsSuperComponents() {
-		getSupersStream().forEach(superVertex -> {
+	void checkDependsSuperComposites() {
+		getSupers().forEach(superVertex -> {
 			if (!superVertex.isSuperOf(getMeta(), supers, getValue(), getComposites()))
-				getRoot().discardWithException(new IllegalStateException("Inconsistant components : " + getComponentsStream().collect(Collectors.toList())));
+				getRoot().discardWithException(new IllegalStateException("Inconsistant composites : " + getComposites()));
 		});
 	}
 
@@ -172,10 +172,10 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		getOrderedDependenciesToRemove().forEach(x -> simpleRemove(x));
 	}
 
-	final T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
-		if (newComponents.size() != getComposites().size())
+	final T update(List<T> supersToAdd, Serializable newValue, List<T> newComposites) {
+		if (newComposites.size() != getComposites().size())
 			getRoot().discardWithException(new IllegalArgumentException());
-		return rebuildAll(() -> getMeta().bindInstance(null, isThrowExistException(), new Supers<>(getSupers(), supersToAdd), newValue, newComponents), computeDependencies());
+		return rebuildAll(() -> getMeta().bindInstance(null, isThrowExistException(), new Supers<>(getSupers(), supersToAdd), newValue, newComposites), computeDependencies());
 	}
 
 	private static class ConvertMap<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends HashMap<T, T> {
@@ -187,8 +187,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 			T newDependency = get(dependency);
 			if (newDependency == null) {
 				T meta = (dependency.isRoot()) ? dependency : convert(dependency.getMeta());
-				newDependency = meta.buildInstance(null, dependency.isThrowExistException(), dependency.getSupersStream().map(x -> convert(x)).collect(Collectors.toList()), dependency.getValue(),
-						dependency.getComponentsStream().map(x -> x.equals(this) ? null : convert(x)).collect(Collectors.toList())).plug();
+				newDependency = meta.buildInstance(null, dependency.isThrowExistException(), dependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList()), dependency.getValue(),
+						dependency.getComposites().stream().map(x -> x.equals(this) ? null : convert(x)).collect(Collectors.toList())).plug();
 				put(dependency, newDependency);
 			}
 			return newDependency;
@@ -220,12 +220,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 					if (!generic.getInheritings().isEmpty() || !generic.getInstances().isEmpty())
 						getRoot().discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + generic + " has an inheritance or instance dependency"));
 
-					for (T composite : generic.getComponents())
-						if (!generic.equals(composite)) {
-							for (int componentPos = 0; componentPos < composite.getComposites().size(); componentPos++)
-								if (/* !compositeDependency.isAutomatic() && */composite.getComposites().get(componentPos).equals(generic) && !contains(composite) && composite.isReferentialIntegrityConstraintEnabled(componentPos))
-									getRoot().discardWithException(new ReferentialIntegrityConstraintViolationException(composite + " is Referential Integrity for ancestor " + generic + " by component position : " + componentPos));
-							visit(composite);
+					for (T components : generic.getComponents())
+						if (!generic.equals(components)) {
+							for (int componentPos = 0; componentPos < components.getComposites().size(); componentPos++)
+								if (/* !compositeDependency.isAutomatic() && */components.getComposites().get(componentPos).equals(generic) && !contains(components) && components.isReferentialIntegrityConstraintEnabled(componentPos))
+									getRoot().discardWithException(new ReferentialIntegrityConstraintViolationException(components + " is Referential Integrity for ancestor " + generic + " by component position : " + componentPos));
+							visit(components);
 						}
 					for (int axe = 0; axe < generic.getComposites().size(); axe++)
 						if (generic.isCascadeRemove(axe))
@@ -252,22 +252,22 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	}
 
 	@SuppressWarnings("unchecked")
-	T adjustMeta(Serializable subValue, List<T> subComponents) {
+	T adjustMeta(Serializable subValue, List<T> subComposites) {
 		T result = null;
 		for (T directInheriting : getInheritings()) {
-			if (!directInheriting.equalsRegardlessSupers(this, subValue, subComponents) /* && Objects.equals(getValue(), directInheriting.getValue()) */&& !subComponents.isEmpty() && componentsDepends(subComponents, directInheriting.getComposites())) {
+			if (!directInheriting.equalsRegardlessSupers(this, subValue, subComposites) /* && Objects.equals(getValue(), directInheriting.getValue()) */&& !subComposites.isEmpty() && componentsDepends(subComposites, directInheriting.getComposites())) {
 				if (result == null)
 					result = directInheriting;
 				else
 					getRoot().discardWithException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
 			}
 		}
-		return result == null ? (T) this : result.adjustMeta(subValue, subComponents);
+		return result == null ? (T) this : result.adjustMeta(subValue, subComposites);
 	}
 
-	T getDirectInstance(Serializable value, List<T> components) {
+	T getDirectInstance(Serializable value, List<T> composites) {
 		for (T instance : getInstances())
-			if (((AbstractVertex<?, ?>) instance).equalsRegardlessSupers(this, value, components))
+			if (((AbstractVertex<?, ?>) instance).equalsRegardlessSupers(this, value, composites))
 				return instance;
 		return null;
 	}
@@ -278,28 +278,28 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	}
 
 	// KK should be protected
-	public final T bindInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
-		checkSameEngine(components);
+	public final T bindInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> composites) {
+		checkSameEngine(composites);
 		checkSameEngine(overrides);
-		T adjustedMeta = adjustMeta(value, components);
-		T equivInstance = adjustedMeta.getDirectEquivInstance(value, components);
+		T adjustedMeta = adjustMeta(value, composites);
+		T equivInstance = adjustedMeta.getDirectEquivInstance(value, composites);
 		if (equivInstance != null)
 			if (throwExistException)
 				getRoot().discardWithException(new ExistsException("Attempts to add an already existing instance : " + equivInstance.info()));
 			else
-				return equivInstance.equalsRegardlessSupers(adjustedMeta, value, components) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : equivInstance.update(overrides, value, components);
-		return rebuildAll(() -> adjustedMeta.buildInstance(clazz, throwExistException, overrides, value, components).plug(), adjustedMeta.computePotentialDependencies(value, components));
+				return equivInstance.equalsRegardlessSupers(adjustedMeta, value, composites) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : equivInstance.update(overrides, value, composites);
+		return rebuildAll(() -> adjustedMeta.buildInstance(clazz, throwExistException, overrides, value, composites).plug(), adjustedMeta.computePotentialDependencies(value, composites));
 	}
 
-	boolean dependsFrom(T meta, Serializable value, List<T> components) {
+	boolean dependsFrom(T meta, Serializable value, List<T> composites) {
 		// TODO perhaps we have to adjust meta here
-		return this.inheritsFrom(meta, value, components) || getComponentsStream().filter(component -> component != null && component != this).anyMatch(component -> component.dependsFrom(meta, value, components))
-				|| (!isRoot() && getMeta().dependsFrom(meta, value, components));
+		return this.inheritsFrom(meta, value, composites) || getComposites().stream().filter(composite -> composite != null && composite != this).anyMatch(component -> component.dependsFrom(meta, value, composites))
+				|| (!isRoot() && getMeta().dependsFrom(meta, value, composites));
 	}
 
-	T getDirectEquivInstance(Serializable value, List<T> components) {
+	T getDirectEquivInstance(Serializable value, List<T> composites) {
 		for (T instance : getInstances())
-			if (instance.equiv(this, value, components))
+			if (instance.equiv(this, value, composites))
 				return instance;
 		return null;
 	}
@@ -365,7 +365,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	T buildInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
-		int level = getLevel() == 0 && Objects.equals(getValue(), getRoot().getValue()) && getComponentsStream().allMatch(c -> c.isRoot()) && Objects.equals(value, getRoot().getValue()) && components.stream().allMatch(c -> c.isRoot()) ? 0 : getLevel() + 1;
+		int level = getLevel() == 0 && Objects.equals(getValue(), getRoot().getValue()) && getComposites().stream().allMatch(c -> c.isRoot()) && Objects.equals(value, getRoot().getValue()) && components.stream().allMatch(c -> c.isRoot()) ? 0
+				: getLevel() + 1;
 		overrides.forEach(AbstractVertex::checkIsAlive);
 		components.forEach(AbstractVertex::checkIsAlive);
 		List<T> supers = new ArrayList<>(new SupersComputer(level, this, overrides, value, components));
@@ -436,21 +437,21 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 
 	@Override
 	public Snapshot<T> getComponents() {
-		return () -> getMetaComposites().stream().map(entry -> entry.getValue().stream()).flatMap(x -> x).iterator();
+		return () -> getMetaComponentsDependencies().stream().map(entry -> entry.getValue().stream()).flatMap(x -> x).iterator();
 	}
 
-	public Snapshot<T> getMetaComposites(T meta) {
+	public Snapshot<T> getMetaComponents(T meta) {
 		return () -> {
-			for (DependenciesEntry<T> entry : getMetaComposites())
+			for (DependenciesEntry<T> entry : getMetaComponentsDependencies())
 				if (meta.equals(entry.getKey()))
 					return entry.getValue().iterator();
 			return Collections.emptyIterator();
 		};
 	}
 
-	public Snapshot<T> getSuperComposites(T superT) {
+	public Snapshot<T> getSuperComponents(T superT) {
 		return () -> {
-			for (DependenciesEntry<T> entry : getSuperComposites())
+			for (DependenciesEntry<T> entry : getSuperComponentsDependencies())
 				if (superT.equals(entry.getKey()))
 					return entry.getValue().iterator();
 			return Collections.emptyIterator();
@@ -460,9 +461,9 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	@SuppressWarnings("unchecked")
 	protected <subT extends T> subT plug() {
 		T result = ((AbstractVertex<T, U>) getMeta()).indexInstance((T) this);
-		getSupersStream().forEach(superGeneric -> ((AbstractVertex<T, U>) superGeneric).indexInheriting((T) this));
-		getComponentsStream().forEach(component -> ((AbstractVertex<T, U>) component).indexByMeta(getMeta(), (T) this));
-		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> ((AbstractVertex<T, U>) component).indexBySuper(superGeneric, (T) this)));
+		getSupers().forEach(superGeneric -> ((AbstractVertex<T, U>) superGeneric).indexInheriting((T) this));
+		getComposites().forEach(composite -> ((AbstractVertex<T, U>) composite).indexByMeta(getMeta(), (T) this));
+		getSupers().forEach(superGeneric -> getComposites().forEach(composite -> ((AbstractVertex<T, U>) composite).indexBySuper(superGeneric, (T) this)));
 		return (subT) result.check();
 	}
 
@@ -471,19 +472,19 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		boolean result = ((AbstractVertex<T, U>) getMeta()).unIndexInstance((T) this);
 		if (!result)
 			getRoot().discardWithException(new NotFoundException(this.info()));
-		getSupersStream().forEach(superGeneric -> ((AbstractVertex<T, U>) superGeneric).unIndexInheriting((T) this));
-		getComponentsStream().forEach(component -> ((AbstractVertex<T, U>) component).unIndexByMeta(getMeta(), (T) this));
-		getSupersStream().forEach(superGeneric -> getComponentsStream().forEach(component -> ((AbstractVertex<T, U>) component).unIndexBySuper(superGeneric, (T) this)));
+		getSupers().forEach(superGeneric -> ((AbstractVertex<T, U>) superGeneric).unIndexInheriting((T) this));
+		getComposites().forEach(composite -> ((AbstractVertex<T, U>) composite).unIndexByMeta(getMeta(), (T) this));
+		getSupers().forEach(superGeneric -> getComposites().forEach(composite -> ((AbstractVertex<T, U>) composite).unIndexBySuper(superGeneric, (T) this)));
 		check();
 		return result;
 	}
 
 	private T indexByMeta(T meta, T composite) {
-		return index(getMetaComposites(), meta, composite);
+		return index(getMetaComponentsDependencies(), meta, composite);
 	}
 
 	private T indexBySuper(T superVertex, T composite) {
-		return index(getSuperComposites(), superVertex, composite);
+		return index(getSuperComponentsDependencies(), superVertex, composite);
 	}
 
 	private static <T extends AbstractVertex<T, U>, U extends IRoot<T, U>> T index(Dependencies<DependenciesEntry<T>> multimap, T index, T composite) {
@@ -505,11 +506,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	}
 
 	private boolean unIndexByMeta(T meta, T composite) {
-		return unIndex(getMetaComposites(), meta, composite);
+		return unIndex(getMetaComponentsDependencies(), meta, composite);
 	}
 
 	private boolean unIndexBySuper(T superT, T composite) {
-		return unIndex(getSuperComposites(), superT, composite);
+		return unIndex(getSuperComponentsDependencies(), superT, composite);
 	}
 
 	private static <T> T index(Dependencies<T> dependencies, T dependency) {
@@ -546,8 +547,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		return unIndex(getInheritingsDependencies(), inheriting);
 	}
 
-	boolean equalsRegardlessSupers(IVertexBase<?, ?> meta, Serializable value, List<? extends IVertexBase<?, ?>> components) {
-		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComposites().equals(components);
+	boolean equalsRegardlessSupers(IVertexBase<?, ?> meta, Serializable value, List<? extends IVertexBase<?, ?>> composites) {
+		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComposites().equals(composites);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -10,8 +10,8 @@ public class Vertex extends AbstractVertex<Vertex, Root> implements IVertex<Vert
 
 	private final Dependencies<Vertex> instances = buildDependencies();
 	private final Dependencies<Vertex> inheritings = buildDependencies();
-	private final Dependencies<DependenciesEntry<Vertex>> superComposites = buildDependencies();
-	private final Dependencies<DependenciesEntry<Vertex>> metaComposites = buildDependencies();
+	private final Dependencies<DependenciesEntry<Vertex>> superComponents = buildDependencies();
+	private final Dependencies<DependenciesEntry<Vertex>> metaComponents = buildDependencies();
 
 	@Override
 	protected Dependencies<Vertex> getInstancesDependencies() {
@@ -24,13 +24,13 @@ public class Vertex extends AbstractVertex<Vertex, Root> implements IVertex<Vert
 	}
 
 	@Override
-	protected Dependencies<DependenciesEntry<Vertex>> getMetaComposites() {
-		return metaComposites;
+	protected Dependencies<DependenciesEntry<Vertex>> getMetaComponentsDependencies() {
+		return metaComponents;
 	}
 
 	@Override
-	protected Dependencies<DependenciesEntry<Vertex>> getSuperComposites() {
-		return superComposites;
+	protected Dependencies<DependenciesEntry<Vertex>> getSuperComponentsDependencies() {
+		return superComponents;
 	}
 
 	@Override

@@ -2,7 +2,6 @@ package org.genericsystem.api.core;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.stream.Stream;
 import javax.json.JsonObject;
 import org.genericsystem.api.exception.RollbackException;
 
@@ -16,21 +15,21 @@ import org.genericsystem.api.exception.RollbackException;
  */
 public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<T, U>> extends ISignature<T> {
 
-	/**
-	 * Returns the supers stream of this signature
-	 *
-	 * @return the supers stream of this signature<br>
-	 *         this is equivalent of getSupers().stream()
-	 */
-	Stream<T> getSupersStream();
-
-	/**
-	 * Returns the components stream of this signature
-	 *
-	 * @return the components stream of this signature<br>
-	 *         this is equivalent of getComponents().stream()
-	 */
-	Stream<T> getComponentsStream();
+	// /**
+	// * Returns the supers stream of this signature
+	// *
+	// * @return the supers stream of this signature<br>
+	// * this is equivalent of getSupers().stream()
+	// */
+	// Stream<T> getSupersStream();
+	//
+	// /**
+	// * Returns the components stream of this signature
+	// *
+	// * @return the components stream of this signature<br>
+	// * this is equivalent of getComponents().stream()
+	// */
+	// Stream<T> getComponentsStream();
 
 	/**
 	 * Indicates whether this vertex is the root of the graph

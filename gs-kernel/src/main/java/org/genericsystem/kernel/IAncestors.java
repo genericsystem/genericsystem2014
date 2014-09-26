@@ -1,7 +1,6 @@
 package org.genericsystem.kernel;
 
 import java.util.Objects;
-import java.util.stream.Stream;
 import org.genericsystem.api.core.IVertexBase;
 import org.genericsystem.api.exception.NotAliveException;
 import org.slf4j.Logger;
@@ -10,11 +9,6 @@ import org.slf4j.LoggerFactory;
 public interface IAncestors<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
 
 	static Logger log = LoggerFactory.getLogger(IAncestors.class);
-
-	@Override
-	default Stream<T> getComponentsStream() {
-		return getComposites().stream();
-	}
 
 	@Override
 	default boolean isRoot() {
@@ -49,7 +43,7 @@ public interface IAncestors<T extends AbstractVertex<T, U>, U extends IRoot<T, U
 
 	@Override
 	default int getLevel() {
-		return isRoot() || Objects.equals(getValue(), getRoot().getValue()) || getComponentsStream().allMatch(c -> c.isRoot()) ? 0 : getMeta().getLevel() + 1;
+		return isRoot() || Objects.equals(getValue(), getRoot().getValue()) || getComposites().stream().allMatch(c -> c.isRoot()) ? 0 : getMeta().getLevel() + 1;
 	}
 
 	@Override
@@ -73,17 +67,12 @@ public interface IAncestors<T extends AbstractVertex<T, U>, U extends IRoot<T, U
 	}
 
 	@Override
-	default Stream<T> getSupersStream() {
-		return getSupers().stream();
-	}
-
-	@Override
 	default boolean inheritsFrom(T superVertex) {
 		if (equals(superVertex))
 			return true;
 		if (getLevel() != superVertex.getLevel())
 			return false;
-		return getSupersStream().anyMatch(vertex -> vertex.inheritsFrom(superVertex));
+		return getSupers().stream().anyMatch(vertex -> vertex.inheritsFrom(superVertex));
 	}
 
 	@Override
@@ -98,6 +87,6 @@ public interface IAncestors<T extends AbstractVertex<T, U>, U extends IRoot<T, U
 
 	@Override
 	default boolean isComponentOf(T vertex) {
-		return isRoot() || getComponentsStream().anyMatch(component -> vertex.isSpecializationOf(component));
+		return isRoot() || getComposites().stream().anyMatch(composite -> vertex.isSpecializationOf(composite));
 	}
 }

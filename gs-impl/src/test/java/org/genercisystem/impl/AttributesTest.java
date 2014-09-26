@@ -13,7 +13,7 @@ public class AttributesTest extends AbstractTest {
 		Generic vehicle = engine.addInstance("Vehicle");
 		assert vehicle.getLevel() == 1 : vehicle.getLevel();
 		Generic power = engine.addInstance("Power", vehicle);
-		assert power.getComponentsStream().count() == 1;
+		assert power.getComposites().size() == 1;
 		assert vehicle.equals(power.getComposites().get(0));
 		assert power.isAlive();
 	}

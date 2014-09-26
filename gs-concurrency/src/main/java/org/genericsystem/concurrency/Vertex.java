@@ -1,7 +1,6 @@
 package org.genericsystem.concurrency;
 
 import java.util.Iterator;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 
@@ -23,12 +22,12 @@ public class Vertex extends AbstractVertex<Vertex, Root> implements IVertex<Vert
 	}
 
 	@Override
-	protected Dependencies<DependenciesEntry<Vertex>> getMetaComposites() {
+	protected Dependencies<DependenciesEntry<Vertex>> getMetaComponentsDependencies() {
 		return metaComposites;
 	}
 
 	@Override
-	protected Dependencies<DependenciesEntry<Vertex>> getSuperComposites() {
+	protected Dependencies<DependenciesEntry<Vertex>> getSuperComponentsDependencies() {
 		return superComposites;
 	}
 

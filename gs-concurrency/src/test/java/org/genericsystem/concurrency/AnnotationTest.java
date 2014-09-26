@@ -4,7 +4,7 @@ import org.genericsystem.concurrency.AnnotationTest.VehicleType.MyAudi;
 import org.genericsystem.concurrency.AnnotationTest.VehicleType.MyBmw;
 import org.genericsystem.concurrency.AnnotationTest.VehicleType.MyMercedes;
 import org.genericsystem.concurrency.AnnotationTest.VehicleType.VehicleInstance;
-import org.genericsystem.impl.annotations.Components;
+import org.genericsystem.impl.annotations.Composites;
 import org.genericsystem.impl.annotations.InstanceClass;
 import org.genericsystem.impl.annotations.Meta;
 import org.genericsystem.impl.annotations.Supers;
@@ -388,7 +388,7 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	@Components(GraphicComponent.class)
+	@Composites(GraphicComponent.class)
 	public static class Size extends Generic {
 
 	}
@@ -406,7 +406,7 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	@Components(Selectable.class)
+	@Composites(Selectable.class)
 	public static class Selected extends Generic {
 
 	}
@@ -434,14 +434,14 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	@Components(Vehicle.class)
+	@Composites(Vehicle.class)
 	public static class Power extends Generic {
 
 	}
 
 	@SystemGeneric
 	@Meta(Power.class)
-	@Components(MyVehicle.class)
+	@Composites(MyVehicle.class)
 	@IntValue(123)
 	public static class V123 extends Generic {
 
@@ -459,14 +459,14 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	@Components(Car.class)
+	@Composites(Car.class)
 	@Supers(Power.class)
 	public static class ElectrikPower extends Generic {
 
 	}
 
 	@SystemGeneric
-	@Components(ElectrikPower.class)
+	@Composites(ElectrikPower.class)
 	public static class Unit extends Generic {
 
 	}
@@ -489,24 +489,24 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	@Components({ Human.class, Vehicle.class })
+	@Composites({ Human.class, Vehicle.class })
 	public static class HumanPossessVehicle extends Generic {
 	}
 
 	@SystemGeneric
-	@Components({ Human.class, Car.class })
+	@Composites({ Human.class, Car.class })
 	@Supers(HumanPossessVehicle.class)
 	public static class HumanPossessCar extends HumanPossessVehicle {
 	}
 
 	@SystemGeneric
-	@Components({ Man.class, Car.class })
+	@Composites({ Man.class, Car.class })
 	@Supers(HumanPossessVehicle.class)
 	public static class ManPossessCar extends HumanPossessVehicle {
 	}
 
 	@SystemGeneric
-	@Components({ Human.class, Vehicle.class, Time.class })
+	@Composites({ Human.class, Vehicle.class, Time.class })
 	public static class HumanPossessVehicleTime extends Generic {
 	}
 

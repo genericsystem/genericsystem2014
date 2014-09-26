@@ -12,8 +12,8 @@ public interface IDependencies<T extends AbstractVertex<T, U>, U extends IRoot<T
 
 	@Override
 	default boolean isAncestorOf(T dependency) {
-		return equals(dependency) || (!dependency.isRoot() && isAncestorOf(dependency.getMeta())) || dependency.getSupersStream().anyMatch(this::isAncestorOf)
-				|| dependency.getComponentsStream().filter(component -> !dependency.equals(component)).anyMatch(this::isAncestorOf);
+		return equals(dependency) || (!dependency.isRoot() && isAncestorOf(dependency.getMeta())) || dependency.getSupers().stream().anyMatch(this::isAncestorOf)
+				|| dependency.getComposites().stream().filter(composite -> !dependency.equals(composite)).anyMatch(this::isAncestorOf);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -29,14 +29,14 @@ public interface IDependencies<T extends AbstractVertex<T, U>, U extends IRoot<T
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T addInstance(List<T> overrides, Serializable value, T... components) {
-		return ((T) this).bindInstance(null, true, overrides, value, Arrays.asList(components));
+	default T addInstance(List<T> overrides, Serializable value, T... composites) {
+		return ((T) this).bindInstance(null, true, overrides, value, Arrays.asList(composites));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T setInstance(List<T> overrides, Serializable value, T... components) {
-		return ((T) this).bindInstance(null, false, overrides, value, Arrays.asList(components));
+	default T setInstance(List<T> overrides, Serializable value, T... composites) {
+		return ((T) this).bindInstance(null, false, overrides, value, Arrays.asList(composites));
 	}
 
 	@Override
@@ -52,9 +52,9 @@ public interface IDependencies<T extends AbstractVertex<T, U>, U extends IRoot<T
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T getInstance(List<T> overrides, Serializable value, T... components) {
-		T adjustedMeta = ((T) this).adjustMeta(value, Arrays.asList(components));
-		return adjustedMeta.getDirectInstance(overrides, value, Arrays.asList(components));
+	default T getInstance(List<T> overrides, Serializable value, T... composites) {
+		T adjustedMeta = ((T) this).adjustMeta(value, Arrays.asList(composites));
+		return adjustedMeta.getDirectInstance(overrides, value, Arrays.asList(composites));
 	}
 
 }

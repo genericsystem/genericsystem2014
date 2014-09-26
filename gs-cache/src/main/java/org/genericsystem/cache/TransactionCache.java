@@ -51,7 +51,8 @@ public class TransactionCache<T extends AbstractGeneric<T, ?, V, ?>, V extends A
 			assert vertex.getMeta() != vertex : this;
 			T meta = getByValue(vertex.getMeta());
 			// TODO null is KK
-			result = meta.newT(null, vertex.isThrowExistException(), meta, vertex.getSupersStream().map(this::getByValue).collect(Collectors.toList()), vertex.getValue(), vertex.getComponentsStream().map(this::getByValue).collect(Collectors.toList()));
+			result = meta.newT(null, vertex.isThrowExistException(), meta, vertex.getSupers().stream().map(this::getByValue).collect(Collectors.toList()), vertex.getValue(), vertex.getComposites().stream().map(this::getByValue)
+					.collect(Collectors.toList()));
 			put(result, vertex);
 		}
 		return result;

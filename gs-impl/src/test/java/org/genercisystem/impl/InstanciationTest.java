@@ -15,8 +15,8 @@ public class InstanciationTest extends AbstractTest {
 	public void testEngineInstanciation() {
 		Engine engine = new Engine();
 		assert engine.getMeta().equals(engine);
-		assert engine.getSupersStream().count() == 0;
-		assert engine.getComponentsStream().count() == 0;
+		assert engine.getSupers().isEmpty();
+		assert engine.getComposites().isEmpty();
 		assert Statics.ENGINE_VALUE.equals(engine.getValue());
 		assert engine.isAlive();
 		assert engine.isMeta();
@@ -27,8 +27,8 @@ public class InstanciationTest extends AbstractTest {
 		Generic car = engine.addInstance("Car");
 
 		assert car.getMeta().equals(engine);
-		assert car.getSupersStream().count() == 0;
-		assert car.getComponentsStream().count() == 0;
+		assert car.getSupers().isEmpty();
+		assert car.getComponents().isEmpty();
 		assert "Car".equals(car.getValue());
 		assert car.isAlive();
 		assert car.isStructural();
@@ -42,8 +42,8 @@ public class InstanciationTest extends AbstractTest {
 		Generic robot = engine.addInstance("Robot");
 
 		assert car.getMeta().equals(engine);
-		assert car.getSupersStream().count() == 0;
-		assert car.getComponentsStream().count() == 0;
+		assert car.getSupers().isEmpty();
+		assert car.getComponents().isEmpty();
 		assert "Car".equals(car.getValue());
 		assert car.isAlive();
 		assert car.isStructural();
@@ -51,8 +51,8 @@ public class InstanciationTest extends AbstractTest {
 		assert !car.inheritsFrom(engine);
 
 		assert robot.getMeta().equals(engine);
-		assert robot.getSupersStream().count() == 0;
-		assert robot.getComponentsStream().count() == 0;
+		assert robot.getSupers().isEmpty();
+		assert robot.getComponents().isEmpty();
 		assert "Robot".equals(robot.getValue());
 		assert robot.isAlive();
 		assert robot.isStructural();
@@ -84,8 +84,8 @@ public class InstanciationTest extends AbstractTest {
 
 		assert car.equals(car2);
 		assert car.getMeta().equals(engine);
-		assert car.getSupersStream().count() == 0;
-		assert car.getComponentsStream().count() == 0;
+		assert car.getSupers().isEmpty();
+		assert car.getComponents().isEmpty();
 		assert "Car".equals(car.getValue());
 		assert car.isAlive();
 		assert car.isStructural();
@@ -105,9 +105,9 @@ public class InstanciationTest extends AbstractTest {
 		assert vehicle.getMeta().equals(engine);
 		assert car.getMeta().equals(engine);
 
-		assert engine.getSupersStream().count() == 0;
-		assert vehicle.getSupersStream().count() == 0;
-		assert car.getSupersStream().count() == 1;
+		assert engine.getSupers().isEmpty();
+		assert vehicle.getSupers().isEmpty();
+		assert !car.getSupers().isEmpty();
 
 		assert car.isInstanceOf(engine);
 		assert !car.inheritsFrom(engine);
@@ -153,17 +153,17 @@ public class InstanciationTest extends AbstractTest {
 		assert robot.getMeta().equals(engine);
 		assert transformer.getMeta().equals(engine);
 
-		assert engine.getSupersStream().count() == 0;
-		assert car.getSupersStream().count() == 0;
-		assert robot.getSupersStream().count() == 0;
-		assert transformer.getSupersStream().count() == 2;
+		assert engine.getSupers().isEmpty();
+		assert car.getSupers().isEmpty();
+		assert robot.getSupers().isEmpty();
+		assert transformer.getSupers().size() == 2;
 
-		assert transformer.getSupersStream().anyMatch(car::equals); // isAlive test
-		assert transformer.getSupersStream().anyMatch(robot::equals);
+		assert transformer.getSupers().stream().anyMatch(car::equals); // isAlive test
+		assert transformer.getSupers().stream().anyMatch(robot::equals);
 		//
-		assert car.getComponentsStream().count() == 0;
-		assert robot.getComponentsStream().count() == 0;
-		assert transformer.getComponentsStream().count() == 0;
+		assert car.getComponents().isEmpty();
+		assert robot.getComponents().isEmpty();
+		assert transformer.getComponents().isEmpty();
 		//
 		assert engine.isAlive();
 		assert car.isAlive();
@@ -192,21 +192,20 @@ public class InstanciationTest extends AbstractTest {
 		assert robot.getMeta().equals(engine);
 		assert transformer.getMeta().equals(engine);
 
-		assert engine.getSupersStream().count() == 0;
-		assert vehicle.getSupersStream().count() == 0;
-		assert car.getSupersStream().count() == 1 : car;
-		assert device.getSupersStream().count() == 0;
-		assert robot.getSupersStream().count() == 1;
-		assert transformer.getSupersStream().count() == 2;
+		assert engine.getSupers().isEmpty();
+		assert vehicle.getSupers().isEmpty();
+		assert car.getSupers().size() == 1 : car;
+		assert device.getSupers().isEmpty();
+		assert robot.getSupers().size() == 1;
+		assert transformer.getSupers().size() == 2;
 
-		assert transformer.getSupersStream().anyMatch(car::equals);
-		assert transformer.getSupersStream().anyMatch(robot::equals);
+		assert transformer.getSupers().stream().anyMatch(car::equals);
+		assert transformer.getSupers().stream().anyMatch(robot::equals);
 
-		car.getSupersStream().anyMatch(vehicle::equals);
-		robot.getSupersStream().anyMatch(device::equals);
-		Statics.concat(transformer.getSupersStream(), superGeneric -> Stream.concat(Stream.of(superGeneric), superGeneric.getSupersStream()));
+		assert car.getSupers().stream().anyMatch(vehicle::equals);
+		assert robot.getSupers().stream().anyMatch(device::equals);
 
-		final Predicate<Generic> condition = x -> Statics.concat(transformer.getSupersStream(), superGeneric -> Stream.concat(Stream.of(superGeneric), superGeneric.getSupersStream())).anyMatch(x::equals);
+		final Predicate<Generic> condition = x -> Statics.concat(transformer.getSupers().stream(), superGeneric -> Stream.concat(Stream.of(superGeneric), superGeneric.getSupers().stream())).anyMatch(x::equals);
 
 		assert condition.test(vehicle);
 		assert condition.test(car);
@@ -243,21 +242,21 @@ public class InstanciationTest extends AbstractTest {
 		assert transformer.getMeta().equals(engine);
 		assert transformer2.getMeta().equals(engine);
 
-		assert engine.getSupersStream().count() == 0;
-		assert vehicle.getSupersStream().count() == 0;
-		assert car.getSupersStream().count() == 1;
-		assert device.getSupersStream().count() == 0;
-		assert robot.getSupersStream().count() == 1;
-		assert transformer.getSupersStream().count() == 2;
+		assert engine.getSupers().isEmpty();
+		assert vehicle.getSupers().isEmpty();
+		assert car.getSupers().size() == 1;
+		assert device.getSupers().isEmpty();
+		assert robot.getSupers().size() == 1;
+		assert transformer.getSupers().size() == 2;
 
-		assert transformer.getSupersStream().anyMatch(car::equals);
-		assert transformer.getSupersStream().anyMatch(robot::equals);
+		assert transformer.getSupers().stream().anyMatch(car::equals);
+		assert transformer.getSupers().stream().anyMatch(robot::equals);
 
-		car.getSupersStream().anyMatch(vehicle::equals);
-		robot.getSupersStream().anyMatch(device::equals);
-		Statics.concat(transformer.getSupersStream(), superGeneric -> Stream.concat(Stream.of(superGeneric), superGeneric.getSupersStream()));
+		assert car.getSupers().stream().anyMatch(vehicle::equals);
+		assert robot.getSupers().stream().anyMatch(device::equals);
+		Statics.concat(transformer.getSupers().stream(), superGeneric -> Stream.concat(Stream.of(superGeneric), superGeneric.getSupers().stream()));
 
-		final Predicate<Generic> condition = x -> Statics.concat(transformer.getSupersStream(), superGeneric -> Stream.concat(Stream.of(superGeneric), superGeneric.getSupersStream())).anyMatch(x::equals);
+		final Predicate<Generic> condition = x -> Statics.concat(transformer.getSupers().stream(), superGeneric -> Stream.concat(Stream.of(superGeneric), superGeneric.getSupers().stream())).anyMatch(x::equals);
 
 		assert condition.test(vehicle);
 		assert condition.test(car);

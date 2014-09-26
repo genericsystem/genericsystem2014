@@ -13,7 +13,7 @@ public interface IRoot<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> ex
 	default void check(T t) throws RollbackException {
 		t.checkDependsMetaComponents();
 		t.checkSupers();
-		t.checkDependsSuperComponents();
+		t.checkDependsSuperComposites();
 	}
 
 	@SuppressWarnings("unchecked")

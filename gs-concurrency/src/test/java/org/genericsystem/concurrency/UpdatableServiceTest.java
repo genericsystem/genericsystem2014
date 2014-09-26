@@ -172,28 +172,28 @@ public class UpdatableServiceTest extends AbstractTest {
 
 		assert newValue.equals(newMachine.getValue());
 		assert newMachine.getComposites().size() == 0;
-		assert newMachine.getSupersStream().count() == 0;
+		assert newMachine.getSupers().isEmpty();
 		assert newMachine.getInstances().size() == 0;
 		assert newMachine.getInheritings().size() == 1;
 
 		Generic newVehicle = engine.getInstance("Vehicle");
 		assert newVehicle != null;
 		assert newVehicle.getComposites().size() == 0;
-		assert newVehicle.getSupersStream().count() == 1;
+		assert newVehicle.getSupers().size() == 1;
 		assert newVehicle.getInstances().size() == 1;
 		assert newVehicle.getInheritings().size() == 0;
 
 		Generic newPower = engine.getInstance("Power", newVehicle);
 		assert newPower != null;
 		assert newPower.getComposites().size() == 1;
-		assert newPower.getSupersStream().count() == 0;
+		assert newPower.getSupers().size() == 0;
 		assert newPower.getInstances().size() == 0;
 		assert newPower.getInheritings().size() == 0;
 
 		Generic newCar = newVehicle.getInstance("Car");
 		assert newCar != null;
 		assert newCar.getComposites().size() == 0;
-		assert newCar.getSupersStream().count() == 0;
+		assert newCar.getSupers().size() == 0;
 		assert newCar.getInstances().size() == 0;
 		assert newCar.getInheritings().size() == 0;
 	}
@@ -216,7 +216,7 @@ public class UpdatableServiceTest extends AbstractTest {
 
 		Generic newVehicle = engine.getInstance("Vehicle");
 		assert newVehicle.getInheritings().size() == 1;
-		assert engine.getInstance("Car").getSupersStream().count() == 1;
+		assert engine.getInstance("Car").getSupers().size() == 1;
 	}
 
 	// public void test101_addSuper_TypeBetweenTwoTypes() {
