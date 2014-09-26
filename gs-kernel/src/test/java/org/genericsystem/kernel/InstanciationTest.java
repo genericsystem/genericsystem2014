@@ -13,7 +13,6 @@ public class InstanciationTest extends AbstractTest {
 		Root root = new Root();
 		assert root.getMeta().equals(root);
 		assert root.getComposites().isEmpty();
-		assert root.getComponents().isEmpty();
 		assert Statics.ENGINE_VALUE.equals(root.getValue());
 		assert root.isAlive();
 		assert root.isMeta();

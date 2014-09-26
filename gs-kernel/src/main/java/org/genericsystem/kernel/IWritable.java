@@ -43,26 +43,26 @@ public interface IWritable<T extends AbstractVertex<T, U>, U extends IRoot<T, U>
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T setInstance(Serializable value, T... components) {
-		return setInstance(Collections.emptyList(), value, components);
+	default T setInstance(Serializable value, T... composites) {
+		return setInstance(Collections.emptyList(), value, composites);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T setInstance(T override, Serializable value, T... components) {
-		return setInstance(Collections.singletonList(override), value, components);
+	default T setInstance(T override, Serializable value, T... composites) {
+		return setInstance(Collections.singletonList(override), value, composites);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T addInstance(Serializable value, T... components) {
-		return addInstance(Collections.emptyList(), value, components);
+	default T addInstance(Serializable value, T... composites) {
+		return addInstance(Collections.emptyList(), value, composites);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T addInstance(T override, Serializable value, T... components) {
-		return addInstance(Collections.singletonList(override), value, components);
+	default T addInstance(T override, Serializable value, T... composites) {
+		return addInstance(Collections.singletonList(override), value, composites);
 	}
 
 	@Override

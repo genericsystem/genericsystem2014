@@ -14,8 +14,10 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex type3 = engine.addInstance(type1, "Type3");
 
 		Vertex instance = type1.addInstance("instance");
+		Vertex instance2 = type2.addInstance("instance");
 		assert instance.getMeta().equals(type1);
 		assert instance.equals(type1.getInstance("instance"));
+		assert instance2.inheritsFrom(instance);
 	}
 
 	public void test001_AdjustMeta() {
