@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.IVertexBase;
 import org.genericsystem.api.core.Snapshot;
@@ -551,18 +552,20 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComposites().equals(composites);
 	}
 
+	// TODO clean
 	@SuppressWarnings("unchecked")
 	T getMap() {
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {}
+	public static class SystemMap {
+	}
 
 	protected boolean equals(ISignature<?> meta, List<? extends ISignature<?>> supers, Serializable value, List<? extends ISignature<?>> components) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComposites().equals(components) && getSupers().equals(supers);
 	}
 
-	Stream<T> getKeys() {
+	protected Stream<T> getKeys() {
 		T map = this.getMap();
 		return map != null ? getAttributes(map).stream() : Stream.empty();
 	}
