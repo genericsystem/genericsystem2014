@@ -1,7 +1,6 @@
 package org.genericsystem.kernel;
 
 import java.util.Collections;
-
 import org.genericsystem.api.exception.RollbackException;
 
 public interface IRoot<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends IVertex<T, U> {

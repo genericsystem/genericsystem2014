@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.genericsystem.api.core.IVertexBase;
 import org.genericsystem.api.core.Snapshot;
@@ -19,12 +20,13 @@ public interface IDependencies<T extends AbstractVertex<T, U>, U extends IRoot<T
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getAllInheritings() {
-		return () -> Stream.concat(Stream.of((T) this), Statics.concat(getInheritings().stream(), inheriting -> inheriting.getAllInheritings().stream()).distinct()).iterator();
+		return () -> Stream.of((T) this).flatMap(inheriting -> inheriting.getInheritings().stream()).iterator();
+		// return () -> Statics.concat(Stream.of((T) this), inheriting -> inheriting.getAllInheritings().stream()).distinct().iterator();
 	}
 
 	@Override
 	default Snapshot<T> getAllInstances() {
-		return () -> getAllInheritings().stream().map(inheriting -> inheriting.getInstances().stream()).flatMap(x -> x).iterator();// .reduce(Stream.empty(), Stream::concat);
+		return () -> getAllInheritings().stream().flatMap(inheriting -> inheriting.getInstances().stream()).iterator();
 	}
 
 	@Override
@@ -57,4 +59,9 @@ public interface IDependencies<T extends AbstractVertex<T, U>, U extends IRoot<T
 		return adjustedMeta.getDirectInstance(overrides, value, Arrays.asList(composites));
 	}
 
+	@SuppressWarnings("unchecked")
+	default Optional<T> getInstanceInAll(List<T> overrides, Serializable value, T... composites) {
+		Stream<T> adjustedMetas = Stream.of((T) this).flatMap(meta -> meta.getInheritings().stream().filter(inheriting -> ((T) IDependencies.this).isAdjusted(inheriting, value, Arrays.asList(composites))));
+		return adjustedMetas.map(adjustedMeta -> adjustedMeta.getDirectInstance(overrides, value, Arrays.asList(composites))).findFirst();
+	}
 }

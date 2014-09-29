@@ -11,13 +11,15 @@ public class AdjustMetaTest extends AbstractTest {
 		Root engine = new Root();
 		Vertex type1 = engine.addInstance("Type1");
 		Vertex type2 = engine.addInstance(type1, "Type2");
-		Vertex type3 = engine.addInstance(type1, "Type3");
 
 		Vertex instance = type1.addInstance("instance");
-		Vertex instance2 = type2.addInstance("instance");
-		assert instance.getMeta().equals(type1);
-		assert instance.equals(type1.getInstance("instance"));
-		assert instance2.inheritsFrom(instance);
+
+		new RollbackCatcher() {
+			@Override
+			public void intercept() {
+				type2.addInstance("instance");
+			}
+		}.assertIsCausedBy(IllegalStateException.class);
 	}
 
 	public void test001_AdjustMeta() {
@@ -29,7 +31,30 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex instance = type2.addInstance("instance");
 		assert instance.getMeta().equals(type2);
 		assert instance.equals(type2.getInstance("instance"));
-		assert instance.equals(type1.getInstance("instance"));
+
+		// new RollbackCatcher() {
+		// @Override
+		// public void intercept() {
+		type3.addInstance("instance");
+		// }
+		// }.assertIsCausedBy(IllegalStateException.class);
+
+	}
+
+	public void test002_AdjustMeta() {
+		Root engine = new Root();
+		Vertex type1 = engine.addInstance("Type1");
+		Vertex type2 = engine.addInstance(type1, "Type2");
+		Vertex type3 = engine.addInstance(type2, "Type3");
+
+		Vertex instance = type1.addInstance("instance");
+		Vertex instance2 = type2.addInstance("instance2");
+		new RollbackCatcher() {
+			@Override
+			public void intercept() {
+				Vertex instance3 = type3.addInstance("instance");
+			}
+		}.assertIsCausedBy(IllegalStateException.class);
 	}
 
 	public void test001_AdjustMeta_SystemMap() {
