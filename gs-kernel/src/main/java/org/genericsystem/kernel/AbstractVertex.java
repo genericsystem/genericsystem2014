@@ -268,7 +268,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	}
 
 	boolean isAdjusted(T directInheriting, Serializable subValue, List<T> subComposites) {
-		return !subComposites.equals(getComposites()) && !directInheriting.equalsRegardlessSupers(this, subValue, subComposites) && compositesDepends(subComposites, directInheriting.getComposites());
+		return !subComposites.equals(getComposites()) && !directInheriting.equalsRegardlessSupers(this, subValue, subComposites) && Objects.equals(getValue(), directInheriting.getValue())
+				&& compositesDepends(subComposites, directInheriting.getComposites());
 	}
 
 	T getDirectInstance(Serializable value, List<T> composites) {
