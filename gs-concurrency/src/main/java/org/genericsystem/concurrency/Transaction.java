@@ -1,6 +1,7 @@
 package org.genericsystem.concurrency;
 
 import java.util.HashSet;
+
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;

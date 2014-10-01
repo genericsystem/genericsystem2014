@@ -326,4 +326,17 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex carPower = engine.addInstance(power, "carPower", engine);
 		assert carPower.equals(power.adjustMeta(235, Collections.singletonList(car)));
 	}
+	
+	public void testAdjustMetaValue() {
+		Root engine = new Root();
+		Vertex vehicle = engine.addType("Vehicle");
+		Vertex power = vehicle.addAttribute("Power");
+		Vertex car = engine.addType(vehicle, "Car");
+		Vertex myBmw = car.addInstance("myBmw");
+		Vertex power235 = myBmw.addHolder(power, 235);
+		assert power235.getMeta().equals(power);
+		
+		Vertex power2 = car.addAttribute(power, "Power2");
+		assert power235.getMeta().equals(power2) : "meta : " + power235.getMeta();
+	}
 }

@@ -60,7 +60,7 @@ class InheritanceComputer<T extends AbstractVertex<T, U>, U extends IRoot<T, U>>
 				return Stream.empty();
 			if (baseSupersStream().count() == 0)
 				return localBase.isRoot() || !origin.isComponentOf(localBase.getMeta()) ? Stream.of(origin) : getInheringsStream(localBase.getMeta());
-				return Statics.concat(baseSupersStream(), superVertex -> getInheringsStream(superVertex)).distinct();
+			return Statics.concat(baseSupersStream(), superVertex -> getInheringsStream(superVertex)).distinct();
 		}
 
 		private Stream<T> projectStream(Stream<T> streamToProject) {

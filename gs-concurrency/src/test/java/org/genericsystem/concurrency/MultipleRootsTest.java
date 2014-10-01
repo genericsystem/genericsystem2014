@@ -1,6 +1,7 @@
 package org.genericsystem.concurrency;
 
 import java.util.Arrays;
+
 import org.genericsystem.api.exception.CrossEnginesAssignementsException;
 import org.genericsystem.kernel.Statics;
 import org.testng.annotations.Test;

@@ -3,6 +3,7 @@ package org.genericsystem.cache;
 import java.util.Arrays;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.kernel.Statics;
 import org.testng.annotations.Test;

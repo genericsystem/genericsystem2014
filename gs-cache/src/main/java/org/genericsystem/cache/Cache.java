@@ -8,13 +8,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+
+import org.genericsystem.api.core.IVertexBase.Constraint.CheckingType;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
-import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.RollbackException;
-import org.genericsystem.impl.constraints.AbstractConstraintImpl.CheckingType;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Statics;
@@ -77,14 +77,18 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U
 	}
 
 	public void flush() throws RollbackException {
+		checkConstraints();
 		try {
-			adds.forEach(x -> x.check(CheckingType.CHECK_ON_ADD_NODE, true));
-			removes.forEach(x -> x.check(CheckingType.CHECK_ON_REMOVE_NODE, true));
 			getSubContext().apply(adds, removes);
-		} catch (Exception e) {
+		} catch (ConstraintViolationException e) {
 			getEngine().discardWithException(e);
 		}
 		clear();
+	}
+
+	protected void checkConstraints() throws RollbackException {
+		adds.forEach(x -> x.check(CheckingType.CHECK_ON_ADD_NODE, true));
+		removes.forEach(x -> x.check(CheckingType.CHECK_ON_REMOVE_NODE, true));
 	}
 
 	protected void rollbackWithException(Throwable exception) throws RollbackException {
@@ -93,7 +97,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U
 	}
 
 	@Override
-	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
+	protected void apply(Iterable<T> adds, Iterable<T> removes) {
 		removes.forEach(this::unplug);
 		adds.forEach(this::plug);
 	}

@@ -2,8 +2,8 @@ package org.genericsystem.cache;
 
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
-import org.genericsystem.kernel.IVertex;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
+import org.genericsystem.kernel.IVertex;
 
 public class Vertex extends AbstractVertex<Vertex, Root> implements IVertex<Vertex, Root> {
 

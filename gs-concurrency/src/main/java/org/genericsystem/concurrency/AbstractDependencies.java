@@ -2,6 +2,7 @@ package org.genericsystem.concurrency;
 
 import java.io.Serializable;
 import java.util.Iterator;
+
 import org.genericsystem.api.core.Snapshot.AbstractSnapshot;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;

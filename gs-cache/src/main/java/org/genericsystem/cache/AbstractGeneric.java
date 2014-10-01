@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import org.genericsystem.api.core.IVertexBase.Constraint.CheckingType;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.RollbackException;
-import org.genericsystem.impl.constraints.AbstractConstraintImpl.CheckingType;
 import org.genericsystem.kernel.AbstractVertex;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends org.genericsystem.impl.AbstractGeneric<T, U, V, W> implements IGeneric<T, U, V, W> {

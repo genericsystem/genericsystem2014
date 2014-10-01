@@ -269,7 +269,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	}
 
 	boolean isAdjusted(T directInheriting, Serializable subValue, List<T> subComposites) {
-		return !subComposites.equals(getComposites()) && !directInheriting.equalsRegardlessSupers(this, subValue, subComposites) && Objects.equals(getValue(), directInheriting.getValue())
+		return !subComposites.equals(getComposites()) && !directInheriting.equalsRegardlessSupers(this, subValue, subComposites)/* && Objects.equals(getValue(), directInheriting.getValue())*/
 				&& compositesDepends(subComposites, directInheriting.getComposites());
 	}
 
@@ -302,7 +302,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	boolean dependsFrom(T meta, Serializable value, List<T> composites) {
 		// TODO perhaps we have to adjust meta here
 		return this.inheritsFrom(meta, value, composites) || getComposites().stream().filter(composite -> composite != null && composite != this).anyMatch(component -> component.dependsFrom(meta, value, composites))
-				|| (!isRoot() && getMeta().dependsFrom(meta, value, composites));
+				|| (!isRoot() && getMeta().dependsFrom(meta, value, composites))
+				/*|| getMeta().*/;
 	}
 
 	T getDirectEquivInstance(Serializable value, List<T> composites) {
