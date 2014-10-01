@@ -80,13 +80,13 @@ public interface IWritable<T extends AbstractVertex<T, U>, U extends IRoot<T, U>
 	@Override
 	@SuppressWarnings("unchecked")
 	default T addHolder(T attribute, Serializable value, T... targets) {
-		return attribute.addInstance(attribute, value, addThisToTargets(targets));
+		return attribute.addInstance(value, addThisToTargets(targets));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	default T setHolder(T attribute, Serializable value, T... targets) {
-		return attribute.setInstance(attribute, value, addThisToTargets(targets));
+		return attribute.setInstance(value, addThisToTargets(targets));
 	}
 
 	@Override

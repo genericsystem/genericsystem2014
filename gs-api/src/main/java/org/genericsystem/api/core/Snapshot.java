@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -50,6 +51,10 @@ public interface Snapshot<T> extends Iterable<T> {
 
 	default Stream<T> stream() {
 		return StreamSupport.stream(spliterator(), false);
+	}
+
+	default String info() {
+		return stream().collect(Collectors.toList()).toString();
 	}
 
 	public static abstract class AbstractSnapshot<T> implements Snapshot<T> {
@@ -108,4 +113,5 @@ public interface Snapshot<T> extends Iterable<T> {
 		}
 
 	}
+
 }

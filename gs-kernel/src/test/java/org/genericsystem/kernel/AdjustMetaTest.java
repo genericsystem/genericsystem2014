@@ -32,12 +32,12 @@ public class AdjustMetaTest extends AbstractTest {
 		assert instance.getMeta().equals(type2);
 		assert instance.equals(type2.getInstance("instance"));
 
-		// new RollbackCatcher() {
-		// @Override
-		// public void intercept() {
-		type3.addInstance("instance");
-		// }
-		// }.assertIsCausedBy(IllegalStateException.class);
+		new RollbackCatcher() {
+			@Override
+			public void intercept() {
+				type3.addInstance("instance");
+			}
+		}.assertIsCausedBy(IllegalStateException.class);
 
 	}
 
@@ -55,6 +55,24 @@ public class AdjustMetaTest extends AbstractTest {
 				Vertex instance3 = type3.addInstance("instance");
 			}
 		}.assertIsCausedBy(IllegalStateException.class);
+	}
+
+	public void test003_AdjustMeta() {
+		Root engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex color = engine.addInstance("Color");
+		// Vertex vehicleColor = engine.addInstance("vehicleColor", vehicle, color);
+		Vertex vehicleColor = vehicle.addAttribute("VehicleColor", color);
+		Vertex carColor = car.addAttribute(vehicleColor, "CarColor", color);
+		assert carColor.inheritsFrom(vehicleColor);
+
+		Vertex myBmw = car.addInstance("myBmw");
+		Vertex red = color.addInstance("red");
+		assert false : myBmw.getAttributes(vehicleColor).info() + "   " + color.getAttributes(vehicleColor).info();
+		// assert false : color.getAttributes().stream().filter(x -> x.inheritsFrom(vehicleColor)).collect(Collectors.toList());
+		Vertex myBmwRed = myBmw.addHolder(vehicleColor, "myBmwRed", red);
+		assert vehicleColor.equals(myBmwRed.getMeta());
 	}
 
 	public void test001_AdjustMeta_SystemMap() {
@@ -203,14 +221,15 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex color = engine.addInstance("Color");
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		Vertex vehicle2 = engine.addInstance(vehicle, "Vehicle2");
-		Vertex vehicleColor2 = engine.addInstance(vehicleColor, "VehicleColor2", vehicle2, color);
+
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex carColor = engine.addInstance(vehicleColor, "CarColor", car, color);
 		Vertex color2 = color.addInstance("Color2");
 		Vertex finition = engine.addInstance("Finition");
-		Vertex car = vehicle2.addInstance("Car");
+		Vertex myBmw = car.addInstance("myBmw");
 		Vertex red = color2.addInstance("Red");
 
-		assert vehicleColor2 == vehicleColor.adjustMeta("CarRed", Arrays.asList(car, red, finition)) : engine.adjustMeta("CarRed", Arrays.asList(car, red, finition));
+		assert carColor == vehicleColor.adjustMeta("CarRed", Arrays.asList(car, red, finition)) : engine.adjustMeta("CarRed", Arrays.asList(car, red, finition));
 	}
 
 	public void test014_AdjustMeta_TypeLevel_Relation_ThreeComponents() {
