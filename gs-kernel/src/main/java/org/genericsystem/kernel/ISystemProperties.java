@@ -2,7 +2,9 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.Optional;
+
 import org.genericsystem.api.core.IVertexBase;
+import org.genericsystem.api.exception.ConstraintViolationException;
 
 public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
 
@@ -133,6 +135,11 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 
 	public static class PropertyConstraint implements Constraint {
 
+		@Override
+		public void check() throws ConstraintViolationException {
+			// assert false;
+		}
+
 	}
 
 	public static class RequiredConstraint implements Constraint {
@@ -147,15 +154,15 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 
 		private static final long serialVersionUID = -2631066712866842794L;
 
-		private final Class<?> clazz;
+		private final Class<? extends SystemProperty> clazz;
 		private final int axe;
 
-		public AxedPropertyClass(Class<?> clazz, int axe) {
+		public AxedPropertyClass(Class<? extends SystemProperty> clazz, int axe) {
 			this.clazz = clazz;
 			this.axe = axe;
 		}
 
-		public Class<?> getClazz() {
+		public Class<? extends SystemProperty> getClazz() {
 			return clazz;
 		}
 

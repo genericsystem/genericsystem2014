@@ -1,13 +1,18 @@
 package org.genericsystem.impl;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ISignature;
+import org.genericsystem.api.core.IVertexBase.Constraint.CheckingType;
 import org.genericsystem.api.core.Snapshot;
+import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.impl.annotations.InstanceClass;
 import org.genericsystem.impl.annotations.SystemGeneric;
-import org.genericsystem.impl.constraints.AbstractConstraintImpl.CheckingType;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
@@ -82,8 +87,8 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 
 	@Override
 	protected boolean unplug() {
-		unwrap().remove();
 		check(CheckingType.CHECK_ON_REMOVE_NODE, true);
+		unwrap().remove();
 		return true;
 	}
 
@@ -155,5 +160,34 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	// protected T bindInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
 	// return super.bindInstance(clazz, throwExistException, overrides, value, components);
 	// }
+
+	void checkConstraints(CheckingType checkingType, boolean isFlushTime) {
+		Stream<T> constraintsStream = getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) x.getValue()).getClazz()));
+		constraintsStream = constraintsStream.filter(x -> (((AxedPropertyClass) x.getValue()).getAxe() != -1 ? !Boolean.FALSE.equals(x.getComposites().get(((AxedPropertyClass) x.getValue()).getAxe())) : true));
+		@SuppressWarnings("unchecked")
+		List<Class<Constraint>> constraintsClass = constraintsStream.map(x -> (Class<Constraint>) ((AxedPropertyClass) x.getValue()).getClazz()).sorted(priorityConstraintComparator).collect(Collectors.toList());
+		for (Class<Constraint> constraintClass : constraintsClass) {
+			try {
+				// TODO stocker dans une map (clazz / instance)
+				Constraint constraint = constraintClass.newInstance();
+				if (constraint.isCheckable(checkingType, isFlushTime))
+					constraint.check();
+			} catch (InstantiationException | IllegalAccessException e) {
+				// TODO KK
+				assert false : e;
+			} catch (ConstraintViolationException e) {
+				getRoot().discardWithException(e);
+			}
+		}
+	}
+
+	private static Comparator<Class<Constraint>> priorityConstraintComparator = new Comparator<Class<Constraint>>() {
+
+		@Override
+		public int compare(Class<Constraint> constraint, Class<Constraint> compareConstraint) {
+			// TODO compare priority
+			return 0;
+		}
+	};
 
 }
