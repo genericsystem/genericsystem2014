@@ -574,7 +574,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	}
 
 	protected Stream<T> getKeys() {
-		T map = this.getMap();
+		T map = getMap();
 		return map != null ? getAttributes(map).stream() : Stream.empty();
 	}
 
