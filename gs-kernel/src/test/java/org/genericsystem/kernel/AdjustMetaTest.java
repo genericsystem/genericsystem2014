@@ -69,10 +69,33 @@ public class AdjustMetaTest extends AbstractTest {
 
 		Vertex myBmw = car.addInstance("myBmw");
 		Vertex red = color.addInstance("red");
+		assert myBmw.getAttributes(Statics.BASE_POSITION).contains(carColor);
+		assert !myBmw.getAttributes(Statics.TARGET_POSITION).contains(carColor);
 		assert false : myBmw.getAttributes(vehicleColor).info() + "   " + color.getAttributes(vehicleColor).info();
 		// assert false : color.getAttributes().stream().filter(x -> x.inheritsFrom(vehicleColor)).collect(Collectors.toList());
 		Vertex myBmwRed = myBmw.addHolder(vehicleColor, "myBmwRed", red);
 		assert vehicleColor.equals(myBmwRed.getMeta());
+	}
+
+	public void test004_AdjustMeta() {
+		Root engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex power = vehicle.addAttribute("Power");
+
+		Vertex myBmw = car.addInstance("myBmw");
+		Vertex holder = myBmw.addHolder(power, 235);
+		assert holder.getMeta().equals(power);
+		Vertex power2 = car.addAttribute(power, "Power2");
+		// assert !holder.isAlive();
+		assert power2.equals(myBmw.getHolders(power).stream().findFirst().get().getMeta());
+		// new RollbackCatcher() {
+		// @Override
+		// public void intercept() {
+		// type3.addInstance("instance");
+		// }
+		// }.assertIsCausedBy(IllegalStateException.class);
+
 	}
 
 	public void test001_AdjustMeta_SystemMap() {

@@ -12,7 +12,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.IVertexBase;
 import org.genericsystem.api.core.Snapshot;
@@ -301,7 +300,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 
 	boolean dependsFrom(T meta, Serializable value, List<T> composites) {
 		// TODO perhaps we have to adjust meta here
-		return this.inheritsFrom(meta, value, composites) || getComposites().stream().filter(composite -> composite != null && composite != this).anyMatch(component -> component.dependsFrom(meta, value, composites))
+		return inheritsFrom(meta, value, composites) || getComposites().stream().filter(composite -> composite != null && composite != this).anyMatch(composite -> composite.dependsFrom(meta, value, composites))
 				|| (!isRoot() && getMeta().dependsFrom(meta, value, composites))
 				/*|| getMeta().*/;
 	}
@@ -568,8 +567,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {
-	}
+	public static class SystemMap {}
 
 	protected boolean equals(ISignature<?> meta, List<? extends ISignature<?>> supers, Serializable value, List<? extends ISignature<?>> components) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComposites().equals(components) && getSupers().equals(supers);

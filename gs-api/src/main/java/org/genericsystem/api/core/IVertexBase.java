@@ -2,9 +2,7 @@ package org.genericsystem.api.core;
 
 import java.io.Serializable;
 import java.util.List;
-
 import javax.json.JsonObject;
-
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
 
@@ -210,11 +208,22 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	boolean isComponentOf(T vertex);
 
 	/**
-	 * Returns the attributes of this vertex (directly if this vertex is a type, the attributes of its type if this vertex is an instance) *
+	 * Returns the attributes of this vertex (directly if this vertex is a type, the attributes of its type if this vertex is an instance)
+	 *
+	 * @return the attributes of this vertex regardless of the position of this vertex in the composites of these attributes
+	 */
+	Snapshot<T> getAttributes();
+
+	/**
+	 * Returns the attributes of this vertex (directly if this vertex is a type, the attributes of its type if this vertex is an instance)<br/>
+	 * for which this vertex is in the specified position in their composites<br/>
+	 *
+	 * @param pos
+	 *            the expected position of this vertex in the composites of these attributes
 	 *
 	 * @return the attributes of this vertex
 	 */
-	Snapshot<T> getAttributes();
+	Snapshot<T> getAttributes(int pos);
 
 	/**
 	 * Returns the attributes of this vertex that inherit from the specified attribute. *
@@ -224,18 +233,40 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	Snapshot<T> getAttributes(T attribute);
 
 	/**
-	 * Returns the holders of this vertex that are instances of the specified attribute. *
+	 * Returns the holders of this vertex that are instances of the specified attribute.
 	 *
-	 * @return the attributes of this vertex
+	 * @return the attributes of this vertex regardless of the position of this vertex in the composites of these holders
 	 */
 	Snapshot<T> getHolders(T attribute);
 
 	/**
-	 * Returns values for each holder that is instances of the specified attribute. *
+	 * Returns the holders of this vertex that are instances of the specified attribute<br/>
+	 * and for which this vertex is in the specified position in their composites<
+	 *
+	 * @param pos
+	 *            the expected position of this vertex in the composites of these holders
+	 *
+	 * @return the holders of this vertex for the specified attribute and the specified position
+	 */
+	Snapshot<T> getHolders(T attribute, int pos);
+
+	/**
+	 * Returns values for each holder that is instances of the specified attribute.
 	 *
 	 * @return values for each holder that is instances of the specified attribute
 	 */
 	Snapshot<Serializable> getValues(T attribute);
+
+	/**
+	 * Returns values for each holder that is instance of the specified attribute and the specified position<br/>
+	 * and for which this vertex is in the specified position in its composites<
+	 *
+	 * @param pos
+	 *            the expected position of this vertex in the composites of the holders
+	 *
+	 * @return values for each holder that is instances of the specified attribute and the specified position
+	 */
+	Snapshot<Serializable> getValues(T attribute, int pos);
 
 	/**
 	 * Returns vertices that have this vertex for meta.<br/>
