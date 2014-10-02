@@ -42,8 +42,8 @@ public class AttributesTest extends AbstractTest {
 		Vertex car = root.addInstance(vehicle, "Car");
 		Vertex carPower = root.addInstance("Power", car);
 		Vertex carPowerUnit = root.addInstance("Unit", carPower);
-		assert carPower.dependsFrom(root, "Power", Collections.singletonList(vehicle));
-		assert carPowerUnit.dependsFrom(root, "Power", Collections.singletonList(vehicle));
+		assert carPower.dependsFrom(root, Collections.emptyList(), "Power", Collections.singletonList(vehicle));
+		assert carPowerUnit.dependsFrom(root, Collections.emptyList(), "Power", Collections.singletonList(vehicle));
 		assert !carPowerUnit.inheritsFrom(root, "Power", Collections.singletonList(vehicle));
 		Vertex vehiclePower = root.addInstance("Power", vehicle);
 		assert root.getInstance("Power", car).getSupers().stream().anyMatch(x -> x.equals(vehiclePower));
@@ -56,7 +56,7 @@ public class AttributesTest extends AbstractTest {
 		Vertex myVehicle = vehicle.addInstance("myVehicle");
 		Vertex p123 = power.addInstance("123", myVehicle);
 		Vertex myVehicle123 = power.addInstance("myVehicle123", myVehicle, p123);
-		assert myVehicle123.dependsFrom(root, "Power", Collections.singletonList(vehicle));
+		assert myVehicle123.dependsFrom(root, Collections.emptyList(), "Power", Collections.singletonList(vehicle));
 		assert !myVehicle123.inheritsFrom(root, "Power", Collections.singletonList(vehicle));
 	}
 

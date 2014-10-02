@@ -360,6 +360,7 @@ public class AdjustMetaTest extends AbstractTest {
 		assert power235.getMeta().equals(power);
 		
 		Vertex power2 = car.addAttribute(power, "Power2");
-		assert power235.getMeta().equals(power2) : "meta : " + power235.getMeta();
+		assert !power235.isAlive();
+		assert myBmw.getHolders(power).stream().findFirst().get().getMeta().equals(power2) : "meta : " + power235.getMeta();
 	}
 }

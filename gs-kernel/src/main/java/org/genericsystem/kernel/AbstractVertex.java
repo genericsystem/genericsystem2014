@@ -189,8 +189,10 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 			T newDependency = get(dependency);
 			if (newDependency == null) {
 				T meta = (dependency.isRoot()) ? dependency : convert(dependency.getMeta());
+				List<T> composites = dependency.getComposites().stream().map(x -> x.equals(this) ? null : convert(x)).collect(Collectors.toList());
+				meta = meta.adjustMeta(dependency.getValue(), composites);
 				newDependency = meta.buildInstance(null, dependency.isThrowExistException(), dependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList()), dependency.getValue(),
-						dependency.getComposites().stream().map(x -> x.equals(this) ? null : convert(x)).collect(Collectors.toList())).plug();
+						composites).plug();
 				put(dependency, newDependency);
 			}
 			return newDependency;
@@ -238,38 +240,38 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	}
 
 	@SuppressWarnings("unchecked")
-	protected LinkedHashSet<T> computePotentialDependencies(Serializable value, List<T> components) {
+	protected LinkedHashSet<T> computePotentialDependencies(List<T> overrides, Serializable value, List<T> components) {
 		return new DependenciesComputer<T, U>() {
 			private static final long serialVersionUID = -3611136800445783634L;
 
 			@Override
 			boolean checkDependency(T node) {
-				return node.dependsFrom((T) AbstractVertex.this, value, components);
+				return node.dependsFrom((T) AbstractVertex.this, overrides, value, components);
 			}
 		}.visit((T) this);
 	}
 
-	public T adjustMeta(Serializable subValue, @SuppressWarnings("unchecked") T... subComponents) {
-		return adjustMeta(subValue, Arrays.asList(subComponents));
+	public T adjustMeta(Serializable value, @SuppressWarnings("unchecked") T... composites) {
+		return adjustMeta(value, Arrays.asList(composites));
 	}
 
 	@SuppressWarnings("unchecked")
-	T adjustMeta(Serializable subValue, List<T> subComposites) {
+	T adjustMeta(Serializable value, List<T> composites) {
 		T result = null;
 		for (T directInheriting : getInheritings()) {
-			if (isAdjusted(directInheriting, subValue, subComposites)) {
+			if (isAdjusted(directInheriting, value, composites)) {
 				if (result == null)
 					result = directInheriting;
 				else
 					getRoot().discardWithException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
 			}
 		}
-		return result == null ? (T) this : result.adjustMeta(subValue, subComposites);
+		return result == null ? (T) this : result.adjustMeta(value, composites);
 	}
 
-	boolean isAdjusted(T directInheriting, Serializable subValue, List<T> subComposites) {
-		return !subComposites.equals(getComposites()) && !directInheriting.equalsRegardlessSupers(this, subValue, subComposites)/* && Objects.equals(getValue(), directInheriting.getValue())*/
-				&& compositesDepends(subComposites, directInheriting.getComposites());
+	boolean isAdjusted(T directInheriting, Serializable value, List<T> composites) {
+		return !composites.equals(getComposites()) && !directInheriting.equalsRegardlessSupers(this, value, composites)/* && Objects.equals(getValue(), directInheriting.getValue())*/
+				&& compositesDepends(composites, directInheriting.getComposites());
 	}
 
 	T getDirectInstance(Serializable value, List<T> composites) {
@@ -295,14 +297,13 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 				getRoot().discardWithException(new ExistsException("Attempts to add an already existing instance : " + equivInstance.info()));
 			else
 				return equivInstance.equalsRegardlessSupers(adjustedMeta, value, composites) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : equivInstance.update(overrides, value, composites);
-		return rebuildAll(() -> adjustedMeta.buildInstance(clazz, throwExistException, overrides, value, composites).plug(), adjustedMeta.computePotentialDependencies(value, composites));
+		return rebuildAll(() -> adjustedMeta.buildInstance(clazz, throwExistException, overrides, value, composites).plug(), adjustedMeta.computePotentialDependencies(overrides, value, composites));
 	}
 
-	boolean dependsFrom(T meta, Serializable value, List<T> composites) {
-		// TODO perhaps we have to adjust meta here
-		return inheritsFrom(meta, value, composites) || getComposites().stream().filter(composite -> composite != null && composite != this).anyMatch(composite -> composite.dependsFrom(meta, value, composites))
-				|| (!isRoot() && getMeta().dependsFrom(meta, value, composites))
-				/*|| getMeta().*/;
+	boolean dependsFrom(T meta, List<T> overrides, Serializable value, List<T> composites) {
+		return inheritsFrom(meta, value, composites) || getComposites().stream().filter(composite -> composite != null && composite != this).anyMatch(composite -> composite.dependsFrom(meta, overrides, value, composites))
+				|| (!isRoot() && getMeta().dependsFrom(meta, overrides, value, composites))
+				|| (!composites.isEmpty() && compositesDepends(getComposites(), composites) && overrides.stream().anyMatch(override -> override.inheritsFrom(getMeta()))); /*isSuperOf(meta, overrides, value, composites)*/
 	}
 
 	T getDirectEquivInstance(Serializable value, List<T> composites) {
@@ -387,7 +388,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 			getRoot().discardWithException(new IllegalStateException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
 	}
 
-	static <T extends AbstractVertex<T, U>, U extends IRoot<T, U>> boolean componentsDepends(SingularsLazyCache singulars, List<T> subComponents, List<T> superComponents) {
+	static <T extends AbstractVertex<T, U>, U extends IRoot<T, U>> boolean compositesDepends(SingularsLazyCache singulars, List<T> subComponents, List<T> superComponents) {
 		int subIndex = 0;
 		loop: for (T superComponent : superComponents) {
 			for (; subIndex < subComponents.size(); subIndex++) {
@@ -408,7 +409,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		boolean get(int i);
 	}
 
-	boolean componentsDepends(List<T> subComponents, @SuppressWarnings("unchecked") T... superComponents) {
+	boolean compositesDepends(List<T> subComponents, @SuppressWarnings("unchecked") T... superComponents) {
 		return compositesDepends(subComponents, Arrays.asList(superComponents));
 	}
 
@@ -421,7 +422,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 				return singulars[i] != null ? singulars[i] : (singulars[i] = isSingularConstraintEnabled(i));
 			}
 		}
-		return componentsDepends(new SingularsLazyCacheImpl(), subComposites, superComposites);
+		return compositesDepends(new SingularsLazyCacheImpl(), subComposites, superComposites);
 	}
 
 	@SuppressWarnings("unchecked")

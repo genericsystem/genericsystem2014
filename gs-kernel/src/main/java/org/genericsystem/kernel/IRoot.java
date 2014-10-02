@@ -1,6 +1,9 @@
 package org.genericsystem.kernel;
 
+import java.io.Serializable;
 import java.util.Collections;
+import java.util.List;
+
 import org.genericsystem.api.exception.RollbackException;
 
 public interface IRoot<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends IVertex<T, U> {
@@ -33,4 +36,27 @@ public interface IRoot<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> ex
 	@Override
 	public T getAlive();
 
+	default T addType(Serializable value) {
+		return addInstance(value, coerceToTArray());
+	}
+	
+	default T addType(T override, Serializable value) {
+		return addInstance(override, value, coerceToTArray());
+	}
+	
+	default T addType(List<T> overrides, Serializable value) {
+		return addInstance(overrides, value, coerceToTArray());
+	}
+	
+	default T setType(Serializable value) {
+		return setInstance(value, coerceToTArray());
+	}
+	
+	default T setType(T override, Serializable value) {
+		return setInstance(override, value, coerceToTArray());
+	}
+	
+	default T setType(List<T> overrides, Serializable value) {
+		return setInstance(overrides, value, coerceToTArray());
+	}
 }
