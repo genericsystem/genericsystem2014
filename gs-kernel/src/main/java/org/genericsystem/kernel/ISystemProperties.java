@@ -126,7 +126,7 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 	}
 
 	public static class ReferentialIntegrityConstraint implements Constraint {
-
+		
 	}
 
 	public static class SingularConstraint implements Constraint {
