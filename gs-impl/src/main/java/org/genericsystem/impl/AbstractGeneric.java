@@ -163,7 +163,16 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 
 	void checkConstraints(CheckingType checkingType, boolean isFlushTime) {
 		Stream<T> constraintsStream = getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) x.getValue()).getClazz()));
-		constraintsStream = constraintsStream.filter(x -> (((AxedPropertyClass) x.getValue()).getAxe() != -1 ? !Boolean.FALSE.equals(x.getComposites().get(((AxedPropertyClass) x.getValue()).getAxe())) : true));
+		constraintsStream = constraintsStream.filter(x -> {
+			System.out.println("x " + x.info());
+			if (((AxedPropertyClass) x.getValue()).getAxe() != -1) {
+				System.out.println(info() + " getComposites " + x.getComposites() + " / getComponents " + x.getComponents().info());
+				if (x.getComposites().size() >= ((AxedPropertyClass) x.getValue()).getAxe())
+					return false;
+				return !Boolean.FALSE.equals(x.getComposites().get(((AxedPropertyClass) x.getValue()).getAxe()));
+			}
+			return true;
+		});
 		@SuppressWarnings("unchecked")
 		List<Class<Constraint>> constraintsClass = constraintsStream.map(x -> (Class<Constraint>) ((AxedPropertyClass) x.getValue()).getClazz()).sorted(priorityConstraintComparator).collect(Collectors.toList());
 		for (Class<Constraint> constraintClass : constraintsClass) {

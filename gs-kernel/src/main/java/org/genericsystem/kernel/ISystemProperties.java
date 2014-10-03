@@ -24,7 +24,7 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 	@Override
 	default T setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value) {
 		T map = ((T) this).getMap();
-		map.getMeta().setInstance(map, new AxedPropertyClass(propertyClass, pos), ((T) this).coerceToTArray(getRoot())).setInstance(value, ((T) this).coerceToTArray(this));
+		map.getMeta().setInstance(map, new AxedPropertyClass(propertyClass, pos), coerceToTArray(getRoot())).setInstance(value, coerceToTArray(this));
 		return (T) this;
 	}
 
@@ -130,6 +130,11 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 	}
 
 	public static class SingularConstraint implements Constraint {
+
+		@Override
+		public void check() throws ConstraintViolationException {
+			assert false;
+		}
 
 	}
 
