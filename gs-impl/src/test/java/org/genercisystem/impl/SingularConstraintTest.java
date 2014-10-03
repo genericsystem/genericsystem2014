@@ -18,9 +18,7 @@ public class SingularConstraintTest extends AbstractTest {
 		vehicleColor.enableSingularConstraint(Statics.TARGET_POSITION);
 		assert vehicleColor.isSingularConstraintEnabled(Statics.TARGET_POSITION);
 		vehicle.addHolder(vehicleColor, "vehicleRed", red);
-		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 		vehicle.addHolder(vehicleColor, "vehicleYellow", yellow);
-		System.out.println(vehicle.getHolders(vehicleColor).info());
 		// assert power.isPropertyConstraintEnabled();
 		// power.addInstance("123", vehicle);
 		// new RollbackCatcher() {

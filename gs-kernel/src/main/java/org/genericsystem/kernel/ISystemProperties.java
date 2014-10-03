@@ -6,14 +6,18 @@ import java.util.Optional;
 import org.genericsystem.api.core.IVertexBase;
 import org.genericsystem.api.exception.ConstraintViolationException;
 
-public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
+public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRoot<T, U>>
+		extends IVertexBase<T, U> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default Serializable getSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos) {
-		Optional<T> key = ((T) this).getKey(new AxedPropertyClass(propertyClass, pos));
+	default Serializable getSystemPropertyValue(
+			Class<? extends SystemProperty> propertyClass, int pos) {
+		Optional<T> key = ((T) this).getKey(new AxedPropertyClass(
+				propertyClass, pos));
 		if (key.isPresent()) {
-			Optional<Serializable> result = getValues(key.get()).stream().findFirst();
+			Optional<Serializable> result = getValues(key.get()).stream()
+					.findFirst();
 			if (result.isPresent())
 				return result.get();
 		}
@@ -22,15 +26,21 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value) {
+	default T setSystemPropertyValue(
+			Class<? extends SystemProperty> propertyClass, int pos,
+			Serializable value) {
 		T map = ((T) this).getMap();
-		map.getMeta().setInstance(map, new AxedPropertyClass(propertyClass, pos), coerceToTArray(getRoot())).setInstance(value, coerceToTArray(this));
+		map.getMeta()
+				.setInstance(map, new AxedPropertyClass(propertyClass, pos),
+						coerceToTArray(getRoot()))
+				.setInstance(value, coerceToTArray(this));
 		return (T) this;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T enableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos) {
+	default T enableSystemProperty(
+			Class<? extends SystemProperty> propertyClass, int pos) {
 		assert isStructural();
 		setSystemPropertyValue(propertyClass, pos, Boolean.TRUE);
 		return (T) this;
@@ -38,14 +48,16 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T disableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos) {
+	default T disableSystemProperty(
+			Class<? extends SystemProperty> propertyClass, int pos) {
 		assert isStructural();
 		setSystemPropertyValue(propertyClass, pos, Boolean.FALSE);
 		return (T) this;
 	}
 
 	@Override
-	default boolean isSystemPropertyEnabled(Class<? extends SystemProperty> propertyClass, int pos) {
+	default boolean isSystemPropertyEnabled(
+			Class<? extends SystemProperty> propertyClass, int pos) {
 		Serializable value = getSystemPropertyValue(propertyClass, pos);
 		return value != null && !Boolean.FALSE.equals(value);
 	}
@@ -62,7 +74,8 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 
 	@Override
 	default boolean isReferentialIntegrityConstraintEnabled(int pos) {
-		return isSystemPropertyEnabled(ReferentialIntegrityConstraint.class, pos);
+		return isSystemPropertyEnabled(ReferentialIntegrityConstraint.class,
+				pos);
 	}
 
 	@Override
@@ -82,17 +95,20 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 
 	@Override
 	default T enablePropertyConstraint() {
-		return enableSystemProperty(PropertyConstraint.class, Statics.NO_POSITION);
+		return enableSystemProperty(PropertyConstraint.class,
+				Statics.NO_POSITION);
 	}
 
 	@Override
 	default T disablePropertyConstraint() {
-		return disableSystemProperty(PropertyConstraint.class, Statics.NO_POSITION);
+		return disableSystemProperty(PropertyConstraint.class,
+				Statics.NO_POSITION);
 	}
 
 	@Override
 	default boolean isPropertyConstraintEnabled() {
-		return isSystemPropertyEnabled(PropertyConstraint.class, Statics.NO_POSITION);
+		return isSystemPropertyEnabled(PropertyConstraint.class,
+				Statics.NO_POSITION);
 	}
 
 	@Override
@@ -126,23 +142,27 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 	}
 
 	public static class ReferentialIntegrityConstraint implements Constraint {
-		
+
 	}
 
 	public static class SingularConstraint implements Constraint {
 
 		@Override
-		public void check() throws ConstraintViolationException {
-			assert false;
+		public void check(IVertexBase base, IVertexBase attribute, int pos)
+				throws ConstraintViolationException {
+			System.out.println("base " + base + " attribute " + attribute
+					+ " pos " + pos);
+			if (base.getHolders(attribute).size() > 1)
+				throw new ConstraintViolationException() {
+				};
 		}
-
 	}
 
 	public static class PropertyConstraint implements Constraint {
 
 		@Override
-		public void check() throws ConstraintViolationException {
-			// assert false;
+		public void check(IVertexBase base, IVertexBase attribute, int pos)
+				throws ConstraintViolationException {
 		}
 
 	}

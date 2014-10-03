@@ -350,13 +350,13 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 
 	}
 
-	public static interface Constraint extends SystemProperty {
+	public static interface Constraint<T extends IVertexBase<T, U>, U extends IVertexBase<T, U>> extends SystemProperty {
 
 		public enum CheckingType {
 			CHECK_ON_ADD_NODE, CHECK_ON_REMOVE_NODE
 		}
 
-		default void check() throws ConstraintViolationException {
+		default void check(T base, T attribute, int pos) throws ConstraintViolationException {
 			// TODO
 		}
 
