@@ -1,5 +1,6 @@
 package org.genercisystem.impl;
 
+import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.impl.Engine;
 import org.genericsystem.impl.Generic;
 import org.genericsystem.kernel.Statics;
@@ -18,16 +19,27 @@ public class SingularConstraintTest extends AbstractTest {
 		vehicleColor.enableSingularConstraint(Statics.TARGET_POSITION);
 		assert vehicleColor.isSingularConstraintEnabled(Statics.TARGET_POSITION);
 		vehicle.addHolder(vehicleColor, "vehicleRed", red);
-		vehicle.addHolder(vehicleColor, "vehicleYellow", yellow);
-		// assert power.isPropertyConstraintEnabled();
-		// power.addInstance("123", vehicle);
-		// new RollbackCatcher() {
-		//
-		// @Override
-		// public void intercept() {
-		// power.addInstance("126", vehicle);
-		// }
-		// }.assertIsCausedBy(ExistsException.class);
+		new RollbackCatcher() {
+			@Override
+			public void intercept() {
+				vehicle.addHolder(vehicleColor, "vehicleYellow", yellow);
+			}
+		}.assertIsCausedBy(ConstraintViolationException.class);
+	}
+
+	public void test002_enableSingularConstraint_trinaryRelation() {
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic color = engine.addInstance("Color");
+		Generic time = engine.addInstance("Time");
+		Generic red = color.addInstance("red");
+		Generic today = time.addInstance("today");
+		Generic yesterday = time.addInstance("yesterday");
+		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
+		vehicleColor.enableSingularConstraint(Statics.TARGET_POSITION);
+		assert vehicleColor.isSingularConstraintEnabled(Statics.TARGET_POSITION);
+		vehicle.addHolder(vehicleColor, "vehicleRedToday", red, today);
+		vehicle.addHolder(vehicleColor, "vehicleRedYesterday", red, yesterday);
 	}
 
 	// public void test002_enablePropertyConstraint_addInstance() {
