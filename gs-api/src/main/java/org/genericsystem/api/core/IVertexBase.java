@@ -3,7 +3,6 @@ package org.genericsystem.api.core;
 import java.io.Serializable;
 import java.util.List;
 import javax.json.JsonObject;
-import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
 
 /**
@@ -350,23 +349,6 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	JsonObject toPrettyJSon();
 
 	public static interface SystemProperty {
-
-	}
-
-	public static interface Constraint<T extends IVertexBase<T, U>, U extends IVertexBase<T, U>> extends SystemProperty {
-
-		public enum CheckingType {
-			CHECK_ON_ADD_NODE, CHECK_ON_REMOVE_NODE
-		}
-
-		default void check(T base, T attribute, int pos) throws ConstraintViolationException {
-			// TODO
-		}
-
-		default boolean isCheckable(CheckingType checkingType, boolean isFlushTime) {
-			// TODO
-			return true;
-		}
 
 	}
 
