@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -12,17 +13,20 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.IVertexBase;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
+import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.CrossEnginesAssignementsException;
 import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
+import org.genericsystem.kernel.ISystemProperties.Constraint.CheckingType;
 import org.genericsystem.kernel.Statics.Supers;
 
 public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> implements IVertex<T, U> {
@@ -191,8 +195,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 				T meta = (dependency.isRoot()) ? dependency : convert(dependency.getMeta());
 				List<T> composites = dependency.getComposites().stream().map(x -> x.equals(this) ? null : convert(x)).collect(Collectors.toList());
 				meta = meta.adjustMeta(dependency.getValue(), composites);
-				newDependency = meta.buildInstance(null, dependency.isThrowExistException(), dependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList()), dependency.getValue(),
-						composites).plug();
+				newDependency = meta.buildInstance(null, dependency.isThrowExistException(), dependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList()), dependency.getValue(), composites).plug();
 				put(dependency, newDependency);
 			}
 			return newDependency;
@@ -270,7 +273,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	}
 
 	boolean isAdjusted(T directInheriting, Serializable value, List<T> composites) {
-		return !composites.equals(getComposites()) && !directInheriting.equalsRegardlessSupers(this, value, composites)/* && Objects.equals(getValue(), directInheriting.getValue())*/
+		return !composites.equals(getComposites()) && !directInheriting.equalsRegardlessSupers(this, value, composites)/* && Objects.equals(getValue(), directInheriting.getValue()) */
 				&& compositesDepends(composites, directInheriting.getComposites());
 	}
 
@@ -302,8 +305,17 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 
 	boolean dependsFrom(T meta, List<T> overrides, Serializable value, List<T> composites) {
 		return inheritsFrom(meta, value, composites) || getComposites().stream().filter(composite -> composite != null && composite != this).anyMatch(composite -> composite.dependsFrom(meta, overrides, value, composites))
-				|| (!isRoot() && getMeta().dependsFrom(meta, overrides, value, composites))
-				|| (!composites.isEmpty() && compositesDepends(getComposites(), composites) && overrides.stream().anyMatch(override -> override.inheritsFrom(getMeta()))); /*isSuperOf(meta, overrides, value, composites)*/
+				|| (!isRoot() && getMeta().dependsFrom(meta, overrides, value, composites)) || (!composites.isEmpty() && compositesDepends(getComposites(), composites) && overrides.stream().anyMatch(override -> override.inheritsFrom(getMeta()))); /*
+																																																														 * isSuperOf
+																																																														 * (
+																																																														 * meta,
+																																																														 * overrides
+																																																														 * ,
+																																																														 * value
+																																																														 * ,
+																																																														 * composites
+																																																														 * )
+																																																														 */
 	}
 
 	T getDirectEquivInstance(Serializable value, List<T> composites) {
@@ -568,7 +580,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {}
+	public static class SystemMap {
+	}
 
 	protected boolean equals(ISignature<?> meta, List<? extends ISignature<?>> supers, Serializable value, List<? extends ISignature<?>> components) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComposites().equals(components) && getSupers().equals(supers);
@@ -582,5 +595,34 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	Optional<T> getKey(AxedPropertyClass property) {
 		return getKeys().filter(x -> Objects.equals(x.getValue(), property)).findFirst();
 	}
+
+	void checkConstraints(CheckingType checkingType, boolean isFlushTime) {
+		Stream<T> constraintsStream = getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) x.getValue()).getClazz()));
+		constraintsStream = constraintsStream.filter(x -> !getHolders(x).isEmpty() && ((AxedPropertyClass) x.getValue()).getAxe() != -1 && !getHolders(x).stream().findFirst().get().getValue().equals(Boolean.FALSE));
+		List<T> constraintsList = constraintsStream/* .sorted(priorityConstraintComparator) */.collect(Collectors.toList());
+		for (T constraintHolder : constraintsList) {
+			try {
+				// TODO stocker dans une map (clazz / instance)
+				Class<Constraint> constraintClass = (Class<Constraint>) ((AxedPropertyClass) constraintHolder.getValue()).getClazz();
+				Constraint constraint = constraintClass.newInstance();
+				if (constraint.isCheckable(checkingType, isFlushTime))
+					constraint.check(getComposites().get(Statics.BASE_POSITION), getMeta(), ((AxedPropertyClass) constraintHolder.getValue()).getAxe());
+			} catch (InstantiationException | IllegalAccessException e) {
+				// TODO KK
+				assert false : e;
+			} catch (ConstraintViolationException e) {
+				getRoot().discardWithException(e);
+			}
+		}
+	}
+
+	private static Comparator<Class<Constraint>> priorityConstraintComparator = new Comparator<Class<Constraint>>() {
+
+		@Override
+		public int compare(Class<Constraint> constraint, Class<Constraint> compareConstraint) {
+			// TODO compare priority
+			return 0;
+		}
+	};
 
 }

@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.util.Objects;
+
 import org.genericsystem.api.core.IVertexBase;
 import org.genericsystem.api.exception.NotAliveException;
 import org.slf4j.Logger;

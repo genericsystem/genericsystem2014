@@ -2,8 +2,9 @@ package org.genericsystem.api.core;
 
 import java.io.Serializable;
 import java.util.List;
+
 import javax.json.JsonObject;
-import org.genericsystem.api.exception.ConstraintViolationException;
+
 import org.genericsystem.api.exception.RollbackException;
 
 /**
@@ -346,97 +347,77 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 */
 	JsonObject toPrettyJSon();
 
-	public static interface SystemProperty {
-
-	}
-
-	public static interface Constraint<T extends IVertexBase<T, U>, U extends IVertexBase<T, U>> extends SystemProperty {
-
-		public enum CheckingType {
-			CHECK_ON_ADD_NODE, CHECK_ON_REMOVE_NODE
-		}
-
-		default void check(T base, T attribute, int pos) throws ConstraintViolationException {
-			// TODO
-		}
-
-		default boolean isCheckable(CheckingType checkingType, boolean isFlushTime) {
-			// TODO
-			return true;
-		}
-
-	}
-
-	/**
-	 *
-	 * Returns the property value of this vertex for the specified system property and the specified position.
-	 *
-	 * @param propertyClass
-	 *            the class of the property
-	 * @param pos
-	 *            the position of this vertex in composites of components to consider.<br/>
-	 *            for example : Statics.NO_POSITION, Statics.FIRST_POSITION, Statics.SECOND_POSITION ...
-	 * @return the property value
-	 */
-	Serializable getSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos);
-
-	/**
-	 *
-	 * Set the property value of this vertex for the specified system property and the specified position.
-	 *
-	 * @param propertyClass
-	 *            the class of the system property
-	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br/>
-	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
-	 *            Use Statics.NO_POSITION for no axed properties.
-	 *
-	 * @Return this
-	 */
-	T setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value);
-
-	/**
-	 *
-	 * Enable this vertex for the specified boolean system property and the specified position.
-	 *
-	 * @param propertyClass
-	 *            the class of the boolean system property
-	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br/>
-	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
-	 *            Use Statics.NO_POSITION for no axed properties.
-	 *
-	 * @Return this
-	 */
-	T enableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos);
-
-	/**
-	 *
-	 * Disable this vertex for the specified boolean system property and the specified position.
-	 *
-	 * @param propertyClass
-	 *            the class of the boolean system property
-	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br/>
-	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
-	 *            Use Statics.NO_POSITION for no axed properties.
-	 *
-	 * @Return this
-	 */
-	T disableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos);
-
-	/**
-	 *
-	 * Indicates whether this vertex is enabled for the specified boolean system property and the specified position.
-	 *
-	 * @param propertyClass
-	 *            the class of the boolean system property
-	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br/>
-	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
-	 *            Use Statics.NO_POSITION for no axed properties.
-	 */
-	boolean isSystemPropertyEnabled(Class<? extends SystemProperty> propertyClass, int pos);
+	// TODO clean ?
+	// /**
+	// *
+	// * Returns the property value of this vertex for the specified system property and the specified position.
+	// *
+	// * @param propertyClass
+	// * the class of the property
+	// * @param pos
+	// * the position of this vertex in composites of components to consider.<br/>
+	// * for example : Statics.NO_POSITION, Statics.FIRST_POSITION, Statics.SECOND_POSITION ...
+	// * @return the property value
+	// */
+	// Serializable getSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos);
+	//
+	// /**
+	// *
+	// * Set the property value of this vertex for the specified system property and the specified position.
+	// *
+	// * @param propertyClass
+	// * the class of the system property
+	// * @param pos
+	// * the position of this vertex in composites to consider for axed properties.<br/>
+	// * for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	// * Use Statics.NO_POSITION for no axed properties.
+	// *
+	// * @Return this
+	// */
+	// T setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value);
+	//
+	// /**
+	// *
+	// * Enable this vertex for the specified boolean system property and the specified position.
+	// *
+	// * @param propertyClass
+	// * the class of the boolean system property
+	// * @param pos
+	// * the position of this vertex in composites to consider for axed properties.<br/>
+	// * for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	// * Use Statics.NO_POSITION for no axed properties.
+	// *
+	// * @Return this
+	// */
+	// T enableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos);
+	//
+	// /**
+	// *
+	// * Disable this vertex for the specified boolean system property and the specified position.
+	// *
+	// * @param propertyClass
+	// * the class of the boolean system property
+	// * @param pos
+	// * the position of this vertex in composites to consider for axed properties.<br/>
+	// * for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	// * Use Statics.NO_POSITION for no axed properties.
+	// *
+	// * @Return this
+	// */
+	// T disableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos);
+	//
+	// /**
+	// *
+	// * Indicates whether this vertex is enabled for the specified boolean system property and the specified position.
+	// *
+	// * @param propertyClass
+	// * the class of the boolean system property
+	// * @param pos
+	// * the position of this vertex in composites to consider for axed properties.<br/>
+	// * for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	// * Use Statics.NO_POSITION for no axed properties.
+	// */
+	// boolean isSystemPropertyEnabled(Class<? extends SystemProperty> propertyClass, int pos);
 
 	/**
 	 *

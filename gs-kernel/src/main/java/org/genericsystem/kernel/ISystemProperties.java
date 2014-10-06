@@ -10,7 +10,6 @@ import org.genericsystem.api.exception.SingularConstraintViolationException;
 public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
 
 	@SuppressWarnings("unchecked")
-	@Override
 	default Serializable getSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos) {
 		Optional<T> key = ((T) this).getKey(new AxedPropertyClass(propertyClass, pos));
 		if (key.isPresent()) {
@@ -22,22 +21,18 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
 	default T setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value) {
 		T map = ((T) this).getMap();
 		map.getMeta().setInstance(map, new AxedPropertyClass(propertyClass, pos), coerceToTArray(getRoot())).setInstance(value, coerceToTArray(this));
 		return (T) this;
 	}
 
-	@Override
 	@SuppressWarnings("unchecked")
 	default T enableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos) {
-		// assert isStructural();
 		setSystemPropertyValue(propertyClass, pos, Boolean.TRUE);
 		return (T) this;
 	}
 
-	@Override
 	@SuppressWarnings("unchecked")
 	default T disableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos) {
 		assert isStructural();
@@ -45,7 +40,6 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 		return (T) this;
 	}
 
-	@Override
 	default boolean isSystemPropertyEnabled(Class<? extends SystemProperty> propertyClass, int pos) {
 		Serializable value = getSystemPropertyValue(propertyClass, pos);
 		return value != null && !Boolean.FALSE.equals(value);
@@ -124,6 +118,27 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 	@Override
 	default boolean isCascadeRemove(int pos) {
 		return isSystemPropertyEnabled(CascadeRemoveProperty.class, pos);
+	}
+
+	public static interface SystemProperty {
+
+	}
+
+	public static interface Constraint<T extends IVertexBase<T, U>, U extends IVertexBase<T, U>> extends SystemProperty {
+
+		public enum CheckingType {
+			CHECK_ON_ADD, CHECK_ON_REMOVE
+		}
+
+		default void check(T base, T attribute, int pos) throws ConstraintViolationException {
+			// TODO
+		}
+
+		default boolean isCheckable(CheckingType checkingType, boolean isFlushTime) {
+			// TODO
+			return true;
+		}
+
 	}
 
 	public static class ReferentialIntegrityConstraint implements Constraint {

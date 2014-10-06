@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.genericsystem.api.core.IVertexBase.Constraint.CheckingType;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.kernel.AbstractVertex;
+import org.genericsystem.kernel.ISystemProperties.Constraint.CheckingType;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends org.genericsystem.impl.AbstractGeneric<T, U, V, W> implements IGeneric<T, U, V, W> {
 
@@ -14,14 +14,14 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	@Override
 	protected T plug() {
 		T plug = getCurrentCache().plug((T) this);
-		getRoot().check(CheckingType.CHECK_ON_ADD_NODE, false, (T) this);
+		getRoot().check(CheckingType.CHECK_ON_ADD, false, (T) this);
 		return plug;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected boolean unplug() {
-		getRoot().check(CheckingType.CHECK_ON_ADD_NODE, false, (T) this);
+		getRoot().check(CheckingType.CHECK_ON_ADD, false, (T) this);
 		return getCurrentCache().unplug((T) this);
 	}
 
