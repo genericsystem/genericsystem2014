@@ -170,7 +170,6 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 		}
 
 		@Override
-		@SuppressWarnings("unchecked")
 		public boolean equals(Object obj) {
 			if (!(obj instanceof AxedPropertyClass))
 				return false;
