@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.genericsystem.api.exception.RollbackException;
+import org.genericsystem.kernel.ISystemProperties.Constraint.CheckingType;
 
 public interface IRoot<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends IVertex<T, U> {
 
@@ -16,6 +17,14 @@ public interface IRoot<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> ex
 		t.checkDependsMetaComponents();
 		t.checkSupers();
 		t.checkDependsSuperComposites();
+	}
+
+	default void check(CheckingType checkingType, boolean isFlushTime, T t) throws RollbackException {
+		checkConsistency(checkingType, isFlushTime, t);
+		t.checkConstraints(checkingType, isFlushTime);
+	}
+
+	default void checkConsistency(CheckingType checkingType, boolean isFlushTime, T t) {
 	}
 
 	@SuppressWarnings("unchecked")
@@ -39,23 +48,23 @@ public interface IRoot<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> ex
 	default T addType(Serializable value) {
 		return addInstance(value, coerceToTArray());
 	}
-	
+
 	default T addType(T override, Serializable value) {
 		return addInstance(override, value, coerceToTArray());
 	}
-	
+
 	default T addType(List<T> overrides, Serializable value) {
 		return addInstance(overrides, value, coerceToTArray());
 	}
-	
+
 	default T setType(Serializable value) {
 		return setInstance(value, coerceToTArray());
 	}
-	
+
 	default T setType(T override, Serializable value) {
 		return setInstance(override, value, coerceToTArray());
 	}
-	
+
 	default T setType(List<T> overrides, Serializable value) {
 		return setInstance(overrides, value, coerceToTArray());
 	}

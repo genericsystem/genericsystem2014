@@ -2,15 +2,16 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.Optional;
-
 import org.genericsystem.api.core.IVertexBase;
 import org.genericsystem.api.exception.ConstraintViolationException;
-import org.genericsystem.api.exception.SingularConstraintViolationException;
+import org.genericsystem.kernel.constraints.PropertyConstraint;
+import org.genericsystem.kernel.constraints.RequiredConstraint;
+import org.genericsystem.kernel.constraints.SingularConstraint;
 
 public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
 
-	@SuppressWarnings("unchecked")
 	@Override
+	@SuppressWarnings("unchecked")
 	default Serializable getSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos) {
 		Optional<T> key = ((T) this).getKey(new AxedPropertyClass(propertyClass, pos));
 		if (key.isPresent()) {
@@ -21,8 +22,8 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
+	@SuppressWarnings("unchecked")
 	default T setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value) {
 		T map = ((T) this).getMap();
 		map.getMeta().setInstance(map, new AxedPropertyClass(propertyClass, pos), coerceToTArray(getRoot())).setInstance(value, coerceToTArray(this));
@@ -32,7 +33,6 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 	@Override
 	@SuppressWarnings("unchecked")
 	default T enableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos) {
-		// assert isStructural();
 		setSystemPropertyValue(propertyClass, pos, Boolean.TRUE);
 		return (T) this;
 	}
@@ -53,17 +53,17 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 
 	@Override
 	default T enableReferentialIntegrity(int pos) {
-		return enableSystemProperty(ReferentialIntegrityConstraint.class, pos);
+		return enableSystemProperty(ReferentialIntegrityProperty.class, pos);
 	}
 
 	@Override
 	default T disableReferentialIntegrity(int pos) {
-		return disableSystemProperty(ReferentialIntegrityConstraint.class, pos);
+		return disableSystemProperty(ReferentialIntegrityProperty.class, pos);
 	}
 
 	@Override
 	default boolean isReferentialIntegrityConstraintEnabled(int pos) {
-		return isSystemPropertyEnabled(ReferentialIntegrityConstraint.class, pos);
+		return isSystemPropertyEnabled(ReferentialIntegrityProperty.class, pos);
 	}
 
 	@Override
@@ -126,28 +126,22 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 		return isSystemPropertyEnabled(CascadeRemoveProperty.class, pos);
 	}
 
-	public static class ReferentialIntegrityConstraint implements Constraint {
+	public static interface Constraint extends SystemProperty {
 
-	}
-
-	public static class SingularConstraint<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> implements Constraint<T, U> {
-
-		@Override
-		public void check(AbstractVertex base, AbstractVertex attribute, int pos) throws ConstraintViolationException {
-			if (base.getHolders(attribute).size() > 1)
-				throw new SingularConstraintViolationException(base + " has more than one " + attribute);
+		public enum CheckingType {
+			CHECK_ON_ADD, CHECK_ON_REMOVE
 		}
-	}
 
-	public static class PropertyConstraint implements Constraint {
+		void check(IVertex base, IVertex attribute, int pos) throws ConstraintViolationException;
 
-		@Override
-		public void check(IVertexBase base, IVertexBase attribute, int pos) throws ConstraintViolationException {
+		default boolean isCheckable(CheckingType checkingType, boolean isFlushTime) {
+			// TODO
+			return true;
 		}
 
 	}
 
-	public static class RequiredConstraint implements Constraint {
+	public static class ReferentialIntegrityProperty implements SystemProperty {
 
 	}
 

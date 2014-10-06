@@ -1,22 +1,17 @@
 package org.genericsystem.impl;
 
-import java.util.Comparator;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.genericsystem.api.core.ISignature;
-import org.genericsystem.api.core.IVertexBase.Constraint.CheckingType;
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.impl.annotations.InstanceClass;
 import org.genericsystem.impl.annotations.SystemGeneric;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.IRoot;
-import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.ISystemProperties.Constraint.CheckingType;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends AbstractVertex<T, U> implements IGeneric<T, U> {
 
@@ -76,14 +71,14 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 			vertex.addInstance(getSupers().stream().map(T::unwrap).collect(Collectors.toList()), getValue(), vertex.coerceToTArray(getComposites().stream().map(T::unwrap).toArray()));
 		else
 			vertex.setInstance(getSupers().stream().map(T::unwrap).collect(Collectors.toList()), getValue(), vertex.coerceToTArray(getComposites().stream().map(T::unwrap).toArray()));
-		getRoot().check(CheckingType.CHECK_ON_ADD_NODE, true, (T) this);
+		getRoot().check(CheckingType.CHECK_ON_ADD, true, (T) this);
 		return (T) this;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected boolean unplug() {
-		getRoot().check(CheckingType.CHECK_ON_REMOVE_NODE, true, (T) this);
+		getRoot().check(CheckingType.CHECK_ON_REMOVE, true, (T) this);
 		unwrap().remove();
 		return true;
 	}
@@ -151,39 +146,5 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	protected Dependencies<DependenciesEntry<T>> getSuperComponentsDependencies() {
 		throw new UnsupportedOperationException();
 	}
-
-	// @Override
-	// protected T bindInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
-	// return super.bindInstance(clazz, throwExistException, overrides, value, components);
-	// }
-
-	void checkConstraints(CheckingType checkingType, boolean isFlushTime) {
-		Stream<T> constraintsStream = getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) x.getValue()).getClazz()));
-		constraintsStream = constraintsStream.filter(x -> !getHolders(x).isEmpty() && ((AxedPropertyClass) x.getValue()).getAxe() != -1 && !getHolders(x).stream().findFirst().get().getValue().equals(Boolean.FALSE));
-		List<T> constraintsList = constraintsStream/* .sorted(priorityConstraintComparator) */.collect(Collectors.toList());
-		for (T constraintHolder : constraintsList) {
-			try {
-				// TODO stocker dans une map (clazz / instance)
-				Class<Constraint> constraintClass = (Class<Constraint>) ((AxedPropertyClass) constraintHolder.getValue()).getClazz();
-				Constraint constraint = constraintClass.newInstance();
-				if (constraint.isCheckable(checkingType, isFlushTime))
-					constraint.check(getComposites().get(Statics.BASE_POSITION), getMeta(), ((AxedPropertyClass) constraintHolder.getValue()).getAxe());
-			} catch (InstantiationException | IllegalAccessException e) {
-				// TODO KK
-				assert false : e;
-			} catch (ConstraintViolationException e) {
-				getRoot().discardWithException(e);
-			}
-		}
-	}
-
-	private static Comparator<Class<Constraint>> priorityConstraintComparator = new Comparator<Class<Constraint>>() {
-
-		@Override
-		public int compare(Class<Constraint> constraint, Class<Constraint> compareConstraint) {
-			// TODO compare priority
-			return 0;
-		}
-	};
 
 }

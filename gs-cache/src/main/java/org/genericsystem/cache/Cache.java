@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import org.genericsystem.api.core.IVertexBase.Constraint.CheckingType;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.ConstraintViolationException;
@@ -17,6 +16,7 @@ import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
+import org.genericsystem.kernel.ISystemProperties.Constraint.CheckingType;
 import org.genericsystem.kernel.Statics;
 
 public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends AbstractContext<T, U, V, W> {
@@ -88,8 +88,8 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U
 
 	protected void checkConstraints() throws RollbackException {
 		U engine = getEngine();
-		adds.forEach(x -> engine.check(CheckingType.CHECK_ON_ADD_NODE, true, x));
-		removes.forEach(x -> engine.check(CheckingType.CHECK_ON_REMOVE_NODE, true, x));
+		adds.forEach(x -> engine.check(CheckingType.CHECK_ON_ADD, true, x));
+		removes.forEach(x -> engine.check(CheckingType.CHECK_ON_REMOVE, true, x));
 	}
 
 	protected void rollbackWithException(Throwable exception) throws RollbackException {
