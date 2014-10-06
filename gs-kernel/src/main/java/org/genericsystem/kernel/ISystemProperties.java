@@ -2,7 +2,6 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.Optional;
-
 import org.genericsystem.api.core.IVertexBase;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.SingularConstraintViolationException;
@@ -32,7 +31,7 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 	@Override
 	@SuppressWarnings("unchecked")
 	default T enableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos) {
-		assert isStructural();
+		// assert isStructural();
 		setSystemPropertyValue(propertyClass, pos, Boolean.TRUE);
 		return (T) this;
 	}
@@ -142,8 +141,7 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 	public static class PropertyConstraint implements Constraint {
 
 		@Override
-		public void check(IVertexBase base, IVertexBase attribute, int pos) throws ConstraintViolationException {
-		}
+		public void check(IVertexBase base, IVertexBase attribute, int pos) throws ConstraintViolationException {}
 
 	}
 

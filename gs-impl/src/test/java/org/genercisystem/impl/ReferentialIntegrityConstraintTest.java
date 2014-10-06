@@ -13,10 +13,10 @@ public class ReferentialIntegrityConstraintTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addType("Vehicle");
 		Generic color = engine.addType("Color");
-		engine.addAttribute("VehicleColor", vehicle, color);
-		vehicle.enableReferentialIntegrity(Statics.BASE_POSITION);
+		vehicle.addAttribute("VehicleColor", color);
+		engine.getMetaAttribute().enableReferentialIntegrity(Statics.BASE_POSITION);
 		new RollbackCatcher() {
-			
+
 			@Override
 			public void intercept() {
 				vehicle.remove();

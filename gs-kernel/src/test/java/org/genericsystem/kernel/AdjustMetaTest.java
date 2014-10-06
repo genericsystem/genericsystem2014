@@ -71,10 +71,10 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex red = color.addInstance("red");
 		assert myBmw.getAttributes(Statics.BASE_POSITION).contains(carColor);
 		assert !myBmw.getAttributes(Statics.TARGET_POSITION).contains(carColor);
-		assert false : myBmw.getAttributes(vehicleColor).info() + "   " + color.getAttributes(vehicleColor).info();
+		// assert false : myBmw.getAttributes(vehicleColor).info() + "   " + color.getAttributes(vehicleColor).info();
 		// assert false : color.getAttributes().stream().filter(x -> x.inheritsFrom(vehicleColor)).collect(Collectors.toList());
 		Vertex myBmwRed = myBmw.addHolder(vehicleColor, "myBmwRed", red);
-		assert vehicleColor.equals(myBmwRed.getMeta());
+		assert carColor.equals(myBmwRed.getMeta());
 	}
 
 	public void test004_AdjustMeta() {
@@ -349,7 +349,7 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex carPower = engine.addInstance(power, "carPower", engine);
 		assert carPower.equals(power.adjustMeta(235, Collections.singletonList(car)));
 	}
-	
+
 	public void testAdjustMetaValue() {
 		Root engine = new Root();
 		Vertex vehicle = engine.addType("Vehicle");
@@ -358,7 +358,7 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex myBmw = car.addInstance("myBmw");
 		Vertex power235 = myBmw.addHolder(power, 235);
 		assert power235.getMeta().equals(power);
-		
+
 		Vertex power2 = car.addAttribute(power, "Power2");
 		assert !power235.isAlive();
 		assert myBmw.getHolders(power).stream().findFirst().get().getMeta().equals(power2) : "meta : " + power235.getMeta();

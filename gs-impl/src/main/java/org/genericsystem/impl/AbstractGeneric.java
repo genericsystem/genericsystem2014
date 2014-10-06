@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.IVertexBase.Constraint.CheckingType;
 import org.genericsystem.api.core.Snapshot;
@@ -63,8 +62,9 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 
 	@Override
 	public void remove() {
+		// TODO KK this verification must go in simpleRemove....
 		if (getClass().getAnnotation(SystemGeneric.class) != null)
-			getRoot().discardWithException(new IllegalAccessException("SystemGeneric Annoted class can't be deleted"));
+			getRoot().discardWithException(new IllegalAccessException("@SystemGeneric annoted generic can't be removed"));
 		super.remove();
 	}
 
@@ -164,10 +164,8 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 
 	void checkConstraints(CheckingType checkingType, boolean isFlushTime) {
 		Stream<T> constraintsStream = getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) x.getValue()).getClazz()));
-		constraintsStream = constraintsStream.filter(x -> 
-			!getHolders(x).isEmpty() && ((AxedPropertyClass) x.getValue()).getAxe() != -1 && !getHolders(x).stream().findFirst().get().getValue().equals(Boolean.FALSE)
-		);
-		List<T> constraintsList = constraintsStream/*.sorted(priorityConstraintComparator)*/.collect(Collectors.toList());
+		constraintsStream = constraintsStream.filter(x -> !getHolders(x).isEmpty() && ((AxedPropertyClass) x.getValue()).getAxe() != -1 && !getHolders(x).stream().findFirst().get().getValue().equals(Boolean.FALSE));
+		List<T> constraintsList = constraintsStream/* .sorted(priorityConstraintComparator) */.collect(Collectors.toList());
 		for (T constraintHolder : constraintsList) {
 			try {
 				// TODO stocker dans une map (clazz / instance)
@@ -192,5 +190,5 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 			return 0;
 		}
 	};
-	
+
 }

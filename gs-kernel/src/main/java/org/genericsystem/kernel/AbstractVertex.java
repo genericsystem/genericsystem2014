@@ -224,12 +224,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 					if (!generic.getInheritings().isEmpty() || !generic.getInstances().isEmpty())
 						getRoot().discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + generic + " has an inheritance or instance dependency"));
 
-					for (T components : generic.getComponents())
-						if (!generic.equals(components)) {
-							for (int componentPos = 0; componentPos < components.getComposites().size(); componentPos++)
-								if (/* !compositeDependency.isAutomatic() && */components.getComposites().get(componentPos).equals(generic) && !contains(components) && components.isReferentialIntegrityConstraintEnabled(componentPos))
-									getRoot().discardWithException(new ReferentialIntegrityConstraintViolationException(components + " is Referential Integrity for ancestor " + generic + " by component position : " + componentPos));
-							visit(components);
+					for (T component : generic.getComponents())
+						if (!generic.equals(component)) {
+							for (int compositePos = 0; compositePos < component.getComposites().size(); compositePos++)
+								if (/* !compositeDependency.isAutomatic() && */component.getComposites().get(compositePos).equals(generic) && !contains(component) && component.isReferentialIntegrityConstraintEnabled(compositePos))
+									getRoot().discardWithException(new ReferentialIntegrityConstraintViolationException(component + " is Referential Integrity for ancestor " + generic + " by component position : " + compositePos));
+							visit(component);
 						}
 					for (int axe = 0; axe < generic.getComposites().size(); axe++)
 						if (generic.isCascadeRemove(axe))
