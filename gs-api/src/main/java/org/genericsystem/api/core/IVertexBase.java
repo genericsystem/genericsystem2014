@@ -16,22 +16,6 @@ import org.genericsystem.api.exception.RollbackException;
  */
 public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<T, U>> extends ISignature<T> {
 
-	// /**
-	// * Returns the supers stream of this signature
-	// *
-	// * @return the supers stream of this signature<br>
-	// * this is equivalent of getSupers().stream()
-	// */
-	// Stream<T> getSupersStream();
-	//
-	// /**
-	// * Returns the components stream of this signature
-	// *
-	// * @return the components stream of this signature<br>
-	// * this is equivalent of getComponents().stream()
-	// */
-	// Stream<T> getComponentsStream();
-
 	/**
 	 * Indicates whether this vertex is the root of the graph
 	 *
@@ -85,7 +69,7 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	/**
 	 * Technical method for create a real array of T implementation for passing safe varags parameter and avoid heap pollution
 	 *
-	 * @param an
+	 * @param array
 	 *            array of object
 	 * @return an array of T
 	 */
@@ -94,7 +78,10 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	/**
 	 * Utility method for create a real array of T implementation with this in first position and targets after
 	 *
-	 * @return the array of T
+	 * @param targets
+	 *            an array of targets stored in an objects array
+	 *
+	 * @return a real array of T implementation augmented of this Vertex in first position
 	 */
 	@SuppressWarnings("unchecked")
 	T[] addThisToTargets(T... targets);
@@ -149,7 +136,7 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	/**
 	 * Indicates whether this vertex "inherits from" or "is instance of" or "is instance of instance of" another.
 	 *
-	 * @param supra
+	 * @param vertex
 	 *            the vertex reference to be tested for the specialization
 	 * @return true if this vertex is a specialization of the specified vertex
 	 */
@@ -199,7 +186,7 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	T getInstance(List<T> supers, Serializable value, T... composites);
 
 	/**
-	 * Indicates whether this vertex has a composite that is a specialization of vertex.<br/>
+	 * Indicates whether this vertex has a composite that is a specialization of vertex.<br>
 	 *
 	 * @param vertex
 	 *            the vertex reference to be tested for the attribution.
@@ -215,8 +202,8 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	Snapshot<T> getAttributes();
 
 	/**
-	 * Returns the attributes of this vertex (directly if this vertex is a type, the attributes of its type if this vertex is an instance)<br/>
-	 * for which this vertex is in the specified position in their composites<br/>
+	 * Returns the attributes of this vertex (directly if this vertex is a type, the attributes of its type if this vertex is an instance)<br>
+	 * for which this vertex is in the specified position in their composites<br>
 	 *
 	 * @param pos
 	 *            the expected position of this vertex in the composites of these attributes
@@ -226,23 +213,31 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	Snapshot<T> getAttributes(int pos);
 
 	/**
-	 * Returns the attributes of this vertex that inherit from the specified attribute. *
+	 * Returns the attributes of this vertex that inherit from the specified attribute.
 	 *
-	 * @return the attributes of this vertex
+	 * @param attribute
+	 *            the attribute from which the result attributes inherit
+	 *
+	 * @return the attributes of this vertex regardless of the position of this vertex in their composites
 	 */
 	Snapshot<T> getAttributes(T attribute);
 
 	/**
 	 * Returns the holders of this vertex that are instances of the specified attribute.
 	 *
-	 * @return the attributes of this vertex regardless of the position of this vertex in the composites of these holders
+	 * @param attribute
+	 *            the attribute of which the result holders are instances
+	 *
+	 * @return the holders of this vertex regardless of the position of this vertex in their composites
 	 */
 	Snapshot<T> getHolders(T attribute);
 
 	/**
-	 * Returns the holders of this vertex that are instances of the specified attribute<br/>
-	 * and for which this vertex is in the specified position in their composites<
+	 * Returns the holders of this vertex that are instances of the specified attribute<br>
+	 * and for which this vertex is in the specified position in the composites of these holders
 	 *
+	 ** @param attribute
+	 *            the attribute of which the result holders are instances
 	 * @param pos
 	 *            the expected position of this vertex in the composites of these holders
 	 *
@@ -253,13 +248,19 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	/**
 	 * Returns values for each holder that is instances of the specified attribute.
 	 *
+	 * @param attribute
+	 *            the attribute of which value holders are instances
+	 *
 	 * @return values for each holder that is instances of the specified attribute
 	 */
 	Snapshot<Serializable> getValues(T attribute);
 
 	/**
-	 * Returns values for each holder that is instance of the specified attribute and the specified position<br/>
-	 * and for which this vertex is in the specified position in its composites<
+	 * Returns values for each holder that is instance of the specified attribute and the specified position<br>
+	 * and for which this vertex is in the specified position in its composites.
+	 *
+	 * @param attribute
+	 *            the attribute of which value holders are instances
 	 *
 	 * @param pos
 	 *            the expected position of this vertex in the composites of the holders
@@ -269,7 +270,7 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	Snapshot<Serializable> getValues(T attribute, int pos);
 
 	/**
-	 * Returns vertices that have this vertex for meta.<br/>
+	 * Returns vertices that have this vertex as meta.<br>
 	 * To get all vertices that are instance of this vertex, consider getAllInstances()
 	 *
 	 * @return the vertices that have this vertex for meta
@@ -277,22 +278,22 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	Snapshot<T> getInstances();
 
 	/**
-	 * Returns vertices that are instance of this vertex.
+	 * Returns vertices that are instances of this vertex.
 	 *
 	 * @return the vertices that are instance of this vertex
 	 */
 	Snapshot<T> getAllInstances();
 
 	/**
-	 * Returns vertices that have this vertex for super.<br/>
-	 * To get all vertices that inherits from this vertex, consider getAllInheritings()
+	 * Returns vertices that have this vertex as super.<br>
+	 * To get all vertices that inherit from this vertex, consider getAllInheritings()
 	 *
 	 * @return the vertices that have this vertex for super
 	 */
 	Snapshot<T> getInheritings();
 
 	/**
-	 * Returns vertices that inherits from this vertex.
+	 * Returns vertices that inherit from this vertex.
 	 *
 	 * @return the vertices that inherits from this vertex
 	 */
@@ -306,19 +307,21 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	Snapshot<T> getComponents();
 
 	/**
-	 * Indicates whether this vertex is ancestor of the specified dependency.<br/>
-	 * The ancestors of a node are recursively :<br/>
-	 * its meta,<br/>
-	 * its supers,<br/>
-	 * its composites.<br/>
+	 * Indicates whether this vertex is ancestor of the specified dependency.<br>
+	 * The ancestors of a node are recursively :<br>
+	 * its meta,<br>
+	 * its supers,<br>
+	 * its composites.
 	 *
 	 * @param dependency
+	 *            the dependency of which this vertex is an ancestor
+	 *
 	 * @return true if this vertex is ancestor of the specified dependency
 	 */
 	boolean isAncestorOf(final T dependency);
 
 	/**
-	 * Returns a String representation of this vertex in the format : <br/>
+	 * Returns a String representation of this vertex in the format : <br>
 	 * (meta)[supers]value[composites]
 	 *
 	 * @return the string representation of this vertex
@@ -374,7 +377,7 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 * @param propertyClass
 	 *            the class of the property
 	 * @param pos
-	 *            the position of this vertex in composites of components to consider.<br/>
+	 *            the position of this vertex in composites of components to consider.<br>
 	 *            for example : Statics.NO_POSITION, Statics.FIRST_POSITION, Statics.SECOND_POSITION ...
 	 * @return the property value
 	 */
@@ -387,11 +390,13 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 * @param propertyClass
 	 *            the class of the system property
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br/>
-	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
+	 * @param value
+	 *            the property value to set
 	 *
-	 * @Return this
+	 * @return this
 	 */
 	T setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value);
 
@@ -402,11 +407,11 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 * @param propertyClass
 	 *            the class of the boolean system property
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br/>
-	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
 	 *
-	 * @Return this
+	 * @return this
 	 */
 	T enableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos);
 
@@ -417,11 +422,11 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 * @param propertyClass
 	 *            the class of the boolean system property
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br/>
-	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
 	 *
-	 * @Return this
+	 * @return this
 	 */
 	T disableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos);
 
@@ -432,9 +437,11 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 * @param propertyClass
 	 *            the class of the boolean system property
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br/>
-	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
+	 *
+	 * @return true if this vertex is enabled for the specified boolean system property and the specified position
 	 */
 	boolean isSystemPropertyEnabled(Class<? extends SystemProperty> propertyClass, int pos);
 
@@ -442,14 +449,12 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 *
 	 * Enable the referential constraint of this vertex for the specified position.
 	 *
-	 * @param propertyClass
-	 *            the class of the boolean system property
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br/>
-	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
 	 *
-	 * @Return this
+	 * @return this
 	 */
 	T enableReferentialIntegrity(int pos);
 
@@ -458,11 +463,11 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 * Disable the referential constraint of this vertex for the specified position.
 	 *
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br/>
-	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
 	 *
-	 * @Return this
+	 * @return this
 	 */
 	T disableReferentialIntegrity(int pos);
 
@@ -471,10 +476,10 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 * Indicates whether this vertex is referential integrity for the specified position.
 	 *
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br/>
-	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
-	 * @Return true if this vertex is referential integrity
+	 * @return true if this vertex is referential integrity
 	 */
 	boolean isReferentialIntegrityConstraintEnabled(int pos);
 
@@ -482,14 +487,12 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 *
 	 * Enable the singular constraint of this vertex for the specified position.
 	 *
-	 * @param propertyClass
-	 *            the class of the boolean system property
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br/>
-	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
 	 *
-	 * @Return this
+	 * @return this
 	 */
 	T enableSingularConstraint(int pos);
 
@@ -498,11 +501,11 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 * Disable the singular constraint of this vertex for the specified position.
 	 *
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br/>
-	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
 	 *
-	 * @Return this
+	 * @return this
 	 */
 	T disableSingularConstraint(int pos);
 
@@ -511,10 +514,10 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 * Indicates whether this vertex is singular constraint for the specified position.
 	 *
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br/>
-	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
-	 * @Return true if this vertex is singular constraint
+	 * @return true if this vertex is singular constraint
 	 */
 	boolean isSingularConstraintEnabled(int pos);
 
@@ -522,10 +525,8 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 *
 	 * Enable the property constraint of this vertex.
 	 *
-	 * @param propertyClass
-	 *            the class of the boolean system property
 	 *
-	 * @Return this
+	 * @return this
 	 */
 	T enablePropertyConstraint();
 
@@ -533,7 +534,7 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 *
 	 * Disable the property constraint of this vertex.
 	 *
-	 * @Return this
+	 * @return this
 	 */
 	T disablePropertyConstraint();
 
@@ -542,33 +543,33 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 * Indicates whether this vertex is property constraint.
 	 *
 	 *
-	 * @Return true if this vertex is property constraint
+	 * @return true if this vertex is property constraint
 	 */
 	boolean isPropertyConstraintEnabled();
 
 	/**
 	 *
-	 * Enable the required constraint of this vertex for the specified position.<br/>
+	 * Enable the required constraint of this vertex for the specified position.<br>
 	 *
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br/>
-	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
 	 *
-	 * @Return this
+	 * @return this
 	 */
 	T enableRequiredConstraint(int pos);
 
 	/**
 	 *
-	 * Disable the required constraint of this vertex for the specified position.<br/>
+	 * Disable the required constraint of this vertex for the specified position.<br>
 	 *
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br/>
-	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
 	 *
-	 * @Return this
+	 * @return this
 	 */
 	T disableRequiredConstraint(int pos);
 
@@ -577,10 +578,10 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 * Indicates whether this vertex is required constraint for the specified position.
 	 *
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br/>
-	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
-	 * @Return true if this vertex is required constraint
+	 * @return true if this vertex is required constraint
 	 */
 	boolean isRequiredConstraintEnabled(int pos);
 
@@ -589,11 +590,11 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 * Enable the cascade remove property of this vertex for the specified position.
 	 *
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br/>
-	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
 	 *
-	 * @Return this
+	 * @return this
 	 */
 	T enableCascadeRemove(int pos);
 
@@ -602,11 +603,11 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 * Disable the cascade remove property of this vertex for the specified position.
 	 *
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br/>
-	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
 	 *
-	 * @Return this
+	 * @return this
 	 */
 	T disableCascadeRemove(int pos);
 
@@ -615,10 +616,10 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 * Indicates whether this cascade remove property is set for the specified position.
 	 *
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br/>
-	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br/>
+	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
-	 * @Return true if the cascade remove property is set
+	 * @return true if the cascade remove property is set
 	 */
 	boolean isCascadeRemove(int pos);
 
@@ -626,7 +627,7 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 * Removes this vertex.
 	 *
 	 * @throws RollbackException
-	 *             if vertex is not alive<br/>
+	 *             if vertex is not alive<br>
 	 *             if the operation violates an integrity constraint
 	 *
 	 */
@@ -772,7 +773,7 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 * Returns a new or the existing attribute on this type that satisfies the specified override, value and targets
 	 *
 	 * @param override
-	 *            a vertex reference from which the returned attribute shall inherit
+	 *            a vertex reference from which the returned attribute inherits
 	 * @param value
 	 *            the expected value
 	 * @param targets
@@ -786,7 +787,7 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 * Returns a new or the existing attribute on this type that satisfies the specified overrides, value and targets
 	 *
 	 * @param overrides
-	 *            vertex references from which the returned attribute shall inherit
+	 *            vertex references from which the returned attribute inherits
 	 * @param value
 	 *            the expected value
 	 * @param targets
@@ -799,6 +800,8 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	/**
 	 * Returns a new holder on this instance that satisfies the specified value and targets
 	 *
+	 * @param attribute
+	 *            the attribute of which the result holder is instance
 	 * @param value
 	 *            the expected value
 	 * @param targets
@@ -810,6 +813,9 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 
 	/**
 	 * Returns a new holder on this instance that satisfies the specified override, value and targets
+	 *
+	 * @param attribute
+	 *            the attribute of which the result holder is instance
 	 *
 	 * @param override
 	 *            a vertex reference from which the returned holder shall inherit
@@ -825,6 +831,9 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	/**
 	 * Returns a new holder on this instance that satisfies the specified overrides, value and targets
 	 *
+	 * @param attribute
+	 *            the attribute of which the result holder is instance
+	 *
 	 * @param overrides
 	 *            vertex references from which the returned holder shall inherit
 	 * @param value
@@ -839,8 +848,8 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	/**
 	 * Returns a new or the existing holder on this type that satisfies the specified overrides, value and targets
 	 *
-	 * @param overrides
-	 *            vertex references from which the returned holder shall inherit
+	 * @param attribute
+	 *            the attribute of which the result holder is instance
 	 * @param value
 	 *            the expected value
 	 * @param targets
@@ -853,8 +862,10 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	/**
 	 * Returns a new or the existing holder on this type that satisfies the specified overrides, value and targets
 	 *
-	 * @param overrides
-	 *            vertex references from which the returned attribute shall inherit
+	 * @param attribute
+	 *            the attribute of which the result holder is instance
+	 * @param override
+	 *            vertex reference from which the returned attribute inherits
 	 * @param value
 	 *            the expected value
 	 * @param targets
@@ -867,6 +878,8 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	/**
 	 * Returns a new or the existing attribute on this type that satisfies the specified overrides, value and targets
 	 *
+	 * @param attribute
+	 *            the attribute of which the result holder is instance
 	 * @param overrides
 	 *            vertex references from which the returned attribute shall inherit
 	 * @param value
