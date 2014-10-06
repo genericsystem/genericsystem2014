@@ -1,6 +1,5 @@
 package org.genericsystem.impl;
 
-import org.genericsystem.api.core.IVertexBase.Constraint.CheckingType;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.IRoot;
 
@@ -14,7 +13,6 @@ public interface IEngine<T extends AbstractGeneric<T, U, ?, ?>, U extends IEngin
 		t.checkConstraints(checkingType, isFlushTime);
 	}
 
-	default void checkConsistency(CheckingType checkingType, boolean isFlushTime, T t) {
-	}
+	default void checkConsistency(CheckingType checkingType, boolean isFlushTime, T t) {}
 
 }
