@@ -38,7 +38,7 @@ public interface IAncestors<T extends AbstractVertex<T, U>, U extends IRoot<T, U
 	}
 
 	@Override
-	default boolean equiv(IVertexBase<? extends IVertexBase<?, ?>, ?> service) {
+	default boolean equiv(IVertexBase<?, ?> service) {
 		return equals(service) || ((AbstractVertex<?, ?>) this).equiv(service.getMeta(), service.getValue(), service.getComposites());
 	}
 
