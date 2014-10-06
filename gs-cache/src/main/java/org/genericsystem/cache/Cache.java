@@ -87,8 +87,9 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U
 	}
 
 	protected void checkConstraints() throws RollbackException {
-		adds.forEach(x -> x.check(CheckingType.CHECK_ON_ADD_NODE, true));
-		removes.forEach(x -> x.check(CheckingType.CHECK_ON_REMOVE_NODE, true));
+		U engine = getEngine();
+		adds.forEach(x -> engine.check(CheckingType.CHECK_ON_ADD_NODE, true, x));
+		removes.forEach(x -> engine.check(CheckingType.CHECK_ON_REMOVE_NODE, true, x));
 	}
 
 	protected void rollbackWithException(Throwable exception) throws RollbackException {

@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.Optional;
+
 import org.genericsystem.api.core.IVertexBase;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.SingularConstraintViolationException;
@@ -133,7 +134,7 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 
 		@Override
 		public void check(AbstractVertex base, AbstractVertex attribute, int pos) throws ConstraintViolationException {
-			if (base.getHolders(attribute).stream().map(x -> ((AbstractVertex<T, U>) x).getComposites().get(pos)).distinct().count() > 1)
+			if (base.getHolders(attribute).size() > 1)
 				throw new SingularConstraintViolationException(base + " has more than one " + attribute);
 		}
 	}
@@ -141,7 +142,8 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 	public static class PropertyConstraint implements Constraint {
 
 		@Override
-		public void check(IVertexBase base, IVertexBase attribute, int pos) throws ConstraintViolationException {}
+		public void check(IVertexBase base, IVertexBase attribute, int pos) throws ConstraintViolationException {
+		}
 
 	}
 

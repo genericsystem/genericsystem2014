@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.IVertexBase.Constraint.CheckingType;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.ConstraintViolationException;
-import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.impl.annotations.InstanceClass;
 import org.genericsystem.impl.annotations.SystemGeneric;
 import org.genericsystem.kernel.AbstractVertex;
@@ -44,12 +44,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		return null; // Not reached
 	}
 
-	@SuppressWarnings("unchecked")
-	protected T check(CheckingType checkingType, boolean isFlushTime) throws RollbackException {
-		getRoot().check(checkingType, isFlushTime, (T) this);
-		return (T) this;
-	}
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -82,13 +76,14 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 			vertex.addInstance(getSupers().stream().map(T::unwrap).collect(Collectors.toList()), getValue(), vertex.coerceToTArray(getComposites().stream().map(T::unwrap).toArray()));
 		else
 			vertex.setInstance(getSupers().stream().map(T::unwrap).collect(Collectors.toList()), getValue(), vertex.coerceToTArray(getComposites().stream().map(T::unwrap).toArray()));
-		check(CheckingType.CHECK_ON_ADD_NODE, true);
+		getRoot().check(CheckingType.CHECK_ON_ADD_NODE, true, (T) this);
 		return (T) this;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected boolean unplug() {
-		check(CheckingType.CHECK_ON_REMOVE_NODE, true);
+		getRoot().check(CheckingType.CHECK_ON_REMOVE_NODE, true, (T) this);
 		unwrap().remove();
 		return true;
 	}

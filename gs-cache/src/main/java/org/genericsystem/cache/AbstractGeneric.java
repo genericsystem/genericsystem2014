@@ -6,28 +6,23 @@ import java.util.List;
 
 import org.genericsystem.api.core.IVertexBase.Constraint.CheckingType;
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.AbstractVertex;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends org.genericsystem.impl.AbstractGeneric<T, U, V, W> implements IGeneric<T, U, V, W> {
 
-	@Override
-	protected T check(CheckingType checkingType, boolean isFlushTime) throws RollbackException {
-		return super.check(checkingType, isFlushTime);
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	protected T plug() {
-		return getCurrentCache().plug((T) this).check(CheckingType.CHECK_ON_ADD_NODE, false);
+		T plug = getCurrentCache().plug((T) this);
+		getRoot().check(CheckingType.CHECK_ON_ADD_NODE, false, (T) this);
+		return plug;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected boolean unplug() {
-		boolean unplug = getCurrentCache().unplug((T) this);
-		check(CheckingType.CHECK_ON_REMOVE_NODE, false);
-		return unplug;
+		getRoot().check(CheckingType.CHECK_ON_ADD_NODE, false, (T) this);
+		return getCurrentCache().unplug((T) this);
 	}
 
 	@SuppressWarnings("unchecked")

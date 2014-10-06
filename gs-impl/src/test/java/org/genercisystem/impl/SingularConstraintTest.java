@@ -1,6 +1,6 @@
 package org.genercisystem.impl;
 
-import org.genericsystem.api.exception.ConstraintViolationException;
+import org.genericsystem.api.exception.SingularConstraintViolationException;
 import org.genericsystem.impl.Engine;
 import org.genericsystem.impl.Generic;
 import org.genericsystem.kernel.Statics;
@@ -12,34 +12,73 @@ public class SingularConstraintTest extends AbstractTest {
 	public void test001_enableSingularConstraint_addInstance() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
 		Generic color = engine.addInstance("Color");
 		Generic red = color.addInstance("red");
 		Generic yellow = color.addInstance("yellow");
 		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
-		vehicleColor.enableSingularConstraint(Statics.TARGET_POSITION);
-		assert vehicleColor.isSingularConstraintEnabled(Statics.TARGET_POSITION);
+		vehicleColor.enableSingularConstraint(Statics.BASE_POSITION);
+		assert vehicleColor.isSingularConstraintEnabled(Statics.BASE_POSITION);
+		myVehicle.addHolder(vehicleColor, "vehicleRed", red);
+		new RollbackCatcher() {
+			@Override
+			public void intercept() {
+				myVehicle.addHolder(vehicleColor, "vehicleYellow", yellow);
+			}
+		}.assertIsCausedBy(SingularConstraintViolationException.class);
+	}
+
+	public void test002_enableSingularConstraint_addInstance() {
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic yourVehicle = vehicle.addInstance("yourVehicle");
+		Generic color = engine.addInstance("Color");
+		Generic red = color.addInstance("red");
+		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
+		vehicleColor.enableSingularConstraint(Statics.BASE_POSITION);
+		assert vehicleColor.isSingularConstraintEnabled(Statics.BASE_POSITION);
+		myVehicle.addHolder(vehicleColor, "vehicleRed", red);
+		yourVehicle.addHolder(vehicleColor, "vehicleRed", red);
+	}
+
+	public void test003_enableSingularConstraint_addDefaultInstance() {
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic color = engine.addInstance("Color");
+		Generic red = color.addInstance("red");
+		Generic yellow = color.addInstance("yellow");
+		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
+		vehicleColor.enableSingularConstraint(Statics.BASE_POSITION);
+		assert vehicleColor.isSingularConstraintEnabled(Statics.BASE_POSITION);
 		vehicle.addHolder(vehicleColor, "vehicleRed", red);
 		new RollbackCatcher() {
 			@Override
 			public void intercept() {
 				vehicle.addHolder(vehicleColor, "vehicleYellow", yellow);
 			}
-		}.assertIsCausedBy(ConstraintViolationException.class);
+		}.assertIsCausedBy(SingularConstraintViolationException.class);
 	}
 
-	public void test002_enableSingularConstraint_trinaryRelation() {
+	public void test001_enableSingularConstraint_ternaryRelation() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
 		Generic color = engine.addInstance("Color");
 		Generic time = engine.addInstance("Time");
 		Generic red = color.addInstance("red");
 		Generic today = time.addInstance("today");
 		Generic yesterday = time.addInstance("yesterday");
 		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
-		vehicleColor.enableSingularConstraint(Statics.TARGET_POSITION);
-		assert vehicleColor.isSingularConstraintEnabled(Statics.TARGET_POSITION);
-		vehicle.addHolder(vehicleColor, "vehicleRedToday", red, today);
-		vehicle.addHolder(vehicleColor, "vehicleRedYesterday", red, yesterday);
+		vehicleColor.enableSingularConstraint(Statics.BASE_POSITION);
+		assert vehicleColor.isSingularConstraintEnabled(Statics.BASE_POSITION);
+		myVehicle.addHolder(vehicleColor, "vehicleRedToday", red, today);
+		new RollbackCatcher() {
+			@Override
+			public void intercept() {
+				myVehicle.addHolder(vehicleColor, "vehicleRedYesterday", red, yesterday);
+			}
+		}.assertIsCausedBy(SingularConstraintViolationException.class);
 	}
 
 	// public void test002_enablePropertyConstraint_addInstance() {
