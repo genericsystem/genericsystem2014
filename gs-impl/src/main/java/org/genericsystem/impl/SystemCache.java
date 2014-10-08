@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 import org.genericsystem.impl.annotations.Composites;
 import org.genericsystem.impl.annotations.Meta;
 import org.genericsystem.impl.annotations.value.BooleanValue;

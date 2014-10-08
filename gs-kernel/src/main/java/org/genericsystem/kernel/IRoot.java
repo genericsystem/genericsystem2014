@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.genericsystem.api.exception.RollbackException;
-import org.genericsystem.kernel.ISystemProperties.Constraint.CheckingType;
+import org.genericsystem.kernel.systemproperty.constraints.Constraint.CheckingType;
 
 public interface IRoot<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends IVertex<T, U> {
 

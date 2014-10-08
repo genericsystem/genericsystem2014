@@ -26,8 +26,10 @@ import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
-import org.genericsystem.kernel.ISystemProperties.Constraint.CheckingType;
 import org.genericsystem.kernel.Statics.Supers;
+import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
+import org.genericsystem.kernel.systemproperty.constraints.Constraint;
+import org.genericsystem.kernel.systemproperty.constraints.Constraint.CheckingType;
 
 public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> implements IVertex<T, U> {
 

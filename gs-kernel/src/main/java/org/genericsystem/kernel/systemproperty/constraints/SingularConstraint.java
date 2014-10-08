@@ -1,9 +1,9 @@
-package org.genericsystem.kernel.constraints;
+package org.genericsystem.kernel.systemproperty.constraints;
 
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.SingularConstraintViolationException;
-import org.genericsystem.kernel.ISystemProperties.Constraint;
 import org.genericsystem.kernel.IVertex;
+import org.genericsystem.kernel.systemproperty.constraints.Constraint;
 
 public class SingularConstraint implements Constraint {
 

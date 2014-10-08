@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.IVertexBase;
 import org.genericsystem.api.core.Snapshot;
 

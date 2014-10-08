@@ -4,11 +4,12 @@ import java.io.Serializable;
 import java.util.Optional;
 
 import org.genericsystem.api.core.IVertexBase;
-import org.genericsystem.api.exception.ConstraintViolationException;
-import org.genericsystem.kernel.annotations.Priority;
-import org.genericsystem.kernel.constraints.PropertyConstraint;
-import org.genericsystem.kernel.constraints.RequiredConstraint;
-import org.genericsystem.kernel.constraints.SingularConstraint;
+import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
+import org.genericsystem.kernel.systemproperty.CascadeRemoveProperty;
+import org.genericsystem.kernel.systemproperty.ReferentialIntegrityProperty;
+import org.genericsystem.kernel.systemproperty.constraints.PropertyConstraint;
+import org.genericsystem.kernel.systemproperty.constraints.RequiredConstraint;
+import org.genericsystem.kernel.systemproperty.constraints.SingularConstraint;
 
 public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
 
@@ -126,76 +127,6 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 	@Override
 	default boolean isCascadeRemove(int pos) {
 		return isSystemPropertyEnabled(CascadeRemoveProperty.class, pos);
-	}
-
-	public static interface Constraint extends SystemProperty {
-
-		enum CheckingType {
-			CHECK_ON_ADD, CHECK_ON_REMOVE
-		}
-
-		static int getPriorityOf(Class<Constraint> clazz) {
-			Priority priority = clazz.getAnnotation(Priority.class);
-			return priority != null ? priority.value() : 0;
-		}
-
-		void check(IVertex base, IVertex attribute) throws ConstraintViolationException;
-
-		default boolean isCheckedAt(IVertex modified, CheckingType checkingType) {
-			return checkingType.equals(CheckingType.CHECK_ON_ADD);
-		}
-
-		default boolean isImmediatelyCheckable() {
-			return true;
-		}
-
-	}
-
-	public static class ReferentialIntegrityProperty implements SystemProperty {
-
-	}
-
-	public static class CascadeRemoveProperty implements SystemProperty {
-
-	}
-
-	static class AxedPropertyClass implements Serializable {
-
-		private static final long serialVersionUID = -2631066712866842794L;
-
-		private final Class<? extends SystemProperty> clazz;
-		private final int axe;
-
-		public AxedPropertyClass(Class<? extends SystemProperty> clazz, int axe) {
-			this.clazz = clazz;
-			this.axe = axe;
-		}
-
-		public Class<? extends SystemProperty> getClazz() {
-			return clazz;
-		}
-
-		public int getAxe() {
-			return axe;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (!(obj instanceof AxedPropertyClass))
-				return false;
-			AxedPropertyClass compare = (AxedPropertyClass) obj;
-			return clazz.equals(compare.getClazz()) && axe == compare.axe;
-		}
-
-		@Override
-		public int hashCode() {
-			return clazz.hashCode();
-		}
-
-		@Override
-		public String toString() {
-			return "{class : " + clazz.getSimpleName() + ", axe : " + axe + "}";
-		}
 	}
 
 }

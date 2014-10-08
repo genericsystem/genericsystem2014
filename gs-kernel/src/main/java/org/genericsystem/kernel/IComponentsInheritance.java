@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
+
 import org.genericsystem.api.core.IVertexBase;
 import org.genericsystem.api.core.Snapshot;
 

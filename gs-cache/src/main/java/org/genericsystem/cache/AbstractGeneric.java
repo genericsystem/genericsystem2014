@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.kernel.AbstractVertex;
-import org.genericsystem.kernel.ISystemProperties.Constraint.CheckingType;
+import org.genericsystem.kernel.systemproperty.constraints.Constraint.CheckingType;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends org.genericsystem.impl.AbstractGeneric<T, U, V, W> implements IGeneric<T, U, V, W> {
 

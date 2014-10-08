@@ -1,10 +1,10 @@
-package org.genericsystem.kernel.constraints;
+package org.genericsystem.kernel.systemproperty.constraints;
 
 import org.genericsystem.api.exception.ConstraintViolationException;
-import org.genericsystem.kernel.ISystemProperties.Constraint;
 import org.genericsystem.kernel.IVertex;
+import org.genericsystem.kernel.systemproperty.constraints.Constraint;
 
-public class PropertyConstraint implements Constraint {
+public class RequiredConstraint implements Constraint {
 
 	@Override
 	public void check(IVertex base, IVertex attribute) throws ConstraintViolationException {
