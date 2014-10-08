@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.util.List;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.NotAliveException;
 import org.genericsystem.kernel.AbstractTest.RollbackCatcher;

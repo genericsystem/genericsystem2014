@@ -1,17 +1,15 @@
-package org.genercisystem.impl;
+package org.genericsystem.kernel;
 
 import org.genericsystem.api.exception.ExistsException;
-import org.genericsystem.impl.Engine;
-import org.genericsystem.impl.Generic;
 import org.testng.annotations.Test;
 
 @Test
 public class PropertyConstraintTest extends AbstractTest {
 
 	public void test001_enablePropertyConstraint_addInstance() {
-		Engine engine = new Engine();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic power = engine.addInstance("Power", vehicle);
+		Root Root = new Root();
+		Vertex vehicle = Root.addInstance("Vehicle");
+		Vertex power = Root.addInstance("Power", vehicle);
 		power.enablePropertyConstraint();
 		assert power.isPropertyConstraintEnabled();
 		power.addInstance("123", vehicle);
@@ -25,10 +23,10 @@ public class PropertyConstraintTest extends AbstractTest {
 	}
 
 	public void test002_enablePropertyConstraint_addInstance() {
-		Engine engine = new Engine();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic power = engine.addInstance("Power", vehicle);
-		Generic subPower = engine.addInstance(power, "SubPower", vehicle);
+		Root Root = new Root();
+		Vertex vehicle = Root.addInstance("Vehicle");
+		Vertex power = Root.addInstance("Power", vehicle);
+		Vertex subPower = Root.addInstance(power, "SubPower", vehicle);
 		assert subPower.inheritsFrom(power);
 		power.enablePropertyConstraint();
 		assert subPower.isPropertyConstraintEnabled();
@@ -43,11 +41,11 @@ public class PropertyConstraintTest extends AbstractTest {
 	}
 
 	public void test003_enablePropertyConstraint_addInstance() {
-		Engine engine = new Engine();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic car = engine.addInstance(vehicle, "Car");
-		Generic power = engine.addInstance("Power", vehicle);
-		Generic subPower = engine.addInstance(power, "Power", car);
+		Root Root = new Root();
+		Vertex vehicle = Root.addInstance("Vehicle");
+		Vertex car = Root.addInstance(vehicle, "Car");
+		Vertex power = Root.addInstance("Power", vehicle);
+		Vertex subPower = Root.addInstance(power, "Power", car);
 		assert subPower.inheritsFrom(power);
 		power.enablePropertyConstraint();
 		assert subPower.isPropertyConstraintEnabled();
@@ -62,9 +60,9 @@ public class PropertyConstraintTest extends AbstractTest {
 	}
 
 	public void test001_enablePropertyConstraint_setInstance() {
-		Engine engine = new Engine();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic power = engine.addInstance("Power", vehicle);
+		Root Root = new Root();
+		Vertex vehicle = Root.addInstance("Vehicle");
+		Vertex power = Root.addInstance("Power", vehicle);
 		power.enablePropertyConstraint();
 		assert power.isPropertyConstraintEnabled();
 		power.setInstance("123", vehicle);
@@ -74,9 +72,9 @@ public class PropertyConstraintTest extends AbstractTest {
 	}
 
 	public void test001_disablePropertyConstraint_setInstance() {
-		Engine engine = new Engine();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic power = engine.addInstance("Power", vehicle);
+		Root Root = new Root();
+		Vertex vehicle = Root.addInstance("Vehicle");
+		Vertex power = Root.addInstance("Power", vehicle);
 		power.enablePropertyConstraint();
 		assert power.isPropertyConstraintEnabled();
 		power.setInstance("123", vehicle);

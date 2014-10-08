@@ -13,18 +13,14 @@ public interface IRoot<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> ex
 		throw new RollbackException(exception);
 	}
 
-	default void check(T t) throws RollbackException {
+	default void check(CheckingType checkingType, boolean isFlushTime, T t) throws RollbackException {
+		// old check
 		t.checkDependsMetaComponents();
 		t.checkSupers();
 		t.checkDependsSuperComposites();
-	}
 
-	default void check(CheckingType checkingType, boolean isFlushTime, T t) throws RollbackException {
-		checkConsistency(checkingType, isFlushTime, t);
+		t.checkConsistency(checkingType, isFlushTime);
 		t.checkConstraints(checkingType, isFlushTime);
-	}
-
-	default void checkConsistency(CheckingType checkingType, boolean isFlushTime, T t) {
 	}
 
 	@SuppressWarnings("unchecked")

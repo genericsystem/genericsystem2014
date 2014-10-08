@@ -1,4 +1,4 @@
-package org.genericsystem.impl.annotations;
+package org.genericsystem.kernel.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;

@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
@@ -24,7 +25,6 @@ import org.genericsystem.api.exception.CrossEnginesAssignementsException;
 import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
-import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.ISystemProperties.Constraint.CheckingType;
 import org.genericsystem.kernel.Statics.Supers;
@@ -54,12 +54,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 			} else
 				this.composites.set(i, (T) this);
 		}
-		return (T) this;
-	}
-
-	@SuppressWarnings("unchecked")
-	protected T check() throws RollbackException {
-		getRoot().check((T) this);
 		return (T) this;
 	}
 
@@ -487,18 +481,19 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		getSupers().forEach(superGeneric -> ((AbstractVertex<T, U>) superGeneric).indexInheriting((T) this));
 		getComposites().forEach(composite -> ((AbstractVertex<T, U>) composite).indexByMeta(getMeta(), (T) this));
 		getSupers().forEach(superGeneric -> getComposites().forEach(composite -> ((AbstractVertex<T, U>) composite).indexBySuper(superGeneric, (T) this)));
-		return (subT) result.check();
+		getRoot().check(CheckingType.CHECK_ON_ADD, true, (T) this);
+		return (subT) result;
 	}
 
 	@SuppressWarnings("unchecked")
 	protected boolean unplug() {
+		getRoot().check(CheckingType.CHECK_ON_REMOVE, true, (T) this);
 		boolean result = ((AbstractVertex<T, U>) getMeta()).unIndexInstance((T) this);
 		if (!result)
 			getRoot().discardWithException(new NotFoundException(this.info()));
 		getSupers().forEach(superGeneric -> ((AbstractVertex<T, U>) superGeneric).unIndexInheriting((T) this));
 		getComposites().forEach(composite -> ((AbstractVertex<T, U>) composite).unIndexByMeta(getMeta(), (T) this));
 		getSupers().forEach(superGeneric -> getComposites().forEach(composite -> ((AbstractVertex<T, U>) composite).unIndexBySuper(superGeneric, (T) this)));
-		check();
 		return result;
 	}
 
@@ -597,31 +592,51 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	}
 
 	void checkConstraints(CheckingType checkingType, boolean isFlushTime) {
-		Stream<T> constraintsStream = getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) x.getValue()).getClazz()));
-		constraintsStream = constraintsStream.filter(x -> !getHolders(x).isEmpty() && ((AxedPropertyClass) x.getValue()).getAxe() != -1 && !getHolders(x).stream().findFirst().get().getValue().equals(Boolean.FALSE));
-		List<T> constraintsList = constraintsStream/* .sorted(priorityConstraintComparator) */.collect(Collectors.toList());
-		for (T constraintHolder : constraintsList) {
+		for (T constraintHolder : getActivedConstraints())
 			try {
-				// TODO stocker dans une map (clazz / instance)
-				Class<Constraint> constraintClass = (Class<Constraint>) ((AxedPropertyClass) constraintHolder.getValue()).getClazz();
-				Constraint constraint = constraintClass.newInstance();
-				if (constraint.isCheckable(checkingType, isFlushTime))
-					constraint.check(getComposites().get(Statics.BASE_POSITION), getMeta(), ((AxedPropertyClass) constraintHolder.getValue()).getAxe());
-			} catch (InstantiationException | IllegalAccessException e) {
-				// TODO KK
-				assert false : e;
+				Constraint constraint = newConstraint(constraintHolder);
+				if (isCheckable(constraint, checkingType, isFlushTime)) {
+					int axe = ((AxedPropertyClass) constraintHolder.getValue()).getAxe();
+					constraint.check(axe == Statics.NO_POSITION ? this : getComposites().get(axe), getMeta());
+				}
 			} catch (ConstraintViolationException e) {
 				getRoot().discardWithException(e);
 			}
-		}
 	}
 
-	private static Comparator<Class<Constraint>> priorityConstraintComparator = new Comparator<Class<Constraint>>() {
+	private List<T> getActivedConstraints() {
+		return getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) x.getValue()).getClazz())).filter(x -> {
+			if (((AxedPropertyClass) x.getValue()).getAxe() != Statics.NO_POSITION) {
+				Iterator<T> holders = getHolders(x).iterator();
+				return holders.hasNext() && !holders.next().getValue().equals(Boolean.FALSE);
+			}
+			return true;
+		}).sorted(priorityConstraintComparator).collect(Collectors.toList());
+	}
 
+	private Constraint newConstraint(T constraintHolder) {
+		try {
+			return (Constraint) ((AxedPropertyClass) constraintHolder.getValue()).getClazz().newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			getRoot().discardWithException(e);
+		}
+		return null;
+	}
+
+	private boolean isCheckable(Constraint constraint, CheckingType checkingType, boolean isFlushTime) {
+		return (isFlushTime || constraint.isImmediatelyCheckable()) && constraint.isCheckedAt(this, checkingType);
+	}
+
+	void checkConsistency(CheckingType checkingType, boolean isFlushTime) {
+		// TODO impl
+	}
+
+	private final Comparator<T> priorityConstraintComparator = new Comparator<T>() {
+
+		@SuppressWarnings("unchecked")
 		@Override
-		public int compare(Class<Constraint> constraint, Class<Constraint> compareConstraint) {
-			// TODO compare priority
-			return 0;
+		public int compare(T constraintHolder, T compareConstraintHolder) {
+			return Constraint.getPriorityOf((Class<Constraint>) ((AxedPropertyClass) constraintHolder.getValue()).getClazz()) < Constraint.getPriorityOf((Class<Constraint>) ((AxedPropertyClass) compareConstraintHolder.getValue()).getClazz()) ? -1 : 1;
 		}
 	};
 

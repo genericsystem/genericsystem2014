@@ -2,8 +2,10 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.Optional;
+
 import org.genericsystem.api.core.IVertexBase;
 import org.genericsystem.api.exception.ConstraintViolationException;
+import org.genericsystem.kernel.annotations.Priority;
 import org.genericsystem.kernel.constraints.PropertyConstraint;
 import org.genericsystem.kernel.constraints.RequiredConstraint;
 import org.genericsystem.kernel.constraints.SingularConstraint;
@@ -128,14 +130,22 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 
 	public static interface Constraint extends SystemProperty {
 
-		public enum CheckingType {
+		enum CheckingType {
 			CHECK_ON_ADD, CHECK_ON_REMOVE
 		}
 
-		void check(IVertex base, IVertex attribute, int pos) throws ConstraintViolationException;
+		static int getPriorityOf(Class<Constraint> clazz) {
+			Priority priority = clazz.getAnnotation(Priority.class);
+			return priority != null ? priority.value() : 0;
+		}
 
-		default boolean isCheckable(CheckingType checkingType, boolean isFlushTime) {
-			// TODO
+		void check(IVertex base, IVertex attribute) throws ConstraintViolationException;
+
+		default boolean isCheckedAt(IVertex modified, CheckingType checkingType) {
+			return checkingType.equals(CheckingType.CHECK_ON_ADD);
+		}
+
+		default boolean isImmediatelyCheckable() {
 			return true;
 		}
 

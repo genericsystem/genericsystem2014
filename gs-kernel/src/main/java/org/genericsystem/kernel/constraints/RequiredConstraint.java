@@ -7,7 +7,7 @@ import org.genericsystem.kernel.IVertex;
 public class RequiredConstraint implements Constraint {
 
 	@Override
-	public void check(IVertex base, IVertex attribute, int pos) throws ConstraintViolationException {
+	public void check(IVertex base, IVertex attribute) throws ConstraintViolationException {
 		// TODO Auto-generated method stub
 	}
 }
