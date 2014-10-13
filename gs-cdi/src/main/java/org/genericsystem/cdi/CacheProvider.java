@@ -1,12 +1,10 @@
 package org.genericsystem.cdi;
 
 import java.io.Serializable;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-
 import org.genericsystem.cache.Cache;
 import org.genericsystem.cache.Engine;
 
@@ -22,7 +20,7 @@ public class CacheProvider implements Serializable {
 
 	@PostConstruct
 	public void init() {
-		currentCache = new Cache(engine);
+		currentCache = engine.newCache();
 	}
 
 	public void mountNewCache() {
@@ -34,7 +32,7 @@ public class CacheProvider implements Serializable {
 	}
 
 	public void discardCurrentCache() {
-		currentCache = currentCache.discardAndUnmount();
+		currentCache = currentCache.clearAndUnmount();
 	}
 
 	@Produces
@@ -42,7 +40,7 @@ public class CacheProvider implements Serializable {
 		return currentCache;
 	}
 
-	public void setCurrentCache(Cache<?> cache) {
+	public void setCurrentCache(Cache<?, ?, ?, ?> cache) {
 		this.currentCache = cache;
 	}
 
