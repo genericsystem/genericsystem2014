@@ -112,30 +112,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		return newT();
 	}
 
-	void checkDependsMetaComponents() {
-		if (!(getMeta().compositesDepends(getComposites(), getMeta().getComposites())))
-			getRoot().discardWithException(new IllegalStateException("Inconsistant components : " + getComposites() + " " + getMeta().getComposites()));
-	}
-
-	void checkSupers() {
-		supers.forEach(AbstractVertex::checkIsAlive);
-		if (!supers.stream().allMatch(superVertex -> superVertex.getLevel() == getLevel()))
-			getRoot().discardWithException(new IllegalStateException("Inconsistant supers : " + supers));
-		if (!supers.stream().allMatch(superVertex -> getMeta().inheritsFrom(superVertex.getMeta())))
-			getRoot().discardWithException(new IllegalStateException("Inconsistant supers : " + supers));
-		if (!supers.stream().noneMatch(this::equals))
-			getRoot().discardWithException(new IllegalStateException("Supers loop detected : " + info()));
-		if (supers.stream().anyMatch(superVertex -> Objects.equals(superVertex.getValue(), getValue()) && superVertex.getComposites().equals(getComposites()) && getMeta().inheritsFrom(superVertex.getMeta())))
-			getRoot().discardWithException(new IllegalStateException("Collision detected : " + info()));
-	}
-
-	void checkDependsSuperComposites() {
-		getSupers().forEach(superVertex -> {
-			if (!superVertex.isSuperOf(getMeta(), supers, getValue(), getComposites()))
-				getRoot().discardWithException(new IllegalStateException("Inconsistant composites : " + getComposites()));
-		});
-	}
-
 	@Override
 	public List<T> getSupers() {
 		return supers;
@@ -595,13 +571,51 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		return getKeys().filter(x -> Objects.equals(x.getValue(), property)).findFirst();
 	}
 
+	void checkSystemConstraints(CheckingType checkingType, boolean isFlushTime) {
+		checkDependsMetaComponents();
+		checkSupers();
+		checkDependsSuperComposites();
+		for (Class<? extends Constraint> constraintClass : IRoot.SYSTEM_CONSTRAINTS)
+			try {
+				Constraint constraint = constraintClass.newInstance();
+				if (isCheckable(constraint, checkingType, isFlushTime))
+					constraint.check(this, this);
+			} catch (InstantiationException | IllegalAccessException | ConstraintViolationException e) {
+				getRoot().discardWithException(e);
+			}
+	}
+
+	private void checkDependsMetaComponents() {
+		if (!(getMeta().compositesDepends(getComposites(), getMeta().getComposites())))
+			getRoot().discardWithException(new IllegalStateException("Inconsistant components : " + getComposites() + " " + getMeta().getComposites()));
+	}
+
+	private void checkSupers() {
+		supers.forEach(AbstractVertex::checkIsAlive);
+		if (!supers.stream().allMatch(superVertex -> superVertex.getLevel() == getLevel()))
+			getRoot().discardWithException(new IllegalStateException("Inconsistant supers : " + supers));
+		if (!supers.stream().allMatch(superVertex -> getMeta().inheritsFrom(superVertex.getMeta())))
+			getRoot().discardWithException(new IllegalStateException("Inconsistant supers : " + supers));
+		if (!supers.stream().noneMatch(this::equals))
+			getRoot().discardWithException(new IllegalStateException("Supers loop detected : " + info()));
+		if (supers.stream().anyMatch(superVertex -> Objects.equals(superVertex.getValue(), getValue()) && superVertex.getComposites().equals(getComposites()) && getMeta().inheritsFrom(superVertex.getMeta())))
+			getRoot().discardWithException(new IllegalStateException("Collision detected : " + info()));
+	}
+
+	private void checkDependsSuperComposites() {
+		getSupers().forEach(superVertex -> {
+			if (!superVertex.isSuperOf(getMeta(), supers, getValue(), getComposites()))
+				getRoot().discardWithException(new IllegalStateException("Inconsistant composites : " + getComposites()));
+		});
+	}
+
 	void checkConstraints(CheckingType checkingType, boolean isFlushTime) {
 		for (T constraintHolder : getActivedConstraints())
 			try {
 				Constraint constraint = newConstraint(constraintHolder);
 				if (isCheckable(constraint, checkingType, isFlushTime)) {
 					int axe = ((AxedPropertyClass) constraintHolder.getValue()).getAxe();
-					constraint.check(axe == Statics.NO_POSITION ? this : getComposites().get(axe), getMeta());
+					constraint.check(axe == Statics.NO_POSITION ? this : getComposites().get(axe), getHolders(constraintHolder).iterator().next().getComposites().get(Statics.BASE_POSITION));
 				}
 			} catch (ConstraintViolationException e) {
 				getRoot().discardWithException(e);

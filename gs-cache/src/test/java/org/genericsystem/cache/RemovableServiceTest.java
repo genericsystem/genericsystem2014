@@ -1,6 +1,6 @@
 package org.genericsystem.cache;
 
-import org.genericsystem.api.exception.NotAliveException;
+import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.testng.annotations.Test;
 
@@ -532,6 +532,6 @@ public class RemovableServiceTest extends AbstractTest {
 			public void intercept() {
 				engine.addInstance(vehicle, "Car");
 			}
-		}.assertIsCausedBy(NotAliveException.class);
+		}.assertIsCausedBy(AliveConstraintViolationException.class);
 	}
 }

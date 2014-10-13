@@ -3,7 +3,7 @@ package org.genericsystem.kernel;
 import java.util.List;
 
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.api.exception.NotAliveException;
+import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.kernel.AbstractTest.RollbackCatcher;
 import org.testng.annotations.Test;
 
@@ -24,7 +24,7 @@ public class RelationTest {
 			public void intercept() {
 				carColor.addInstance("myCarColor", myCar, green);
 			}
-		}.assertIsCausedBy(NotAliveException.class);
+		}.assertIsCausedBy(AliveConstraintViolationException.class);
 	}
 
 	public void test001_addInstance_NotAliveException_withMetaRelation() {
@@ -43,7 +43,7 @@ public class RelationTest {
 			public void intercept() {
 				carColor.addInstance("myCarColor", myCar, green);
 			}
-		}.assertIsCausedBy(NotAliveException.class);
+		}.assertIsCausedBy(AliveConstraintViolationException.class);
 	}
 
 	public void test002_addInstance_2components() {

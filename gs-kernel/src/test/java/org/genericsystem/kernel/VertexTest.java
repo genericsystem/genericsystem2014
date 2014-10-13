@@ -3,7 +3,7 @@ package org.genericsystem.kernel;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.genericsystem.api.exception.NotAliveException;
+import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test
@@ -228,7 +228,7 @@ public class VertexTest extends AbstractTest {
 			public void intercept() {
 				engine.addInstance(vehicle, "Car");
 			}
-		}.assertIsCausedBy(NotAliveException.class);
+		}.assertIsCausedBy(AliveConstraintViolationException.class);
 	}
 
 	public void test11() {
@@ -240,7 +240,7 @@ public class VertexTest extends AbstractTest {
 			public void intercept() {
 				vehicle.addInstance("myVehicle");
 			}
-		}.assertIsCausedBy(NotAliveException.class);
+		}.assertIsCausedBy(AliveConstraintViolationException.class);
 	}
 
 	public void test12() {
