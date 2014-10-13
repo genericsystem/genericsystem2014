@@ -1,7 +1,6 @@
 package org.genericsystem.kernel;
 
 import java.util.Arrays;
-
 import org.genericsystem.api.exception.ExistsException;
 import org.testng.annotations.Test;
 
@@ -18,7 +17,7 @@ public class WeakEquivTest extends AbstractTest {
 		Vertex green = color.addInstance("green");
 		Vertex myBmwGreen = carColor.addInstance("myBmwGreen", myBmw, green);
 		Vertex yellow = color.addInstance("yellow");
-		assert !myBmwGreen.equiv(carColor, "myBmwYellow", Arrays.asList(myBmw, yellow));
+		assert myBmwGreen.equiv(carColor, "myBmwYellow", Arrays.asList(myBmw, yellow));
 	}
 
 	public void test002_weakEquiv_Relation_SingularConstraintAndReferencialIntegrity() {
@@ -32,7 +31,7 @@ public class WeakEquivTest extends AbstractTest {
 		Vertex green = color.addInstance("green");
 		Vertex yellow = color.addInstance("yellow");
 		Vertex myBmwGreen = carColor.addInstance("myBmwGreen", myBmw, green);
-		assert myBmwGreen.equiv(carColor, "myBmwYellow", Arrays.asList(myBmw, yellow));
+		assert !myBmwGreen.equiv(carColor, "myBmwYellow", Arrays.asList(myBmw, yellow));
 	}
 
 	public void test003_weakEquiv_Relation_SingularConstraintAndReferencialIntegrity_axeOne() {
@@ -55,7 +54,7 @@ public class WeakEquivTest extends AbstractTest {
 		Vertex color = engine.addInstance("Color");
 		Vertex carColor = engine.addInstance("CarColor", car, color);
 		carColor.enableSingularConstraint(1);
-		carColor.enableReferentialIntegrity(1);
+		carColor.disableReferentialIntegrity(1);
 		Vertex myBmw = car.addInstance("myBmw");
 		Vertex green = color.addInstance("green");
 		Vertex yellow = color.addInstance("yellow");
@@ -75,7 +74,7 @@ public class WeakEquivTest extends AbstractTest {
 		Vertex color = engine.addInstance("Color");
 		Vertex carColor = engine.addInstance("CarColor", car, color);
 		carColor.enableSingularConstraint(1);
-		carColor.enableReferentialIntegrity(1);
+		carColor.disableReferentialIntegrity(1);
 		Vertex myBmw = car.addInstance("myBmw");
 		Vertex green = color.addInstance("green");
 		Vertex yellow = color.addInstance("yellow");
@@ -95,6 +94,6 @@ public class WeakEquivTest extends AbstractTest {
 		Vertex myBmw = engine.addInstance(car, "myBmw");
 		Vertex green = color.addInstance("green");
 		Vertex myBmwGreen = carColor.addInstance("myBmwGreen", myBmw, green);
-		assert myBmwGreen.equiv(carColor, "myBmwYellow", Arrays.asList(myBmw, defaultColor));
+		assert !myBmwGreen.equiv(carColor, "myBmwYellow", Arrays.asList(myBmw, defaultColor));
 	}
 }

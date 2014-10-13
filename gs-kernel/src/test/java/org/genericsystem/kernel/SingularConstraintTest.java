@@ -16,6 +16,7 @@ public class SingularConstraintTest extends AbstractTest {
 		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
 		vehicleColor.enableSingularConstraint(Statics.BASE_POSITION);
 		assert vehicleColor.isSingularConstraintEnabled(Statics.BASE_POSITION);
+		assert !vehicleColor.isReferentialIntegrityEnabled(Statics.BASE_POSITION);
 		myVehicle.addHolder(vehicleColor, "vehicleRed", red);
 		new RollbackCatcher() {
 			@Override

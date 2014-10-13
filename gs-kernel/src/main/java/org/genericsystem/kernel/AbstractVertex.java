@@ -14,7 +14,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.IVertexBase;
 import org.genericsystem.api.core.Snapshot;
@@ -290,10 +289,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		checkSameEngine(composites);
 		checkSameEngine(overrides);
 		T adjustedMeta = adjustMeta(value, composites);
+		// assert adjustedMeta.inheritsFrom((T) this) : adjustedMeta;
+		// log.info("ZZZZZZZZZZZZZZ" + this.info() + "  " + adjustedMeta.info());
 		T equivInstance = adjustedMeta.getDirectEquivInstance(value, composites);
 		if (equivInstance != null)
 			if (throwExistException)
-				getRoot().discardWithException(new ExistsException("Attempts to add an already existing instance : " + equivInstance.info()));
+				getRoot().discardWithException(new ExistsException("An equivalent instance already exists : " + equivInstance.info()));
 			else
 				return equivInstance.equalsRegardlessSupers(adjustedMeta, value, composites) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : equivInstance.update(overrides, value, composites);
 		return rebuildAll(() -> adjustedMeta.buildInstance(clazz, throwExistException, overrides, value, composites).plug(), adjustedMeta.computePotentialDependencies(overrides, value, composites));
@@ -302,22 +303,24 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	boolean dependsFrom(T meta, List<T> overrides, Serializable value, List<T> composites) {
 		return inheritsFrom(meta, value, composites) || getComposites().stream().filter(composite -> composite != null && composite != this).anyMatch(composite -> composite.dependsFrom(meta, overrides, value, composites))
 				|| (!isRoot() && getMeta().dependsFrom(meta, overrides, value, composites)) || (!composites.isEmpty() && compositesDepends(getComposites(), composites) && overrides.stream().anyMatch(override -> override.inheritsFrom(getMeta()))); /*
-																																																														 * isSuperOf
-																																																														 * (
-																																																														 * meta,
-																																																														 * overrides
-																																																														 * ,
-																																																														 * value
-																																																														 * ,
-																																																														 * composites
-																																																														 * )
-																																																														 */
+				 * isSuperOf
+				 * (
+				 * meta,
+				 * overrides
+				 * ,
+				 * value
+				 * ,
+				 * composites
+				 * )
+				 */
 	}
 
 	T getDirectEquivInstance(Serializable value, List<T> composites) {
-		for (T instance : getInstances())
+		for (T instance : getInstances()) {
+			log.info(instance.info() + " --- " + this + " " + value + " " + composites + "  " + instance.equiv(this, value, composites));
 			if (instance.equiv(this, value, composites))
 				return instance;
+		}
 		return null;
 	}
 
@@ -327,7 +330,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		if (getComposites().size() != components.size())
 			return false;// for the moment, not equivalent when component size is different
 		for (int i = 0; i < getComposites().size(); i++)
-			if (isReferentialIntegrityEnabled(i) && isSingularConstraintEnabled(i) && getComposites().get(i).equiv(components.get(i)))
+			if (!isReferentialIntegrityEnabled(i) && isSingularConstraintEnabled(i) && getComposites().get(i).equiv(components.get(i)))
 				return true;
 		for (int i = 0; i < getComposites().size(); i++)
 			if (!getComposites().get(i).equiv(components.get(i)))
@@ -577,8 +580,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {
-	}
+	public static class SystemMap {}
 
 	protected boolean equals(ISignature<?> meta, List<? extends ISignature<?>> supers, Serializable value, List<? extends ISignature<?>> components) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComposites().equals(components) && getSupers().equals(supers);
