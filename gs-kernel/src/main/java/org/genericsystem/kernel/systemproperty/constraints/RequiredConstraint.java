@@ -1,13 +1,24 @@
 package org.genericsystem.kernel.systemproperty.constraints;
 
 import org.genericsystem.api.exception.ConstraintViolationException;
+import org.genericsystem.api.exception.RequiredConstraintViolationException;
 import org.genericsystem.kernel.IVertex;
-import org.genericsystem.kernel.systemproperty.constraints.Constraint;
 
 public class RequiredConstraint implements Constraint {
 
 	@Override
 	public void check(IVertex base, IVertex attribute) throws ConstraintViolationException {
-		// TODO Auto-generated method stub
+		if (base.isConcrete() && base.getHolders(attribute).isEmpty())
+			throw new RequiredConstraintViolationException(base + " has more than one " + attribute);
+	}
+
+	@Override
+	public boolean isCheckedAt(IVertex modified, CheckingType checkingType) {
+		return checkingType.equals(CheckingType.CHECK_ON_ADD) || checkingType.equals(CheckingType.CHECK_ON_REMOVE);
+	}
+
+	@Override
+	public boolean isImmediatelyCheckable() {
+		return false;
 	}
 }

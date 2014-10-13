@@ -599,7 +599,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 				Constraint constraint = newConstraint(constraintHolder);
 				if (isCheckable(constraint, checkingType, isFlushTime)) {
 					int axe = ((AxedPropertyClass) constraintHolder.getValue()).getAxe();
-					constraint.check(axe == Statics.NO_POSITION ? this : getComposites().get(axe), getMeta());
+					constraint.check(axe == Statics.NO_POSITION ? this : getComposites().get(axe), getHolders(constraintHolder).iterator().next().getComposites().get(Statics.BASE_POSITION));
 				}
 			} catch (ConstraintViolationException e) {
 				getRoot().discardWithException(e);
