@@ -7,9 +7,9 @@ import org.genericsystem.api.core.IVertexBase;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 import org.genericsystem.kernel.systemproperty.CascadeRemoveProperty;
 import org.genericsystem.kernel.systemproperty.ReferentialIntegrityProperty;
-import org.genericsystem.kernel.systemproperty.constraints.PropertyConstraint;
-import org.genericsystem.kernel.systemproperty.constraints.RequiredConstraint;
-import org.genericsystem.kernel.systemproperty.constraints.SingularConstraint;
+import org.genericsystem.kernel.systemproperty.constraints.PropertyConstraintImpl;
+import org.genericsystem.kernel.systemproperty.constraints.RequiredConstraintImpl;
+import org.genericsystem.kernel.systemproperty.constraints.SingularConstraintImpl;
 
 public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
 
@@ -71,47 +71,47 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 
 	@Override
 	default T enableSingularConstraint(int pos) {
-		return enableSystemProperty(SingularConstraint.class, pos);
+		return enableSystemProperty(SingularConstraintImpl.class, pos);
 	}
 
 	@Override
 	default T disableSingularConstraint(int pos) {
-		return disableSystemProperty(SingularConstraint.class, pos);
+		return disableSystemProperty(SingularConstraintImpl.class, pos);
 	}
 
 	@Override
 	default boolean isSingularConstraintEnabled(int pos) {
-		return isSystemPropertyEnabled(SingularConstraint.class, pos);
+		return isSystemPropertyEnabled(SingularConstraintImpl.class, pos);
 	}
 
 	@Override
 	default T enablePropertyConstraint() {
-		return enableSystemProperty(PropertyConstraint.class, Statics.NO_POSITION);
+		return enableSystemProperty(PropertyConstraintImpl.class, Statics.NO_POSITION);
 	}
 
 	@Override
 	default T disablePropertyConstraint() {
-		return disableSystemProperty(PropertyConstraint.class, Statics.NO_POSITION);
+		return disableSystemProperty(PropertyConstraintImpl.class, Statics.NO_POSITION);
 	}
 
 	@Override
 	default boolean isPropertyConstraintEnabled() {
-		return isSystemPropertyEnabled(PropertyConstraint.class, Statics.NO_POSITION);
+		return isSystemPropertyEnabled(PropertyConstraintImpl.class, Statics.NO_POSITION);
 	}
 
 	@Override
 	default T enableRequiredConstraint(int pos) {
-		return enableSystemProperty(RequiredConstraint.class, pos);
+		return enableSystemProperty(RequiredConstraintImpl.class, pos);
 	}
 
 	@Override
 	default T disableRequiredConstraint(int pos) {
-		return disableSystemProperty(RequiredConstraint.class, pos);
+		return disableSystemProperty(RequiredConstraintImpl.class, pos);
 	}
 
 	@Override
 	default boolean isRequiredConstraintEnabled(int pos) {
-		return isSystemPropertyEnabled(RequiredConstraint.class, pos);
+		return isSystemPropertyEnabled(RequiredConstraintImpl.class, pos);
 	}
 
 	@Override

@@ -2,8 +2,9 @@ package org.genercisystem.impl;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
+
+import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.ExistsException;
-import org.genericsystem.api.exception.NotAliveException;
 import org.genericsystem.impl.Engine;
 import org.genericsystem.impl.Generic;
 import org.genericsystem.kernel.Statics;
@@ -156,7 +157,7 @@ public class GenericTest extends AbstractTest {
 			public void intercept() {
 				engine.addInstance(vehicle, "Car");
 			}
-		}.assertIsCausedBy(NotAliveException.class);
+		}.assertIsCausedBy(AliveConstraintViolationException.class);
 	}
 
 	public void unwrapDependenciesTest() {

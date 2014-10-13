@@ -2,7 +2,9 @@ package org.genericsystem.api.core;
 
 import java.io.Serializable;
 import java.util.List;
+
 import javax.json.JsonObject;
+
 import org.genericsystem.api.exception.RollbackException;
 
 /**

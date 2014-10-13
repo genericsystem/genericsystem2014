@@ -3,7 +3,7 @@ package org.genericsystem.kernel;
 import java.util.Objects;
 
 import org.genericsystem.api.core.IVertexBase;
-import org.genericsystem.api.exception.NotAliveException;
+import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +24,7 @@ public interface IAncestors<T extends AbstractVertex<T, U>, U extends IRoot<T, U
 	@Override
 	default void checkIsAlive() {
 		if (!equals(getAlive()))
-			getRoot().discardWithException(new NotAliveException(info()));
+			getRoot().discardWithException(new AliveConstraintViolationException(info()));
 	}
 
 	@Override
