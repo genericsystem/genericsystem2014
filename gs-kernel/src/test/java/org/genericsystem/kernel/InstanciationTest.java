@@ -3,7 +3,6 @@ package org.genericsystem.kernel;
 import java.util.Arrays;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.exception.ExistsException;
 import org.testng.annotations.Test;
 
@@ -125,7 +124,7 @@ public class InstanciationTest extends AbstractTest {
 
 			@Override
 			public void intercept() {
-				root.addInstance(Arrays.asList(vehicle), "Vehicle");
+				root.addInstance(vehicle, "Vehicle");
 
 			}
 		}.assertIsCausedBy(ExistsException.class);

@@ -53,8 +53,9 @@ public class WeakEquivTest extends AbstractTest {
 		Vertex car = engine.addInstance("Car");
 		Vertex color = engine.addInstance("Color");
 		Vertex carColor = engine.addInstance("CarColor", car, color);
-		carColor.enableSingularConstraint(1);
-		carColor.disableReferentialIntegrity(1);
+		carColor.enableSingularConstraint(Statics.TARGET_POSITION);
+		carColor.disableReferentialIntegrity(Statics.TARGET_POSITION);
+		assert !carColor.isReferentialIntegrityEnabled(Statics.TARGET_POSITION);
 		Vertex myBmw = car.addInstance("myBmw");
 		Vertex green = color.addInstance("green");
 		Vertex yellow = color.addInstance("yellow");
@@ -64,6 +65,7 @@ public class WeakEquivTest extends AbstractTest {
 			@Override
 			public void intercept() {
 				Vertex myBmwGreen2 = carColor.addInstance(myBmwGreen, "myBmwGreen2", myBmw, green);
+				assert false : green.getComponents().info();
 			}
 		}.assertIsCausedBy(ExistsException.class);
 	}

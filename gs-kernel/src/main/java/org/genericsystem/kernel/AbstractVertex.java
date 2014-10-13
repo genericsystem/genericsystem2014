@@ -265,14 +265,15 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		checkSameEngine(composites);
 		checkSameEngine(overrides);
 		T adjustedMeta = adjustMeta(value, composites);
-		// assert adjustedMeta.inheritsFrom((T) this) : adjustedMeta;
-		// log.info("ZZZZZZZZZZZZZZ" + this.info() + "  " + adjustedMeta.info());
-		T equivInstance = adjustedMeta.getDirectEquivInstance(value, composites);
-		if (equivInstance != null)
-			if (throwExistException)
-				getRoot().discardWithException(new ExistsException("An equivalent instance already exists : " + equivInstance.info()));
-			else
+		if (!throwExistException) {
+			T equivInstance = adjustedMeta.getDirectEquivInstance(value, composites);
+			if (equivInstance != null)
 				return equivInstance.equalsRegardlessSupers(adjustedMeta, value, composites) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : equivInstance.update(overrides, value, composites);
+		} else {
+			T equivInstance = adjustedMeta.getDirectInstance(value, composites);
+			if (equivInstance != null)
+				getRoot().discardWithException(new ExistsException("An equivalent instance already exists : " + equivInstance.info()));
+		}
 		return rebuildAll(() -> adjustedMeta.buildInstance(clazz, throwExistException, overrides, value, composites).plug(), adjustedMeta.computePotentialDependencies(overrides, value, composites));
 	}
 
@@ -292,11 +293,9 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	}
 
 	T getDirectEquivInstance(Serializable value, List<T> composites) {
-		for (T instance : getInstances()) {
-			log.info(instance.info() + " --- " + this + " " + value + " " + composites + "  " + instance.equiv(this, value, composites));
+		for (T instance : getInstances())
 			if (instance.equiv(this, value, composites))
 				return instance;
-		}
 		return null;
 	}
 
