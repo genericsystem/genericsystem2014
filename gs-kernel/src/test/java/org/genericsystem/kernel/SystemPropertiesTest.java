@@ -13,17 +13,17 @@ public class SystemPropertiesTest extends AbstractTest {
 		power.enablePropertyConstraint();
 		power.enableReferentialIntegrity(0);
 		assert power.isPropertyConstraintEnabled();
-		assert power.isReferentialIntegrityConstraintEnabled(0);
+		assert power.isReferentialIntegrityEnabled(0);
 		power.disablePropertyConstraint();
 		power.disableReferentialIntegrity(0);
 		power.disablePropertyConstraint();
 		assert !power.isPropertyConstraintEnabled();
-		assert !power.isReferentialIntegrityConstraintEnabled(0);
+		assert !power.isReferentialIntegrityEnabled(0);
 		power.enablePropertyConstraint();
 		power.enableReferentialIntegrity(0);
 		power.enablePropertyConstraint();
 		assert power.isPropertyConstraintEnabled();
-		assert power.isReferentialIntegrityConstraintEnabled(0);
+		assert power.isReferentialIntegrityEnabled(0);
 	}
 
 	public void test002_inheritedConstraint() {
@@ -37,17 +37,17 @@ public class SystemPropertiesTest extends AbstractTest {
 		power.enableReferentialIntegrity(0);
 		power.enablePropertyConstraint();
 		assert carPower.isPropertyConstraintEnabled();
-		assert carPower.isReferentialIntegrityConstraintEnabled(0);
+		assert carPower.isReferentialIntegrityEnabled(0);
 		power.disablePropertyConstraint();
 		power.disableReferentialIntegrity(0);
 		power.disablePropertyConstraint();
 		assert !carPower.isPropertyConstraintEnabled();
-		assert !carPower.isReferentialIntegrityConstraintEnabled(0);
+		assert !carPower.isReferentialIntegrityEnabled(0);
 		power.enablePropertyConstraint();
 		power.enableReferentialIntegrity(0);
 		power.enablePropertyConstraint();
 		assert carPower.isPropertyConstraintEnabled();
-		assert carPower.isReferentialIntegrityConstraintEnabled(0);
+		assert carPower.isReferentialIntegrityEnabled(0);
 	}
 
 	public void test003_inheritedModifiedConstraint() {

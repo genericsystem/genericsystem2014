@@ -226,7 +226,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 					for (T component : generic.getComponents())
 						if (!generic.equals(component)) {
 							for (int compositePos = 0; compositePos < component.getComposites().size(); compositePos++)
-								if (/* !compositeDependency.isAutomatic() && */component.getComposites().get(compositePos).equals(generic) && !contains(component) && component.isReferentialIntegrityConstraintEnabled(compositePos))
+								if (/* !compositeDependency.isAutomatic() && */component.getComposites().get(compositePos).equals(generic) && !contains(component) && component.isReferentialIntegrityEnabled(compositePos))
 									getRoot().discardWithException(new ReferentialIntegrityConstraintViolationException(component + " is Referential Integrity for ancestor " + generic + " by component position : " + compositePos));
 							visit(component);
 						}
@@ -327,7 +327,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		if (getComposites().size() != components.size())
 			return false;// for the moment, not equivalent when component size is different
 		for (int i = 0; i < getComposites().size(); i++)
-			if (isReferentialIntegrityConstraintEnabled(i) && isSingularConstraintEnabled(i) && getComposites().get(i).equiv(components.get(i)))
+			if (isReferentialIntegrityEnabled(i) && isSingularConstraintEnabled(i) && getComposites().get(i).equiv(components.get(i)))
 				return true;
 		for (int i = 0; i < getComposites().size(); i++)
 			if (!getComposites().get(i).equiv(components.get(i)))
@@ -608,11 +608,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 
 	private List<T> getActivedConstraints() {
 		return getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) x.getValue()).getClazz())).filter(x -> {
-			if (((AxedPropertyClass) x.getValue()).getAxe() != Statics.NO_POSITION) {
-				Iterator<T> holders = getHolders(x).iterator();
-				return holders.hasNext() && !holders.next().getValue().equals(Boolean.FALSE);
-			}
-			return true;
+			Iterator<T> holders = getHolders(x).iterator();
+			return holders.hasNext() && !holders.next().getValue().equals(Boolean.FALSE);
 		}).sorted(priorityConstraintComparator).collect(Collectors.toList());
 	}
 

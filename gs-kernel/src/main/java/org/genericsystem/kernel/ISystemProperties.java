@@ -65,7 +65,7 @@ public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRo
 	}
 
 	@Override
-	default boolean isReferentialIntegrityConstraintEnabled(int pos) {
+	default boolean isReferentialIntegrityEnabled(int pos) {
 		return isSystemPropertyEnabled(ReferentialIntegrityProperty.class, pos);
 	}
 

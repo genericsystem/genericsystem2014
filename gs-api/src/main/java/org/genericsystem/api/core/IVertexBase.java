@@ -463,7 +463,7 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 *            Use Statics.NO_POSITION for no axed properties.
 	 * @return true if this vertex is referential integrity
 	 */
-	boolean isReferentialIntegrityConstraintEnabled(int pos);
+	boolean isReferentialIntegrityEnabled(int pos);
 
 	/**
 	 *
