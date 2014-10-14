@@ -73,6 +73,7 @@ public class AttributesTest extends AbstractTest {
 	}
 
 	public void test1AttributWith2LevelsInheritance1AttributOnFistChild() {
+
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
 		Vertex car = root.addInstance(vehicle, "Car");
