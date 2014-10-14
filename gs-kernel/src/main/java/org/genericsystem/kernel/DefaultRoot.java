@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import org.genericsystem.api.core.IRoot;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.systemproperty.constraints.AliveConstraintImpl;
@@ -49,66 +48,52 @@ public interface DefaultRoot<T extends AbstractVertex<T, U>, U extends DefaultRo
 	@Override
 	public T getAlive();
 
+	@Override
 	default T addType(Serializable value) {
 		return addInstance(value, coerceToTArray());
 	}
 
+	@Override
 	default T addType(T override, Serializable value) {
 		return addInstance(override, value, coerceToTArray());
 	}
 
+	@Override
 	default T addType(List<T> overrides, Serializable value) {
 		return addInstance(overrides, value, coerceToTArray());
 	}
 
+	@Override
 	default T setType(Serializable value) {
 		return setInstance(value, coerceToTArray());
 	}
 
+	@Override
 	default T setType(T override, Serializable value) {
 		return setInstance(override, value, coerceToTArray());
 	}
 
+	@Override
 	default T setType(List<T> overrides, Serializable value) {
 		return setInstance(overrides, value, coerceToTArray());
 	}
 
+	@Override
 	default T addTree(Serializable value) {
 		return addTree(value, 1);
 	}
 
-	default T addTree(T override, Serializable value) {
-		return addTree(override, value, 1);
-	}
-
-	default T addTree(List<T> overrides, Serializable value) {
-		return addTree(overrides, value, 1);
-	}
-
+	@Override
 	default T addTree(Serializable value, int parentsCount) {
 		return addInstance(value, coerceToTArray(new Object[parentsCount]));
 	}
 
-	default T addTree(T override, Serializable value, int parentsCount) {
-		return addInstance(override, value, coerceToTArray(new Object[parentsCount]));
-	}
-
-	default T addTree(List<T> overrides, Serializable value, int parentsCount) {
-		return addInstance(overrides, value, coerceToTArray(new Object[parentsCount]));
-	}
-
+	@Override
 	default T setTree(Serializable value) {
 		return setTree(value, 1);
 	}
 
-	default T setTree(T override, Serializable value) {
-		return setTree(override, value, 1);
-	}
-
-	default T setTree(List<T> overrides, Serializable value) {
-		return setTree(overrides, value, 1);
-	}
-
+	@Override
 	@SuppressWarnings("unchecked")
 	default T setTree(Serializable value, int parentsCount) {
 		return setInstance(value, (T[]) new Object[parentsCount]);
