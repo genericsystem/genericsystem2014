@@ -701,6 +701,30 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 	@SuppressWarnings("unchecked")
 	T setInstance(List<T> overrides, Serializable value, T... composites);
 
+	T addNode(Serializable value);
+
+	T addNode(Serializable value, int parentsNumber);
+
+	T setNode(Serializable value);
+
+	T setNode(Serializable value, int parentsNumber);
+
+	T addNode(T override, Serializable value);
+
+	T addNode(T override, Serializable value, int parentsNumber);
+
+	T setNode(T override, Serializable value);
+
+	T setNode(T override, Serializable value, int parentsNumber);
+
+	T addNode(List<T> overrides, Serializable value);
+
+	T addNode(List<T> overrides, Serializable value, int parentsNumber);
+
+	T setNode(List<T> overrides, Serializable value);
+
+	T setNode(List<T> overrides, Serializable value, int parentsNumber);
+
 	/**
 	 * Returns a new attribute on this type that satisfies the specified value and targets
 	 *

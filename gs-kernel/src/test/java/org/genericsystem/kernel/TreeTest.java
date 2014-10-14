@@ -9,17 +9,19 @@ public class TreeTest extends AbstractTest {
 
 	public void test001() {
 		Root root = new Root();
-		Vertex tree = root.addInstance("Tree", new Vertex[] { null });
+		Vertex tree = root.addTree("Tree");
 		assert root.getMetaAttribute().equals(tree.getMeta());
 		assert tree.getComposites().contains(tree);
 		assert tree.getComposites().size() == 1;
 		assert tree.getSupers().isEmpty();
+
+		// TODO: Ajouter un atrribut sur une instance
 	}
 
 	public void test002() {
 		Root root = new Root();
 		Vertex tree = root.addTree("Tree");
-		Vertex treeRoot = tree.addInstance("treeRoot", new Vertex[] { null });
+		Vertex treeRoot = tree.addNode("treeRoot");
 
 		assert tree.equals(treeRoot.getMeta());
 		assert treeRoot.getComposites().contains(treeRoot);

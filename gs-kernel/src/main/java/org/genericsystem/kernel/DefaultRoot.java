@@ -85,16 +85,16 @@ public interface DefaultRoot<T extends AbstractVertex<T, U>, U extends DefaultRo
 		return addTree(overrides, value, 1);
 	}
 
-	default T addTree(Serializable value, int parentsCount) {
-		return addInstance(value, coerceToTArray(new Object[parentsCount]));
+	default T addTree(Serializable value, int parentsNumber) {
+		return addInstance(value, coerceToTArray(new Object[parentsNumber]));
 	}
 
-	default T addTree(T override, Serializable value, int parentsCount) {
-		return addInstance(override, value, coerceToTArray(new Object[parentsCount]));
+	default T addTree(T override, Serializable value, int parentsNumber) {
+		return addInstance(override, value, coerceToTArray(new Object[parentsNumber]));
 	}
 
-	default T addTree(List<T> overrides, Serializable value, int parentsCount) {
-		return addInstance(overrides, value, coerceToTArray(new Object[parentsCount]));
+	default T addTree(List<T> overrides, Serializable value, int parentsNumber) {
+		return addInstance(overrides, value, coerceToTArray(new Object[parentsNumber]));
 	}
 
 	default T setTree(Serializable value) {
@@ -109,19 +109,16 @@ public interface DefaultRoot<T extends AbstractVertex<T, U>, U extends DefaultRo
 		return setTree(overrides, value, 1);
 	}
 
-	@SuppressWarnings("unchecked")
-	default T setTree(Serializable value, int parentsCount) {
-		return setInstance(value, (T[]) new Object[parentsCount]);
+	default T setTree(Serializable value, int parentsNumber) {
+		return setInstance(value, coerceToTArray(new Object[parentsNumber]));
 	}
 
-	@SuppressWarnings("unchecked")
-	default T setTree(T override, Serializable value, int parentsCount) {
-		return setInstance(override, value, (T[]) new Object[parentsCount]);
+	default T setTree(T override, Serializable value, int parentsNumber) {
+		return setInstance(override, value, coerceToTArray(new Object[parentsNumber]));
 	}
 
-	@SuppressWarnings("unchecked")
-	default T setTree(List<T> overrides, Serializable value, int parentsCount) {
-		return setInstance(overrides, value, (T[]) new Object[parentsCount]);
+	default T setTree(List<T> overrides, Serializable value, int parentsNumber) {
+		return setInstance(overrides, value, coerceToTArray(new Object[parentsNumber]));
 	}
 
 }
