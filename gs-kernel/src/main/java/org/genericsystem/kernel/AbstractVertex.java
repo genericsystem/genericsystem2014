@@ -280,16 +280,16 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	boolean dependsFrom(T meta, List<T> overrides, Serializable value, List<T> composites) {
 		return inheritsFrom(meta, value, composites) || getComposites().stream().filter(composite -> composite != null && composite != this).anyMatch(composite -> composite.dependsFrom(meta, overrides, value, composites))
 				|| (!isRoot() && getMeta().dependsFrom(meta, overrides, value, composites)) || (!composites.isEmpty() && compositesDepends(getComposites(), composites) && overrides.stream().anyMatch(override -> override.inheritsFrom(getMeta()))); /*
-																																																														 * isSuperOf
-																																																														 * (
-																																																														 * meta,
-																																																														 * overrides
-																																																														 * ,
-																																																														 * value
-																																																														 * ,
-																																																														 * composites
-																																																														 * )
-																																																														 */
+				 * isSuperOf
+				 * (
+				 * meta,
+				 * overrides
+				 * ,
+				 * value
+				 * ,
+				 * composites
+				 * )
+				 */
 	}
 
 	T getDirectEquivInstance(Serializable value, List<T> composites) {
@@ -609,6 +609,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	}
 
 	void checkConstraints(CheckingType checkingType, boolean isFlushTime) {
+
 		for (T constraintHolder : getActivedConstraints())
 			try {
 				Constraint constraint = newConstraint(constraintHolder);
