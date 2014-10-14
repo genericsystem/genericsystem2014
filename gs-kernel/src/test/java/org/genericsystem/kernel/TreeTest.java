@@ -35,21 +35,22 @@ public class TreeTest extends AbstractTest {
 		assert treeRoot.getSupers().isEmpty();
 	}
 
-	// public void test003() {
-	// Root root = new Root();
-	// Vertex tree = root.addInstance("Tree", new Vertex[] { null });
-	// Vertex treeRoot = tree.addInstance("treeRoot", new Vertex[] { null });
-	// Vertex htmlNode = treeRoot.addAttribute("htmlNode");
-	//
-	// assert tree.getAllInstances().contains(treeRoot);
-	// assert tree.getAllInstances().size() == 1;
-	//
-	// assert treeRoot.getAllInstances().contains(htmlNode);
-	// assert treeRoot.getAllInstances().size() == 1;
-	//
-	// assert treeRoot.getSupers().isEmpty();
-	// assert htmlNode.getSupers().contains(treeRoot);
-	// assert htmlNode.getSupers().size() == 1;
-	//
-	// }
+	public void test003() {
+		// Root root = new Root();
+		// Vertex tree = root.addTree("tree");
+		// Vertex rootNode = tree.addRoot("nodeRoot");
+		// Vertex htmlNode = rootNode.addNode("htmlNode");
+		// Vertex htmlNode2 = rootNode.addInhertingNode("htmlNode2");
+		//
+		// assert tree.getAllInstances().contains(rootNode);
+		// assert tree.getAllInstances().size() == 1;
+		//
+		// assert rootNode.getAllInstances().contains(htmlNode);
+		// assert rootNode.getAllInstances().size() == 1;
+		//
+		// assert rootNode.getSupers().isEmpty();
+		// assert htmlNode.getSupers().contains(rootNode);
+		// assert htmlNode.getSupers().size() == 1;
+
+	}
 }

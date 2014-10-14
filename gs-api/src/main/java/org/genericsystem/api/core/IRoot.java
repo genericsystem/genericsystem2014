@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * @author middleware
+ * @author Nicolas Feybesse
  *
  * @param <T>
  *            the implementation of IRoot used for engine
@@ -24,8 +24,8 @@ public interface IRoot<T> {
 	T setType(List<T> overrides, Serializable value);
 
 	/**
-	 * Return a new attribute on this type with itself as reference that satisfies the specified value
-	 * 
+	 * Return a new tree with the specified value
+	 *
 	 * @param value
 	 *            the expected value
 	 * @return a new tree
@@ -33,19 +33,19 @@ public interface IRoot<T> {
 	T addTree(Serializable value);
 
 	/**
-	 * Return a new attribute on this type with itself as reference that satisfies the specified value and parents count
-	 * 
+	 * Return a new tree with the specified value and number of parents
+	 *
 	 * @param value
 	 *            the expected value
-	 * @param parentsCount
-	 *            the quantity of parents
+	 * @param parentsNumber
+	 *            the number of parents
 	 * @return a new tree
 	 */
-	T addTree(Serializable value, int parentsCount);
+	T addTree(Serializable value, int parentsNumber);
 
 	/**
-	 * Return a new or the existing attribute on this type with itself as reference that satisfies the specified value
-	 * 
+	 * Return a new or the existing tree with the specified value
+	 *
 	 * @param value
 	 *            the expected value
 	 * @return a new tree
@@ -53,110 +53,13 @@ public interface IRoot<T> {
 	T setTree(Serializable value);
 
 	/**
-	 * Return a new or the existing attribute on this type with itself as reference that satisfies the specified value and parents count
-	 * 
+	 * Return a new or the existing tree with the specified value and number of parents
+	 *
 	 * @param value
 	 *            the expected value
-	 * @param parentsCount
-	 *            the quantity of parents
-	 * @return a new attribute
+	 * @param parentsNumber
+	 *            the number of parents
+	 * @return a new or the existing tree
 	 */
-	T setTree(Serializable value, int parentsCount);
-
-	/**
-	 * Return a new attribute on this type with itself as reference that satisfies the specified override and value
-	 * 
-	 * @param override
-	 *            a vertex reference from which the returned attribute shall inherit
-	 * @param value
-	 *            the expected value
-	 * @return a new attribute
-	 */
-	T addTree(T override, Serializable value);
-
-	/**
-	 * Return a new attribute on this type with itself as reference that satisfies the specified override, value and parents count
-	 * 
-	 * @param override
-	 *            a vertex reference from which the returned attribute shall inherit
-	 * @param value
-	 *            the expected value
-	 * @param parentsCount
-	 *            the quantity of parents
-	 * @return a new attribute
-	 */
-	T addTree(T override, Serializable value, int parentsCount);
-
-	/**
-	 * Return a new or the existing attribute on this type with itself as reference that satisfies the specified override and value
-	 * 
-	 * @param override
-	 *            a vertex reference from which the returned attribute shall inherit
-	 * @param value
-	 *            the expected value
-	 * @return a new attribute
-	 */
-	T setTree(T override, Serializable value);
-
-	/**
-	 * Return a new or the existing attribute on this type with itself as reference that satisfies the specified override, value and parents count
-	 * 
-	 * @param override
-	 *            a vertex reference from which the returned attribute shall inherit
-	 * @param value
-	 *            the expected value
-	 * @param parentsCount
-	 *            the quantity of parents
-	 * @return a new attribute
-	 */
-	T setTree(T override, Serializable value, int parentsCount);
-
-	/**
-	 * Return a new attribute on this type with itself as reference that satisfies the specified overrides and value
-	 * 
-	 * @param overrides
-	 *            vertex references from which the returned attribute shall inherit
-	 * @param value
-	 *            the expected value
-	 * @return a new attribute
-	 */
-	T addTree(List<T> overrides, Serializable value);
-
-	/**
-	 * Return a new attribute on this type with itself as reference that satisfies the specified overrides, value and parents count
-	 * 
-	 * @param overrides
-	 *            vertex references from which the returned attribute shall inherit
-	 * @param value
-	 *            the expected value
-	 * @param parentsCount
-	 *            the quantity of parents
-	 * @return a new attribute
-	 */
-	T addTree(List<T> overrides, Serializable value, int parentsCount);
-
-	/**
-	 * Return a new or the existing attribute on this type with itself as reference that satisfies the specified overrides and value
-	 * 
-	 * @param overrides
-	 *            vertex references from which the returned attribute shall inherit
-	 * @param value
-	 *            the expected value
-	 * @return a new attribute
-	 */
-	T setTree(List<T> overrides, Serializable value);
-
-	/**
-	 * Return a new or the existing attribute on this type with itself as reference that satisfies the specified overrides, value and parents count
-	 * 
-	 * @param overrides
-	 *            vertex references from which the returned attribute shall inherit
-	 * @param value
-	 *            the expected value
-	 * @param parentsCount
-	 *            the quantity of parents
-	 * @return a new attribute
-	 */
-	T setTree(List<T> overrides, Serializable value, int parentsCount);
-
+	T setTree(Serializable value, int parentsNumber);
 }
