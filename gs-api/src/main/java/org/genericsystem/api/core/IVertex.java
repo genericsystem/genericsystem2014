@@ -15,7 +15,7 @@ import org.genericsystem.api.exception.RollbackException;
  * @param <U>
  *            the implementation of IVertexBase used for root node
  */
-public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<T, U>> extends ISignature<T> {
+public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> extends ISignature<T> {
 
 	/**
 	 * Indicates whether this vertex is the root of the graph
@@ -65,7 +65,7 @@ public interface IVertexBase<T extends IVertexBase<T, U>, U extends IVertexBase<
 	 * @return true if this instance is equivalent of the service
 	 *
 	 */
-	boolean equiv(IVertexBase<?, ?> vertex);
+	boolean equiv(IVertex<?, ?> vertex);
 
 	/**
 	 * Technical method for create a real array of T implementation for passing safe varags parameter and avoid heap pollution

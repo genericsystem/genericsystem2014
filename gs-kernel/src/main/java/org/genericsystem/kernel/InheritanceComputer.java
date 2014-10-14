@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-class InheritanceComputer<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends HashSet<T> {
+class InheritanceComputer<T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> extends HashSet<T> {
 
 	private static final long serialVersionUID = 1877502935577170921L;
 

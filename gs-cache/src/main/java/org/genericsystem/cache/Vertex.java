@@ -3,9 +3,9 @@ package org.genericsystem.cache;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
-import org.genericsystem.kernel.IVertex;
+import org.genericsystem.kernel.DefaultVertex;
 
-public class Vertex extends AbstractVertex<Vertex, Root> implements IVertex<Vertex, Root> {
+public class Vertex extends AbstractVertex<Vertex, Root> implements DefaultVertex<Vertex, Root> {
 
 	private final Dependencies<Vertex> instances = buildDependencies();
 	private final Dependencies<Vertex> inheritings = buildDependencies();

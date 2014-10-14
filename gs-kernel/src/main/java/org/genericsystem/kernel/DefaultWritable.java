@@ -5,9 +5,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.genericsystem.api.core.IVertexBase;
+import org.genericsystem.api.core.IVertex;
 
-public interface IWritable<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
+public interface DefaultWritable<T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> extends IVertex<T, U> {
 
 	// TODO clean
 	// @Override

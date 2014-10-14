@@ -3,7 +3,7 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.Optional;
 
-import org.genericsystem.api.core.IVertexBase;
+import org.genericsystem.api.core.IVertex;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 import org.genericsystem.kernel.systemproperty.CascadeRemoveProperty;
 import org.genericsystem.kernel.systemproperty.ReferentialIntegrityProperty;
@@ -11,7 +11,7 @@ import org.genericsystem.kernel.systemproperty.constraints.PropertyConstraintImp
 import org.genericsystem.kernel.systemproperty.constraints.RequiredConstraintImpl;
 import org.genericsystem.kernel.systemproperty.constraints.SingularConstraintImpl;
 
-public interface ISystemProperties<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
+public interface DefaultSystemProperties<T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> extends IVertex<T, U> {
 
 	@Override
 	@SuppressWarnings("unchecked")

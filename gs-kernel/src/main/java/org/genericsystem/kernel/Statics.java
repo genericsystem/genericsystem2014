@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import org.genericsystem.api.core.IVertexBase;
+import org.genericsystem.api.core.IVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,7 +131,7 @@ public class Statics {
 		}
 	}
 
-	public static class Supers<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends ArrayList<T> {
+	public static class Supers<T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> extends ArrayList<T> {
 		private static final long serialVersionUID = 6163099887384346235L;
 
 		public Supers(List<T> adds) {
@@ -161,7 +161,7 @@ public class Statics {
 		}
 	}
 
-	public static <T extends IVertexBase<T, ?>> boolean areOverridesReached(List<T> overrides, List<T> supers) {
+	public static <T extends IVertex<T, ?>> boolean areOverridesReached(List<T> overrides, List<T> supers) {
 		return overrides.stream().allMatch(override -> supers.stream().anyMatch(superVertex -> superVertex.inheritsFrom(override)));
 	}
 

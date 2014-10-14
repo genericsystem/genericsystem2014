@@ -2,7 +2,7 @@ package org.genericsystem.kernel.systemproperty;
 
 import java.io.Serializable;
 
-import org.genericsystem.api.core.IVertexBase.SystemProperty;
+import org.genericsystem.api.core.IVertex.SystemProperty;
 
 public class AxedPropertyClass implements Serializable {
 

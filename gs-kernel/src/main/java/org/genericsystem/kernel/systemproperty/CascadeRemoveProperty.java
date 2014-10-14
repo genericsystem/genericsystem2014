@@ -1,6 +1,6 @@
 package org.genericsystem.kernel.systemproperty;
 
-import org.genericsystem.api.core.IVertexBase.SystemProperty;
+import org.genericsystem.api.core.IVertex.SystemProperty;
 
 public class CascadeRemoveProperty implements SystemProperty {
 

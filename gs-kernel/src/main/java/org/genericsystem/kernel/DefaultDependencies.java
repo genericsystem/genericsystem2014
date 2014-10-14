@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.genericsystem.api.core.IVertexBase;
+import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
 
-public interface IDependencies<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
+public interface DefaultDependencies<T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> extends IVertex<T, U> {
 
 	@Override
 	default boolean isAncestorOf(T dependency) {
@@ -21,8 +21,8 @@ public interface IDependencies<T extends AbstractVertex<T, U>, U extends IRoot<T
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getAllInheritings() {
-		return () -> Stream.of((T) this).flatMap(inheriting -> inheriting.getInheritings().stream()).iterator();
-		// return () -> Statics.concat(Stream.of((T) this), inheriting -> inheriting.getAllInheritings().stream()).distinct().iterator();
+		return () -> Stream.concat(Stream.of((T) this), Stream.of((T) this).flatMap(inheriting -> inheriting.getInheritings().stream())).distinct().iterator();
+		// return () -> Statics.concat(Stream.of((T) this), inheriting -> inheriting.getInheritings().stream()).distinct().iterator();
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public interface IDependencies<T extends AbstractVertex<T, U>, U extends IRoot<T
 
 	@SuppressWarnings("unchecked")
 	default Optional<T> getInstanceInAll(List<T> overrides, Serializable value, T... composites) {
-		Stream<T> adjustedMetas = Stream.of((T) this).flatMap(meta -> meta.getInheritings().stream().filter(inheriting -> ((T) IDependencies.this).isAdjusted(inheriting, value, Arrays.asList(composites))));
+		Stream<T> adjustedMetas = Stream.of((T) this).flatMap(meta -> meta.getInheritings().stream().filter(inheriting -> ((T) DefaultDependencies.this).isAdjusted(inheriting, value, Arrays.asList(composites))));
 		return adjustedMetas.map(adjustedMeta -> adjustedMeta.getDirectInstance(overrides, value, Arrays.asList(composites))).findFirst();
 	}
 }

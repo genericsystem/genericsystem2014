@@ -2,10 +2,10 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 
-import org.genericsystem.api.core.IVertexBase;
+import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
 
-public interface IComponentsInheritance<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
+public interface DefaultComponentsInheritance<T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> extends IVertex<T, U> {
 
 	@SuppressWarnings("unchecked")
 	@Override

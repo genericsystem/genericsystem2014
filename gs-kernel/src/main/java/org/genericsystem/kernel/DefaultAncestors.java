@@ -2,14 +2,14 @@ package org.genericsystem.kernel;
 
 import java.util.Objects;
 
-import org.genericsystem.api.core.IVertexBase;
+import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public interface IAncestors<T extends AbstractVertex<T, U>, U extends IRoot<T, U>> extends IVertexBase<T, U> {
+public interface DefaultAncestors<T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> extends IVertex<T, U> {
 
-	static Logger log = LoggerFactory.getLogger(IAncestors.class);
+	static Logger log = LoggerFactory.getLogger(DefaultAncestors.class);
 
 	@Override
 	default boolean isRoot() {
@@ -38,7 +38,7 @@ public interface IAncestors<T extends AbstractVertex<T, U>, U extends IRoot<T, U
 	}
 
 	@Override
-	default boolean equiv(IVertexBase<?, ?> service) {
+	default boolean equiv(IVertex<?, ?> service) {
 		return equals(service) || ((AbstractVertex<?, ?>) this).equiv(service.getMeta(), service.getValue(), service.getComposites());
 	}
 
