@@ -55,4 +55,22 @@ public interface DefaultVertex<T extends AbstractVertex<T, U>, U extends Default
 	default T setNode(List<T> overrides, Serializable value, int parentsNumber) {
 		return setInstance(overrides, value, coerceToTArray(new Object[parentsNumber]));
 	}
+
+	default T addRoot(Serializable value) {
+		return addNode(value);
+	}
+
+	default T setRoot(Serializable value) {
+		return setNode(value);
+	}
+
+	// TODO: Not implemented !
+	default T addInhertingNode(Serializable value) {
+		return null;
+	}
+
+	// TODO: Not implemented !
+	default T setInhertingNode(Serializable value) {
+		return null;
+	}
 }

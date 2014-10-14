@@ -36,21 +36,21 @@ public class TreeTest extends AbstractTest {
 	}
 
 	public void test003() {
-		// Root root = new Root();
-		// Vertex tree = root.addTree("tree");
-		// Vertex rootNode = tree.addRoot("nodeRoot");
-		// Vertex htmlNode = rootNode.addNode("htmlNode");
-		// Vertex htmlNode2 = rootNode.addInhertingNode("htmlNode2");
-		//
-		// assert tree.getAllInstances().contains(rootNode);
-		// assert tree.getAllInstances().size() == 1;
-		//
-		// assert rootNode.getAllInstances().contains(htmlNode);
-		// assert rootNode.getAllInstances().size() == 1;
-		//
-		// assert rootNode.getSupers().isEmpty();
-		// assert htmlNode.getSupers().contains(rootNode);
-		// assert htmlNode.getSupers().size() == 1;
+		Root root = new Root();
+		Vertex tree = root.addTree("tree");
+		Vertex rootNode = tree.addRoot("nodeRoot");
+		Vertex htmlNode = rootNode.addNode("htmlNode");
+		Vertex htmlNode2 = rootNode.addNode("htmlNode2");
+
+		assert tree.getAllInstances().contains(rootNode);
+		assert tree.getAllInstances().size() == 1;
+
+		assert rootNode.getAllInstances().contains(htmlNode);
+		assert rootNode.getAllInstances().size() == 1;
+
+		assert rootNode.getSupers().isEmpty();
+		assert htmlNode.getSupers().contains(rootNode);
+		assert htmlNode.getSupers().size() == 1;
 
 	}
 }

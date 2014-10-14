@@ -725,6 +725,14 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 
 	T setNode(List<T> overrides, Serializable value, int parentsNumber);
 
+	T addRoot(Serializable value);
+
+	T setRoot(Serializable value);
+
+	T addInhertingNode(Serializable value);
+
+	T setInhertingNode(Serializable value);
+
 	/**
 	 * Returns a new attribute on this type that satisfies the specified value and targets
 	 *
