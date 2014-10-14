@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.IVertexBase;
 import org.genericsystem.api.core.Snapshot;
@@ -316,7 +317,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	}
 
 	private void checkSameEngine(List<T> generics) {
-		if (generics.stream().anyMatch(generic -> !generic.getRoot().equals(getRoot())))
+		if (generics.stream().anyMatch(generic -> generic != null && !generic.getRoot().equals(getRoot())))
 			getRoot().discardWithException(new CrossEnginesAssignementsException());
 	}
 
@@ -359,14 +360,17 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	T buildInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
-		int level = getLevel() == 0 && Objects.equals(getValue(), getRoot().getValue()) && getComposites().stream().allMatch(c -> c.isRoot()) && Objects.equals(value, getRoot().getValue()) && components.stream().allMatch(c -> c.isRoot()) ? 0
+	T buildInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> composites) {
+		int level = getLevel() == 0 && Objects.equals(getValue(), getRoot().getValue()) && getComposites().stream().allMatch(c -> c.isRoot()) && Objects.equals(value, getRoot().getValue()) && composites.stream().allMatch(c -> c.isRoot()) ? 0
 				: getLevel() + 1;
 		overrides.forEach(AbstractVertex::checkIsAlive);
-		components.forEach(AbstractVertex::checkIsAlive);
-		List<T> supers = new ArrayList<>(new SupersComputer(level, this, overrides, value, components));
+		composites.forEach(composite -> {
+			if (composite != null)
+				composite.checkIsAlive();
+		});
+		List<T> supers = new ArrayList<>(new SupersComputer(level, this, overrides, value, composites));
 		checkOverridesAreReached(overrides, supers);
-		return newT(clazz, throwExistException, (T) this, supers, value, components);
+		return newT(clazz, throwExistException, (T) this, supers, value, composites);
 	}
 
 	void checkOverridesAreReached(List<T> overrides, List<T> supers) {
@@ -374,12 +378,13 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 			getRoot().discardWithException(new IllegalStateException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
 	}
 
-	static <T extends AbstractVertex<T, U>, U extends IRoot<T, U>> boolean compositesDepends(SingularsLazyCache singulars, List<T> subComponents, List<T> superComponents) {
+	boolean compositesDepends(SingularsLazyCache singulars, List<T> subComponents, List<T> superComponents) {
 		int subIndex = 0;
 		loop: for (T superComponent : superComponents) {
 			for (; subIndex < subComponents.size(); subIndex++) {
 				T subComponent = subComponents.get(subIndex);
-				if (subComponent.isSpecializationOf(superComponent)) {
+				if ((subComponent == null && superComponent != null && this.equals(superComponent)) || (superComponent == null && subComponent != null && equals(subComponent))
+						|| (subComponent != null && superComponent != null && subComponent.isSpecializationOf(superComponent))) {
 					if (singulars.get(subIndex))
 						return true;
 					subIndex++;
@@ -555,7 +560,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {}
+	public static class SystemMap {
+	}
 
 	protected boolean equals(ISignature<?> meta, List<? extends ISignature<?>> supers, Serializable value, List<? extends ISignature<?>> components) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComposites().equals(components) && getSupers().equals(supers);
