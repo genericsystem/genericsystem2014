@@ -81,6 +81,7 @@ public class AttributesTest extends AbstractTest {
 		assert vehicle.getLevel() == 1;
 		assert car.getLevel() == 1;
 		assert power.getLevel() == 1;
+
 		// assert vehicle.getAttributes(root).size() == 0;
 		// assert car.getAttributes(root).size() == 1;
 		assert car.getAttributes(root).contains(power);
