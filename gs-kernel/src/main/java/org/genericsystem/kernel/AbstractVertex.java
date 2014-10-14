@@ -609,6 +609,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	}
 
 	void checkConstraints(CheckingType checkingType, boolean isFlushTime) {
+
 		for (T constraintHolder : getActivedConstraints())
 			try {
 				Constraint constraint = newConstraint(constraintHolder);
