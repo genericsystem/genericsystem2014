@@ -1,5 +1,6 @@
 package org.genericsystem.kernel;
 
+import java.util.Arrays;
 import java.util.stream.Collectors;
 import org.testng.annotations.Test;
 
@@ -37,20 +38,43 @@ public class TreeTest extends AbstractTest {
 	public void test003() {
 		Root root = new Root();
 		Vertex tree = root.addTree("tree");
-		Vertex rootNode = tree.addRoot("rootNode");
-		Vertex htmlNode = rootNode.addSubNode("htmlNode");
-
-		assert tree.equals(htmlNode.getMeta());
-		assert htmlNode.getComposites().contains(rootNode) : htmlNode.detailedInfo();
-		assert htmlNode.getComposites().size() == 1;
-		assert htmlNode.getSupers().isEmpty();
-		assert rootNode.getHolders(tree).contains(htmlNode);
-		assert rootNode.getHolders(tree).contains(htmlNode);
-		assert rootNode.getHolders(tree).size() == 1 : rootNode.getHolders(tree).info();
-
+		Vertex html = tree.addRoot("html");
+		assert html.getMeta().equals(tree);
+		assert html.getComposites().contains(html);
+		assert html.getComposites().size() == 1;
+		assert html.getSupers().isEmpty();
 	}
 
 	public void test004() {
+		Root root = new Root();
+		Vertex tree = root.addTree("tree");
+		Vertex html = tree.addRoot("html");
+		Vertex head = html.addSubNode("head");
+		Vertex body = html.addSubNode("body");
+		Vertex div = body.addSubNode("div");
+
+		assert !html.getSubNodes().contains(html);
+		assert html.getSubNodes().containsAll(Arrays.asList(head, body));
+		assert html.getSubNodes().size() == 2;
+		assert html.getAllSubNodes().containsAll(Arrays.asList(html, head, body, div));
+		assert html.getAllSubNodes().size() == 4;
+
+		assert head.getSubNodes().isEmpty();
+		assert head.getAllSubNodes().contains(head);
+		assert head.getAllSubNodes().size() == 1;
+
+		assert body.getSubNodes().contains(div);
+		assert body.getSubNodes().size() == 1;
+		assert body.getAllSubNodes().containsAll(Arrays.asList(body, div));
+		assert body.getAllSubNodes().size() == 2;
+
+		assert div.getSubNodes().isEmpty();
+		assert div.getAllSubNodes().contains(div);
+		assert div.getAllSubNodes().size() == 1;
+
+	}
+
+	public void test005() {
 		Root root = new Root();
 		Vertex tree = root.addTree("tree");
 		Vertex rootNode = tree.addRoot("rootNode");
