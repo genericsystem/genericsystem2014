@@ -2,9 +2,7 @@ package org.genericsystem.api.core;
 
 import java.io.Serializable;
 import java.util.List;
-
 import javax.json.JsonObject;
-
 import org.genericsystem.api.exception.RollbackException;
 
 /**
@@ -709,29 +707,17 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 
 	T setRoot(Serializable value, int parentsNumber);
 
-	T addRoot(T override, Serializable value);
-
-	T addRoot(T override, Serializable value, int parentsNumber);
-
-	T setRoot(T override, Serializable value);
-
-	T setRoot(T override, Serializable value, int parentsNumber);
-
-	T addRoot(List<T> overrides, Serializable value);
-
-	T addRoot(List<T> overrides, Serializable value, int parentsNumber);
-
-	T setRoot(List<T> overrides, Serializable value);
-
-	T setRoot(List<T> overrides, Serializable value, int parentsNumber);
-
 	T addSubNode(Serializable value);
 
 	T setSubNode(Serializable value);
 
-	T addInhertingNode(Serializable value);
+	T addInheritingSubNode(Serializable value);
 
-	T setInhertingNode(Serializable value);
+	T setInhertingSubNode(Serializable value);
+
+	Snapshot<T> getAllSubNodes();
+
+	Snapshot<T> getSubNodes();
 
 	/**
 	 * Returns a new attribute on this type that satisfies the specified value and targets
