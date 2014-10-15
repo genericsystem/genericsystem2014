@@ -21,36 +21,41 @@ public class TreeTest extends AbstractTest {
 	public void test002() {
 		Root root = new Root();
 		Vertex tree = root.addTree("Tree");
-		Vertex treeRoot = tree.addNode("treeRoot");
+		Vertex rootNode = tree.addRoot("rootNode");
 
-		assert tree.equals(treeRoot.getMeta());
-		assert treeRoot.getComposites().contains(treeRoot);
-		assert treeRoot.getComposites().size() == 1;
-		assert treeRoot.getSupers().isEmpty();
+		assert tree.equals(rootNode.getMeta()) : rootNode.detailedInfo();
+		assert rootNode.getComposites().contains(rootNode);
+		assert rootNode.getComposites().size() == 1;
+		assert rootNode.getSupers().isEmpty();
 
-		assert tree.getInstances().contains(treeRoot);
+		assert tree.getInstances().contains(rootNode);
 		assert tree.getInstances().size() == 1;
-		assert tree.getAllInstances().contains(treeRoot) : tree.getAllInstances().stream().collect(Collectors.toList());
+		assert tree.getAllInstances().contains(rootNode) : tree.getAllInstances().stream().collect(Collectors.toList());
 		assert tree.getAllInstances().size() == 1;
-		assert treeRoot.getSupers().isEmpty();
+		assert rootNode.getSupers().isEmpty();
 	}
 
 	public void test003() {
 		Root root = new Root();
 		Vertex tree = root.addTree("tree");
-		Vertex rootNode = tree.addRoot("nodeRoot");
-		Vertex htmlNode = rootNode.addNode("htmlNode");
-		Vertex htmlNode2 = rootNode.addNode("htmlNode2");
+		Vertex rootNode = tree.addRoot("rootNode");
+		Vertex htmlNode = rootNode.addSubNode("htmlNode");
+		// Vertex headNode = htmlNode.addNode("headNode");
 
-		assert tree.getAllInstances().contains(rootNode);
-		assert tree.getAllInstances().size() == 1;
+		assert tree.equals(htmlNode.getMeta());
+		assert htmlNode.getComposites().contains(rootNode) : htmlNode.detailedInfo();
+		assert htmlNode.getComposites().size() == 1;
+		assert htmlNode.getSupers().isEmpty();
+		assert rootNode.getHolders(tree).contains(htmlNode);
+		assert rootNode.getHolders(tree).size() == 1 : rootNode.getHolders(tree).info();
 
-		assert rootNode.getAllInstances().contains(htmlNode);
-		assert rootNode.getAllInstances().size() == 1;
-
-		assert rootNode.getSupers().isEmpty();
-		assert htmlNode.getSupers().contains(rootNode);
-		assert htmlNode.getSupers().size() == 1;
-
+		// assert rootNode.getHolders(tree).contains(htmlNode);
+		// assert rootNode.getAllInstances().size() == 1;
+		// assert htmlNode.getAllInstances().contains(headNode) : htmlNode.getComponents().stream().collect(Collectors.toList());
+		// assert htmlNode.getAllInstances().size() == 1;
+		//
+		// assert false : htmlNode.detailedInfo();
+		// assert false : headNode.detailedInfo();
+		// assert headNode.getComponents().size() == 1;
 	}
 }
