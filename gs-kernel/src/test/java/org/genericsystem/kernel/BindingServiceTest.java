@@ -52,4 +52,20 @@ public class BindingServiceTest extends AbstractTest {
 
 	}
 
+	public void test004_getInheritingsBygetAttributesTest() {
+		// given
+		Vertex engine = new Root();
+		Vertex animal = engine.addInstance("Animal");// Alone type
+		Vertex machine = engine.addInstance("Machine");
+		Vertex vehicle = engine.addInstance(machine, "Vehicle");
+		Vertex robot = engine.addInstance(machine, "Robot");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex bike = engine.addInstance(vehicle, "Bike");
+		Vertex transformer = engine.addInstance(Arrays.asList(robot, car), "Transformer");
+		Vertex plasticTransformer = engine.addInstance(transformer, "PlasticTransformer");
+
+		assert false : machine.getAttributes(engine).info();
+
+	}
+
 }

@@ -1,7 +1,6 @@
 package org.genericsystem.kernel;
 
 import java.util.stream.Collectors;
-
 import org.testng.annotations.Test;
 
 @Test
@@ -46,6 +45,7 @@ public class TreeTest extends AbstractTest {
 		assert htmlNode.getComposites().contains(rootNode) : htmlNode.detailedInfo();
 		assert htmlNode.getComposites().size() == 1;
 		assert htmlNode.getSupers().isEmpty();
+		assert rootNode.getHolders(tree).contains(htmlNode);
 		assert rootNode.getHolders(tree).contains(htmlNode);
 		assert rootNode.getHolders(tree).size() == 1 : rootNode.getHolders(tree).info();
 
