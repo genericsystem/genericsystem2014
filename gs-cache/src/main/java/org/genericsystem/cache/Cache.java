@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.ConstraintViolationException;
@@ -244,8 +243,8 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U
 		T result = indexInstance(generic.getMeta(), generic);
 		assert result == generic;
 		generic.getSupers().forEach(superGeneric -> indexInheriting(superGeneric, generic));
-		generic.getComposites().forEach(composite -> indexByMeta(composite, generic.getMeta(), generic));
-		generic.getSupers().forEach(superGeneric -> generic.getComposites().forEach(composite -> indexBySuper(composite, superGeneric, generic)));
+		generic.getComposites().stream().filter(composite -> !generic.equals(composite)).forEach(composite -> indexByMeta(composite, generic.getMeta(), generic));
+		generic.getSupers().forEach(superGeneric -> generic.getComposites().stream().filter(composite -> generic.equals(composite)).forEach(composite -> indexBySuper(composite, superGeneric, generic)));
 		simpleAdd(generic);
 		return result;
 	}
@@ -255,8 +254,8 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U
 		if (!result)
 			getEngine().discardWithException(new NotFoundException(generic.info()));
 		generic.getSupers().forEach(superGeneric -> unIndexInheriting(superGeneric, generic));
-		generic.getComposites().forEach(composite -> unIndexByMeta(composite, generic.getMeta(), generic));
-		generic.getSupers().forEach(superGeneric -> generic.getComposites().forEach(composite -> unIndexBySuper(composite, superGeneric, generic)));
+		generic.getComposites().stream().filter(composite -> !generic.equals(composite)).forEach(composite -> unIndexByMeta(composite, generic.getMeta(), generic));
+		generic.getSupers().forEach(superGeneric -> generic.getComposites().stream().filter(composite -> generic.equals(composite)).forEach(composite -> unIndexBySuper(composite, superGeneric, generic)));
 		return result && simpleRemove(generic);
 	}
 
