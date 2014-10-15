@@ -39,7 +39,6 @@ public class TreeTest extends AbstractTest {
 		Vertex tree = root.addTree("tree");
 		Vertex rootNode = tree.addRoot("rootNode");
 		Vertex htmlNode = rootNode.addSubNode("htmlNode");
-		// Vertex headNode = htmlNode.addNode("headNode");
 
 		assert tree.equals(htmlNode.getMeta());
 		assert htmlNode.getComposites().contains(rootNode) : htmlNode.detailedInfo();
@@ -49,13 +48,22 @@ public class TreeTest extends AbstractTest {
 		assert rootNode.getHolders(tree).contains(htmlNode);
 		assert rootNode.getHolders(tree).size() == 1 : rootNode.getHolders(tree).info();
 
-		// assert rootNode.getHolders(tree).contains(htmlNode);
-		// assert rootNode.getAllInstances().size() == 1;
-		// assert htmlNode.getAllInstances().contains(headNode) : htmlNode.getComponents().stream().collect(Collectors.toList());
-		// assert htmlNode.getAllInstances().size() == 1;
-		//
-		// assert false : htmlNode.detailedInfo();
-		// assert false : headNode.detailedInfo();
-		// assert headNode.getComponents().size() == 1;
+	}
+
+	public void test004() {
+		Root root = new Root();
+		Vertex tree = root.addTree("tree");
+		Vertex rootNode = tree.addRoot("rootNode");
+		Vertex htmlNode = rootNode.addSubNode("htmlNode");
+		Vertex bodyNode = htmlNode.addSubNode("bodyNode");
+		Vertex divNode = bodyNode.addSubNode("divNode");
+		Vertex formNode = divNode.addSubNode("formNode");
+
+		assert tree.getAllInstances().contains(rootNode);
+		assert tree.getAllInstances().contains(htmlNode);
+		assert tree.getAllInstances().contains(bodyNode);
+		assert tree.getAllInstances().contains(divNode);
+		assert tree.getAllInstances().contains(formNode);
+		assert tree.getAllInstances().size() == 5;
 	}
 }
