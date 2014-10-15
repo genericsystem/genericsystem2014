@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
 
@@ -21,8 +20,7 @@ public interface DefaultDependencies<T extends AbstractVertex<T, U>, U extends D
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getAllInheritings() {
-		return () -> Stream.concat(Stream.of((T) this), Stream.of((T) this).flatMap(inheriting -> inheriting.getInheritings().stream())).distinct().iterator();
-		// return () -> Statics.concat(Stream.of((T) this), inheriting -> inheriting.getInheritings().stream()).distinct().iterator();
+		return () -> Stream.concat(Stream.of((T) this), getInheritings().stream().flatMap(inheriting -> inheriting.getAllInheritings().stream())).distinct().iterator();
 	}
 
 	@Override

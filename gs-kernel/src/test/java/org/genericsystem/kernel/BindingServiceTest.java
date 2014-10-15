@@ -1,5 +1,6 @@
 package org.genericsystem.kernel;
 
+import java.util.Arrays;
 import org.genericsystem.api.exception.ExistsException;
 import org.testng.annotations.Test;
 
@@ -33,19 +34,22 @@ public class BindingServiceTest extends AbstractTest {
 		}.assertIsCausedBy(ExistsException.class);
 	}
 
-	// public void test003_addSameValueSingular() {
-	// // given
-	// Vertex engine = new Root();
-	// Vertex vehicle = engine.addInstance("Vehicle");
-	// vehicle.setSingularConstraint(0);
-	//
-	// // when
-	// Vertex vehicle2 = engine.addInstance("Vehicle");
-	//
-	// assert vehicle.isAlive();
-	// assert vehicle2.isAlive();
-	// assert "Vehicle".equals(vehicle.getValue());
-	// assert "Vehicle".equals(vehicle2.getValue());
-	// }
+	public void test003_allInheritingsTest() {
+		// given
+		Vertex engine = new Root();
+		Vertex animal = engine.addInstance("Animal");// Alone type
+		Vertex machine = engine.addInstance("Machine");
+		Vertex vehicle = engine.addInstance(machine, "Vehicle");
+		Vertex robot = engine.addInstance(machine, "Robot");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex bike = engine.addInstance(vehicle, "Bike");
+		Vertex transformer = engine.addInstance(Arrays.asList(robot, car), "Transformer");
+		Vertex plasticTransformer = engine.addInstance(transformer, "PlasticTransformer");
+		// then
+		assert !machine.getAllInheritings().contains(animal) : machine.getAllInheritings().info();
+		assert machine.getAllInheritings().containsAll(Arrays.asList(machine, vehicle, robot, car, bike, transformer, plasticTransformer)) : machine.getAllInheritings().info();
+		assert machine.getAllInheritings().size() == 7 : machine.getAllInheritings().info();
+
+	}
 
 }
