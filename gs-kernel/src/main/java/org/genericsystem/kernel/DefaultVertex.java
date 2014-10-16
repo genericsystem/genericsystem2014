@@ -10,22 +10,12 @@ DefaultWritable<T, U>, IVertex<T, U> {
 
 	@Override
 	default T addRoot(Serializable value) {
-		return addRoot(value, 1);
-	}
-
-	@Override
-	default T addRoot(Serializable value, int parentsNumber) {
-		return addInstance(value, coerceToTArray(new Object[parentsNumber]));
+		return addInstance(value, coerceToTArray(new Object[getMeta().getComposites().size()]));
 	}
 
 	@Override
 	default T setRoot(Serializable value) {
-		return setRoot(value, 1);
-	}
-
-	@Override
-	default T setRoot(Serializable value, int parentsNumber) {
-		return setInstance(value, coerceToTArray(new Object[parentsNumber]));
+		return setInstance(value, coerceToTArray(new Object[getMeta().getComposites().size()]));
 	}
 
 	@Override

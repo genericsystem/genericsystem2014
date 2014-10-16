@@ -701,11 +701,7 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 
 	T addRoot(Serializable value);
 
-	T addRoot(Serializable value, int parentsNumber);
-
 	T setRoot(Serializable value);
-
-	T setRoot(Serializable value, int parentsNumber);
 
 	T addSubNode(Serializable value);
 
