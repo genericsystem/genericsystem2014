@@ -2,7 +2,6 @@ package org.genericsystem.cache;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
-
 import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.kernel.Statics;
 import org.testng.annotations.Test;
@@ -83,8 +82,8 @@ public class GenericTest extends AbstractTest {
 		Generic car = engine.addInstance(vehicle, "Car");
 		Generic vehiclePower = engine.addInstance("VehiclePower", vehicle);
 		Generic carPower = engine.addInstance(vehiclePower, "CarPower", car);
-		assert car.getAttributes(engine).contains(carPower) : car.getAttributes(engine);
-		assert !car.getAttributes(engine).contains(vehiclePower) : car.getAttributes(engine);
+		assert car.getAttributes(engine).contains(carPower) : carPower.info();
+		assert !car.getAttributes(engine).contains(vehiclePower) : carPower.info();
 		// assert car.getAttributes(engine).size() == 1;
 	}
 

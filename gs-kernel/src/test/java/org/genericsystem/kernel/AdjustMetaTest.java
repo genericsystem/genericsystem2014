@@ -2,7 +2,6 @@ package org.genericsystem.kernel;
 
 import java.util.Arrays;
 import java.util.Collections;
-
 import org.testng.annotations.Test;
 
 @Test
@@ -32,13 +31,7 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex instance = type2.addInstance("instance");
 		assert instance.getMeta().equals(type2);
 		assert instance.equals(type2.getInstance("instance"));
-
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				type3.addInstance("instance");
-			}
-		}.assertIsCausedBy(IllegalStateException.class);
+		type3.addInstance("instance");
 
 	}
 
