@@ -22,5 +22,4 @@ public class CacheTest extends AbstractTest {
 		assert hashCode == System.identityHashCode(cache);
 
 	}
-
 }

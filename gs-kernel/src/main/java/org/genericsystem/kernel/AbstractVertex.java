@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
@@ -295,11 +296,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 			return false;
 		if (getComposites().size() != composites.size())
 			return false;// for the moment, not equivalent when component size is different
+		List<? extends IVertex<?, ?>> notNullComposites = composites.stream().map(composite -> composite == null ? this : composite).collect(Collectors.toList());
 		for (int i = 0; i < getComposites().size(); i++)
-			if (!isReferentialIntegrityEnabled(i) && isSingularConstraintEnabled(i) && getComposites().get(i).equiv(composites.get(i)))
+			if (!isReferentialIntegrityEnabled(i) && isSingularConstraintEnabled(i) && getComposites().get(i).equiv(notNullComposites.get(i)))
 				return true;
 		for (int i = 0; i < getComposites().size(); i++)
-			if (!getComposites().get(i).equiv(composites.get(i)))
+			if (!getComposites().get(i).equiv(notNullComposites.get(i)))
 				return false;
 		if (!meta.isPropertyConstraintEnabled())
 			return Objects.equals(getValue(), value);
@@ -539,7 +541,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 	}
 
 	boolean equalsRegardlessSupers(IVertex<?, ?> meta, Serializable value, List<? extends IVertex<?, ?>> composites) {
-		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComposites().equals(composites);
+		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComposites().equals(composites.stream().map(composite -> composite == null ? this : composite).collect(Collectors.toList()));
 	}
 
 	// TODO clean
@@ -548,10 +550,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {}
+	public static class SystemMap {
+	}
 
-	protected boolean equals(ISignature<?> meta, List<? extends ISignature<?>> supers, Serializable value, List<? extends ISignature<?>> components) {
-		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComposites().equals(components) && getSupers().equals(supers);
+	protected boolean equals(ISignature<?> meta, List<? extends ISignature<?>> supers, Serializable value, List<? extends ISignature<?>> composites) {
+		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComposites().equals(composites.stream().map(composite -> composite == null ? this : composite).collect(Collectors.toList())) && getSupers().equals(supers);
 	}
 
 	protected Stream<T> getKeys() {
@@ -564,7 +567,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 	}
 
 	void checkSystemConstraints(CheckingType checkingType, boolean isFlushTime) {
-		checkDependsMetaComponents();
+		checkDependsMetaComposites();
 		checkSupers();
 		checkDependsSuperComposites();
 		for (Class<? extends Constraint> constraintClass : DefaultRoot.SYSTEM_CONSTRAINTS)
@@ -577,7 +580,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 			}
 	}
 
-	private void checkDependsMetaComponents() {
+	private void checkDependsMetaComposites() {
 		if (!(getMeta().compositesDepends(getComposites(), getMeta().getComposites())))
 			getRoot().discardWithException(new IllegalStateException("Inconsistant components : " + getComposites() + " " + getMeta().getComposites()));
 	}
