@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.util.Arrays;
+
 import org.genericsystem.api.exception.ExistsException;
 import org.testng.annotations.Test;
 
@@ -60,14 +61,8 @@ public class WeakEquivTest extends AbstractTest {
 		Vertex green = color.addInstance("green");
 		Vertex yellow = color.addInstance("yellow");
 		Vertex myBmwGreen = carColor.addInstance("myBmwGreen", myBmw, green);
-		new RollbackCatcher() {
 
-			@Override
-			public void intercept() {
-				Vertex myBmwGreen2 = carColor.addInstance(myBmwGreen, "myBmwGreen2", myBmw, green);
-				assert false : green.getComponents().info();
-			}
-		}.assertIsCausedBy(ExistsException.class);
+		catchAndCheckCause(() -> carColor.addInstance(myBmwGreen, "myBmwGreen2", myBmw, green), ExistsException.class);
 	}
 
 	public void test005_weakEquiv_Relation_SingularConstraintAndReferencialIntegrity_setInstance() {

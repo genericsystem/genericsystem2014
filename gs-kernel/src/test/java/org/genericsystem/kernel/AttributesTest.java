@@ -57,8 +57,16 @@ public class AttributesTest extends AbstractTest {
 		Vertex myVehicle = vehicle.addInstance("myVehicle");
 		Vertex p123 = power.addInstance("123", myVehicle);
 		Vertex myVehicle123 = power.addInstance("myVehicle123", myVehicle, p123);
+
 		assert myVehicle123.dependsFrom(root, Collections.emptyList(), "Power", Collections.singletonList(vehicle));
 		assert !myVehicle123.inheritsFrom(root, "Power", Collections.singletonList(vehicle));
+	}
+
+	public void test004() {
+		Root root = new Root();
+		Vertex vehicle = root.addInstance("Vehicle");
+		Vertex myVehicle = vehicle.addInstance("myVehicle");
+		catchAndCheckCause(() -> myVehicle.addAttribute("Power", vehicle), IllegalStateException.class);
 	}
 
 	public void test1AttributWith2LevelsInheritance1AttributOnParent() {

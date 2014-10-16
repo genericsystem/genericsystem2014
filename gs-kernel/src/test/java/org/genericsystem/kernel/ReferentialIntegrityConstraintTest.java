@@ -12,12 +12,6 @@ public class ReferentialIntegrityConstraintTest extends AbstractTest {
 		Vertex color = engine.addType("Color");
 		vehicle.addAttribute("VehicleColor", color);
 		engine.getMetaAttribute().enableReferentialIntegrity(Statics.BASE_POSITION);
-		new RollbackCatcher() {
-
-			@Override
-			public void intercept() {
-				vehicle.remove();
-			}
-		}.assertIsCausedBy(ReferentialIntegrityConstraintViolationException.class);
+		catchAndCheckCause(() -> vehicle.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 }

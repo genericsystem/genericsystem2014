@@ -29,13 +29,7 @@ public class MultipleRootsTest extends AbstractTest {
 		Root engine2 = new Root("SecondEngine");
 		Vertex car = engine1.addInstance("Car");
 		Vertex car2 = engine2.addInstance("Car");
-		new RollbackCatcher() {
-
-			@Override
-			public void intercept() {
-				Vertex power = engine1.addInstance("Power", car2);
-			}
-		}.assertIsCausedBy(CrossEnginesAssignementsException.class);
+		catchAndCheckCause(() -> engine1.addInstance("Power", car2), CrossEnginesAssignementsException.class);
 	}
 
 	public void test003_addInstance_attribute() {
@@ -43,13 +37,7 @@ public class MultipleRootsTest extends AbstractTest {
 		Root engine2 = new Root("SecondEngine");
 		Vertex car = engine1.addInstance("Car");
 		Vertex car2 = engine2.addInstance("Car");
-		new RollbackCatcher() {
-
-			@Override
-			public void intercept() {
-				Vertex power = engine2.addInstance("Power", car);
-			}
-		}.assertIsCausedBy(CrossEnginesAssignementsException.class);
+		catchAndCheckCause(() -> engine2.addInstance("Power", car), CrossEnginesAssignementsException.class);
 	}
 
 	public void test004_addInstance_attribute() {
@@ -57,13 +45,7 @@ public class MultipleRootsTest extends AbstractTest {
 		Root engine2 = new Root("SecondEngine");
 		Vertex car = engine1.addInstance("Car");
 		Vertex car2 = engine2.addInstance("Car");
-		new RollbackCatcher() {
-
-			@Override
-			public void intercept() {
-				Vertex power = engine2.addInstance("Power", car);
-			}
-		}.assertIsCausedBy(CrossEnginesAssignementsException.class);
+		catchAndCheckCause(() -> engine2.addInstance("Power", car), CrossEnginesAssignementsException.class);
 	}
 
 	// public void test005_setMetaAttribute_attribute() {
@@ -95,11 +77,7 @@ public class MultipleRootsTest extends AbstractTest {
 		Root engine2 = new Root("SecondEngine");
 		Vertex car = engine2.addInstance("Car");
 		Vertex robot = engine2.addInstance("Robot");
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				Vertex transformer = engine1.addInstance(Arrays.asList(car, robot), "Transformer");
-			}
-		}.assertIsCausedBy(CrossEnginesAssignementsException.class);
+
+		catchAndCheckCause(() -> engine1.addInstance(Arrays.asList(car, robot), "Transformer"), CrossEnginesAssignementsException.class);
 	}
 }

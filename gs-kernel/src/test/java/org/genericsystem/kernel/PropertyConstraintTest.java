@@ -13,13 +13,7 @@ public class PropertyConstraintTest extends AbstractTest {
 		power.enablePropertyConstraint();
 		assert power.isPropertyConstraintEnabled();
 		power.addInstance("123", vehicle);
-		new RollbackCatcher() {
-
-			@Override
-			public void intercept() {
-				power.addInstance("126", vehicle);
-			}
-		}.assertIsCausedBy(ExistsException.class);
+		catchAndCheckCause(() -> power.addInstance("126", vehicle), ExistsException.class);
 	}
 
 	public void test002_enablePropertyConstraint_addInstance() {
@@ -31,13 +25,7 @@ public class PropertyConstraintTest extends AbstractTest {
 		power.enablePropertyConstraint();
 		assert subPower.isPropertyConstraintEnabled();
 		subPower.addInstance("123", vehicle);
-		new RollbackCatcher() {
-
-			@Override
-			public void intercept() {
-				subPower.addInstance("126", vehicle);
-			}
-		}.assertIsCausedBy(ExistsException.class);
+		catchAndCheckCause(() -> subPower.addInstance("126", vehicle), ExistsException.class);
 	}
 
 	public void test003_enablePropertyConstraint_addInstance() {
@@ -50,13 +38,7 @@ public class PropertyConstraintTest extends AbstractTest {
 		power.enablePropertyConstraint();
 		assert subPower.isPropertyConstraintEnabled();
 		subPower.addInstance("123", car);
-		new RollbackCatcher() {
-
-			@Override
-			public void intercept() {
-				subPower.addInstance("126", car);
-			}
-		}.assertIsCausedBy(ExistsException.class);
+		catchAndCheckCause(() -> subPower.addInstance("126", car), ExistsException.class);
 	}
 
 	public void test001_enablePropertyConstraint_setInstance() {

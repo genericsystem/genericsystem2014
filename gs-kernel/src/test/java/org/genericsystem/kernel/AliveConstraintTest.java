@@ -15,12 +15,7 @@ public class AliveConstraintTest extends AbstractTest {
 		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
 		myVehicle.remove();
 		assert !myVehicle.isAlive();
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				myVehicle.addHolder(vehicleColor, "vehicleRed", red);
-			}
-		}.assertIsCausedBy(AliveConstraintViolationException.class);
+		catchAndCheckCause(() -> myVehicle.addHolder(vehicleColor, "vehicleRed", red), AliveConstraintViolationException.class);
 	}
 
 }

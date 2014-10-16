@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.util.Arrays;
+
 import org.genericsystem.api.exception.ExistsException;
 import org.testng.annotations.Test;
 
@@ -24,14 +25,7 @@ public class BindingServiceTest extends AbstractTest {
 		Vertex engine = new Root();
 		engine.addInstance("Vehicle");
 
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				// when
-				engine.addInstance("Vehicle");
-			}
-			// then
-		}.assertIsCausedBy(ExistsException.class);
+		catchAndCheckCause(() -> engine.addInstance("Vehicle"), ExistsException.class);
 	}
 
 	public void test003_allInheritingsTest() {

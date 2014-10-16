@@ -15,12 +15,7 @@ public class AdjustMetaTest extends AbstractTest {
 
 		Vertex instance = type1.addInstance("instance");
 
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				type2.addInstance("instance");
-			}
-		}.assertIsCausedBy(IllegalStateException.class);
+		catchAndCheckCause(() -> type2.addInstance("instance"), IllegalStateException.class);
 	}
 
 	public void test001_AdjustMeta() {
@@ -32,14 +27,7 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex instance = type2.addInstance("instance");
 		assert instance.getMeta().equals(type2);
 		assert instance.equals(type2.getInstance("instance"));
-
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				type3.addInstance("instance");
-			}
-		}.assertIsCausedBy(IllegalStateException.class);
-
+		catchAndCheckCause(() -> type3.addInstance("instance"), IllegalStateException.class);
 	}
 
 	public void test002_AdjustMeta() {
@@ -50,12 +38,7 @@ public class AdjustMetaTest extends AbstractTest {
 
 		Vertex instance = type1.addInstance("instance");
 		Vertex instance2 = type2.addInstance("instance2");
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				Vertex instance3 = type3.addInstance("instance");
-			}
-		}.assertIsCausedBy(IllegalStateException.class);
+		catchAndCheckCause(() -> type3.addInstance("instance"), IllegalStateException.class);
 	}
 
 	public void test003_AdjustMeta() {
@@ -254,93 +237,6 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex red = color2.addInstance("Red");
 
 		assert carColor == vehicleColor.adjustMeta("CarRed", Arrays.asList(car, red, finition)) : engine.adjustMeta("CarRed", Arrays.asList(car, red, finition));
-	}
-
-	public void test014_AdjustMeta_TypeLevel_Relation_ThreeComponents() {
-		Root engine = new Root();
-		engine.setInstance(engine.getValue(), engine);
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex color = engine.addInstance("Color");
-		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		Vertex vehicle2 = engine.addInstance(vehicle, "Vehicle2");
-		Vertex color2 = color.addInstance("Color2");
-		Vertex vehicleColor2 = engine.addInstance(vehicleColor, "VehicleColor2", vehicle2, color2);
-		Vertex finition = engine.addInstance("Finition");
-		Vertex car = vehicle2.addInstance("Car");
-		Vertex red = color2.addInstance("Red");
-		assert vehicleColor2 == vehicleColor.adjustMeta("CarRed", Arrays.asList(car, red, finition)) : engine.adjustMeta("CarRed", Arrays.asList(car, red, finition));
-	}
-
-	public void test015_AdjustMeta_TypeLevel_Relation_ThreeComponents() {
-		Root engine = new Root();
-		engine.setInstance(engine.getValue(), engine);
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex color = engine.addInstance("Color");
-		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		Vertex vehicle2 = engine.addInstance(vehicle, "Vehicle2");
-		Vertex color2 = color.addInstance("Color2");
-		Vertex finition = engine.addInstance("Finition");
-		Vertex car = vehicle2.addInstance("Car");
-		Vertex vehicleColor2 = engine.addInstance(vehicleColor, "VehicleColor2", car, color2);
-		Vertex red = color2.addInstance("Red");
-		assert vehicleColor2 == vehicleColor.adjustMeta("CarRed", Arrays.asList(car, red, finition)) : engine.adjustMeta("CarRed", Arrays.asList(car, red, finition));
-	}
-
-	public void test016_AdjustMeta_TypeLevel_Relation_ThreeComponents() {
-		Root engine = new Root();
-		engine.setInstance(engine.getValue(), engine);
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex color = engine.addInstance("Color");
-		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		Vertex vehicle2 = engine.addInstance(vehicle, "Vehicle2");
-		Vertex vehicleColor2 = engine.addInstance(vehicleColor, "VehicleColor2", vehicle2, color);
-		Vertex color2 = color.addInstance("Color2");
-		Vertex finition = engine.addInstance("Finition");
-		Vertex car = vehicle2.addInstance("Car");
-		Vertex vehicleColor3 = engine.addInstance(vehicleColor2, "VehicleColor3", car, color2);
-		Vertex red = color2.addInstance("Red");
-		assert vehicleColor3 == vehicleColor.adjustMeta("CarRed", Arrays.asList(car, red, finition)) : engine.adjustMeta("CarRed", Arrays.asList(car, red, finition));
-	}
-
-	public void test017_AdjustMeta_TypeLevel_Relation_ThreeComponents() {
-		Root engine = new Root();
-		engine.setInstance(engine.getValue(), engine);
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex vehicle2 = engine.addInstance(vehicle, "Vehicle2");
-		Vertex vehicleVehicle2 = engine.addInstance("VehicleVehicle2", vehicle, vehicle2);
-		Vertex power = engine.addInstance("Power", vehicle);
-		Vertex intensity = engine.addInstance(power, "Intensity", vehicle2);
-		Vertex unit = engine.addInstance("Unit", power);
-		Vertex intensityUnit = engine.addInstance(unit, "Unit", intensity);
-		Vertex car = vehicle.addInstance("Car");
-		Vertex bus = vehicle2.addInstance("Bus");
-		power.addInstance(100, car);
-		intensity.addInstance(110, bus);
-		unit.addInstance("Watt", power);
-		intensityUnit.addInstance("KWatt", intensity);
-		Vertex vehicleBus = engine.addInstance(vehicleVehicle2, "VehicleBus", vehicle, bus);
-		assert vehicleBus == vehicleVehicle2.adjustMeta("carBus", Arrays.asList(car, bus));
-	}
-
-	public void test018_AdjustMeta_TypeLevel_Relation() {
-		Root engine = new Root();
-		engine.setInstance(engine.getValue(), engine);
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex vehicle2 = engine.addInstance(vehicle, "Vehicle2");
-		Vertex vehicleVehicle2 = engine.addInstance("VehicleVehicle2", vehicle, vehicle2);
-		Vertex power = engine.addInstance("Power", vehicle);
-		Vertex intensity = engine.addInstance(power, "Intensity", vehicle2);
-		Vertex unit = engine.addInstance("Unit", power);
-		Vertex intensityUnit = engine.addInstance(unit, "Unit", intensity);
-		Vertex car = vehicle.addInstance("Car");
-		Vertex bus = vehicle2.addInstance("Bus");
-		power.addInstance(100, car);
-		Vertex v110 = intensity.addInstance(110, bus);
-		Vertex watt = unit.addInstance("Watt", power);
-		Vertex kWatt = intensityUnit.addInstance(watt, "KWatt", intensity);
-
-		Vertex vehicleVehicle2IntensityUnitWatt = engine.addInstance(vehicleVehicle2, "VehicleVehicle2IntensityUnitWatt", vehicle, vehicle2, intensity, unit, watt);
-		assert vehicleVehicle2IntensityUnitWatt == vehicleVehicle2.adjustMeta("carBus", Arrays.asList(car, bus, v110, intensityUnit, kWatt));
 	}
 
 	public void test020_AdjustMeta_TypeLevel_Attribute() {

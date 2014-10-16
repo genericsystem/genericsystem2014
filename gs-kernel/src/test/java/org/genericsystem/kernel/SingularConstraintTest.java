@@ -18,12 +18,7 @@ public class SingularConstraintTest extends AbstractTest {
 		assert vehicleColor.isSingularConstraintEnabled(Statics.BASE_POSITION);
 		assert !vehicleColor.isReferentialIntegrityEnabled(Statics.BASE_POSITION);
 		myVehicle.addHolder(vehicleColor, "vehicleRed", red);
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				myVehicle.addHolder(vehicleColor, "vehicleYellow", yellow);
-			}
-		}.assertIsCausedBy(SingularConstraintViolationException.class);
+		catchAndCheckCause(() -> myVehicle.addHolder(vehicleColor, "vehicleYellow", yellow), SingularConstraintViolationException.class);
 	}
 
 	public void test002_enableSingularConstraint_addInstance() {
@@ -50,12 +45,7 @@ public class SingularConstraintTest extends AbstractTest {
 		vehicleColor.enableSingularConstraint(Statics.BASE_POSITION);
 		assert vehicleColor.isSingularConstraintEnabled(Statics.BASE_POSITION);
 		vehicle.addHolder(vehicleColor, "vehicleRed", red);
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				vehicle.addHolder(vehicleColor, "vehicleYellow", yellow);
-			}
-		}.assertIsCausedBy(SingularConstraintViolationException.class);
+		catchAndCheckCause(() -> vehicle.addHolder(vehicleColor, "vehicleYellow", yellow), SingularConstraintViolationException.class);
 	}
 
 	public void test001_enableSingularConstraint_ternaryRelation() {
@@ -71,12 +61,7 @@ public class SingularConstraintTest extends AbstractTest {
 		vehicleColor.enableSingularConstraint(Statics.BASE_POSITION);
 		assert vehicleColor.isSingularConstraintEnabled(Statics.BASE_POSITION);
 		myVehicle.addHolder(vehicleColor, "vehicleRedToday", red, today);
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				myVehicle.addHolder(vehicleColor, "vehicleRedYesterday", red, yesterday);
-			}
-		}.assertIsCausedBy(SingularConstraintViolationException.class);
+		catchAndCheckCause(() -> myVehicle.addHolder(vehicleColor, "vehicleRedYesterday", red, yesterday), SingularConstraintViolationException.class);
 	}
 
 	// public void test002_enablePropertyConstraint_addInstance() {

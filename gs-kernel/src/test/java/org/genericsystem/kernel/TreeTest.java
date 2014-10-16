@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
+
 import org.genericsystem.api.exception.ExistsException;
 import org.testng.annotations.Test;
 
@@ -95,12 +96,7 @@ public class TreeTest extends AbstractTest {
 	public void test006() {
 		Root root = new Root();
 		root.addTree("Tree");
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				root.addTree("Tree");
-			}
-		}.assertIsCausedBy(ExistsException.class);
+		catchAndCheckCause(() -> root.addTree("Tree"), ExistsException.class);
 	}
 
 	public void test007() {

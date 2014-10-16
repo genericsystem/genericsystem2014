@@ -106,18 +106,6 @@ public class AncestorsServiceTest extends AbstractTest {
 		assert root.isAncestorOf(button);
 	}
 
-	public void test006_getInheritings_VertexAndItsSuperHaveNotSameMeta() {
-		Root engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex vehiclePower = engine.addInstance("VehiclePower", vehicle);
-		Vertex car = vehicle.addInstance("Car");
-		Vertex carPower = engine.addInstance(vehiclePower, "CarPower", vehicle);
-		Vertex vehicleStandard = vehicle.addInstance("VehicleStandard");
-		Vertex v235 = vehiclePower.addInstance(235, vehicleStandard);
-		Vertex myBmw = car.addInstance("myBmw");
-		Vertex v236 = carPower.addInstance(v235, 236, myBmw);
-	}
-
 	// public void isAncestorOfViaComponent3() {
 	// Root root = new Root();
 	// Vertex vehicle = root.addInstance("Vehicle");
