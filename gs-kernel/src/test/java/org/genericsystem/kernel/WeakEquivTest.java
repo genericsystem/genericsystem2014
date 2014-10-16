@@ -1,7 +1,8 @@
 package org.genericsystem.kernel;
 
 import java.util.Arrays;
-import org.genericsystem.api.exception.ExistsException;
+
+import org.genericsystem.api.exception.SingularConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test
@@ -52,22 +53,21 @@ public class WeakEquivTest extends AbstractTest {
 		Root engine = new Root();
 		Vertex car = engine.addInstance("Car");
 		Vertex color = engine.addInstance("Color");
-		Vertex carColor = engine.addInstance("CarColor", car, color);
+		Vertex carColor = car.addAttribute("CarColor", color);
 		carColor.enableSingularConstraint(Statics.TARGET_POSITION);
-		carColor.disableReferentialIntegrity(Statics.TARGET_POSITION);
-		assert !carColor.isReferentialIntegrityEnabled(Statics.TARGET_POSITION);
+		// carColor.disableReferentialIntegrity(Statics.TARGET_POSITION);
+		assert engine.getMetaAttribute().isReferentialIntegrityEnabled(Statics.TARGET_POSITION);
 		Vertex myBmw = car.addInstance("myBmw");
+		Vertex myAudi = car.addInstance("myAudi");
 		Vertex green = color.addInstance("green");
-		Vertex yellow = color.addInstance("yellow");
-		Vertex myBmwGreen = carColor.addInstance("myBmwGreen", myBmw, green);
+		myBmw.addHolder(carColor, "myBmwGreen", green);
 		new RollbackCatcher() {
 
 			@Override
 			public void intercept() {
-				Vertex myBmwGreen2 = carColor.addInstance(myBmwGreen, "myBmwGreen2", myBmw, green);
-				assert false : green.getComponents().info();
+				myAudi.addHolder(carColor, "myAudiGreen", green);
 			}
-		}.assertIsCausedBy(ExistsException.class);
+		}.assertIsCausedBy(SingularConstraintViolationException.class);
 	}
 
 	public void test005_weakEquiv_Relation_SingularConstraintAndReferencialIntegrity_setInstance() {

@@ -6,10 +6,10 @@ import java.util.Optional;
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 import org.genericsystem.kernel.systemproperty.CascadeRemoveProperty;
-import org.genericsystem.kernel.systemproperty.ReferentialIntegrityProperty;
-import org.genericsystem.kernel.systemproperty.constraints.PropertyConstraintImpl;
-import org.genericsystem.kernel.systemproperty.constraints.RequiredConstraintImpl;
-import org.genericsystem.kernel.systemproperty.constraints.SingularConstraintImpl;
+import org.genericsystem.kernel.systemproperty.NoReferentialIntegrityProperty;
+import org.genericsystem.kernel.systemproperty.constraints.PropertyConstraint;
+import org.genericsystem.kernel.systemproperty.constraints.RequiredConstraint;
+import org.genericsystem.kernel.systemproperty.constraints.SingularConstraint;
 
 public interface DefaultSystemProperties<T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> extends IVertex<T, U> {
 
@@ -43,7 +43,6 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T, U>, U exten
 	@Override
 	@SuppressWarnings("unchecked")
 	default T disableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos) {
-		assert isStructural();
 		setSystemPropertyValue(propertyClass, pos, Boolean.FALSE);
 		return (T) this;
 	}
@@ -56,62 +55,62 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T, U>, U exten
 
 	@Override
 	default T enableReferentialIntegrity(int pos) {
-		return enableSystemProperty(ReferentialIntegrityProperty.class, pos);
+		return disableSystemProperty(NoReferentialIntegrityProperty.class, pos);
 	}
 
 	@Override
 	default T disableReferentialIntegrity(int pos) {
-		return disableSystemProperty(ReferentialIntegrityProperty.class, pos);
+		return enableSystemProperty(NoReferentialIntegrityProperty.class, pos);
 	}
 
 	@Override
 	default boolean isReferentialIntegrityEnabled(int pos) {
-		return isSystemPropertyEnabled(ReferentialIntegrityProperty.class, pos);
+		return !isSystemPropertyEnabled(NoReferentialIntegrityProperty.class, pos);
 	}
 
 	@Override
 	default T enableSingularConstraint(int pos) {
-		return enableSystemProperty(SingularConstraintImpl.class, pos);
+		return enableSystemProperty(SingularConstraint.class, pos);
 	}
 
 	@Override
 	default T disableSingularConstraint(int pos) {
-		return disableSystemProperty(SingularConstraintImpl.class, pos);
+		return disableSystemProperty(SingularConstraint.class, pos);
 	}
 
 	@Override
 	default boolean isSingularConstraintEnabled(int pos) {
-		return isSystemPropertyEnabled(SingularConstraintImpl.class, pos);
+		return isSystemPropertyEnabled(SingularConstraint.class, pos);
 	}
 
 	@Override
 	default T enablePropertyConstraint() {
-		return enableSystemProperty(PropertyConstraintImpl.class, Statics.NO_POSITION);
+		return enableSystemProperty(PropertyConstraint.class, Statics.NO_POSITION);
 	}
 
 	@Override
 	default T disablePropertyConstraint() {
-		return disableSystemProperty(PropertyConstraintImpl.class, Statics.NO_POSITION);
+		return disableSystemProperty(PropertyConstraint.class, Statics.NO_POSITION);
 	}
 
 	@Override
 	default boolean isPropertyConstraintEnabled() {
-		return isSystemPropertyEnabled(PropertyConstraintImpl.class, Statics.NO_POSITION);
+		return isSystemPropertyEnabled(PropertyConstraint.class, Statics.NO_POSITION);
 	}
 
 	@Override
 	default T enableRequiredConstraint(int pos) {
-		return enableSystemProperty(RequiredConstraintImpl.class, pos);
+		return enableSystemProperty(RequiredConstraint.class, pos);
 	}
 
 	@Override
 	default T disableRequiredConstraint(int pos) {
-		return disableSystemProperty(RequiredConstraintImpl.class, pos);
+		return disableSystemProperty(RequiredConstraint.class, pos);
 	}
 
 	@Override
 	default boolean isRequiredConstraintEnabled(int pos) {
-		return isSystemPropertyEnabled(RequiredConstraintImpl.class, pos);
+		return isSystemPropertyEnabled(RequiredConstraint.class, pos);
 	}
 
 	@Override

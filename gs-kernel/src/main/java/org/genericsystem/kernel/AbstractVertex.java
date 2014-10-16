@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
@@ -261,7 +262,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 		return result != null && Statics.areOverridesReached(overrides, result.getSupers()) ? result : null;
 	}
 
-	// KK should be protected
+	// TODO KK should be protected
 	public final T bindInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> composites) {
 		checkSameEngine(composites);
 		checkSameEngine(overrides);
@@ -315,7 +316,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 	T rebuildAll(Supplier<T> rebuilder, LinkedHashSet<T> dependenciesToRebuild) {
 		ConvertMap<T, U> convertMap = new ConvertMap<>();
 		dependenciesToRebuild.forEach(this::simpleRemove);
-		dependenciesToRebuild.forEach(x -> log.info("Remove : " + x.info()));
 		T build = rebuilder.get();
 		dependenciesToRebuild.remove(this);
 		convertMap.put((T) this, build);
@@ -548,7 +548,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {}
+	public static class SystemMap {
+	}
 
 	protected boolean equals(ISignature<?> meta, List<? extends ISignature<?>> supers, Serializable value, List<? extends ISignature<?>> components) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComposites().equals(components) && getSupers().equals(supers);
@@ -607,7 +608,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 				Constraint constraint = newConstraint(constraintHolder);
 				if (isCheckable(constraint, checkingType, isFlushTime)) {
 					int axe = ((AxedPropertyClass) constraintHolder.getValue()).getAxe();
-					constraint.check(axe == Statics.NO_POSITION ? this : getComposites().get(axe), getHolders(constraintHolder).iterator().next().getComposites().get(Statics.BASE_POSITION));
+					constraint.check(getComposites().get(axe == Statics.NO_POSITION ? Statics.BASE_POSITION : axe), getHolders(constraintHolder).iterator().next().getComposites().get(Statics.BASE_POSITION));
 				}
 			} catch (ConstraintViolationException e) {
 				getRoot().discardWithException(e);

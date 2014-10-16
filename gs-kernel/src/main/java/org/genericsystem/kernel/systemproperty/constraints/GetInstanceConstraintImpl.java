@@ -5,10 +5,10 @@ import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.DefaultRoot;
 import org.genericsystem.kernel.DefaultVertex;
 
-public class PropertyConstraintImpl implements Constraint {
+public class GetInstanceConstraintImpl implements Constraint {
 
 	@Override
 	public <T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> void check(DefaultVertex<T, U> base, DefaultVertex<T, U> attribute) throws ConstraintViolationException {
-		// TODO Auto-generated method stub
+		base.getMeta().getInstance(base.getValue(), base.coerceToTArray(base.getComponents()));
 	}
 }

@@ -56,7 +56,7 @@ public class RemovableServiceTest extends AbstractTest {
 		// given
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
-		vehicle.addInstance("MyVehicule");
+		vehicle.addInstance("myVehicule");
 
 		// when
 		new RollbackCatcher() {
