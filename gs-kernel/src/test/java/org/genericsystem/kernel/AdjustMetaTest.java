@@ -3,6 +3,7 @@ package org.genericsystem.kernel;
 import java.util.Arrays;
 import java.util.Collections;
 
+import org.genericsystem.api.exception.ExistsException;
 import org.testng.annotations.Test;
 
 @Test
@@ -27,7 +28,10 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex instance = type2.addInstance("instance");
 		assert instance.getMeta().equals(type2);
 		assert instance.equals(type2.getInstance("instance"));
-		catchAndCheckCause(() -> type3.addInstance("instance"), IllegalStateException.class);
+		type3.addInstance("instance");
+
+		catchAndCheckCause(() -> type3.addInstance("instance"), ExistsException.class);
+
 	}
 
 	public void test002_AdjustMeta() {

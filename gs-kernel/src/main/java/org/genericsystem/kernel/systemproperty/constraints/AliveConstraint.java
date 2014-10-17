@@ -6,7 +6,7 @@ import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.DefaultRoot;
 import org.genericsystem.kernel.DefaultVertex;
 
-public class AliveConstraintImpl implements Constraint {
+public class AliveConstraint implements Constraint {
 
 	@Override
 	public <T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> void check(DefaultVertex<T, U> base, DefaultVertex<T, U> attribute) throws ConstraintViolationException {

@@ -244,7 +244,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U
 		assert result == generic;
 		generic.getSupers().forEach(superGeneric -> indexInheriting(superGeneric, generic));
 		generic.getComposites().stream().filter(composite -> !generic.equals(composite)).forEach(composite -> indexByMeta(composite, generic.getMeta(), generic));
-		generic.getSupers().forEach(superGeneric -> generic.getComposites().stream().filter(composite -> generic.equals(composite)).forEach(composite -> indexBySuper(composite, superGeneric, generic)));
+		generic.getSupers().forEach(superGeneric -> generic.getComposites().stream().filter(composite -> !generic.equals(composite)).forEach(composite -> indexBySuper(composite, superGeneric, generic)));
 		simpleAdd(generic);
 		return result;
 	}
@@ -255,7 +255,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U
 			getEngine().discardWithException(new NotFoundException(generic.info()));
 		generic.getSupers().forEach(superGeneric -> unIndexInheriting(superGeneric, generic));
 		generic.getComposites().stream().filter(composite -> !generic.equals(composite)).forEach(composite -> unIndexByMeta(composite, generic.getMeta(), generic));
-		generic.getSupers().forEach(superGeneric -> generic.getComposites().stream().filter(composite -> generic.equals(composite)).forEach(composite -> unIndexBySuper(composite, superGeneric, generic)));
+		generic.getSupers().forEach(superGeneric -> generic.getComposites().stream().filter(composite -> !generic.equals(composite)).forEach(composite -> unIndexBySuper(composite, superGeneric, generic)));
 		return result && simpleRemove(generic);
 	}
 

@@ -16,9 +16,9 @@ public class Root extends Vertex implements DefaultRoot<Vertex, Root> {
 
 	public Root(Serializable value, Class<?>... userClasses) {
 		init(false, null, Collections.emptyList(), value, Collections.emptyList());
-		setInstance(this, getValue(), coerceToTArray(this));
-		Vertex map = setInstance(SystemMap.class, coerceToTArray(this)).enablePropertyConstraint();
-		assert map.isAlive();
+		Vertex metaAttribut = setInstance(this, getValue(), coerceToTArray(this));
+		setInstance(SystemMap.class, coerceToTArray(this)).enablePropertyConstraint();
+		metaAttribut.disableReferentialIntegrity(Statics.BASE_POSITION);
 	}
 
 	@Override

@@ -56,11 +56,8 @@ public class RemovableServiceTest extends AbstractTest {
 		// given
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
-		vehicle.addInstance("MyVehicule");
-		catchAndCheckCause(() -> {
-			vehicle.remove();
-			return null;
-		}, ReferentialIntegrityConstraintViolationException.class);
+		vehicle.addInstance("myVehicule");
+		catchAndCheckCause(() -> vehicle.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
 	public void test103_remove_SubType() {
@@ -102,10 +99,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Vertex vehicle = engine.addInstance("Vehicle");
 		engine.addInstance("Power", vehicle);
 		vehicle.addInstance("Car");
-		catchAndCheckCause(() -> {
-			vehicle.remove();
-			return null;
-		}, ReferentialIntegrityConstraintViolationException.class);
+		catchAndCheckCause(() -> vehicle.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
 	public void test105_remove_attribute_attribute_KO() {
@@ -130,10 +124,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Vertex vehicle = engine.addInstance("Vehicle");
 		engine.addInstance(vehicle, "Car");
 
-		catchAndCheckCause(() -> {
-			vehicle.remove();
-			return null;
-		}, ReferentialIntegrityConstraintViolationException.class);
+		catchAndCheckCause(() -> vehicle.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
 	public void test107_remove_relation_KO() {
@@ -159,10 +150,9 @@ public class RemovableServiceTest extends AbstractTest {
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Vertex carRed = vehicleColor.addInstance("CarRed", car, red);
 
-		// when
+		vehicleColor.disableReferentialIntegrity(Statics.TARGET_POSITION);
 		red.remove();
 
-		// then
 		assert engine.isAlive();
 		assert vehicle.isAlive();
 		assert car.isAlive();

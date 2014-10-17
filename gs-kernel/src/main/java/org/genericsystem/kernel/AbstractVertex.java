@@ -262,7 +262,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 		return result != null && Statics.areOverridesReached(overrides, result.getSupers()) ? result : null;
 	}
 
-	// KK should be protected
+	// TODO KK should be protected
 	public final T bindInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> composites) {
 		checkSameEngine(composites);
 		checkSameEngine(overrides);
@@ -317,7 +317,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 	T rebuildAll(Supplier<T> rebuilder, LinkedHashSet<T> dependenciesToRebuild) {
 		ConvertMap<T, U> convertMap = new ConvertMap<>();
 		dependenciesToRebuild.forEach(this::simpleRemove);
-		dependenciesToRebuild.forEach(x -> log.info("Remove : " + x.info()));
 		T build = rebuilder.get();
 		dependenciesToRebuild.remove(this);
 		convertMap.put((T) this, build);
@@ -589,7 +588,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 
 	private void checkLevelComposites() {
 		if (getComposites().stream().anyMatch(composite -> composite.getLevel() > getLevel()))
-			getRoot().discardWithException(new IllegalStateException("Inconsistant level link between components : " + getLevel() + "and another"));
+			getRoot().discardWithException(new IllegalStateException("Inconsistant level link between components : level " + getLevel() + " and another"));
 	}
 
 	private void checkLevel() {
@@ -622,7 +621,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 				Constraint constraint = newConstraint(constraintHolder);
 				if (isCheckable(constraint, checkingType, isFlushTime)) {
 					int axe = ((AxedPropertyClass) constraintHolder.getValue()).getAxe();
-					constraint.check(axe == Statics.NO_POSITION ? this : getComposites().get(axe), getHolders(constraintHolder).iterator().next().getComposites().get(Statics.BASE_POSITION));
+					constraint.check(getComposites().get(axe == Statics.NO_POSITION ? Statics.BASE_POSITION : axe), getHolders(constraintHolder).iterator().next().getComposites().get(Statics.BASE_POSITION));
 				}
 			} catch (ConstraintViolationException e) {
 				getRoot().discardWithException(e);

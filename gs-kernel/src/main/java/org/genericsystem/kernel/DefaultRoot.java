@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.genericsystem.api.core.IRoot;
 import org.genericsystem.api.exception.RollbackException;
-import org.genericsystem.kernel.systemproperty.constraints.AliveConstraintImpl;
+import org.genericsystem.kernel.systemproperty.constraints.AliveConstraint;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint.CheckingType;
 
@@ -17,7 +17,7 @@ public interface DefaultRoot<T extends AbstractVertex<T, U>, U extends DefaultRo
 		private static final long serialVersionUID = -950838421343460439L;
 
 		{
-			add(AliveConstraintImpl.class);
+			add(AliveConstraint.class);
 		}
 	};
 
