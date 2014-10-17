@@ -15,10 +15,10 @@ public class PropertyConstraintTest extends AbstractTest {
 		power.enablePropertyConstraint();
 		assert power.isPropertyConstraintEnabled();
 
-		power.addInstance("123", vehicle);
-		// catchAndCheckCause(() -> power.addInstance("126", vehicle), ExistsException.class);
-		power.addInstance("126", vehicle);
-
+		myVehicle.addHolder(power, "123");
+		myVehicle.addHolder(power, "126");
+		log.info(myVehicle.getHolders(power).iterator().next().info());
+		assert false;
 	}
 
 	public void test001_enablePropertyConstraint_addInstance_link() {
@@ -34,7 +34,7 @@ public class PropertyConstraintTest extends AbstractTest {
 		assert vehicleColorOutside.isPropertyConstraintEnabled();
 		myVehicle.addHolder(vehicleColorOutside, "outside", red);
 		myVehicle.addHolder(vehicleColorOutside, "outside", blue);
-
+		assert myVehicle.getHolders(vehicleColorOutside).size() == 2;
 	}
 
 	public void test002_enablePropertyConstraint_addInstance() {
@@ -47,52 +47,6 @@ public class PropertyConstraintTest extends AbstractTest {
 		assert power.isPropertyConstraintEnabled();
 		Vertex myVehicle123 = myVehicle.addHolder(power, "123");
 		catchAndCheckCause(() -> myVehicle.addHolder(power, myVehicle123, "126"), AliveConstraintViolationException.class);
-
-	}
-
-	// public void test001_enablePropertyConstraint_addInstance() {
-	// Root Root = new Root();
-	// Vertex vehicle = Root.addInstance("Vehicle");
-	// Vertex power = Root.addInstance("Power", vehicle);
-	// power.enablePropertyConstraint();
-	// assert power.isPropertyConstraintEnabled();
-	// vehicle.addHolder("123", power);
-	// // new RollbackCatcher() {
-	// //
-	// // @Override
-	// // public void intercept() {
-	// System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-	// System.out.println("aaa " + power.addInstance("126", vehicle));
-	// System.out.println("===>" + vehicle.getHolders(power).info());
-	// // }
-	// // }.assertIsCausedBy(PropertyConstraintViolationException.class);
-	// }
-
-	public void test003_enablePropertyConstraint_addInstance() {
-		Root Root = new Root();
-		Vertex vehicle = Root.addInstance("Vehicle");
-		Vertex power = Root.addInstance("Power", vehicle);
-		Vertex subPower = Root.addInstance(power, "SubPower", vehicle);
-		assert subPower.inheritsFrom(power);
-		power.enablePropertyConstraint();
-		assert subPower.isPropertyConstraintEnabled();
-		subPower.addInstance("123", vehicle);
-		// catchAndCheckCause(() -> subPower.addInstance("126", vehicle), AliveConstraintViolationException.class);
-		subPower.addInstance("126", vehicle);
-	}
-
-	public void test004_enablePropertyConstraint_addInstance() {
-		Root Root = new Root();
-		Vertex vehicle = Root.addInstance("Vehicle");
-		Vertex car = Root.addInstance(vehicle, "Car");
-		Vertex power = Root.addInstance("Power", vehicle);
-		Vertex subPower = Root.addInstance(power, "Power", car);
-		assert subPower.inheritsFrom(power);
-		power.enablePropertyConstraint();
-		assert subPower.isPropertyConstraintEnabled();
-		subPower.addInstance("123", car);
-		// catchAndCheckCause(() -> subPower.addInstance("126", car), AliveConstraintViolationException.class);
-		subPower.addInstance("126", car);
 	}
 
 	public void test001_enablePropertyConstraint_setInstance() {
