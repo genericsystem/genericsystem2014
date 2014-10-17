@@ -11,6 +11,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -291,17 +292,20 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 		return null;
 	}
 
+	private final Function<? super ISignature<?>, ? extends IVertex<?, ?>> NULL_TO_THIS = x -> x == null ? this : (IVertex<?, ?>) x;
+
 	boolean equiv(IVertex<?, ?> meta, Serializable value, List<? extends IVertex<?, ?>> composites) {
 		if (!getMeta().equiv(meta))
 			return false;
 		if (getComposites().size() != composites.size())
 			return false;// for the moment, not equivalent when component size is different
-		List<? extends IVertex<?, ?>> notNullComposites = composites.stream().map(composite -> composite == null ? this : composite).collect(Collectors.toList());
-		for (int i = 0; i < getComposites().size(); i++)
-			if (!isReferentialIntegrityEnabled(i) && isSingularConstraintEnabled(i) && getComposites().get(i).equiv(notNullComposites.get(i)))
+		List<? extends IVertex<?, ?>> notNullComposites = composites.stream().map(NULL_TO_THIS).collect(Collectors.toList());
+		List<T> compositesList = getComposites();
+		for (int i = 0; i < compositesList.size(); i++)
+			if (!isReferentialIntegrityEnabled(i) && isSingularConstraintEnabled(i) && compositesList.get(i).equiv(notNullComposites.get(i)))
 				return true;
-		for (int i = 0; i < getComposites().size(); i++)
-			if (!getComposites().get(i).equiv(notNullComposites.get(i)))
+		for (int i = 0; i < compositesList.size(); i++)
+			if (!compositesList.get(i).equiv(notNullComposites.get(i)))
 				return false;
 		if (!meta.isPropertyConstraintEnabled())
 			return Objects.equals(getValue(), value);
@@ -540,7 +544,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 	}
 
 	boolean equalsRegardlessSupers(IVertex<?, ?> meta, Serializable value, List<? extends IVertex<?, ?>> composites) {
-		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComposites().equals(composites.stream().map(composite -> composite == null ? this : composite).collect(Collectors.toList()));
+		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComposites().equals(composites.stream().map(NULL_TO_THIS).collect(Collectors.toList()));
 	}
 
 	// TODO clean
@@ -553,7 +557,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 	}
 
 	protected boolean equals(ISignature<?> meta, List<? extends ISignature<?>> supers, Serializable value, List<? extends ISignature<?>> composites) {
-		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComposites().equals(composites.stream().map(composite -> composite == null ? this : composite).collect(Collectors.toList())) && getSupers().equals(supers);
+		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComposites().equals(composites.stream().map(NULL_TO_THIS).collect(Collectors.toList())) && getSupers().equals(supers);
 	}
 
 	protected Stream<T> getKeys() {
