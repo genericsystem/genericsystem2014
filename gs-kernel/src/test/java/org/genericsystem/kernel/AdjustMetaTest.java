@@ -150,9 +150,8 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex color = engine.addInstance("Color");
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		Vertex color2 = engine.addInstance(color, "Color2");
+		Vertex red = engine.addInstance(color, "red");
 		Vertex car = vehicle.addInstance("Car");
-		Vertex red = color2.addInstance("Red");
 		assert vehicleColor == vehicleColor.adjustMeta("CarRed", Arrays.asList(car, red)) : engine.adjustMeta("CarRed", Arrays.asList(car, red));
 	}
 
@@ -162,9 +161,8 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex color = engine.addInstance("Color");
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		Vertex color2 = color.addInstance("Color2");
+		Vertex red = color.addInstance("red");
 		Vertex car = vehicle.addInstance("Car");
-		Vertex red = color2.addInstance("Red");
 		assert vehicleColor == vehicleColor.adjustMeta("CarRed", Arrays.asList(car, red)) : engine.adjustMeta("CarRed", Arrays.asList(car, red));
 	}
 
@@ -175,9 +173,8 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex color = engine.addInstance("Color");
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Vertex vehicle2 = engine.addInstance(vehicle, "Vehicle2");
-		Vertex color2 = engine.addInstance(color, "Color2");
+		Vertex red = engine.addInstance(color, "red");
 		Vertex car = vehicle2.addInstance("Car");
-		Vertex red = color2.addInstance("Red");
 		assert vehicleColor == vehicleColor.adjustMeta("CarRed", Arrays.asList(car, red)) : engine.adjustMeta("CarRed", Arrays.asList(car, red));
 	}
 
@@ -188,9 +185,8 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex color = engine.addInstance("Color");
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Vertex vehicle2 = engine.addInstance("Vehicle2");
-		Vertex color2 = color.addInstance("Color2");
+		Vertex red = color.addInstance("red");
 		Vertex car = vehicle2.addInstance("Car");
-		Vertex red = color2.addInstance("Red");
 		assert vehicleColor == vehicleColor.adjustMeta("CarRed", Arrays.asList(car, red)) : engine.adjustMeta("CarRed", Arrays.asList(car, red));
 	}
 
@@ -201,9 +197,8 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex color = engine.addInstance("Color");
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Vertex vehicle2 = engine.addInstance(vehicle, "Vehicle2");
-		Vertex color2 = color.addInstance("Color2");
+		Vertex red = color.addInstance("red");
 		Vertex car = vehicle2.addInstance("Car");
-		Vertex red = color2.addInstance("Red");
 		assert vehicleColor == vehicleColor.adjustMeta("CarRed", Arrays.asList(car, red)) : engine.adjustMeta("CarRed", Arrays.asList(car, red));
 	}
 
@@ -214,10 +209,9 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex color = engine.addInstance("Color");
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Vertex vehicle2 = engine.addInstance(vehicle, "Vehicle2");
-		Vertex color2 = color.addInstance("Color2");
+		Vertex red = color.addInstance("red");
 		Vertex finition = engine.addInstance("Finition");
 		Vertex car = vehicle2.addInstance("Car");
-		Vertex red = color2.addInstance("Red");
 
 		assert vehicleColor == vehicleColor.adjustMeta("CarRed", Arrays.asList(car, red, finition)) : engine.adjustMeta("CarRed", Arrays.asList(car, red, finition));
 	}
@@ -231,10 +225,9 @@ public class AdjustMetaTest extends AbstractTest {
 
 		Vertex car = engine.addInstance(vehicle, "Car");
 		Vertex carColor = engine.addInstance(vehicleColor, "CarColor", car, color);
-		Vertex color2 = color.addInstance("Color2");
+		Vertex red = color.addInstance("red");
 		Vertex finition = engine.addInstance("Finition");
 		Vertex myBmw = car.addInstance("myBmw");
-		Vertex red = color2.addInstance("Red");
 
 		assert carColor == vehicleColor.adjustMeta("CarRed", Arrays.asList(car, red, finition)) : engine.adjustMeta("CarRed", Arrays.asList(car, red, finition));
 	}

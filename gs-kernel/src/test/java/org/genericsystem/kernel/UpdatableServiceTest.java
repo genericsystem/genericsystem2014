@@ -47,55 +47,43 @@ public class UpdatableServiceTest extends AbstractTest {
 
 	public void test007_setValue_Type() {
 		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		String valueCar = "Car";
-		Vertex car = vehicle.addInstance(valueCar);
-		String valueNewBeetle = "NewBeetle";
-		Vertex newBeetle = car.addInstance(valueNewBeetle);
-		String newValue = "elciheV";
+		Vertex bike = engine.addInstance("Bike");
+		Vertex car = engine.addInstance("Car");
+		Vertex myBmwBike = bike.addInstance("myBmwBike");
 
-		Vertex newVehicle = vehicle.updateValue(newValue);
+		Vertex newBike = bike.updateValue("newBike");
 
-		LinkedHashSet<Vertex> engineAliveDependencies = newVehicle.computeDependencies();
-		assert engineAliveDependencies.size() == 3;
-		assert !engineAliveDependencies.contains(vehicle);
+		LinkedHashSet<Vertex> engineAliveDependencies = newBike.computeDependencies();
+		assert engineAliveDependencies.size() == 2 : engineAliveDependencies.size();
 		assert !engineAliveDependencies.contains(car);
-		assert !engineAliveDependencies.contains(newBeetle);
+		assert !engineAliveDependencies.contains(myBmwBike);
 
-		Vertex vertex1asNewVehicle = engine.getInstance(newValue);
-		assert vertex1asNewVehicle != null;
-		assert engine.equals(vertex1asNewVehicle.getMeta());
+		Vertex getNewBike = engine.getInstance("newBike");
+		assert getNewBike != null;
+		assert engine.equals(getNewBike.getMeta());
 
-		Vertex vertex2asNewCar = vertex1asNewVehicle.getInstance(valueCar);
-		assert vertex2asNewCar != null;
-		assert vertex1asNewVehicle.equals(vertex2asNewCar.getMeta());
-
-		Vertex vertex3asNewNewBeetle = vertex2asNewCar.getInstance(valueNewBeetle);
-		assert vertex3asNewNewBeetle != null;
-		assert vertex2asNewCar.equals(vertex3asNewNewBeetle.getMeta());
+		Vertex getMyBmwBike = getNewBike.getInstance("myBmwBike");
+		assert getMyBmwBike != null;
+		assert getNewBike.equals(getMyBmwBike.getMeta());
 	}
 
 	public void test008_setValue_Type() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
-		String valueCar = "Car";
-		Vertex car = vehicle.addInstance(valueCar);
-		String valueNewBeetle = "NewBeetle";
-		Vertex newBeetle = car.addInstance(valueNewBeetle);
-		String newValue = "raC";
-
-		Vertex newCar = car.updateValue(newValue);
+		Vertex car = engine.addInstance("Car");
+		Vertex newBeetle = car.addInstance("NewBeetle");
+		Vertex newCar = car.updateValue("raC");
 
 		LinkedHashSet<Vertex> engineAliveDependencies = newCar.computeDependencies();
 		assert engineAliveDependencies.size() == 2;
 		assert !engineAliveDependencies.contains(car);
 		assert !engineAliveDependencies.contains(newBeetle);
 
-		Vertex vertex1asNewCar = vehicle.getInstance(newValue);
+		Vertex vertex1asNewCar = engine.getInstance("raC");
 		assert vertex1asNewCar != null;
-		assert vehicle.equals(vertex1asNewCar.getMeta());
+		assert engine.equals(vertex1asNewCar.getMeta());
 
-		Vertex vertex2asNewNewBeetle = vertex1asNewCar.getInstance(valueNewBeetle);
+		Vertex vertex2asNewNewBeetle = vertex1asNewCar.getInstance("NewBeetle");
 		assert vertex2asNewNewBeetle != null;
 		assert vertex1asNewCar.equals(vertex2asNewNewBeetle.getMeta());
 	}
@@ -103,31 +91,29 @@ public class UpdatableServiceTest extends AbstractTest {
 	public void test020_setValue_Inheritance() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
-		String valueOptions = "Options";
-		Vertex options = engine.addInstance(vehicle, valueOptions);
-		String newValue = "elciheV";
+		Vertex options = engine.addInstance(vehicle, "Options");
 
-		Vertex newVehicle = vehicle.updateValue(newValue);
+		Vertex newVehicle = vehicle.updateValue("elciheV");
 
 		assert newVehicle.isAlive();
 		assert !vehicle.isAlive();
 		assert !options.isAlive();
 
-		assert newValue.equals(newVehicle.getValue());
+		assert "elciheV".equals(newVehicle.getValue());
 		assert engine.equals(newVehicle.getMeta());
 		assert engine.computeDependencies().contains(newVehicle);
 		assert newVehicle.computeDependencies().size() == 2;
 		assert newVehicle.computeDependencies().contains(newVehicle);
 		Vertex newOptions = newVehicle.computeDependencies().stream().collect(Collectors.toList()).get(0);
 		assert newOptions.isAlive();
-		if (newValue.equals(newOptions.getValue()))
+		if ("elciheV".equals(newOptions.getValue()))
 			newOptions = newVehicle.computeDependencies().stream().collect(Collectors.toList()).get(1);
 		assert engine.equals(newOptions.getMeta());
 		assert options.getValue().equals(newOptions.getValue());
 		List<Vertex> newOptionsSupers = newOptions.getSupers();
 		assert newOptionsSupers.size() == 1;
 		Vertex newVehicleFromNewOptions = newOptionsSupers.get(0);
-		assert newValue.equals(newVehicleFromNewOptions.getValue());
+		assert "elciheV".equals(newVehicleFromNewOptions.getValue());
 	}
 
 	public void test040_setValue_Component() {

@@ -570,6 +570,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 		checkDependsMetaComposites();
 		checkSupers();
 		checkDependsSuperComposites();
+		checkLevel();
 		checkLevelComposites();
 		for (Class<? extends Constraint> constraintClass : DefaultRoot.SYSTEM_CONSTRAINTS)
 			try {
@@ -588,7 +589,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 
 	private void checkLevelComposites() {
 		if (getComposites().stream().anyMatch(composite -> composite.getLevel() > getLevel()))
-			getRoot().discardWithException(new IllegalStateException("Inconsistant level components : higher than " + getLevel()));
+			getRoot().discardWithException(new IllegalStateException("Inconsistant level link between components : " + getLevel() + "and another"));
+	}
+
+	private void checkLevel() {
+		if (getLevel() > Statics.CONCRETE)
+			getRoot().discardWithException(new IllegalStateException("Limit level : higher than " + getLevel()));
 	}
 
 	private void checkSupers() {
