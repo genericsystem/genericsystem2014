@@ -15,7 +15,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
@@ -553,8 +552,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {
-	}
+	public static class SystemMap {}
 
 	protected boolean equals(ISignature<?> meta, List<? extends ISignature<?>> supers, Serializable value, List<? extends ISignature<?>> composites) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComposites().equals(composites.stream().map(NULL_TO_THIS).collect(Collectors.toList())) && getSupers().equals(supers);
@@ -597,7 +595,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 
 	private void checkLevel() {
 		if (getLevel() > Statics.CONCRETE)
-			getRoot().discardWithException(new IllegalStateException("Limit level : higher than " + getLevel()));
+			getRoot().discardWithException(new IllegalStateException("Unable to instanciate generic : " + getMeta() + " because it is already concrete."));
 	}
 
 	private void checkSupers() {
