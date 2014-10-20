@@ -18,7 +18,7 @@ public class PropertyConstraintTest extends AbstractTest {
 		assert power.isPropertyConstraintEnabled();
 
 		Vertex v123 = myVehicle.addHolder(power, "123");
-		assert v123.inheritsFrom(power, "126", Arrays.asList(myVehicle));
+		assert !v123.inheritsFrom(power, "126", Arrays.asList(myVehicle));
 
 		Vertex v126 = myVehicle.addHolder(power, "126");
 		assert !v126.inheritsFrom(v123);
