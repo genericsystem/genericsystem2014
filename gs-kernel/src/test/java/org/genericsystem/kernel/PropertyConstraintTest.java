@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.util.Arrays;
+
 import org.genericsystem.api.exception.PropertyConstraintViolationException;
 import org.testng.annotations.Test;
 
@@ -19,8 +20,9 @@ public class PropertyConstraintTest extends AbstractTest {
 		Vertex v123 = myVehicle.addHolder(power, "123");
 		assert v123.inheritsFrom(power, "126", Arrays.asList(myVehicle));
 
-		myVehicle.addHolder(power, "126");
-		log.info(myVehicle.getHolders(power).iterator().next().info());
+		Vertex v126 = myVehicle.addHolder(power, "126");
+		assert !v126.inheritsFrom(v123);
+		assert !v123.inheritsFrom(v126);
 	}
 
 	public void test001_enablePropertyConstraint_addInstance_link() {
@@ -48,7 +50,8 @@ public class PropertyConstraintTest extends AbstractTest {
 		power.enablePropertyConstraint();
 		assert power.isPropertyConstraintEnabled();
 		Vertex myVehicle123 = myVehicle.addHolder(power, "123");
-		catchAndCheckCause(() -> myVehicle.addHolder(power, myVehicle123, "126"), PropertyConstraintViolationException.class);
+		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+		catchAndCheckCause(() -> myVehicle.addHolder(power, "126"), PropertyConstraintViolationException.class);
 	}
 
 	public void test001_enablePropertyConstraint_setInstance() {
