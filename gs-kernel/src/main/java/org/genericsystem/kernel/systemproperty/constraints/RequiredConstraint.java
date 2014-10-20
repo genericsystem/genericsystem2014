@@ -9,9 +9,9 @@ import org.genericsystem.kernel.DefaultVertex;
 public class RequiredConstraint implements Constraint {
 
 	@Override
-	public <T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> void check(DefaultVertex<T, U> base, DefaultVertex<T, U> attribute) throws ConstraintViolationException {
-		if (base.isConcrete() && base.getHolders((T) attribute).isEmpty())
-			throw new RequiredConstraintViolationException(base + " has more than one " + attribute);
+	public <T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> void check(DefaultVertex<T, U> modified, DefaultVertex<T, U> attribute) throws ConstraintViolationException {
+		if (modified.getHolders((T) attribute).isEmpty())
+			throw new RequiredConstraintViolationException(modified + " has more than one " + attribute);
 	}
 
 	@Override

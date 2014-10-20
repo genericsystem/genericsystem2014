@@ -18,7 +18,7 @@ public interface Constraint extends SystemProperty {
 		return priority != null ? priority.value() : 0;
 	}
 
-	<T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> void check(DefaultVertex<T, U> base, DefaultVertex<T, U> attribute) throws ConstraintViolationException;
+	<T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> void check(DefaultVertex<T, U> modified, DefaultVertex<T, U> attribute) throws ConstraintViolationException;
 
 	default <T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> boolean isCheckedAt(DefaultVertex<T, U> modified, CheckingType checkingType) {
 		return checkingType.equals(CheckingType.CHECK_ON_ADD);

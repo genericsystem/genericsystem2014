@@ -1,8 +1,12 @@
 package org.genericsystem.kernel.systemproperty.constraints;
 
+import java.util.Objects;
+import java.util.stream.Stream;
+
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.PropertyConstraintViolationException;
 import org.genericsystem.kernel.AbstractVertex;
+import org.genericsystem.kernel.AbstractVertex.SystemMap;
 import org.genericsystem.kernel.DefaultRoot;
 import org.genericsystem.kernel.DefaultVertex;
 import org.genericsystem.kernel.Statics;
@@ -10,27 +14,23 @@ import org.genericsystem.kernel.Statics;
 public class PropertyConstraint implements Constraint {
 
 	@Override
-	public <T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> void check(DefaultVertex<T, U> base, DefaultVertex<T, U> attribute) throws ConstraintViolationException {
-		System.out.println("base " + base + " attribute " + attribute + " " + base.getHolders((T) attribute).info());
-		base.getHolders((T) attribute).stream().filter(x -> x.getComposites().get(Statics.BASE_POSITION).equals(base)).forEach(x -> System.out.println("=> " + x.info()));
-		if (base.getHolders((T) attribute).stream().filter(x -> x.getComposites().get(Statics.BASE_POSITION).equals(base)).count() > 1)
-			throw new PropertyConstraintViolationException(base + " has more than one " + attribute);
+	public <T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> void check(DefaultVertex<T, U> modified, DefaultVertex<T, U> attribute) throws ConstraintViolationException {
+		// TODO KK
+		if (attribute.getValue().equals(SystemMap.class))
+			return;
+		T base = modified.getComposites().get(Statics.BASE_POSITION);
+		Stream<T> snapshot = base.getHolders((T) attribute).stream().filter(x -> x.getComposites().get(Statics.BASE_POSITION).equals(base)).filter(next -> {
+			for (int compositePos = Statics.TARGET_POSITION; compositePos < next.getComposites().size(); compositePos++)
+				if (!Objects.equals(next.getComposites().get(compositePos), modified.getComposites().get(compositePos)))
+					return false;
+			return true;
+		});
+		if (snapshot.count() > 1)
+			throw new PropertyConstraintViolationException(modified + " has more than one " + attribute);
+	}
 
-		// if (modified.isAttribute()) {
-		// for (final Generic inheriting : ((GenericImpl) ((Holder) modified).getBaseComponent()).getAllInheritings()) {
-		// FunctionalSnapshot<Holder> snapshot = ((GenericImpl) inheriting).getHolders((Attribute) constraintBase).filter(next -> {
-		// for (int componentPos = 1; componentPos < next.getComponents().size(); componentPos++)
-		// if (!Objects.equals(next.getComponent(componentPos), ((Holder) constraintBase).getComponent(componentPos)))
-		// return false;
-		// return true;
-		// });
-		// if (snapshot.size() > 1)
-		// throw new PropertyConstraintViolationException(snapshot.get(0).info() + snapshot.get(1).info());
-		// }
-		// return;
-		// }
-		// if (!(((GenericImpl) constraintBase).getAllInstances().filter(next -> !next.equals(modified) && Objects.equals(next.getValue(), modified.getValue())).isEmpty()))
-		// throw new PropertyConstraintViolationException("");
-
+	@Override
+	public <T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> boolean isCheckedAt(DefaultVertex<T, U> modified, CheckingType checkingType) {
+		return checkingType.equals(CheckingType.CHECK_ON_ADD) || (modified.getValue() == null && checkingType.equals(CheckingType.CHECK_ON_REMOVE));
 	}
 }
