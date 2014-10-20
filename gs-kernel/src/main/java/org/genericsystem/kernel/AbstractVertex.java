@@ -280,7 +280,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 	}
 
 	boolean dependsFrom(T meta, List<T> overrides, Serializable value, List<T> composites) {
-		return inheritsFrom(meta, value, composites) || getComposites().stream().filter(composite -> composite != null && composite != this).anyMatch(composite -> composite.dependsFrom(meta, overrides, value, composites))
+		return (inheritsFrom(meta, value, composites) && (!getMeta().equals(meta) || !getComposites().equals(composites)))
+				|| getComposites().stream().filter(composite -> composite != null && composite != this).anyMatch(composite -> composite.dependsFrom(meta, overrides, value, composites))
 				|| (!isRoot() && getMeta().dependsFrom(meta, overrides, value, composites)) || (!composites.isEmpty() && compositesDepends(getComposites(), composites) && overrides.stream().anyMatch(override -> override.inheritsFrom(getMeta())));
 	}
 
