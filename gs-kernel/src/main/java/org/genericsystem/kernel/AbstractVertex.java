@@ -21,6 +21,7 @@ import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
+import org.genericsystem.api.exception.ConsistencyConstraintViolationException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.CrossEnginesAssignementsException;
 import org.genericsystem.api.exception.ExistsException;
@@ -587,17 +588,17 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 
 	private void checkDependsMetaComposites() {
 		if (!(getMeta().compositesDepends(getComposites(), getMeta().getComposites())))
-			getRoot().discardWithException(new IllegalStateException("Inconsistant components : " + getComposites() + " " + getMeta().getComposites()));
+			getRoot().discardWithException(new ConsistencyConstraintViolationException("Inconsistant components : " + getComposites() + " " + getMeta().getComposites()));
 	}
 
 	private void checkLevelComposites() {
 		if (getComposites().stream().anyMatch(composite -> composite.getLevel() > getLevel()))
-			getRoot().discardWithException(new IllegalStateException("Inconsistant level link between components : level " + getLevel() + " and another"));
+			getRoot().discardWithException(new ConsistencyConstraintViolationException("Inconsistant level link between components : level " + getLevel() + " and another"));
 	}
 
 	private void checkLevel() {
 		if (getLevel() > Statics.CONCRETE)
-			getRoot().discardWithException(new IllegalStateException("Unable to instanciate generic : " + getMeta() + " because it is already concrete."));
+			getRoot().discardWithException(new ConsistencyConstraintViolationException("Unable to instanciate generic : " + getMeta() + " because it is already concrete."));
 	}
 
 	private void checkSupers() {

@@ -103,7 +103,7 @@ public class RelationTest {
 		Generic human = Engine.addInstance("Human");
 		Generic bob = human.addInstance("Bob");
 		Generic jane = human.addInstance("Jane");
-		Generic humanIsBrotherOfHuman = Engine.addInstance("HumanIsBrotherOfHuman", human, human);
+		Generic humanIsBrotherOfHuman = human.addAttribute("HumanIsBrotherOfHuman", human);
 		Generic bobIsBrotherOfHuman = Engine.addInstance(humanIsBrotherOfHuman, "BobIsBrotherOfHuman", bob, human);
 		Generic bobIsBrotherOfJane = humanIsBrotherOfHuman.addInstance("BobIsBrotherOfJane", bob, jane);
 		assert bobIsBrotherOfHuman.inheritsFrom(humanIsBrotherOfHuman);

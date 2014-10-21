@@ -10,7 +10,7 @@ public class RequiredConstraint implements Constraint {
 
 	@Override
 	public <T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> void check(DefaultVertex<T, U> modified, DefaultVertex<T, U> attribute) throws ConstraintViolationException {
-		if (modified.getHolders((T) attribute).isEmpty())
+		if (modified.isConcrete() && modified.getHolders((T) attribute).isEmpty())
 			throw new RequiredConstraintViolationException(modified + " has more than one " + attribute);
 	}
 

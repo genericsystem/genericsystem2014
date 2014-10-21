@@ -27,16 +27,12 @@ public class Engine extends Generic implements IEngine<Generic, Engine, Vertex, 
 
 		Cache<Generic, Engine, Vertex, Root> cache = newCache().start();
 		Generic metaAttribute = setInstance(this, getValue(), coerceToTArray(this));
-		Generic map = setInstance(SystemMap.class, coerceToTArray(this));
-		assert metaAttribute.isAlive();
-		assert map.isAlive();
-		map.enablePropertyConstraint();
+		setInstance(SystemMap.class, coerceToTArray(this)).enablePropertyConstraint();
+		metaAttribute.disableReferentialIntegrity(Statics.BASE_POSITION);
 		for (Class<?> clazz : userClasses)
 			systemCache.set(clazz);
 
-		assert map.isAlive();
 		cache.flushAndUnmount();
-		assert map.isAlive();
 	}
 
 	Root buildRoot(Serializable value) {

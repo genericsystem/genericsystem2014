@@ -2,6 +2,8 @@ package org.genercisystem.impl;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.genericsystem.api.exception.ConsistencyConstraintViolationException;
 import org.genericsystem.impl.Engine;
 import org.genericsystem.impl.Generic;
 import org.testng.annotations.Test;
@@ -48,56 +50,25 @@ public class UpdatableServiceTest extends AbstractTest {
 	public void test007_setValue_Type() {
 		Generic engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
-		String valueCar = "Car";
-		Generic car = vehicle.addInstance(valueCar);
-		String valueNewBeetle = "NewBeetle";
-		Generic newBeetle = car.addInstance(valueNewBeetle);
-		String newValue = "elciheV";
+		vehicle.addInstance("myVehicle");
+		vehicle.updateValue("newVehicle");
 
-		Generic newVehicle = vehicle.updateValue(newValue);
+		Generic newVehicle2 = engine.getInstance("newVehicle");
+		assert newVehicle2 != null;
+		assert engine.equals(newVehicle2.getMeta());
 
-		// LinkedHashSet<Generic> engineAliveDependencies = newVehicle.computeDependencies();
-		// assert engineAliveDependencies.size() == 3;
-		// assert !engineAliveDependencies.contains(vehicle);
-		// assert !engineAliveDependencies.contains(car);
-		// assert !engineAliveDependencies.contains(newBeetle);
-
-		Generic Generic1asNewVehicle = engine.getInstance(newValue);
-		assert Generic1asNewVehicle != null;
-		assert engine.equals(Generic1asNewVehicle.getMeta());
-
-		Generic Generic2asNewCar = Generic1asNewVehicle.getInstance(valueCar);
-		assert Generic2asNewCar != null;
-		assert Generic1asNewVehicle.equals(Generic2asNewCar.getMeta());
-
-		Generic Generic3asNewNewBeetle = Generic2asNewCar.getInstance(valueNewBeetle);
-		assert Generic3asNewNewBeetle != null;
-		assert Generic2asNewCar.equals(Generic3asNewNewBeetle.getMeta());
+		Generic myVehicle2 = newVehicle2.getInstance("myVehicle");
+		assert myVehicle2 != null;
+		assert newVehicle2.equals(myVehicle2.getMeta());
 	}
 
 	public void test008_setValue_Type() {
 		Generic engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
-		String valueCar = "Car";
-		Generic car = vehicle.addInstance(valueCar);
-		String valueNewBeetle = "NewBeetle";
-		Generic newBeetle = car.addInstance(valueNewBeetle);
-		String newValue = "raC";
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		myVehicle.updateValue("newMyVehicle");
 
-		Generic newCar = car.updateValue(newValue);
-
-		// LinkedHashSet<Generic> engineAliveDependencies = newCar.computeDependencies();
-		// assert engineAliveDependencies.size() == 2;
-		// assert !engineAliveDependencies.contains(car);
-		// assert !engineAliveDependencies.contains(newBeetle);
-
-		Generic Generic1asNewCar = vehicle.getInstance(newValue);
-		assert Generic1asNewCar != null;
-		assert vehicle.equals(Generic1asNewCar.getMeta());
-
-		Generic Generic2asNewNewBeetle = Generic1asNewCar.getInstance(valueNewBeetle);
-		assert Generic2asNewNewBeetle != null;
-		assert Generic1asNewCar.equals(Generic2asNewNewBeetle.getMeta());
+		assert vehicle.equals(vehicle.getInstance("newMyVehicle").getMeta());
 	}
 
 	public void test020_setValue_Inheritance() {
@@ -437,7 +408,7 @@ public class UpdatableServiceTest extends AbstractTest {
 				myCarRed.update("MyCarBlue", green, blue);
 			}
 			// then
-		}.assertIsCausedBy(IllegalStateException.class);
+		}.assertIsCausedBy(ConsistencyConstraintViolationException.class);
 	}
 
 }
