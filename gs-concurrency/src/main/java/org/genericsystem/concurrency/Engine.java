@@ -36,7 +36,7 @@ public class Engine extends Generic implements IEngine<Generic, Engine, Vertex, 
 	}
 
 	Root buildRoot(Serializable value) {
-		return new Root(this, Statics.ENGINE_VALUE);
+		return new Root(this, value);
 	}
 
 	@Override
