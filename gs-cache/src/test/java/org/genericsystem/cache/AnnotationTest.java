@@ -1,9 +1,5 @@
 package org.genericsystem.cache;
 
-import org.genericsystem.cache.AnnotationTest.VehicleType.MyAudi;
-import org.genericsystem.cache.AnnotationTest.VehicleType.MyBmw;
-import org.genericsystem.cache.AnnotationTest.VehicleType.MyMercedes;
-import org.genericsystem.cache.AnnotationTest.VehicleType.VehicleInstance;
 import org.genericsystem.impl.annotations.Composites;
 import org.genericsystem.impl.annotations.InstanceClass;
 import org.genericsystem.impl.annotations.Meta;
@@ -81,28 +77,29 @@ public class AnnotationTest extends AbstractTest {
 		}.assertIsCausedBy(InstantiationException.class);
 	}
 
+	public static class VehicleInstance extends Generic {
+
+	}
+
+	@SystemGeneric
+	@Meta(VehicleType.class)
+	public static class MyAudi extends VehicleInstance {
+	}
+
+	@SystemGeneric
+	@Meta(VehicleType.class)
+	public static class MyBmw extends Generic {
+	}
+
+	@SystemGeneric
+	@Meta(VehicleType.class)
+	public static class MyMercedes {
+	}
+
 	@SystemGeneric
 	@InstanceClass(VehicleInstance.class)
 	public static class VehicleType extends Generic {
 
-		public static class VehicleInstance extends Generic {
-
-		}
-
-		@SystemGeneric
-		@Meta(VehicleType.class)
-		public static class MyAudi extends VehicleInstance {
-		}
-
-		@SystemGeneric
-		@Meta(VehicleType.class)
-		public static class MyBmw extends Generic {
-		}
-
-		@SystemGeneric
-		@Meta(VehicleType.class)
-		public static class MyMercedes {
-		}
 	}
 
 	public void test002_SuperGeneric() {

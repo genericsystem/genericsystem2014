@@ -38,6 +38,10 @@ public abstract class AbstractTest extends Arquillian {
 		// stringBuilder.append("<specializes> ");
 		// stringBuilder.append("<class>org.genericsystem.cdi.MockPersistentDirectoryProvider</class>");
 		// stringBuilder.append("</alternatives>");
+
+		// stringBuilder.append("<decorators>");
+		// stringBuilder.append("<class>org.jboss.weld.environment.se.threading.RunnableDecorator</class>");
+		// stringBuilder.append("</decorators>");
 		stringBuilder.append("</beans>");
 		javaArchive.addAsManifestResource(new StringAsset(stringBuilder.toString()), "beans.xml");
 	}

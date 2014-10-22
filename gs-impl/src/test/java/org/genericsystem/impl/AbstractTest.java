@@ -1,4 +1,4 @@
-package org.genercisystem.impl;
+package org.genericsystem.impl;
 
 import org.genericsystem.api.exception.RollbackException;
 import org.slf4j.Logger;

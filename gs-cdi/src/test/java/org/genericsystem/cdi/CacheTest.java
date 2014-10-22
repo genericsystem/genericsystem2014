@@ -20,6 +20,5 @@ public class CacheTest extends AbstractTest {
 	@Test(dependsOnMethods = "test001")
 	public void test002() {
 		assert hashCode == System.identityHashCode(cache);
-
 	}
 }

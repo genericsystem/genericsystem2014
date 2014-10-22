@@ -1,4 +1,4 @@
-package org.genercisystem.impl;
+package org.genericsystem.impl;
 
 import org.testng.annotations.Test;
 

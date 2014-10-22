@@ -3,11 +3,10 @@ package org.genericsystem.concurrency;
 import java.util.List;
 
 import org.genericsystem.api.exception.AliveConstraintViolationException;
-import org.genericsystem.concurrency.AbstractTest.RollbackCatcher;
 import org.testng.annotations.Test;
 
 @Test
-public class RelationTest {
+public class RelationTest extends AbstractTest {
 
 	public void test001_addInstance_NotAliveException() {
 		final Engine cache = new Engine();

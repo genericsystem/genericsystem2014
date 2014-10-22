@@ -1,4 +1,4 @@
-package org.genercisystem.impl;
+package org.genericsystem.impl;
 
 import java.util.List;
 import java.util.stream.Collectors;
