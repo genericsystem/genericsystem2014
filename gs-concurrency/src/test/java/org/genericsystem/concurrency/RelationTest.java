@@ -2,7 +2,6 @@ package org.genericsystem.concurrency;
 
 import java.util.List;
 
-import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.concurrency.AbstractTest.RollbackCatcher;
 import org.testng.annotations.Test;
@@ -98,131 +97,144 @@ public class RelationTest {
 		assert components.contains(car) : components;
 	}
 
-	public void test004_addInstance_OverridenRelation() {
-		final Engine Engine = new Engine();
-		Generic human = Engine.addInstance("Human");
-		Generic bob = human.addInstance("Bob");
-		Generic jane = human.addInstance("Jane");
-		Generic humanIsBrotherOfHuman = human.addAttribute("HumanIsBrotherOfHuman", human);
-		Generic bobIsBrotherOfHuman = Engine.addInstance(humanIsBrotherOfHuman, "BobIsBrotherOfHuman", bob, human);
-		Generic bobIsBrotherOfJane = humanIsBrotherOfHuman.addInstance("BobIsBrotherOfJane", bob, jane);
-		assert bobIsBrotherOfHuman.inheritsFrom(humanIsBrotherOfHuman);
-		assert bobIsBrotherOfJane.isInstanceOf(bobIsBrotherOfHuman) : bobIsBrotherOfJane.info();
-		Snapshot<Generic> instances = bobIsBrotherOfHuman.getInstances();
-		assert instances.size() == 1 : instances.size();
-		assert instances.contains(bobIsBrotherOfJane) : instances;
+	public void test004_addInheritsRelation() {
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic color = engine.addInstance("Color");
+		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
+
+		Generic car = engine.addInstance(vehicle, "Car");
+		Generic colorMat = engine.addInstance(color, "ColorMat");
+		Generic carColorMat = car.addAttribute(vehicleColor, "carColorMat", colorMat);
+
+		assert carColorMat.inheritsFrom(vehicleColor);
+		assert vehicleColor.getInheritings().contains(carColorMat);
+		assert vehicleColor.getInheritings().size() == 1;
+		assert !carColorMat.isInstanceOf(vehicleColor);
 	}
 
-	public void test004_addInstance_OverridenRelation_MetaRelation() {
-		final Engine Engine = new Engine();
-		Generic metaRelation = Engine.setInstance(Engine.getValue(), Engine, Engine);
-		Generic human = Engine.addInstance("Human");
-		Generic bob = human.addInstance("Bob");
-		Generic jane = human.addInstance("Jane");
-		Generic humanIsBrotherOfHuman = Engine.addInstance("HumanIsBrotherOfHuman", human, human);
-		assert humanIsBrotherOfHuman.isInstanceOf(metaRelation);
-		Generic bobIsBrotherOfHuman = Engine.addInstance(humanIsBrotherOfHuman, "BobIsBrotherOfHuman", bob, human);
-		Generic bobIsBrotherOfJane = humanIsBrotherOfHuman.addInstance("bobIsBrotherOfJane", bob, jane);
-		assert bobIsBrotherOfHuman.inheritsFrom(humanIsBrotherOfHuman);
-		assert bobIsBrotherOfJane.isInstanceOf(bobIsBrotherOfHuman);
-		Snapshot<Generic> instances = bobIsBrotherOfHuman.getInstances();
-		assert instances.size() == 1 : instances.size();
-		assert instances.contains(bobIsBrotherOfJane) : instances;
+	public void test005_addInheritsRelations_OnSameStructural() {
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic color = engine.addInstance("Color");
+		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
+		Generic vehicleColorMat = vehicle.addAttribute(vehicleColor, "vehicleColorMat", color);
+
+		assert vehicleColorMat.inheritsFrom(vehicleColor);
+		assert vehicleColor.getInheritings().contains(vehicleColorMat);
+		assert vehicleColor.getInheritings().size() == 1;
+		assert !vehicleColorMat.isInstanceOf(vehicleColor);
 	}
 
-	public void test005_addInstance_OverridenRelation_OverridenComponent() {
-		final Engine Engine = new Engine();
-		Generic vehicle = Engine.addInstance("Vehicle");
-		Generic car = vehicle.addInstance("Car");
-		Generic microCar = car.addInstance("MicroCar");
-		Generic caravane = vehicle.addInstance("Caravane");
-		Generic vehicleHaveSameOwnerAsVehicle = Engine.addInstance("VehicleHaveSameOwnerAsVehicle", vehicle, vehicle);
-		Generic carHaveSameOwnerAsVehicle = Engine.addInstance(vehicleHaveSameOwnerAsVehicle, "carHaveSameOwnerAsVehicle", car, vehicle);
-		Generic mycarHaveSameOwnerAsCaravane = vehicleHaveSameOwnerAsVehicle.addInstance("myCarHaveSameOwnerAsCaravane", microCar, caravane);
-		assert mycarHaveSameOwnerAsCaravane.isInstanceOf(carHaveSameOwnerAsVehicle);
-		Snapshot<Generic> instances = carHaveSameOwnerAsVehicle.getInstances();
-		assert instances.size() == 1 : instances.size();
-		assert instances.contains(mycarHaveSameOwnerAsCaravane) : instances;
+	public void test006_inherits_different_than_instance() {
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic color = engine.addInstance("Color");
+		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
+
+		Generic car = engine.addInstance(vehicle, "Car");
+		Generic colorMat = engine.addInstance(color, "ColorMat");
+		Generic carColorMat = car.addAttribute(vehicleColor, "carColorMat", colorMat);
+
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic red = color.addInstance("red");
+		Generic myVehicleRed = myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
+
+		assert myVehicleRed.isInstanceOf(vehicleColor);
+		assert !myVehicleRed.isInstanceOf(carColorMat);
+		assert carColorMat.inheritsFrom(vehicleColor);
 	}
 
-	public void test005_addInstance_OverridenRelation_OverridenComponent_MetaRelation() {
-		final Engine Engine = new Engine();
-		Generic metaRelation = Engine.setInstance(Engine.getValue(), Engine, Engine);
-		Generic vehicle = Engine.addInstance("Vehicle");
-		Generic car = vehicle.addInstance("Car");
-		Generic microCar = car.addInstance("MicroCar");
-		Generic caravane = vehicle.addInstance("Caravane");
-		Generic vehicleHaveSameOwnerAsVehicle = Engine.addInstance("VehicleHaveSameOwnerAsVehicle", vehicle, vehicle);
-		assert vehicleHaveSameOwnerAsVehicle.isInstanceOf(metaRelation);
-		Generic carHaveSameOwnerAsVehicle = Engine.addInstance(vehicleHaveSameOwnerAsVehicle, "carHaveSameOwnerAsVehicle", car, vehicle);
-		Generic mycarHaveSameOwnerAsCaravane = vehicleHaveSameOwnerAsVehicle.addInstance("myCarHaveSameOwnerAsCaravane", microCar, caravane);
-		assert mycarHaveSameOwnerAsCaravane.isInstanceOf(carHaveSameOwnerAsVehicle);
-		Snapshot<Generic> instances = carHaveSameOwnerAsVehicle.getInstances();
-		assert instances.size() == 1 : instances.size();
-		assert instances.contains(mycarHaveSameOwnerAsCaravane) : instances;
+	public void test007_addInstance_ofSubRelation() {
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic color = engine.addInstance("Color");
+		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
+
+		Generic car = engine.addInstance(vehicle, "Car");
+		Generic colorMat = engine.addInstance(color, "ColorMat");
+		Generic carColorMat = car.addAttribute(vehicleColor, "carColorMat", colorMat);
+
+		Generic myCar = car.addInstance("myCar");
+		Generic redMat = colorMat.addInstance("redMat");
+		Generic myCarRedMat = myCar.addHolder(carColorMat, "myCarRedMat", redMat);
+
+		assert myCarRedMat.isInstanceOf(carColorMat);
+		assert myCarRedMat.isInstanceOf(vehicleColor);
+		assert vehicleColor.getInstances().size() == 0;
+		assert carColorMat.getInstances().size() == 1;
 	}
 
-	public void test006_addInstance_OverridenRelation() {
-		final Engine Engine = new Engine();
-		Generic vehicle = Engine.addInstance("Vehicle");
-		Generic car = vehicle.addInstance("Car");
-		Generic caravane = vehicle.addInstance("Caravane");
-		Generic vehicleHaveSameOwnerAsVehicle = Engine.addInstance("VehicleHaveSameOwnerAsVehicle", vehicle, vehicle);
-		Generic carHaveSameOwnerAsVehicle = Engine.addInstance(vehicleHaveSameOwnerAsVehicle, "carHaveSameOwnerAsVehicle", vehicle, car);
-		Generic mycarHaveSameOwnerAsCaravane = vehicleHaveSameOwnerAsVehicle.addInstance("myCarHaveSameOwnerAsCaravane", caravane, car);
-		assert carHaveSameOwnerAsVehicle.inheritsFrom(vehicleHaveSameOwnerAsVehicle);
-		assert mycarHaveSameOwnerAsCaravane.isInstanceOf(carHaveSameOwnerAsVehicle);
-		Snapshot<Generic> instances = carHaveSameOwnerAsVehicle.getInstances();
-		assert instances.size() == 1 : instances.size();
-		assert instances.contains(mycarHaveSameOwnerAsCaravane) : instances;
+	public void test008() {
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic color = engine.addInstance("Color");
+		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
+
+		Generic car = engine.addInstance(vehicle, "Car");
+		Generic colorMat = engine.addInstance(color, "ColorMat");
+		Generic carColorMat = car.addAttribute(vehicleColor, "carColorMat", colorMat);
+
+		Generic myCar = car.addInstance("myCar");
+		Generic redMat = colorMat.addInstance("redMat");
+		Generic myCarRedMat = myCar.addHolder(carColorMat, "myCarRedMat", redMat);
+
+		Generic vehicleColorIsCold = vehicleColor.addAttribute("vehicleColorIsCold");
+
+		assert carColorMat.getAttributes().contains(vehicleColorIsCold);
 	}
 
-	public void test006_addInstance_OverridenRelation_MetaRelation() {
-		final Engine Engine = new Engine();
-		Generic metaRelation = Engine.setInstance(Engine.getValue(), Engine, Engine);
-		Generic vehicle = Engine.addInstance("Vehicle");
-		Generic car = vehicle.addInstance("Car");
-		Generic caravane = vehicle.addInstance("Caravane");
-		Generic vehicleHaveSameOwnerAsVehicle = Engine.addInstance("VehicleHaveSameOwnerAsVehicle", vehicle, vehicle);
-		assert vehicleHaveSameOwnerAsVehicle.isInstanceOf(metaRelation);
-		Generic carHaveSameOwnerAsVehicle = Engine.addInstance(vehicleHaveSameOwnerAsVehicle, "carHaveSameOwnerAsVehicle", vehicle, car);
-		Generic mycarHaveSameOwnerAsCaravane = vehicleHaveSameOwnerAsVehicle.addInstance("myCarHaveSameOwnerAsCaravane", caravane, car);
-		assert carHaveSameOwnerAsVehicle.inheritsFrom(vehicleHaveSameOwnerAsVehicle);
-		assert mycarHaveSameOwnerAsCaravane.isInstanceOf(carHaveSameOwnerAsVehicle);
-		Snapshot<Generic> instances = carHaveSameOwnerAsVehicle.getInstances();
-		assert instances.size() == 1 : instances.size();
-		assert instances.contains(mycarHaveSameOwnerAsCaravane) : instances;
+	public void test009() {
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic color = engine.addInstance("Color");
+		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
+
+		Generic car = engine.addInstance(vehicle, "Car");
+		Generic colorMat = engine.addInstance(color, "ColorMat");
+		Generic carColorMat = car.addAttribute(vehicleColor, "carColorMat", colorMat);
+
+		Generic myCar = car.addInstance("myCar");
+		Generic redMat = colorMat.addInstance("redMat");
+		Generic myCarRedMat = myCar.addHolder(carColorMat, "myCarRedMat", redMat);
+
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic red = color.addInstance("red");
+		Generic myVehicleRed = myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
+
+		Generic vehicleColorIsCold = vehicleColor.addAttribute("vehicleColorIsCold");
+
+		assert carColorMat.getAttributes().contains(vehicleColorIsCold);
+		assert vehicleColor.getAttributes().contains(vehicleColorIsCold);
 	}
 
-	public void test007_addInstance_OverridenRelation_OverridenComponent() {
-		final Engine Engine = new Engine();
-		Generic vehicle = Engine.addInstance("Vehicle");
-		Generic car = vehicle.addInstance("Car");
-		Generic microCar = car.addInstance("MicroCar");
-		Generic caravane = vehicle.addInstance("Caravane");
-		Generic vehicleHaveSameOwnerAsVehicle = Engine.addInstance("VehicleHaveSameOwnerAsVehicle", vehicle, vehicle);
-		Generic carHaveSameOwnerAsVehicle = Engine.addInstance(vehicleHaveSameOwnerAsVehicle, "carHaveSameOwnerAsVehicle", vehicle, car);
-		Generic mycarHaveSameOwnerAsCaravane = vehicleHaveSameOwnerAsVehicle.addInstance("myCarHaveSameOwnerAsCaravane", caravane, microCar);
-		assert mycarHaveSameOwnerAsCaravane.isInstanceOf(carHaveSameOwnerAsVehicle);
-		Snapshot<Generic> instances = carHaveSameOwnerAsVehicle.getInstances();
-		assert instances.size() == 1 : instances.size();
-		assert instances.contains(mycarHaveSameOwnerAsCaravane) : instances;
-	}
+	public void test010() {
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic color = engine.addInstance("Color");
+		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
 
-	public void test007_addInstance_OverridenRelation_OverridenComponent_MetaRelation() {
-		final Engine Engine = new Engine();
-		Generic metaRelation = Engine.setInstance(Engine.getValue(), Engine, Engine);
-		Generic vehicle = Engine.addInstance("Vehicle");
-		Generic car = vehicle.addInstance("Car");
-		Generic microCar = car.addInstance("MicroCar");
-		Generic caravane = vehicle.addInstance("Caravane");
-		Generic vehicleHaveSameOwnerAsVehicle = Engine.addInstance("VehicleHaveSameOwnerAsVehicle", vehicle, vehicle);
-		assert vehicleHaveSameOwnerAsVehicle.isInstanceOf(metaRelation);
-		Generic carHaveSameOwnerAsVehicle = Engine.addInstance(vehicleHaveSameOwnerAsVehicle, "carHaveSameOwnerAsVehicle", vehicle, car);
-		Generic mycarHaveSameOwnerAsCaravane = vehicleHaveSameOwnerAsVehicle.addInstance("myCarHaveSameOwnerAsCaravane", caravane, microCar);
-		assert mycarHaveSameOwnerAsCaravane.isInstanceOf(carHaveSameOwnerAsVehicle);
-		Snapshot<Generic> instances = carHaveSameOwnerAsVehicle.getInstances();
-		assert instances.size() == 1 : instances.size();
-		assert instances.contains(mycarHaveSameOwnerAsCaravane) : instances;
+		Generic car = engine.addInstance(vehicle, "Car");
+		Generic colorMat = engine.addInstance(color, "ColorMat");
+		Generic carColorMat = car.addAttribute(vehicleColor, "carColorMat", colorMat);
+
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic red = color.addInstance("red");
+		myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
+
+		Generic myCar = car.addInstance("myCar");
+		Generic redMat = colorMat.addInstance("redMat");
+		myCar.addHolder(carColorMat, "myCarRedMat", redMat);
+
+		Generic vehiclePower = vehicle.addAttribute("power");
+		Generic myVehicle125 = myVehicle.addHolder(vehiclePower, "125");
+
+		assert myVehicle.getHolders(vehiclePower).contains(myVehicle125) : myVehicle.getHolders(vehiclePower).info();
+		assert myVehicle125.getValue().equals("125");
+		assert myVehicle.getValues(vehiclePower).contains("125") : myVehicle.getHolders(vehiclePower).info();
+		assert myVehicle.getHolders(vehiclePower).size() == 1;
+
+		assert myCar.getHolders(vehiclePower).size() == 0;
+
 	}
 }
