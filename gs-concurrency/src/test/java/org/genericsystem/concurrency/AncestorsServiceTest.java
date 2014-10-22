@@ -106,17 +106,17 @@ public class AncestorsServiceTest extends AbstractTest {
 		assert Engine.isAncestorOf(button);
 	}
 
-	public void test006_getInheritings_GenericAndItsSuperHaveNotSameMeta() {
-		Engine engine = new Engine();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic vehiclePower = engine.addInstance("VehiclePower", vehicle);
-		Generic car = vehicle.addInstance("Car");
-		Generic carPower = engine.addInstance(vehiclePower, "CarPower", vehicle);
-		Generic vehicleStandard = vehicle.addInstance("VehicleStandard");
-		Generic v235 = vehiclePower.addInstance(235, vehicleStandard);
-		Generic myBmw = car.addInstance("myBmw");
-		Generic v236 = carPower.addInstance(v235, 236, myBmw);
-	}
+	// public void test006_getInheritings_GenericAndItsSuperHaveNotSameMeta() {
+	// Engine engine = new Engine();
+	// Generic vehicle = engine.addInstance("Vehicle");
+	// Generic vehiclePower = engine.addInstance("VehiclePower", vehicle);
+	// Generic car = vehicle.addInstance("Car");
+	// Generic carPower = engine.addInstance(vehiclePower, "CarPower", vehicle);
+	// Generic vehicleStandard = vehicle.addInstance("VehicleStandard");
+	// Generic v235 = vehiclePower.addInstance(235, vehicleStandard);
+	// Generic myBmw = car.addInstance("myBmw");
+	// Generic v236 = carPower.addInstance(v235, 236, myBmw);
+	// }
 
 	// public void isAncestorOfViaComponent3() {
 	// Engine Engine = new Engine();

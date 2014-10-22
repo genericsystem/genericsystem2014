@@ -2,6 +2,7 @@ package org.genericsystem.concurrency;
 
 import java.util.List;
 
+import org.genericsystem.api.exception.ConsistencyConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test
@@ -439,7 +440,7 @@ public class UpdatableServiceTest extends AbstractTest {
 				myCarRed.update("MyCarBlue", green, blue);
 			}
 			// then
-		}.assertIsCausedBy(IllegalStateException.class);
+		}.assertIsCausedBy(ConsistencyConstraintViolationException.class);
 	}
 
 	public void test021_AddInstance_AttributeWithSameNameAlreadyExisting() {

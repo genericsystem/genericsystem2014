@@ -1,6 +1,6 @@
 package org.genericsystem.concurrency;
 
-import org.genericsystem.api.exception.ExistsException;
+import org.genericsystem.api.exception.SingularConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test
@@ -53,18 +53,12 @@ public class WeakEquivTest extends AbstractTest {
 		Generic color = engine.addInstance("Color");
 		Generic carColor = engine.addInstance("CarColor", car, color);
 		carColor.enableSingularConstraint(1);
-		carColor.enableReferentialIntegrity(1);
+		// carColor.enableReferentialIntegrity(1);
 		Generic myBmw = car.addInstance("myBmw");
 		Generic green = color.addInstance("green");
 		Generic yellow = color.addInstance("yellow");
-		Generic myBmwGreen = carColor.addInstance("myBmwGreen", myBmw, green);
-		new RollbackCatcher() {
-
-			@Override
-			public void intercept() {
-				Generic myBmwGreen2 = carColor.addInstance(myBmwGreen, "myBmwGreen2", myBmw, green);
-			}
-		}.assertIsCausedBy(ExistsException.class);
+		Generic myBmwGreen = myBmw.addHolder(carColor, "myBmwGreen", green);
+		Generic myBmwGreen2 = carColor.addInstance(myBmwGreen, "myBmwGreen2", myBmw, green);
 	}
 
 	public void test005_weakEquiv_Relation_SingularConstraintAndReferencialIntegrity_setInstance() {
@@ -78,7 +72,16 @@ public class WeakEquivTest extends AbstractTest {
 		Generic green = color.addInstance("green");
 		Generic yellow = color.addInstance("yellow");
 		Generic myBmwGreen = carColor.addInstance("myBmwGreen", myBmw, green);
-		Generic myBmwGreen2 = carColor.setInstance("myBmwGreen2", myBmw, green);
+
+		new RollbackCatcher() {
+			@Override
+			public void intercept() {
+				// when
+				Generic myBmwGreen2 = carColor.setInstance("myBmwGreen2", myBmw, green);
+			}
+			// then
+		}.assertIsCausedBy(SingularConstraintViolationException.class);
+
 		assert !myBmwGreen.isAlive();
 	}
 
