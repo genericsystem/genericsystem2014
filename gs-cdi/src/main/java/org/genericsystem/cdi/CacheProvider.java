@@ -1,13 +1,12 @@
 package org.genericsystem.cdi;
 
 import java.io.Serializable;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-import org.genericsystem.concurrency.Cache;
-import org.genericsystem.concurrency.Engine;
 
 @SessionScoped
 public class CacheProvider implements Serializable {
@@ -41,7 +40,7 @@ public class CacheProvider implements Serializable {
 		return currentCache;
 	}
 
-	public void setCurrentCache(Cache<?, ?, ?, ?> cache) {
+	public void setCurrentCache(Cache cache) {
 		this.currentCache = cache;
 	}
 

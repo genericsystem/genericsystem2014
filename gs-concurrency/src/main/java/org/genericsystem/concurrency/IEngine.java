@@ -1,6 +1,6 @@
 package org.genericsystem.concurrency;
 
-public interface IEngine<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends org.genericsystem.cache.IEngine<T, U, V, W>, GenericService<T, U, V, W> {
+public interface IEngine<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends org.genericsystem.cache.IEngine<T, U, V, W>, IGeneric<T, U, V, W> {
 
 	@Override
 	default Cache<T, U, V, W> buildCache(org.genericsystem.cache.AbstractContext<T, U, V, W> subContext) {

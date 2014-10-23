@@ -5,13 +5,19 @@ import org.testng.annotations.Test;
 @Test
 public class InjectionTest extends AbstractTest {
 
-	public void testInstanceIsConcreteWithValue() {
+	public void test() {
+		assert engine != null;
 		assert cache != null;
-		// Generic car = engine.addInstance("Car");
-		// @SuppressWarnings("unused")
-		// Generic color = engine.addInstance("Color", car);
-		// Generic audi = car.addInstance("audi");
-		// Generic red = carColor.addInstance("audiRed", audi);
+	}
+
+	public void test2() {
+		Generic car = engine.addInstance("Car");
+		Generic color = engine.addInstance("Color");
+		Generic carColor = car.setAttribute("outsideColor", color);
+		Generic audi = car.addInstance("audi");
+		Generic red = color.addInstance("red");
+		Generic audiRed = audi.setHolder(carColor, "audiRed", red);
+		assert audi.getHolders(carColor).contains(audiRed) : audi.getHolders(carColor);
 	}
 
 }
