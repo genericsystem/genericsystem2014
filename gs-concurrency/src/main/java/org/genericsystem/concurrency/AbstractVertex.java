@@ -5,7 +5,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends I
 	protected LifeManager lifeManager;
 
 	@SuppressWarnings("unchecked")
-	T restore(Long designTs, long birthTs, long lastReadTs, long deathTs) {
+	protected T restore(Long designTs, long birthTs, long lastReadTs, long deathTs) {
 		lifeManager = new LifeManager(designTs, birthTs, lastReadTs, deathTs);
 		return (T) this;
 	}

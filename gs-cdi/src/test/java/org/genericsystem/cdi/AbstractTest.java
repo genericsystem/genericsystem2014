@@ -1,13 +1,10 @@
 package org.genericsystem.cdi;
 
-import javax.enterprise.inject.spi.Extension;
 import javax.inject.Inject;
 
 import org.genericsystem.api.exception.RollbackException;
-import org.genericsystem.cache.Engine;
 import org.genericsystem.cdi.event.EventLauncher;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.testenricher.cdi.container.CDIExtension;
 import org.jboss.arquillian.testng.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
@@ -22,12 +19,13 @@ public abstract class AbstractTest extends Arquillian {
 	@Inject
 	Engine engine;
 
+	@Inject
+	Cache cache;
+
 	@Deployment
 	public static JavaArchive createDeployment() {
 		JavaArchive javaArchive = ShrinkWrap.create(JavaArchive.class);
-		// javaArchive.addClasses(SerializableCache.class, GenericProvider.class, EngineProvider.class, CdiFactory.class);
 		javaArchive.addClasses(UserClassesProvider.class, PersistentDirectoryProvider.class, MockPersistentDirectoryProvider.class, EventLauncher.class, CacheProvider.class, EngineProvider.class);
-		javaArchive.addAsServiceProvider(Extension.class, CDIExtension.class);
 		createBeansXml(javaArchive);
 		return javaArchive;
 	}
@@ -38,10 +36,6 @@ public abstract class AbstractTest extends Arquillian {
 		// stringBuilder.append("<specializes> ");
 		// stringBuilder.append("<class>org.genericsystem.cdi.MockPersistentDirectoryProvider</class>");
 		// stringBuilder.append("</alternatives>");
-
-		// stringBuilder.append("<decorators>");
-		// stringBuilder.append("<class>org.jboss.weld.environment.se.threading.RunnableDecorator</class>");
-		// stringBuilder.append("</decorators>");
 		stringBuilder.append("</beans>");
 		javaArchive.addAsManifestResource(new StringAsset(stringBuilder.toString()), "beans.xml");
 	}

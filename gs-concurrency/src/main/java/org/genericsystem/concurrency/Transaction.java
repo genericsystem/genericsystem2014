@@ -10,7 +10,8 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends IEngin
 
 	private final long ts;
 
-	protected Transaction(U engine) {
+	// TODO KK sould be protected
+	public Transaction(U engine) {
 		this(engine.unwrap().pickNewTs(), engine);
 	}
 

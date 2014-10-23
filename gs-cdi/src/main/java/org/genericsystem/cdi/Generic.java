@@ -1,4 +1,7 @@
-package org.genericsystem.concurrency;
+package org.genericsystem.cdi;
+
+import org.genericsystem.concurrency.AbstractGeneric;
+import org.genericsystem.concurrency.IGeneric;
 
 public class Generic extends AbstractGeneric<Generic, Engine, Vertex, Root> implements IGeneric<Generic, Engine, Vertex, Root> {
 
