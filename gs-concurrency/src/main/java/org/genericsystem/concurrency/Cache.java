@@ -8,7 +8,7 @@ import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.cache.AbstractContext;
 import org.genericsystem.kernel.Statics;
 
-public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends org.genericsystem.cache.Cache<T, U, V, W> {
+public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends DefaultRoot<V, W>> extends org.genericsystem.cache.Cache<T, U, V, W> {
 
 	protected Cache(U engine) {
 		this(new Transaction<>(engine));

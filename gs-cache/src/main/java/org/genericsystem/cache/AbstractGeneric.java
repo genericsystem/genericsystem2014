@@ -3,12 +3,18 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 
+import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
+import org.genericsystem.cache.annotations.InstanceClass;
+import org.genericsystem.cache.annotations.SystemGeneric;
 import org.genericsystem.kernel.AbstractVertex;
+import org.genericsystem.kernel.Dependencies;
+import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint.CheckingType;
 
-public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends org.genericsystem.impl.AbstractGeneric<T, U, V, W> implements IGeneric<T, U, V, W> {
+public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends DefaultRoot<V, W>> extends AbstractVertex<T, U> implements DefaultGeneric<T, U, V, W> {
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -26,12 +32,10 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
 	protected V unwrap() {
 		return getCurrentCache().unwrap((T) this);
 	}
 
-	@Override
 	protected T wrap(V vertex) {
 		return getCurrentCache().wrap(vertex);
 	}
@@ -81,6 +85,30 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		return getRoot().getOrBuildT(clazz, throwExistException, meta, supers, value, components);
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	protected T newT(Class<?> clazz) {
+		InstanceClass metaAnnotation = getClass().getAnnotation(InstanceClass.class);
+		if (metaAnnotation != null)
+			if (clazz == null || clazz.isAssignableFrom(metaAnnotation.value()))
+				clazz = metaAnnotation.value();
+			else if (!metaAnnotation.value().isAssignableFrom(clazz))
+				getRoot().discardWithException(new InstantiationException(clazz + " must extends " + metaAnnotation.value()));
+		T newT = newT();// Instantiates T in all cases...
+
+		if (clazz == null || clazz.isAssignableFrom(newT.getClass()))
+			return newT;
+		if (newT.getClass().isAssignableFrom(clazz))
+			try {
+				return (T) clazz.newInstance();
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
+				getRoot().discardWithException(e);
+			}
+		else
+			getRoot().discardWithException(new InstantiationException(clazz + " must extends " + newT.getClass()));
+		return null; // Not reached
+	}
+
 	@Override
 	protected abstract T newT();
 
@@ -90,8 +118,47 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	}
 
 	@Override
-	protected T newT(Class<?> clazz) {
-		return super.newT(clazz);
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof ISignature<?>))
+			return false;
+		ISignature<?> service = (ISignature<?>) obj;
+		return equals(service.getMeta(), service.getSupers(), service.getValue(), service.getComposites());
+	}
+
+	@Override
+	public void remove() {
+		// TODO KK this verification must go in simpleRemove....
+		if (getClass().getAnnotation(SystemGeneric.class) != null)
+			getRoot().discardWithException(new IllegalAccessException("@SystemGeneric annoted generic can't be removed"));
+		super.remove();
+	}
+
+	@Override
+	public int hashCode() {
+		// TODO introduce : meta and components length
+		return Objects.hashCode(getValue());
+	}
+
+	@Override
+	protected Dependencies<T> getInheritingsDependencies() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	protected Dependencies<T> getInstancesDependencies() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	protected Dependencies<DependenciesEntry<T>> getMetaComponentsDependencies() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	protected Dependencies<DependenciesEntry<T>> getSuperComponentsDependencies() {
+		throw new UnsupportedOperationException();
 	}
 
 }

@@ -41,7 +41,6 @@
 	<modules>
 		<module>gs-api</module>
 		<module>gs-kernel</module>
-		<module>gs-impl</module>
 		<module>gs-cache</module>	
 		<module>gs-concurrency</module>
 		<module>gs-cdi</module>

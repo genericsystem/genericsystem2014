@@ -5,10 +5,9 @@ import java.util.Collections;
 import java.util.List;
 
 import org.genericsystem.api.exception.RollbackException;
-import org.genericsystem.impl.SystemCache;
 import org.genericsystem.kernel.Statics;
 
-public class Engine extends Generic implements IEngine<Generic, Engine, Vertex, Root> {
+public class Engine extends Generic implements DefaultEngine<Generic, Engine, Vertex, Root> {
 
 	private final ThreadLocal<Cache<Generic, Engine, Vertex, Root>> cacheLocal = new ThreadLocal<>();
 	private final SystemCache<Generic> systemCache = new SystemCache<>(this);
@@ -93,7 +92,13 @@ public class Engine extends Generic implements IEngine<Generic, Engine, Vertex, 
 
 	@Override
 	public void discardWithException(Throwable exception) throws RollbackException {
-		IEngine.super.discardWithException(exception);
+		DefaultEngine.super.discardWithException(exception);
+	}
+
+	@Override
+	// TODO KK
+	public DefaultEngine<?, ?, Generic, Engine> getEngine() {
+		return (DefaultEngine) this;
 	}
 
 }

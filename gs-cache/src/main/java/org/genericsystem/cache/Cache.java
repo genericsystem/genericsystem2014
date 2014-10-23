@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.ConstraintViolationException;
@@ -18,7 +19,7 @@ import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint.CheckingType;
 
-public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends AbstractContext<T, U, V, W> {
+public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends DefaultRoot<V, W>> extends AbstractContext<T, U, V, W> {
 
 	protected AbstractContext<T, U, V, W> subContext;
 

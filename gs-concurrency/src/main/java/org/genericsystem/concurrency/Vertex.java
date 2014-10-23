@@ -5,7 +5,7 @@ import java.util.Iterator;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 
-public class Vertex extends AbstractVertex<Vertex, Root> implements IVertex<Vertex, Root> {
+public class Vertex extends AbstractVertex<Vertex, Root> implements DefaultVertex<Vertex, Root> {
 
 	private final Dependencies<Vertex> instances = buildDependencies();
 	private final Dependencies<Vertex> inheritings = buildDependencies();

@@ -2,6 +2,7 @@ package org.genericsystem.cdi;
 
 import java.lang.reflect.Type;
 import java.util.Set;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Any;
@@ -10,8 +11,9 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.util.AnnotationLiteral;
+
+import org.genericsystem.cache.annotations.SystemGeneric;
 import org.genericsystem.cdi.event.EventLauncher;
-import org.genericsystem.impl.annotations.SystemGeneric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +26,8 @@ public class StartupBean implements Extension {
 		log.info("------------------start initialization-----------------------");
 		UserClassesProvider userClasses = getBean(UserClassesProvider.class, beanManager);
 		@SuppressWarnings("serial")
-		Set<Bean<?>> beans = beanManager.getBeans(Object.class, new AnnotationLiteral<Any>() {});
+		Set<Bean<?>> beans = beanManager.getBeans(Object.class, new AnnotationLiteral<Any>() {
+		});
 		for (Bean<?> bean : beans) {
 			Type clazz = bean.getBeanClass();
 			if (clazz instanceof Class) {

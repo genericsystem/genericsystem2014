@@ -6,7 +6,7 @@ import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
 
-public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends IEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends IRoot<V, W>> extends org.genericsystem.cache.Transaction<T, U, V, W> {
+public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends DefaultRoot<V, W>> extends org.genericsystem.cache.Transaction<T, U, V, W> {
 
 	private final long ts;
 

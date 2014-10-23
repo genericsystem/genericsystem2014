@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.genericsystem.cache.GenericsCache;
-import org.genericsystem.concurrency.IEngine;
+import org.genericsystem.cache.SystemCache;
+import org.genericsystem.concurrency.DefaultEngine;
 import org.genericsystem.concurrency.Transaction;
-import org.genericsystem.impl.SystemCache;
 import org.genericsystem.kernel.Statics;
 
-public class Engine extends Generic implements IEngine<Generic, Engine, Vertex, Root> {
+public class Engine extends Generic implements DefaultEngine<Generic, Engine, Vertex, Root> {
 
 	private final ThreadLocal<Cache> cacheLocal = new ThreadLocal<>();
 
@@ -103,6 +103,12 @@ public class Engine extends Generic implements IEngine<Generic, Engine, Vertex, 
 	@Override
 	public Engine getAlive() {
 		return this;
+	}
+
+	@Override
+	// TODO KK
+	public org.genericsystem.cache.DefaultEngine<?, ?, Generic, Engine> getEngine() {
+		return (org.genericsystem.cache.DefaultEngine) this;
 	}
 
 	static class TsGenerator {

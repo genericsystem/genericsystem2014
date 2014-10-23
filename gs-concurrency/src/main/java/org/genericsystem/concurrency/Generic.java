@@ -1,6 +1,6 @@
 package org.genericsystem.concurrency;
 
-public class Generic extends AbstractGeneric<Generic, Engine, Vertex, Root> implements IGeneric<Generic, Engine, Vertex, Root> {
+public class Generic extends AbstractGeneric<Generic, Engine, Vertex, Root> implements DefaultGeneric<Generic, Engine, Vertex, Root> {
 
 	@Override
 	protected Generic newT() {

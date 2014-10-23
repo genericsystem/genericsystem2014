@@ -6,15 +6,15 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.genericsystem.kernel.Statics;
 
-public class Root extends Vertex implements IRoot<Vertex, Root> {
+public class Root extends Vertex implements DefaultRoot<Vertex, Root> {
 
 	private final TsGenerator generator = new TsGenerator();
 
-	private final IEngine<?, ?, Vertex, Root> engine;
+	private final DefaultEngine<?, ?, Vertex, Root> engine;
 
 	private final GarbageCollector<Vertex, Root> garbageCollector;
 
-	Root(IEngine<?, ?, Vertex, Root> engine, Serializable value) {
+	Root(DefaultEngine<?, ?, Vertex, Root> engine, Serializable value) {
 		init(false, null, Collections.emptyList(), value, Collections.emptyList());
 		this.engine = engine;
 		long ts = pickNewTs();
@@ -43,7 +43,7 @@ public class Root extends Vertex implements IRoot<Vertex, Root> {
 	}
 
 	@Override
-	public IEngine<?, ?, Vertex, Root> getEngine() {
+	public DefaultEngine<?, ?, Vertex, Root> getEngine() {
 		return engine;
 	}
 

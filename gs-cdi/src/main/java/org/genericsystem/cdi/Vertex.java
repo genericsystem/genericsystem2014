@@ -4,12 +4,12 @@ import java.util.Iterator;
 
 import org.genericsystem.concurrency.AbstractDependencies;
 import org.genericsystem.concurrency.AbstractVertex;
-import org.genericsystem.concurrency.IVertex;
+import org.genericsystem.concurrency.DefaultVertex;
 import org.genericsystem.concurrency.LifeManager;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 
-public class Vertex extends AbstractVertex<Vertex, Root> implements IVertex<Vertex, Root> {
+public class Vertex extends AbstractVertex<Vertex, Root> implements DefaultVertex<Vertex, Root> {
 
 	private final Dependencies<Vertex> instances = buildDependencies();
 	private final Dependencies<Vertex> inheritings = buildDependencies();

@@ -1,11 +1,11 @@
 package org.genericsystem.cache;
 
-import org.genericsystem.impl.annotations.Composites;
-import org.genericsystem.impl.annotations.InstanceClass;
-import org.genericsystem.impl.annotations.Meta;
-import org.genericsystem.impl.annotations.Supers;
-import org.genericsystem.impl.annotations.SystemGeneric;
-import org.genericsystem.impl.annotations.value.IntValue;
+import org.genericsystem.cache.annotations.Composites;
+import org.genericsystem.cache.annotations.InstanceClass;
+import org.genericsystem.cache.annotations.Meta;
+import org.genericsystem.cache.annotations.Supers;
+import org.genericsystem.cache.annotations.SystemGeneric;
+import org.genericsystem.cache.annotations.value.IntValue;
 import org.testng.annotations.Test;
 
 @Test
