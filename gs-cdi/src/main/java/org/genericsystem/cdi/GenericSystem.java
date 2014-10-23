@@ -1,7 +1,7 @@
 package org.genericsystem.cdi;
 
-import org.genericsystem.cache.Cache;
-import org.genericsystem.cache.Engine;
+import org.genericsystem.concurrency.Cache;
+import org.genericsystem.concurrency.Engine;
 
 /**
  * <tt>Engine</tt> factory of Generic System. Assemble utilities for management of <tt>Engine</tt> and <tt>Caches</tt>.

@@ -1,15 +1,13 @@
 package org.genericsystem.cdi;
 
 import java.util.Arrays;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-
-import org.genericsystem.cache.Engine;
 import org.genericsystem.cdi.event.EventLauncher;
+import org.genericsystem.concurrency.Engine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

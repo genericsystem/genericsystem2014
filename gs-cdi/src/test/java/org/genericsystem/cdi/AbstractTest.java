@@ -1,13 +1,10 @@
 package org.genericsystem.cdi;
 
-import javax.enterprise.inject.spi.Extension;
 import javax.inject.Inject;
-
 import org.genericsystem.api.exception.RollbackException;
-import org.genericsystem.cache.Engine;
 import org.genericsystem.cdi.event.EventLauncher;
+import org.genericsystem.concurrency.Cache;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.testenricher.cdi.container.CDIExtension;
 import org.jboss.arquillian.testng.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
@@ -19,15 +16,18 @@ public abstract class AbstractTest extends Arquillian {
 
 	protected static Logger log = LoggerFactory.getLogger(AbstractTest.class);
 
+	// @Inject
+	// Engine engine;
+
 	@Inject
-	Engine engine;
+	Cache cache;
 
 	@Deployment
 	public static JavaArchive createDeployment() {
 		JavaArchive javaArchive = ShrinkWrap.create(JavaArchive.class);
 		// javaArchive.addClasses(SerializableCache.class, GenericProvider.class, EngineProvider.class, CdiFactory.class);
 		javaArchive.addClasses(UserClassesProvider.class, PersistentDirectoryProvider.class, MockPersistentDirectoryProvider.class, EventLauncher.class, CacheProvider.class, EngineProvider.class);
-		javaArchive.addAsServiceProvider(Extension.class, CDIExtension.class);
+		// javaArchive.addAsServiceProvider(Extension.class, CDIExtension.class);
 		createBeansXml(javaArchive);
 		return javaArchive;
 	}

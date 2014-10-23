@@ -1,8 +1,7 @@
 package org.genericsystem.cdi;
 
 import javax.inject.Inject;
-
-import org.genericsystem.cache.Cache;
+import org.genericsystem.concurrency.Cache;
 import org.testng.annotations.Test;
 
 @Test
@@ -17,7 +16,7 @@ public class CacheTest extends AbstractTest {
 		hashCode = System.identityHashCode(cache);
 	}
 
-	@Test(dependsOnMethods = "test001")
+	// @Test(dependsOnMethods = "test001")
 	public void test002() {
 		assert hashCode == System.identityHashCode(cache);
 	}
