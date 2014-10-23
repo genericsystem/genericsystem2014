@@ -2,7 +2,6 @@ package org.genericsystem.kernel;
 
 import java.util.Arrays;
 import java.util.Collections;
-
 import org.genericsystem.api.exception.ExistsException;
 import org.testng.annotations.Test;
 
@@ -11,12 +10,14 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test000_AdjustMeta() {
 		Root engine = new Root();
-		Vertex type1 = engine.addInstance("Type1");
-		Vertex type2 = engine.addInstance(type1, "Type2");
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex bike = engine.addInstance(vehicle, "Bike");
 
-		Vertex instance = type1.addInstance("instance");
+		Vertex myCarBmw = car.addInstance("myBmw");
+		Vertex myBikeBmw = bike.addInstance("myBmw");
 
-		catchAndCheckCause(() -> type2.addInstance("instance"), IllegalStateException.class);
+		assert vehicle.getInstance("myBmw") == null;
 	}
 
 	public void test001_AdjustMeta() {
