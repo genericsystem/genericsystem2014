@@ -5,12 +5,16 @@ import org.testng.annotations.Test;
 @Test
 public class InjectionTest extends AbstractTest {
 
+	// @Inject
+	// Cache cache;
+
 	public void test() {
 		assert engine != null;
-		assert cache != null;
+		// assert cache != null;
 	}
 
 	public void test2() {
+		engine.newCache().start();
 		Generic car = engine.addInstance("Car");
 		Generic color = engine.addInstance("Color");
 		Generic carColor = car.setAttribute("outsideColor", color);

@@ -28,7 +28,7 @@ public class Engine extends Generic implements DefaultEngine<Generic, Engine, Ve
 		for (Class<?> clazz : userClasses)
 			systemCache.set(clazz);
 
-		cache.flushAndUnmount();
+		cache.flush();
 	}
 
 	private final GenericsCache<Generic> genericsCache = new GenericsCache<>();

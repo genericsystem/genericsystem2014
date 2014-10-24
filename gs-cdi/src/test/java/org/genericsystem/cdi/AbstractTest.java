@@ -19,13 +19,10 @@ public abstract class AbstractTest extends Arquillian {
 	@Inject
 	Engine engine;
 
-	@Inject
-	Cache cache;
-
 	@Deployment
 	public static JavaArchive createDeployment() {
 		JavaArchive javaArchive = ShrinkWrap.create(JavaArchive.class);
-		javaArchive.addClasses(UserClassesProvider.class, PersistentDirectoryProvider.class, MockPersistentDirectoryProvider.class, EventLauncher.class, CacheProvider.class, EngineProvider.class);
+		javaArchive.addClasses(UserClassesProvider.class, PersistentDirectoryProvider.class, MockPersistentDirectoryProvider.class, EventLauncher.class, CacheSessionProvider.class, CacheRequestProvider.class, EngineProvider.class);
 		createBeansXml(javaArchive);
 		return javaArchive;
 	}
