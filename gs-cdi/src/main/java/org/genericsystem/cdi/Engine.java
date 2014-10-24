@@ -34,7 +34,8 @@ public class Engine extends Generic implements DefaultEngine<Generic, Engine, Ve
 		for (Class<?> clazz : userClasses)
 			systemCache.set(clazz);
 
-		cache.flushAndUnmount();
+		cache.flush();
+		cache.stop();
 	}
 
 	Root buildRoot(Serializable value) {

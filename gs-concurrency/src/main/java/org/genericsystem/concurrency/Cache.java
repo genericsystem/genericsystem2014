@@ -49,22 +49,23 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngin
 		}
 	}
 
-	@Override
-	public Cache<T, U, V, W> mountNewCache() {
-		return (Cache<T, U, V, W>) super.mountNewCache();
-	}
+	// @Override
+	// public Cache<T, U, V, W> mountAndStartNewCache() {
+	// return (Cache<T, U, V, W>) super.mountAndStartNewCache();
+	// }
 
-	@Override
-	public Cache<T, U, V, W> flushAndUnmount() {
-		flush();
-		return getSubContext() instanceof Cache ? ((Cache<T, U, V, W>) getSubContext()).start() : this;
-	}
-
-	@Override
-	public Cache<T, U, V, W> clearAndUnmount() {
-		clear();
-		return getSubContext() instanceof Cache ? ((Cache<T, U, V, W>) getSubContext()).start() : this;
-	}
+	// TODO clean
+	// @Override
+	// public Cache<T, U, V, W> flushAndUnmount() {
+	// flush();
+	// return getSubContext() instanceof Cache ? ((Cache<T, U, V, W>) getSubContext()).start() : this;
+	// }
+	//
+	// @Override
+	// public Cache<T, U, V, W> clearAndUnmount() {
+	// clear();
+	// return getSubContext() instanceof Cache ? ((Cache<T, U, V, W>) getSubContext()).start() : this;
+	// }
 
 	@Override
 	public Cache<T, U, V, W> start() {
