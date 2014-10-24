@@ -76,13 +76,8 @@ public class InstanciationTest extends AbstractTest {
 	public void test004_addInstance_sameValueParameter() {
 		Engine Engine = new Engine();
 		Generic car = Engine.addInstance("Car");
-		new RollbackCatcher() {
 
-			@Override
-			public void intercept() {
-				Generic car2 = Engine.addInstance("Car");
-			}
-		}.assertIsCausedBy(ExistsException.class);
+		catchAndCheckCause(() -> Engine.addInstance("Car"), ExistsException.class);
 	}
 
 	public void test005_setInstance_exisitingInstance() {
@@ -123,14 +118,7 @@ public class InstanciationTest extends AbstractTest {
 	public void test007_addInstance_selfInheriting() {
 		Engine Engine = new Engine();
 		Generic vehicle = Engine.addInstance("Vehicle");
-		new RollbackCatcher() {
-
-			@Override
-			public void intercept() {
-				Engine.addInstance(Arrays.asList(vehicle), "Vehicle");
-
-			}
-		}.assertIsCausedBy(ExistsException.class);
+		catchAndCheckCause(() -> Engine.addInstance(Arrays.asList(vehicle), "Vehicle"), ExistsException.class);
 	}
 
 	public void test008_addInstance_multipleOverrides() {

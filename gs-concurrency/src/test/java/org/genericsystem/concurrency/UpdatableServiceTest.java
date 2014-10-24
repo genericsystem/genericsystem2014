@@ -386,14 +386,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Generic myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
 
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				// when
-				myCarRed.updateComponents(blue);
-			}
-			// then
-		}.assertIsCausedBy(IllegalArgumentException.class);
+		catchAndCheckCause(() -> myCarRed.updateComponents(blue), IllegalArgumentException.class);
 	}
 
 	// public void test300_replaceComponentWithValueModification() {
@@ -433,14 +426,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Generic myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
 
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				// when
-				myCarRed.update("MyCarBlue", green, blue);
-			}
-			// then
-		}.assertIsCausedBy(ConsistencyConstraintViolationException.class);
+		catchAndCheckCause(() -> myCarRed.update("MyCarBlue", green, blue), ConsistencyConstraintViolationException.class);
 	}
 
 	public void test021_AddInstance_AttributeWithSameNameAlreadyExisting() {

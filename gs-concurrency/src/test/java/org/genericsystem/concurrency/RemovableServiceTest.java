@@ -58,16 +58,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Generic engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		vehicle.addInstance("MyVehicule");
-
-		// when
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				// when
-				vehicle.remove();
-			}
-			// then
-		}.assertIsCausedBy(ReferentialIntegrityConstraintViolationException.class);
+		catchAndCheckCause(() -> vehicle.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
 	// public void test103_remove_SubType() {
@@ -110,15 +101,7 @@ public class RemovableServiceTest extends AbstractTest {
 		engine.addInstance("Power", vehicle);
 		vehicle.addInstance("Car");
 
-		// when
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				// when
-				vehicle.remove();
-			}
-			// then
-		}.assertIsCausedBy(ReferentialIntegrityConstraintViolationException.class);
+		catchAndCheckCause(() -> vehicle.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
 	public void test105_remove_attribute_attribute_KO() {
@@ -143,14 +126,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Generic vehicle = engine.addInstance("Vehicle");
 		engine.addInstance(vehicle, "Car");
 
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				// when
-				vehicle.remove();
-			}
-			// then
-		}.assertIsCausedBy(ReferentialIntegrityConstraintViolationException.class);
+		catchAndCheckCause(() -> vehicle.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
 	public void test107_remove_relation_KO() {
@@ -163,14 +139,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		vehicleColor.addInstance("CarRed", car, red);
 
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				// when
-				vehicleColor.remove();
-			}
-			// then
-		}.assertIsCausedBy(ReferentialIntegrityConstraintViolationException.class);
+		catchAndCheckCause(() -> vehicleColor.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
 	public void test108_remove_relationFromTarget() {

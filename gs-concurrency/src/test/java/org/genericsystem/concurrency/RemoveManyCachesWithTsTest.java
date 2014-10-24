@@ -13,7 +13,6 @@ public class RemoveManyCachesWithTsTest extends AbstractTest {
 		Generic myBmw = car.addInstance("myBmw");
 		Generic myBmwRed = myBmw.addHolder(color, "red");
 		cache.flush();
-
 		Cache cache2 = engine.newCache().start();
 		cache2.flush();
 		assert cache.getTs() < cache2.getTs();
@@ -35,7 +34,6 @@ public class RemoveManyCachesWithTsTest extends AbstractTest {
 		Generic myBmw = car.addInstance("myBmw");
 		Generic myBmwRed = myBmw.addHolder(color, "red");
 		cache.flush();
-
 		Cache cache2 = engine.newCache().start();
 		Generic car2 = engine.addInstance("Car2");
 		cache2.flush();
@@ -62,6 +60,7 @@ public class RemoveManyCachesWithTsTest extends AbstractTest {
 		Generic myBmw = car.addInstance("myBmw");
 		Generic myBmwRed = myBmw.addHolder(color, "red");
 		cache.flush();
+		assert cache.getTs() < cache2.getTs();
 		cache2.start();
 		myBmwRed.remove();
 		cache2.flush();
@@ -99,13 +98,14 @@ public class RemoveManyCachesWithTsTest extends AbstractTest {
 		Generic color = car.addAttribute("Color");
 		Generic myBmw = car.addInstance("myBmw");
 		cache.flush();
+		assert cache.getTs() < cache2.getTs();
 		Generic myBmwRed = myBmw.addHolder(color, "red");
 		cache2.start();
 		Generic myBmwRed2 = myBmw.addHolder(color, "red");
-		assert cache.getTs() < cache2.getTs();
 		cache.start();
 		myBmwRed.remove();
 		cache.flush();
+		assert cache.getTs() < cache2.getTs();
 		cache2.start();
 		cache2.flush();
 		assert cache.getTs() < cache2.getTs();
@@ -124,12 +124,13 @@ public class RemoveManyCachesWithTsTest extends AbstractTest {
 		Generic color = car.addAttribute("Color");
 		Generic myBmw = car.addInstance("myBmw");
 		cache.flush();
+		assert cache.getTs() < cache2.getTs();
 		Generic myBmwRed = myBmw.addHolder(color, "red");
 		cache2.start();
 		Generic myBmwRed2 = myBmw.addHolder(color, "red");
-		assert cache.getTs() < cache2.getTs();
 		cache.start();
 		cache.flush();
+		assert cache.getTs() > cache2.getTs();
 		myBmwRed.remove();
 		cache2.start();
 		cache2.clear();

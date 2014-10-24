@@ -61,12 +61,7 @@ public class RemoveOneCacheTest extends AbstractTest {
 
 		Generic myBmwGreen = myBmw.addHolder(color, "green");
 
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				myBmwBlue.remove();
-			}
-		}.assertIsCausedBy(AliveConstraintViolationException.class);
+		catchAndCheckCause(() -> myBmwBlue.remove(), AliveConstraintViolationException.class);
 
 		assert myBmw.getHolders(color).size() == 0;
 	}
@@ -87,13 +82,7 @@ public class RemoveOneCacheTest extends AbstractTest {
 
 		Generic myBmwGreen = myBmw.addHolder(color, "green");
 		cache.flush();
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				myBmwBlue.remove();
-			}
-		}.assertIsCausedBy(AliveConstraintViolationException.class);
-
+		catchAndCheckCause(() -> myBmwBlue.remove(), AliveConstraintViolationException.class);
 		assert myBmw.getHolders(color).contains(myBmwGreen);
 		assert myBmw.getHolders(color).size() == 1;
 	}
@@ -181,11 +170,6 @@ public class RemoveOneCacheTest extends AbstractTest {
 		cache.flush();
 		myBmw.remove();
 		cache.clear();
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				car.remove();
-			}
-		}.assertIsCausedBy(ReferentialIntegrityConstraintViolationException.class);
+		catchAndCheckCause(() -> car.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 }

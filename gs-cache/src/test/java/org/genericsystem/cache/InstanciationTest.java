@@ -62,14 +62,7 @@ public class InstanciationTest extends AbstractTest {
 	public void testTwoTypeInstanciationSameNamesAddInstance() {
 		Engine engine = new Engine();
 		engine.addInstance("Car");
-
-		new RollbackCatcher() {
-
-			@Override
-			public void intercept() {
-				engine.addInstance("Car");
-			}
-		}.assertIsCausedBy(ExistsException.class);
+		catchAndCheckCause(() -> engine.addInstance("Car"), ExistsException.class);
 	}
 
 	public void testTwoTypeInstanciationSameNamesSetInstance() {
@@ -126,14 +119,7 @@ public class InstanciationTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		// log.info(vehicle.info());
-		new RollbackCatcher() {
-
-			@Override
-			public void intercept() {
-				engine.addInstance(Arrays.asList(vehicle), "Vehicle");
-
-			}
-		}.assertIsCausedBy(ExistsException.class);
+		catchAndCheckCause(() -> engine.addInstance(Arrays.asList(vehicle), "Vehicle"), ExistsException.class);
 	}
 
 	public void test3TypeInstanciationWithMultipleInheritence() {
