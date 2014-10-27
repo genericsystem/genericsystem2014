@@ -12,22 +12,22 @@ public class Cache extends org.genericsystem.concurrency.Cache<Generic, Engine, 
 		super(subContext);
 	}
 
-	@Override
-	public Cache mountNewCache() {
-		return (Cache) super.mountNewCache();
-	}
+	// @Override
+	// public Cache mountAndStartNewCache() {
+	// return (Cache) super.mountAndStartNewCache();
+	// }
 
-	@Override
-	public Cache flushAndUnmount() {
-		flush();
-		return getSubContext() instanceof Cache ? ((Cache) getSubContext()).start() : this;
-	}
-
-	@Override
-	public Cache clearAndUnmount() {
-		clear();
-		return getSubContext() instanceof Cache ? ((Cache) getSubContext()).start() : this;
-	}
+	// @Override
+	// public Cache flushAndUnmount() {
+	// flush();
+	// return getSubContext() instanceof Cache ? ((Cache) getSubContext()).start() : this;
+	// }
+	//
+	// @Override
+	// public Cache clearAndUnmount() {
+	// clear();
+	// return getSubContext() instanceof Cache ? ((Cache) getSubContext()).start() : this;
+	// }
 
 	@Override
 	public Cache start() {

@@ -5,11 +5,10 @@ import java.io.Serializable;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
 @SessionScoped
-public class CacheProvider implements Serializable {
+public class CacheSessionProvider implements Serializable {
 
 	private static final long serialVersionUID = 5201003234496546928L;
 
@@ -23,29 +22,25 @@ public class CacheProvider implements Serializable {
 		currentCache = engine.newCache();
 	}
 
-	public void mountNewCache() {
-		currentCache = currentCache.mountNewCache();
+	public void mountAndStartNewCache() {
+		currentCache = (Cache) currentCache.mountAndStartNewCache();
 	}
 
-	public void flushCurrentCache() {
-		currentCache = currentCache.flushAndUnmount();
+	public void flushAndUnmount() {
+		currentCache = (Cache) currentCache.flushAndUnmount();
 	}
 
-	public void discardCurrentCache() {
-		currentCache = currentCache.clearAndUnmount();
+	public void clearAndUnmount() {
+		currentCache = (Cache) currentCache.clearAndUnmount();
 	}
 
-	@Produces
 	public Cache getCurrentCache() {
 		return currentCache;
 	}
 
-	public void setCurrentCache(Cache cache) {
-		this.currentCache = cache;
-	}
-
 	@PreDestroy
 	public void preDestroy() {
+		currentCache.stop();
 		currentCache = null;
 	}
 

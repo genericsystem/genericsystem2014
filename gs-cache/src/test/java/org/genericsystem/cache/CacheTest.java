@@ -84,9 +84,12 @@ public class CacheTest extends AbstractTest {
 
 	public void test003_mountNewCache() {
 		Engine engine = new Engine();
+		Cache<Generic, Engine, Vertex, Root> cache = engine.newCache().start();
 		Cache<Generic, Engine, Vertex, Root> currentCache = engine.getCurrentCache();
-		Cache<Generic, Engine, Vertex, Root> mountNewCache = currentCache.mountNewCache();
+		assert cache == currentCache;
+		Cache<Generic, Engine, Vertex, Root> mountNewCache = currentCache.mountAndStartNewCache();
 		assert mountNewCache.getSubContext() == currentCache;
+		assert mountNewCache != currentCache;
 		Generic vehicle = engine.addInstance("Vehicle");
 		assert currentCache == mountNewCache.flushAndUnmount();
 		assert ((AbstractGeneric<Generic, Engine, Vertex, Root>) vehicle).unwrap() == null;
@@ -100,7 +103,7 @@ public class CacheTest extends AbstractTest {
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = color.addInstance("vehicleColor", vehicle);
-		Cache<Generic, Engine, Vertex, Root> mountNewCache = currentCache.mountNewCache();
+		Cache<Generic, Engine, Vertex, Root> mountNewCache = currentCache.mountAndStartNewCache();
 		Generic vehicleColor2 = color.addInstance("vehicleColor2", vehicle);
 		assert vehicle.getMetaComponents(color).containsAll(Arrays.asList(vehicleColor, vehicleColor2)) : vehicle.getMetaComponents(color);
 		mountNewCache.flush();
@@ -116,7 +119,7 @@ public class CacheTest extends AbstractTest {
 		Cache<Generic, Engine, Vertex, Root> currentCache = engine.getCurrentCache();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic vehiclePower = engine.addInstance("vehiclePower", vehicle);
-		Cache<Generic, Engine, Vertex, Root> mountNewCache = currentCache.mountNewCache();
+		Cache<Generic, Engine, Vertex, Root> mountNewCache = currentCache.mountAndStartNewCache();
 		assert vehiclePower.isAlive();
 		assert !vehicle.getMetaComponents(engine.getMetaAttribute()).isEmpty() : vehicle.getMetaComponents(engine.getMetaAttribute()).stream().collect(Collectors.toList());
 		vehiclePower.remove();
