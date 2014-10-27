@@ -5,7 +5,7 @@ import java.util.Iterator;
 import org.genericsystem.api.core.Snapshot.AbstractSnapshot;
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
-class DependenciesImpl<T> extends AbstractSnapshot<T> implements Dependencies<T> {
+public class DependenciesImpl<T> extends AbstractSnapshot<T> implements Dependencies<T> {
 
 	private Node<T> head = null;
 	private Node<T> tail = null;

@@ -43,13 +43,7 @@ public class GenericTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		assert engine.getInstances().contains(vehicle) : engine.getInstances().stream().collect(Collectors.toList());
-		new RollbackCatcher() {
-
-			@Override
-			public void intercept() {
-				engine.addInstance("Vehicle");
-			}
-		}.assertIsCausedBy(ExistsException.class);
+		catchAndCheckCause(() -> engine.addInstance("Vehicle"), ExistsException.class);
 	}
 
 	public void testSetInstance() {

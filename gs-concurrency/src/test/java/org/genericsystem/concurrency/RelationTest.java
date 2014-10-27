@@ -17,12 +17,7 @@ public class RelationTest extends AbstractTest {
 		final Generic green = color.addInstance("green");
 		myCar.remove();
 		assert !myCar.isAlive();
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				carColor.addInstance("myCarColor", myCar, green);
-			}
-		}.assertIsCausedBy(AliveConstraintViolationException.class);
+		catchAndCheckCause(() -> carColor.addInstance("myCarColor", myCar, green), AliveConstraintViolationException.class);
 	}
 
 	public void test001_addInstance_NotAliveException_withMetaRelation() {
@@ -36,12 +31,7 @@ public class RelationTest extends AbstractTest {
 		final Generic green = color.addInstance("green");
 		myCar.remove();
 		assert !myCar.isAlive();
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				carColor.addInstance("myCarColor", myCar, green);
-			}
-		}.assertIsCausedBy(AliveConstraintViolationException.class);
+		catchAndCheckCause(() -> carColor.addInstance("myCarColor", myCar, green), AliveConstraintViolationException.class);
 	}
 
 	public void test002_addInstance_2components() {

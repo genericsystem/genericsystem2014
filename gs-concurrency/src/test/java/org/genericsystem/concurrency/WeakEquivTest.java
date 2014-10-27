@@ -73,16 +73,7 @@ public class WeakEquivTest extends AbstractTest {
 		Generic yellow = color.addInstance("yellow");
 		Generic myBmwGreen = carColor.addInstance("myBmwGreen", myBmw, green);
 
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				// when
-				Generic myBmwGreen2 = carColor.setInstance("myBmwGreen2", myBmw, green);
-			}
-			// then
-		}.assertIsCausedBy(SingularConstraintViolationException.class);
-
-		assert !myBmwGreen.isAlive();
+		catchAndCheckCause(() -> carColor.setInstance("myBmwGreen2", myBmw, green), SingularConstraintViolationException.class);
 	}
 
 	// public void test006_weakEquiv_DefaultValue() {

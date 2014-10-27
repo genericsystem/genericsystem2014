@@ -360,14 +360,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Generic myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
 
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				// when
-				myCarRed.updateComponents(blue);
-			}
-			// then
-		}.assertIsCausedBy(IllegalArgumentException.class);
+		catchAndCheckCause(() -> myCarRed.updateComponents(blue), IllegalArgumentException.class);
 	}
 
 	public void test300_replaceComponentWithValueModification() {
@@ -407,17 +400,6 @@ public class UpdatableServiceTest extends AbstractTest {
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Generic myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
 
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				// when
-				Generic result = myCarRed.update("MyCarBlue", green, blue);
-				assert result != myCarRed;
-				assert result.isAlive();
-				assert vehicleColor.equals(result.getMeta());
-				assert false : result.info();
-			}
-			// then
-		}.assertIsCausedBy(ConsistencyConstraintViolationException.class);
+		catchAndCheckCause(() -> myCarRed.update("MyCarBlue", green, blue), ConsistencyConstraintViolationException.class);
 	}
 }

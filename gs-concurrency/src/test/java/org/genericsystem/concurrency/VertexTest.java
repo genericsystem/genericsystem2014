@@ -222,24 +222,14 @@ public class VertexTest extends AbstractTest {
 		Generic engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		vehicle.remove();
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				engine.addInstance(vehicle, "Car");
-			}
-		}.assertIsCausedBy(AliveConstraintViolationException.class);
+		catchAndCheckCause(() -> engine.addInstance(vehicle, "Car"), AliveConstraintViolationException.class);
 	}
 
 	public void test11() {
 		Generic engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		vehicle.remove();
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				vehicle.addInstance("myVehicle");
-			}
-		}.assertIsCausedBy(AliveConstraintViolationException.class);
+		catchAndCheckCause(() -> vehicle.addInstance("myVehicle"), AliveConstraintViolationException.class);
 	}
 
 	// public void test12() {

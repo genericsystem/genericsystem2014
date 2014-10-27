@@ -24,13 +24,7 @@ public class AnnotationTest extends AbstractTest {
 	public void test001_remove() {
 		Engine engine = new Engine(Vehicle.class);
 		Generic vehicle = engine.find(Vehicle.class);
-		new RollbackCatcher() {
-
-			@Override
-			public void intercept() {
-				vehicle.remove();
-			}
-		}.assertIsCausedBy(IllegalAccessException.class);
+		catchAndCheckCause(() -> vehicle.remove(), IllegalAccessException.class);
 	}
 
 	public void test001_instanceof() {
@@ -61,20 +55,9 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	public void test004_instanceof() {
-		new RollbackCatcher() {
 
-			@Override
-			public void intercept() {
-				new Engine(MyBmw.class);
-			}
-		}.assertIsCausedBy(InstantiationException.class);
-		new RollbackCatcher() {
-
-			@Override
-			public void intercept() {
-				new Engine(MyMercedes.class);
-			}
-		}.assertIsCausedBy(InstantiationException.class);
+		catchAndCheckCause(() -> new Engine(MyBmw.class), InstantiationException.class);
+		catchAndCheckCause(() -> new Engine(MyMercedes.class), InstantiationException.class);
 	}
 
 	public static class VehicleInstance extends Generic {

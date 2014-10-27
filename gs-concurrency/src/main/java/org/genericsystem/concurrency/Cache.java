@@ -26,12 +26,12 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngin
 	public void pickNewTs() throws RollbackException {
 		if (getSubContext() instanceof Cache) {
 			((Cache<?, ?, ?, ?>) getSubContext()).pickNewTs();
-			clean();
 		} else {
 			long ts = getTs();
 			subContext = new Transaction<>(getEngine());
 			assert getTs() > ts;
 		}
+		// clean();
 	}
 
 	private void clean() {

@@ -23,14 +23,7 @@ public class BindingServiceTest extends AbstractTest {
 		Generic engine = new Engine();
 		engine.addInstance("Vehicle");
 
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				// when
-				engine.addInstance("Vehicle");
-			}
-			// then
-		}.assertIsCausedBy(ExistsException.class);
+		catchAndCheckCause(() -> engine.addInstance("Vehicle"), ExistsException.class);
 	}
 
 	// public void test003_addSameValueSingular() {
