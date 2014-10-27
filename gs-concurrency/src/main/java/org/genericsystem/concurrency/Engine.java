@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Supplier;
 
 import org.genericsystem.cache.GenericsCache;
 import org.genericsystem.cache.SystemCache;
@@ -22,17 +23,32 @@ public class Engine extends Generic implements DefaultEngine<Generic, Engine, Ve
 	}
 
 	public Engine(Serializable engineValue, Class<?>... userClasses) {
+		this(null, engineValue, userClasses);
+	}
+
+	public Engine(Supplier<Cache<Generic, Engine, Vertex, Root>> cacheSupplier, Serializable engineValue, Class<?>... userClasses) {
 		init(false, null, Collections.emptyList(), engineValue, Collections.emptyList());
 		root = buildRoot(engineValue);
 
-		Cache<Generic, Engine, Vertex, Root> cache = newCache().start();
+		Cache<Generic, Engine, Vertex, Root> cache = getCache(cacheSupplier);
+		mountSystemProperties(cache);
+		for (Class<?> clazz : userClasses)
+			systemCache.set(clazz);
+		cache.flush();
+
+	}
+
+	private Cache<Generic, Engine, Vertex, Root> getCache(Supplier<Cache<Generic, Engine, Vertex, Root>> cacheSupplier) {
+		Cache<Generic, Engine, Vertex, Root> cacheInThreadLocal = cacheLocal.get();
+		if (cacheInThreadLocal != null)
+			return cacheInThreadLocal;
+		return cacheSupplier == null ? newCache().start() : cacheSupplier.get().start();
+	}
+
+	private void mountSystemProperties(Cache<Generic, Engine, Vertex, Root> cache) {
 		Generic metaAttribute = setInstance(this, getValue(), coerceToTArray(this));
 		setInstance(SystemMap.class, coerceToTArray(this)).enablePropertyConstraint();
 		metaAttribute.disableReferentialIntegrity(Statics.BASE_POSITION);
-		for (Class<?> clazz : userClasses)
-			systemCache.set(clazz);
-
-		cache.flush();
 	}
 
 	Root buildRoot(Serializable value) {

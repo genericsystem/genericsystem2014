@@ -1,13 +1,16 @@
 package org.genericsystem.cdi;
 
 import java.util.Arrays;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
+
 import org.genericsystem.cdi.event.EventLauncher;
 import org.genericsystem.concurrency.Engine;
+import org.genericsystem.kernel.Statics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +53,7 @@ public class EngineProvider {
 		log.info("-  directory path : " + persistentDirectoryProvider.getDirectoryPath());
 		log.info("-  userClasses : " + Arrays.toString(userClassesProvider.getUserClassesArray()));
 		log.info("-----------------------------------------------------------------------------------------------");
-		engine = new Engine(userClassesProvider.getUserClassesArray());// TODO GenericSystem.newPersistentEngine(persistentDirectoryProvider.getDirectoryPath(), userClassesProvider.getUserClassesArray());
+		engine = new Engine(() -> null, Statics.ENGINE_VALUE, userClassesProvider.getUserClassesArray());// TODO GenericSystem.newPersistentEngine(persistentDirectoryProvider.getDirectoryPath(), userClassesProvider.getUserClassesArray());
 	}
 
 	@Produces
