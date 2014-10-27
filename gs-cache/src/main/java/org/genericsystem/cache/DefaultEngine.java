@@ -2,7 +2,6 @@ package org.genericsystem.cache;
 
 import java.io.Serializable;
 import java.util.List;
-
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.AbstractVertex;
 
@@ -17,8 +16,6 @@ public interface DefaultEngine<T extends AbstractGeneric<T, U, V, W>, U extends 
 	default Cache<T, U, V, W> buildCache(AbstractContext<T, U, V, W> subContext) {
 		return new Cache<>(subContext);
 	}
-
-	Cache<T, U, V, W> start(Cache<T, U, V, W> cache);
 
 	void stop(Cache<T, U, V, W> cache);
 
