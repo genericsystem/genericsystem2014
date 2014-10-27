@@ -54,18 +54,18 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngin
 		return adds.contains(generic) || (!removes.contains(generic) && getSubContext().isAlive(generic));
 	}
 
-	public Cache<T, U, V, W> mountNewCache() {
+	public Cache<T, U, V, W> mountAndStartNewCache() {
 		return getEngine().buildCache(this).start();
 	}
 
 	public Cache<T, U, V, W> flushAndUnmount() {
 		flush();
-		return subContext instanceof Cache ? ((Cache<T, U, V, W>) subContext).start() : this;
+		return subContext instanceof Cache ? ((Cache<T, U, V, W>) subContext).start() : null;
 	}
 
 	public Cache<T, U, V, W> clearAndUnmount() {
 		clear();
-		return subContext instanceof Cache ? ((Cache<T, U, V, W>) subContext).start() : this;
+		return subContext instanceof Cache ? ((Cache<T, U, V, W>) subContext).start() : null;
 	}
 
 	public Cache<T, U, V, W> start() {
