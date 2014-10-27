@@ -16,7 +16,7 @@ public class IteratorAndRemoveTest extends AbstractTest {
 		Vertex myCar3 = car.addInstance("myCar3");
 		car.addInstance("myCar4");
 
-		Snapshot<Vertex> myCars = car.getAllInstances();
+		Snapshot<Vertex> myCars = car.getInstances();
 
 		Iterator<Vertex> iterator = myCars.iterator();
 		int cpt = 0;
@@ -36,10 +36,10 @@ public class IteratorAndRemoveTest extends AbstractTest {
 		car.addInstance("myCar3");
 		car.addInstance("myCar4");
 
-		for (Vertex v : car.getAllInstances())
+		for (Vertex v : car.getInstances())
 			if (v.equals(myCar1))
 				v.remove();
-		assert car.getAllInstances().size() == 3;
+		assert car.getInstances().size() == 3;
 	}
 
 	public void test005_IterateAndRemoveInLoop_beforeFindIt() {
@@ -50,19 +50,19 @@ public class IteratorAndRemoveTest extends AbstractTest {
 		Vertex myCar3 = car.addInstance("myCar3");
 		car.addInstance("myCar4");
 
-		Snapshot<Vertex> myCars = car.getAllInstances();
+		Snapshot<Vertex> myCars = car.getInstances();
 
 		Iterator<Vertex> iterator = myCars.iterator();
 		int cpt = 0;
 		while (iterator.hasNext()) {
 			if (cpt == 0)
 				myCar3.remove();
-			if (iterator.next().equals(myCar3) && myCar3.isAlive())
-				assert false : "Remove Object founded alive";
+			if (iterator.next().equals(myCar3))
+				assert false : "Remove Object";
 			cpt++;
 		}
-		assert cpt == 4 : cpt;
-		assert car.getAllInstances().size() == 3;
+		assert cpt == 3 : cpt;
+		assert car.getInstances().size() == 3;
 	}
 
 	public void test006_IterateAndRemoveInLoop_attributes() {

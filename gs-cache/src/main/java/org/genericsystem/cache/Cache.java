@@ -2,7 +2,6 @@ package org.genericsystem.cache;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -128,35 +127,29 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngin
 		return subContext;
 	}
 
-	private Snapshot<T> getDependencies(Map<T, Dependencies<T>> multiMap, Supplier<Iterator<T>> subIteratorSupplier, T generic) {
-		return () -> {
-			Dependencies<T> dependencies = multiMap.get(generic);
-			return dependencies == null ? subIteratorSupplier.get() : dependencies.iterator();
-		};
+	private static <T> Snapshot<T> getDependencies(Map<T, Dependencies<T>> multiMap, Supplier<Stream<T>> subStreamSupplier, T generic) {
+		Dependencies<T> dependencies = multiMap.get(generic);
+		if (dependencies == null)
+			multiMap.put(generic, dependencies = new CacheDependencies<>(subStreamSupplier));
+		return dependencies;
 	}
 
 	@Override
 	Snapshot<T> getInstances(T generic) {
-		return getDependencies(instancesDependenciesMap, () -> subContext.getInstances(generic).iterator(), generic);
+		return getDependencies(instancesDependenciesMap, () -> subContext.getInstances(generic).stream(), generic);
 	}
 
 	@Override
 	Snapshot<T> getInheritings(T generic) {
-		return getDependencies(inheritingsDependenciesMap, () -> subContext.getInheritings(generic).iterator(), generic);
+		return getDependencies(inheritingsDependenciesMap, () -> subContext.getInheritings(generic).stream(), generic);
 	}
 
 	private T index(Map<T, Dependencies<T>> multiMap, Supplier<Stream<T>> subStreamSupplier, T generic, T dependency) {
-		Dependencies<T> dependencies = multiMap.get(generic);
-		if (dependencies == null)
-			multiMap.put(generic, dependencies = new CacheDependencies<>(subStreamSupplier));
-		return dependencies.set(dependency);
+		return ((Dependencies<T>) getDependencies(multiMap, subStreamSupplier, generic)).set(dependency);
 	}
 
 	private boolean unIndex(Map<T, Dependencies<T>> multiMap, Supplier<Stream<T>> subStreamSupplier, T generic, T dependency) {
-		Dependencies<T> dependencies = multiMap.get(generic);
-		if (dependencies == null)
-			multiMap.put(generic, dependencies = new CacheDependencies<>(subStreamSupplier));
-		return dependencies.remove(dependency);
+		return ((Dependencies<T>) getDependencies(multiMap, subStreamSupplier, generic)).remove(dependency);
 	}
 
 	private T indexInstance(T generic, T instance) {
@@ -209,35 +202,21 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngin
 	}
 
 	private static <T> Snapshot<T> getIndex(Map<T, Map<T, Dependencies<T>>> multiMap, Supplier<Stream<T>> subStreamSupplier, T generic, T index) {
-		return () -> {
-			Map<T, Dependencies<T>> dependencies = multiMap.get(generic);
-			if (dependencies == null)
-				return subStreamSupplier.get().iterator();
-			Dependencies<T> dependenciesByIndex = dependencies.get(index);
-			if (dependenciesByIndex == null)
-				return subStreamSupplier.get().iterator();
-			return dependenciesByIndex.iterator();
-		};
+		Map<T, Dependencies<T>> dependencies = multiMap.get(generic);
+		if (dependencies == null)
+			multiMap.put(generic, dependencies = new HashMap<>());
+		Dependencies<T> dependenciesByIndex = dependencies.get(index);
+		if (dependenciesByIndex == null)
+			dependencies.put(index, dependenciesByIndex = new CacheDependencies<>(subStreamSupplier));
+		return dependenciesByIndex;
 	}
 
 	private static <T> T index(Map<T, Map<T, Dependencies<T>>> multiMap, Supplier<Stream<T>> subStreamSupplier, T generic, T index, T composite) {
-		Map<T, Dependencies<T>> dependencies = multiMap.get(generic);
-		if (dependencies == null)
-			multiMap.put(generic, dependencies = new HashMap<>());
-		Dependencies<T> dependenciesByIndex = dependencies.get(index);
-		if (dependenciesByIndex == null)
-			dependencies.put(index, dependenciesByIndex = new CacheDependencies<>(subStreamSupplier));
-		return dependenciesByIndex.set(composite);
+		return ((Dependencies<T>) getIndex(multiMap, subStreamSupplier, generic, index)).set(composite);
 	}
 
 	private static <T> boolean unIndex(Map<T, Map<T, Dependencies<T>>> multiMap, Supplier<Stream<T>> subStreamSupplier, T generic, T index, T composite) {
-		Map<T, Dependencies<T>> dependencies = multiMap.get(generic);
-		if (dependencies == null)
-			multiMap.put(generic, dependencies = new HashMap<>());
-		Dependencies<T> dependenciesByIndex = dependencies.get(index);
-		if (dependenciesByIndex == null)
-			dependencies.put(index, dependenciesByIndex = new CacheDependencies<>(subStreamSupplier));
-		return dependenciesByIndex.remove(composite);
+		return ((Dependencies<T>) getIndex(multiMap, subStreamSupplier, generic, index)).remove(composite);
 	}
 
 	T plug(T generic) {

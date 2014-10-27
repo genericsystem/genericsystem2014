@@ -1,18 +1,17 @@
 package org.genericsystem.cache;
 
 import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.genericsystem.kernel.Dependencies;
+import org.genericsystem.kernel.DependenciesImpl;
 
 public class CacheDependencies<T> implements Dependencies<T> {
 
-	private final Set<T> inserts = new LinkedHashSet<T>();
-	private final Set<T> deletes = new LinkedHashSet<T>();
+	private final Dependencies<T> inserts = new DependenciesImpl<T>();
+	private final Dependencies<T> deletes = new DependenciesImpl<T>();
 	private final Supplier<Stream<T>> streamSupplier;
 
 	public CacheDependencies(Supplier<Stream<T>> streamSupplier) {
@@ -27,7 +26,11 @@ public class CacheDependencies<T> implements Dependencies<T> {
 	@Override
 	public boolean remove(T generic) {
 		if (!inserts.remove(generic))
-			return deletes.add(generic);
+			if (!deletes.contains(generic)) {
+				deletes.add(generic);
+				return true;
+			} else
+				return false;
 		return true;
 	}
 
