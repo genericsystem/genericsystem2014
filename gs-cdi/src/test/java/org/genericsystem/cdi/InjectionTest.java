@@ -1,5 +1,6 @@
 package org.genericsystem.cdi;
 
+import org.genericsystem.concurrency.Generic;
 import org.testng.annotations.Test;
 
 @Test

@@ -1,6 +1,10 @@
 package org.genericsystem.cdi;
 
+import org.genericsystem.concurrency.Engine;
+import org.genericsystem.concurrency.Generic;
+import org.genericsystem.concurrency.Root;
 import org.genericsystem.concurrency.Transaction;
+import org.genericsystem.concurrency.Vertex;
 
 public class Cache extends org.genericsystem.concurrency.Cache<Generic, Engine, Vertex, Root> {
 
@@ -31,6 +35,6 @@ public class Cache extends org.genericsystem.concurrency.Cache<Generic, Engine, 
 
 	@Override
 	public Cache start() {
-		return getEngine().start(this);
+		return (Cache) getEngine().start(this);
 	}
 }

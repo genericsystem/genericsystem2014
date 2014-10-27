@@ -1,9 +1,9 @@
 package org.genericsystem.cdi;
 
 import javax.inject.Inject;
-
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.cdi.event.EventLauncher;
+import org.genericsystem.concurrency.Engine;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.testng.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;

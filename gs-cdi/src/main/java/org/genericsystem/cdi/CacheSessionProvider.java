@@ -1,11 +1,11 @@
 package org.genericsystem.cdi;
 
 import java.io.Serializable;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
+import org.genericsystem.concurrency.Engine;
 
 @SessionScoped
 public class CacheSessionProvider implements Serializable {
@@ -19,7 +19,7 @@ public class CacheSessionProvider implements Serializable {
 
 	@PostConstruct
 	public void init() {
-		currentCache = engine.newCache();
+		currentCache = (Cache) engine.newCache();
 	}
 
 	public void mountAndStartNewCache() {
