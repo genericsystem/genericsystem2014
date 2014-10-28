@@ -1,6 +1,6 @@
 package org.genericsystem.concurrency;
 
-import java.util.Iterator;
+import java.util.stream.Stream;
 
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
@@ -53,8 +53,8 @@ public class Vertex extends AbstractVertex<Vertex, Root> implements DefaultVerte
 			}
 
 			@Override
-			public Iterator<Vertex> iterator() {
-				return iterator(getRoot().getEngine().getCurrentCache().getTs());
+			public Stream<Vertex> get() {
+				return get(getRoot().getEngine().getCurrentCache().getTs());
 			}
 		};
 	}

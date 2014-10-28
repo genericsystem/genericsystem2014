@@ -32,9 +32,9 @@ public class GenericTest extends AbstractTest {
 		// assert engine.getInstances().isEmpty();
 		Generic vehicleVertex = engine.addInstance("Vehicle");
 		Generic powerVehicleVertex = engine.addInstance("Power", vehicleVertex);
-		Generic vehicle = engine.getInstances().stream().filter(g -> g.getValue().equals("Vehicle")).findFirst().get();
+		Generic vehicle = engine.getInstances().get().filter(g -> g.getValue().equals("Vehicle")).findFirst().get();
 		// Generic metaAttribut = engine.getInstances().filter(g -> g.getValue().equals("Engine") && g.getCompositesStream().count() == 1).stream().findFirst().get();
-		Generic powerVehicle = engine.getMetaAttribute().getInstances().stream().filter(g -> g.getValue().equals("Power")).findFirst().get();
+		Generic powerVehicle = engine.getMetaAttribute().getInstances().get().filter(g -> g.getValue().equals("Power")).findFirst().get();
 		assert vehicle.getAlive().equals(vehicleVertex) : engine.getInstances();
 		assert powerVehicle.getAlive().equals(powerVehicleVertex) : engine.getInstances();
 	}
@@ -42,7 +42,7 @@ public class GenericTest extends AbstractTest {
 	public void testAddInstance() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
-		assert engine.getInstances().contains(vehicle) : engine.getInstances().stream().collect(Collectors.toList());
+		assert engine.getInstances().contains(vehicle) : engine.getInstances().get().collect(Collectors.toList());
 		catchAndCheckCause(() -> engine.addInstance("Vehicle"), ExistsException.class);
 	}
 

@@ -3,7 +3,6 @@ package org.genericsystem.kernel;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -24,8 +23,8 @@ class InheritanceComputer<T extends AbstractVertex<T, U>, U extends DefaultRoot<
 		this.level = level;
 	}
 
-	Iterator<T> inheritanceIterator() {
-		return getInheringsStream(base).iterator();
+	Stream<T> inheritanceStream() {
+		return getInheringsStream(base);
 	}
 
 	private Stream<T> getInheringsStream(T superVertex) {
@@ -70,7 +69,7 @@ class InheritanceComputer<T extends AbstractVertex<T, U>, U extends DefaultRoot<
 		private Stream<T> getStream(final T holder) {
 			if (holder.getLevel() != level || localBase.getSuperComposites(holder).iterator().hasNext())
 				add(holder);
-			Stream<T> indexStream = Stream.concat(holder.getLevel() < level ? localBase.getMetaComposites(holder).stream() : Stream.empty(), localBase.getSuperComposites(holder).stream());
+			Stream<T> indexStream = Stream.concat(holder.getLevel() < level ? localBase.getMetaComposites(holder).get() : Stream.empty(), localBase.getSuperComposites(holder).get());
 			return Stream.concat(isTerminal() && contains(holder) ? Stream.empty() : Stream.of(holder), projectStream(indexStream));
 		}
 	}

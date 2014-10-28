@@ -14,13 +14,13 @@ public class VertexTest extends AbstractTest {
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex car = engine.addInstance(vehicle, "Car");
 
-		assert vehicle.getInheritings().stream().anyMatch(car::equals);
+		assert vehicle.getInheritings().get().anyMatch(car::equals);
 	}
 
 	public void test001_getInstances() {
 		Root engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
-		assert engine.getInstances().stream().anyMatch(g -> g.equals(vehicle));
+		assert engine.getInstances().get().anyMatch(g -> g.equals(vehicle));
 	}
 
 	public void test001_getMetaComponents() {
@@ -30,7 +30,7 @@ public class VertexTest extends AbstractTest {
 		Vertex myVehicle = vehicle.addInstance("myVehicle");
 		Vertex myVehicle123 = powerVehicle.addInstance("123", myVehicle);
 
-		assert myVehicle.getMetaComposites(powerVehicle).stream().anyMatch(g -> g.equals(myVehicle123));
+		assert myVehicle.getMetaComposites(powerVehicle).get().anyMatch(g -> g.equals(myVehicle123));
 	}
 
 	public void test001_getSuperComponents() {

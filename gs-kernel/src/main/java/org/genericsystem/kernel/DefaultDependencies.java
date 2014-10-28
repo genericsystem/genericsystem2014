@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
 
@@ -20,12 +21,12 @@ public interface DefaultDependencies<T extends AbstractVertex<T, U>, U extends D
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getAllInheritings() {
-		return () -> Stream.concat(Stream.of((T) this), getInheritings().stream().flatMap(inheriting -> inheriting.getAllInheritings().stream())).distinct().iterator();
+		return () -> Stream.concat(Stream.of((T) this), getInheritings().get().flatMap(inheriting -> inheriting.getAllInheritings().get())).distinct();
 	}
 
 	@Override
 	default Snapshot<T> getAllInstances() {
-		return () -> getAllInheritings().stream().flatMap(inheriting -> inheriting.getInstances().stream()).iterator();
+		return () -> getAllInheritings().get().flatMap(inheriting -> inheriting.getInstances().get());
 	}
 
 	@Override
@@ -60,7 +61,7 @@ public interface DefaultDependencies<T extends AbstractVertex<T, U>, U extends D
 
 	@SuppressWarnings("unchecked")
 	default Optional<T> getInstanceInAll(List<T> overrides, Serializable value, T... components) {
-		Stream<T> adjustedMetas = Stream.of((T) this).flatMap(meta -> meta.getInheritings().stream().filter(inheriting -> ((T) DefaultDependencies.this).isAdjusted(inheriting, value, Arrays.asList(components))));
+		Stream<T> adjustedMetas = Stream.of((T) this).flatMap(meta -> meta.getInheritings().get().filter(inheriting -> ((T) DefaultDependencies.this).isAdjusted(inheriting, value, Arrays.asList(components))));
 		return adjustedMetas.map(adjustedMeta -> adjustedMeta.getDirectInstance(overrides, value, Arrays.asList(components))).findFirst();
 	}
 }
