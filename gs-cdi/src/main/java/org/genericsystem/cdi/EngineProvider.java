@@ -9,6 +9,7 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
 import org.genericsystem.cdi.event.EventLauncher;
+import org.genericsystem.kernel.Statics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +28,9 @@ public class EngineProvider {
 
 	@Inject
 	private EventLauncher eventLauncher;
+
+	@Inject
+	private CacheRequestProvider cacheRequestProvider;
 
 	@PostConstruct
 	public void init() {
@@ -51,7 +55,9 @@ public class EngineProvider {
 		log.info("-  directory path : " + persistentDirectoryProvider.getDirectoryPath());
 		log.info("-  userClasses : " + Arrays.toString(userClassesProvider.getUserClassesArray()));
 		log.info("-----------------------------------------------------------------------------------------------");
-		engine = new Engine(userClassesProvider.getUserClassesArray());// TODO GenericSystem.newPersistentEngine(persistentDirectoryProvider.getDirectoryPath(), userClassesProvider.getUserClassesArray());
+
+		engine = new Engine(() -> cacheRequestProvider.getCurrentCache(), Statics.ENGINE_VALUE, userClassesProvider.getUserClassesArray());// TODO GenericSystem.newPersistentEngine(persistentDirectoryProvider.getDirectoryPath(),
+																																			// userClassesProvider.getUserClassesArray());
 	}
 
 	@Produces

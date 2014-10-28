@@ -70,7 +70,7 @@ public class AncestorsServiceTest extends AbstractTest {
 		assert microcar.isAncestorOf(microcar);
 	}
 
-	public void isAncestorOfViaComponent() {
+	public void isAncestorOfViaComposite() {
 		Engine Engine = new Engine();
 		Generic vehicle = Engine.addInstance("Vehicle");
 		Generic power = Engine.addInstance("Power", vehicle);
@@ -92,7 +92,7 @@ public class AncestorsServiceTest extends AbstractTest {
 		assert Engine.isAncestorOf(radio);
 	}
 
-	public void isAncestorOfViaComponent2() {
+	public void isAncestorOfViaComponent() {
 		Engine Engine = new Engine();
 		Generic vehicle = Engine.addInstance("Vehicle");
 		Generic power = Engine.addInstance("Power", vehicle);
@@ -118,7 +118,7 @@ public class AncestorsServiceTest extends AbstractTest {
 	// Generic v236 = carPower.addInstance(v235, 236, myBmw);
 	// }
 
-	// public void isAncestorOfViaComponent3() {
+	// public void isAncestorOfViaComposite3() {
 	// Engine Engine = new Engine();
 	// Generic vehicle = Engine.addInstance("Vehicle");
 	// Generic car = Engine.addInstance(vehicle, "Car");

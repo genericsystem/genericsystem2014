@@ -17,7 +17,7 @@ public @interface InstanceClass {
 	/**
 	 * Define the class of the instance.
 	 *
-	 * @return the class of the components.
+	 * @return the class of the composites.
 	 */
 	Class<?> value();
 }

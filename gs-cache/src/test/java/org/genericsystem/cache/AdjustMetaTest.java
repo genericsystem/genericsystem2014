@@ -5,12 +5,12 @@ import org.testng.annotations.Test;
 @Test
 public class AdjustMetaTest extends AbstractTest {
 
-	public void test001_AdjustMeta_MetaLevel_metaAttribut_NoComponent() {
+	public void test001_AdjustMeta_MetaLevel_metaAttribut_NoComposite() {
 		Engine engine = new Engine();
 		assert engine == engine.adjustMeta("Power");
 	}
 
-	public void test002_AdjustMeta_MetaLevel_metaAttribut_OneComponent() {
+	public void test002_AdjustMeta_MetaLevel_metaAttribut_OneComposite() {
 		Engine engine = new Engine();
 		Generic metaAttribute = engine.getMetaAttribute();
 		Generic car = engine.addInstance("Car");
@@ -21,7 +21,7 @@ public class AdjustMetaTest extends AbstractTest {
 		assert metaAttribute.equals(engine.adjustMeta("Power", car));
 	}
 
-	public void test003_AdjustMeta_MetaLevel_metaAttribut_TwoComponents() {
+	public void test003_AdjustMeta_MetaLevel_metaAttribut_TwoComposites() {
 		Engine engine = new Engine();
 		Generic metaAttribute = engine.getMetaAttribute();
 		Generic car = engine.addInstance("Car");
@@ -40,7 +40,7 @@ public class AdjustMetaTest extends AbstractTest {
 		assert metaAttribute.equals(engine.adjustMeta("Radio", car));
 	}
 
-	public void test005_AdjustMeta_MetaLevel_metaRelation_ThreeComponents() {
+	public void test005_AdjustMeta_MetaLevel_metaRelation_ThreeComposites() {
 		Engine engine = new Engine();
 		Generic metaAttribute = engine.getMetaAttribute();
 		assert metaAttribute.equals(engine.adjustMeta(engine.getValue(), engine, engine));
@@ -52,7 +52,7 @@ public class AdjustMetaTest extends AbstractTest {
 		assert metaRelation.equals(engine.adjustMeta("CarColorFinition", car, color, finition));
 	}
 
-	public void test006_AdjustMeta_TypeLevel_Relation_TwoComponents() {
+	public void test006_AdjustMeta_TypeLevel_Relation_TwoComposites() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
@@ -62,7 +62,7 @@ public class AdjustMetaTest extends AbstractTest {
 		assert vehicleColor == vehicleColor.adjustMeta("CarRed", car, red) : engine.adjustMeta("CarRed", car, red);
 	}
 
-	public void test007_AdjustMeta_TypeLevel_Relation_TwoComponents_oneComponentSpecializedByInheritance() {
+	public void test007_AdjustMeta_TypeLevel_Relation_TwoComposites_oneCompositeSpecializedByInheritance() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
@@ -73,7 +73,7 @@ public class AdjustMetaTest extends AbstractTest {
 		assert vehicleColor.equals(vehicleColor.adjustMeta("CarRed", car, red)) : engine.adjustMeta("CarRed", car, red);
 	}
 
-	public void test008_AdjustMeta_TypeLevel_Relation_TwoComponents_oneComponentSpecializedByInstanciation() {
+	public void test008_AdjustMeta_TypeLevel_Relation_TwoComposites_oneCompositeSpecializedByInstanciation() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
@@ -83,7 +83,7 @@ public class AdjustMetaTest extends AbstractTest {
 		assert vehicleColor.equals(vehicleColor.adjustMeta("CarRed", myVehicle, red)) : engine.adjustMeta("CarRed", myVehicle, red);
 	}
 
-	public void test009_AdjustMeta_TypeLevel_Relation_TwoComponents_TwoComponentSpecializedByInheritance() {
+	public void test009_AdjustMeta_TypeLevel_Relation_TwoComposites_TwoCompositeSpecializedByInheritance() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
@@ -95,7 +95,7 @@ public class AdjustMetaTest extends AbstractTest {
 		assert vehicleColor.equals(vehicleColor.adjustMeta("CarRed", car, red)) : engine.adjustMeta("CarRed", car, red);
 	}
 
-	public void test010_AdjustMeta_TypeLevel_Relation_TwoComponents_TwoComponentSpecializedByInstanciation() {
+	public void test010_AdjustMeta_TypeLevel_Relation_TwoComposites_TwoCompositeSpecializedByInstanciation() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
@@ -106,7 +106,7 @@ public class AdjustMetaTest extends AbstractTest {
 		assert vehicleColor.equals(vehicleColor.adjustMeta("CarRed", myVehicle2, red)) : engine.adjustMeta("CarRed", myVehicle2, red);
 	}
 
-	public void test011_AdjustMeta_TypeLevel_Relation_TwoComponents_TwoComponentSpecialized() {
+	public void test011_AdjustMeta_TypeLevel_Relation_TwoComposites_TwoCompositeSpecialized() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
@@ -117,7 +117,7 @@ public class AdjustMetaTest extends AbstractTest {
 		assert vehicleColor.equals(vehicleColor.adjustMeta("CarRed", car, red)) : engine.adjustMeta("CarRed", car, red);
 	}
 
-	public void test012_AdjustMeta_TypeLevel_Relation_ThreeComponents() {
+	public void test012_AdjustMeta_TypeLevel_Relation_ThreeComposites() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
@@ -130,7 +130,7 @@ public class AdjustMetaTest extends AbstractTest {
 		assert vehicleColor.equals(vehicleColor.adjustMeta("CarRed", myVehicle2, red, finition)) : engine.adjustMeta("CarRed", myVehicle2, red, finition);
 	}
 
-	public void test013_AdjustMeta_TypeLevel_Relation_ThreeComponents() {
+	public void test013_AdjustMeta_TypeLevel_Relation_ThreeComposites() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
@@ -143,7 +143,7 @@ public class AdjustMetaTest extends AbstractTest {
 		assert vehicleColor2.equals(vehicleColor.adjustMeta("CarRed", myVehicle2, red, finition)) : vehicleColor.adjustMeta("CarRed", myVehicle2, red, finition);
 	}
 
-	public void test014_AdjustMeta_TypeLevel_Relation_ThreeComponents() {
+	public void test014_AdjustMeta_TypeLevel_Relation_ThreeComposites() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
@@ -156,7 +156,7 @@ public class AdjustMetaTest extends AbstractTest {
 		assert vehicleColor2.equals(vehicleColor.adjustMeta("CarRed", myVehicle2, red, finition)) : engine.adjustMeta("CarRed", myVehicle2, red, finition);
 	}
 
-	public void test015_AdjustMeta_TypeLevel_Relation_ThreeComponents() {
+	public void test015_AdjustMeta_TypeLevel_Relation_ThreeComposites() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");

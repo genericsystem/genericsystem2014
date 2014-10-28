@@ -1,7 +1,7 @@
 package org.genericsystem.cache;
 
-import java.util.Collections;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.ConcurrencyControlException;
@@ -29,7 +29,7 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Defaul
 	protected void simpleAdd(T generic) {
 		V vertex = unwrap(generic.getMeta());
 		// TODO null is KK
-		V result = vertex.bindInstance(null, generic.isThrowExistException(), generic.getSupers().stream().map(this::unwrap).collect(Collectors.toList()), generic.getValue(), generic.getComposites().stream().map(this::unwrap).collect(Collectors.toList()));
+		V result = vertex.bindInstance(null, generic.isThrowExistException(), generic.getSupers().stream().map(this::unwrap).collect(Collectors.toList()), generic.getValue(), generic.getComponents().stream().map(this::unwrap).collect(Collectors.toList()));
 		vertices.put(generic, result);
 	}
 
@@ -50,7 +50,7 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Defaul
 	Snapshot<T> getInheritings(T generic) {
 		return () -> {
 			V vertex = unwrap(generic);
-			return vertex != null ? vertex.getInheritings().stream().map(generic::wrap).iterator() : Collections.emptyIterator();
+			return vertex != null ? vertex.getInheritings().get().map(generic::wrap) : Stream.empty();
 		};
 	}
 
@@ -58,25 +58,25 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Defaul
 	Snapshot<T> getInstances(T generic) {
 		return () -> {
 			V vertex = unwrap(generic);
-			return vertex != null ? vertex.getInstances().stream().map(generic::wrap).iterator() : Collections.emptyIterator();
+			return vertex != null ? vertex.getInstances().get().map(generic::wrap) : Stream.empty();
 		};
 	}
 
 	@Override
-	Snapshot<T> getMetaComponents(T generic, T meta) {
+	Snapshot<T> getMetaComposites(T generic, T meta) {
 		return () -> {
 			V genericVertex = unwrap(generic);
 			V metaVertex = unwrap(meta);
-			return genericVertex != null && metaVertex != null ? genericVertex.getMetaComponents(metaVertex).stream().map(generic::wrap).iterator() : Collections.emptyIterator();
+			return genericVertex != null && metaVertex != null ? genericVertex.getMetaComposites(metaVertex).get().map(generic::wrap) : Stream.empty();
 		};
 	}
 
 	@Override
-	Snapshot<T> getSuperComponents(T generic, T superT) {
+	Snapshot<T> getSuperComposites(T generic, T superT) {
 		return () -> {
 			V genericVertex = unwrap(generic);
 			V superVertex = unwrap(superT);
-			return genericVertex != null && superVertex != null ? genericVertex.getSuperComponents(superVertex).stream().map(generic::wrap).iterator() : Collections.emptyIterator();
+			return genericVertex != null && superVertex != null ? genericVertex.getSuperComposites(superVertex).get().map(generic::wrap) : Stream.empty();
 		};
 	}
 

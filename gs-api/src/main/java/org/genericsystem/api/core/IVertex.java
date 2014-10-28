@@ -143,69 +143,69 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 
 	/**
 	 *
-	 * Returns the vertex if exists of this (meta) vertex. The returned vertex satisfies the specified value and composites
+	 * Returns the vertex if exists of this (meta) vertex. The returned vertex satisfies the specified value and components
 	 *
 	 * @param value
 	 *            the value of returned vertex
-	 * @param composites
-	 *            the composites of returned vertex
+	 * @param components
+	 *            the components of returned vertex
 	 * @return a vertex if exists, null otherwise
 	 */
 	@SuppressWarnings("unchecked")
-	T getInstance(Serializable value, T... composites);
+	T getInstance(Serializable value, T... components);
 
 	/**
-	 * Returns an instance if exists of this (meta) vertex. The returned vertex satisfies the specified value, super and composites.<br>
+	 * Returns an instance if exists of this (meta) vertex. The returned vertex satisfies the specified value, super and components.<br>
 	 * Note that the returned vertex if any, inherits from the super specified but can have more or more precise in an undefined order.
 	 *
 	 * @param value
 	 *            the value of returned vertex
 	 * @param superT
 	 *            the super of returned vertex
-	 * @param composites
-	 *            the composites of returned vertex
+	 * @param components
+	 *            the components of returned vertex
 	 * @return a vertex if exists, null otherwise
 	 */
 	@SuppressWarnings("unchecked")
-	T getInstance(T superT, Serializable value, T... composites);
+	T getInstance(T superT, Serializable value, T... components);
 
 	/**
-	 * Returns an instance if exists of this (meta) vertex. The returned vertex satisfies the specified value, supers and composites.<br>
+	 * Returns an instance if exists of this (meta) vertex. The returned vertex satisfies the specified value, supers and components.<br>
 	 * Note that the returned vertex if any, inherits from any vertex specified in supers list but can have more or more precise supers in an undefined order.
 	 *
 	 * @param supers
 	 *            the supers list of returned vertex
 	 * @param value
 	 *            the value of returned vertex
-	 * @param composites
-	 *            the composites of vertex to return
+	 * @param components
+	 *            the components of vertex to return
 	 * @return a vertex if exists, null otherwise
 	 */
 	@SuppressWarnings("unchecked")
-	T getInstance(List<T> supers, Serializable value, T... composites);
+	T getInstance(List<T> supers, Serializable value, T... components);
 
 	/**
-	 * Indicates whether this vertex has a composite that is a specialization of vertex.<br>
+	 * Indicates whether this vertex has a component that is a specialization of vertex.<br>
 	 *
 	 * @param vertex
 	 *            the vertex reference to be tested for the attribution.
 	 * @return true if this vertex is instance of metaVertex
 	 */
-	boolean isComponentOf(T vertex);
+	boolean isCompositeOf(T vertex);
 
 	/**
 	 * Returns the attributes of this vertex (directly if this vertex is a type, the attributes of its type if this vertex is an instance)
 	 *
-	 * @return the attributes of this vertex regardless of the position of this vertex in the composites of these attributes
+	 * @return the attributes of this vertex regardless of the position of this vertex in the components of these attributes
 	 */
 	Snapshot<T> getAttributes();
 
 	/**
 	 * Returns the attributes of this vertex (directly if this vertex is a type, the attributes of its type if this vertex is an instance)<br>
-	 * for which this vertex is in the specified position in their composites<br>
+	 * for which this vertex is in the specified position in their components<br>
 	 *
 	 * @param pos
-	 *            the expected position of this vertex in the composites of these attributes
+	 *            the expected position of this vertex in the components of these attributes
 	 *
 	 * @return the attributes of this vertex
 	 */
@@ -217,7 +217,7 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 	 * @param attribute
 	 *            the attribute from which the result attributes inherit
 	 *
-	 * @return the attributes of this vertex regardless of the position of this vertex in their composites
+	 * @return the attributes of this vertex regardless of the position of this vertex in their components
 	 */
 	Snapshot<T> getAttributes(T attribute);
 
@@ -227,18 +227,18 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 	 * @param attribute
 	 *            the attribute of which the result holders are instances
 	 *
-	 * @return the holders of this vertex regardless of the position of this vertex in their composites
+	 * @return the holders of this vertex regardless of the position of this vertex in their components
 	 */
 	Snapshot<T> getHolders(T attribute);
 
 	/**
 	 * Returns the holders of this vertex that are instances of the specified attribute<br>
-	 * and for which this vertex is in the specified position in the composites of these holders
+	 * and for which this vertex is in the specified position in the components of these holders
 	 *
 	 ** @param attribute
 	 *            the attribute of which the result holders are instances
 	 * @param pos
-	 *            the expected position of this vertex in the composites of these holders
+	 *            the expected position of this vertex in the components of these holders
 	 *
 	 * @return the holders of this vertex for the specified attribute and the specified position
 	 */
@@ -256,13 +256,13 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 
 	/**
 	 * Returns values for each holder that is instance of the specified attribute and the specified position<br>
-	 * and for which this vertex is in the specified position in its composites.
+	 * and for which this vertex is in the specified position in its components.
 	 *
 	 * @param attribute
 	 *            the attribute of which value holders are instances
 	 *
 	 * @param pos
-	 *            the expected position of this vertex in the composites of the holders
+	 *            the expected position of this vertex in the components of the holders
 	 *
 	 * @return values for each holder that is instances of the specified attribute and the specified position
 	 */
@@ -299,18 +299,18 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 	Snapshot<T> getAllInheritings();
 
 	/**
-	 * Returns component vertices for which this vertex is a composite.
+	 * Returns composite vertices for which this vertex is a component.
 	 *
-	 * @return the component vertices
+	 * @return the composite vertices
 	 */
-	Snapshot<T> getComponents();
+	Snapshot<T> getComposites();
 
 	/**
 	 * Indicates whether this vertex is ancestor of the specified dependency.<br>
 	 * The ancestors of a node are recursively :<br>
 	 * its meta,<br>
 	 * its supers,<br>
-	 * its composites.
+	 * its components.
 	 *
 	 * @param dependency
 	 *            the dependency of which this vertex is an ancestor
@@ -321,7 +321,7 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 
 	/**
 	 * Returns a String representation of this vertex in the format : <br>
-	 * (meta)[supers]value[composites]
+	 * (meta)[supers]value[components]
 	 *
 	 * @return the string representation of this vertex
 	 */
@@ -335,14 +335,14 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 	String detailedInfo();
 
 	/**
-	 * Returns a String pretty representation of the components of this vertex
+	 * Returns a String pretty representation of the composites of this vertex
 	 *
 	 * @return the string representation of this vertex
 	 */
 	String toPrettyString();
 
 	/**
-	 * Returns a JSon representation of the components of this vertex
+	 * Returns a JSon representation of the composites of this vertex
 	 *
 	 * @return the string representation of this vertex
 	 */
@@ -359,7 +359,7 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 	 * @param propertyClass
 	 *            the class of the property
 	 * @param pos
-	 *            the position of this vertex in composites of components to consider.<br>
+	 *            the position of this vertex in components of composites to consider.<br>
 	 *            for example : Statics.NO_POSITION, Statics.FIRST_POSITION, Statics.SECOND_POSITION ...
 	 * @return the property value
 	 */
@@ -372,7 +372,7 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 	 * @param propertyClass
 	 *            the class of the system property
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            the position of this vertex in components to consider for axed properties.<br>
 	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
 	 * @param value
@@ -389,7 +389,7 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 	 * @param propertyClass
 	 *            the class of the boolean system property
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            the position of this vertex in components to consider for axed properties.<br>
 	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
 	 *
@@ -404,7 +404,7 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 	 * @param propertyClass
 	 *            the class of the boolean system property
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            the position of this vertex in components to consider for axed properties.<br>
 	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
 	 *
@@ -419,7 +419,7 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 	 * @param propertyClass
 	 *            the class of the boolean system property
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            the position of this vertex in components to consider for axed properties.<br>
 	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
 	 *
@@ -432,7 +432,7 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 	 * Enable the referential constraint of this vertex for the specified position.
 	 *
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            the position of this vertex in components to consider for axed properties.<br>
 	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
 	 *
@@ -445,7 +445,7 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 	 * Disable the referential constraint of this vertex for the specified position.
 	 *
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            the position of this vertex in components to consider for axed properties.<br>
 	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
 	 *
@@ -458,7 +458,7 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 	 * Indicates whether this vertex is referential integrity for the specified position.
 	 *
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            the position of this vertex in components to consider for axed properties.<br>
 	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
 	 * @return true if this vertex is referential integrity
@@ -470,7 +470,7 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 	 * Enable the singular constraint of this vertex for the specified position.
 	 *
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            the position of this vertex in components to consider for axed properties.<br>
 	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
 	 *
@@ -483,7 +483,7 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 	 * Disable the singular constraint of this vertex for the specified position.
 	 *
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            the position of this vertex in components to consider for axed properties.<br>
 	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
 	 *
@@ -496,7 +496,7 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 	 * Indicates whether this vertex is singular constraint for the specified position.
 	 *
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            the position of this vertex in components to consider for axed properties.<br>
 	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
 	 * @return true if this vertex is singular constraint
@@ -534,7 +534,7 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 	 * Enable the required constraint of this vertex for the specified position.<br>
 	 *
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            the position of this vertex in components to consider for axed properties.<br>
 	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
 	 *
@@ -547,7 +547,7 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 	 * Disable the required constraint of this vertex for the specified position.<br>
 	 *
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            the position of this vertex in components to consider for axed properties.<br>
 	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
 	 *
@@ -560,7 +560,7 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 	 * Indicates whether this vertex is required constraint for the specified position.
 	 *
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            the position of this vertex in components to consider for axed properties.<br>
 	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
 	 * @return true if this vertex is required constraint
@@ -572,7 +572,7 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 	 * Enable the cascade remove property of this vertex for the specified position.
 	 *
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            the position of this vertex in components to consider for axed properties.<br>
 	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
 	 *
@@ -585,7 +585,7 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 	 * Disable the cascade remove property of this vertex for the specified position.
 	 *
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            the position of this vertex in components to consider for axed properties.<br>
 	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
 	 *
@@ -598,7 +598,7 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 	 * Indicates whether this cascade remove property is set for the specified position.
 	 *
 	 * @param pos
-	 *            the position of this vertex in composites to consider for axed properties.<br>
+	 *            the position of this vertex in components to consider for axed properties.<br>
 	 *            for example : Statics.FIRST_POSITION, Statics.SECOND_POSITION, Statics.THIRD_POSITION ...<br>
 	 *            Use Statics.NO_POSITION for no axed properties.
 	 * @return true if the cascade remove property is set
@@ -616,88 +616,88 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 	void remove();
 
 	/**
-	 * Returns a new instance of this type that satisfies the specified value and composites
+	 * Returns a new instance of this type that satisfies the specified value and components
 	 *
 	 * @param value
 	 *            the expected value
-	 * @param composites
-	 *            the expected composite references
+	 * @param components
+	 *            the expected component references
 	 * @return the new instance
 	 *
 	 * @throws RollbackException
 	 *             if the instance already exists
 	 */
 	@SuppressWarnings("unchecked")
-	T addInstance(Serializable value, T... composites);
+	T addInstance(Serializable value, T... components);
 
 	/**
-	 * Returns a new instance of this type that satisfies the specified override, value and composites.
+	 * Returns a new instance of this type that satisfies the specified override, value and components.
 	 *
 	 * @param override
 	 *            a vertex reference from which the returned instance shall inherit
 	 * @param value
 	 *            the expected value
-	 * @param composites
-	 *            the expected composite references
+	 * @param components
+	 *            the expected component references
 	 * @return the new instance
 	 */
 	@SuppressWarnings("unchecked")
-	T addInstance(T override, Serializable value, T... composites);
+	T addInstance(T override, Serializable value, T... components);
 
 	/**
-	 * Returns a new instance of this type that satisfies the specified overrides, value and composites.
+	 * Returns a new instance of this type that satisfies the specified overrides, value and components.
 	 *
 	 * @param overrides
 	 *            vertex references from which the returned instance shall inherit
 	 *
 	 * @param value
 	 *            the expected value
-	 * @param composites
-	 *            the expected composite references
+	 * @param components
+	 *            the expected component references
 	 * @return the new instance
 	 */
 	@SuppressWarnings("unchecked")
-	T addInstance(List<T> overrides, Serializable value, T... composites);
+	T addInstance(List<T> overrides, Serializable value, T... components);
 
 	/**
-	 * Returns an existing or a new instance of this type that satisfies the specified value and composites
+	 * Returns an existing or a new instance of this type that satisfies the specified value and components
 	 *
 	 * @param value
 	 *            the expected value
-	 * @param composites
-	 *            the expected composite references
-	 * @return a new instance or the existing instance that satisfies the specified value and composites
+	 * @param components
+	 *            the expected component references
+	 * @return a new instance or the existing instance that satisfies the specified value and components
 	 */
 	@SuppressWarnings("unchecked")
-	T setInstance(Serializable value, T... composites);
+	T setInstance(Serializable value, T... components);
 
 	/**
-	 * Returns an existing or a new instance of this type that satisfies the specified override, value and composites
+	 * Returns an existing or a new instance of this type that satisfies the specified override, value and components
 	 *
 	 * @param override
 	 *            a vertex reference from which the returned instance shall inherit
 	 * @param value
 	 *            the expected value
-	 * @param composites
-	 *            the expected composite references
-	 * @return a new instance or the existing instance that satisfies the specified override, value and composites
+	 * @param components
+	 *            the expected component references
+	 * @return a new instance or the existing instance that satisfies the specified override, value and components
 	 */
 	@SuppressWarnings("unchecked")
-	T setInstance(T override, Serializable value, T... composites);
+	T setInstance(T override, Serializable value, T... components);
 
 	/**
-	 * Returns an existing or a new instance of this type that satisfies the specified overrides, value and composites
+	 * Returns an existing or a new instance of this type that satisfies the specified overrides, value and components
 	 *
 	 * @param overrides
 	 *            vertex references from which the returned instance shall inherit
 	 * @param value
 	 *            the expected value
-	 * @param composites
-	 *            the expected composite references
-	 * @return a new instance or the existing instance that satisfies the specified overrides, value and composites
+	 * @param components
+	 *            the expected component references
+	 * @return a new instance or the existing instance that satisfies the specified overrides, value and components
 	 */
 	@SuppressWarnings("unchecked")
-	T setInstance(List<T> overrides, Serializable value, T... composites);
+	T setInstance(List<T> overrides, Serializable value, T... components);
 
 	T addRoot(Serializable value);
 
@@ -895,12 +895,12 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 	T updateSupers(T... overrides);
 
 	@SuppressWarnings("unchecked")
-	T updateComponents(T... newComponents);
+	T updateComposites(T... newComposites);
 
 	@SuppressWarnings("unchecked")
-	T update(List<T> overrides, Serializable newValue, T... newComponents);
+	T update(List<T> overrides, Serializable newValue, T... newComposites);
 
 	@SuppressWarnings("unchecked")
-	T update(Serializable newValue, T... newComponents);
+	T update(Serializable newValue, T... newComposites);
 
 }

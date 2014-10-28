@@ -18,7 +18,7 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T, U>, U exten
 	default Serializable getSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos) {
 		Optional<T> key = ((T) this).getKey(new AxedPropertyClass(propertyClass, pos));
 		if (key.isPresent()) {
-			Optional<Serializable> result = getValues(key.get()).stream().findFirst();
+			Optional<Serializable> result = getValues(key.get()).get().findFirst();
 			if (result.isPresent())
 				return result.get();
 		}

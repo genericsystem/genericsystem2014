@@ -2,20 +2,21 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
 
 public interface DefaultVertex<T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> extends DefaultAncestors<T, U>, DefaultDependencies<T, U>, DefaultDisplay<T, U>, DefaultSystemProperties<T, U>, DefaultComponentsInheritance<T, U>,
-DefaultWritable<T, U>, IVertex<T, U> {
+		DefaultWritable<T, U>, IVertex<T, U> {
 
 	@Override
 	default T addRoot(Serializable value) {
-		return addInstance(value, coerceToTArray(new Object[getMeta().getComposites().size()]));
+		return addInstance(value, coerceToTArray(new Object[getMeta().getComponents().size()]));
 	}
 
 	@Override
 	default T setRoot(Serializable value) {
-		return setInstance(value, coerceToTArray(new Object[getMeta().getComposites().size()]));
+		return setInstance(value, coerceToTArray(new Object[getMeta().getComponents().size()]));
 	}
 
 	@Override
@@ -43,12 +44,12 @@ DefaultWritable<T, U>, IVertex<T, U> {
 	@Override
 	@SuppressWarnings("unchecked")
 	default Snapshot<T> getSubNodes() {
-		return () -> ((T) this).getMetaComponents(this.getMeta()).stream().iterator();
+		return () -> ((T) this).getMetaComposites(this.getMeta()).get();
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	default Snapshot<T> getAllSubNodes() {
-		return () -> Stream.concat(Stream.of((T) this), getSubNodes().stream().flatMap(inheriting -> inheriting.getAllSubNodes().stream())).distinct().iterator();
+		return () -> Stream.concat(Stream.of((T) this), getSubNodes().get().flatMap(inheriting -> inheriting.getAllSubNodes().get())).distinct();
 	}
 }

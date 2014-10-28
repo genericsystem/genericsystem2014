@@ -4,14 +4,12 @@ import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.cache.annotations.InstanceClass;
 import org.genericsystem.cache.annotations.SystemGeneric;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
-import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint.CheckingType;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends DefaultRoot<V, W>> extends AbstractVertex<T, U> implements DefaultGeneric<T, U, V, W> {
@@ -59,20 +57,20 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Snapshot<T> getMetaComponents(T meta) {
-		return getCurrentCache().getMetaComponents((T) this, meta);
+	public Snapshot<T> getMetaComposites(T meta) {
+		return getCurrentCache().getMetaComposites((T) this, meta);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Snapshot<T> getSuperComponents(T superVertex) {
-		return getCurrentCache().getSuperComponents((T) this, superVertex);
+	public Snapshot<T> getSuperComposites(T superVertex) {
+		return getCurrentCache().getSuperComposites((T) this, superVertex);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Snapshot<T> getComponents() {
-		return getCurrentCache().getComponents((T) this);
+	public Snapshot<T> getComposites() {
+		return getCurrentCache().getComposites((T) this);
 	}
 
 	@Override
@@ -81,8 +79,8 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	}
 
 	@Override
-	protected T newT(Class<?> clazz, boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
-		return getRoot().getOrBuildT(clazz, throwExistException, meta, supers, value, components);
+	protected T newT(Class<?> clazz, boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> composites) {
+		return getRoot().getOrBuildT(clazz, throwExistException, meta, supers, value, composites);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -113,8 +111,8 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	protected abstract T newT();
 
 	@Override
-	protected T init(boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components) {
-		return super.init(throwExistException, meta, supers, value, components);
+	protected T init(boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> composites) {
+		return super.init(throwExistException, meta, supers, value, composites);
 	}
 
 	@Override
@@ -124,7 +122,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 		if (!(obj instanceof ISignature<?>))
 			return false;
 		ISignature<?> service = (ISignature<?>) obj;
-		return equals(service.getMeta(), service.getSupers(), service.getValue(), service.getComposites());
+		return equals(service.getMeta(), service.getSupers(), service.getValue(), service.getComponents());
 	}
 
 	@Override
@@ -137,7 +135,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 
 	@Override
 	public int hashCode() {
-		// TODO introduce : meta and components length
+		// TODO introduce : meta and composites length
 		return Objects.hashCode(getValue());
 	}
 
@@ -152,12 +150,12 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	}
 
 	@Override
-	protected Dependencies<DependenciesEntry<T>> getMetaComponentsDependencies() {
+	protected DependenciesMap<T> getMetaCompositesDependencies() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	protected Dependencies<DependenciesEntry<T>> getSuperComponentsDependencies() {
+	protected DependenciesMap<T> getSuperCompositesDependencies() {
 		throw new UnsupportedOperationException();
 	}
 

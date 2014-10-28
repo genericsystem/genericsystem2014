@@ -18,8 +18,8 @@ public class AttributesTest extends AbstractTest {
 		assert root.getInstance("Power", vehicle) == power;
 		// assert root.selectInstances("Power").count() == 1;
 		// assert root.selectInstances("Power").anyMatch(x -> x.equals(power));
-		assert power.getComposites().size() == 1;
-		assert vehicle.equals(power.getComposites().get(0));
+		assert power.getComponents().size() == 1;
+		assert vehicle.equals(power.getComponents().get(0));
 		assert power.isAlive();
 	}
 
@@ -33,12 +33,12 @@ public class AttributesTest extends AbstractTest {
 		// assert root.selectInstances("Power").count() == 2;
 		// assert root.selectInstances("Power").anyMatch(x -> x.equals(powerType));
 		// assert root.selectInstances("Power").anyMatch(x -> x.equals(power));
-		assert power.getComposites().size() == 1;
-		assert vehicle.equals(power.getComposites().get(0));
+		assert power.getComponents().size() == 1;
+		assert vehicle.equals(power.getComponents().get(0));
 		assert power.isAlive();
 	}
 
-	public void test003_isDependencyOf_ByComposite() {
+	public void test003_isDependencyOf_ByComponent() {
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
 		Vertex car = root.addInstance(vehicle, "Car");

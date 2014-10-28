@@ -129,7 +129,7 @@ public class UpdatableServiceTest extends AbstractTest {
 	// assert newValue.equals(newVehicleFromNewOptions.getValue());
 	// }
 
-	// public void test040_setValue_Component() {
+	// public void test040_setValue_Composite() {
 	// Generic engine = new Engine();
 	// Generic vehicle = engine.addInstance("Vehicle");
 	// String valuePower = "Power";
@@ -143,13 +143,13 @@ public class UpdatableServiceTest extends AbstractTest {
 	// assert engine.equals(newVehicle.getMeta());
 	// assert engine.computeDependencies().contains(newVehicle);
 	// Generic newPower = engine.getInstance("Power", newVehicle);
-	// assert newPower.getComponentsStream().count() == 1;
-	// Generic componentOfPower = newPower.getComponents().get(0);
-	// assert newVehicle.getValue().equals(componentOfPower.getValue());
-	// assert engine.equals(componentOfPower.getMeta());
+	// assert newPower.getCompositesStream().count() == 1;
+	// Generic compositeOfPower = newPower.getComposites().get(0);
+	// assert newVehicle.getValue().equals(compositeOfPower.getValue());
+	// assert engine.equals(compositeOfPower.getMeta());
 	// }
 
-	public void test060_setValue_Type_Inheritance_Component() {
+	public void test060_setValue_Type_Inheritance_Composite() {
 		Engine engine = new Engine();
 		Generic machine = engine.addInstance("Machine");
 		Generic vehicle = engine.addInstance(machine, "Vehicle");
@@ -173,28 +173,28 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert vehicle.equals(car.getMeta());
 
 		assert newValue.equals(newMachine.getValue());
-		assert newMachine.getComposites().size() == 0;
+		assert newMachine.getComponents().size() == 0;
 		assert newMachine.getSupers().isEmpty();
 		assert newMachine.getInstances().size() == 0;
 		assert newMachine.getInheritings().size() == 1;
 
 		Generic newVehicle = engine.getInstance("Vehicle");
 		assert newVehicle != null;
-		assert newVehicle.getComposites().size() == 0;
+		assert newVehicle.getComponents().size() == 0;
 		assert newVehicle.getSupers().size() == 1;
 		assert newVehicle.getInstances().size() == 1;
 		assert newVehicle.getInheritings().size() == 0;
 
 		Generic newPower = engine.getInstance("Power", newVehicle);
 		assert newPower != null;
-		assert newPower.getComposites().size() == 1;
+		assert newPower.getComponents().size() == 1;
 		assert newPower.getSupers().size() == 0;
 		assert newPower.getInstances().size() == 0;
 		assert newPower.getInheritings().size() == 0;
 
 		Generic newCar = newVehicle.getInstance("Car");
 		assert newCar != null;
-		assert newCar.getComposites().size() == 0;
+		assert newCar.getComponents().size() == 0;
 		assert newCar.getSupers().size() == 0;
 		assert newCar.getInstances().size() == 0;
 		assert newCar.getInheritings().size() == 0;
@@ -337,7 +337,7 @@ public class UpdatableServiceTest extends AbstractTest {
 	// assert newCar.getSupersStream().count() == 1;
 	// }
 
-	public void test200_replaceComponent() {
+	public void test200_replaceComposite() {
 		Generic engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic myVehicle = vehicle.addInstance("MyVehicle");
@@ -353,7 +353,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		Generic myVehicleGreen = vehicleColor.addInstance("MyVehicleGreen", myVehicle, green);
 
 		// when
-		myCarRed.updateComponents(myCar, blue);
+		myCarRed.updateComposites(myCar, blue);
 
 		// then
 		assert engine.isAlive();
@@ -371,11 +371,11 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert myVehicleGreen.isAlive();
 
 		Generic newCarBlue = vehicleColor.getInstance("MyCarRed", myCar, blue);
-		List<Generic> newCarBlueComponents = newCarBlue.getComposites();
-		assert newCarBlueComponents.size() == 2;
+		List<Generic> newCarBlueComposites = newCarBlue.getComponents();
+		assert newCarBlueComposites.size() == 2;
 	}
 
-	public void test201_replaceComponent_KO() {
+	public void test201_replaceComposite_KO() {
 		Generic engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic car = engine.addInstance(vehicle, "Car");
@@ -386,17 +386,10 @@ public class UpdatableServiceTest extends AbstractTest {
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Generic myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
 
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				// when
-				myCarRed.updateComponents(blue);
-			}
-			// then
-		}.assertIsCausedBy(IllegalArgumentException.class);
+		catchAndCheckCause(() -> myCarRed.updateComposites(blue), IllegalArgumentException.class);
 	}
 
-	// public void test300_replaceComponentWithValueModification() {
+	// public void test300_replaceCompositeWithValueModification() {
 	// Generic engine = new Engine();
 	// Generic vehicle = engine.addInstance("Vehicle");
 	// Generic car = engine.addInstance(vehicle, "Car");
@@ -417,11 +410,11 @@ public class UpdatableServiceTest extends AbstractTest {
 	//
 	// Generic newCarBlue = vehicleColor.getInstance("MyCarBlue", myCar, blue);
 	// assert newCarBlue.computeDependencies().size() == 1;
-	// List<Generic> newCarBlueComponents = newCarBlue.getComponents();
-	// assert newCarBlueComponents.size() == 2;
+	// List<Generic> newCarBlueComposites = newCarBlue.getComposites();
+	// assert newCarBlueComposites.size() == 2;
 	// }
 
-	public void test301_replaceComponentWithValueModification_InsistentExceptionKO() {
+	public void test301_replaceCompositeWithValueModification_InsistentExceptionKO() {
 		Generic engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic car = engine.addInstance(vehicle, "Car");
@@ -433,14 +426,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Generic myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
 
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				// when
-				myCarRed.update("MyCarBlue", green, blue);
-			}
-			// then
-		}.assertIsCausedBy(ConsistencyConstraintViolationException.class);
+		catchAndCheckCause(() -> myCarRed.update("MyCarBlue", green, blue), ConsistencyConstraintViolationException.class);
 	}
 
 	public void test021_AddInstance_AttributeWithSameNameAlreadyExisting() {

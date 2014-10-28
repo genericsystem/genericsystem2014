@@ -17,12 +17,7 @@ public class RelationTest extends AbstractTest {
 		final Generic green = color.addInstance("green");
 		myCar.remove();
 		assert !myCar.isAlive();
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				carColor.addInstance("myCarColor", myCar, green);
-			}
-		}.assertIsCausedBy(AliveConstraintViolationException.class);
+		catchAndCheckCause(() -> carColor.addInstance("myCarColor", myCar, green), AliveConstraintViolationException.class);
 	}
 
 	public void test001_addInstance_NotAliveException_withMetaRelation() {
@@ -36,15 +31,10 @@ public class RelationTest extends AbstractTest {
 		final Generic green = color.addInstance("green");
 		myCar.remove();
 		assert !myCar.isAlive();
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				carColor.addInstance("myCarColor", myCar, green);
-			}
-		}.assertIsCausedBy(AliveConstraintViolationException.class);
+		catchAndCheckCause(() -> carColor.addInstance("myCarColor", myCar, green), AliveConstraintViolationException.class);
 	}
 
-	public void test002_addInstance_2components() {
+	public void test002_addInstance_2composites() {
 		final Engine cache = new Engine();
 		Generic car = cache.addInstance("Car");
 		Generic color = cache.addInstance("Color");
@@ -55,7 +45,7 @@ public class RelationTest extends AbstractTest {
 		carColor.addInstance("myCarColor", myCar, green);
 	}
 
-	public void test002_addInstance_2components_MetaRelation() {
+	public void test002_addInstance_2composites_MetaRelation() {
 		final Engine Engine = new Engine();
 		Generic metaRelation = Engine.setInstance(Engine.getValue(), Engine, Engine);
 		Generic car = Engine.addInstance("Car");
@@ -75,10 +65,10 @@ public class RelationTest extends AbstractTest {
 		Generic caravane = vehicle.addInstance("Caravane");
 		Generic vehicleHaveSameOwnerAsVehicle = Engine.addInstance("VehicleHaveSameOwnerAsVehicle", vehicle, vehicle);
 		Generic myVehicleHaveSameOwnerAsVehicle = vehicleHaveSameOwnerAsVehicle.addInstance("myVehicleHaveSameOwnerAsVehicle", car, caravane);
-		List<Generic> components = myVehicleHaveSameOwnerAsVehicle.getComposites();
-		assert components.size() == 2 : components.size();
-		assert components.contains(caravane) : components;
-		assert components.contains(car) : components;
+		List<Generic> composites = myVehicleHaveSameOwnerAsVehicle.getComponents();
+		assert composites.size() == 2 : composites.size();
+		assert composites.contains(caravane) : composites;
+		assert composites.contains(car) : composites;
 	}
 
 	public void test003_addInstance_reflexiveRelation_MetaRelation() {
@@ -90,10 +80,10 @@ public class RelationTest extends AbstractTest {
 		Generic vehicleHaveSameOwnerAsVehicle = Engine.addInstance("VehicleHaveSameOwnerAsVehicle", vehicle, vehicle);
 		assert vehicleHaveSameOwnerAsVehicle.isInstanceOf(metaRelation);
 		Generic myVehicleHaveSameOwnerAsVehicle = vehicleHaveSameOwnerAsVehicle.addInstance("myVehicleHaveSameOwnerAsVehicle", car, caravane);
-		List<Generic> components = myVehicleHaveSameOwnerAsVehicle.getComposites();
-		assert components.size() == 2 : components.size();
-		assert components.contains(caravane) : components;
-		assert components.contains(car) : components;
+		List<Generic> composites = myVehicleHaveSameOwnerAsVehicle.getComponents();
+		assert composites.size() == 2 : composites.size();
+		assert composites.contains(caravane) : composites;
+		assert composites.contains(car) : composites;
 	}
 
 	public void test004_addInheritsRelation() {

@@ -117,7 +117,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert "elciheV".equals(newVehicleFromNewOptions.getValue());
 	}
 
-	public void test040_setValue_Component() {
+	public void test040_setValue_Composite() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		String valuePower = "Power";
@@ -131,13 +131,13 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert engine.equals(newVehicle.getMeta());
 		assert engine.computeDependencies().contains(newVehicle);
 		Vertex newPower = engine.getInstance("Power", newVehicle);
-		assert newPower.getComposites().size() == 1;
-		Vertex componentOfPower = newPower.getComposites().get(0);
-		assert newVehicle.getValue().equals(componentOfPower.getValue());
-		assert engine.equals(componentOfPower.getMeta());
+		assert newPower.getComponents().size() == 1;
+		Vertex compositeOfPower = newPower.getComponents().get(0);
+		assert newVehicle.getValue().equals(compositeOfPower.getValue());
+		assert engine.equals(compositeOfPower.getMeta());
 	}
 
-	public void test060_setValue_Type_Inheritance_Component() {
+	public void test060_setValue_Type_Inheritance_Composite() {
 		Vertex engine = new Root();
 		Vertex machine = engine.addInstance("Machine");
 		Vertex vehicle = engine.addInstance(machine, "Vehicle");
@@ -161,28 +161,28 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert vehicle.equals(car.getMeta());
 
 		assert newValue.equals(newMachine.getValue());
-		assert newMachine.getComposites().size() == 0;
+		assert newMachine.getComponents().size() == 0;
 		assert newMachine.getSupers().isEmpty();
 		assert newMachine.getInstances().size() == 0;
 		assert newMachine.getInheritings().size() == 1;
 
 		Vertex newVehicle = engine.getInstance("Vehicle");
 		assert newVehicle != null;
-		assert newVehicle.getComposites().size() == 0;
+		assert newVehicle.getComponents().size() == 0;
 		assert newVehicle.getSupers().size() == 1;
 		assert newVehicle.getInstances().size() == 1;
 		assert newVehicle.getInheritings().size() == 0;
 
 		Vertex newPower = engine.getInstance("Power", newVehicle);
 		assert newPower != null;
-		assert newPower.getComposites().size() == 1;
+		assert newPower.getComponents().size() == 1;
 		assert newPower.getSupers().size() == 0;
 		assert newPower.getInstances().size() == 0;
 		assert newPower.getInheritings().size() == 0;
 
 		Vertex newCar = newVehicle.getInstance("Car");
 		assert newCar != null;
-		assert newCar.getComposites().size() == 0;
+		assert newCar.getComponents().size() == 0;
 		assert newCar.getSupers().size() == 0;
 		assert newCar.getInstances().size() == 0;
 		assert newCar.getInheritings().size() == 0;
@@ -325,7 +325,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert newCar.getSupers().size() == 1;
 	}
 
-	public void test200_replaceComponent() {
+	public void test200_replaceComposite() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex myVehicle = vehicle.addInstance("MyVehicle");
@@ -341,7 +341,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		Vertex myVehicleGreen = vehicleColor.addInstance("MyVehicleGreen", myVehicle, green);
 
 		// when
-		myCarRed.updateComponents(myCar, blue);
+		myCarRed.updateComposites(myCar, blue);
 
 		// then
 		assert engine.isAlive();
@@ -359,11 +359,11 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert myVehicleGreen.isAlive();
 
 		Vertex newCarBlue = vehicleColor.getInstance("MyCarRed", myCar, blue);
-		List<Vertex> newCarBlueComponents = newCarBlue.getComposites();
-		assert newCarBlueComponents.size() == 2;
+		List<Vertex> newCarBlueComposites = newCarBlue.getComponents();
+		assert newCarBlueComposites.size() == 2;
 	}
 
-	public void test201_replaceComponent_KO() {
+	public void test201_replaceComposite_KO() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex car = engine.addInstance(vehicle, "Car");
@@ -374,11 +374,11 @@ public class UpdatableServiceTest extends AbstractTest {
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Vertex myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
 
-		catchAndCheckCause(() -> myCarRed.updateComponents(blue), IllegalArgumentException.class);
+		catchAndCheckCause(() -> myCarRed.updateComposites(blue), IllegalArgumentException.class);
 
 	}
 
-	public void test300_replaceComponentWithValueModification() {
+	public void test300_replaceCompositeWithValueModification() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex car = engine.addInstance(vehicle, "Car");
@@ -399,11 +399,11 @@ public class UpdatableServiceTest extends AbstractTest {
 
 		Vertex newCarBlue = vehicleColor.getInstance("MyCarBlue", myCar, blue);
 		assert newCarBlue.computeDependencies().size() == 1;
-		List<Vertex> newCarBlueComponents = newCarBlue.getComposites();
-		assert newCarBlueComponents.size() == 2;
+		List<Vertex> newCarBlueComposites = newCarBlue.getComponents();
+		assert newCarBlueComposites.size() == 2;
 	}
 
-	public void test301_replaceComponentWithValueModification_InsistentExceptionKO() {
+	public void test301_replaceCompositeWithValueModification_InsistentExceptionKO() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex car = engine.addInstance(vehicle, "Car");

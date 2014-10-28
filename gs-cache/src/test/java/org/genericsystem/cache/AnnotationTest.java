@@ -1,6 +1,6 @@
 package org.genericsystem.cache;
 
-import org.genericsystem.cache.annotations.Composites;
+import org.genericsystem.cache.annotations.Components;
 import org.genericsystem.cache.annotations.InstanceClass;
 import org.genericsystem.cache.annotations.Meta;
 import org.genericsystem.cache.annotations.Supers;
@@ -24,13 +24,7 @@ public class AnnotationTest extends AbstractTest {
 	public void test001_remove() {
 		Engine engine = new Engine(Vehicle.class);
 		Generic vehicle = engine.find(Vehicle.class);
-		new RollbackCatcher() {
-
-			@Override
-			public void intercept() {
-				vehicle.remove();
-			}
-		}.assertIsCausedBy(IllegalAccessException.class);
+		catchAndCheckCause(() -> vehicle.remove(), IllegalAccessException.class);
 	}
 
 	public void test001_instanceof() {
@@ -51,7 +45,7 @@ public class AnnotationTest extends AbstractTest {
 		Engine engine = new Engine(VehicleType.class);
 		VehicleType vehicle = engine.find(VehicleType.class);
 		assert vehicle.addInstance("myBmw") instanceof VehicleInstance;
-		assert vehicle.getInstances().stream().allMatch(x -> x instanceof VehicleInstance);
+		assert vehicle.getInstances().get().allMatch(x -> x instanceof VehicleInstance);
 	}
 
 	public void test003_instanceof() {
@@ -61,20 +55,9 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	public void test004_instanceof() {
-		new RollbackCatcher() {
 
-			@Override
-			public void intercept() {
-				new Engine(MyBmw.class);
-			}
-		}.assertIsCausedBy(InstantiationException.class);
-		new RollbackCatcher() {
-
-			@Override
-			public void intercept() {
-				new Engine(MyMercedes.class);
-			}
-		}.assertIsCausedBy(InstantiationException.class);
+		catchAndCheckCause(() -> new Engine(MyBmw.class), InstantiationException.class);
+		catchAndCheckCause(() -> new Engine(MyMercedes.class), InstantiationException.class);
 	}
 
 	public static class VehicleInstance extends Generic {
@@ -144,7 +127,7 @@ public class AnnotationTest extends AbstractTest {
 		Engine engine = new Engine(ElectrikPower.class, Unit.class);
 		Generic electrikPowerCar = engine.find(ElectrikPower.class);
 		Generic unit = engine.find(Unit.class);
-		assert unit.isComponentOf(electrikPowerCar);
+		assert unit.isCompositeOf(electrikPowerCar);
 		assert unit.isStructural();
 		assert electrikPowerCar.getAttributes(engine).contains(unit);
 	}
@@ -190,8 +173,8 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	public void test011_getDirectSubGenericsWithDiamondProblem() {
-		Engine engine = new Engine(GraphicComponent.class, Window.class, Selectable.class, SelectableWindow.class);
-		Generic graphicComponent = engine.find(GraphicComponent.class);
+		Engine engine = new Engine(GraphicComposite.class, Window.class, Selectable.class, SelectableWindow.class);
+		Generic graphicComposite = engine.find(GraphicComposite.class);
 		Generic window = engine.find(Window.class);
 		Generic selectable = engine.find(Selectable.class);
 		Generic selectableWindow = engine.find(SelectableWindow.class);
@@ -201,10 +184,10 @@ public class AnnotationTest extends AbstractTest {
 		assert selectableWindow.getSupers().contains(window) : selectableWindow.getSupers();
 
 		assert window.getSupers().size() == 1 : window.getSupers();
-		assert window.getSupers().contains(graphicComponent) : window.getSupers();
+		assert window.getSupers().contains(graphicComposite) : window.getSupers();
 
 		assert selectable.getSupers().size() == 1 : selectable.getSupers();
-		assert selectable.getSupers().contains(graphicComponent) : selectable.getSupers();
+		assert selectable.getSupers().contains(graphicComposite) : selectable.getSupers();
 
 		assert selectableWindow.getSupers().size() == 2;
 		assert selectableWindow.getSupers().contains(selectable);
@@ -212,7 +195,7 @@ public class AnnotationTest extends AbstractTest {
 
 		assert selectableWindow.inheritsFrom(selectable);
 		assert selectableWindow.inheritsFrom(window);
-		assert selectableWindow.inheritsFrom(graphicComponent);
+		assert selectableWindow.inheritsFrom(graphicComposite);
 	}
 
 	public void test012_Value() {
@@ -224,8 +207,8 @@ public class AnnotationTest extends AbstractTest {
 		assert mySelectableWindow.isInstanceOf(selectableWindow) : mySelectableWindow.info() + selectableWindow.info();
 
 		assert engine.find(Selectable.class).isAncestorOf(mySelectableWindow);
-		Generic vTrue = selectedSelectable.addInstance(true, selectedSelectable.getComposites().toArray(new Generic[1]));
-		Generic v12 = size.addInstance(12, size.getComposites().toArray(new Generic[1]));
+		Generic vTrue = selectedSelectable.addInstance(true, selectedSelectable.getComponents().toArray(new Generic[1]));
+		Generic v12 = size.addInstance(12, size.getComponents().toArray(new Generic[1]));
 
 		assert selectableWindow.getInstances().size() == 1 : selectableWindow.getInstances();
 		assert selectableWindow.getInstances().contains(mySelectableWindow);
@@ -254,17 +237,17 @@ public class AnnotationTest extends AbstractTest {
 		assert transformerChildrenGames.getSupers().contains(childrenGames) : transformerChildrenGames.info();
 		assert transformerChildrenGames.getSupers().contains(transformer);
 		assert transformerChildrenGames.getInheritings().size() == 0;
-		assert transformerChildrenGames.getComponents().size() == 0;
+		assert transformerChildrenGames.getComposites().size() == 0;
 
 		assert childrenGames.getSupers().contains(games);
 		assert childrenGames.getSupers().contains(children);
 		assert childrenGames.getInheritings().contains(transformerChildrenGames);
-		assert childrenGames.getComponents().size() == 0;
+		assert childrenGames.getComposites().size() == 0;
 
 		assert transformer.getSupers().contains(vehicle);
 		assert transformer.getSupers().contains(human);
 		assert transformer.getInheritings().contains(transformerChildrenGames);
-		assert transformer.getComponents().size() == 0;
+		assert transformer.getComposites().size() == 0;
 	}
 
 	public void test014_MultiInheritanceComplexValue() {
@@ -290,7 +273,7 @@ public class AnnotationTest extends AbstractTest {
 		assert !myTransformerChildrenGames.inheritsFrom(myTransformer);
 		assert myTransformerChildrenGames.getSupers().size() == 0;
 		assert myTransformerChildrenGames.getInheritings().size() == 0;
-		assert myTransformerChildrenGames.getComponents().size() == 0;
+		assert myTransformerChildrenGames.getComposites().size() == 0;
 
 		assert transformer.getSupers().size() == 2;
 		assert transformer.getSupers().contains(engine.find(Human.class));
@@ -307,7 +290,7 @@ public class AnnotationTest extends AbstractTest {
 		assert !myChildrenGames.inheritsFrom(myChildren);
 		assert myChildrenGames.getSupers().size() == 0;// .contains(childrenGames);
 		assert myChildrenGames.getInheritings().size() == 0;
-		assert myChildrenGames.getComponents().size() == 0;
+		assert myChildrenGames.getComposites().size() == 0;
 
 		assert childrenGames.getSupers().size() == 2;
 		assert childrenGames.getSupers().contains(engine.find(Games.class));
@@ -320,7 +303,7 @@ public class AnnotationTest extends AbstractTest {
 		assert !myTransformer.inheritsFrom(myck);
 		assert myTransformer.getSupers().size() == 0;// .contains(transformer);
 		assert myTransformer.getInheritings().size() == 0;
-		assert myTransformer.getComponents().size() == 0;
+		assert myTransformer.getComposites().size() == 0;
 
 		assert transformer.getInstances().contains(myTransformer);
 		assert myTransformer.isInstanceOf(transformer);
@@ -380,30 +363,30 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	public static class GraphicComponent extends Generic {
+	public static class GraphicComposite extends Generic {
 
 	}
 
 	@SystemGeneric
-	@Composites(GraphicComponent.class)
+	@Components(GraphicComposite.class)
 	public static class Size extends Generic {
 
 	}
 
 	@SystemGeneric
-	@Supers(GraphicComponent.class)
-	public static class Window extends GraphicComponent {
+	@Supers(GraphicComposite.class)
+	public static class Window extends GraphicComposite {
 
 	}
 
 	@SystemGeneric
-	@Supers(GraphicComponent.class)
+	@Supers(GraphicComposite.class)
 	public static class Selectable extends Generic {
 
 	}
 
 	@SystemGeneric
-	@Composites(Selectable.class)
+	@Components(Selectable.class)
 	public static class Selected extends Generic {
 
 	}
@@ -431,14 +414,14 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	@Composites(Vehicle.class)
+	@Components(Vehicle.class)
 	public static class Power extends Generic {
 
 	}
 
 	@SystemGeneric
 	@Meta(Power.class)
-	@Composites(MyVehicle.class)
+	@Components(MyVehicle.class)
 	@IntValue(123)
 	public static class V123 extends Generic {
 
@@ -456,14 +439,14 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	@Composites(Car.class)
+	@Components(Car.class)
 	@Supers(Power.class)
 	public static class ElectrikPower extends Generic {
 
 	}
 
 	@SystemGeneric
-	@Composites(ElectrikPower.class)
+	@Components(ElectrikPower.class)
 	public static class Unit extends Generic {
 
 	}
@@ -486,24 +469,24 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	@Composites({ Human.class, Vehicle.class })
+	@Components({ Human.class, Vehicle.class })
 	public static class HumanPossessVehicle extends Generic {
 	}
 
 	@SystemGeneric
-	@Composites({ Human.class, Car.class })
+	@Components({ Human.class, Car.class })
 	@Supers(HumanPossessVehicle.class)
 	public static class HumanPossessCar extends HumanPossessVehicle {
 	}
 
 	@SystemGeneric
-	@Composites({ Man.class, Car.class })
+	@Components({ Man.class, Car.class })
 	@Supers(HumanPossessVehicle.class)
 	public static class ManPossessCar extends HumanPossessVehicle {
 	}
 
 	@SystemGeneric
-	@Composites({ Human.class, Vehicle.class, Time.class })
+	@Components({ Human.class, Vehicle.class, Time.class })
 	public static class HumanPossessVehicleTime extends Generic {
 	}
 

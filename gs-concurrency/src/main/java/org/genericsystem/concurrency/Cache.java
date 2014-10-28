@@ -8,67 +8,67 @@ import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.cache.AbstractContext;
 import org.genericsystem.kernel.Statics;
 
-public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends DefaultRoot<V, W>> extends org.genericsystem.cache.Cache<T, U, V, W> {
+public class Cache extends org.genericsystem.cache.Cache<Generic, Engine, Vertex, Root> {
 
-	protected Cache(U engine) {
-		this(new Transaction<>(engine));
+	protected Cache(Engine engine) {
+		this(new Transaction(engine));
 	}
 
-	protected Cache(org.genericsystem.cache.AbstractContext<T, U, V, W> subContext) {
+	protected Cache(org.genericsystem.cache.AbstractContext<Generic, Engine, Vertex, Root> subContext) {
 		super(subContext);
 	}
 
 	public long getTs() {
-		AbstractContext<T, U, V, W> context = getSubContext();
-		return context instanceof Cache ? ((Cache<T, U, V, W>) context).getTs() : ((Transaction<T, U, V, W>) context).getTs();
+		AbstractContext<Generic, Engine, Vertex, Root> context = getSubContext();
+		return context instanceof Cache ? ((Cache) context).getTs() : ((Transaction) context).getTs();
 	}
 
 	public void pickNewTs() throws RollbackException {
 		if (getSubContext() instanceof Cache) {
-			((Cache<?, ?, ?, ?>) getSubContext()).pickNewTs();
-			clean();
+			((Cache) getSubContext()).pickNewTs();
 		} else {
 			long ts = getTs();
-			subContext = new Transaction<>(getEngine());
+			subContext = new Transaction(getEngine());
 			assert getTs() > ts;
 		}
+		// clean();
 	}
 
 	private void clean() {
-		Iterator<T> iterator = adds.iterator();
+		Iterator<Generic> iterator = adds.iterator();
 		while (iterator.hasNext()) {
-			T next = iterator.next();
+			Generic next = iterator.next();
 			if (subContext.isAlive(next))
 				iterator.remove();
 		}
 		iterator = removes.iterator();
 		while (iterator.hasNext()) {
-			T next = iterator.next();
+			Generic next = iterator.next();
 			if (!subContext.isAlive(next))
 				rollbackWithException(new AliveConstraintViolationException(next.info()));
 		}
 	}
 
 	// @Override
-	// public Cache<T, U, V, W> mountAndStartNewCache() {
-	// return (Cache<T, U, V, W>) super.mountAndStartNewCache();
+	// public Cache mountAndStartNewCache() {
+	// return (Cache) super.mountAndStartNewCache();
 	// }
 
 	// TODO clean
 	// @Override
-	// public Cache<T, U, V, W> flushAndUnmount() {
+	// public Cache flushAndUnmount() {
 	// flush();
-	// return getSubContext() instanceof Cache ? ((Cache<T, U, V, W>) getSubContext()).start() : this;
+	// return getSubContext() instanceof Cache ? ((Cache) getSubContext()).start() : this;
 	// }
 	//
 	// @Override
-	// public Cache<T, U, V, W> clearAndUnmount() {
+	// public Cache clearAndUnmount() {
 	// clear();
-	// return getSubContext() instanceof Cache ? ((Cache<T, U, V, W>) getSubContext()).start() : this;
+	// return getSubContext() instanceof Cache ? ((Cache) getSubContext()).start() : this;
 	// }
 
 	@Override
-	public Cache<T, U, V, W> start() {
+	public Cache start() {
 		return getEngine().start(this);
 	}
 
@@ -80,11 +80,11 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngin
 				// if (getEngine().pickNewTs() - getTs() >= timeOut)
 				// throw new ConcurrencyControlException("The timestamp cache (" + getTs() + ") is begger than the life time out : " + Statics.LIFE_TIMEOUT);
 				checkConstraints();
-				AbstractContext<T, U, V, W> context = getSubContext();
+				AbstractContext<Generic, Engine, Vertex, Root> context = getSubContext();
 				if (context instanceof Transaction)
-					((Transaction<T, U, V, W>) context).apply(adds, removes);
+					((Transaction) context).apply(adds, removes);
 				else
-					((Cache<T, U, V, W>) context).apply(adds, removes);
+					((Cache) context).apply(adds, removes);
 				clear();
 				return;
 			} catch (ConcurrencyControlException e) {

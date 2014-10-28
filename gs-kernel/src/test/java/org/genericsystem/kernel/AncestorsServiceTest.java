@@ -70,7 +70,7 @@ public class AncestorsServiceTest extends AbstractTest {
 		assert microcar.isAncestorOf(microcar);
 	}
 
-	public void isAncestorOfViaComponent() {
+	public void isAncestorOfViaComposite() {
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
 		Vertex power = root.addInstance("Power", vehicle);
@@ -92,7 +92,7 @@ public class AncestorsServiceTest extends AbstractTest {
 		assert root.isAncestorOf(radio);
 	}
 
-	public void isAncestorOfViaComponent2() {
+	public void isAncestorOfViaComponent() {
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
 		Vertex power = root.addInstance("Power", vehicle);
@@ -106,7 +106,7 @@ public class AncestorsServiceTest extends AbstractTest {
 		assert root.isAncestorOf(button);
 	}
 
-	// public void isAncestorOfViaComponent3() {
+	// public void isAncestorOfViaComposite3() {
 	// Root root = new Root();
 	// Vertex vehicle = root.addInstance("Vehicle");
 	// Vertex car = root.addInstance(vehicle, "Car");

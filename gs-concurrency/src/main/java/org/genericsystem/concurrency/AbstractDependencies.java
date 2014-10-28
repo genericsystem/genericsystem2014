@@ -1,12 +1,13 @@
 package org.genericsystem.concurrency;
 
 import java.io.Serializable;
-import java.util.Iterator;
-import org.genericsystem.api.core.Snapshot.AbstractSnapshot;
+import java.util.Spliterators;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
-public abstract class AbstractDependencies<T extends AbstractVertex<?, ?>> extends AbstractSnapshot<T> implements Dependencies<T> {
+public abstract class AbstractDependencies<T> implements Dependencies<T> {
 
 	private Node<T> head = null;
 	private Node<T> tail = null;
@@ -56,8 +57,12 @@ public abstract class AbstractDependencies<T extends AbstractVertex<?, ?>> exten
 		return false;
 	}
 
-	public Iterator<T> iterator(long ts) {
-		return new InternalIterator(ts);
+	// public Iterator<T> iterator(long ts) {
+	// return new InternalIterator(ts);
+	// }
+
+	public Stream<T> get(long ts) {
+		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(new InternalIterator(ts), 0), false);
 	}
 
 	private class InternalIterator extends AbstractGeneralAwareIterator<Node<T>, T> {
@@ -70,7 +75,7 @@ public abstract class AbstractDependencies<T extends AbstractVertex<?, ?>> exten
 
 		@Override
 		protected void advance() {
-			do {
+			for (;;) {
 				Node<T> nextNode = (next == null) ? head : next.next;
 				if (nextNode == null) {
 					LifeManager lifeManager = getLifeManager();
@@ -87,7 +92,10 @@ public abstract class AbstractDependencies<T extends AbstractVertex<?, ?>> exten
 					}
 				}
 				next = nextNode;
-			} while (next.content == null || !next.content.isAlive(ts));
+				T content = next.content;
+				if (content != null && (!(content instanceof AbstractVertex) || ((AbstractVertex) content).isAlive(ts)))
+					break;
+			}
 		}
 
 		@Override

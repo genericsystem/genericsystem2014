@@ -1,9 +1,9 @@
 package org.genericsystem.concurrency;
 
-public interface DefaultRoot<T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> extends org.genericsystem.cache.DefaultRoot<T, U>, DefaultVertex<T, U> {
+public interface DefaultRoot extends org.genericsystem.cache.DefaultRoot<Vertex, Root>, DefaultVertex {
 
 	long pickNewTs();
 
-	GarbageCollector<T, U> getGarbageCollector();
+	GarbageCollector getGarbageCollector();
 
 }

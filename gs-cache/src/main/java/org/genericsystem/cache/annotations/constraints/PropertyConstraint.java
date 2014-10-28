@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The System Property to allows a single value for the same components.
+ * The System Property to allows a single value for the same composites.
  * 
  * @author Nicolas Feybesse
  * @author Michael Ory
