@@ -32,7 +32,7 @@ public class TreeTest extends AbstractTest {
 
 		assert tree.getInstances().contains(rootNode);
 		assert tree.getInstances().size() == 1;
-		assert tree.getAllInstances().contains(rootNode) : tree.getAllInstances().stream().collect(Collectors.toList());
+		assert tree.getAllInstances().contains(rootNode) : tree.getAllInstances().get().collect(Collectors.toList());
 		assert tree.getAllInstances().size() == 1;
 		assert rootNode.getSupers().isEmpty();
 	}
@@ -119,11 +119,11 @@ public class TreeTest extends AbstractTest {
 		Vertex div = body.addSubNode("div");
 		div.setHolder(treeColor, "divIsGreen", green);
 
-		assert tree.getHolders(treeColor).stream().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(blue);
-		assert html.getHolders(treeColor).stream().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(red);
-		assert head.getHolders(treeColor).stream().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(blue);
-		assert body.getHolders(treeColor).stream().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(blue);
-		assert div.getHolders(treeColor).stream().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(green);
+		assert tree.getHolders(treeColor).get().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(blue);
+		assert html.getHolders(treeColor).get().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(red);
+		assert head.getHolders(treeColor).get().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(blue);
+		assert body.getHolders(treeColor).get().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(blue);
+		assert div.getHolders(treeColor).get().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(green);
 	}
 
 	public void test008() {
@@ -146,10 +146,10 @@ public class TreeTest extends AbstractTest {
 		Vertex div = body.addInheritingSubNode("div");
 		div.setHolder(treeColor, "divIsGreen", green);
 
-		assert tree.getHolders(treeColor).stream().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(blue);
-		assert html.getHolders(treeColor).stream().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(red);
-		assert head.getHolders(treeColor).stream().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(red);
-		assert body.getHolders(treeColor).stream().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(red);
-		assert div.getHolders(treeColor).stream().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(green);
+		assert tree.getHolders(treeColor).get().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(blue);
+		assert html.getHolders(treeColor).get().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(red);
+		assert head.getHolders(treeColor).get().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(red);
+		assert body.getHolders(treeColor).get().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(red);
+		assert div.getHolders(treeColor).get().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(green);
 	}
 }

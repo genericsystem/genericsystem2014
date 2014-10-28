@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
@@ -15,6 +14,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
@@ -330,7 +330,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 
 	@SuppressWarnings("unchecked")
 	Snapshot<T> getInheritings(final T origin, final int level) {
-		return () -> new InheritanceComputer<>((T) AbstractVertex.this, origin, level).inheritanceIterator();
+		return () -> new InheritanceComputer<>((T) AbstractVertex.this, origin, level).inheritanceStream();
 	}
 
 	abstract protected T newT();
@@ -430,7 +430,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 
 	@Override
 	public Snapshot<T> getComposites() {
-		return () -> getMetaCompositesDependencies().stream().map(entry -> entry.getValue().stream()).flatMap(x -> x).iterator();
+		return () -> getMetaCompositesDependencies().get().map(entry -> entry.getValue().get()).flatMap(x -> x);
 	}
 
 	// TODO KK public -> package
@@ -438,8 +438,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 		return () -> {
 			for (DependenciesEntry<T> entry : getMetaCompositesDependencies())
 				if (meta.equals(entry.getKey()))
-					return entry.getValue().iterator();
-			return Collections.emptyIterator();
+					return entry.getValue().get();
+			return Stream.empty();
 		};
 	}
 
@@ -448,8 +448,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 		return () -> {
 			for (DependenciesEntry<T> entry : getSuperCompositesDependencies())
 				if (superT.equals(entry.getKey()))
-					return entry.getValue().iterator();
-			return Collections.emptyIterator();
+					return entry.getValue().get();
+			return Stream.empty();
 		};
 	}
 
@@ -553,7 +553,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {}
+	public static class SystemMap {
+	}
 
 	protected boolean equals(ISignature<?> meta, List<? extends ISignature<?>> supers, Serializable value, List<? extends ISignature<?>> components) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComponents().equals(components.stream().map(NULL_TO_THIS).collect(Collectors.toList())) && getSupers().equals(supers);
@@ -561,7 +562,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 
 	protected Stream<T> getKeys() {
 		T map = getMap();
-		return map != null ? getAttributes(map).stream() : Stream.empty();
+		return map != null ? getAttributes(map).get() : Stream.empty();
 	}
 
 	Optional<T> getKey(AxedPropertyClass property) {
@@ -624,7 +625,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 				Constraint constraint = newConstraint(constraintHolder);
 				if (isCheckable(constraint, checkingType, isFlushTime)) {
 					int axe = ((AxedPropertyClass) constraintHolder.getValue()).getAxe();
-					constraint.check(this, getHolders(constraintHolder).iterator().next().getComponents().get(Statics.BASE_POSITION));
+					constraint.check(this, getHolders(constraintHolder).get().findFirst().get().getComponents().get(Statics.BASE_POSITION));
 				}
 			} catch (ConstraintViolationException e) {
 				getRoot().discardWithException(e);
@@ -632,10 +633,13 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 	}
 
 	private List<T> getActivedConstraints() {
-		return getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) x.getValue()).getClazz())).filter(x -> {
-			Iterator<T> holders = getHolders(x).iterator();
-			return holders.hasNext() && !holders.next().getValue().equals(Boolean.FALSE);
-		}).sorted(priorityConstraintComparator).collect(Collectors.toList());
+		// return getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) x.getValue()).getClazz())).filter(x -> {
+		// Iterator<T> holders = getHolders(x).iterator();
+		// return holders.hasNext() && !holders.next().getValue().equals(Boolean.FALSE);
+		// }).sorted(priorityConstraintComparator).collect(Collectors.toList());
+
+		return getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) x.getValue()).getClazz())).filter(x -> getHolders(x).get().anyMatch(y -> !Boolean.FALSE.equals(y.getValue())))
+				.sorted(priorityConstraintComparator).collect(Collectors.toList());
 	}
 
 	private Constraint newConstraint(T constraintHolder) {

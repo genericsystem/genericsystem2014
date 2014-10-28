@@ -19,7 +19,7 @@ public class PropertyConstraint implements Constraint {
 		if (attribute.getValue().equals(SystemMap.class))
 			return;
 		T base = modified.getComponents().get(Statics.BASE_POSITION);
-		Stream<T> snapshot = base.getHolders((T) attribute).stream().filter(x -> x.getComponents().get(Statics.BASE_POSITION).equals(base)).filter(next -> {
+		Stream<T> snapshot = base.getHolders((T) attribute).get().filter(x -> x.getComponents().get(Statics.BASE_POSITION).equals(base)).filter(next -> {
 			for (int componentPos = Statics.TARGET_POSITION; componentPos < next.getComponents().size(); componentPos++)
 				if (!Objects.equals(next.getComponents().get(componentPos), modified.getComponents().get(componentPos)))
 					return false;

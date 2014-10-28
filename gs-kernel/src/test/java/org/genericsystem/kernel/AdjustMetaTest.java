@@ -77,7 +77,7 @@ public class AdjustMetaTest extends AbstractTest {
 		assert holder.getMeta().equals(power);
 		Vertex power2 = car.addAttribute(power, "Power2");
 		// assert !holder.isAlive();
-		assert power2.equals(myBmw.getHolders(power).stream().findFirst().get().getMeta());
+		assert power2.equals(myBmw.getHolders(power).get().findFirst().get().getMeta());
 		// new RollbackCatcher() {
 		// @Override
 		// public void intercept() {
@@ -256,6 +256,6 @@ public class AdjustMetaTest extends AbstractTest {
 
 		Vertex power2 = car.addAttribute(power, "Power2");
 		assert !power235.isAlive();
-		assert myBmw.getHolders(power).stream().findFirst().get().getMeta().equals(power2) : "meta : " + power235.getMeta();
+		assert myBmw.getHolders(power).get().findFirst().get().getMeta().equals(power2) : "meta : " + power235.getMeta();
 	}
 }
