@@ -9,6 +9,7 @@ public class InjectionTest extends AbstractTest {
 	public void test() {
 		assert engine != null;
 		assert engine.getCurrentCache() != null;
+		assert cacheProvider.get() != null;
 	}
 
 	public void test2() {
