@@ -26,17 +26,17 @@ public class CacheTest extends AbstractTest {
 		assert engine.getInstances().stream().anyMatch(g -> g.equals(vehicle));
 	}
 
-	public void test001_getMetaComposites() {
+	public void test001_getMetaComponents() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic powerVehicle = engine.addInstance("power", vehicle);
-		assert vehicle.getMetaComponents(engine.getMetaAttribute()).contains(powerVehicle);
+		assert vehicle.getMetaComposites(engine.getMetaAttribute()).contains(powerVehicle);
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		Generic myVehicle123 = powerVehicle.addInstance("123", myVehicle);
-		assert myVehicle.getMetaComponents(powerVehicle).contains(myVehicle123);
+		assert myVehicle.getMetaComposites(powerVehicle).contains(myVehicle123);
 	}
 
-	public void test001_getSuperComposites() {
+	public void test001_getSuperComponents() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic powerVehicle = engine.addInstance("power", vehicle);
@@ -44,10 +44,10 @@ public class CacheTest extends AbstractTest {
 		Generic vehicle256 = powerVehicle.addInstance("256", vehicle);
 		Generic myVehicle123 = powerVehicle.addInstance(vehicle256, "123", myVehicle);
 		assert myVehicle123.inheritsFrom(vehicle256);
-		assert myVehicle.getSuperComponents(vehicle256).contains(myVehicle123);
+		assert myVehicle.getSuperComposites(vehicle256).contains(myVehicle123);
 	}
 
-	public void test002_getSuperComposites() {
+	public void test002_getSuperComponents() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic powerVehicle = engine.addInstance("power", vehicle);
@@ -58,7 +58,7 @@ public class CacheTest extends AbstractTest {
 		Generic myVehicle123 = powerVehicle.addInstance("123", myVehicle);
 		assert !vehicle256.equals(myVehicle123);
 		assert myVehicle123.inheritsFrom(vehicle256);
-		assert myVehicle.getSuperComponents(vehicle256).contains(myVehicle123);
+		assert myVehicle.getSuperComposites(vehicle256).contains(myVehicle123);
 	}
 
 	public void test002_flush() {
@@ -97,7 +97,7 @@ public class CacheTest extends AbstractTest {
 		assert vehicle.unwrap() != null;
 	}
 
-	public void test004_TwoCompositesWithSameMetaInDifferentCaches() {
+	public void test004_TwoComponentsWithSameMetaInDifferentCaches() {
 		Engine engine = new Engine();
 		Cache<Generic, Engine, Vertex, Root> currentCache = engine.getCurrentCache();
 		Generic vehicle = engine.addInstance("Vehicle");
@@ -105,28 +105,28 @@ public class CacheTest extends AbstractTest {
 		Generic vehicleColor = color.addInstance("vehicleColor", vehicle);
 		Cache<Generic, Engine, Vertex, Root> mountNewCache = currentCache.mountAndStartNewCache();
 		Generic vehicleColor2 = color.addInstance("vehicleColor2", vehicle);
-		assert vehicle.getMetaComponents(color).containsAll(Arrays.asList(vehicleColor, vehicleColor2)) : vehicle.getMetaComponents(color);
+		assert vehicle.getMetaComposites(color).containsAll(Arrays.asList(vehicleColor, vehicleColor2)) : vehicle.getMetaComposites(color);
 		mountNewCache.flush();
 		assert vehicle.isAlive();
 		assert color.isAlive();
 		assert vehicleColor.isAlive();
 		assert vehicleColor2.isAlive();
-		assert vehicle.getMetaComponents(color).containsAll(Arrays.asList(vehicleColor, vehicleColor2)) : vehicle.getMetaComponents(color);
+		assert vehicle.getMetaComposites(color).containsAll(Arrays.asList(vehicleColor, vehicleColor2)) : vehicle.getMetaComposites(color);
 	}
 
-	public void test005_TwoCompositesWithSameMetaInDifferentCaches_remove() {
+	public void test005_TwoComponentsWithSameMetaInDifferentCaches_remove() {
 		Engine engine = new Engine();
 		Cache<Generic, Engine, Vertex, Root> currentCache = engine.getCurrentCache();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic vehiclePower = engine.addInstance("vehiclePower", vehicle);
 		Cache<Generic, Engine, Vertex, Root> mountNewCache = currentCache.mountAndStartNewCache();
 		assert vehiclePower.isAlive();
-		assert !vehicle.getMetaComponents(engine.getMetaAttribute()).isEmpty() : vehicle.getMetaComponents(engine.getMetaAttribute()).stream().collect(Collectors.toList());
+		assert !vehicle.getMetaComposites(engine.getMetaAttribute()).isEmpty() : vehicle.getMetaComposites(engine.getMetaAttribute()).stream().collect(Collectors.toList());
 		vehiclePower.remove();
-		assert vehicle.getMetaComponents(engine.getMetaAttribute()).isEmpty() : vehicle.getMetaComponents(engine.getMetaAttribute()).stream().collect(Collectors.toList());
+		assert vehicle.getMetaComposites(engine.getMetaAttribute()).isEmpty() : vehicle.getMetaComposites(engine.getMetaAttribute()).stream().collect(Collectors.toList());
 		mountNewCache.flush();
 		assert vehicle.isAlive();
 		assert !vehiclePower.isAlive();
-		assert vehicle.getMetaComponents(engine.getMetaAttribute()).isEmpty() : vehicle.getMetaComponents(engine.getMetaAttribute()).stream().collect(Collectors.toList());
+		assert vehicle.getMetaComposites(engine.getMetaAttribute()).isEmpty() : vehicle.getMetaComposites(engine.getMetaAttribute()).stream().collect(Collectors.toList());
 	}
 }

@@ -17,7 +17,7 @@ public interface DefaultDisplay<T extends AbstractVertex<T, U>, U extends Defaul
 
 	@Override
 	default String info() {
-		return "(" + getMeta().getValue() + ")" + getSupers() + this + getComposites() + " ";
+		return "(" + getMeta().getValue() + ")" + getSupers() + this + getComponents() + " ";
 	}
 
 	@Override
@@ -26,13 +26,13 @@ public interface DefaultDisplay<T extends AbstractVertex<T, U>, U extends Defaul
 		s += " Value       : " + getValue() + "\n";
 		s += " Meta        : " + getMeta() + " (" + System.identityHashCode(getMeta()) + ")\n";
 		s += " MetaLevel   : " + Statics.getMetaLevelString(getLevel()) + "\n";
-		s += " Category    : " + Statics.getCategoryString(getLevel(), getComposites().size()) + "\n";
+		s += " Category    : " + Statics.getCategoryString(getLevel(), getComponents().size()) + "\n";
 		s += " Class       : " + getClass().getName() + "\n";
 		s += "**********************************************************************\n";
 		for (T superGeneric : getSupers())
 			s += " Super       : " + superGeneric + " (" + System.identityHashCode(superGeneric) + ")\n";
-		for (T component : getComposites())
-			s += " Component   : " + component + " (" + System.identityHashCode(component) + ")\n";
+		for (T composite : getComponents())
+			s += " Composite   : " + composite + " (" + System.identityHashCode(composite) + ")\n";
 		s += "**********************************************************************\n";
 		// s += "**********************************************************************\n";
 		// s += "design date : " + new SimpleDateFormat(Statics.LOG_PATTERN).format(new Date(getDesignTs() / Statics.MILLI_TO_NANOSECONDS)) + "\n";
@@ -65,7 +65,7 @@ public interface DefaultDisplay<T extends AbstractVertex<T, U>, U extends Defaul
 		for (T attribute : getAttributes()) {
 			JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
 			for (T holder : getHolders(attribute)) {
-				if (holder.getComposites().get(0).isSpecializationOf((T) this))
+				if (holder.getComponents().get(0).isSpecializationOf((T) this))
 					arrayBuilder.add(holder.toPrettyJSon());
 				builder.add(attribute.toString(), arrayBuilder);
 			}
@@ -85,9 +85,9 @@ public interface DefaultDisplay<T extends AbstractVertex<T, U>, U extends Defaul
 			arrayBuilder.add(System.identityHashCode(superVertex));
 		builder.add("Supers", arrayBuilder);
 
-		for (T component : getComposites())
-			arrayBuilder.add(System.identityHashCode(component));
-		builder.add("Components", arrayBuilder);
+		for (T composite : getComponents())
+			arrayBuilder.add(System.identityHashCode(composite));
+		builder.add("Composites", arrayBuilder);
 		return builder.build();
 	}
 }

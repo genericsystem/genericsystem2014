@@ -11,7 +11,7 @@ public class SignatureImpl<T extends AbstractVertex<T, ?>> implements Supplier<T
 	private final SignatureImpl<T> metaSignature;
 	private List<Serializable> superValues;
 	private Serializable value;
-	private List<Serializable> compositeValues;
+	private List<Serializable> componentValues;
 
 	public SignatureImpl(SignatureImpl<T> metaSignature) {
 		this.metaSignature = metaSignature;
@@ -37,19 +37,19 @@ public class SignatureImpl<T extends AbstractVertex<T, ?>> implements Supplier<T
 		this.value = value;
 	}
 
-	public List<Serializable> getCompositeValues() {
-		return compositeValues;
+	public List<Serializable> getComponentValues() {
+		return componentValues;
 	}
 
-	public void setCompositeValues(List<Serializable> compositeValues) {
-		this.compositeValues = compositeValues;
+	public void setComponentValues(List<Serializable> componentValues) {
+		this.componentValues = componentValues;
 	}
 
 	@Override
 	public T get() {
 		T meta = metaSignature.get();
 		for (T instance : meta.getInstances())
-			if (Objects.equals(value, instance.getValue()) && compositeValues.equals(instance.getComposites().stream().map(composite -> composite.getValue()).collect(Collectors.toList())))
+			if (Objects.equals(value, instance.getValue()) && componentValues.equals(instance.getComponents().stream().map(component -> component.getValue()).collect(Collectors.toList())))
 				return instance;// KK What to do with supers ?
 		return null;
 	}

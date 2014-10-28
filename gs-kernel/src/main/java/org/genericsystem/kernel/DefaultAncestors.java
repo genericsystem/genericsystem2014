@@ -39,12 +39,12 @@ public interface DefaultAncestors<T extends AbstractVertex<T, U>, U extends Defa
 
 	@Override
 	default boolean equiv(IVertex<?, ?> service) {
-		return equals(service) || ((AbstractVertex<?, ?>) this).equiv(service.getMeta(), service.getValue(), service.getComposites());
+		return equals(service) || ((AbstractVertex<?, ?>) this).equiv(service.getMeta(), service.getValue(), service.getComponents());
 	}
 
 	@Override
 	default int getLevel() {
-		return isRoot() || Objects.equals(getValue(), getRoot().getValue()) || getComposites().stream().allMatch(c -> c.isRoot()) ? 0 : getMeta().getLevel() + 1;
+		return isRoot() || Objects.equals(getValue(), getRoot().getValue()) || getComponents().stream().allMatch(c -> c.isRoot()) ? 0 : getMeta().getLevel() + 1;
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public interface DefaultAncestors<T extends AbstractVertex<T, U>, U extends Defa
 	}
 
 	@Override
-	default boolean isComponentOf(T vertex) {
-		return isRoot() || getComposites().stream().anyMatch(composite -> vertex.isSpecializationOf(composite));
+	default boolean isCompositeOf(T vertex) {
+		return isRoot() || getComponents().stream().anyMatch(component -> vertex.isSpecializationOf(component));
 	}
 }

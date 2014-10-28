@@ -15,55 +15,55 @@ public interface DefaultWritable<T extends AbstractVertex<T, U>, U extends Defau
 
 	@Override
 	default T updateValue(Serializable newValue) {
-		return update(getSupers(), newValue, coerceToTArray(getComposites().toArray()));
+		return update(getSupers(), newValue, coerceToTArray(getComponents().toArray()));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	default T updateSupers(T... supersToAdd) {
-		return update(Arrays.asList(supersToAdd), getValue(), coerceToTArray(getComposites().toArray()));
+		return update(Arrays.asList(supersToAdd), getValue(), coerceToTArray(getComponents().toArray()));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T updateComponents(T... newComponents) {
-		return update(getSupers(), getValue(), newComponents);
+	default T updateComposites(T... newComposites) {
+		return update(getSupers(), getValue(), newComposites);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T update(List<T> supersToAdd, Serializable newValue, T... newComponents) {
-		return ((T) this).update(supersToAdd, newValue, Arrays.asList(newComponents));
+	default T update(List<T> supersToAdd, Serializable newValue, T... newComposites) {
+		return ((T) this).update(supersToAdd, newValue, Arrays.asList(newComposites));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T update(Serializable newValue, T... newComponents) {
-		return update(Collections.emptyList(), newValue, newComponents);
+	default T update(Serializable newValue, T... newComposites) {
+		return update(Collections.emptyList(), newValue, newComposites);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T setInstance(Serializable value, T... composites) {
-		return setInstance(Collections.emptyList(), value, composites);
+	default T setInstance(Serializable value, T... components) {
+		return setInstance(Collections.emptyList(), value, components);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T setInstance(T override, Serializable value, T... composites) {
-		return setInstance(Collections.singletonList(override), value, composites);
+	default T setInstance(T override, Serializable value, T... components) {
+		return setInstance(Collections.singletonList(override), value, components);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T addInstance(Serializable value, T... composites) {
-		return addInstance(Collections.emptyList(), value, composites);
+	default T addInstance(Serializable value, T... components) {
+		return addInstance(Collections.emptyList(), value, components);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T addInstance(T override, Serializable value, T... composites) {
-		return addInstance(Collections.singletonList(override), value, composites);
+	default T addInstance(T override, Serializable value, T... components) {
+		return addInstance(Collections.singletonList(override), value, components);
 	}
 
 	@Override

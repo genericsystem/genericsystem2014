@@ -1,7 +1,6 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
-
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
 
@@ -21,7 +20,7 @@ public interface DefaultComponentsInheritance<T extends AbstractVertex<T, U>, U 
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getAttributes(int pos) {
-		return () -> getAttributes().stream().filter(attribute -> pos >= 0 && pos < attribute.getComposites().size() && ((T) this).isSpecializationOf(attribute.getComposites().get(pos))).iterator();
+		return () -> getAttributes().stream().filter(attribute -> pos >= 0 && pos < attribute.getComponents().size() && ((T) this).isSpecializationOf(attribute.getComponents().get(pos))).iterator();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -33,7 +32,7 @@ public interface DefaultComponentsInheritance<T extends AbstractVertex<T, U>, U 
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getHolders(T attribute, int pos) {
-		return () -> getHolders(attribute).stream().filter(holder -> pos >= 0 && pos < holder.getComposites().size() && ((T) this).isSpecializationOf(holder.getComposites().get(pos))).iterator();
+		return () -> getHolders(attribute).stream().filter(holder -> pos >= 0 && pos < holder.getComponents().size() && ((T) this).isSpecializationOf(holder.getComponents().get(pos))).iterator();
 
 	}
 

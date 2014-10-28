@@ -35,7 +35,7 @@ public class RelationTest extends AbstractTest {
 		catchAndCheckCause(() -> carColor.addInstance("myCarColor", myCar, green), AliveConstraintViolationException.class);
 	}
 
-	public void test002_addInstance_2components() {
+	public void test002_addInstance_2composites() {
 		final Root cache = new Root();
 		Vertex car = cache.addInstance("Car");
 		Vertex color = cache.addInstance("Color");
@@ -46,7 +46,7 @@ public class RelationTest extends AbstractTest {
 		carColor.addInstance("myCarColor", myCar, green);
 	}
 
-	public void test002_addInstance_2components_MetaRelation() {
+	public void test002_addInstance_2composites_MetaRelation() {
 		final Root root = new Root();
 		Vertex metaRelation = root.setInstance(root.getValue(), root, root);
 		Vertex car = root.addInstance("Car");
@@ -66,10 +66,10 @@ public class RelationTest extends AbstractTest {
 		Vertex caravane = vehicle.addInstance("Caravane");
 		Vertex vehicleHaveSameOwnerAsVehicle = root.addInstance("VehicleHaveSameOwnerAsVehicle", vehicle, vehicle);
 		Vertex myVehicleHaveSameOwnerAsVehicle = vehicleHaveSameOwnerAsVehicle.addInstance("myVehicleHaveSameOwnerAsVehicle", car, caravane);
-		List<Vertex> components = myVehicleHaveSameOwnerAsVehicle.getComposites();
-		assert components.size() == 2 : components.size();
-		assert components.contains(caravane) : components;
-		assert components.contains(car) : components;
+		List<Vertex> composites = myVehicleHaveSameOwnerAsVehicle.getComponents();
+		assert composites.size() == 2 : composites.size();
+		assert composites.contains(caravane) : composites;
+		assert composites.contains(car) : composites;
 	}
 
 	public void test003_addInstance_reflexiveRelation_MetaRelation() {
@@ -81,10 +81,10 @@ public class RelationTest extends AbstractTest {
 		Vertex vehicleHaveSameOwnerAsVehicle = root.addInstance("VehicleHaveSameOwnerAsVehicle", vehicle, vehicle);
 		assert vehicleHaveSameOwnerAsVehicle.isInstanceOf(metaRelation);
 		Vertex myVehicleHaveSameOwnerAsVehicle = vehicleHaveSameOwnerAsVehicle.addInstance("myVehicleHaveSameOwnerAsVehicle", car, caravane);
-		List<Vertex> components = myVehicleHaveSameOwnerAsVehicle.getComposites();
-		assert components.size() == 2 : components.size();
-		assert components.contains(caravane) : components;
-		assert components.contains(car) : components;
+		List<Vertex> composites = myVehicleHaveSameOwnerAsVehicle.getComponents();
+		assert composites.size() == 2 : composites.size();
+		assert composites.contains(caravane) : composites;
+		assert composites.contains(car) : composites;
 	}
 
 }

@@ -24,8 +24,8 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngin
 
 	private transient Map<T, Dependencies<T>> inheritingsDependenciesMap;
 	private transient Map<T, Dependencies<T>> instancesDependenciesMap;
-	private transient Map<T, Map<T, Dependencies<T>>> metaComponentsDependenciesMap;
-	private transient Map<T, Map<T, Dependencies<T>>> superComponentsDependenciesMap;
+	private transient Map<T, Map<T, Dependencies<T>>> metaCompositesDependenciesMap;
+	private transient Map<T, Map<T, Dependencies<T>>> superCompositesDependenciesMap;
 
 	protected Set<T> adds = new LinkedHashSet<>();
 	protected Set<T> removes = new LinkedHashSet<>();
@@ -33,8 +33,8 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngin
 	public void clear() {
 		inheritingsDependenciesMap = new HashMap<>();
 		instancesDependenciesMap = new HashMap<>();
-		metaComponentsDependenciesMap = new HashMap<>();
-		superComponentsDependenciesMap = new HashMap<>();
+		metaCompositesDependenciesMap = new HashMap<>();
+		superCompositesDependenciesMap = new HashMap<>();
 		adds = new LinkedHashSet<>();
 		removes = new LinkedHashSet<>();
 	}
@@ -168,37 +168,37 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngin
 		return unIndex(inheritingsDependenciesMap, () -> subContext.getInheritings(generic).stream(), generic, inheriting);
 	}
 
-	Snapshot<T> getComponents(T generic) {
+	Snapshot<T> getComposites(T generic) {
 		return () -> {
-			Map<T, Dependencies<T>> dependencies = metaComponentsDependenciesMap.get(generic);
-			return dependencies == null ? Collections.emptyIterator() : Statics.concat(metaComponentsDependenciesMap.get(generic).entrySet().stream(), x -> x.getValue().stream()).iterator();
+			Map<T, Dependencies<T>> dependencies = metaCompositesDependenciesMap.get(generic);
+			return dependencies == null ? Collections.emptyIterator() : Statics.concat(metaCompositesDependenciesMap.get(generic).entrySet().stream(), x -> x.getValue().stream()).iterator();
 		};
 	}
 
 	@Override
-	Snapshot<T> getMetaComponents(T generic, T meta) {
-		return getIndex(metaComponentsDependenciesMap, () -> subContext.getMetaComponents(generic, meta).stream(), generic, meta);
+	Snapshot<T> getMetaComposites(T generic, T meta) {
+		return getIndex(metaCompositesDependenciesMap, () -> subContext.getMetaComposites(generic, meta).stream(), generic, meta);
 	}
 
 	@Override
-	Snapshot<T> getSuperComponents(T generic, T superT) {
-		return getIndex(superComponentsDependenciesMap, () -> subContext.getSuperComponents(generic, superT).stream(), generic, superT);
+	Snapshot<T> getSuperComposites(T generic, T superT) {
+		return getIndex(superCompositesDependenciesMap, () -> subContext.getSuperComposites(generic, superT).stream(), generic, superT);
 	}
 
-	private T indexByMeta(T generic, T meta, T composite) {
-		return index(metaComponentsDependenciesMap, () -> subContext.getMetaComponents(generic, meta).stream(), generic, meta, composite);
+	private T indexByMeta(T generic, T meta, T component) {
+		return index(metaCompositesDependenciesMap, () -> subContext.getMetaComposites(generic, meta).stream(), generic, meta, component);
 	}
 
-	private T indexBySuper(T generic, T superT, T composite) {
-		return index(superComponentsDependenciesMap, () -> subContext.getSuperComponents(generic, superT).stream(), generic, superT, composite);
+	private T indexBySuper(T generic, T superT, T component) {
+		return index(superCompositesDependenciesMap, () -> subContext.getSuperComposites(generic, superT).stream(), generic, superT, component);
 	}
 
-	private boolean unIndexByMeta(T generic, T meta, T composite) {
-		return unIndex(metaComponentsDependenciesMap, () -> subContext.getMetaComponents(generic, meta).stream(), generic, meta, composite);
+	private boolean unIndexByMeta(T generic, T meta, T component) {
+		return unIndex(metaCompositesDependenciesMap, () -> subContext.getMetaComposites(generic, meta).stream(), generic, meta, component);
 	}
 
-	private boolean unIndexBySuper(T generic, T superT, T composite) {
-		return unIndex(superComponentsDependenciesMap, () -> subContext.getSuperComponents(generic, superT).stream(), generic, superT, composite);
+	private boolean unIndexBySuper(T generic, T superT, T component) {
+		return unIndex(superCompositesDependenciesMap, () -> subContext.getSuperComposites(generic, superT).stream(), generic, superT, component);
 	}
 
 	private static <T> Snapshot<T> getIndex(Map<T, Map<T, Dependencies<T>>> multiMap, Supplier<Stream<T>> subStreamSupplier, T generic, T index) {
@@ -211,20 +211,20 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngin
 		return dependenciesByIndex;
 	}
 
-	private static <T> T index(Map<T, Map<T, Dependencies<T>>> multiMap, Supplier<Stream<T>> subStreamSupplier, T generic, T index, T composite) {
-		return ((Dependencies<T>) getIndex(multiMap, subStreamSupplier, generic, index)).set(composite);
+	private static <T> T index(Map<T, Map<T, Dependencies<T>>> multiMap, Supplier<Stream<T>> subStreamSupplier, T generic, T index, T component) {
+		return ((Dependencies<T>) getIndex(multiMap, subStreamSupplier, generic, index)).set(component);
 	}
 
-	private static <T> boolean unIndex(Map<T, Map<T, Dependencies<T>>> multiMap, Supplier<Stream<T>> subStreamSupplier, T generic, T index, T composite) {
-		return ((Dependencies<T>) getIndex(multiMap, subStreamSupplier, generic, index)).remove(composite);
+	private static <T> boolean unIndex(Map<T, Map<T, Dependencies<T>>> multiMap, Supplier<Stream<T>> subStreamSupplier, T generic, T index, T component) {
+		return ((Dependencies<T>) getIndex(multiMap, subStreamSupplier, generic, index)).remove(component);
 	}
 
 	T plug(T generic) {
 		T result = indexInstance(generic.getMeta(), generic);
 		assert result == generic;
 		generic.getSupers().forEach(superGeneric -> indexInheriting(superGeneric, generic));
-		generic.getComposites().stream().filter(composite -> !generic.equals(composite)).forEach(composite -> indexByMeta(composite, generic.getMeta(), generic));
-		generic.getSupers().forEach(superGeneric -> generic.getComposites().stream().filter(composite -> !generic.equals(composite)).forEach(composite -> indexBySuper(composite, superGeneric, generic)));
+		generic.getComponents().stream().filter(component -> !generic.equals(component)).forEach(component -> indexByMeta(component, generic.getMeta(), generic));
+		generic.getSupers().forEach(superGeneric -> generic.getComponents().stream().filter(component -> !generic.equals(component)).forEach(component -> indexBySuper(component, superGeneric, generic)));
 		simpleAdd(generic);
 		return result;
 	}
@@ -234,8 +234,8 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngin
 		if (!result)
 			getEngine().discardWithException(new NotFoundException(generic.info()));
 		generic.getSupers().forEach(superGeneric -> unIndexInheriting(superGeneric, generic));
-		generic.getComposites().stream().filter(composite -> !generic.equals(composite)).forEach(composite -> unIndexByMeta(composite, generic.getMeta(), generic));
-		generic.getSupers().forEach(superGeneric -> generic.getComposites().stream().filter(composite -> !generic.equals(composite)).forEach(composite -> unIndexBySuper(composite, superGeneric, generic)));
+		generic.getComponents().stream().filter(component -> !generic.equals(component)).forEach(component -> unIndexByMeta(component, generic.getMeta(), generic));
+		generic.getSupers().forEach(superGeneric -> generic.getComponents().stream().filter(component -> !generic.equals(component)).forEach(component -> unIndexBySuper(component, superGeneric, generic)));
 		return result && simpleRemove(generic);
 	}
 

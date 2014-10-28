@@ -52,14 +52,14 @@ class InheritanceComputer<T extends AbstractVertex<T, U>, U extends DefaultRoot<
 		}
 
 		private Stream<T> baseSupersStream() {
-			return localBase.getSupers().stream().filter(next -> /* base.getMeta().equals(next.getMeta()) && */origin.isComponentOf(next));
+			return localBase.getSupers().stream().filter(next -> /* base.getMeta().equals(next.getMeta()) && */origin.isCompositeOf(next));
 		}
 
 		private Stream<T> fromAboveStream() {
-			if (!origin.isComponentOf(localBase))
+			if (!origin.isCompositeOf(localBase))
 				return Stream.empty();
 			if (baseSupersStream().count() == 0)
-				return localBase.isRoot() || !origin.isComponentOf(localBase.getMeta()) ? Stream.of(origin) : getInheringsStream(localBase.getMeta());
+				return localBase.isRoot() || !origin.isCompositeOf(localBase.getMeta()) ? Stream.of(origin) : getInheringsStream(localBase.getMeta());
 			return Statics.concat(baseSupersStream(), superVertex -> getInheringsStream(superVertex)).distinct();
 		}
 
@@ -68,9 +68,9 @@ class InheritanceComputer<T extends AbstractVertex<T, U>, U extends DefaultRoot<
 		}
 
 		private Stream<T> getStream(final T holder) {
-			if (holder.getLevel() != level || localBase.getSuperComponents(holder).iterator().hasNext())
+			if (holder.getLevel() != level || localBase.getSuperComposites(holder).iterator().hasNext())
 				add(holder);
-			Stream<T> indexStream = Stream.concat(holder.getLevel() < level ? localBase.getMetaComponents(holder).stream() : Stream.empty(), localBase.getSuperComponents(holder).stream());
+			Stream<T> indexStream = Stream.concat(holder.getLevel() < level ? localBase.getMetaComposites(holder).stream() : Stream.empty(), localBase.getSuperComposites(holder).stream());
 			return Stream.concat(isTerminal() && contains(holder) ? Stream.empty() : Stream.of(holder), projectStream(indexStream));
 		}
 	}

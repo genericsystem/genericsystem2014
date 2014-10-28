@@ -28,9 +28,9 @@ public abstract class AbstractContext<T extends AbstractGeneric<T, U, V, W>, U e
 
 	abstract Snapshot<T> getInstances(T generic);
 
-	abstract Snapshot<T> getMetaComponents(T generic, T meta);
+	abstract Snapshot<T> getMetaComposites(T generic, T meta);
 
-	abstract Snapshot<T> getSuperComponents(T generic, T superT);
+	abstract Snapshot<T> getSuperComposites(T generic, T superT);
 
 	abstract V unwrap(T generic);
 

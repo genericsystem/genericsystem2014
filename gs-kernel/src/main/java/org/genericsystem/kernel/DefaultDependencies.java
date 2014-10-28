@@ -14,7 +14,7 @@ public interface DefaultDependencies<T extends AbstractVertex<T, U>, U extends D
 	@Override
 	default boolean isAncestorOf(T dependency) {
 		return equals(dependency) || (!dependency.isRoot() && isAncestorOf(dependency.getMeta())) || dependency.getSupers().stream().anyMatch(this::isAncestorOf)
-				|| dependency.getComposites().stream().filter(composite -> !dependency.equals(composite)).anyMatch(this::isAncestorOf);
+				|| dependency.getComponents().stream().filter(component -> !dependency.equals(component)).anyMatch(this::isAncestorOf);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -30,37 +30,37 @@ public interface DefaultDependencies<T extends AbstractVertex<T, U>, U extends D
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T addInstance(List<T> overrides, Serializable value, T... composites) {
-		return ((T) this).bindInstance(null, true, overrides, value, Arrays.asList(composites));
+	default T addInstance(List<T> overrides, Serializable value, T... components) {
+		return ((T) this).bindInstance(null, true, overrides, value, Arrays.asList(components));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T setInstance(List<T> overrides, Serializable value, T... composites) {
-		return ((T) this).bindInstance(null, false, overrides, value, Arrays.asList(composites));
+	default T setInstance(List<T> overrides, Serializable value, T... components) {
+		return ((T) this).bindInstance(null, false, overrides, value, Arrays.asList(components));
 	}
 
 	@Override
-	default T getInstance(T superT, Serializable value, @SuppressWarnings("unchecked") T... components) {
-		return getInstance(Collections.singletonList(superT), value, components);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	default T getInstance(Serializable value, T... components) {
-		return getInstance(Collections.emptyList(), value, components);
+	default T getInstance(T superT, Serializable value, @SuppressWarnings("unchecked") T... composites) {
+		return getInstance(Collections.singletonList(superT), value, composites);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T getInstance(List<T> overrides, Serializable value, T... composites) {
-		T adjustedMeta = ((T) this).adjustMeta(value, Arrays.asList(composites));
-		return adjustedMeta.getDirectInstance(overrides, value, Arrays.asList(composites));
+	default T getInstance(Serializable value, T... composites) {
+		return getInstance(Collections.emptyList(), value, composites);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T getInstance(List<T> overrides, Serializable value, T... components) {
+		T adjustedMeta = ((T) this).adjustMeta(value, Arrays.asList(components));
+		return adjustedMeta.getDirectInstance(overrides, value, Arrays.asList(components));
 	}
 
 	@SuppressWarnings("unchecked")
-	default Optional<T> getInstanceInAll(List<T> overrides, Serializable value, T... composites) {
-		Stream<T> adjustedMetas = Stream.of((T) this).flatMap(meta -> meta.getInheritings().stream().filter(inheriting -> ((T) DefaultDependencies.this).isAdjusted(inheriting, value, Arrays.asList(composites))));
-		return adjustedMetas.map(adjustedMeta -> adjustedMeta.getDirectInstance(overrides, value, Arrays.asList(composites))).findFirst();
+	default Optional<T> getInstanceInAll(List<T> overrides, Serializable value, T... components) {
+		Stream<T> adjustedMetas = Stream.of((T) this).flatMap(meta -> meta.getInheritings().stream().filter(inheriting -> ((T) DefaultDependencies.this).isAdjusted(inheriting, value, Arrays.asList(components))));
+		return adjustedMetas.map(adjustedMeta -> adjustedMeta.getDirectInstance(overrides, value, Arrays.asList(components))).findFirst();
 	}
 }

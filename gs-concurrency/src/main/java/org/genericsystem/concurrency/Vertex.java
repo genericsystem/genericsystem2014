@@ -9,8 +9,8 @@ public class Vertex extends AbstractVertex<Vertex, Root> implements DefaultVerte
 
 	private final Dependencies<Vertex> instances = buildDependencies();
 	private final Dependencies<Vertex> inheritings = buildDependencies();
-	private final Dependencies<DependenciesEntry<Vertex>> superComposites = builMultidDependencies();
-	private final Dependencies<DependenciesEntry<Vertex>> metaComposites = builMultidDependencies();
+	private final Dependencies<DependenciesEntry<Vertex>> superComponents = builMultidDependencies();
+	private final Dependencies<DependenciesEntry<Vertex>> metaComponents = builMultidDependencies();
 
 	@Override
 	protected Dependencies<Vertex> getInstancesDependencies() {
@@ -23,13 +23,13 @@ public class Vertex extends AbstractVertex<Vertex, Root> implements DefaultVerte
 	}
 
 	@Override
-	protected Dependencies<DependenciesEntry<Vertex>> getMetaComponentsDependencies() {
-		return metaComposites;
+	protected Dependencies<DependenciesEntry<Vertex>> getMetaCompositesDependencies() {
+		return metaComponents;
 	}
 
 	@Override
-	protected Dependencies<DependenciesEntry<Vertex>> getSuperComponentsDependencies() {
-		return superComposites;
+	protected Dependencies<DependenciesEntry<Vertex>> getSuperCompositesDependencies() {
+		return superComponents;
 	}
 
 	@Override

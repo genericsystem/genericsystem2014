@@ -32,6 +32,6 @@ public interface DefaultEngine<T extends AbstractGeneric<T, U, V, W>, U extends 
 		getCurrentCache().rollbackWithException(exception);
 	}
 
-	T getOrBuildT(Class<?> clazz, boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> components);
+	T getOrBuildT(Class<?> clazz, boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> composites);
 
 }

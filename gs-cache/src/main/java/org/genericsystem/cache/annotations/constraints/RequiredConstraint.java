@@ -16,9 +16,9 @@ import java.lang.annotation.Target;
 public @interface RequiredConstraint {
 
 	/**
-	 * Returns the positions of the components.
+	 * Returns the positions of the composites.
 	 * 
-	 * @return An array of component position.
+	 * @return An array of composite position.
 	 */
 	int[] value() default { 0 };
 }

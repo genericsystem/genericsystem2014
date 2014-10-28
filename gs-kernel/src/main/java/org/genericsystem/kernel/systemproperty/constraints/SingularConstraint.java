@@ -11,7 +11,7 @@ public class SingularConstraint implements Constraint {
 
 	@Override
 	public <T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> void check(DefaultVertex<T, U> modified, DefaultVertex<T, U> attribute) throws ConstraintViolationException {
-		T base = modified.getComposites().get(Statics.BASE_POSITION);
+		T base = modified.getComponents().get(Statics.BASE_POSITION);
 		if (base.getHolders((T) attribute).size() > 1)
 			throw new SingularConstraintViolationException(modified + " has more than one " + attribute);
 	}

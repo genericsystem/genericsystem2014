@@ -16,8 +16,8 @@ public class AttributesTest extends AbstractTest {
 		assert Engine.getInstance("Power", vehicle) == power;
 		// assert Engine.selectInstances("Power").count() == 1;
 		// assert Engine.selectInstances("Power").anyMatch(x -> x.equals(power));
-		assert power.getComposites().size() == 1;
-		assert vehicle.equals(power.getComposites().get(0));
+		assert power.getComponents().size() == 1;
+		assert vehicle.equals(power.getComponents().get(0));
 		assert power.isAlive();
 	}
 
@@ -31,12 +31,12 @@ public class AttributesTest extends AbstractTest {
 		// assert Engine.selectInstances("Power").count() == 2;
 		// assert Engine.selectInstances("Power").anyMatch(x -> x.equals(powerType));
 		// assert Engine.selectInstances("Power").anyMatch(x -> x.equals(power));
-		assert power.getComposites().size() == 1;
-		assert vehicle.equals(power.getComposites().get(0));
+		assert power.getComponents().size() == 1;
+		assert vehicle.equals(power.getComponents().get(0));
 		assert power.isAlive();
 	}
 
-	// public void test003_isDependencyOf_ByComposite() {
+	// public void test003_isDependencyOf_ByComponent() {
 	// Engine Engine = new Engine();
 	// Generic vehicle = Engine.addInstance("Vehicle");
 	// Generic car = Engine.addInstance(vehicle, "Car");

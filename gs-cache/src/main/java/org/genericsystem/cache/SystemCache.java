@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.genericsystem.cache.annotations.Composites;
+import org.genericsystem.cache.annotations.Components;
 import org.genericsystem.cache.annotations.Meta;
 import org.genericsystem.cache.annotations.value.BooleanValue;
 import org.genericsystem.cache.annotations.value.IntValue;
@@ -42,7 +42,7 @@ public class SystemCache<T extends AbstractGeneric<T, ?, ?, ?>> extends HashMap<
 			assert systemProperty.isAlive();
 			return systemProperty;
 		}
-		T result = setMeta(clazz).bindInstance(clazz, false, setOverrides(clazz), findValue(clazz), setComposites(clazz));
+		T result = setMeta(clazz).bindInstance(clazz, false, setOverrides(clazz), findValue(clazz), setComponents(clazz));
 		put(clazz, result);
 		return result;
 	}
@@ -77,13 +77,13 @@ public class SystemCache<T extends AbstractGeneric<T, ?, ?, ?>> extends HashMap<
 		return clazz;
 	}
 
-	private List<T> setComposites(Class<?> clazz) {
-		List<T> composites = new ArrayList<>();
-		Composites compositesAnnotation = clazz.getAnnotation(Composites.class);
-		if (compositesAnnotation != null)
-			for (Class<?> componentClass : compositesAnnotation.value())
-				composites.add(set(componentClass));
-		return composites;// root.coerceToArray(components.toArray());
+	private List<T> setComponents(Class<?> clazz) {
+		List<T> components = new ArrayList<>();
+		Components componentsAnnotation = clazz.getAnnotation(Components.class);
+		if (componentsAnnotation != null)
+			for (Class<?> compositeClass : componentsAnnotation.value())
+				components.add(set(compositeClass));
+		return components;// root.coerceToArray(composites.toArray());
 	}
 
 }

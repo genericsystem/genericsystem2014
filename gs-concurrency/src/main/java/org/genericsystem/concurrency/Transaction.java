@@ -62,8 +62,8 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Defaul
 				writeLockAndCheckMvcc(add.getMeta());
 				for (T superT : add.getSupers())
 					writeLockAndCheckMvcc(superT);
-				for (T component : add.getComposites())
-					writeLockAndCheckMvcc(component);
+				for (T composite : add.getComponents())
+					writeLockAndCheckMvcc(composite);
 				writeLockAndCheckMvcc(add);
 			}
 		}

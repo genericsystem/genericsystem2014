@@ -13,8 +13,8 @@ public class TreeTest extends AbstractTest {
 		Root root = new Root();
 		Vertex tree = root.addTree("Tree");
 		assert root.getMetaAttribute().equals(tree.getMeta());
-		assert tree.getComposites().contains(tree);
-		assert tree.getComposites().size() == 1;
+		assert tree.getComponents().contains(tree);
+		assert tree.getComponents().size() == 1;
 		assert tree.getSupers().isEmpty();
 
 		// TODO: Ajouter un atrribut sur une instance
@@ -26,8 +26,8 @@ public class TreeTest extends AbstractTest {
 		Vertex rootNode = tree.addRoot("rootNode");
 
 		assert tree.equals(rootNode.getMeta()) : rootNode.detailedInfo();
-		assert rootNode.getComposites().contains(rootNode);
-		assert rootNode.getComposites().size() == 1;
+		assert rootNode.getComponents().contains(rootNode);
+		assert rootNode.getComponents().size() == 1;
 		assert rootNode.getSupers().isEmpty();
 
 		assert tree.getInstances().contains(rootNode);
@@ -42,8 +42,8 @@ public class TreeTest extends AbstractTest {
 		Vertex tree = root.addTree("tree");
 		Vertex html = tree.addRoot("html");
 		assert html.getMeta().equals(tree);
-		assert html.getComposites().contains(html);
-		assert html.getComposites().size() == 1;
+		assert html.getComponents().contains(html);
+		assert html.getComponents().size() == 1;
 		assert html.getSupers().isEmpty();
 	}
 
@@ -119,11 +119,11 @@ public class TreeTest extends AbstractTest {
 		Vertex div = body.addSubNode("div");
 		div.setHolder(treeColor, "divIsGreen", green);
 
-		assert tree.getHolders(treeColor).stream().findFirst().get().getComposites().get(Statics.TARGET_POSITION).equals(blue);
-		assert html.getHolders(treeColor).stream().findFirst().get().getComposites().get(Statics.TARGET_POSITION).equals(red);
-		assert head.getHolders(treeColor).stream().findFirst().get().getComposites().get(Statics.TARGET_POSITION).equals(blue);
-		assert body.getHolders(treeColor).stream().findFirst().get().getComposites().get(Statics.TARGET_POSITION).equals(blue);
-		assert div.getHolders(treeColor).stream().findFirst().get().getComposites().get(Statics.TARGET_POSITION).equals(green);
+		assert tree.getHolders(treeColor).stream().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(blue);
+		assert html.getHolders(treeColor).stream().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(red);
+		assert head.getHolders(treeColor).stream().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(blue);
+		assert body.getHolders(treeColor).stream().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(blue);
+		assert div.getHolders(treeColor).stream().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(green);
 	}
 
 	public void test008() {
@@ -146,10 +146,10 @@ public class TreeTest extends AbstractTest {
 		Vertex div = body.addInheritingSubNode("div");
 		div.setHolder(treeColor, "divIsGreen", green);
 
-		assert tree.getHolders(treeColor).stream().findFirst().get().getComposites().get(Statics.TARGET_POSITION).equals(blue);
-		assert html.getHolders(treeColor).stream().findFirst().get().getComposites().get(Statics.TARGET_POSITION).equals(red);
-		assert head.getHolders(treeColor).stream().findFirst().get().getComposites().get(Statics.TARGET_POSITION).equals(red);
-		assert body.getHolders(treeColor).stream().findFirst().get().getComposites().get(Statics.TARGET_POSITION).equals(red);
-		assert div.getHolders(treeColor).stream().findFirst().get().getComposites().get(Statics.TARGET_POSITION).equals(green);
+		assert tree.getHolders(treeColor).stream().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(blue);
+		assert html.getHolders(treeColor).stream().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(red);
+		assert head.getHolders(treeColor).stream().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(red);
+		assert body.getHolders(treeColor).stream().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(red);
+		assert div.getHolders(treeColor).stream().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(green);
 	}
 }

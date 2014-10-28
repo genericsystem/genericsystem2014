@@ -22,17 +22,17 @@ public class VertexTest extends AbstractTest {
 		assert engine.getInstances().stream().anyMatch(g -> g.equals(vehicle));
 	}
 
-	public void test001_getMetaComposites() {
+	public void test001_getMetaComponents() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic powerVehicle = engine.addInstance("power", vehicle);
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		Generic myVehicle123 = powerVehicle.addInstance("123", myVehicle);
 
-		assert myVehicle.getMetaComponents(powerVehicle).stream().anyMatch(g -> g.equals(myVehicle123));
+		assert myVehicle.getMetaComposites(powerVehicle).stream().anyMatch(g -> g.equals(myVehicle123));
 	}
 
-	public void test001_getSuperComposites() {
+	public void test001_getSuperComponents() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic powerVehicle = engine.addInstance("power", vehicle);
@@ -40,10 +40,10 @@ public class VertexTest extends AbstractTest {
 		Generic vehicle256 = powerVehicle.addInstance("256", vehicle);
 		Generic myVehicle123 = powerVehicle.addInstance(vehicle256, "123", myVehicle);
 
-		assert myVehicle.getSuperComponents(vehicle256).contains(myVehicle123);
+		assert myVehicle.getSuperComposites(vehicle256).contains(myVehicle123);
 	}
 
-	public void test002_getSuperComposites() {
+	public void test002_getSuperComponents() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic powerVehicle = engine.addInstance("power", vehicle);
@@ -52,7 +52,7 @@ public class VertexTest extends AbstractTest {
 		Generic vehicle256 = powerVehicle.addInstance("256", vehicle);
 		Generic myVehicle123 = powerVehicle.addInstance("123", myVehicle);
 
-		assert myVehicle.getSuperComponents(vehicle256).contains(myVehicle123);
+		assert myVehicle.getSuperComposites(vehicle256).contains(myVehicle123);
 	}
 
 	// public void test() {
@@ -77,11 +77,11 @@ public class VertexTest extends AbstractTest {
 	// assert engine.getInstances().containsAll(Arrays.asList(vehicle, car));
 	// assert car.getInstances().contains(myBmw) : car.getInstances() + car.info();
 	// assert power.getInstances().contains(v233);
-	// assert car.getMetaComposites(power.getMeta()).contains(power);
+	// assert car.getMetaComponents(power.getMeta()).contains(power);
 	// assert car.getSupersStream().findFirst().get() == vehicle : car.getSupersStream().findFirst().get().info();
 	// assert car.getSupersStream().anyMatch(vehicle::equals);
 	// assert vehicle.getInheritings().contains(car);
-	// assert myBmw.getMetaComposites(v233.getMeta()).contains(v233);
+	// assert myBmw.getMetaComponents(v233.getMeta()).contains(v233);
 	// assert myBmw.isInstanceOf(car);
 	// assert myBmw.isInstanceOf(vehicle);
 	// assert !myBmw.isInstanceOf(engine);

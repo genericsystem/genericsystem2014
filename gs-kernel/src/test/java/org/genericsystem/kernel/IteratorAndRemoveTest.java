@@ -72,9 +72,9 @@ public class IteratorAndRemoveTest extends AbstractTest {
 		Vertex power = car.addAttribute("Power");
 		Vertex doors = car.addAttribute("Doors");
 
-		for (Vertex v : car.getComposites())
+		for (Vertex v : car.getComponents())
 			v.remove();
-		assert car.getComposites().size() == 0;
+		assert car.getComponents().size() == 0;
 	}
 
 	public void test007_IterateAndRemoveInLoop_attributes() {
@@ -84,11 +84,11 @@ public class IteratorAndRemoveTest extends AbstractTest {
 		Vertex power = car.addAttribute("Power");
 		Vertex doors = car.addAttribute("Doors");
 
-		for (Vertex v : car.getComposites()) {
+		for (Vertex v : car.getComponents()) {
 			color.remove();
 			power.remove();
 			doors.remove();
 		}
-		assert car.getComposites().size() == 0;
+		assert car.getComponents().size() == 0;
 	}
 }
