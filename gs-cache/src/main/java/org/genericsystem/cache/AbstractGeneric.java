@@ -4,14 +4,12 @@ import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.cache.annotations.InstanceClass;
 import org.genericsystem.cache.annotations.SystemGeneric;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
-import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint.CheckingType;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends DefaultRoot<V, W>> extends AbstractVertex<T, U> implements DefaultGeneric<T, U, V, W> {
@@ -152,12 +150,12 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	}
 
 	@Override
-	protected Dependencies<DependenciesEntry<T>> getMetaCompositesDependencies() {
+	protected DependenciesMap<T> getMetaCompositesDependencies() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	protected Dependencies<DependenciesEntry<T>> getSuperCompositesDependencies() {
+	protected DependenciesMap<T> getSuperCompositesDependencies() {
 		throw new UnsupportedOperationException();
 	}
 

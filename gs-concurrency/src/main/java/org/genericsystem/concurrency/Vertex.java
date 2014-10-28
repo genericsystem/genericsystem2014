@@ -1,16 +1,14 @@
 package org.genericsystem.concurrency;
 
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Dependencies;
-import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 
 public class Vertex extends AbstractVertex implements DefaultVertex {
 
 	private final Dependencies<Vertex> instances = buildDependencies();
 	private final Dependencies<Vertex> inheritings = buildDependencies();
-	private final Dependencies<DependenciesEntry<Vertex>> superComponents = builMultidDependencies();
-	private final Dependencies<DependenciesEntry<Vertex>> metaComponents = builMultidDependencies();
+	private final DependenciesMap<Vertex> superComponents = buildDependenciesMap();
+	private final DependenciesMap<Vertex> metaComponents = buildDependenciesMap();
 
 	@Override
 	protected Dependencies<Vertex> getInstancesDependencies() {
@@ -23,12 +21,12 @@ public class Vertex extends AbstractVertex implements DefaultVertex {
 	}
 
 	@Override
-	protected Dependencies<DependenciesEntry<Vertex>> getMetaCompositesDependencies() {
+	protected DependenciesMap<Vertex> getMetaCompositesDependencies() {
 		return metaComponents;
 	}
 
 	@Override
-	protected Dependencies<DependenciesEntry<Vertex>> getSuperCompositesDependencies() {
+	protected DependenciesMap<Vertex> getSuperCompositesDependencies() {
 		return superComponents;
 	}
 
@@ -42,10 +40,9 @@ public class Vertex extends AbstractVertex implements DefaultVertex {
 		return new Vertex[dim];
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	protected <U> Dependencies<U> buildDependencies() {
-		return (Dependencies<U>) new AbstractDependencies<Vertex>() {
+	protected Dependencies<Vertex> buildDependencies() {
+		return new AbstractDependencies<Vertex>() {
 
 			@Override
 			public LifeManager getLifeManager() {
@@ -59,8 +56,9 @@ public class Vertex extends AbstractVertex implements DefaultVertex {
 		};
 	}
 
-	protected <U> Dependencies<U> builMultidDependencies() {
-		return super.buildDependencies();
+	@Override
+	protected DependenciesMap<Vertex> buildDependenciesMap() {
+		return super.buildDependenciesMap();
 	}
 
 }

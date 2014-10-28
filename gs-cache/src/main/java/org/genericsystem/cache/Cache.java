@@ -12,9 +12,9 @@ import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.AbstractVertex;
+import org.genericsystem.kernel.AbstractVertex.DependenciesMap;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
-import org.genericsystem.kernel.DependenciesImpl;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint.CheckingType;
 
 public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends DefaultRoot<V, W>> extends AbstractContext<T, U, V, W> {
@@ -200,15 +200,6 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngin
 
 	private boolean unIndexBySuper(T generic, T superT, T component) {
 		return unIndex(superCompositesDependencies, () -> subContext.getSuperComposites(generic, superT).get(), generic, superT, component);
-	}
-
-	public static class DependenciesMap<T> extends DependenciesImpl<DependenciesEntry<T>> implements Dependencies<DependenciesEntry<T>> {
-		Dependencies<T> getByIndex(T index) {
-			for (DependenciesEntry<T> entry : this)
-				if (index.equals(entry.getKey()))
-					return entry.getValue();
-			return null;
-		}
 	}
 
 	private static <T> Snapshot<T> getIndex(Map<T, DependenciesMap<T>> multiMap, Supplier<Stream<T>> subStreamSupplier, T generic, T index) {

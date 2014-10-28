@@ -14,7 +14,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
@@ -95,9 +94,9 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 
 	protected abstract Dependencies<T> getInheritingsDependencies();
 
-	protected abstract Dependencies<DependenciesEntry<T>> getMetaCompositesDependencies();
+	protected abstract DependenciesMap<T> getMetaCompositesDependencies();
 
-	protected abstract Dependencies<DependenciesEntry<T>> getSuperCompositesDependencies();
+	protected abstract DependenciesMap<T> getSuperCompositesDependencies();
 
 	@SuppressWarnings("unchecked")
 	protected T init(boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> composites) {
@@ -120,8 +119,13 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 	}
 
 	@SuppressWarnings("static-method")
-	protected <H> Dependencies<H> buildDependencies() {
+	protected Dependencies<T> buildDependencies() {
 		return new DependenciesImpl<>();
+	}
+
+	@SuppressWarnings("static-method")
+	protected DependenciesMap<T> buildDependenciesMap() {
+		return new DependenciesMap<>();
 	}
 
 	protected void forceRemove() {
@@ -483,7 +487,16 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 		return index(getSuperCompositesDependencies(), superVertex, component);
 	}
 
-	private static <T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> T index(Dependencies<DependenciesEntry<T>> multimap, T index, T component) {
+	public static class DependenciesMap<T> extends DependenciesImpl<DependenciesEntry<T>> implements Dependencies<DependenciesEntry<T>> {
+		public Dependencies<T> getByIndex(T index) {
+			for (DependenciesEntry<T> entry : this)
+				if (index.equals(entry.getKey()))
+					return entry.getValue();
+			return null;
+		}
+	}
+
+	private static <T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> T index(DependenciesMap<T> multimap, T index, T component) {
 		for (DependenciesEntry<T> entry : multimap)
 			if (index.equals(entry.getKey()))
 				return entry.getValue().set(component);
@@ -494,7 +507,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 		return result;
 	}
 
-	private static <T> boolean unIndex(Dependencies<DependenciesEntry<T>> multimap, T index, T component) {
+	private static <T> boolean unIndex(DependenciesMap<T> multimap, T index, T component) {
 		for (DependenciesEntry<T> entry : multimap)
 			if (index.equals(entry.getKey()))
 				return entry.getValue().remove(component);
@@ -553,8 +566,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {
-	}
+	public static class SystemMap {}
 
 	protected boolean equals(ISignature<?> meta, List<? extends ISignature<?>> supers, Serializable value, List<? extends ISignature<?>> components) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComponents().equals(components.stream().map(NULL_TO_THIS).collect(Collectors.toList())) && getSupers().equals(supers);
