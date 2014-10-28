@@ -5,7 +5,11 @@ import org.genericsystem.cache.annotations.InstanceClass;
 import org.genericsystem.cache.annotations.Meta;
 import org.genericsystem.cache.annotations.Supers;
 import org.genericsystem.cache.annotations.SystemGeneric;
+import org.genericsystem.cache.annotations.constraints.PropertyConstraint;
+import org.genericsystem.cache.annotations.constraints.RequiredConstraint;
+import org.genericsystem.cache.annotations.constraints.SingularConstraint;
 import org.genericsystem.cache.annotations.value.IntValue;
+import org.genericsystem.kernel.Statics;
 import org.testng.annotations.Test;
 
 @Test
@@ -309,6 +313,30 @@ public class AnnotationTest extends AbstractTest {
 		assert myTransformer.isInstanceOf(transformer);
 	}
 
+	public void test015_propertyConstraint() {
+		Engine engine = new Engine(Vehicle.class, Puissance.class);
+		Generic voiture = engine.find(Vehicle.class);
+		Generic puissance = engine.find(Puissance.class);
+
+		assert puissance.isPropertyConstraintEnabled();
+	}
+
+	public void test016_requiredConstraint() {
+		Engine engine = new Engine(Vehicle.class, Puissance.class);
+		Generic voiture = engine.find(Vehicle.class);
+		Generic puissance = engine.find(Puissance.class);
+
+		assert puissance.isRequiredConstraintEnabled(Statics.NO_POSITION);
+	}
+
+	public void test017_singularConstraint() {
+		Engine engine = new Engine(Vehicle.class, Puissance.class);
+		Generic voiture = engine.find(Vehicle.class);
+		Generic puissance = engine.find(Puissance.class);
+
+		assert puissance.isSingularConstraintEnabled(0);
+	}
+
 	@SystemGeneric
 	public static class Games extends Generic {
 	}
@@ -416,6 +444,15 @@ public class AnnotationTest extends AbstractTest {
 	@SystemGeneric
 	@Components(Vehicle.class)
 	public static class Power extends Generic {
+
+	}
+
+	@SystemGeneric
+	@Components(Vehicle.class)
+	@PropertyConstraint
+	@SingularConstraint(value = 0)
+	@RequiredConstraint
+	public static class Puissance extends Generic {
 
 	}
 
