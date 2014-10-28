@@ -11,6 +11,7 @@ public class Engine extends org.genericsystem.concurrency.Engine {
 
 	public Engine(Supplier<Cache> cacheSupplier, Serializable engineValue, Class<?>... userClasses) {
 		super(engineValue, userClasses);
+		assert cacheSupplier != null : "Unable to find the current cache. Did you miss to call start() method on it ?";
 		this.cacheSupplier = cacheSupplier;
 		getCurrentCache().stop();
 	}
@@ -20,9 +21,10 @@ public class Engine extends org.genericsystem.concurrency.Engine {
 		Cache cacheInThreadLocal = cacheLocal.get();
 		if (cacheInThreadLocal != null)
 			return cacheInThreadLocal;
-		if (cacheSupplier == null)
+		Cache cache = cacheSupplier.get();
+		if (cache == null)
 			throw new IllegalStateException("Unable to find the current cache. Did you miss to call start() method on it ?");
-		return cacheSupplier.get().start();
+		return cache;
 	}
 
 }
