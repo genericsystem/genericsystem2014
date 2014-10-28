@@ -4,15 +4,14 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Supplier;
 
 import org.genericsystem.cache.GenericsCache;
 import org.genericsystem.cache.SystemCache;
 import org.genericsystem.kernel.Statics;
 
-public class Engine extends Generic implements DefaultEngine<Generic, Engine, Vertex, Root> {
+public class Engine extends Generic implements DefaultEngine {
 
-	private final ThreadLocal<Cache<Generic, Engine, Vertex, Root>> cacheLocal = new ThreadLocal<>();
+	protected final ThreadLocal<Cache> cacheLocal = new ThreadLocal<>();
 
 	private final GenericsCache<Generic> genericsCache = new GenericsCache<>();
 	private final SystemCache<Generic> systemCache = new SystemCache<>(this);
@@ -23,35 +22,23 @@ public class Engine extends Generic implements DefaultEngine<Generic, Engine, Ve
 	}
 
 	public Engine(Serializable engineValue, Class<?>... userClasses) {
-		this(null, engineValue, userClasses);
-	}
-
-	public Engine(Supplier<Cache<Generic, Engine, Vertex, Root>> cacheSupplier, Serializable engineValue, Class<?>... userClasses) {
 		init(false, null, Collections.emptyList(), engineValue, Collections.emptyList());
 		root = buildRoot(engineValue);
 
-		Cache<Generic, Engine, Vertex, Root> cache = getCache(cacheSupplier);
+		Cache cache = newCache().start();
 		mountSystemProperties(cache);
 		for (Class<?> clazz : userClasses)
 			systemCache.set(clazz);
 		cache.flush();
-
 	}
 
-	private Cache<Generic, Engine, Vertex, Root> getCache(Supplier<Cache<Generic, Engine, Vertex, Root>> cacheSupplier) {
-		Cache<Generic, Engine, Vertex, Root> cacheInThreadLocal = cacheLocal.get();
-		if (cacheInThreadLocal != null)
-			return cacheInThreadLocal;
-		return cacheSupplier == null ? newCache().start() : cacheSupplier.get().start();
-	}
-
-	private void mountSystemProperties(Cache<Generic, Engine, Vertex, Root> cache) {
+	private void mountSystemProperties(Cache cache) {
 		Generic metaAttribute = setInstance(this, getValue(), coerceToTArray(this));
 		setInstance(SystemMap.class, coerceToTArray(this)).enablePropertyConstraint();
 		metaAttribute.disableReferentialIntegrity(Statics.BASE_POSITION);
 	}
 
-	Root buildRoot(Serializable value) {
+	private Root buildRoot(Serializable value) {
 		return new Root(this, value);
 	}
 
@@ -66,12 +53,12 @@ public class Engine extends Generic implements DefaultEngine<Generic, Engine, Ve
 	}
 
 	@Override
-	public Cache<Generic, Engine, Vertex, Root> start(org.genericsystem.cache.Cache<Generic, Engine, Vertex, Root> cache) {
+	public Cache start(org.genericsystem.cache.Cache<Generic, Engine, Vertex, Root> cache) {
 		if (!equals(cache.getEngine()))
 			throw new IllegalStateException();
 		// TODO KK
-		cacheLocal.set((Cache<Generic, Engine, Vertex, Root>) cache);
-		return (Cache<Generic, Engine, Vertex, Root>) cache;
+		cacheLocal.set((Cache) cache);
+		return (Cache) cache;
 	}
 
 	@Override
@@ -81,8 +68,8 @@ public class Engine extends Generic implements DefaultEngine<Generic, Engine, Ve
 	}
 
 	@Override
-	public Cache<Generic, Engine, Vertex, Root> getCurrentCache() {
-		Cache<Generic, Engine, Vertex, Root> currentCache = cacheLocal.get();
+	public Cache getCurrentCache() {
+		Cache currentCache = cacheLocal.get();
 		if (currentCache == null)
 			throw new IllegalStateException("Unable to find the current cache. Did you miss to call start() method on it ?");
 		return currentCache;

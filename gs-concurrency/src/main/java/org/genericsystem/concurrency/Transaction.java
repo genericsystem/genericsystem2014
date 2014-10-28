@@ -6,16 +6,16 @@ import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
 
-public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends DefaultRoot<V, W>> extends org.genericsystem.cache.Transaction<T, U, V, W> {
+public class Transaction extends org.genericsystem.cache.Transaction<Generic, Engine, Vertex, Root> {
 
 	private final long ts;
 
 	// TODO KK sould be protected
-	public Transaction(U engine) {
+	public Transaction(Engine engine) {
 		this(engine.unwrap().pickNewTs(), engine);
 	}
 
-	protected Transaction(long ts, U engine) {
+	protected Transaction(long ts, Engine engine) {
 		super(engine);
 		this.ts = ts;
 	}
@@ -25,13 +25,13 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Defaul
 	}
 
 	@Override
-	public boolean isAlive(T generic) {
-		V vertex = unwrap(generic);
+	public boolean isAlive(Generic generic) {
+		Vertex vertex = unwrap(generic);
 		return vertex != null && vertex.getLifeManager().isAlive(getTs());
 	}
 
 	@Override
-	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
+	protected void apply(Iterable<Generic> adds, Iterable<Generic> removes) throws ConcurrencyControlException, ConstraintViolationException {
 		synchronized (getEngine()) {
 			LockedLifeManager lockedLifeManager = new LockedLifeManager();
 			try {
@@ -44,7 +44,7 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Defaul
 	}
 
 	@Override
-	protected boolean simpleRemove(T generic) {
+	protected boolean simpleRemove(Generic generic) {
 		unwrap(generic).getLifeManager().kill(getTs());
 		getEngine().unwrap().getGarbageCollector().add(unwrap(generic));
 		vertices.put(generic, null);
@@ -55,21 +55,21 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Defaul
 
 		private static final long serialVersionUID = -8771313495837238881L;
 
-		private void writeLockAllAndCheckMvcc(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
-			for (T remove : removes)
+		private void writeLockAllAndCheckMvcc(Iterable<Generic> adds, Iterable<Generic> removes) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
+			for (Generic remove : removes)
 				writeLockAndCheckMvcc(remove);
-			for (T add : adds) {
+			for (Generic add : adds) {
 				writeLockAndCheckMvcc(add.getMeta());
-				for (T superT : add.getSupers())
+				for (Generic superT : add.getSupers())
 					writeLockAndCheckMvcc(superT);
-				for (T composite : add.getComponents())
+				for (Generic composite : add.getComponents())
 					writeLockAndCheckMvcc(composite);
 				writeLockAndCheckMvcc(add);
 			}
 		}
 
-		private void writeLockAndCheckMvcc(T generic) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
-			V vertex = unwrap(generic);
+		private void writeLockAndCheckMvcc(Generic generic) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
+			Vertex vertex = unwrap(generic);
 			if (vertex != null) {
 				LifeManager manager = vertex.getLifeManager();
 				if (!contains(manager)) {

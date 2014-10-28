@@ -1,6 +1,7 @@
 package org.genericsystem.cdi;
 
 import javax.inject.Inject;
+
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.cdi.event.EventLauncher;
 import org.genericsystem.concurrency.Engine;
@@ -30,9 +31,9 @@ public abstract class AbstractTest extends Arquillian {
 	private static void createBeansXml(JavaArchive javaArchive) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("<beans xmlns=\"http://java.sun.com/xml/ns/javaee\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\" http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/beans_1_0.xsd\">");
-		// stringBuilder.append("<specializes> ");
-		// stringBuilder.append("<class>org.genericsystem.cdi.MockPersistentDirectoryProvider</class>");
-		// stringBuilder.append("</alternatives>");
+		stringBuilder.append("<alternatives> ");
+		stringBuilder.append("<class>org.genericsystem.cdi.MockPersistentDirectoryProvider</class>");
+		stringBuilder.append("</alternatives>");
 		stringBuilder.append("</beans>");
 		javaArchive.addAsManifestResource(new StringAsset(stringBuilder.toString()), "beans.xml");
 	}
