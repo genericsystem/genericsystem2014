@@ -1,9 +1,11 @@
 package org.genericsystem.cdi;
 
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.cdi.event.EventLauncher;
+import org.genericsystem.concurrency.Cache;
 import org.genericsystem.concurrency.Engine;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.testng.Arquillian;
@@ -19,6 +21,9 @@ public abstract class AbstractTest extends Arquillian {
 
 	@Inject
 	Engine engine;
+
+	@Inject
+	Instance<Cache> cacheProvider;
 
 	@Deployment
 	public static JavaArchive createDeployment() {
