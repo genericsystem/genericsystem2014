@@ -125,7 +125,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 
 	@SuppressWarnings("static-method")
 	protected DependenciesMap<T> buildDependenciesMap() {
-		return new DependenciesMap<>();
+		return new DependenciesMapImpl<>();
 	}
 
 	protected void forceRemove() {
@@ -487,13 +487,17 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 		return index(getSuperCompositesDependencies(), superVertex, component);
 	}
 
-	public static class DependenciesMap<T> extends DependenciesImpl<DependenciesEntry<T>> implements Dependencies<DependenciesEntry<T>> {
-		public Dependencies<T> getByIndex(T index) {
+	public static interface DependenciesMap<T> extends Dependencies<DependenciesEntry<T>> {
+		public default Dependencies<T> getByIndex(T index) {
 			for (DependenciesEntry<T> entry : this)
 				if (index.equals(entry.getKey()))
 					return entry.getValue();
 			return null;
 		}
+	}
+
+	public static class DependenciesMapImpl<T> extends DependenciesImpl<DependenciesEntry<T>> implements DependenciesMap<T> {
+
 	}
 
 	private static <T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> T index(DependenciesMap<T> multimap, T index, T component) {

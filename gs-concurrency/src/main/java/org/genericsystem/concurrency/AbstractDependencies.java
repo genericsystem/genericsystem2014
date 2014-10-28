@@ -4,11 +4,10 @@ import java.io.Serializable;
 import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
-public abstract class AbstractDependencies<T extends AbstractVertex> implements Dependencies<T> {
+public abstract class AbstractDependencies<T> implements Dependencies<T> {
 
 	private Node<T> head = null;
 	private Node<T> tail = null;
@@ -76,7 +75,7 @@ public abstract class AbstractDependencies<T extends AbstractVertex> implements 
 
 		@Override
 		protected void advance() {
-			do {
+			for (;;) {
 				Node<T> nextNode = (next == null) ? head : next.next;
 				if (nextNode == null) {
 					LifeManager lifeManager = getLifeManager();
@@ -93,7 +92,10 @@ public abstract class AbstractDependencies<T extends AbstractVertex> implements 
 					}
 				}
 				next = nextNode;
-			} while (next.content == null || !next.content.isAlive(ts));
+				T content = next.content;
+				if (content != null && (!(content instanceof AbstractVertex) || ((AbstractVertex) content).isAlive(ts)))
+					break;
+			}
 		}
 
 		@Override
