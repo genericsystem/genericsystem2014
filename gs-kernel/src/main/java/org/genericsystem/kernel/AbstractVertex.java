@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
@@ -626,7 +625,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 				Constraint constraint = newConstraint(constraintHolder);
 				if (isCheckable(constraint, checkingType, isFlushTime)) {
 					int axe = ((AxedPropertyClass) constraintHolder.getValue()).getAxe();
-					constraint.check(this, getHolders(constraintHolder).iterator().next().getComponents().get(Statics.BASE_POSITION));
+					constraint.check(this, getHolders(constraintHolder).get().findFirst().get().getComponents().get(Statics.BASE_POSITION));
 				}
 			} catch (ConstraintViolationException e) {
 				getRoot().discardWithException(e);
@@ -634,10 +633,13 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 	}
 
 	private List<T> getActivedConstraints() {
-		return getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) x.getValue()).getClazz())).filter(x -> {
-			Iterator<T> holders = getHolders(x).iterator();
-			return holders.hasNext() && !holders.next().getValue().equals(Boolean.FALSE);
-		}).sorted(priorityConstraintComparator).collect(Collectors.toList());
+		// return getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) x.getValue()).getClazz())).filter(x -> {
+		// Iterator<T> holders = getHolders(x).iterator();
+		// return holders.hasNext() && !holders.next().getValue().equals(Boolean.FALSE);
+		// }).sorted(priorityConstraintComparator).collect(Collectors.toList());
+
+		return getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) x.getValue()).getClazz())).filter(x -> getHolders(x).get().anyMatch(y -> !Boolean.FALSE.equals(y.getValue())))
+				.sorted(priorityConstraintComparator).collect(Collectors.toList());
 	}
 
 	private Constraint newConstraint(T constraintHolder) {
