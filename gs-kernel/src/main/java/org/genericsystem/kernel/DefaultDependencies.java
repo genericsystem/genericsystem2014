@@ -6,11 +6,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
 
-public interface DefaultDependencies<T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> extends IVertex<T, U> {
+public interface DefaultDependencies<T extends AbstractVertex<T>> extends IVertex<T> {
 
 	@Override
 	default boolean isAncestorOf(T dependency) {

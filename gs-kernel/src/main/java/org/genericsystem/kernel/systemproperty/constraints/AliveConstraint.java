@@ -3,18 +3,17 @@ package org.genericsystem.kernel.systemproperty.constraints;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.kernel.AbstractVertex;
-import org.genericsystem.kernel.DefaultRoot;
 import org.genericsystem.kernel.DefaultVertex;
 
 public class AliveConstraint implements Constraint {
 
 	@Override
-	public <T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> void check(DefaultVertex<T, U> modified, DefaultVertex<T, U> attribute) throws ConstraintViolationException {
+	public <T extends AbstractVertex<T>> void check(DefaultVertex<T> modified, DefaultVertex<T> attribute) throws ConstraintViolationException {
 		assert modified.isAlive();
-		for (DefaultVertex<T, U> component : modified.getComponents())
+		for (DefaultVertex<T> component : modified.getComponents())
 			if (!component.isAlive())
 				throw new AliveConstraintViolationException("Component : " + component + " of added node " + modified + " should be alive.");
-		for (DefaultVertex<T, U> directSuper : modified.getSupers())
+		for (DefaultVertex<T> directSuper : modified.getSupers())
 			if (!directSuper.isAlive())
 				throw new AliveConstraintViolationException("Super : " + directSuper + " of added node " + modified + " should be alive.");
 	}

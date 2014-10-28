@@ -1,6 +1,9 @@
 package org.genericsystem.concurrency;
 
-public interface DefaultRoot extends org.genericsystem.cache.DefaultRoot<Vertex, Root>, DefaultVertex {
+public interface DefaultRoot extends org.genericsystem.cache.DefaultRoot<Vertex>, DefaultVertex {
+
+	@Override
+	DefaultEngine getEngine();
 
 	long pickNewTs();
 

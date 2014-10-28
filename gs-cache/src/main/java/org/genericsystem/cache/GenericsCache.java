@@ -4,11 +4,10 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GenericsCache<T extends AbstractGeneric<T, ?, ?, ?>> {
+public class GenericsCache<T extends AbstractGeneric<T, ?>> {
 
 	private final Map<T, T> map = new ConcurrentHashMap<>();
 	static Logger log = LoggerFactory.getLogger(GenericsCache.class);

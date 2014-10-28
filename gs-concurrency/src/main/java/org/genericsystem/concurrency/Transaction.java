@@ -1,21 +1,24 @@
 package org.genericsystem.concurrency;
 
 import java.util.HashSet;
-
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
 
-public class Transaction extends org.genericsystem.cache.Transaction<Generic, Engine, Vertex, Root> {
+public class Transaction extends org.genericsystem.cache.Transaction<Generic, Vertex> {
 
 	private final long ts;
 
-	// TODO KK sould be protected
-	public Transaction(Engine engine) {
+	@Override
+	public DefaultEngine getEngine() {
+		return (DefaultEngine) super.getEngine();
+	}
+
+	Transaction(DefaultEngine engine) {
 		this(engine.unwrap().pickNewTs(), engine);
 	}
 
-	protected Transaction(long ts, Engine engine) {
+	Transaction(long ts, DefaultEngine engine) {
 		super(engine);
 		this.ts = ts;
 	}

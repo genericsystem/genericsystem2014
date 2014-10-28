@@ -31,12 +31,17 @@ import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint.CheckingType;
 
-public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> implements DefaultVertex<T, U> {
+public abstract class AbstractVertex<T extends AbstractVertex<T>> implements DefaultVertex<T> {
 
 	private T meta;
 	private List<T> components;
 	private Serializable value;
 	private boolean throwExistException;
+
+	@Override
+	public DefaultRoot<T> getRoot() {
+		return getMeta().getRoot();
+	}
 
 	@SuppressWarnings("unchecked")
 	protected T init(boolean throwExistException, T meta, Serializable value, List<T> components) {
@@ -161,7 +166,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 		return rebuildAll(() -> getMeta().bindInstance(null, isThrowExistException(), new Supers<>(getSupers(), supersToAdd), newValue, newComponents), computeDependencies());
 	}
 
-	private static class ConvertMap<T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> extends HashMap<T, T> {
+	private static class ConvertMap<T extends AbstractVertex<T>> extends HashMap<T, T> {
 		private static final long serialVersionUID = 5003546962293036021L;
 
 		T convert(T dependency) {
@@ -180,7 +185,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 	}
 
 	protected LinkedHashSet<T> computeDependencies() {
-		return new DependenciesComputer<T, U>() {
+		return new DependenciesComputer<T>() {
 			private static final long serialVersionUID = 4116681784718071815L;
 
 			@Override
@@ -221,7 +226,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 
 	@SuppressWarnings("unchecked")
 	protected LinkedHashSet<T> computePotentialDependencies(List<T> overrides, Serializable value, List<T> components) {
-		return new DependenciesComputer<T, U>() {
+		return new DependenciesComputer<T>() {
 			private static final long serialVersionUID = -3611136800445783634L;
 
 			@Override
@@ -257,7 +262,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 	// TODO KK if a component is null
 	T getDirectInstance(Serializable value, List<T> components) {
 		for (T instance : getInstances())
-			if (((AbstractVertex<?, ?>) instance).equalsRegardlessSupers(this, value, components))
+			if (((AbstractVertex<?>) instance).equalsRegardlessSupers(this, value, components))
 				return instance;
 		return null;
 	}
@@ -296,14 +301,14 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 		return null;
 	}
 
-	private final Function<? super ISignature<?>, ? extends IVertex<?, ?>> NULL_TO_THIS = x -> x == null ? this : (IVertex<?, ?>) x;
+	private final Function<? super ISignature<?>, ? extends IVertex<?>> NULL_TO_THIS = x -> x == null ? this : (IVertex<?>) x;
 
-	boolean equiv(IVertex<?, ?> meta, Serializable value, List<? extends IVertex<?, ?>> components) {
+	boolean equiv(IVertex<?> meta, Serializable value, List<? extends IVertex<?>> components) {
 		if (!getMeta().equiv(meta))
 			return false;
 		if (getComponents().size() != components.size())
 			return false;// for the moment, not equivalent when composite size is different
-		List<? extends IVertex<?, ?>> notNullComponents = components.stream().map(NULL_TO_THIS).collect(Collectors.toList());
+		List<? extends IVertex<?>> notNullComponents = components.stream().map(NULL_TO_THIS).collect(Collectors.toList());
 		List<T> componentsList = getComponents();
 		for (int i = 0; i < componentsList.size(); i++)
 			if (!isReferentialIntegrityEnabled(i) && isSingularConstraintEnabled(i) && componentsList.get(i).equiv(notNullComponents.get(i)))
@@ -323,7 +328,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 
 	@SuppressWarnings("unchecked")
 	T rebuildAll(Supplier<T> rebuilder, LinkedHashSet<T> dependenciesToRebuild) {
-		ConvertMap<T, U> convertMap = new ConvertMap<>();
+		ConvertMap<T> convertMap = new ConvertMap<>();
 		dependenciesToRebuild.forEach(this::simpleRemove);
 		T build = rebuilder.get();
 		dependenciesToRebuild.remove(this);
@@ -422,7 +427,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 		return isSuperOf(getMeta(), getValue(), getComponents(), superMeta, superValue, superComponents);
 	}
 
-	private static <T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> boolean isSuperOf(T subMeta, Serializable subValue, List<T> subComponents, T superMeta, Serializable superValue, List<T> superComponents) {
+	private static <T extends AbstractVertex<T>> boolean isSuperOf(T subMeta, Serializable subValue, List<T> subComponents, T superMeta, Serializable superValue, List<T> superComponents) {
 		if (!subMeta.inheritsFrom(superMeta))
 			return false;
 		if (!subMeta.componentsDepends(subComponents, superComponents))
@@ -459,10 +464,10 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 
 	@SuppressWarnings("unchecked")
 	protected <subT extends T> subT plug() {
-		T result = ((AbstractVertex<T, U>) getMeta()).indexInstance((T) this);
-		getSupers().forEach(superGeneric -> ((AbstractVertex<T, U>) superGeneric).indexInheriting((T) this));
-		getComponents().stream().filter(component -> !equals(component)).forEach(component -> ((AbstractVertex<T, U>) component).indexByMeta(getMeta(), (T) this));
-		getSupers().forEach(superGeneric -> getComponents().stream().filter(component -> !equals(component)).forEach(component -> ((AbstractVertex<T, U>) component).indexBySuper(superGeneric, (T) this)));
+		T result = ((AbstractVertex<T>) getMeta()).indexInstance((T) this);
+		getSupers().forEach(superGeneric -> ((AbstractVertex<T>) superGeneric).indexInheriting((T) this));
+		getComponents().stream().filter(component -> !equals(component)).forEach(component -> ((AbstractVertex<T>) component).indexByMeta(getMeta(), (T) this));
+		getSupers().forEach(superGeneric -> getComponents().stream().filter(component -> !equals(component)).forEach(component -> ((AbstractVertex<T>) component).indexBySuper(superGeneric, (T) this)));
 		getRoot().check(CheckingType.CHECK_ON_ADD, true, (T) this);
 		return (subT) result;
 	}
@@ -470,12 +475,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 	@SuppressWarnings("unchecked")
 	protected boolean unplug() {
 		getRoot().check(CheckingType.CHECK_ON_REMOVE, true, (T) this);
-		boolean result = ((AbstractVertex<T, U>) getMeta()).unIndexInstance((T) this);
+		boolean result = ((AbstractVertex<T>) getMeta()).unIndexInstance((T) this);
 		if (!result)
 			getRoot().discardWithException(new NotFoundException(this.info()));
-		getSupers().forEach(superGeneric -> ((AbstractVertex<T, U>) superGeneric).unIndexInheriting((T) this));
-		getComponents().stream().filter(component -> !equals(component)).forEach(component -> ((AbstractVertex<T, U>) component).unIndexByMeta(getMeta(), (T) this));
-		getSupers().forEach(superGeneric -> getComponents().stream().filter(component -> !equals(component)).forEach(component -> ((AbstractVertex<T, U>) component).unIndexBySuper(superGeneric, (T) this)));
+		getSupers().forEach(superGeneric -> ((AbstractVertex<T>) superGeneric).unIndexInheriting((T) this));
+		getComponents().stream().filter(component -> !equals(component)).forEach(component -> ((AbstractVertex<T>) component).unIndexByMeta(getMeta(), (T) this));
+		getSupers().forEach(superGeneric -> getComponents().stream().filter(component -> !equals(component)).forEach(component -> ((AbstractVertex<T>) component).unIndexBySuper(superGeneric, (T) this)));
 		return result;
 	}
 
@@ -500,7 +505,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 
 	}
 
-	private static <T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> T index(DependenciesMap<T> multimap, T index, T component) {
+	private static <T extends AbstractVertex<T>> T index(DependenciesMap<T> multimap, T index, T component) {
 		for (DependenciesEntry<T> entry : multimap)
 			if (index.equals(entry.getKey()))
 				return entry.getValue().set(component);
@@ -560,7 +565,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T, U>, U extends D
 		return unIndex(getInheritingsDependencies(), inheriting);
 	}
 
-	boolean equalsRegardlessSupers(IVertex<?, ?> meta, Serializable value, List<? extends IVertex<?, ?>> components) {
+	boolean equalsRegardlessSupers(IVertex<?> meta, Serializable value, List<? extends IVertex<?>> components) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComponents().equals(components.stream().map(NULL_TO_THIS).collect(Collectors.toList()));
 	}
 

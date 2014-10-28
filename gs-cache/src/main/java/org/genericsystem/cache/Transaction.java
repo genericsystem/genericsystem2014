@@ -2,26 +2,24 @@ package org.genericsystem.cache;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.kernel.AbstractVertex;
 
-public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends DefaultRoot<V, W>> extends AbstractContext<T, U, V, W> {
+public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends AbstractContext<T, V> {
 
-	private transient final U engine;
+	private transient final DefaultEngine<T, V> engine;
 	protected final TransactionCache<T, V> vertices;
 
-	@SuppressWarnings("unchecked")
-	protected Transaction(U engine) {
+	protected Transaction(DefaultEngine<T, V> engine) {
 		this.engine = engine;
-		vertices = new TransactionCache<>((T) engine);
+		vertices = new TransactionCache<>(engine);
 	}
 
 	@Override
 	public boolean isAlive(T generic) {
-		AbstractVertex<?, ?> vertex = generic.unwrap();
+		AbstractVertex<?> vertex = generic.unwrap();
 		return vertex != null && vertex.isAlive();
 	}
 
@@ -42,7 +40,7 @@ public class Transaction<T extends AbstractGeneric<T, U, V, W>, U extends Defaul
 	}
 
 	@Override
-	public U getEngine() {
+	public DefaultEngine<T, V> getEngine() {
 		return engine;
 	}
 

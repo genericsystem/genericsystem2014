@@ -12,7 +12,7 @@ import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint.CheckingType;
 
-public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends DefaultRoot<V, W>> extends AbstractVertex<T, U> implements DefaultGeneric<T, U, V, W> {
+public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends AbstractVertex<T> implements DefaultGeneric<T, V> {
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -76,6 +76,11 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, U, V, W>, U e
 	@Override
 	protected LinkedHashSet<T> computeDependencies() {
 		return super.computeDependencies();
+	}
+
+	@Override
+	public DefaultEngine<T, V> getRoot() {
+		return getMeta().getRoot();
 	}
 
 	@Override

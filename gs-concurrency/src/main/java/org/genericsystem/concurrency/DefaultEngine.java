@@ -1,9 +1,9 @@
 package org.genericsystem.concurrency;
 
-public interface DefaultEngine extends org.genericsystem.cache.DefaultEngine<Generic, Engine, Vertex, Root>, DefaultGeneric {
+public interface DefaultEngine extends org.genericsystem.cache.DefaultEngine<Generic, Vertex>, DefaultGeneric {
 
 	@Override
-	default Cache buildCache(org.genericsystem.cache.AbstractContext<Generic, Engine, Vertex, Root> subContext) {
+	default Cache buildCache(org.genericsystem.cache.AbstractContext<Generic, Vertex> subContext) {
 		return new Cache(subContext);
 	}
 
@@ -13,12 +13,15 @@ public interface DefaultEngine extends org.genericsystem.cache.DefaultEngine<Gen
 	}
 
 	@Override
-	Cache start(org.genericsystem.cache.Cache<Generic, Engine, Vertex, Root> cache);
+	Cache start(org.genericsystem.cache.Cache<Generic, Vertex> cache);
 
 	@Override
-	void stop(org.genericsystem.cache.Cache<Generic, Engine, Vertex, Root> cache);
+	void stop(org.genericsystem.cache.Cache<Generic, Vertex> cache);
 
 	@Override
 	public Cache getCurrentCache();
+
+	@Override
+	public DefaultRoot unwrap();
 
 }
