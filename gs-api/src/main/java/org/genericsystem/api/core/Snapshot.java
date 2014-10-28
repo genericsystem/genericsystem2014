@@ -9,11 +9,11 @@ import java.util.stream.Stream;
 public interface Snapshot<T> extends Iterable<T> {
 
 	@Override
-	public default Iterator<T> iterator() {
+	default Iterator<T> iterator() {
 		return get().iterator();
 	}
 
-	public abstract Stream<T> get();
+	abstract Stream<T> get();
 
 	default int size() {
 		return (int) get().count();
@@ -35,7 +35,7 @@ public interface Snapshot<T> extends Iterable<T> {
 	}
 
 	default boolean containsAll(Collection<?> c) {
-		return c.stream().allMatch(x -> get().anyMatch(x::equals));
+		return c.stream().allMatch(x -> get().anyMatch(y -> y.equals(x)));
 	}
 
 	default T get(T o) {
