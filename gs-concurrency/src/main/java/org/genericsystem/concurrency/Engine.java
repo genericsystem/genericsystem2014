@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
-
 import org.genericsystem.cache.GenericsCache;
 import org.genericsystem.cache.SystemCache;
 import org.genericsystem.kernel.Statics;
@@ -63,7 +62,6 @@ public class Engine extends Generic implements DefaultEngine {
 
 	@Override
 	public void stop(org.genericsystem.cache.Cache<Generic, Engine, Vertex, Root> cache) {
-		assert cacheLocal.get() == cache;
 		cacheLocal.set(null);
 	}
 

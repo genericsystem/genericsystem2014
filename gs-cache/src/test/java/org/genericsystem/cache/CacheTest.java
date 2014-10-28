@@ -15,7 +15,7 @@ public class CacheTest extends AbstractTest {
 		assert vehicle.unwrap() == null;
 		Generic car = engine.addInstance(vehicle, "Car");
 
-		assert vehicle.getInheritings().stream().anyMatch(car::equals);
+		assert vehicle.getInheritings().get().anyMatch(car::equals);
 	}
 
 	public void test001_getInstances() {
@@ -23,7 +23,7 @@ public class CacheTest extends AbstractTest {
 		Generic vehicle = engine.addInstance("Vehicle");
 		assert vehicle.isAlive();
 		assert vehicle.unwrap() == null;
-		assert engine.getInstances().stream().anyMatch(g -> g.equals(vehicle));
+		assert engine.getInstances().get().anyMatch(g -> g.equals(vehicle));
 	}
 
 	public void test001_getMetaComponents() {
@@ -72,14 +72,14 @@ public class CacheTest extends AbstractTest {
 		assert vehicle.getMeta().isAlive();
 		assert vehicle.getMeta().unwrap() != null;
 		assert vehicle.unwrap() != null;
-		assert vehicle.unwrap().getInheritings().stream().anyMatch(car.unwrap()::equals);
+		assert vehicle.unwrap().getInheritings().get().anyMatch(car.unwrap()::equals);
 	}
 
 	public void test002_clear() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		engine.getCurrentCache().clear();
-		assert !engine.getInstances().stream().anyMatch(g -> g.equals(vehicle));
+		assert !engine.getInstances().get().anyMatch(g -> g.equals(vehicle));
 	}
 
 	public void test003_mountNewCache() {
@@ -121,12 +121,12 @@ public class CacheTest extends AbstractTest {
 		Generic vehiclePower = engine.addInstance("vehiclePower", vehicle);
 		Cache<Generic, Engine, Vertex, Root> mountNewCache = currentCache.mountAndStartNewCache();
 		assert vehiclePower.isAlive();
-		assert !vehicle.getMetaComposites(engine.getMetaAttribute()).isEmpty() : vehicle.getMetaComposites(engine.getMetaAttribute()).stream().collect(Collectors.toList());
+		assert !vehicle.getMetaComposites(engine.getMetaAttribute()).isEmpty() : vehicle.getMetaComposites(engine.getMetaAttribute()).get().collect(Collectors.toList());
 		vehiclePower.remove();
-		assert vehicle.getMetaComposites(engine.getMetaAttribute()).isEmpty() : vehicle.getMetaComposites(engine.getMetaAttribute()).stream().collect(Collectors.toList());
+		assert vehicle.getMetaComposites(engine.getMetaAttribute()).isEmpty() : vehicle.getMetaComposites(engine.getMetaAttribute()).get().collect(Collectors.toList());
 		mountNewCache.flush();
 		assert vehicle.isAlive();
 		assert !vehiclePower.isAlive();
-		assert vehicle.getMetaComposites(engine.getMetaAttribute()).isEmpty() : vehicle.getMetaComposites(engine.getMetaAttribute()).stream().collect(Collectors.toList());
+		assert vehicle.getMetaComposites(engine.getMetaAttribute()).isEmpty() : vehicle.getMetaComposites(engine.getMetaAttribute()).get().collect(Collectors.toList());
 	}
 }
