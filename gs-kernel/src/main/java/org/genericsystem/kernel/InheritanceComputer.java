@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-class InheritanceComputer<T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> extends HashSet<T> {
+class InheritanceComputer<T extends AbstractVertex<T>> extends HashSet<T> {
 
 	private static final long serialVersionUID = 1877502935577170921L;
 
@@ -59,7 +59,7 @@ class InheritanceComputer<T extends AbstractVertex<T, U>, U extends DefaultRoot<
 				return Stream.empty();
 			if (baseSupersStream().count() == 0)
 				return localBase.isRoot() || !origin.isCompositeOf(localBase.getMeta()) ? Stream.of(origin) : getInheringsStream(localBase.getMeta());
-			return Statics.concat(baseSupersStream(), superVertex -> getInheringsStream(superVertex)).distinct();
+				return Statics.concat(baseSupersStream(), superVertex -> getInheringsStream(superVertex)).distinct();
 		}
 
 		private Stream<T> projectStream(Stream<T> streamToProject) {

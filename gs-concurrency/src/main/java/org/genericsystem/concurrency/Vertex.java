@@ -2,6 +2,7 @@ package org.genericsystem.concurrency;
 
 import java.util.stream.Stream;
 import org.genericsystem.kernel.Dependencies;
+import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 
 public class Vertex extends AbstractVertex implements DefaultVertex {
 
@@ -56,9 +57,28 @@ public class Vertex extends AbstractVertex implements DefaultVertex {
 		};
 	}
 
-	@Override
-	protected DependenciesMap<Vertex> buildDependenciesMap() {
-		return super.buildDependenciesMap();
+	public static abstract class AbstractDependenciesMap<T> extends AbstractDependencies<DependenciesEntry<T>> implements DependenciesMap<T> {
+
 	}
 
+	@Override
+	protected DependenciesMap<Vertex> buildDependenciesMap() {
+		return new AbstractDependenciesMap<Vertex>() {
+			@Override
+			public Stream<DependenciesEntry<Vertex>> get() {
+				return get(getRoot().getEngine().getCurrentCache().getTs());
+			}
+
+			@Override
+			public LifeManager getLifeManager() {
+				return lifeManager;
+			}
+
+		};
+	}
+
+	@Override
+	public DefaultRoot getRoot() {
+		return getMeta().getRoot();
+	}
 }

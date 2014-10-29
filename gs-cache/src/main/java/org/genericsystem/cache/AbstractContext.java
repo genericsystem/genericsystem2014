@@ -7,11 +7,11 @@ import org.genericsystem.kernel.AbstractVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractContext<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends DefaultRoot<V, W>> {
+public abstract class AbstractContext<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> {
 
 	static Logger log = LoggerFactory.getLogger(AbstractContext.class);
 
-	public abstract U getEngine();
+	public abstract DefaultEngine<T, V> getEngine();
 
 	public abstract boolean isAlive(T generic);
 

@@ -3,18 +3,18 @@ package org.genericsystem.cache;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import org.genericsystem.kernel.AbstractVertex;
 
-public class TransactionCache<T extends AbstractGeneric<T, ?, V, ?>, V extends AbstractVertex<V, ?>> extends HashMap<T, V> {
+public class TransactionCache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends HashMap<T, V> {
 
 	private static final long serialVersionUID = -2571113223711253002L;
 
 	private final Map<V, T> reverseMap = new HashMap<>();
 
-	public TransactionCache(T engine) {
+	@SuppressWarnings("unchecked")
+	public TransactionCache(DefaultEngine<T, V> engine) {
 		assert engine.unwrap() != null;
-		put(engine, engine.unwrap());
+		put((T) engine, (V) engine.unwrap());
 	}
 
 	@SuppressWarnings("unchecked")

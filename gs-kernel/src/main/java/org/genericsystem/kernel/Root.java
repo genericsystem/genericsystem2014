@@ -2,11 +2,10 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.Collections;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Root extends Vertex implements DefaultRoot<Vertex, Root> {
+public class Root extends Vertex implements DefaultRoot<Vertex> {
 
 	protected final static Logger log = LoggerFactory.getLogger(Root.class);
 
@@ -36,7 +35,6 @@ public class Root extends Vertex implements DefaultRoot<Vertex, Root> {
 		return true;
 	}
 
-	public static class MetaAttribute {
-	}
+	public static class MetaAttribute {}
 
 }

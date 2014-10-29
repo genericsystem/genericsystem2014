@@ -9,7 +9,7 @@ import java.util.List;
  * @param <T>
  *            the implementation of IRoot used for engine
  */
-public interface IRoot<T> {
+public interface IRoot<T extends IVertex<T>> extends IVertex<T> {
 
 	T addType(Serializable value);
 
@@ -62,4 +62,8 @@ public interface IRoot<T> {
 	 * @return a new or the existing tree
 	 */
 	T setTree(Serializable value, int parentsNumber);
+
+	T getMetaAttribute();
+
+	void discardWithException(Throwable exception);
 }

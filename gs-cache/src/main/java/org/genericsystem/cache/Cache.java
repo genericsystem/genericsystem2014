@@ -13,13 +13,14 @@ import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.AbstractVertex.DependenciesMap;
+import org.genericsystem.kernel.AbstractVertex.DependenciesMapImpl;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint.CheckingType;
 
-public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends DefaultRoot<V, W>> extends AbstractContext<T, U, V, W> {
+public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends AbstractContext<T, V> {
 
-	protected AbstractContext<T, U, V, W> subContext;
+	protected AbstractContext<T, V> subContext;
 
 	private transient Map<T, Dependencies<T>> inheritingsDependencies;
 	private transient Map<T, Dependencies<T>> instancesDependencies;
@@ -38,11 +39,11 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngin
 		removes = new LinkedHashSet<>();
 	}
 
-	protected Cache(U engine) {
+	protected Cache(DefaultEngine<T, V> engine) {
 		this(new Transaction<>(engine));
 	}
 
-	protected Cache(AbstractContext<T, U, V, W> subContext) {
+	protected Cache(AbstractContext<T, V> subContext) {
 		this.subContext = subContext;
 		clear();
 	}
@@ -52,21 +53,21 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngin
 		return adds.contains(generic) || (!removes.contains(generic) && getSubContext().isAlive(generic));
 	}
 
-	public Cache<T, U, V, W> mountAndStartNewCache() {
+	public Cache<T, V> mountAndStartNewCache() {
 		return getEngine().buildCache(this).start();
 	}
 
-	public Cache<T, U, V, W> flushAndUnmount() {
+	public Cache<T, V> flushAndUnmount() {
 		flush();
-		return subContext instanceof Cache ? ((Cache<T, U, V, W>) subContext).start() : null;
+		return subContext instanceof Cache ? ((Cache<T, V>) subContext).start() : null;
 	}
 
-	public Cache<T, U, V, W> clearAndUnmount() {
+	public Cache<T, V> clearAndUnmount() {
 		clear();
-		return subContext instanceof Cache ? ((Cache<T, U, V, W>) subContext).start() : null;
+		return subContext instanceof Cache ? ((Cache<T, V>) subContext).start() : null;
 	}
 
-	public Cache<T, U, V, W> start() {
+	public Cache<T, V> start() {
 		return getEngine().start(this);
 	}
 
@@ -85,7 +86,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngin
 	}
 
 	protected void checkConstraints() throws RollbackException {
-		U engine = getEngine();
+		DefaultEngine<T, V> engine = getEngine();
 		adds.forEach(x -> engine.check(CheckingType.CHECK_ON_ADD, true, x));
 		removes.forEach(x -> engine.check(CheckingType.CHECK_ON_REMOVE, true, x));
 	}
@@ -118,11 +119,11 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngin
 	}
 
 	@Override
-	public U getEngine() {
+	public DefaultEngine<T, V> getEngine() {
 		return subContext.getEngine();
 	}
 
-	protected AbstractContext<T, U, V, W> getSubContext() {
+	protected AbstractContext<T, V> getSubContext() {
 		return subContext;
 	}
 
@@ -171,7 +172,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngin
 		return () -> {
 			DependenciesMap<T> dependencies = metaCompositesDependencies.get(generic);
 			if (dependencies == null)
-				metaCompositesDependencies.put(generic, dependencies = new DependenciesMap<>());
+				metaCompositesDependencies.put(generic, dependencies = new DependenciesMapImpl<>());
 			return dependencies.get().flatMap(x -> x.getValue().get());
 		};
 	}
@@ -205,7 +206,7 @@ public class Cache<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngin
 	private static <T> Snapshot<T> getIndex(Map<T, DependenciesMap<T>> multiMap, Supplier<Stream<T>> subStreamSupplier, T generic, T index) {
 		DependenciesMap<T> dependencies = multiMap.get(generic);
 		if (dependencies == null)
-			multiMap.put(generic, dependencies = new DependenciesMap<>());
+			multiMap.put(generic, dependencies = new DependenciesMapImpl<>());
 		Dependencies<T> dependenciesByIndex = dependencies.getByIndex(index);
 		if (dependenciesByIndex == null)
 			dependencies.add(new DependenciesEntry<>(index, dependenciesByIndex = new CacheDependencies<>(subStreamSupplier)));

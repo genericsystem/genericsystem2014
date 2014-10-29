@@ -10,10 +10,8 @@ import org.genericsystem.api.exception.RollbackException;
  *
  * @param <T>
  *            the implementation of IVertexBase used for all nodes
- * @param <U>
- *            the implementation of IVertexBase used for root node
  */
-public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> extends ISignature<T> {
+public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 
 	/**
 	 * Indicates whether this vertex is the root of the graph
@@ -27,7 +25,7 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 	 *
 	 * @return the signature of the root of the graph
 	 */
-	U getRoot();
+	IRoot<T> getRoot();
 
 	/**
 	 *
@@ -63,7 +61,7 @@ public interface IVertex<T extends IVertex<T, U>, U extends IVertex<T, U>> exten
 	 * @return true if this instance is equivalent of the service
 	 *
 	 */
-	boolean equiv(IVertex<?, ?> vertex);
+	boolean equiv(IVertex<?> vertex);
 
 	/**
 	 * Technical method for create a real array of T implementation for passing safe varags parameter and avoid heap pollution

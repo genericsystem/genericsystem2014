@@ -6,7 +6,7 @@ import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class SignatureImpl<T extends AbstractVertex<T, ?>> implements Supplier<T> {
+public class SignatureImpl<T extends AbstractVertex<T>> implements Supplier<T> {
 
 	private final SignatureImpl<T> metaSignature;
 	private List<Serializable> superValues;

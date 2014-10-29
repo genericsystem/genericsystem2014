@@ -2,9 +2,12 @@ package org.genericsystem.cache;
 
 import org.genericsystem.kernel.AbstractVertex;
 
-public interface DefaultGeneric<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends DefaultRoot<V, W>> extends DefaultVertex<T, U> {
+public interface DefaultGeneric<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends DefaultVertex<T> {
 
-	default Cache<T, U, V, W> getCurrentCache() {
+	@Override
+	abstract DefaultEngine<T, V> getRoot();
+
+	default Cache<T, V> getCurrentCache() {
 		return getRoot().getCurrentCache();
 	}
 }

@@ -1,13 +1,12 @@
 package org.genericsystem.kernel;
 
 import java.util.Objects;
-
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public interface DefaultAncestors<T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> extends IVertex<T, U> {
+public interface DefaultAncestors<T extends AbstractVertex<T>> extends IVertex<T> {
 
 	static Logger log = LoggerFactory.getLogger(DefaultAncestors.class);
 
@@ -38,18 +37,13 @@ public interface DefaultAncestors<T extends AbstractVertex<T, U>, U extends Defa
 	}
 
 	@Override
-	default boolean equiv(IVertex<?, ?> service) {
-		return equals(service) || ((AbstractVertex<?, ?>) this).equiv(service.getMeta(), service.getValue(), service.getComponents());
+	default boolean equiv(IVertex<?> service) {
+		return equals(service) || ((AbstractVertex<?>) this).equiv(service.getMeta(), service.getValue(), service.getComponents());
 	}
 
 	@Override
 	default int getLevel() {
 		return isRoot() || Objects.equals(getValue(), getRoot().getValue()) || getComponents().stream().allMatch(c -> c.isRoot()) ? 0 : getMeta().getLevel() + 1;
-	}
-
-	@Override
-	default U getRoot() {
-		return getMeta().getRoot();
 	}
 
 	@Override

@@ -2,7 +2,6 @@ package org.genericsystem.cache;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
-
 import org.testng.annotations.Test;
 
 @Test
@@ -84,26 +83,26 @@ public class CacheTest extends AbstractTest {
 
 	public void test003_mountNewCache() {
 		Engine engine = new Engine();
-		Cache<Generic, Engine, Vertex, Root> cache = engine.newCache().start();
-		Cache<Generic, Engine, Vertex, Root> currentCache = engine.getCurrentCache();
+		Cache<Generic, Vertex> cache = engine.newCache().start();
+		Cache<Generic, Vertex> currentCache = engine.getCurrentCache();
 		assert cache == currentCache;
-		Cache<Generic, Engine, Vertex, Root> mountNewCache = currentCache.mountAndStartNewCache();
+		Cache<Generic, Vertex> mountNewCache = currentCache.mountAndStartNewCache();
 		assert mountNewCache.getSubContext() == currentCache;
 		assert mountNewCache != currentCache;
 		Generic vehicle = engine.addInstance("Vehicle");
 		assert currentCache == mountNewCache.flushAndUnmount();
-		assert ((AbstractGeneric<Generic, Engine, Vertex, Root>) vehicle).unwrap() == null;
+		assert ((AbstractGeneric<Generic, Vertex>) vehicle).unwrap() == null;
 		currentCache.flush();
 		assert vehicle.unwrap() != null;
 	}
 
 	public void test004_TwoComponentsWithSameMetaInDifferentCaches() {
 		Engine engine = new Engine();
-		Cache<Generic, Engine, Vertex, Root> currentCache = engine.getCurrentCache();
+		Cache<Generic, Vertex> currentCache = engine.getCurrentCache();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = color.addInstance("vehicleColor", vehicle);
-		Cache<Generic, Engine, Vertex, Root> mountNewCache = currentCache.mountAndStartNewCache();
+		Cache<Generic, Vertex> mountNewCache = currentCache.mountAndStartNewCache();
 		Generic vehicleColor2 = color.addInstance("vehicleColor2", vehicle);
 		assert vehicle.getMetaComposites(color).containsAll(Arrays.asList(vehicleColor, vehicleColor2)) : vehicle.getMetaComposites(color);
 		mountNewCache.flush();
@@ -116,10 +115,10 @@ public class CacheTest extends AbstractTest {
 
 	public void test005_TwoComponentsWithSameMetaInDifferentCaches_remove() {
 		Engine engine = new Engine();
-		Cache<Generic, Engine, Vertex, Root> currentCache = engine.getCurrentCache();
+		Cache<Generic, Vertex> currentCache = engine.getCurrentCache();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic vehiclePower = engine.addInstance("vehiclePower", vehicle);
-		Cache<Generic, Engine, Vertex, Root> mountNewCache = currentCache.mountAndStartNewCache();
+		Cache<Generic, Vertex> mountNewCache = currentCache.mountAndStartNewCache();
 		assert vehiclePower.isAlive();
 		assert !vehicle.getMetaComposites(engine.getMetaAttribute()).isEmpty() : vehicle.getMetaComposites(engine.getMetaAttribute()).get().collect(Collectors.toList());
 		vehiclePower.remove();

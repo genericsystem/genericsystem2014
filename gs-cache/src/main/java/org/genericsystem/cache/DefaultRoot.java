@@ -2,8 +2,8 @@ package org.genericsystem.cache;
 
 import org.genericsystem.kernel.AbstractVertex;
 
-public interface DefaultRoot<T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> extends org.genericsystem.kernel.DefaultRoot<T, U>, DefaultVertex<T, U> {
+public interface DefaultRoot<V extends AbstractVertex<V>> extends org.genericsystem.kernel.DefaultRoot<V>, DefaultVertex<V> {
 
-	DefaultEngine<?, ?, T, U> getEngine();
+	DefaultEngine<?, V> getEngine();
 
 }
