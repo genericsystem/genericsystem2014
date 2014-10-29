@@ -3,7 +3,6 @@ package org.genericsystem.kernel;
 import java.util.Arrays;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.exception.ExistsException;
 import org.testng.annotations.Test;
 
@@ -188,7 +187,7 @@ public class InstanciationTest extends AbstractTest {
 		assert transformer.getSupers().stream().anyMatch(robot::equals);
 		car.getSupers().stream().anyMatch(vehicle::equals);
 		robot.getSupers().stream().anyMatch(device::equals);
-		Predicate<Vertex> condition = x -> Statics.concat(transformer.getSupers().stream(), superVertex -> Stream.concat(Stream.of(superVertex), superVertex.getSupers().stream())).anyMatch(x::equals);
+		Predicate<Vertex> condition = x -> transformer.getSupers().stream().flatMap(superVertex -> Stream.concat(Stream.of(superVertex), superVertex.getSupers().stream())).anyMatch(x::equals);
 		assert condition.test(vehicle);
 		assert condition.test(car);
 		assert condition.test(robot);
@@ -225,7 +224,7 @@ public class InstanciationTest extends AbstractTest {
 		assert transformer.getSupers().stream().anyMatch(robot::equals);
 		car.getSupers().stream().anyMatch(vehicle::equals);
 		robot.getSupers().stream().anyMatch(device::equals);
-		Predicate<Vertex> condition = x -> Statics.concat(transformer.getSupers().stream(), superVertex -> Stream.concat(Stream.of(superVertex), superVertex.getSupers().stream())).anyMatch(x::equals);
+		Predicate<Vertex> condition = x -> transformer.getSupers().stream().flatMap(superVertex -> Stream.concat(Stream.of(superVertex), superVertex.getSupers().stream())).anyMatch(x::equals);
 		assert condition.test(vehicle);
 		assert condition.test(car);
 		assert condition.test(robot);

@@ -3,7 +3,6 @@ package org.genericsystem.cache;
 import java.util.Arrays;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.kernel.Statics;
 import org.testng.annotations.Test;
@@ -187,9 +186,8 @@ public class InstanciationTest extends AbstractTest {
 
 		assert car.getSupers().stream().anyMatch(vehicle::equals);
 		assert robot.getSupers().stream().anyMatch(device::equals);
-		Statics.concat(transformer.getSupers().stream(), superGeneric -> Stream.concat(Stream.of(superGeneric), superGeneric.getSupers().stream()));
 
-		final Predicate<Generic> condition = x -> Statics.concat(transformer.getSupers().stream(), superGeneric -> Stream.concat(Stream.of(superGeneric), superGeneric.getSupers().stream())).anyMatch(x::equals);
+		final Predicate<Generic> condition = x -> transformer.getSupers().stream().flatMap(superGeneric -> Stream.concat(Stream.of(superGeneric), superGeneric.getSupers().stream())).anyMatch(x::equals);
 
 		assert condition.test(vehicle);
 		assert condition.test(car);
@@ -238,9 +236,8 @@ public class InstanciationTest extends AbstractTest {
 
 		assert car.getSupers().stream().anyMatch(vehicle::equals);
 		assert robot.getSupers().stream().anyMatch(device::equals);
-		Statics.concat(transformer.getSupers().stream(), superGeneric -> Stream.concat(Stream.of(superGeneric), superGeneric.getSupers().stream()));
 
-		final Predicate<Generic> condition = x -> Statics.concat(transformer.getSupers().stream(), superGeneric -> Stream.concat(Stream.of(superGeneric), superGeneric.getSupers().stream())).anyMatch(x::equals);
+		final Predicate<Generic> condition = x -> transformer.getSupers().stream().flatMap(superGeneric -> Stream.concat(Stream.of(superGeneric), superGeneric.getSupers().stream())).anyMatch(x::equals);
 
 		assert condition.test(vehicle);
 		assert condition.test(car);
