@@ -4,14 +4,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import org.genericsystem.api.core.IRoot;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.systemproperty.constraints.AliveConstraint;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint.CheckingType;
 
-public interface DefaultRoot<T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> extends DefaultVertex<T, U>, IRoot<T> {
+public interface DefaultRoot<T extends AbstractVertex<T>> extends IRoot<T> {
 
 	static final List<Class<? extends Constraint>> SYSTEM_CONSTRAINTS = new ArrayList<Class<? extends Constraint>>() {
 		private static final long serialVersionUID = -950838421343460439L;
@@ -21,6 +20,7 @@ public interface DefaultRoot<T extends AbstractVertex<T, U>, U extends DefaultRo
 		}
 	};
 
+	@Override
 	default void discardWithException(Throwable exception) throws RollbackException {
 		throw new RollbackException(exception);
 	}
@@ -31,6 +31,7 @@ public interface DefaultRoot<T extends AbstractVertex<T, U>, U extends DefaultRo
 		t.checkConstraints(checkingType, isFlushTime);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	default T getMetaAttribute() {
 		return ((T) this).getDirectInstance(getValue(), Collections.singletonList((T) this));
@@ -39,15 +40,6 @@ public interface DefaultRoot<T extends AbstractVertex<T, U>, U extends DefaultRo
 	//
 	// These signatures force Engine to re-implement methods
 	//
-
-	@Override
-	boolean isRoot();
-
-	@Override
-	public U getRoot();
-
-	@Override
-	public T getAlive();
 
 	@Override
 	default T addType(Serializable value) {

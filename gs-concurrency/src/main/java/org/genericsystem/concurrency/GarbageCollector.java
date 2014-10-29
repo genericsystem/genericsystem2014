@@ -8,13 +8,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.genericsystem.kernel.Statics;
 
-public class GarbageCollector<T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> extends LinkedHashSet<T> {
+public class GarbageCollector extends LinkedHashSet<Vertex> {
 
 	private static final long serialVersionUID = -2021341943811568201L;
 	private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-	private final DefaultRoot<T, U> root;
+	private final DefaultRoot root;
 
-	public GarbageCollector(DefaultRoot<T, U> root) {
+	public GarbageCollector(DefaultRoot root) {
 		this.root = root;
 	}
 
@@ -30,9 +30,9 @@ public class GarbageCollector<T extends AbstractVertex<T, U>, U extends DefaultR
 	public void runGarbage(long timeOut) {
 		long ts = root.pickNewTs();
 		synchronized (root) {
-			Iterator<T> iterator = GarbageCollector.this.iterator();
+			Iterator<Vertex> iterator = GarbageCollector.this.iterator();
 			while (iterator.hasNext()) {
-				T vertex = iterator.next();
+				Vertex vertex = iterator.next();
 				if (ts - vertex.getLifeManager().getDeathTs() >= timeOut) {
 					vertex.remove();
 					iterator.remove();

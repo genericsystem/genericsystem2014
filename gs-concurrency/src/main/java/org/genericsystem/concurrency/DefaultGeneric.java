@@ -1,9 +1,12 @@
 package org.genericsystem.concurrency;
 
-public interface DefaultGeneric<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends DefaultRoot<V, W>> extends org.genericsystem.cache.DefaultGeneric<T, U, V, W> {
+public interface DefaultGeneric extends org.genericsystem.cache.DefaultGeneric<Generic, Vertex> {
 
 	@Override
-	default Cache<T, U, V, W> getCurrentCache() {
+	abstract DefaultEngine getRoot();
+
+	@Override
+	default Cache getCurrentCache() {
 		return getRoot().getCurrentCache();
 	}
 

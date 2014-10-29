@@ -2,7 +2,6 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.Optional;
-
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 import org.genericsystem.kernel.systemproperty.CascadeRemoveProperty;
@@ -11,7 +10,7 @@ import org.genericsystem.kernel.systemproperty.constraints.PropertyConstraint;
 import org.genericsystem.kernel.systemproperty.constraints.RequiredConstraint;
 import org.genericsystem.kernel.systemproperty.constraints.SingularConstraint;
 
-public interface DefaultSystemProperties<T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> extends IVertex<T, U> {
+public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IVertex<T> {
 
 	@Override
 	@SuppressWarnings("unchecked")

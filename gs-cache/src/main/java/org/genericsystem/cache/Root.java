@@ -3,11 +3,11 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.Collections;
 
-public class Root extends Vertex implements DefaultRoot<Vertex, Root> {
+public class Root extends Vertex implements DefaultRoot<Vertex> {
 
-	private final DefaultEngine<?, ?, Vertex, Root> engine;
+	private final Engine engine;
 
-	Root(DefaultEngine<?, ?, Vertex, Root> engine, Serializable value) {
+	Root(Engine engine, Serializable value) {
 		init(false, null, Collections.emptyList(), value, Collections.emptyList());
 		this.engine = engine;
 	}
@@ -28,7 +28,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex, Root> {
 	}
 
 	@Override
-	public DefaultEngine<?, ?, Vertex, Root> getEngine() {
+	public Engine getEngine() {
 		return engine;
 	}
 

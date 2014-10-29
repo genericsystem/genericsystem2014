@@ -3,13 +3,12 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
-
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.Statics;
 
-public class Engine extends Generic implements DefaultEngine<Generic, Engine, Vertex, Root> {
+public class Engine extends Generic implements DefaultEngine<Generic, Vertex> {
 
-	private final ThreadLocal<Cache<Generic, Engine, Vertex, Root>> cacheLocal = new ThreadLocal<>();
+	private final ThreadLocal<Cache<Generic, Vertex>> cacheLocal = new ThreadLocal<>();
 	private final SystemCache<Generic> systemCache = new SystemCache<>(this);
 	private final Root root;
 
@@ -21,7 +20,7 @@ public class Engine extends Generic implements DefaultEngine<Generic, Engine, Ve
 		init(false, null, Collections.emptyList(), engineValue, Collections.emptyList());
 		root = buildRoot(engineValue);
 
-		Cache<Generic, Engine, Vertex, Root> cache = newCache().start();
+		Cache<Generic, Vertex> cache = newCache().start();
 		Generic metaAttribute = setInstance(this, getValue(), coerceToTArray(this));
 		setInstance(SystemMap.class, coerceToTArray(this)).enablePropertyConstraint();
 		metaAttribute.disableReferentialIntegrity(Statics.BASE_POSITION);
@@ -48,7 +47,7 @@ public class Engine extends Generic implements DefaultEngine<Generic, Engine, Ve
 	}
 
 	@Override
-	public Cache<Generic, Engine, Vertex, Root> start(Cache<Generic, Engine, Vertex, Root> cache) {
+	public Cache<Generic, Vertex> start(Cache<Generic, Vertex> cache) {
 		if (!equals(cache.getEngine()))
 			throw new IllegalStateException();
 		cacheLocal.set(cache);
@@ -56,14 +55,14 @@ public class Engine extends Generic implements DefaultEngine<Generic, Engine, Ve
 	}
 
 	@Override
-	public void stop(Cache<Generic, Engine, Vertex, Root> cache) {
+	public void stop(Cache<Generic, Vertex> cache) {
 		assert cacheLocal.get() == cache;
 		cacheLocal.set(null);
 	}
 
 	@Override
-	public Cache<Generic, Engine, Vertex, Root> getCurrentCache() {
-		Cache<Generic, Engine, Vertex, Root> currentCache = cacheLocal.get();
+	public Cache<Generic, Vertex> getCurrentCache() {
+		Cache<Generic, Vertex> currentCache = cacheLocal.get();
 		if (currentCache == null)
 			throw new IllegalStateException();
 		return currentCache;
@@ -93,12 +92,6 @@ public class Engine extends Generic implements DefaultEngine<Generic, Engine, Ve
 	@Override
 	public void discardWithException(Throwable exception) throws RollbackException {
 		DefaultEngine.super.discardWithException(exception);
-	}
-
-	@Override
-	// TODO KK
-	public DefaultEngine<?, ?, Generic, Engine> getEngine() {
-		return (DefaultEngine) this;
 	}
 
 }

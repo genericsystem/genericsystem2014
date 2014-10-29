@@ -1,6 +1,6 @@
 package org.genericsystem.cache;
 
-public class Generic extends AbstractGeneric<Generic, Engine, Vertex, Root> implements DefaultGeneric<Generic, Engine, Vertex, Root> {
+public class Generic extends AbstractGeneric<Generic, Vertex> implements DefaultGeneric<Generic, Vertex> {
 
 	@Override
 	protected Generic newT() {

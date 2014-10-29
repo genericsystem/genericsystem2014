@@ -2,30 +2,29 @@ package org.genericsystem.cache;
 
 import java.io.Serializable;
 import java.util.List;
-
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.AbstractVertex;
 
-public interface DefaultEngine<T extends AbstractGeneric<T, U, V, W>, U extends DefaultEngine<T, U, V, W>, V extends AbstractVertex<V, W>, W extends DefaultRoot<V, W>> extends DefaultRoot<T, U>, DefaultGeneric<T, U, V, W> {
+public interface DefaultEngine<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.kernel.DefaultRoot<T>, DefaultGeneric<T, V> {
 
 	<subT extends T> subT find(Class<subT> clazz);
 
-	default Cache<T, U, V, W> newCache() {
-		return buildCache(new Transaction<>(getRoot()));
+	default Cache<T, V> newCache() {
+		return buildCache(new Transaction<>((DefaultEngine<T, V>) getRoot()));
 	}
 
-	default Cache<T, U, V, W> buildCache(AbstractContext<T, U, V, W> subContext) {
+	default Cache<T, V> buildCache(AbstractContext<T, V> subContext) {
 		return new Cache<>(subContext);
 	}
 
-	Cache<T, U, V, W> start(Cache<T, U, V, W> cache);
+	Cache<T, V> start(Cache<T, V> cache);
 
-	void stop(Cache<T, U, V, W> cache);
+	void stop(Cache<T, V> cache);
 
 	@Override
-	public Cache<T, U, V, W> getCurrentCache();
+	public Cache<T, V> getCurrentCache();
 
-	W unwrap();
+	DefaultRoot<V> unwrap();
 
 	@Override
 	default void discardWithException(Throwable exception) throws RollbackException {

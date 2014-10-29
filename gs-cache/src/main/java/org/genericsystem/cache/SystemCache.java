@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import org.genericsystem.cache.annotations.Components;
 import org.genericsystem.cache.annotations.Meta;
 import org.genericsystem.cache.annotations.constraints.PropertyConstraint;
@@ -17,7 +16,7 @@ import org.genericsystem.kernel.AbstractVertex.SystemMap;
 import org.genericsystem.kernel.Root.MetaAttribute;
 import org.genericsystem.kernel.Statics;
 
-public class SystemCache<T extends AbstractGeneric<T, ?, ?, ?>> extends HashMap<Class<?>, T> {
+public class SystemCache<T extends AbstractGeneric<T, ?>> extends HashMap<Class<?>, T> {
 
 	private static final long serialVersionUID = 1150085123612887245L;
 

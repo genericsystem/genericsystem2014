@@ -1,17 +1,16 @@
 package org.genericsystem.kernel;
 
-import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Vertex extends AbstractVertex<Vertex, Root> implements DefaultVertex<Vertex, Root> {
+public class Vertex extends AbstractVertex<Vertex> implements DefaultVertex<Vertex> {
 
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 
 	private final Dependencies<Vertex> instances = buildDependencies();
 	private final Dependencies<Vertex> inheritings = buildDependencies();
-	private final Dependencies<DependenciesEntry<Vertex>> superComposites = buildDependencies();
-	private final Dependencies<DependenciesEntry<Vertex>> metaComposites = buildDependencies();
+	private final DependenciesMap<Vertex> superComposites = buildDependenciesMap();
+	private final DependenciesMap<Vertex> metaComposites = buildDependenciesMap();
 
 	@Override
 	protected Dependencies<Vertex> getInstancesDependencies() {
@@ -24,12 +23,12 @@ public class Vertex extends AbstractVertex<Vertex, Root> implements DefaultVerte
 	}
 
 	@Override
-	protected Dependencies<DependenciesEntry<Vertex>> getMetaCompositesDependencies() {
+	protected DependenciesMap<Vertex> getMetaCompositesDependencies() {
 		return metaComposites;
 	}
 
 	@Override
-	protected Dependencies<DependenciesEntry<Vertex>> getSuperCompositesDependencies() {
+	protected DependenciesMap<Vertex> getSuperCompositesDependencies() {
 		return superComposites;
 	}
 

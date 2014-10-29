@@ -1,16 +1,15 @@
 package org.genericsystem.concurrency;
 
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 
-public class Vertex extends AbstractVertex<Vertex, Root> implements DefaultVertex<Vertex, Root> {
+public class Vertex extends AbstractVertex implements DefaultVertex {
 
 	private final Dependencies<Vertex> instances = buildDependencies();
 	private final Dependencies<Vertex> inheritings = buildDependencies();
-	private final Dependencies<DependenciesEntry<Vertex>> superComponents = builMultidDependencies();
-	private final Dependencies<DependenciesEntry<Vertex>> metaComponents = builMultidDependencies();
+	private final DependenciesMap<Vertex> superComponents = buildDependenciesMap();
+	private final DependenciesMap<Vertex> metaComponents = buildDependenciesMap();
 
 	@Override
 	protected Dependencies<Vertex> getInstancesDependencies() {
@@ -23,12 +22,12 @@ public class Vertex extends AbstractVertex<Vertex, Root> implements DefaultVerte
 	}
 
 	@Override
-	protected Dependencies<DependenciesEntry<Vertex>> getMetaCompositesDependencies() {
+	protected DependenciesMap<Vertex> getMetaCompositesDependencies() {
 		return metaComponents;
 	}
 
 	@Override
-	protected Dependencies<DependenciesEntry<Vertex>> getSuperCompositesDependencies() {
+	protected DependenciesMap<Vertex> getSuperCompositesDependencies() {
 		return superComponents;
 	}
 
@@ -42,10 +41,9 @@ public class Vertex extends AbstractVertex<Vertex, Root> implements DefaultVerte
 		return new Vertex[dim];
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	protected <U> Dependencies<U> buildDependencies() {
-		return (Dependencies<U>) new AbstractDependencies<Vertex>() {
+	protected Dependencies<Vertex> buildDependencies() {
+		return new AbstractDependencies<Vertex>() {
 
 			@Override
 			public LifeManager getLifeManager() {
@@ -59,8 +57,28 @@ public class Vertex extends AbstractVertex<Vertex, Root> implements DefaultVerte
 		};
 	}
 
-	protected <U> Dependencies<U> builMultidDependencies() {
-		return super.buildDependencies();
+	public static abstract class AbstractDependenciesMap<T> extends AbstractDependencies<DependenciesEntry<T>> implements DependenciesMap<T> {
+
 	}
 
+	@Override
+	protected DependenciesMap<Vertex> buildDependenciesMap() {
+		return new AbstractDependenciesMap<Vertex>() {
+			@Override
+			public Stream<DependenciesEntry<Vertex>> get() {
+				return get(getRoot().getEngine().getCurrentCache().getTs());
+			}
+
+			@Override
+			public LifeManager getLifeManager() {
+				return lifeManager;
+			}
+
+		};
+	}
+
+	@Override
+	public DefaultRoot getRoot() {
+		return getMeta().getRoot();
+	}
 }

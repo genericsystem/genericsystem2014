@@ -1,15 +1,15 @@
 package org.genericsystem.cache;
 
 import org.genericsystem.kernel.AbstractVertex;
+import org.genericsystem.kernel.DefaultVertex;
 import org.genericsystem.kernel.Dependencies;
-import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 
-public class Vertex extends AbstractVertex<Vertex, Root> implements DefaultVertex<Vertex, Root> {
+public class Vertex extends AbstractVertex<Vertex> implements DefaultVertex<Vertex> {
 
 	private final Dependencies<Vertex> instances = buildDependencies();
 	private final Dependencies<Vertex> inheritings = buildDependencies();
-	private final Dependencies<DependenciesEntry<Vertex>> superComponents = buildDependencies();
-	private final Dependencies<DependenciesEntry<Vertex>> metaComponents = buildDependencies();
+	private final DependenciesMap<Vertex> superComponents = buildDependenciesMap();
+	private final DependenciesMap<Vertex> metaComponents = buildDependenciesMap();
 
 	@Override
 	protected Dependencies<Vertex> getInstancesDependencies() {
@@ -22,12 +22,12 @@ public class Vertex extends AbstractVertex<Vertex, Root> implements DefaultVerte
 	}
 
 	@Override
-	protected Dependencies<DependenciesEntry<Vertex>> getMetaCompositesDependencies() {
+	protected DependenciesMap<Vertex> getMetaCompositesDependencies() {
 		return metaComponents;
 	}
 
 	@Override
-	protected Dependencies<DependenciesEntry<Vertex>> getSuperCompositesDependencies() {
+	protected DependenciesMap<Vertex> getSuperCompositesDependencies() {
 		return superComponents;
 	}
 
