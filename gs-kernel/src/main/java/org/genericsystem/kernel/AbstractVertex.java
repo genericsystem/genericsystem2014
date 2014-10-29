@@ -439,7 +439,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	@Override
 	public Snapshot<T> getComposites() {
-		return () -> getMetaCompositesDependencies().get().map(entry -> entry.getValue().get()).flatMap(x -> x);
+		return () -> getMetaCompositesDependencies().get().flatMap(entry -> entry.getValue().get());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -471,10 +471,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		};
 	}
 
+	@Override
 	public Snapshot<T> getCompositesByMeta(T meta) {
 		return getCompositesByIndex(getMetaCompositesDependencies(), meta);
 	}
 
+	@Override
 	public Snapshot<T> getCompositesBySuper(T superT) {
 		return getCompositesByIndex(getSuperCompositesDependencies(), superT);
 	}

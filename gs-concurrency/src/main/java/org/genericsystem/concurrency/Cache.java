@@ -51,24 +51,6 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 	// }
 	// }
 
-	// @Override
-	// public Cache mountAndStartNewCache() {
-	// return (Cache) super.mountAndStartNewCache();
-	// }
-
-	// TODO clean
-	// @Override
-	// public Cache flushAndUnmount() {
-	// flush();
-	// return getSubContext() instanceof Cache ? ((Cache) getSubContext()).start() : this;
-	// }
-	//
-	// @Override
-	// public Cache clearAndUnmount() {
-	// clear();
-	// return getSubContext() instanceof Cache ? ((Cache) getSubContext()).start() : this;
-	// }
-
 	@Override
 	public Cache<T, V> start() {
 		return (Cache<T, V>) super.start();
