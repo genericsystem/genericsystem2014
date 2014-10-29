@@ -5,10 +5,10 @@ import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.DefaultVertex;
 
-public class AliveConstraint implements Constraint {
+public class AliveConstraint<T extends AbstractVertex<T>> implements Constraint<T> {
 
 	@Override
-	public <T extends AbstractVertex<T>> void check(DefaultVertex<T> modified, DefaultVertex<T> attribute) throws ConstraintViolationException {
+	public void check(T modified, T attribute) throws ConstraintViolationException {
 		assert modified.isAlive();
 		for (DefaultVertex<T> component : modified.getComponents())
 			if (!component.isAlive())
@@ -17,4 +17,5 @@ public class AliveConstraint implements Constraint {
 			if (!directSuper.isAlive())
 				throw new AliveConstraintViolationException("Super : " + directSuper + " of added node " + modified + " should be alive.");
 	}
+
 }

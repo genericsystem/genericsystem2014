@@ -2,17 +2,17 @@ package org.genericsystem.kernel.systemproperty.constraints;
 
 import java.util.Objects;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.PropertyConstraintViolationException;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.AbstractVertex.SystemMap;
-import org.genericsystem.kernel.DefaultVertex;
 import org.genericsystem.kernel.Statics;
 
-public class PropertyConstraint implements Constraint {
+public class PropertyConstraint<T extends AbstractVertex<T>> implements Constraint<T> {
 
 	@Override
-	public <T extends AbstractVertex<T>> void check(DefaultVertex<T> modified, DefaultVertex<T> attribute) throws ConstraintViolationException {
+	public void check(T modified, T attribute) throws ConstraintViolationException {
 		// TODO KK
 		if (attribute.getValue().equals(SystemMap.class))
 			return;
@@ -28,7 +28,8 @@ public class PropertyConstraint implements Constraint {
 	}
 
 	@Override
-	public <T extends AbstractVertex<T>> boolean isCheckedAt(DefaultVertex<T> modified, CheckingType checkingType) {
+	public boolean isCheckedAt(T modified, CheckingType checkingType) {
 		return checkingType.equals(CheckingType.CHECK_ON_ADD) || (modified.getValue() == null && checkingType.equals(CheckingType.CHECK_ON_REMOVE));
 	}
+
 }

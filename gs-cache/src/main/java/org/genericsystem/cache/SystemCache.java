@@ -4,13 +4,19 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 import org.genericsystem.cache.annotations.Components;
 import org.genericsystem.cache.annotations.Meta;
+import org.genericsystem.cache.annotations.constraints.PropertyConstraint;
+import org.genericsystem.cache.annotations.constraints.RequiredConstraint;
+import org.genericsystem.cache.annotations.constraints.SingularConstraint;
+import org.genericsystem.cache.annotations.constraints.UniqueValueConstraint;
 import org.genericsystem.cache.annotations.value.BooleanValue;
 import org.genericsystem.cache.annotations.value.IntValue;
 import org.genericsystem.cache.annotations.value.StringValue;
 import org.genericsystem.kernel.AbstractVertex.SystemMap;
 import org.genericsystem.kernel.Root.MetaAttribute;
+import org.genericsystem.kernel.Statics;
 
 public class SystemCache<T extends AbstractGeneric<T, ?>> extends HashMap<Class<?>, T> {
 
@@ -42,8 +48,26 @@ public class SystemCache<T extends AbstractGeneric<T, ?>> extends HashMap<Class<
 			return systemProperty;
 		}
 		T result = setMeta(clazz).bindInstance(clazz, false, setOverrides(clazz), findValue(clazz), setComponents(clazz));
+		mountConstraints(result, clazz);
 		put(clazz, result);
 		return result;
+	}
+
+	private void mountConstraints(T result, Class<?> clazz) {
+
+		if (clazz.getAnnotation(PropertyConstraint.class) != null)
+			result.enablePropertyConstraint();
+
+		if (clazz.getAnnotation(UniqueValueConstraint.class) != null)
+			result.enableUniqueValueConstraint();
+
+		if (clazz.getAnnotation(RequiredConstraint.class) != null)
+			result.enableRequiredConstraint(Statics.NO_POSITION);
+
+		SingularConstraint singularTarget = clazz.getAnnotation(SingularConstraint.class);
+		if (singularTarget != null)
+			for (int axe : singularTarget.value())
+				result.enableSingularConstraint(axe);
 	}
 
 	private T setMeta(Class<?> clazz) {

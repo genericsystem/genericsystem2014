@@ -14,6 +14,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
@@ -573,7 +574,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {}
+	public static class SystemMap {
+	}
 
 	protected boolean equals(ISignature<?> meta, List<? extends ISignature<?>> supers, Serializable value, List<? extends ISignature<?>> components) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComponents().equals(components.stream().map(NULL_TO_THIS).collect(Collectors.toList())) && getSupers().equals(supers);
@@ -588,6 +590,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getKeys().filter(x -> Objects.equals(x.getValue(), property)).findFirst();
 	}
 
+	@SuppressWarnings("unchecked")
 	void checkSystemConstraints(CheckingType checkingType, boolean isFlushTime) {
 		checkDependsMetaComponents();
 		checkSupers();
@@ -598,7 +601,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 			try {
 				Constraint constraint = constraintClass.newInstance();
 				if (isCheckable(constraint, checkingType, isFlushTime))
-					constraint.check(this, this);
+					constraint.check((T) this, (T) this);
 			} catch (InstantiationException | IllegalAccessException | ConstraintViolationException e) {
 				getRoot().discardWithException(e);
 			}
@@ -638,13 +641,14 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		});
 	}
 
+	@SuppressWarnings("unchecked")
 	void checkConstraints(CheckingType checkingType, boolean isFlushTime) {
 		for (T constraintHolder : getActivedConstraints())
 			try {
 				Constraint constraint = newConstraint(constraintHolder);
 				if (isCheckable(constraint, checkingType, isFlushTime)) {
 					int axe = ((AxedPropertyClass) constraintHolder.getValue()).getAxe();
-					constraint.check(this, getHolders(constraintHolder).get().findFirst().get().getComponents().get(Statics.BASE_POSITION));
+					constraint.check((T) this, getHolders(constraintHolder).get().findFirst().get().getComponents().get(Statics.BASE_POSITION));
 				}
 			} catch (ConstraintViolationException e) {
 				getRoot().discardWithException(e);
@@ -670,8 +674,9 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	private boolean isCheckable(Constraint constraint, CheckingType checkingType, boolean isFlushTime) {
-		return (isFlushTime || constraint.isImmediatelyCheckable()) && constraint.isCheckedAt(this, checkingType);
+		return (isFlushTime || constraint.isImmediatelyCheckable()) && constraint.isCheckedAt((T) this, checkingType);
 	}
 
 	void checkConsistency(CheckingType checkingType, boolean isFlushTime) {
@@ -683,7 +688,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		@SuppressWarnings("unchecked")
 		@Override
 		public int compare(T constraintHolder, T compareConstraintHolder) {
-			return Constraint.getPriorityOf((Class<Constraint>) ((AxedPropertyClass) constraintHolder.getValue()).getClazz()) < Constraint.getPriorityOf((Class<Constraint>) ((AxedPropertyClass) compareConstraintHolder.getValue()).getClazz()) ? -1 : 1;
+			return Constraint.getPriorityOf((Class<Constraint<?>>) ((AxedPropertyClass) constraintHolder.getValue()).getClazz()) < Constraint.getPriorityOf((Class<Constraint<?>>) ((AxedPropertyClass) compareConstraintHolder.getValue()).getClazz()) ? -1
+					: 1;
 		}
 	};
 

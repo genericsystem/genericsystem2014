@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.Optional;
+
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 import org.genericsystem.kernel.systemproperty.CascadeRemoveProperty;
@@ -94,6 +95,39 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 
 	@Override
 	default boolean isPropertyConstraintEnabled() {
+		return isSystemPropertyEnabled(PropertyConstraint.class, Statics.NO_POSITION);
+	}
+
+	/**
+	 * TODO ERIK
+	 */
+	@Override
+	default T enableUniqueValueConstraint() {
+		return enableSystemProperty(PropertyConstraint.class, Statics.NO_POSITION);
+	}
+
+	@Override
+	default T disableUniqueValueConstraint() {
+		return disableSystemProperty(PropertyConstraint.class, Statics.NO_POSITION);
+	}
+
+	@Override
+	default boolean isUniqueValueEnabled() {
+		return isSystemPropertyEnabled(PropertyConstraint.class, Statics.NO_POSITION);
+	}
+
+	@Override
+	default T enableInstanceValueClassConstraint(T clazz) {
+		return enableSystemProperty(PropertyConstraint.class, Statics.NO_POSITION);
+	}
+
+	@Override
+	default T disableInstanceValueClassConstraint() {
+		return disableSystemProperty(PropertyConstraint.class, Statics.NO_POSITION);
+	}
+
+	@Override
+	default boolean isInstanceValueClassEnabled() {
 		return isSystemPropertyEnabled(PropertyConstraint.class, Statics.NO_POSITION);
 	}
 
