@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.IVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +35,7 @@ public class Statics {
 	public static final int ATTRIBUTE_SIZE = 1;
 	public static final int RELATION_SIZE = 2;
 	public static final int TERNARY_RELATION_SIZE = 3;
+
 	public static final long GARBAGE_PERIOD = 1000L;
 	public static final long GARBAGE_INITIAL_DELAY = 1000L;
 	public static final long LIFE_TIMEOUT = 1386174608777L;// 30 minutes
@@ -131,7 +131,7 @@ public class Statics {
 		}
 	}
 
-	public static class Supers<T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> extends ArrayList<T> {
+	public static class Supers<T extends AbstractVertex<T>> extends ArrayList<T> {
 		private static final long serialVersionUID = 6163099887384346235L;
 
 		public Supers(List<T> adds) {
@@ -161,7 +161,7 @@ public class Statics {
 		}
 	}
 
-	public static <T extends IVertex<T, ?>> boolean areOverridesReached(List<T> overrides, List<T> supers) {
+	public static <T extends IVertex<T>> boolean areOverridesReached(List<T> overrides, List<T> supers) {
 		return overrides.stream().allMatch(override -> supers.stream().anyMatch(superVertex -> superVertex.inheritsFrom(override)));
 	}
 
