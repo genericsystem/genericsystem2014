@@ -7,6 +7,7 @@ import org.genericsystem.api.core.IVertex;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 import org.genericsystem.kernel.systemproperty.CascadeRemoveProperty;
 import org.genericsystem.kernel.systemproperty.NoReferentialIntegrityProperty;
+import org.genericsystem.kernel.systemproperty.constraints.InstanceValueClassConstraint;
 import org.genericsystem.kernel.systemproperty.constraints.PropertyConstraint;
 import org.genericsystem.kernel.systemproperty.constraints.RequiredConstraint;
 import org.genericsystem.kernel.systemproperty.constraints.SingularConstraint;
@@ -18,9 +19,9 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 	default Serializable getSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos) {
 		Optional<T> key = ((T) this).getKey(new AxedPropertyClass(propertyClass, pos));
 		if (key.isPresent()) {
-			Optional<Serializable> result = getValues(key.get()).get().findFirst();
+			Optional<T> result = getHolders(key.get()).get().findFirst();
 			if (result.isPresent())
-				return result.get();
+				return result.get().getValue();
 		}
 		return null;
 	}
@@ -98,9 +99,6 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 		return isSystemPropertyEnabled(PropertyConstraint.class, Statics.NO_POSITION);
 	}
 
-	/**
-	 * TODO ERIK
-	 */
 	@Override
 	default T enableUniqueValueConstraint() {
 		return enableSystemProperty(PropertyConstraint.class, Statics.NO_POSITION);
@@ -117,18 +115,15 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 	}
 
 	@Override
-	default T enableInstanceValueClassConstraint(Class<?> clazz) {
-		return enableSystemProperty(PropertyConstraint.class, Statics.NO_POSITION);
+	default Class<?> getClassConstraint() {
+		return (Class<?>) getSystemPropertyValue(InstanceValueClassConstraint.class, Statics.NO_POSITION);
 	}
 
 	@Override
-	default T disableInstanceValueClassConstraint() {
-		return disableSystemProperty(PropertyConstraint.class, Statics.NO_POSITION);
-	}
-
-	@Override
-	default boolean isInstanceValueClassEnabled() {
-		return isSystemPropertyEnabled(PropertyConstraint.class, Statics.NO_POSITION);
+	@SuppressWarnings("unchecked")
+	default T setClassConstraint(Class<?> constraintClass) {
+		setSystemPropertyValue(InstanceValueClassConstraint.class, Statics.NO_POSITION, constraintClass);
+		return (T) this;
 	}
 
 	@Override
