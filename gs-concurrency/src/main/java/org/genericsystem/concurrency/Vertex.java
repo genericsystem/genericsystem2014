@@ -4,7 +4,7 @@ import java.util.stream.Stream;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 
-public class Vertex extends AbstractVertex implements DefaultVertex {
+public class Vertex extends AbstractVertex<Vertex> implements DefaultVertex<Vertex> {
 
 	private final Dependencies<Vertex> instances = buildDependencies();
 	private final Dependencies<Vertex> inheritings = buildDependencies();
@@ -78,7 +78,7 @@ public class Vertex extends AbstractVertex implements DefaultVertex {
 	}
 
 	@Override
-	public DefaultRoot getRoot() {
+	public Root getRoot() {
 		return getMeta().getRoot();
 	}
 }

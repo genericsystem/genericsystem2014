@@ -10,7 +10,7 @@ public interface DefaultEngine<T extends AbstractGeneric<T, V>, V extends Abstra
 	<subT extends T> subT find(Class<subT> clazz);
 
 	default Cache<T, V> newCache() {
-		return buildCache(new Transaction<>((DefaultEngine<T, V>) getRoot()));
+		return buildCache(new Transaction<>(getRoot()));
 	}
 
 	default Cache<T, V> buildCache(AbstractContext<T, V> subContext) {

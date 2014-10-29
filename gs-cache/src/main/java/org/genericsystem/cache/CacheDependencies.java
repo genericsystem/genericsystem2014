@@ -3,14 +3,13 @@ package org.genericsystem.cache;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.DependenciesImpl;
 
 public class CacheDependencies<T> implements Dependencies<T> {
 
-	private final Dependencies<T> inserts = new DependenciesImpl<T>();
-	private final Dependencies<T> deletes = new DependenciesImpl<T>();
+	private final Dependencies<T> inserts = new DependenciesImpl<>();
+	private final Dependencies<T> deletes = new DependenciesImpl<>();
 	private final Supplier<Stream<T>> streamSupplier;
 
 	public CacheDependencies(Supplier<Stream<T>> streamSupplier) {
@@ -24,12 +23,13 @@ public class CacheDependencies<T> implements Dependencies<T> {
 
 	@Override
 	public boolean remove(T generic) {
-		if (!inserts.remove(generic))
+		if (!inserts.remove(generic)) {
 			if (!deletes.contains(generic)) {
 				deletes.add(generic);
 				return true;
-			} else
-				return false;
+			}
+			return false;
+		}
 		return true;
 	}
 
@@ -45,6 +45,6 @@ public class CacheDependencies<T> implements Dependencies<T> {
 	@Override
 	public Stream<T> get() {
 		return Stream.concat(streamSupplier.get().filter(x -> !deletes.contains(x)), inserts.get());
-		
+
 	}
 }
