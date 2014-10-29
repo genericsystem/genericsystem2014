@@ -1,6 +1,7 @@
 package org.genericsystem.concurrency;
 
 import java.io.Serializable;
+import java.util.Map.Entry;
 import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -93,7 +94,7 @@ public abstract class AbstractDependencies<T> implements Dependencies<T> {
 				}
 				next = nextNode;
 				T content = next.content;
-				if (content != null && (!(content instanceof AbstractVertex) || ((AbstractVertex) content).isAlive(ts)))
+				if (content != null && (((content instanceof AbstractVertex) && ((AbstractVertex) content).isAlive(ts)) || ((content instanceof Entry) && ((AbstractVertex) ((Entry) content).getKey()).isAlive(ts))))
 					break;
 			}
 		}
