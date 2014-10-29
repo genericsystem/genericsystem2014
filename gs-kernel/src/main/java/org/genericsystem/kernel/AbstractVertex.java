@@ -681,8 +681,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		@SuppressWarnings("unchecked")
 		@Override
 		public int compare(T constraintHolder, T compareConstraintHolder) {
-			return Constraint.getPriorityOf((Class<Constraint<?>>) ((AxedPropertyClass) constraintHolder.getValue()).getClazz()) < Constraint.getPriorityOf((Class<Constraint<?>>) ((AxedPropertyClass) compareConstraintHolder.getValue()).getClazz()) ? -1
-					: 1;
+			return Constraint.getPriorityOf((Class<Constraint<?>>) ((AxedPropertyClass) constraintHolder.getValue()).getClazz()) < Constraint.getPriorityOf((Class<Constraint<?>>) ((AxedPropertyClass) compareConstraintHolder.getValue()).getClazz()) ? -1 : 1;
 		}
 	};
 

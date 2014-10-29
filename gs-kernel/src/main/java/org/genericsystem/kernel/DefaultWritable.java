@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
 import org.genericsystem.api.core.IVertex;
 
 public interface DefaultWritable<T extends AbstractVertex<T>> extends IVertex<T> {

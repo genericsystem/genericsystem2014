@@ -2,7 +2,9 @@ package org.genericsystem.api.core;
 
 import java.io.Serializable;
 import java.util.List;
+
 import javax.json.JsonObject;
+
 import org.genericsystem.api.exception.RollbackException;
 
 /**
@@ -555,31 +557,21 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	boolean isUniqueValueEnabled();
 
 	/**
-	 * Enable the instance value class constraint of this vertex.
+	 * get the class value constraint of this vertex.
 	 *
-	 * @param clazz
-	 *            the class constraint
-	 * @return this
+	 *
+	 * @return the class constraint
 	 */
-	T enableInstanceValueClassConstraint(T clazz);
+	Class<?> getClassConstraint();
 
 	/**
-	 *
-	 * Disable the instance value class constraint of this vertex.
-	 *
-	 *
+	 * set the class value constraint of this vertex.
+	 * 
+	 * @param constraintClass
+	 *            the value class of the constraint
 	 * @return this
 	 */
-	T disableInstanceValueClassConstraint();
-
-	/**
-	 *
-	 * Indicates whether this vertex is instance value class constraint .
-	 *
-	 *
-	 * @return true if this vertex is instance value class constraint
-	 */
-	boolean isInstanceValueClassEnabled();
+	T setClassConstraint(Class<?> constraintClass);
 
 	/**
 	 *
