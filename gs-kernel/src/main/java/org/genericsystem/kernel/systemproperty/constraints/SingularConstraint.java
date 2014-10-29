@@ -10,7 +10,7 @@ public class SingularConstraint<T extends AbstractVertex<T>> implements Constrai
 	@Override
 	public void check(T modified, T attribute) throws ConstraintViolationException {
 		T base = modified.getComponents().get(Statics.BASE_POSITION);
-		if (base.getHolders((T) attribute).size() > 1)
+		if (base.getHolders(attribute).size() > 1)
 			throw new SingularConstraintViolationException(modified + " has more than one " + attribute);
 	}
 

@@ -61,20 +61,20 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 	}
 
 	@Override
-	Snapshot<T> getMetaComposites(T generic, T meta) {
+	Snapshot<T> getCompositesByMeta(T generic, T meta) {
 		return () -> {
 			V genericVertex = unwrap(generic);
 			V metaVertex = unwrap(meta);
-			return genericVertex != null && metaVertex != null ? genericVertex.getMetaComposites(metaVertex).get().map(generic::wrap) : Stream.empty();
+			return genericVertex != null && metaVertex != null ? genericVertex.getCompositesByMeta(metaVertex).get().map(generic::wrap) : Stream.empty();
 		};
 	}
 
 	@Override
-	Snapshot<T> getSuperComposites(T generic, T superT) {
+	Snapshot<T> getCompositesBySuper(T generic, T superT) {
 		return () -> {
 			V genericVertex = unwrap(generic);
 			V superVertex = unwrap(superT);
-			return genericVertex != null && superVertex != null ? genericVertex.getSuperComposites(superVertex).get().map(generic::wrap) : Stream.empty();
+			return genericVertex != null && superVertex != null ? genericVertex.getCompositesBySuper(superVertex).get().map(generic::wrap) : Stream.empty();
 		};
 	}
 

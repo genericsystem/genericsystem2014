@@ -14,7 +14,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
@@ -443,26 +442,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return () -> getMetaCompositesDependencies().get().map(entry -> entry.getValue().get()).flatMap(x -> x);
 	}
 
-	// TODO KK public -> package
-	public Snapshot<T> getMetaComposites(T meta) {
-		return () -> {
-			for (DependenciesEntry<T> entry : getMetaCompositesDependencies())
-				if (meta.equals(entry.getKey()))
-					return entry.getValue().get();
-			return Stream.empty();
-		};
-	}
-
-	// TODO KK public -> package
-	public Snapshot<T> getSuperComposites(T superT) {
-		return () -> {
-			for (DependenciesEntry<T> entry : getSuperCompositesDependencies())
-				if (superT.equals(entry.getKey()))
-					return entry.getValue().get();
-			return Stream.empty();
-		};
-	}
-
 	@SuppressWarnings("unchecked")
 	protected <subT extends T> subT plug() {
 		T result = ((AbstractVertex<T>) getMeta()).indexInstance((T) this);
@@ -483,6 +462,21 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		getComponents().stream().filter(component -> !equals(component)).forEach(component -> ((AbstractVertex<T>) component).unIndexByMeta(getMeta(), (T) this));
 		getSupers().forEach(superGeneric -> getComponents().stream().filter(component -> !equals(component)).forEach(component -> ((AbstractVertex<T>) component).unIndexBySuper(superGeneric, (T) this)));
 		return result;
+	}
+
+	private static <T> Snapshot<T> getCompositesByIndex(DependenciesMap<T> multiMap, T index) {
+		return () -> {
+			Dependencies<T> dependencies = multiMap.getByIndex(index);
+			return dependencies != null ? dependencies.get() : Stream.empty();
+		};
+	}
+
+	public Snapshot<T> getCompositesByMeta(T meta) {
+		return getCompositesByIndex(getMetaCompositesDependencies(), meta);
+	}
+
+	public Snapshot<T> getCompositesBySuper(T superT) {
+		return getCompositesByIndex(getSuperCompositesDependencies(), superT);
 	}
 
 	private T indexByMeta(T meta, T composite) {
@@ -509,10 +503,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	private static <T extends AbstractVertex<T>> T index(DependenciesMap<T> multimap, T index, T composite) {
 		Dependencies<T> dependencies = multimap.getByIndex(index);
 		if (dependencies == null)
-			dependencies = composite.buildDependencies();
-		T result = dependencies.set(composite);
-		multimap.set(new DependenciesEntry<>(index, dependencies));
-		return result;
+			multimap.set(new DependenciesEntry<>(index, dependencies = composite.buildDependencies()));
+		return dependencies.set(composite);
 	}
 
 	private static <T> boolean unIndex(DependenciesMap<T> multimap, T index, T composite) {
@@ -574,8 +566,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {
-	}
+	public static class SystemMap {}
 
 	protected boolean equals(ISignature<?> meta, List<? extends ISignature<?>> supers, Serializable value, List<? extends ISignature<?>> components) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComponents().equals(components.stream().map(NULL_TO_THIS).collect(Collectors.toList())) && getSupers().equals(supers);
@@ -601,7 +592,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 			try {
 				Constraint constraint = constraintClass.newInstance();
 				if (isCheckable(constraint, checkingType, isFlushTime))
-					constraint.check((T) this, (T) this);
+					constraint.check(this, this);
 			} catch (InstantiationException | IllegalAccessException | ConstraintViolationException e) {
 				getRoot().discardWithException(e);
 			}
@@ -648,7 +639,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 				Constraint constraint = newConstraint(constraintHolder);
 				if (isCheckable(constraint, checkingType, isFlushTime)) {
 					int axe = ((AxedPropertyClass) constraintHolder.getValue()).getAxe();
-					constraint.check((T) this, getHolders(constraintHolder).get().findFirst().get().getComponents().get(Statics.BASE_POSITION));
+					constraint.check(this, getHolders(constraintHolder).get().findFirst().get().getComponents().get(Statics.BASE_POSITION));
 				}
 			} catch (ConstraintViolationException e) {
 				getRoot().discardWithException(e);
@@ -676,7 +667,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	@SuppressWarnings("unchecked")
 	private boolean isCheckable(Constraint constraint, CheckingType checkingType, boolean isFlushTime) {
-		return (isFlushTime || constraint.isImmediatelyCheckable()) && constraint.isCheckedAt((T) this, checkingType);
+		return (isFlushTime || constraint.isImmediatelyCheckable()) && constraint.isCheckedAt(this, checkingType);
 	}
 
 	void checkConsistency(CheckingType checkingType, boolean isFlushTime) {

@@ -42,7 +42,7 @@ public interface DefaultVertex<T extends AbstractVertex<T>> extends DefaultAnces
 	@Override
 	@SuppressWarnings("unchecked")
 	default Snapshot<T> getSubNodes() {
-		return () -> ((T) this).getMetaComposites(this.getMeta()).get();
+		return () -> ((T) this).getCompositesByMeta(this.getMeta()).get();
 	}
 
 	@Override

@@ -30,7 +30,7 @@ public class VertexTest extends AbstractTest {
 		Vertex myVehicle = vehicle.addInstance("myVehicle");
 		Vertex myVehicle123 = powerVehicle.addInstance("123", myVehicle);
 
-		assert myVehicle.getMetaComposites(powerVehicle).get().anyMatch(g -> g.equals(myVehicle123));
+		assert myVehicle.getCompositesByMeta(powerVehicle).get().anyMatch(g -> g.equals(myVehicle123));
 	}
 
 	public void test001_getSuperComponents() {
@@ -41,7 +41,7 @@ public class VertexTest extends AbstractTest {
 		Vertex vehicle256 = powerVehicle.addInstance("256", vehicle);
 		Vertex myVehicle123 = powerVehicle.addInstance(vehicle256, "123", myVehicle);
 
-		assert myVehicle.getSuperComposites(vehicle256).contains(myVehicle123);
+		assert myVehicle.getCompositesBySuper(vehicle256).contains(myVehicle123);
 	}
 
 	public void test002_getSuperComponents() {
@@ -53,7 +53,7 @@ public class VertexTest extends AbstractTest {
 		Vertex vehicle256 = powerVehicle.addInstance("256", vehicle);
 		Vertex myVehicle123 = powerVehicle.addInstance("123", myVehicle);
 
-		assert myVehicle.getSuperComposites(vehicle256).contains(myVehicle123);
+		assert myVehicle.getCompositesBySuper(vehicle256).contains(myVehicle123);
 	}
 
 	public void test() {
@@ -78,11 +78,11 @@ public class VertexTest extends AbstractTest {
 		assert engine.getInstances().containsAll(Arrays.asList(vehicle, car));
 		assert car.getInstances().contains(myBmw) : car.getInstances() + car.info();
 		assert power.getInstances().contains(v233);
-		assert car.getMetaComposites(power.getMeta()).contains(power);
+		assert car.getCompositesByMeta(power.getMeta()).contains(power);
 		assert car.getSupers().stream().findFirst().get() == vehicle : car.getSupers().stream().findFirst().get().info();
 		assert car.getSupers().stream().anyMatch(vehicle::equals);
 		assert vehicle.getInheritings().contains(car);
-		assert myBmw.getMetaComposites(v233.getMeta()).contains(v233);
+		assert myBmw.getCompositesByMeta(v233.getMeta()).contains(v233);
 		assert myBmw.isInstanceOf(car);
 		assert myBmw.isInstanceOf(vehicle);
 		assert !myBmw.isInstanceOf(engine);

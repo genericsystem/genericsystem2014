@@ -2,9 +2,7 @@ package org.genericsystem.api.core;
 
 import java.io.Serializable;
 import java.util.List;
-
 import javax.json.JsonObject;
-
 import org.genericsystem.api.exception.RollbackException;
 
 /**
@@ -558,7 +556,7 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 
 	/**
 	 * Enable the instance value class constraint of this vertex.
-	 * 
+	 *
 	 * @param clazz
 	 *            the class constraint
 	 * @return this
@@ -956,5 +954,9 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 
 	@SuppressWarnings("unchecked")
 	T update(Serializable newValue, T... newComposites);
+
+	Snapshot<T> getCompositesByMeta(T meta);
+
+	Snapshot<T> getCompositesBySuper(T superT);
 
 }
