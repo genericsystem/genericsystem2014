@@ -178,29 +178,29 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 	}
 
 	@Override
-	Snapshot<T> getMetaComposites(T generic, T meta) {
-		return getIndex(metaCompositesDependencies, () -> subContext.getMetaComposites(generic, meta).get(), generic, meta);
+	Snapshot<T> getCompositesByMeta(T generic, T meta) {
+		return getIndex(metaCompositesDependencies, () -> subContext.getCompositesByMeta(generic, meta).get(), generic, meta);
 	}
 
 	@Override
-	Snapshot<T> getSuperComposites(T generic, T superT) {
-		return getIndex(superCompositesDependencies, () -> subContext.getSuperComposites(generic, superT).get(), generic, superT);
+	Snapshot<T> getCompositesBySuper(T generic, T superT) {
+		return getIndex(superCompositesDependencies, () -> subContext.getCompositesBySuper(generic, superT).get(), generic, superT);
 	}
 
 	private T indexByMeta(T generic, T meta, T component) {
-		return index(metaCompositesDependencies, () -> subContext.getMetaComposites(generic, meta).get(), generic, meta, component);
+		return index(metaCompositesDependencies, () -> subContext.getCompositesByMeta(generic, meta).get(), generic, meta, component);
 	}
 
 	private T indexBySuper(T generic, T superT, T component) {
-		return index(superCompositesDependencies, () -> subContext.getSuperComposites(generic, superT).get(), generic, superT, component);
+		return index(superCompositesDependencies, () -> subContext.getCompositesBySuper(generic, superT).get(), generic, superT, component);
 	}
 
 	private boolean unIndexByMeta(T generic, T meta, T component) {
-		return unIndex(metaCompositesDependencies, () -> subContext.getMetaComposites(generic, meta).get(), generic, meta, component);
+		return unIndex(metaCompositesDependencies, () -> subContext.getCompositesByMeta(generic, meta).get(), generic, meta, component);
 	}
 
 	private boolean unIndexBySuper(T generic, T superT, T component) {
-		return unIndex(superCompositesDependencies, () -> subContext.getSuperComposites(generic, superT).get(), generic, superT, component);
+		return unIndex(superCompositesDependencies, () -> subContext.getCompositesBySuper(generic, superT).get(), generic, superT, component);
 	}
 
 	private static <T> Snapshot<T> getIndex(Map<T, DependenciesMap<T>> multiMap, Supplier<Stream<T>> subStreamSupplier, T generic, T index) {

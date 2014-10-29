@@ -8,7 +8,7 @@ public class RequiredConstraint<T extends AbstractVertex<T>> implements Constrai
 
 	@Override
 	public void check(T modified, T attribute) throws ConstraintViolationException {
-		if (modified.isConcrete() && modified.getHolders((T) attribute).isEmpty())
+		if (modified.isConcrete() && modified.getHolders(attribute).isEmpty())
 			throw new RequiredConstraintViolationException(modified + " has more than one " + attribute);
 	}
 

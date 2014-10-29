@@ -67,9 +67,9 @@ class InheritanceComputer<T extends AbstractVertex<T>> extends HashSet<T> {
 		}
 
 		private Stream<T> getStream(final T holder) {
-			if (holder.getLevel() != level || localBase.getSuperComposites(holder).iterator().hasNext())
+			if (holder.getLevel() != level || localBase.getCompositesBySuper(holder).iterator().hasNext())
 				add(holder);
-			Stream<T> indexStream = Stream.concat(holder.getLevel() < level ? localBase.getMetaComposites(holder).get() : Stream.empty(), localBase.getSuperComposites(holder).get());
+			Stream<T> indexStream = Stream.concat(holder.getLevel() < level ? localBase.getCompositesByMeta(holder).get() : Stream.empty(), localBase.getCompositesBySuper(holder).get());
 			return Stream.concat(isTerminal() && contains(holder) ? Stream.empty() : Stream.of(holder), projectStream(indexStream));
 		}
 	}
