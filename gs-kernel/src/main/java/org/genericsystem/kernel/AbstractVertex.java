@@ -484,12 +484,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return result;
 	}
 
-	private T indexByMeta(T meta, T component) {
-		return index(getMetaCompositesDependencies(), meta, component);
+	private T indexByMeta(T meta, T composite) {
+		return index(getMetaCompositesDependencies(), meta, composite);
 	}
 
-	private T indexBySuper(T superVertex, T component) {
-		return index(getSuperCompositesDependencies(), superVertex, component);
+	private T indexBySuper(T superVertex, T composite) {
+		return index(getSuperCompositesDependencies(), superVertex, composite);
 	}
 
 	public static interface DependenciesMap<T> extends Dependencies<DependenciesEntry<T>> {
@@ -505,30 +505,28 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	}
 
-	private static <T extends AbstractVertex<T>> T index(DependenciesMap<T> multimap, T index, T component) {
-		for (DependenciesEntry<T> entry : multimap)
-			if (index.equals(entry.getKey()))
-				return entry.getValue().set(component);
-
-		Dependencies<T> dependencies = component.buildDependencies();
-		T result = dependencies.set(component);
+	private static <T extends AbstractVertex<T>> T index(DependenciesMap<T> multimap, T index, T composite) {
+		Dependencies<T> dependencies = multimap.getByIndex(index);
+		if (dependencies == null)
+			dependencies = composite.buildDependencies();
+		T result = dependencies.set(composite);
 		multimap.set(new DependenciesEntry<>(index, dependencies));
 		return result;
 	}
 
-	private static <T> boolean unIndex(DependenciesMap<T> multimap, T index, T component) {
-		for (DependenciesEntry<T> entry : multimap)
-			if (index.equals(entry.getKey()))
-				return entry.getValue().remove(component);
-		return false;
+	private static <T> boolean unIndex(DependenciesMap<T> multimap, T index, T composite) {
+		Dependencies<T> dependencies = multimap.getByIndex(index);
+		if (dependencies == null)
+			return false;
+		return dependencies.remove(composite);
 	}
 
-	private boolean unIndexByMeta(T meta, T component) {
-		return unIndex(getMetaCompositesDependencies(), meta, component);
+	private boolean unIndexByMeta(T meta, T composite) {
+		return unIndex(getMetaCompositesDependencies(), meta, composite);
 	}
 
-	private boolean unIndexBySuper(T superT, T component) {
-		return unIndex(getSuperCompositesDependencies(), superT, component);
+	private boolean unIndexBySuper(T superT, T composite) {
+		return unIndex(getSuperCompositesDependencies(), superT, composite);
 	}
 
 	private static <T> T index(Dependencies<T> dependencies, T dependency) {
