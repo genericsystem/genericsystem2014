@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @FunctionalInterface
-public interface SnapshotIterator<T> {
+public interface IteratorSnapshot<T> {
 
 	public default Iterator<T> iterator() {
 		return get().iterator();

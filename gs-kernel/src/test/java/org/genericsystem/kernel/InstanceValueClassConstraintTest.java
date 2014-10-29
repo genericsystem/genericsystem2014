@@ -1,8 +1,5 @@
 package org.genericsystem.kernel;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.testng.annotations.Test;
 
 @Test
@@ -26,10 +23,4 @@ public class InstanceValueClassConstraintTest extends AbstractTest {
 
 	}
 
-	public void test02_simpleCase() {
-		List<Integer> list = new ArrayList<>();
-		list.add(null);
-		list.stream().findFirst();
-
-	}
 }
