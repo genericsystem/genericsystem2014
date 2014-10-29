@@ -1,7 +1,6 @@
 package org.genericsystem.concurrency;
 
-
-public interface DefaultVertex extends org.genericsystem.cache.DefaultVertex<Vertex> {
+public interface DefaultVertex<T extends AbstractVertex<T>> extends org.genericsystem.cache.DefaultVertex<T> {
 
 	LifeManager getLifeManager();
 

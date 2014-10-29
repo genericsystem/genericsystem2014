@@ -1,13 +1,13 @@
 package org.genericsystem.concurrency;
 
-public abstract class AbstractVertex extends org.genericsystem.kernel.AbstractVertex<Vertex> implements DefaultVertex {
+public abstract class AbstractVertex<V extends AbstractVertex<V>> extends org.genericsystem.kernel.AbstractVertex<V> implements DefaultVertex<V> {
 
 	protected LifeManager lifeManager;
 
 	@SuppressWarnings("unchecked")
-	protected <T extends AbstractVertex> T restore(Long designTs, long birthTs, long lastReadTs, long deathTs) {
+	protected V restore(Long designTs, long birthTs, long lastReadTs, long deathTs) {
 		lifeManager = new LifeManager(designTs, birthTs, lastReadTs, deathTs);
-		return (T) this;
+		return (V) this;
 	}
 
 	@Override

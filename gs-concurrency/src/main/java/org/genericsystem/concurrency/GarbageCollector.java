@@ -5,16 +5,15 @@ import java.util.LinkedHashSet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
 import org.genericsystem.kernel.Statics;
 
-public class GarbageCollector extends LinkedHashSet<Vertex> {
+public class GarbageCollector<V extends AbstractVertex<V>> extends LinkedHashSet<V> {
 
 	private static final long serialVersionUID = -2021341943811568201L;
 	private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-	private final DefaultRoot root;
+	private final DefaultRoot<V> root;
 
-	public GarbageCollector(DefaultRoot root) {
+	public GarbageCollector(DefaultRoot<V> root) {
 		this.root = root;
 	}
 
@@ -30,9 +29,9 @@ public class GarbageCollector extends LinkedHashSet<Vertex> {
 	public void runGarbage(long timeOut) {
 		long ts = root.pickNewTs();
 		synchronized (root) {
-			Iterator<Vertex> iterator = GarbageCollector.this.iterator();
+			Iterator<V> iterator = GarbageCollector.this.iterator();
 			while (iterator.hasNext()) {
-				Vertex vertex = iterator.next();
+				V vertex = iterator.next();
 				if (ts - vertex.getLifeManager().getDeathTs() >= timeOut) {
 					vertex.remove();
 					iterator.remove();

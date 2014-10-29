@@ -8,9 +8,9 @@ import org.genericsystem.cache.GenericsCache;
 import org.genericsystem.cache.SystemCache;
 import org.genericsystem.kernel.Statics;
 
-public class Engine extends Generic implements DefaultEngine {
+public class Engine extends Generic implements DefaultEngine<Generic, Vertex> {
 
-	protected final ThreadLocal<Cache> cacheLocal = new ThreadLocal<>();
+	protected final ThreadLocal<Cache<Generic, Vertex>> cacheLocal = new ThreadLocal<>();
 
 	private final GenericsCache<Generic> genericsCache = new GenericsCache<>();
 	private final SystemCache<Generic> systemCache = new SystemCache<>(this);
@@ -24,14 +24,14 @@ public class Engine extends Generic implements DefaultEngine {
 		init(false, null, Collections.emptyList(), engineValue, Collections.emptyList());
 		root = buildRoot(engineValue);
 
-		Cache cache = newCache().start();
+		Cache<Generic, Vertex> cache = newCache().start();
 		mountSystemProperties(cache);
 		for (Class<?> clazz : userClasses)
 			systemCache.set(clazz);
 		cache.flush();
 	}
 
-	private void mountSystemProperties(Cache cache) {
+	private void mountSystemProperties(Cache<Generic, Vertex> cache) {
 		Generic metaAttribute = setInstance(this, getValue(), coerceToTArray(this));
 		setInstance(SystemMap.class, coerceToTArray(this)).enablePropertyConstraint();
 		metaAttribute.disableReferentialIntegrity(Statics.BASE_POSITION);
@@ -52,12 +52,12 @@ public class Engine extends Generic implements DefaultEngine {
 	}
 
 	@Override
-	public Cache start(org.genericsystem.cache.Cache<Generic, Vertex> cache) {
+	public Cache<Generic, Vertex> start(org.genericsystem.cache.Cache<Generic, Vertex> cache) {
 		if (!equals(cache.getEngine()))
 			throw new IllegalStateException();
 		// TODO KK
-		cacheLocal.set((Cache) cache);
-		return (Cache) cache;
+		cacheLocal.set((Cache<Generic, Vertex>) cache);
+		return (Cache<Generic, Vertex>) cache;
 	}
 
 	@Override
@@ -66,8 +66,8 @@ public class Engine extends Generic implements DefaultEngine {
 	}
 
 	@Override
-	public Cache getCurrentCache() {
-		Cache currentCache = cacheLocal.get();
+	public Cache<Generic, Vertex> getCurrentCache() {
+		Cache<Generic, Vertex> currentCache = cacheLocal.get();
 		if (currentCache == null)
 			throw new IllegalStateException("Unable to find the current cache. Did you miss to call start() method on it ?");
 		return currentCache;
