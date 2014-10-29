@@ -2,19 +2,23 @@ package org.genericsystem.api.core;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Spliterators;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @FunctionalInterface
-public interface IteratorSnapshot<T> {
+public interface IteratorSnapshot<T> extends Snapshot<T> {
 
-	public default Iterator<T> iterator() {
-		return get().iterator();
+	@Override
+	public abstract Iterator<T> iterator();
 
+	@Override
+	public default Stream<T> get() {
+		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator(), 0), false);
 	}
 
-	public abstract Stream<T> get();
-
+	@Override
 	default int size() {
 		Iterator<T> iterator = iterator();
 		int size = 0;
@@ -25,10 +29,12 @@ public interface IteratorSnapshot<T> {
 		return size;
 	}
 
+	@Override
 	default boolean isEmpty() {
 		return !iterator().hasNext();
 	}
 
+	@Override
 	default boolean contains(Object o) {
 		Iterator<T> it = iterator();
 		while (it.hasNext())
@@ -37,6 +43,7 @@ public interface IteratorSnapshot<T> {
 		return false;
 	}
 
+	@Override
 	default boolean containsAll(Collection<?> c) {
 		for (Object e : c)
 			if (!contains(e))
@@ -44,6 +51,7 @@ public interface IteratorSnapshot<T> {
 		return true;
 	}
 
+	@Override
 	default T get(T o) {
 		Iterator<T> it = iterator();
 		while (it.hasNext()) {
@@ -54,6 +62,7 @@ public interface IteratorSnapshot<T> {
 		return null;
 	}
 
+	@Override
 	default String info() {
 		return get().collect(Collectors.toList()).toString();
 	}

@@ -2,7 +2,6 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.Optional;
-
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 import org.genericsystem.kernel.systemproperty.CascadeRemoveProperty;
@@ -22,6 +21,10 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 			Optional<T> result = getHolders(key.get()).get().findFirst();
 			if (result.isPresent())
 				return result.get().getValue();
+
+			// Iterator<Serializable> iterator = getValues(key.get()).iterator();
+			// if (iterator.hasNext())
+			// return iterator.next();
 		}
 		return null;
 	}

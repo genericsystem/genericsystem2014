@@ -1,11 +1,13 @@
 package org.genericsystem.kernel;
 
+import java.util.stream.Stream;
 import org.testng.annotations.Test;
 
 @Test
 public class InstanceValueClassConstraintTest extends AbstractTest {
 
 	public void test01_simpleCase() {
+		Stream.empty().count();
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
 		Vertex myVehicle = vehicle.addInstance("myVehicle");
@@ -22,5 +24,4 @@ public class InstanceValueClassConstraintTest extends AbstractTest {
 		// catchAndCheckCause(() -> myVehicle.addHolder(power, "125"), UniqueValueConstraintViolationException.class);
 
 	}
-
 }
