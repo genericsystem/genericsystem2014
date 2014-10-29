@@ -8,7 +8,6 @@ public class InstanceValueClassConstraint<T extends AbstractVertex<T>> implement
 	@Override
 	public void check(T modified, T attribute) throws ConstraintViolationException {
 		// TODO Auto-generated method stub
-
 	}
 
 }

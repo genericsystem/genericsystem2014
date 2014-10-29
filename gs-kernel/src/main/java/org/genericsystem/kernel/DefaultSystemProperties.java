@@ -117,7 +117,7 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 	}
 
 	@Override
-	default T enableInstanceValueClassConstraint(T clazz) {
+	default T enableInstanceValueClassConstraint(Class<?> clazz) {
 		return enableSystemProperty(PropertyConstraint.class, Statics.NO_POSITION);
 	}
 

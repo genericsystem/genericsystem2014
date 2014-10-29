@@ -563,7 +563,7 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 *            the class constraint
 	 * @return this
 	 */
-	T enableInstanceValueClassConstraint(T clazz);
+	T enableInstanceValueClassConstraint(Class<?> clazz);
 
 	/**
 	 *
