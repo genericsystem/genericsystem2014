@@ -3,10 +3,10 @@ package org.genericsystem.kernel.systemproperty.constraints;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.kernel.AbstractVertex;
 
-public class UniqueValueConstraint implements Constraint {
+public class UniqueValueConstraint<T extends AbstractVertex<T>> implements Constraint<T> {
 
 	@Override
-	public <T extends AbstractVertex<T>> void check(T modified, T attribute) throws ConstraintViolationException {
+	public void check(T modified, T attribute) throws ConstraintViolationException {
 		// Set<Serializable> values = new HashSet<>();
 		// for (T vertex : modified.getAllInstances()) {
 		// if (vertex.getValue() != null && !values.add(vertex.getValue()))

@@ -4,16 +4,16 @@ import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RequiredConstraintViolationException;
 import org.genericsystem.kernel.AbstractVertex;
 
-public class RequiredConstraint implements Constraint {
+public class RequiredConstraint<T extends AbstractVertex<T>> implements Constraint<T> {
 
 	@Override
-	public <T extends AbstractVertex<T>> void check(T modified, T attribute) throws ConstraintViolationException {
+	public void check(T modified, T attribute) throws ConstraintViolationException {
 		if (modified.isConcrete() && modified.getHolders((T) attribute).isEmpty())
 			throw new RequiredConstraintViolationException(modified + " has more than one " + attribute);
 	}
 
 	@Override
-	public <T extends AbstractVertex<T>> boolean isCheckedAt(T modified, CheckingType checkingType) {
+	public boolean isCheckedAt(T modified, CheckingType checkingType) {
 		return checkingType.equals(CheckingType.CHECK_ON_ADD) || checkingType.equals(CheckingType.CHECK_ON_REMOVE);
 	}
 
