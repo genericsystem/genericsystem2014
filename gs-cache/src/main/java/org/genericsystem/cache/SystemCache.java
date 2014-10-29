@@ -4,11 +4,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 import org.genericsystem.cache.annotations.Components;
 import org.genericsystem.cache.annotations.Meta;
 import org.genericsystem.cache.annotations.constraints.PropertyConstraint;
 import org.genericsystem.cache.annotations.constraints.RequiredConstraint;
 import org.genericsystem.cache.annotations.constraints.SingularConstraint;
+import org.genericsystem.cache.annotations.constraints.UniqueValueConstraint;
 import org.genericsystem.cache.annotations.value.BooleanValue;
 import org.genericsystem.cache.annotations.value.IntValue;
 import org.genericsystem.cache.annotations.value.StringValue;
@@ -55,6 +57,9 @@ public class SystemCache<T extends AbstractGeneric<T, ?>> extends HashMap<Class<
 
 		if (clazz.getAnnotation(PropertyConstraint.class) != null)
 			result.enablePropertyConstraint();
+
+		if (clazz.getAnnotation(UniqueValueConstraint.class) != null)
+			result.enableUniqueValueConstraint();
 
 		if (clazz.getAnnotation(RequiredConstraint.class) != null)
 			result.enableRequiredConstraint(Statics.NO_POSITION);
