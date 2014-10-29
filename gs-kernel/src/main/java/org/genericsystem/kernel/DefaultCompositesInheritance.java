@@ -4,7 +4,7 @@ import java.io.Serializable;
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
 
-public interface DefaultComponentsInheritance<T extends AbstractVertex<T>> extends IVertex<T> {
+public interface DefaultCompositesInheritance<T extends AbstractVertex<T>> extends IVertex<T> {
 
 	@SuppressWarnings("unchecked")
 	@Override
