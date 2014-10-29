@@ -5,27 +5,32 @@ import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.cache.AbstractContext;
 import org.genericsystem.kernel.Statics;
 
-public class Cache extends org.genericsystem.cache.Cache<Generic, Vertex> {
+public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.cache.Cache<T, V> {
 
-	protected Cache(Engine engine) {
-		this(new Transaction(engine));
+	protected Cache(DefaultEngine<T, V> engine) {
+		this(new Transaction<>(engine));
 	}
 
-	protected Cache(org.genericsystem.cache.AbstractContext<Generic, Vertex> subContext) {
+	protected Cache(org.genericsystem.cache.AbstractContext<T, V> subContext) {
 		super(subContext);
 	}
 
 	public long getTs() {
-		AbstractContext<Generic, Vertex> context = getSubContext();
-		return context instanceof Cache ? ((Cache) context).getTs() : ((Transaction) context).getTs();
+		AbstractContext<T, V> context = getSubContext();
+		return context instanceof Cache ? ((Cache<T, V>) context).getTs() : ((Transaction<T, V>) context).getTs();
+	}
+
+	@Override
+	public DefaultEngine<T, V> getEngine() {
+		return (DefaultEngine<T, V>) super.getEngine();
 	}
 
 	public void pickNewTs() throws RollbackException {
 		if (getSubContext() instanceof Cache) {
-			((Cache) getSubContext()).pickNewTs();
+			((Cache<T, V>) getSubContext()).pickNewTs();
 		} else {
 			long ts = getTs();
-			subContext = new Transaction((Engine) getEngine());
+			subContext = new Transaction<>(getEngine());
 			assert getTs() > ts;
 		}
 		// clean();
@@ -65,8 +70,8 @@ public class Cache extends org.genericsystem.cache.Cache<Generic, Vertex> {
 	// }
 
 	@Override
-	public Cache start() {
-		return (Cache) super.start();
+	public Cache<T, V> start() {
+		return (Cache<T, V>) super.start();
 	}
 
 	@Override
@@ -77,11 +82,11 @@ public class Cache extends org.genericsystem.cache.Cache<Generic, Vertex> {
 				// if (getEngine().pickNewTs() - getTs() >= timeOut)
 				// throw new ConcurrencyControlException("The timestamp cache (" + getTs() + ") is begger than the life time out : " + Statics.LIFE_TIMEOUT);
 				checkConstraints();
-				AbstractContext<Generic, Vertex> context = getSubContext();
+				AbstractContext<T, V> context = getSubContext();
 				if (context instanceof Transaction)
-					((Transaction) context).apply(adds, removes);
+					((Transaction<T, V>) context).apply(adds, removes);
 				else
-					((Cache) context).apply(adds, removes);
+					((Cache<T, V>) context).apply(adds, removes);
 				clear();
 				return;
 			} catch (ConcurrencyControlException e) {
