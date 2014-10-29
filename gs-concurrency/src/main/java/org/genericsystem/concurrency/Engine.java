@@ -52,7 +52,7 @@ public class Engine extends Generic implements DefaultEngine {
 	}
 
 	@Override
-	public Cache start(org.genericsystem.cache.Cache<Generic, Engine, Vertex, Root> cache) {
+	public Cache start(org.genericsystem.cache.Cache<Generic, Vertex> cache) {
 		if (!equals(cache.getEngine()))
 			throw new IllegalStateException();
 		// TODO KK
@@ -61,7 +61,7 @@ public class Engine extends Generic implements DefaultEngine {
 	}
 
 	@Override
-	public void stop(org.genericsystem.cache.Cache<Generic, Engine, Vertex, Root> cache) {
+	public void stop(org.genericsystem.cache.Cache<Generic, Vertex> cache) {
 		cacheLocal.set(null);
 	}
 
@@ -92,12 +92,6 @@ public class Engine extends Generic implements DefaultEngine {
 	@Override
 	public Engine getAlive() {
 		return this;
-	}
-
-	@Override
-	// TODO KK
-	public org.genericsystem.cache.DefaultEngine<?, ?, Generic, Engine> getEngine() {
-		return (org.genericsystem.cache.DefaultEngine) this;
 	}
 
 	static class TsGenerator {

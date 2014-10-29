@@ -3,7 +3,7 @@ package org.genericsystem.kernel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Vertex extends AbstractVertex<Vertex, Root> implements DefaultVertex<Vertex, Root> {
+public class Vertex extends AbstractVertex<Vertex> implements DefaultVertex<Vertex> {
 
 	protected static Logger log = LoggerFactory.getLogger(Vertex.class);
 

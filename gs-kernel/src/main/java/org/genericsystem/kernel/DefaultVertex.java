@@ -2,12 +2,10 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
 
-public interface DefaultVertex<T extends AbstractVertex<T, U>, U extends DefaultRoot<T, U>> extends DefaultAncestors<T, U>, DefaultDependencies<T, U>, DefaultDisplay<T, U>, DefaultSystemProperties<T, U>, DefaultComponentsInheritance<T, U>,
-		DefaultWritable<T, U>, IVertex<T, U> {
+public interface DefaultVertex<T extends AbstractVertex<T>> extends DefaultAncestors<T>, DefaultDependencies<T>, DefaultDisplay<T>, DefaultSystemProperties<T>, DefaultComponentsInheritance<T>, DefaultWritable<T>, IVertex<T> {
 
 	@Override
 	default T addRoot(Serializable value) {

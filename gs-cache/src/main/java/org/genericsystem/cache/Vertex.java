@@ -4,7 +4,7 @@ import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.DefaultVertex;
 import org.genericsystem.kernel.Dependencies;
 
-public class Vertex extends AbstractVertex<Vertex, Root> implements DefaultVertex<Vertex, Root> {
+public class Vertex extends AbstractVertex<Vertex> implements DefaultVertex<Vertex> {
 
 	private final Dependencies<Vertex> instances = buildDependencies();
 	private final Dependencies<Vertex> inheritings = buildDependencies();
