@@ -13,13 +13,5 @@ public class InstanceValueClassConstraint<T extends AbstractVertex<T>> implement
 
 		if (!value.equals(modified.getValue().getClass()))
 			throw new InstanceValueClassViolationConstraint(modified + " should be " + modified.getClassConstraint());
-
-		// if (!constraintValue.<Class<?>> getValue().isAssignableFrom(instance.getValue().getClass()))
-		// throw new InstanceClassConstraintViolationException(instance.getValue() + " should be " + constraintValue.getValue())
-		// TODO Auto-generated method stub
-		// for (Generic instance : ((Attribute) getConstraintBase(constraintValue)).getInstances())
-		// if (!constraintValue.<Class<?>> getValue().isAssignableFrom(instance.getValue().getClass()))
-		// throw new InstanceClassConstraintViolationException(instance.getValue() + " should be " + constraintValue.getValue());
-		// }
 	}
 }

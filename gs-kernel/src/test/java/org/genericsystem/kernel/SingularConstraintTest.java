@@ -64,6 +64,96 @@ public class SingularConstraintTest extends AbstractTest {
 		catchAndCheckCause(() -> myVehicle.addHolder(vehicleColor, "vehicleRedYesterday", red, yesterday), SingularConstraintViolationException.class);
 	}
 
+	public void test005_enableSingularConstraint_targetPosition() {
+		Root engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex myVehicle = vehicle.addInstance("myVehicle");
+		Vertex myVehicle2 = vehicle.addInstance("myVehicle2");
+		Vertex color = engine.addInstance("Color");
+		Vertex red = color.addInstance("red");
+		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
+		vehicleColor.enableSingularConstraint(Statics.TARGET_POSITION);
+		assert vehicleColor.isSingularConstraintEnabled(Statics.TARGET_POSITION);
+		myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
+		myVehicle2.addHolder(vehicleColor, "myVehicleRed2", red);
+
+		catchAndCheckCause(() -> myVehicle2.addHolder(vehicleColor, "myVehicleRed2", red), SingularConstraintViolationException.class);
+	}
+
+	public void test006_enableSingularConstraint_targetPosition() {
+		Root engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex myVehicle = vehicle.addInstance("myVehicle");
+		Vertex color = engine.addInstance("Color");
+		Vertex red = color.addInstance("red");
+		Vertex yellow = color.addInstance("yellow");
+		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
+		vehicleColor.enableSingularConstraint(Statics.TARGET_POSITION);
+
+		Vertex myVehicleRed = myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
+		Vertex myVehicleYellow = myVehicle.addHolder(vehicleColor, "myVehicleYellow", yellow);
+
+		assert myVehicle.getHolders(vehicleColor).contains(myVehicleRed);
+		assert myVehicle.getHolders(vehicleColor).contains(myVehicleYellow);
+		assert myVehicle.getHolders(vehicleColor).size() == 2;
+	}
+
+	public void test007_enableSingularConstraint_targetPosition() {
+		Root engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex myVehicle = vehicle.addInstance("myVehicle");
+		Vertex myVehicle2 = vehicle.addInstance("myVehicle2");
+		Vertex color = engine.addInstance("Color");
+		Vertex red = color.addInstance("red");
+		Vertex yellow = color.addInstance("yellow");
+		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
+		vehicleColor.enableSingularConstraint(Statics.TARGET_POSITION);
+
+		Vertex myVehicleRed = myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
+		Vertex myVehicle2Yellow = myVehicle2.addHolder(vehicleColor, "myVehicle2Yellow", yellow);
+
+		assert myVehicle.getHolders(vehicleColor).contains(myVehicleRed);
+		assert myVehicle.getHolders(vehicleColor).size() == 1;
+		assert myVehicle2.getHolders(vehicleColor).contains(myVehicle2Yellow);
+		assert myVehicle2.getHolders(vehicleColor).size() == 1;
+	}
+
+	public void test008_enableSingularConstraint_targetPosition() {
+		Root engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex myVehicle = vehicle.addInstance("myVehicle");
+		Vertex myVehicle2 = vehicle.addInstance("myVehicle2");
+		Vertex color = engine.addInstance("Color");
+		Vertex red = color.addInstance("red");
+		Vertex yellow = color.addInstance("yellow");
+		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
+		vehicleColor.enableSingularConstraint(Statics.TARGET_POSITION);
+
+		Vertex myVehicleRed = myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
+		Vertex myVehicle2Yellow = myVehicle2.addHolder(vehicleColor, "myVehicle2Yellow", yellow);
+
+		catchAndCheckCause(() -> myVehicle.addHolder(vehicleColor, "myVehicleYellow", yellow), SingularConstraintViolationException.class);
+	}
+
+	public void test009_enableSingularConstraint_ternaryPosition() {
+		Root engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex myVehicle = vehicle.addInstance("myVehicle");
+		Vertex myVehicle2 = vehicle.addInstance("myVehicle2");
+
+		Vertex color = engine.addInstance("Color");
+		Vertex red = color.addInstance("red");
+
+		Vertex location = engine.addInstance("Location");
+		Vertex outside = location.addInstance("outside");
+
+		Vertex vehicleColorLocation = vehicle.addAttribute("vehicleColor", color, location);
+		vehicleColorLocation.enableSingularConstraint(Statics.TERNARY_POSITION);
+
+		Vertex myVehicleRedOutside = myVehicle.addHolder(vehicleColorLocation, "myVehicleRedOutside", red, outside);
+		catchAndCheckCause(() -> myVehicle2.addHolder(vehicleColorLocation, "myVehicle2RedOutside", red, outside), SingularConstraintViolationException.class);
+	}
+
 	// public void test002_enablePropertyConstraint_addInstance() {
 	// Root engine = new Root();
 	// Vertex vehicle = engine.addInstance("Vehicle");
