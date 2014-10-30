@@ -75,7 +75,6 @@ public class SingularConstraintTest extends AbstractTest {
 		vehicleColor.enableSingularConstraint(Statics.TARGET_POSITION);
 		assert vehicleColor.isSingularConstraintEnabled(Statics.TARGET_POSITION);
 		myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
-		myVehicle2.addHolder(vehicleColor, "myVehicleRed2", red);
 
 		catchAndCheckCause(() -> myVehicle2.addHolder(vehicleColor, "myVehicleRed2", red), SingularConstraintViolationException.class);
 	}

@@ -633,26 +633,33 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	@SuppressWarnings("unchecked")
 	void checkConstraints(CheckingType checkingType, boolean isFlushTime) {
 
-		for (T constraintAttribute : getSortedConstraints()) {
-			Optional<T> constraintHolder = getHolders(constraintAttribute).get().findFirst();
-			if (constraintHolder.isPresent()) {
-				Serializable value = constraintHolder.get().getValue();
-				if (value != null && !Boolean.FALSE.equals(value)) {
-					Constraint<T> constraint = constraintAttribute.getConstraint();
-					if (isCheckable(constraint, checkingType, isFlushTime))
-						try {
-							constraint.check((T) this, constraintHolder.get().getComponents().get(Statics.BASE_POSITION), value, ((AxedPropertyClass) constraintAttribute.getValue()).getAxe());
-						} catch (ConstraintViolationException e) {
-							getRoot().discardWithException(e);
-						}
-				}
+		for (T constraintHolder : getConstraintsHolders()) {
+
+			Serializable value = constraintHolder.getValue();
+			if (value != null && !Boolean.FALSE.equals(value)) {
+				Constraint<T> constraint = constraintHolder.getMeta().getConstraint();
+				if (isCheckable(constraint, checkingType, isFlushTime))
+					try {
+						constraint.check((T) this, constraintHolder.getComponents().get(Statics.BASE_POSITION), value, ((AxedPropertyClass) constraintHolder.getMeta().getValue()).getAxe());
+					} catch (ConstraintViolationException e) {
+						getRoot().discardWithException(e);
+					}
 			}
+
 		}
 	}
 
-	private List<T> getSortedConstraints() {
-		return getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) x.getValue()).getClazz())).sorted(CONSTRAINT_PRIORITY).collect(Collectors.toList());
+	public List<T> getConstraintsHolders() {
+		T map = getMap();
+		if (map == null)
+			return Collections.emptyList();
+		return getHolders(getMap()).get().filter(holder -> holder.getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) holder.getMeta().getValue()).getClazz())).sorted(CONSTRAINT_PRIORITY)
+				.collect(Collectors.toList());
 	}
+
+	// private List<T> getSortedConstraints() {
+	// return getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) x.getValue()).getClazz())).sorted(CONSTRAINT_PRIORITY).collect(Collectors.toList());
+	// }
 
 	@SuppressWarnings("unchecked")
 	Constraint<T> getConstraint() {
@@ -682,7 +689,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	private static final Comparator<AbstractVertex<?>> CONSTRAINT_PRIORITY = new Comparator<AbstractVertex<?>>() {
 		@Override
 		public int compare(AbstractVertex<?> constraintHolder, AbstractVertex<?> compareConstraintHolder) {
-			return constraintHolder.getConstraintPriority() < compareConstraintHolder.getConstraintPriority() ? -1 : 1;
+			return constraintHolder.getMeta().getConstraintPriority() < compareConstraintHolder.getMeta().getConstraintPriority() ? -1 : 1;
 		}
 	};
 

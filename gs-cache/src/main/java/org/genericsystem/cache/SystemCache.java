@@ -61,6 +61,9 @@ public class SystemCache<T extends AbstractGeneric<T, ?>> extends HashMap<Class<
 		if (clazz.getAnnotation(UniqueValueConstraint.class) != null)
 			result.enableUniqueValueConstraint();
 
+		// if (clazz.getAnnotation(InstanceValueClassConstraint.class) != null)
+		// result.setClassConstraint(clazz.getAnnotation(InstanceValueClassConstraint.class).)
+
 		if (clazz.getAnnotation(RequiredConstraint.class) != null)
 			result.enableRequiredConstraint(Statics.NO_POSITION);
 
@@ -68,6 +71,7 @@ public class SystemCache<T extends AbstractGeneric<T, ?>> extends HashMap<Class<
 		if (singularTarget != null)
 			for (int axe : singularTarget.value())
 				result.enableSingularConstraint(axe);
+
 	}
 
 	private T setMeta(Class<?> clazz) {

@@ -52,6 +52,7 @@ public class InstanceValueClassConstraintTest extends AbstractTest {
 		Vertex power = root.addInstance("Power");
 		vehicle.addAttribute(power, "Power");
 		power.setClassConstraint(Integer.class);
+
 		myVehicle.addHolder(power, 125);
 		power.setClassConstraint(null);
 		myVehicle.addHolder(power, "230");
