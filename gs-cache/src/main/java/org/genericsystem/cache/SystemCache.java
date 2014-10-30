@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.genericsystem.cache.annotations.Components;
+import org.genericsystem.cache.annotations.Dependencies;
 import org.genericsystem.cache.annotations.Meta;
 import org.genericsystem.cache.annotations.constraints.InstanceValueClassConstraint;
 import org.genericsystem.cache.annotations.constraints.PropertyConstraint;
@@ -50,8 +51,16 @@ public class SystemCache<T extends AbstractGeneric<T, ?>> extends HashMap<Class<
 		}
 		T result = setMeta(clazz).bindInstance(clazz, false, setOverrides(clazz), findValue(clazz), setComponents(clazz));
 		mountConstraints(result, clazz);
+		triggersDependencies(clazz);
 		put(clazz, result);
 		return result;
+	}
+
+	private void triggersDependencies(Class<?> clazz) {
+		Dependencies dependenciesClass = clazz.getAnnotation(Dependencies.class);
+		if (dependenciesClass != null)
+			for (Class<?> dependencyClass : dependenciesClass.value())
+				set(dependencyClass);
 	}
 
 	private void mountConstraints(T result, Class<?> clazz) {

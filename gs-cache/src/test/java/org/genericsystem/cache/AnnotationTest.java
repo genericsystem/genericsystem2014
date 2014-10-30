@@ -1,6 +1,7 @@
 package org.genericsystem.cache;
 
 import org.genericsystem.cache.annotations.Components;
+import org.genericsystem.cache.annotations.Dependencies;
 import org.genericsystem.cache.annotations.InstanceClass;
 import org.genericsystem.cache.annotations.Meta;
 import org.genericsystem.cache.annotations.Supers;
@@ -355,6 +356,14 @@ public class AnnotationTest extends AbstractTest {
 		assert puissance.getClassConstraint().equals(Integer.class);
 	}
 
+	public void test020_dependencies() {
+		Engine engine = new Engine(Voiture.class);
+		Generic puissance = engine.find(Puissance.class);
+		Generic couleur = engine.find(Couleur.class);
+		assert puissance instanceof Puissance;
+		assert couleur instanceof Couleur;
+	}
+
 	@SystemGeneric
 	public static class Games extends Generic {
 	}
@@ -472,7 +481,17 @@ public class AnnotationTest extends AbstractTest {
 	@RequiredConstraint
 	@UniqueValueConstraint
 	@InstanceValueClassConstraint(Integer.class)
+	@Dependencies(Couleur.class)
 	public static class Puissance extends Generic {
+
+	}
+
+	public static class Couleur extends Generic {
+
+	}
+
+	@Dependencies(Puissance.class)
+	public static class Voiture extends Generic {
 
 	}
 
