@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.genericsystem.cache.annotations.Components;
 import org.genericsystem.cache.annotations.Meta;
+import org.genericsystem.cache.annotations.constraints.InstanceValueClassConstraint;
 import org.genericsystem.cache.annotations.constraints.PropertyConstraint;
 import org.genericsystem.cache.annotations.constraints.RequiredConstraint;
 import org.genericsystem.cache.annotations.constraints.SingularConstraint;
@@ -60,9 +61,9 @@ public class SystemCache<T extends AbstractGeneric<T, ?>> extends HashMap<Class<
 
 		if (clazz.getAnnotation(UniqueValueConstraint.class) != null)
 			result.enableUniqueValueConstraint();
-		//
-		// if (clazz.getAnnotation(InstanceValueClassConstraint.class) != null)
-		// result.setClassConstraint(clazz.getAnnotation(InstanceValueClassConstraint.class).)
+
+		if (clazz.getAnnotation(InstanceValueClassConstraint.class) != null)
+			result.setClassConstraint(clazz.getAnnotation(InstanceValueClassConstraint.class).value());
 
 		if (clazz.getAnnotation(RequiredConstraint.class) != null)
 			result.enableRequiredConstraint(Statics.NO_POSITION);

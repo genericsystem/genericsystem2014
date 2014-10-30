@@ -598,12 +598,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	private void checkDependsMetaComponents() {
 		if (!(getMeta().componentsDepends(getComponents(), getMeta().getComponents())))
-			getRoot().discardWithException(new ConsistencyConstraintViolationException("Inconsistant composites : " + getComponents() + " " + getMeta().getComponents()));
+			getRoot().discardWithException(new ConsistencyConstraintViolationException("Components : " + getComponents() + " must match to " + getMeta().getComponents()));
 	}
 
 	private void checkLevelComponents() {
 		if (getComponents().stream().anyMatch(component -> component.getLevel() > getLevel()))
-			getRoot().discardWithException(new ConsistencyConstraintViolationException("Inconsistant level link between composites : level " + getLevel() + " and another"));
+			getRoot().discardWithException(new ConsistencyConstraintViolationException("Inconsistant level link between components : level " + getLevel() + " and another"));
 	}
 
 	private void checkLevel() {
@@ -634,7 +634,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	void checkConstraints(CheckingType checkingType, boolean isFlushTime) {
 
 		for (T constraintHolder : getConstraintsHolders()) {
-
 			Serializable value = constraintHolder.getValue();
 			if (value != null && !Boolean.FALSE.equals(value)) {
 				Constraint<T> constraint = constraintHolder.getMeta().getConstraint();
@@ -645,7 +644,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 						getRoot().discardWithException(e);
 					}
 			}
-
 		}
 	}
 
@@ -653,7 +651,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		T map = getMap();
 		if (map == null)
 			return Collections.emptyList();
-		return getHolders(getMap()).get().filter(holder -> holder.getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) holder.getMeta().getValue()).getClazz())).sorted(CONSTRAINT_PRIORITY)
+		return getMeta().getHolders(getMap()).get().filter(holder -> holder.getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) holder.getMeta().getValue()).getClazz())).sorted(CONSTRAINT_PRIORITY)
 				.collect(Collectors.toList());
 	}
 
