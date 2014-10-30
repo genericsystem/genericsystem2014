@@ -642,7 +642,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		}
 	}
 
-	public List<T> getConstraintsHolders() {
+	List<T> getConstraintsHolders() {
 		T map = getMap();
 		return map != null ? getMeta().getHolders(getMap()).get().filter(holder -> holder.getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) holder.getMeta().getValue()).getClazz()))
 				.filter(holder -> holder.getValue() != null && !Boolean.FALSE.equals(holder.getValue())).sorted(CONSTRAINT_PRIORITY).collect(Collectors.toList()) : Collections.emptyList();
