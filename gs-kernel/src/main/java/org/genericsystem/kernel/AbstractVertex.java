@@ -575,7 +575,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComponents().equals(components.stream().map(NULL_TO_THIS).collect(Collectors.toList())) && getSupers().equals(supers);
 	}
 
-	protected Stream<T> getKeys() {
+	Stream<T> getKeys() {
 		T map = getMap();
 		return map != null ? getAttributes(map).get() : Stream.empty();
 	}
