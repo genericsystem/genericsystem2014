@@ -1,5 +1,6 @@
 package org.genericsystem.cache;
 
+import java.util.Iterator;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,18 +34,19 @@ public class CacheDependencies<T> implements Dependencies<T> {
 		return true;
 	}
 
-	// public Iterator<T> iterator() {
-	// return Stream.concat(streamSupplier.get().filter(x -> !deletes.contains(x)), inserts.get()).iterator();
-	// }
+	@Override
+	public Iterator<T> iterator() {
+		return Stream.concat(streamSupplier.get().filter(x -> !deletes.contains(x)), inserts.get()).iterator();
+	}
 
 	@Override
 	public String toString() {
 		return get().collect(Collectors.toList()).toString();
 	}
 
-	@Override
-	public Stream<T> get() {
-		return Stream.concat(streamSupplier.get().filter(x -> !deletes.contains(x)), inserts.get());
-
-	}
+	// @Override
+	// public Stream<T> get() {
+	// return Stream.concat(streamSupplier.get().filter(x -> !deletes.contains(x)), inserts.get());
+	//
+	// }
 }

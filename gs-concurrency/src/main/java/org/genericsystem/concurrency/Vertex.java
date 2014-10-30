@@ -1,6 +1,6 @@
 package org.genericsystem.concurrency;
 
-import java.util.stream.Stream;
+import java.util.Iterator;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 
@@ -51,8 +51,8 @@ public class Vertex extends AbstractVertex<Vertex> implements DefaultVertex<Vert
 			}
 
 			@Override
-			public Stream<Vertex> get() {
-				return get(getRoot().getEngine().getCurrentCache().getTs());
+			public Iterator<Vertex> iterator() {
+				return iterator(getRoot().getEngine().getCurrentCache().getTs());
 			}
 		};
 	}
@@ -65,8 +65,8 @@ public class Vertex extends AbstractVertex<Vertex> implements DefaultVertex<Vert
 	protected DependenciesMap<Vertex> buildDependenciesMap() {
 		return new AbstractDependenciesMap<Vertex>() {
 			@Override
-			public Stream<DependenciesEntry<Vertex>> get() {
-				return get(getRoot().getEngine().getCurrentCache().getTs());
+			public Iterator<DependenciesEntry<Vertex>> iterator() {
+				return iterator(getRoot().getEngine().getCurrentCache().getTs());
 			}
 
 			@Override

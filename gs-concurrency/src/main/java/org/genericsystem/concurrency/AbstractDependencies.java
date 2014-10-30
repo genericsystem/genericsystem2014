@@ -1,10 +1,8 @@
 package org.genericsystem.concurrency;
 
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.Map.Entry;
-import java.util.Spliterators;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
@@ -58,13 +56,13 @@ public abstract class AbstractDependencies<T> implements Dependencies<T> {
 		return false;
 	}
 
-	// public Iterator<T> iterator(long ts) {
-	// return new InternalIterator(ts);
-	// }
-
-	public Stream<T> get(long ts) {
-		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(new InternalIterator(ts), 0), false);
+	public Iterator<T> iterator(long ts) {
+		return new InternalIterator(ts);
 	}
+
+	// public Stream<T> get(long ts) {
+	// return StreamSupport.stream(Spliterators.spliteratorUnknownSize(new InternalIterator(ts), 0), false);
+	// }
 
 	private class InternalIterator extends AbstractGeneralAwareIterator<Node<T>, T> {
 

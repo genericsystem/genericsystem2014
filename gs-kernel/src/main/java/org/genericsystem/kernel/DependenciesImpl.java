@@ -1,9 +1,6 @@
 package org.genericsystem.kernel;
 
 import java.util.Iterator;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
 public class DependenciesImpl<T> implements Dependencies<T> {
@@ -81,10 +78,4 @@ public class DependenciesImpl<T> implements Dependencies<T> {
 			this.content = content;
 		}
 	}
-
-	@Override
-	public Stream<T> get() {
-		return StreamSupport.stream(spliterator(), false);
-	}
-
 }
