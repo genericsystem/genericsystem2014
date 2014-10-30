@@ -14,7 +14,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
@@ -569,8 +568,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {
-	}
+	public static class SystemMap {}
 
 	protected boolean equals(ISignature<?> meta, List<? extends ISignature<?>> supers, Serializable value, List<? extends ISignature<?>> components) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComponents().equals(components.stream().map(NULL_TO_THIS).collect(Collectors.toList())) && getSupers().equals(supers);
@@ -631,31 +629,26 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	@SuppressWarnings("unchecked")
 	void checkConstraints(CheckingType checkingType, boolean isFlushTime) {
-		for (T constraintHolder : getActivedConstraints())
-			try {
-				Constraint constraint = newConstraint(constraintHolder);
-				if (isCheckable(constraint, checkingType, isFlushTime)) {
-					int axe = ((AxedPropertyClass) constraintHolder.getValue()).getAxe();
-					constraint.check(this, getHolders(constraintHolder).get().findFirst().get().getComponents().get(Statics.BASE_POSITION), constraintHolder.getValue());
+		for (T constraintHolder : getActivedConstraints()) {
+			Constraint<T> constraint = constraintHolder.getConstraint();
+			if (isCheckable(constraint, checkingType, isFlushTime))
+				try {
+					constraint.check((T) this, getHolders(constraintHolder).get().findFirst().get().getComponents().get(Statics.BASE_POSITION), constraintHolder.getValue(), ((AxedPropertyClass) constraintHolder.getValue()).getAxe());
+				} catch (ConstraintViolationException e) {
+					getRoot().discardWithException(e);
 				}
-			} catch (ConstraintViolationException e) {
-				getRoot().discardWithException(e);
-			}
+		}
 	}
 
 	private List<T> getActivedConstraints() {
-		// return getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) x.getValue()).getClazz())).filter(x -> {
-		// Iterator<T> holders = getHolders(x).iterator();
-		// return holders.hasNext() && !holders.next().getValue().equals(Boolean.FALSE);
-		// }).sorted(priorityConstraintComparator).collect(Collectors.toList());
-
 		return getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) x.getValue()).getClazz())).filter(x -> getHolders(x).get().anyMatch(y -> !Boolean.FALSE.equals(y.getValue())))
 				.sorted(priorityConstraintComparator).collect(Collectors.toList());
 	}
 
-	private Constraint newConstraint(T constraintHolder) {
+	@SuppressWarnings("unchecked")
+	Constraint<T> getConstraint() {
 		try {
-			return (Constraint) ((AxedPropertyClass) constraintHolder.getValue()).getClazz().newInstance();
+			return (Constraint<T>) ((AxedPropertyClass) getValue()).getClazz().newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
 			getRoot().discardWithException(e);
 		}
