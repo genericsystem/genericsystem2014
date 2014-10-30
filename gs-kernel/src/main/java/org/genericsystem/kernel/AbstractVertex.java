@@ -28,6 +28,7 @@ import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Statics.Supers;
+import org.genericsystem.kernel.annotations.Priority;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint.CheckingType;
@@ -650,7 +651,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	private List<T> getSortedConstraints() {
-		return getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) x.getValue()).getClazz())).sorted(priorityConstraintComparator).collect(Collectors.toList());
+		return getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) x.getValue()).getClazz())).sorted(CONSTRAINT_PRIORITY).collect(Collectors.toList());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -663,6 +664,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return null;
 	}
 
+	int getConstraintPriority() {
+		Class<?> clazz = ((AxedPropertyClass) getValue()).getClazz();
+		Priority priority = clazz.getAnnotation(Priority.class);
+		return priority != null ? priority.value() : 0;
+	}
+
 	@SuppressWarnings("unchecked")
 	private boolean isCheckable(Constraint<T> constraint, CheckingType checkingType, boolean isFlushTime) {
 		return (isFlushTime || constraint.isImmediatelyCheckable()) && constraint.isCheckedAt((T) this, checkingType);
@@ -672,13 +679,10 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		// TODO impl
 	}
 
-	private final Comparator<T> priorityConstraintComparator = new Comparator<T>() {
-
-		@SuppressWarnings("unchecked")
+	private static final Comparator<AbstractVertex<?>> CONSTRAINT_PRIORITY = new Comparator<AbstractVertex<?>>() {
 		@Override
-		public int compare(T constraintHolder, T compareConstraintHolder) {
-			return Constraint.getPriorityOf((Class<Constraint<?>>) ((AxedPropertyClass) constraintHolder.getValue()).getClazz()) < Constraint.getPriorityOf((Class<Constraint<?>>) ((AxedPropertyClass) compareConstraintHolder.getValue()).getClazz()) ? -1
-					: 1;
+		public int compare(AbstractVertex<?> constraintHolder, AbstractVertex<?> compareConstraintHolder) {
+			return constraintHolder.getConstraintPriority() < compareConstraintHolder.getConstraintPriority() ? -1 : 1;
 		}
 	};
 
