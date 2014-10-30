@@ -629,7 +629,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	@SuppressWarnings("unchecked")
 	void checkConstraints(CheckingType checkingType, boolean isFlushTime) {
-		for (T constraintHolder : getActivedConstraints()) {
+		for (T constraintHolder : getActivedSortedConstraints()) {
 			Constraint<T> constraint = constraintHolder.getConstraint();
 			if (isCheckable(constraint, checkingType, isFlushTime))
 				try {
@@ -640,7 +640,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		}
 	}
 
-	private List<T> getActivedConstraints() {
+	private List<T> getActivedSortedConstraints() {
 		return getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) x.getValue()).getClazz())).filter(x -> getHolders(x).get().anyMatch(y -> !Boolean.FALSE.equals(y.getValue())))
 				.sorted(priorityConstraintComparator).collect(Collectors.toList());
 	}
@@ -656,8 +656,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	@SuppressWarnings("unchecked")
-	private boolean isCheckable(Constraint constraint, CheckingType checkingType, boolean isFlushTime) {
-		return (isFlushTime || constraint.isImmediatelyCheckable()) && constraint.isCheckedAt(this, checkingType);
+	private boolean isCheckable(Constraint<T> constraint, CheckingType checkingType, boolean isFlushTime) {
+		return (isFlushTime || constraint.isImmediatelyCheckable()) && constraint.isCheckedAt((T) this, checkingType);
 	}
 
 	void checkConsistency(CheckingType checkingType, boolean isFlushTime) {
