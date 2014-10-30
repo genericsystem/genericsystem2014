@@ -3,6 +3,7 @@ package org.genericsystem.cache;
 import java.util.Iterator;
 
 import org.genericsystem.api.core.Snapshot;
+import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test
@@ -33,6 +34,36 @@ public class IteratorAndRemoveCacheTest extends AbstractTest {
 			cpt++;
 		}
 		assert car.getInstances().size() == 0;
+	}
+
+	public void test001_() {
+		Engine engine = new Engine();
+		Generic car = engine.addInstance("Car");
+		Generic myCar1 = car.addInstance("myCar1");
+		Cache cache1 = engine.getCurrentCache();
+		cache1.flush();
+		myCar1.remove();
+		cache1.flush();
+		Cache cache2 = engine.newCache().start();
+		catchAndCheckCause(() -> myCar1.remove(), AliveConstraintViolationException.class);
+		cache2.flush();
+	}
+
+	public void test002_() {
+		Engine engine = new Engine();
+		Generic car = engine.addInstance("Car");
+		Generic myCar1 = car.addInstance("myCar1");
+		Cache cache1 = engine.getCurrentCache();
+		cache1.flush();
+
+		Cache cache2 = engine.newCache().start();
+		myCar1.remove();
+
+		cache1.start();
+		myCar1.remove();
+		cache1.flush();
+		cache2.start();
+		catchAndCheckCause(() -> cache2.flush(), AliveConstraintViolationException.class);
 	}
 
 	public void test003_IterateAndRemove() {

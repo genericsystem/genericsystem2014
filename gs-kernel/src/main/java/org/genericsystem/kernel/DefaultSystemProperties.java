@@ -10,6 +10,7 @@ import org.genericsystem.kernel.systemproperty.constraints.InstanceValueClassCon
 import org.genericsystem.kernel.systemproperty.constraints.PropertyConstraint;
 import org.genericsystem.kernel.systemproperty.constraints.RequiredConstraint;
 import org.genericsystem.kernel.systemproperty.constraints.SingularConstraint;
+import org.genericsystem.kernel.systemproperty.constraints.UniqueValueConstraint;
 
 public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IVertex<T> {
 
@@ -104,17 +105,17 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 
 	@Override
 	default T enableUniqueValueConstraint() {
-		return enableSystemProperty(PropertyConstraint.class, Statics.NO_POSITION);
+		return enableSystemProperty(UniqueValueConstraint.class, Statics.NO_POSITION);
 	}
 
 	@Override
 	default T disableUniqueValueConstraint() {
-		return disableSystemProperty(PropertyConstraint.class, Statics.NO_POSITION);
+		return disableSystemProperty(UniqueValueConstraint.class, Statics.NO_POSITION);
 	}
 
 	@Override
 	default boolean isUniqueValueEnabled() {
-		return isSystemPropertyEnabled(PropertyConstraint.class, Statics.NO_POSITION);
+		return isSystemPropertyEnabled(UniqueValueConstraint.class, Statics.NO_POSITION);
 	}
 
 	@Override
