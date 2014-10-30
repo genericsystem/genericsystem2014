@@ -305,7 +305,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	private final Function<? super ISignature<?>, ? extends IVertex<?>> NULL_TO_THIS = x -> x == null ? this : (IVertex<?>) x;
 
 	boolean equiv(IVertex<?> meta, Serializable value, List<? extends IVertex<?>> components) {
-		if (!getMeta().equiv(meta))
+		if (!meta.isRoot() && !getMeta().equiv(meta))
 			return false;
 		if (getComponents().size() != components.size())
 			return false;// for the moment, not equivalent when composite size is different
