@@ -51,28 +51,28 @@ public class TreeTest extends AbstractTest {
 		Root root = new Root();
 		Vertex tree = root.addTree("tree");
 		Vertex html = tree.addRoot("html");
-		Vertex head = html.addSubNode("head");
-		Vertex body = html.addSubNode("body");
-		Vertex div = body.addSubNode("div");
+		Vertex head = html.addNode("head");
+		Vertex body = html.addNode("body");
+		Vertex div = body.addNode("div");
 
 		assert !html.getSubNodes().contains(html);
 		assert html.getSubNodes().containsAll(Arrays.asList(head, body));
 		assert html.getSubNodes().size() == 2;
-		assert html.getAllSubNodes().containsAll(Arrays.asList(html, head, body, div));
-		assert html.getAllSubNodes().size() == 4;
+		assert html.getAllNodes().containsAll(Arrays.asList(html, head, body, div));
+		assert html.getAllNodes().size() == 4;
 
 		assert head.getSubNodes().isEmpty();
-		assert head.getAllSubNodes().contains(head);
-		assert head.getAllSubNodes().size() == 1;
+		assert head.getAllNodes().contains(head);
+		assert head.getAllNodes().size() == 1;
 
 		assert body.getSubNodes().contains(div);
 		assert body.getSubNodes().size() == 1;
-		assert body.getAllSubNodes().containsAll(Arrays.asList(body, div));
-		assert body.getAllSubNodes().size() == 2;
+		assert body.getAllNodes().containsAll(Arrays.asList(body, div));
+		assert body.getAllNodes().size() == 2;
 
 		assert div.getSubNodes().isEmpty();
-		assert div.getAllSubNodes().contains(div);
-		assert div.getAllSubNodes().size() == 1;
+		assert div.getAllNodes().contains(div);
+		assert div.getAllNodes().size() == 1;
 
 	}
 
@@ -80,10 +80,10 @@ public class TreeTest extends AbstractTest {
 		Root root = new Root();
 		Vertex tree = root.addTree("tree");
 		Vertex rootNode = tree.addRoot("rootNode");
-		Vertex htmlNode = rootNode.addSubNode("htmlNode");
-		Vertex bodyNode = htmlNode.addSubNode("bodyNode");
-		Vertex divNode = bodyNode.addSubNode("divNode");
-		Vertex formNode = divNode.addSubNode("formNode");
+		Vertex htmlNode = rootNode.addNode("htmlNode");
+		Vertex bodyNode = htmlNode.addNode("bodyNode");
+		Vertex divNode = bodyNode.addNode("divNode");
+		Vertex formNode = divNode.addNode("formNode");
 
 		assert tree.getAllInstances().contains(rootNode);
 		assert tree.getAllInstances().contains(htmlNode);
@@ -114,9 +114,9 @@ public class TreeTest extends AbstractTest {
 
 		Vertex html = tree.addRoot("html");
 		html.setHolder(treeColor, "htmlIsRed", red);
-		Vertex head = html.addSubNode("head");
-		Vertex body = html.addSubNode("body");
-		Vertex div = body.addSubNode("div");
+		Vertex head = html.addNode("head");
+		Vertex body = html.addNode("body");
+		Vertex div = body.addNode("div");
 		div.setHolder(treeColor, "divIsGreen", green);
 
 		assert tree.getHolders(treeColor).get().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(blue);
@@ -141,9 +141,9 @@ public class TreeTest extends AbstractTest {
 
 		Vertex html = tree.addRoot("html");
 		html.setHolder(treeColor, "htmlIsRed", red);
-		Vertex head = html.addInheritingSubNode("head");
-		Vertex body = html.addInheritingSubNode("body");
-		Vertex div = body.addInheritingSubNode("div");
+		Vertex head = html.addInheritingNode("head");
+		Vertex body = html.addInheritingNode("body");
+		Vertex div = body.addInheritingNode("div");
 		div.setHolder(treeColor, "divIsGreen", green);
 
 		assert tree.getHolders(treeColor).get().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(blue);

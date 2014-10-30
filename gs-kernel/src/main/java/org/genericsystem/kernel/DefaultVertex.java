@@ -18,24 +18,24 @@ public interface DefaultVertex<T extends AbstractVertex<T>> extends DefaultAnces
 	}
 
 	@Override
-	default T addSubNode(Serializable value) {
+	default T addNode(Serializable value) {
 		return addHolder(getMeta(), value, coerceToTArray());
 	}
 
 	@Override
-	default T setSubNode(Serializable value) {
+	default T setNode(Serializable value) {
 		return addHolder(getMeta(), value, coerceToTArray());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T addInheritingSubNode(Serializable value) {
+	default T addInheritingNode(Serializable value) {
 		return addHolder(getMeta(), (T) this, value, coerceToTArray());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T setInhertingSubNode(Serializable value) {
+	default T setInheritingNode(Serializable value) {
 		return setHolder((T) this, getMeta(), value, coerceToTArray());
 	}
 
@@ -47,7 +47,7 @@ public interface DefaultVertex<T extends AbstractVertex<T>> extends DefaultAnces
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default Snapshot<T> getAllSubNodes() {
-		return () -> Stream.concat(Stream.of((T) this), getSubNodes().get().flatMap(inheriting -> inheriting.getAllSubNodes().get())).distinct();
+	default Snapshot<T> getAllNodes() {
+		return () -> Stream.concat(Stream.of((T) this), getSubNodes().get().flatMap(inheriting -> inheriting.getAllNodes().get())).distinct();
 	}
 }
