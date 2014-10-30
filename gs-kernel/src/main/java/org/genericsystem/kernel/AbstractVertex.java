@@ -665,7 +665,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		Class<?> clazz = ((AxedPropertyClass) getValue()).getClazz();
 		Priority priority = clazz.getAnnotation(Priority.class);
 		return priority != null ? priority.value() : 0;
-
 	}
 
 	@SuppressWarnings("unchecked")
