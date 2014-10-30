@@ -14,6 +14,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
@@ -301,10 +302,10 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return null;
 	}
 
-	private final Function<? super ISignature<?>, ? extends IVertex<?>> NULL_TO_THIS = x -> x == null ? this : (IVertex<?>) x;
+	protected final Function<? super ISignature<?>, ? extends IVertex<?>> NULL_TO_THIS = x -> x == null ? this : (IVertex<?>) x;
 
 	boolean equiv(IVertex<?> meta, Serializable value, List<? extends IVertex<?>> components) {
-		if (!getMeta().equiv(meta))
+		if (!meta.isRoot() && !getMeta().equiv(meta))
 			return false;
 		if (getComponents().size() != components.size())
 			return false;// for the moment, not equivalent when composite size is different
@@ -575,7 +576,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {}
+	public static class SystemMap {
+	}
 
 	protected boolean equals(ISignature<?> meta, List<? extends ISignature<?>> supers, Serializable value, List<? extends ISignature<?>> components) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComponents().equals(components.stream().map(NULL_TO_THIS).collect(Collectors.toList())) && getSupers().equals(supers);
