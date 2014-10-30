@@ -1,7 +1,6 @@
 package org.genericsystem.kernel.systemproperty.constraints;
 
 import java.io.Serializable;
-
 import org.genericsystem.api.core.IVertex.SystemProperty;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.kernel.AbstractVertex;
@@ -18,7 +17,7 @@ public interface Constraint<T extends AbstractVertex<T>> extends SystemProperty 
 		return priority != null ? priority.value() : 0;
 	}
 
-	void check(T modified, T attribute, Serializable value) throws ConstraintViolationException;
+	void check(T modified, T constraintBase, Serializable value, int axe) throws ConstraintViolationException;
 
 	default boolean isCheckedAt(T modified, CheckingType checkingType) {
 		return checkingType.equals(CheckingType.CHECK_ON_ADD);

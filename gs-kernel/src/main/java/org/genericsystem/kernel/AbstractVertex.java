@@ -631,32 +631,32 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	@SuppressWarnings("unchecked")
 	void checkConstraints(CheckingType checkingType, boolean isFlushTime) {
-		for (T constraintHolder : getActivedConstraints())
-			try {
-				Constraint constraint = newConstraint(constraintHolder);
-				if (isCheckable(constraint, checkingType, isFlushTime)) {
-					int axe = ((AxedPropertyClass) constraintHolder.getValue()).getAxe();
 
-					constraint.check(this, getHolders(constraintHolder).get().findFirst().get().getComponents().get(Statics.BASE_POSITION), constraintHolder.getValue());
+		for (T constraintAttribute : getSortedConstraints()) {
+			Optional<T> constraintHolder = getHolders(constraintAttribute).get().findFirst();
+			if (constraintHolder.isPresent()) {
+				Serializable value = constraintHolder.get().getValue();
+				if (value != null && !Boolean.FALSE.equals(value)) {
+					Constraint<T> constraint = constraintAttribute.getConstraint();
+					if (isCheckable(constraint, checkingType, isFlushTime))
+						try {
+							constraint.check((T) this, constraintHolder.get().getComponents().get(Statics.BASE_POSITION), value, ((AxedPropertyClass) constraintAttribute.getValue()).getAxe());
+						} catch (ConstraintViolationException e) {
+							getRoot().discardWithException(e);
+						}
 				}
-			} catch (ConstraintViolationException e) {
-				getRoot().discardWithException(e);
 			}
+		}
 	}
 
-	private List<T> getActivedConstraints() {
-		// return getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) x.getValue()).getClazz())).filter(x -> {
-		// Iterator<T> holders = getHolders(x).iterator();
-		// return holders.hasNext() && !holders.next().getValue().equals(Boolean.FALSE);
-		// }).sorted(priorityConstraintComparator).collect(Collectors.toList());
-
-		return getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) x.getValue()).getClazz())).filter(x -> getHolders(x).get().anyMatch(y -> !Boolean.FALSE.equals(y.getValue())))
-				.sorted(priorityConstraintComparator).collect(Collectors.toList());
+	private List<T> getSortedConstraints() {
+		return getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) x.getValue()).getClazz())).sorted(priorityConstraintComparator).collect(Collectors.toList());
 	}
 
-	private Constraint newConstraint(T constraintHolder) {
+	@SuppressWarnings("unchecked")
+	Constraint<T> getConstraint() {
 		try {
-			return (Constraint) ((AxedPropertyClass) constraintHolder.getValue()).getClazz().newInstance();
+			return (Constraint<T>) ((AxedPropertyClass) getValue()).getClazz().newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
 			getRoot().discardWithException(e);
 		}
@@ -664,8 +664,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	@SuppressWarnings("unchecked")
-	private boolean isCheckable(Constraint constraint, CheckingType checkingType, boolean isFlushTime) {
-		return (isFlushTime || constraint.isImmediatelyCheckable()) && constraint.isCheckedAt(this, checkingType);
+	private boolean isCheckable(Constraint<T> constraint, CheckingType checkingType, boolean isFlushTime) {
+		return (isFlushTime || constraint.isImmediatelyCheckable()) && constraint.isCheckedAt((T) this, checkingType);
 	}
 
 	void checkConsistency(CheckingType checkingType, boolean isFlushTime) {

@@ -9,10 +9,12 @@ import org.genericsystem.kernel.AbstractVertex;
 public class InstanceValueClassConstraint<T extends AbstractVertex<T>> implements Constraint<T> {
 
 	@Override
-	public void check(T modified, T attribute, Serializable value) throws ConstraintViolationException {
+	public void check(T modified, T attribute, Serializable value, int axe) throws ConstraintViolationException {
 
 		if (!modified.getClassConstraint().equals(modified.getValue().getClass()))
 			throw new InstanceValueClassViolationConstraint(modified + " should be " + modified.getClassConstraint());
+
+		assert false : value;
 
 		// if (!constraintValue.<Class<?>> getValue().isAssignableFrom(instance.getValue().getClass()))
 		// throw new InstanceClassConstraintViolationException(instance.getValue() + " should be " + constraintValue.getValue())
