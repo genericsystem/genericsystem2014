@@ -45,14 +45,15 @@ public class InstanceValueClassConstraintTest extends AbstractTest {
 
 	}
 
-	public void test04_exception() {
+	public void test04_DisableConstraint() {
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
 		Vertex myVehicle = vehicle.addInstance("myVehicle");
 		Vertex power = root.addInstance("Power");
 		vehicle.addAttribute(power, "Power");
 		power.setClassConstraint(Integer.class);
-
-		catchAndCheckCause(() -> myVehicle.addHolder(power, "125"), InstanceValueClassViolationConstraint.class);
+		myVehicle.addHolder(power, 125);
+		power.setClassConstraint(null);
+		myVehicle.addHolder(power, "230");
 	}
 }
