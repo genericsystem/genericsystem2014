@@ -18,6 +18,7 @@ public class SupersComputer<T extends AbstractVertex<T>> extends LinkedHashSet<T
 
 	private final Map<T, Boolean> alreadyComputed = new HashMap<>();
 
+	@SuppressWarnings("unchecked")
 	public SupersComputer(int level, T meta, List<T> overrides, Serializable value, List<T> components) {
 		this.level = level;
 		this.meta = meta;

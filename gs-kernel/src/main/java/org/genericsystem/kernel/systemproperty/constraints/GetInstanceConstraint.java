@@ -1,15 +1,15 @@
 package org.genericsystem.kernel.systemproperty.constraints;
 
+import java.io.Serializable;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.GetInstanceConstraintViolationException;
 import org.genericsystem.kernel.AbstractVertex;
-import org.genericsystem.kernel.DefaultVertex;
 
-public class GetInstanceConstraint implements Constraint {
+public class GetInstanceConstraint<T extends AbstractVertex<T>> implements Constraint<T> {
 
 	@Override
-	public <T extends AbstractVertex<T>> void check(DefaultVertex<T> modified, DefaultVertex<T> attribute) throws ConstraintViolationException {
-		T generic = modified.getMeta().getInstance(modified.getValue(), modified.coerceToTArray(modified.getComposites()));
+	public void check(T modified, T attribute, Serializable value, int axe) throws ConstraintViolationException {
+		T generic = modified.getMeta().getInstance(modified.getValue(), modified.coerceToTArray(modified.getComposites().get().toArray()));
 		if (generic != modified)
 			throw new GetInstanceConstraintViolationException("get : " + generic.info() + " for search : " + modified.info());
 	}

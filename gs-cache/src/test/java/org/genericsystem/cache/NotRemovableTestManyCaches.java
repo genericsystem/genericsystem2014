@@ -17,6 +17,7 @@ public class NotRemovableTestManyCaches extends AbstractTest {
 		Generic myBmwRed = myBmw.addHolder(color, "red");
 		cache.start();
 		catchAndCheckCause(() -> myBmwRed.remove(), AliveConstraintViolationException.class);
+
 	}
 
 	public void test003_aliveEx() {

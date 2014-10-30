@@ -2,7 +2,9 @@ package org.genericsystem.api.core;
 
 import java.io.Serializable;
 import java.util.List;
+
 import javax.json.JsonObject;
+
 import org.genericsystem.api.exception.RollbackException;
 
 /**
@@ -529,6 +531,50 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 
 	/**
 	 *
+	 * Enable the unique value constraint of this vertex.
+	 *
+	 *
+	 * @return this
+	 */
+	T enableUniqueValueConstraint();
+
+	/**
+	 *
+	 * Disable the unique value constraint of this vertex.
+	 *
+	 *
+	 * @return this
+	 */
+	T disableUniqueValueConstraint();
+
+	/**
+	 *
+	 * Indicates whether this vertex is unique value constraint.
+	 *
+	 *
+	 * @return true if this vertex is unique value constraint
+	 */
+	boolean isUniqueValueEnabled();
+
+	/**
+	 * get the class value constraint of this vertex.
+	 *
+	 *
+	 * @return the class constraint
+	 */
+	Class<?> getClassConstraint();
+
+	/**
+	 * set the class value constraint of this vertex.
+	 * 
+	 * @param constraintClass
+	 *            the value class of the constraint
+	 * @return this
+	 */
+	T setClassConstraint(Class<?> constraintClass);
+
+	/**
+	 *
 	 * Enable the required constraint of this vertex for the specified position.<br>
 	 *
 	 * @param pos
@@ -900,5 +946,9 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 
 	@SuppressWarnings("unchecked")
 	T update(Serializable newValue, T... newComposites);
+
+	Snapshot<T> getCompositesByMeta(T meta);
+
+	Snapshot<T> getCompositesBySuper(T superT);
 
 }
