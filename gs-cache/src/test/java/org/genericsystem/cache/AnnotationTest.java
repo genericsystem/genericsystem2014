@@ -5,9 +5,11 @@ import org.genericsystem.cache.annotations.InstanceClass;
 import org.genericsystem.cache.annotations.Meta;
 import org.genericsystem.cache.annotations.Supers;
 import org.genericsystem.cache.annotations.SystemGeneric;
+import org.genericsystem.cache.annotations.constraints.InstanceValueClassConstraint;
 import org.genericsystem.cache.annotations.constraints.PropertyConstraint;
 import org.genericsystem.cache.annotations.constraints.RequiredConstraint;
 import org.genericsystem.cache.annotations.constraints.SingularConstraint;
+import org.genericsystem.cache.annotations.constraints.UniqueValueConstraint;
 import org.genericsystem.cache.annotations.value.IntValue;
 import org.genericsystem.kernel.Statics;
 import org.testng.annotations.Test;
@@ -337,6 +339,23 @@ public class AnnotationTest extends AbstractTest {
 		assert puissance.isSingularConstraintEnabled(0);
 	}
 
+	public void test018_uniqueValueConstraint() {
+		Engine engine = new Engine(Vehicle.class, Puissance.class);
+		Generic voiture = engine.find(Vehicle.class);
+		Generic puissance = engine.find(Puissance.class);
+
+		assert puissance.isUniqueValueEnabled();
+	}
+
+	public void test019_uniqueClassConstraint() {
+		Engine engine = new Engine(Vehicle.class, Puissance.class);
+		Generic voiture = engine.find(Vehicle.class);
+		Generic puissance = engine.find(Puissance.class);
+
+		System.out.println(puissance.getClassConstraint());
+		assert puissance.getClassConstraint().equals(Integer.class);
+	}
+
 	@SystemGeneric
 	public static class Games extends Generic {
 	}
@@ -452,6 +471,8 @@ public class AnnotationTest extends AbstractTest {
 	@PropertyConstraint
 	@SingularConstraint(value = 0)
 	@RequiredConstraint
+	@UniqueValueConstraint
+	@InstanceValueClassConstraint(Integer.class)
 	public static class Puissance extends Generic {
 
 	}
