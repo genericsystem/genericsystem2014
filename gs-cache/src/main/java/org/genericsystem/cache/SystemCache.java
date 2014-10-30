@@ -60,7 +60,7 @@ public class SystemCache<T extends AbstractGeneric<T, ?>> extends HashMap<Class<
 
 		if (clazz.getAnnotation(UniqueValueConstraint.class) != null)
 			result.enableUniqueValueConstraint();
-
+		//
 		// if (clazz.getAnnotation(InstanceValueClassConstraint.class) != null)
 		// result.setClassConstraint(clazz.getAnnotation(InstanceValueClassConstraint.class).)
 
