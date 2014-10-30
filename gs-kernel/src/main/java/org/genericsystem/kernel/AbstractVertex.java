@@ -629,20 +629,25 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	@SuppressWarnings("unchecked")
 	void checkConstraints(CheckingType checkingType, boolean isFlushTime) {
-		for (T constraintHolder : getActivedSortedConstraints()) {
-			Constraint<T> constraint = constraintHolder.getConstraint();
-			if (isCheckable(constraint, checkingType, isFlushTime))
-				try {
-					constraint.check((T) this, getHolders(constraintHolder).get().findFirst().get().getComponents().get(Statics.BASE_POSITION), constraintHolder.getValue(), ((AxedPropertyClass) constraintHolder.getValue()).getAxe());
-				} catch (ConstraintViolationException e) {
-					getRoot().discardWithException(e);
+		for (T constraintAttribute : getSortedConstraints()) {
+			Optional<T> constraintHolder = getHolders(constraintAttribute).get().findFirst();
+			if (constraintHolder.isPresent()) {
+				Serializable value = constraintHolder.get().getValue();
+				if (value != null && !Boolean.FALSE.equals(value)) {
+					Constraint<T> constraint = constraintAttribute.getConstraint();
+					if (isCheckable(constraint, checkingType, isFlushTime))
+						try {
+							constraint.check((T) this, getHolders(constraintAttribute).get().findFirst().get().getComponents().get(Statics.BASE_POSITION), value, ((AxedPropertyClass) constraintAttribute.getValue()).getAxe());
+						} catch (ConstraintViolationException e) {
+							getRoot().discardWithException(e);
+						}
 				}
+			}
 		}
 	}
 
-	private List<T> getActivedSortedConstraints() {
-		return getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) x.getValue()).getClazz())).filter(x -> getHolders(x).get().anyMatch(y -> !Boolean.FALSE.equals(y.getValue())))
-				.sorted(priorityConstraintComparator).collect(Collectors.toList());
+	private List<T> getSortedConstraints() {
+		return getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) x.getValue()).getClazz())).sorted(priorityConstraintComparator).collect(Collectors.toList());
 	}
 
 	@SuppressWarnings("unchecked")
