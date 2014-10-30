@@ -49,7 +49,8 @@ public class SystemCache<T extends AbstractGeneric<T, ?>> extends HashMap<Class<
 			assert systemProperty.isAlive();
 			return systemProperty;
 		}
-		T result = setMeta(clazz).bindInstance(clazz, false, setOverrides(clazz), findValue(clazz), setComponents(clazz));
+		T meta = setMeta(clazz);
+		T result = meta.setInstance(clazz, setOverrides(clazz), findValue(clazz), meta.coerceToTArray(setComponents(clazz).toArray()));
 		mountConstraints(result, clazz);
 		triggersDependencies(clazz);
 		put(clazz, result);

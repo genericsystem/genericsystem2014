@@ -2,6 +2,7 @@ package org.genericsystem.cache;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
@@ -27,7 +28,7 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 	protected void simpleAdd(T generic) {
 		V vertex = unwrap(generic.getMeta());
 		// TODO null is KK
-		V result = vertex.bindInstance(null, generic.isThrowExistException(), generic.getSupers().stream().map(this::unwrap).collect(Collectors.toList()), generic.getValue(), generic.getComponents().stream().map(this::unwrap).collect(Collectors.toList()));
+		V result = vertex.addInstance(generic.getSupers().stream().map(this::unwrap).collect(Collectors.toList()), generic.getValue(), vertex.coerceToTArray(generic.getComponents().stream().map(this::unwrap).toArray()));
 		vertices.put(generic, result);
 	}
 

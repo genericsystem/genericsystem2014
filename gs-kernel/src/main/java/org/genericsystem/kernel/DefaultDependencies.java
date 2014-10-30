@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
 
@@ -26,18 +27,6 @@ public interface DefaultDependencies<T extends AbstractVertex<T>> extends IVerte
 	@Override
 	default Snapshot<T> getAllInstances() {
 		return () -> getAllInheritings().get().flatMap(inheriting -> inheriting.getInstances().get());
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	default T addInstance(List<T> overrides, Serializable value, T... components) {
-		return ((T) this).bindInstance(null, true, overrides, value, Arrays.asList(components));
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	default T setInstance(List<T> overrides, Serializable value, T... components) {
-		return ((T) this).bindInstance(null, false, overrides, value, Arrays.asList(components));
 	}
 
 	@Override

@@ -150,6 +150,14 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 		super.remove();
 	}
 
+	// // TODO KK should be protected
+	// @Override
+	// public T bindInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
+	//
+	// clazz = specializeInstanceClass(clazz);
+	// super.bindInstance(clazz, throwExistException, overrides, value, components);
+	// }
+
 	@Override
 	public int hashCode() {
 		// TODO introduce : meta and composites length
