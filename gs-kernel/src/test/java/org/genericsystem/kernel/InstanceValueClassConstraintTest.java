@@ -1,12 +1,14 @@
 package org.genericsystem.kernel;
 
 import java.util.stream.Stream;
+
+import org.genericsystem.api.exception.UniqueValueConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test
 public class InstanceValueClassConstraintTest extends AbstractTest {
 
-	public void test01_simpleCase() {
+	public void test01_setAndGet() {
 		Stream.empty().count();
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
@@ -20,18 +22,37 @@ public class InstanceValueClassConstraintTest extends AbstractTest {
 
 	}
 
-	public void test02_simpleCase() {
+	public void test02_noException() {
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
 		Vertex myVehicle = vehicle.addInstance("myVehicle");
 		Vertex power = root.addInstance("Power");
 		vehicle.addAttribute(power, "Power");
 		power.setClassConstraint(Integer.class);
+
 		myVehicle.addHolder(power, 125);
+	}
 
-		//
-		//
-		// catchAndCheckCause(() -> myVehicle.addHolder(power, "125"), UniqueValueConstraintViolationException.class);
+	public void test03_exception() {
+		Root root = new Root();
+		Vertex vehicle = root.addInstance("Vehicle");
+		Vertex myVehicle = vehicle.addInstance("myVehicle");
+		Vertex power = root.addInstance("Power");
+		vehicle.addAttribute(power, "Power");
+		power.setClassConstraint(Integer.class);
 
+		catchAndCheckCause(() -> myVehicle.addHolder(power, "125"), UniqueValueConstraintViolationException.class);
+
+	}
+
+	public void test04_exception() {
+		Root root = new Root();
+		Vertex vehicle = root.addInstance("Vehicle");
+		Vertex myVehicle = vehicle.addInstance("myVehicle");
+		Vertex power = root.addInstance("Power");
+		vehicle.addAttribute(power, "Power");
+		power.setClassConstraint(Integer.class);
+
+		catchAndCheckCause(() -> myVehicle.addHolder(power, "125"), UniqueValueConstraintViolationException.class);
 	}
 }

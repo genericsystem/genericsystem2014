@@ -636,6 +636,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 				Constraint constraint = newConstraint(constraintHolder);
 				if (isCheckable(constraint, checkingType, isFlushTime)) {
 					int axe = ((AxedPropertyClass) constraintHolder.getValue()).getAxe();
+
 					constraint.check(this, getHolders(constraintHolder).get().findFirst().get().getComponents().get(Statics.BASE_POSITION), constraintHolder.getValue());
 				}
 			} catch (ConstraintViolationException e) {
