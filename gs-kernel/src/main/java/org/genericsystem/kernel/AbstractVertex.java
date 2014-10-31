@@ -166,6 +166,9 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	public T update(List<T> supersToAdd, Serializable newValue, T... newComponents) {
 		if (newComponents.length != getComponents().size())
 			getRoot().discardWithException(new IllegalArgumentException());
+		for (int i = 0; i < newComponents.length; i++)
+			if (equiv(newComponents[i]))
+				newComponents[i] = null;
 		return rebuildAll(() -> getMeta().setInstance(new Supers<>(getSupers(), supersToAdd), newValue, newComponents), computeDependencies());
 	}
 
@@ -274,16 +277,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		T result = getDirectInstance(value, components);
 		return result != null && Statics.areOverridesReached(overrides, result.getSupers()) ? result : null;
 	}
-
-	// Class<?> specializeInstanceClass(Class<?> specializationClass) {
-	// InstanceClass instanceClass = getClass().getAnnotation(Instancelass.class);
-	// if (instanceClass != null)
-	// if (specializationClass == null || specializationClass.isAssignableFrom(instanceClass.value()))
-	// specializationClass = instanceClass.value();
-	// else
-	// assert instanceClass.value().isAssignableFrom(specializationClass);
-	// return specializationClass;
-	// }
 
 	@SuppressWarnings("unchecked")
 	public T addInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
