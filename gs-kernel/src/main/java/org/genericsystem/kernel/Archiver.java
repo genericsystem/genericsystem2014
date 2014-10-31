@@ -29,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-
 import org.genericsystem.kernel.Archiver.AbstractWriterLoader.ZipWriterLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,7 +122,7 @@ public class Archiver {
 	}
 
 	private static NavigableMap<Long, File> snapshotsMap(File directory, String extension) {
-		NavigableMap<Long, File> snapshotsMap = new TreeMap<Long, File>();
+		NavigableMap<Long, File> snapshotsMap = new TreeMap<>();
 		for (File file : directory.listFiles()) {
 			String filename = file.getName();
 			if (!file.isDirectory() && filename.endsWith(extension)) {
@@ -164,8 +163,7 @@ public class Archiver {
 				Map<Long, Vertex> vertexMap = new HashMap<>();
 				for (;;)
 					loadDependency(vertexMap);
-			} catch (EOFException ignore) {
-			} catch (ClassNotFoundException | IOException e) {
+			} catch (EOFException ignore) {} catch (ClassNotFoundException | IOException e) {
 				log.error(e.getMessage(), e);
 			}
 		}
@@ -176,10 +174,11 @@ public class Archiver {
 				if (inputStream.readBoolean()) {
 					long ts = inputStream.readLong();
 					Serializable value = (Serializable) inputStream.readObject();
+					Class clazz = (Class) inputStream.readObject();
 					Vertex meta = loadAncestor(vertexMap);
 					List<Vertex> overrides = loadAncestors(vertexMap);
 					List<Vertex> components = loadAncestors(vertexMap);
-					vertexMap.put(ts, meta.setInstance(overrides, value, components.toArray(new Vertex[components.size()])));
+					vertexMap.put(ts, meta.bindInstance(null, false, overrides, value, components));
 				}
 		}
 
@@ -219,7 +218,7 @@ public class Archiver {
 			long lastTs = snapshotsMap.lastKey();
 			long firstTs = snapshotsMap.firstKey();
 			long ts = firstTs;
-			for (long snapshotTs : new TreeSet<Long>(snapshotsMap.keySet()))
+			for (long snapshotTs : new TreeSet<>(snapshotsMap.keySet()))
 				if (snapshotTs != lastTs && snapshotTs != firstTs)
 					if ((snapshotTs - ts) < minInterval((lastTs - snapshotTs)))
 						removeSnapshot(snapshotsMap, snapshotTs);
@@ -264,6 +263,7 @@ public class Archiver {
 		protected void writeDependency(Vertex dependency) throws IOException {
 			outputStream.writeLong(getTs(dependency));
 			outputStream.writeObject(dependency.getValue());
+			outputStream.writeObject(dependency.getClass());
 			writeAncestor(dependency.getMeta());
 			writeAncestors(dependency.getSupers());
 			writeAncestors(dependency.getComponents());

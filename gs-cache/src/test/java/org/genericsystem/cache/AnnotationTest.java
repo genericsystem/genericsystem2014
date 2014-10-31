@@ -36,6 +36,8 @@ public class AnnotationTest extends AbstractTest {
 	public void test001_instanceof() {
 		Engine engine = new Engine(Vehicle.class);
 		assert engine.find(Vehicle.class) instanceof Vehicle;
+		assert engine.getInstance(Vehicle.class) instanceof Vehicle;
+		assert engine.getInstances().get().anyMatch(x -> x instanceof Vehicle);
 	}
 
 	public void test002_instanceof() {
@@ -352,8 +354,15 @@ public class AnnotationTest extends AbstractTest {
 		Generic voiture = engine.find(Vehicle.class);
 		Generic puissance = engine.find(Puissance.class);
 
-		System.out.println(puissance.getClassConstraint());
 		assert puissance.getClassConstraint().equals(Integer.class);
+	}
+
+	public void test020_dependencies() {
+		Engine engine = new Engine(Voiture.class);
+		Generic puissance = engine.find(Puissance.class);
+		Generic couleur = engine.find(Couleur.class);
+		assert puissance instanceof Puissance;
+		assert couleur instanceof Couleur;
 	}
 
 	@SystemGeneric
@@ -469,11 +478,21 @@ public class AnnotationTest extends AbstractTest {
 	@SystemGeneric
 	@Components(Vehicle.class)
 	@PropertyConstraint
-	@SingularConstraint(value = 0)
+	@SingularConstraint(Statics.BASE_POSITION)
 	@RequiredConstraint
 	@UniqueValueConstraint
 	@InstanceValueClassConstraint(Integer.class)
+	@Dependencies(Couleur.class)
 	public static class Puissance extends Generic {
+
+	}
+
+	public static class Couleur extends Generic {
+
+	}
+
+	@Dependencies(Puissance.class)
+	public static class Voiture extends Generic {
 
 	}
 

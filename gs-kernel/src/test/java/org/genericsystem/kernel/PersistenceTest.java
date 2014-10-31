@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.io.File;
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -94,17 +95,17 @@ public class PersistenceTest {
 		compareGraph(root, new Root(Statics.ENGINE_VALUE, snapshot));
 	}
 
-	// public void testInheritanceTree() {
-	// String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
-	// Root root = new Root(Statics.ENGINE_VALUE, snapshot);
-	// Vertex tree = root.addTree("Tree");
-	// Vertex rootTree = tree.addRoot("Root");
-	// Vertex child = rootTree.setInhertingSubNode("Child");
-	// rootTree.setInhertingSubNode("Child2");
-	// child.setInhertingSubNode("Child3");
-	// root.close();
-	// compareGraph(root, new Root(Statics.ENGINE_VALUE, snapshot));
-	// }
+	public void testInheritanceTree() {
+		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
+		Root root = new Root(Statics.ENGINE_VALUE, snapshot);
+		Vertex tree = root.addTree("Tree");
+		Vertex rootTree = tree.addRoot("Root");
+		Vertex child = rootTree.setInhertingSubNode("Child");
+		rootTree.setInhertingSubNode("Child2");
+		child.setInhertingSubNode("Child3");
+		root.close();
+		compareGraph(root, new Root(Statics.ENGINE_VALUE, snapshot));
+	}
 
 	private static String cleanDirectory(String directoryPath) {
 		File file = new File(directoryPath);
@@ -115,41 +116,27 @@ public class PersistenceTest {
 	}
 
 	private void compareGraph(Vertex persistedNode, Vertex readNode) {
-		readByInheritings(persistedNode, readNode);
-		readByInstances(persistedNode, readNode);
-		readByComposites(persistedNode, readNode);
-	}
-
-	private void readByInheritings(Vertex persistedNode, Vertex readNode) {
-		assert persistedNode.getInheritings().size() == readNode.getInheritings().size() : persistedNode.getInheritings().info() + " / " + readNode.getInheritings().info();
-		LOOP: for (Vertex persistedGeneric : persistedNode.getInheritings()) {
-			for (Vertex read : readNode.getInheritings()) {
-				if (persistedGeneric.equiv(read))
+		DependenciesOrder persistVisit = new DependenciesOrder().visit(persistedNode);
+		DependenciesOrder readVisit = new DependenciesOrder().visit(readNode);
+		LOOP: for (Vertex persist : persistVisit) {
+			for (Vertex read : readVisit)
+				if (persist.equiv(read))
 					continue LOOP;
-			}
-			assert false;
+			assert false : persistVisit + " \n\t " + readVisit;
 		}
 	}
 
-	private void readByInstances(Vertex persistedNode, Vertex readNode) {
-		assert persistedNode.getInstances().size() == readNode.getInstances().size() : persistedNode.getInstances().info() + " / " + readNode.getInstances().info();
-		LOOP: for (Vertex persistedGeneric : persistedNode.getInstances()) {
-			for (Vertex read : readNode.getInstances()) {
-				if (persistedGeneric.equiv(read))
-					continue LOOP;
-			}
-			assert false;
-		}
-	}
+	private class DependenciesOrder extends ArrayDeque<Vertex> {
+		private static final long serialVersionUID = -5970021419012502402L;
 
-	private void readByComposites(Vertex persistedNode, Vertex readNode) {
-		assert persistedNode.getComposites().size() == readNode.getComposites().size() : persistedNode.getComposites().info() + " / " + readNode.getComposites().info();
-		LOOP: for (Vertex persistedGeneric : persistedNode.getComposites()) {
-			for (Vertex read : readNode.getComposites()) {
-				if (persistedGeneric.equiv(read))
-					continue LOOP;
+		private DependenciesOrder visit(Vertex node) {
+			if (!contains(node)) {
+				node.getComposites().forEach(this::visit);
+				node.getInheritings().forEach(this::visit);
+				node.getInstances().forEach(this::visit);
+				super.addFirst(node);
 			}
-			assert false;
+			return this;
 		}
 	}
 
