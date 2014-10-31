@@ -87,9 +87,9 @@ public class PersistenceTest {
 		Root root = new Root(Statics.ENGINE_VALUE, snapshot);
 		Vertex tree = root.addTree("Tree");
 		Vertex rootTree = tree.addRoot("Root");
-		Vertex child = rootTree.setSubNode("Child");
-		rootTree.setSubNode("Child2");
-		child.setSubNode("Child3");
+		Vertex child = rootTree.setNode("Child");
+		rootTree.setNode("Child2");
+		child.setNode("Child3");
 		root.close();
 		compareGraph(root, new Root(Statics.ENGINE_VALUE, snapshot));
 	}
