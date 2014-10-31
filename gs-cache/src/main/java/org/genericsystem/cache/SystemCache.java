@@ -6,7 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.genericsystem.cache.annotations.Components;
+import org.genericsystem.cache.annotations.Dependencies;
 import org.genericsystem.cache.annotations.Meta;
+import org.genericsystem.cache.annotations.constraints.InstanceValueClassConstraint;
 import org.genericsystem.cache.annotations.constraints.PropertyConstraint;
 import org.genericsystem.cache.annotations.constraints.RequiredConstraint;
 import org.genericsystem.cache.annotations.constraints.SingularConstraint;
@@ -47,10 +49,19 @@ public class SystemCache<T extends AbstractGeneric<T, ?>> extends HashMap<Class<
 			assert systemProperty.isAlive();
 			return systemProperty;
 		}
-		T result = setMeta(clazz).bindInstance(clazz, false, setOverrides(clazz), findValue(clazz), setComponents(clazz));
+		T meta = setMeta(clazz);
+		T result = meta.setInstance(clazz, setOverrides(clazz), findValue(clazz), meta.coerceToTArray(setComponents(clazz).toArray()));
 		mountConstraints(result, clazz);
+		triggersDependencies(clazz);
 		put(clazz, result);
 		return result;
+	}
+
+	private void triggersDependencies(Class<?> clazz) {
+		Dependencies dependenciesClass = clazz.getAnnotation(Dependencies.class);
+		if (dependenciesClass != null)
+			for (Class<?> dependencyClass : dependenciesClass.value())
+				set(dependencyClass);
 	}
 
 	private void mountConstraints(T result, Class<?> clazz) {
@@ -61,8 +72,8 @@ public class SystemCache<T extends AbstractGeneric<T, ?>> extends HashMap<Class<
 		if (clazz.getAnnotation(UniqueValueConstraint.class) != null)
 			result.enableUniqueValueConstraint();
 
-		// if (clazz.getAnnotation(InstanceValueClassConstraint.class) != null)
-		// result.setClassConstraint(clazz.getAnnotation(InstanceValueClassConstraint.class).)
+		if (clazz.getAnnotation(InstanceValueClassConstraint.class) != null)
+			result.setClassConstraint(clazz.getAnnotation(InstanceValueClassConstraint.class).value());
 
 		if (clazz.getAnnotation(RequiredConstraint.class) != null)
 			result.enableRequiredConstraint(Statics.NO_POSITION);

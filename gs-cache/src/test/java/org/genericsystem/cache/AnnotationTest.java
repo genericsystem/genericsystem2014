@@ -1,6 +1,7 @@
 package org.genericsystem.cache;
 
 import org.genericsystem.cache.annotations.Components;
+import org.genericsystem.cache.annotations.Dependencies;
 import org.genericsystem.cache.annotations.InstanceClass;
 import org.genericsystem.cache.annotations.Meta;
 import org.genericsystem.cache.annotations.Supers;

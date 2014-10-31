@@ -747,15 +747,15 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 
 	T setRoot(Serializable value);
 
-	T addSubNode(Serializable value);
+	T addNode(Serializable value);
 
-	T setSubNode(Serializable value);
+	T setNode(Serializable value);
 
-	T addInheritingSubNode(Serializable value);
+	T addInheritingNode(Serializable value);
 
-	T setInhertingSubNode(Serializable value);
+	T setInheritingNode(Serializable value);
 
-	Snapshot<T> getAllSubNodes();
+	Snapshot<T> getAllNodes();
 
 	Snapshot<T> getSubNodes();
 
