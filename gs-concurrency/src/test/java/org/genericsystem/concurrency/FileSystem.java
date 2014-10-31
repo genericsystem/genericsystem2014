@@ -58,22 +58,22 @@ public class FileSystem extends Generic {
 		}
 
 		public Snapshot<Directory> getDirectories() {
-			return (Snapshot) getAllSubNodes();
+			return (Snapshot) getSubNodes();
 		}
 
 		public Directory getDirectory(String name) {
-			Optional<Generic> optional = getAllSubNodes().get().filter(x -> x.getValue().equals(name)).findFirst();
+			Optional<Generic> optional = getSubNodes().get().filter(x -> x.getValue().equals(name)).findFirst();
 			return optional.isPresent() ? (Directory) optional.get() : null;
 
 		}
 
 		public Directory addDirectory(String name) {
-			return (Directory) addSubNode(name);
+			return (Directory) addNode(name);
 
 		}
 
 		public Directory setDirectory(String name) {
-			return (Directory) setSubNode(name);
+			return (Directory) setNode(name);
 		}
 
 		public String getShortPath() {
@@ -110,11 +110,11 @@ public class FileSystem extends Generic {
 	}
 
 	public Snapshot<Generic> getRootDirectories() {
-		return () -> getAllSubNodes().get().filter(x -> x.getComponents().get(Statics.BASE_POSITION).equals(x));
+		return () -> getSubNodes().get().filter(x -> x.getComponents().get(Statics.BASE_POSITION).equals(x));
 	}
 
 	public Directory getRootDirectory(String name) {
-		Optional<Generic> optional = getRoot().getAllSubNodes().get().filter(x -> x.getValue().equals(name)).findFirst();
+		Optional<Generic> optional = getRoot().getSubNodes().get().filter(x -> x.getValue().equals(name)).findFirst();
 		return optional.isPresent() ? (Directory) optional.get() : null;
 	}
 
