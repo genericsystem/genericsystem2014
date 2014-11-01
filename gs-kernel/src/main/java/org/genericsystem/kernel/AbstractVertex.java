@@ -14,6 +14,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
@@ -27,6 +28,7 @@ import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Statics.Supers;
+import org.genericsystem.kernel.annotations.Priority;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint.CheckingType;
@@ -160,10 +162,14 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		getOrderedDependenciesToRemove().forEach(x -> simpleRemove(x));
 	}
 
-	final T update(List<T> supersToAdd, Serializable newValue, List<T> newComponents) {
-		if (newComponents.size() != getComponents().size())
+	@Override
+	public T update(List<T> supersToAdd, Serializable newValue, T... newComponents) {
+		if (newComponents.length != getComponents().size())
 			getRoot().discardWithException(new IllegalArgumentException());
-		return rebuildAll(() -> getMeta().bindInstance(null, isThrowExistException(), new Supers<>(getSupers(), supersToAdd), newValue, newComponents), computeDependencies());
+		for (int i = 0; i < newComponents.length; i++)
+			if (equiv(newComponents[i]))
+				newComponents[i] = null;
+		return rebuildAll(() -> getMeta().setInstance(new Supers<>(getSupers(), supersToAdd), newValue, newComponents), computeDependencies());
 	}
 
 	private static class ConvertMap<T extends AbstractVertex<T>> extends HashMap<T, T> {
@@ -272,22 +278,59 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return result != null && Statics.areOverridesReached(overrides, result.getSupers()) ? result : null;
 	}
 
-	// TODO KK should be protected
-	public final T bindInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
-		checkSameEngine(components);
+	@SuppressWarnings("unchecked")
+	public T addInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
+		List<T> componentList = Arrays.asList(components);
+		checkSameEngine(componentList);
 		checkSameEngine(overrides);
 		T adjustedMeta = adjustMeta(value, components);
-		if (!throwExistException) {
-			T equivInstance = adjustedMeta.getDirectEquivInstance(value, components);
-			if (equivInstance != null)
-				return equivInstance.equalsRegardlessSupers(adjustedMeta, value, components) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : equivInstance.update(overrides, value, components);
-		} else {
-			T equivInstance = adjustedMeta.getDirectInstance(value, components);
-			if (equivInstance != null)
-				getRoot().discardWithException(new ExistsException("An equivalent instance already exists : " + equivInstance.info()));
-		}
-		return rebuildAll(() -> adjustedMeta.buildInstance(clazz, throwExistException, overrides, value, components).plug(), adjustedMeta.computePotentialDependencies(overrides, value, components));
+		T equivInstance = adjustedMeta.getDirectInstance(value, componentList);
+		if (equivInstance != null)
+			getRoot().discardWithException(new ExistsException("An equivalent instance already exists : " + equivInstance.info()));
+		return rebuildAll(() -> adjustedMeta.buildInstance(clazz, true, overrides, value, componentList).plug(), adjustedMeta.computePotentialDependencies(overrides, value, componentList));
+
 	}
+
+	@Override
+	public T addInstance(List<T> overrides, Serializable value, T... components) {
+		return addInstance(null, overrides, value, components);
+	}
+
+	@SuppressWarnings("unchecked")
+	public T setInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
+		List<T> componentList = Arrays.asList(components);
+		checkSameEngine(componentList);
+		checkSameEngine(overrides);
+		T adjustedMeta = adjustMeta(value, components);
+		T equivInstance = adjustedMeta.getDirectEquivInstance(value, componentList);
+		if (equivInstance != null)
+			return equivInstance.equalsRegardlessSupers(adjustedMeta, value, componentList) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : equivInstance.update(overrides, value, components);
+		return rebuildAll(() -> adjustedMeta.buildInstance(clazz, false, overrides, value, componentList).plug(), adjustedMeta.computePotentialDependencies(overrides, value, componentList));
+	}
+
+	@Override
+	public T setInstance(List<T> overrides, Serializable value, T... components) {
+		return setInstance(null, overrides, value, components);
+	}
+
+	// // TODO KK should be protected
+	// public final T bindInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
+	//
+	// // clazz = specializeInstanceClass(clazz);
+	// checkSameEngine(components);
+	// checkSameEngine(overrides);
+	// T adjustedMeta = adjustMeta(value, components);
+	// if (!throwExistException) {
+	// T equivInstance = adjustedMeta.getDirectEquivInstance(value, components);
+	// if (equivInstance != null)
+	// return equivInstance.equalsRegardlessSupers(adjustedMeta, value, components) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : equivInstance.update(overrides, value, components);
+	// } else {
+	// T equivInstance = adjustedMeta.getDirectInstance(value, components);
+	// if (equivInstance != null)
+	// getRoot().discardWithException(new ExistsException("An equivalent instance already exists : " + equivInstance.info()));
+	// }
+	// return rebuildAll(() -> adjustedMeta.buildInstance(clazz, throwExistException, overrides, value, components).plug(), adjustedMeta.computePotentialDependencies(overrides, value, components));
+	// }
 
 	boolean dependsFrom(T meta, List<T> overrides, Serializable value, List<T> components) {
 		return inheritsFrom(meta, value, components) || getComponents().stream().filter(component -> component != null && component != this).anyMatch(component -> component.dependsFrom(meta, overrides, value, components))
@@ -304,7 +347,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	private final Function<? super ISignature<?>, ? extends IVertex<?>> NULL_TO_THIS = x -> x == null ? this : (IVertex<?>) x;
 
 	boolean equiv(IVertex<?> meta, Serializable value, List<? extends IVertex<?>> components) {
-		if (!getMeta().equiv(meta))
+		if (!meta.isRoot() && !getMeta().equiv(meta))
 			return false;
 		if (getComponents().size() != components.size())
 			return false;// for the moment, not equivalent when composite size is different
@@ -313,9 +356,10 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		for (int i = 0; i < componentsList.size(); i++)
 			if (!isReferentialIntegrityEnabled(i) && isSingularConstraintEnabled(i) && componentsList.get(i).equiv(notNullComponents.get(i)))
 				return true;
-		for (int i = 0; i < componentsList.size(); i++)
+		for (int i = 0; i < componentsList.size(); i++) {
 			if (!componentsList.get(i).equiv(notNullComponents.get(i)))
 				return false;
+		}
 		if (!meta.isPropertyConstraintEnabled())
 			return Objects.equals(getValue(), value);
 		return true;
@@ -568,13 +612,14 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {}
+	public static class SystemMap {
+	}
 
 	protected boolean equals(ISignature<?> meta, List<? extends ISignature<?>> supers, Serializable value, List<? extends ISignature<?>> components) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComponents().equals(components.stream().map(NULL_TO_THIS).collect(Collectors.toList())) && getSupers().equals(supers);
 	}
 
-	protected Stream<T> getKeys() {
+	Stream<T> getKeys() {
 		T map = getMap();
 		return map != null ? getAttributes(map).get() : Stream.empty();
 	}
@@ -583,31 +628,24 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getKeys().filter(x -> Objects.equals(x.getValue(), property)).findFirst();
 	}
 
-	@SuppressWarnings("unchecked")
 	void checkSystemConstraints(CheckingType checkingType, boolean isFlushTime) {
+		// checkIsAlive();
 		checkDependsMetaComponents();
 		checkSupers();
 		checkDependsSuperComponents();
 		checkLevel();
 		checkLevelComponents();
-		for (Class<? extends Constraint> constraintClass : DefaultRoot.SYSTEM_CONSTRAINTS)
-			try {
-				Constraint constraint = constraintClass.newInstance();
-				if (isCheckable(constraint, checkingType, isFlushTime))
-					constraint.check(this, this);
-			} catch (InstantiationException | IllegalAccessException | ConstraintViolationException e) {
-				getRoot().discardWithException(e);
-			}
+
 	}
 
 	private void checkDependsMetaComponents() {
 		if (!(getMeta().componentsDepends(getComponents(), getMeta().getComponents())))
-			getRoot().discardWithException(new ConsistencyConstraintViolationException("Inconsistant composites : " + getComponents() + " " + getMeta().getComponents()));
+			getRoot().discardWithException(new ConsistencyConstraintViolationException("Components : " + getComponents() + " must match to " + getMeta().getComponents()));
 	}
 
 	private void checkLevelComponents() {
 		if (getComponents().stream().anyMatch(component -> component.getLevel() > getLevel()))
-			getRoot().discardWithException(new ConsistencyConstraintViolationException("Inconsistant level link between composites : level " + getLevel() + " and another"));
+			getRoot().discardWithException(new ConsistencyConstraintViolationException("Inconsistant level link between components : level " + getLevel() + " and another"));
 	}
 
 	private void checkLevel() {
@@ -636,52 +674,53 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	@SuppressWarnings("unchecked")
 	void checkConstraints(CheckingType checkingType, boolean isFlushTime) {
-		for (T constraintHolder : getActivedConstraints())
-			try {
-				Constraint constraint = newConstraint(constraintHolder);
-				if (isCheckable(constraint, checkingType, isFlushTime)) {
-					int axe = ((AxedPropertyClass) constraintHolder.getValue()).getAxe();
-					constraint.check(this, getHolders(constraintHolder).get().findFirst().get().getComponents().get(Statics.BASE_POSITION));
+		for (T constraintHolder : getConstraintsHolders()) {
+			Serializable value = constraintHolder.getValue();
+			Constraint<T> constraint = constraintHolder.getMeta().getConstraint();
+			if (isCheckable(constraint, checkingType, isFlushTime))
+				try {
+					constraint.check((T) this, constraintHolder.getComponents().get(Statics.BASE_POSITION), value, ((AxedPropertyClass) constraintHolder.getMeta().getValue()).getAxe());
+				} catch (ConstraintViolationException e) {
+					getRoot().discardWithException(e);
 				}
-			} catch (ConstraintViolationException e) {
-				getRoot().discardWithException(e);
-			}
+		}
 	}
 
-	private List<T> getActivedConstraints() {
-		// return getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) x.getValue()).getClazz())).filter(x -> {
-		// Iterator<T> holders = getHolders(x).iterator();
-		// return holders.hasNext() && !holders.next().getValue().equals(Boolean.FALSE);
-		// }).sorted(priorityConstraintComparator).collect(Collectors.toList());
-
-		return getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) x.getValue()).getClazz())).filter(x -> getHolders(x).get().anyMatch(y -> !Boolean.FALSE.equals(y.getValue())))
-				.sorted(priorityConstraintComparator).collect(Collectors.toList());
+	public List<T> getConstraintsHolders() {
+		T map = getMap();
+		return map != null ? getMeta().getHolders(getMap()).get().filter(holder -> holder.getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) holder.getMeta().getValue()).getClazz()))
+				.filter(holder -> holder.getValue() != null && !Boolean.FALSE.equals(holder.getValue())).sorted(CONSTRAINT_PRIORITY).collect(Collectors.toList()) : Collections.emptyList();
 	}
 
-	private Constraint newConstraint(T constraintHolder) {
+	@SuppressWarnings("unchecked")
+	Constraint<T> getConstraint() {
 		try {
-			return (Constraint) ((AxedPropertyClass) constraintHolder.getValue()).getClazz().newInstance();
+			return (Constraint<T>) ((AxedPropertyClass) getValue()).getClazz().newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
 			getRoot().discardWithException(e);
 		}
 		return null;
 	}
 
+	int getConstraintPriority() {
+		Class<?> clazz = ((AxedPropertyClass) getValue()).getClazz();
+		Priority priority = clazz.getAnnotation(Priority.class);
+		return priority != null ? priority.value() : 0;
+	}
+
 	@SuppressWarnings("unchecked")
-	private boolean isCheckable(Constraint constraint, CheckingType checkingType, boolean isFlushTime) {
-		return (isFlushTime || constraint.isImmediatelyCheckable()) && constraint.isCheckedAt(this, checkingType);
+	private boolean isCheckable(Constraint<T> constraint, CheckingType checkingType, boolean isFlushTime) {
+		return (isFlushTime || constraint.isImmediatelyCheckable()) && constraint.isCheckedAt((T) this, checkingType);
 	}
 
 	void checkConsistency(CheckingType checkingType, boolean isFlushTime) {
 		// TODO impl
 	}
 
-	private final Comparator<T> priorityConstraintComparator = new Comparator<T>() {
-
-		@SuppressWarnings("unchecked")
+	private static final Comparator<AbstractVertex<?>> CONSTRAINT_PRIORITY = new Comparator<AbstractVertex<?>>() {
 		@Override
-		public int compare(T constraintHolder, T compareConstraintHolder) {
-			return Constraint.getPriorityOf((Class<Constraint<?>>) ((AxedPropertyClass) constraintHolder.getValue()).getClazz()) < Constraint.getPriorityOf((Class<Constraint<?>>) ((AxedPropertyClass) compareConstraintHolder.getValue()).getClazz()) ? -1 : 1;
+		public int compare(AbstractVertex<?> constraintHolder, AbstractVertex<?> compareConstraintHolder) {
+			return constraintHolder.getMeta().getConstraintPriority() < compareConstraintHolder.getMeta().getConstraintPriority() ? -1 : 1;
 		}
 	};
 
