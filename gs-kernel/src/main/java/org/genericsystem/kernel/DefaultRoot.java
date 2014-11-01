@@ -1,25 +1,14 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.genericsystem.api.core.IRoot;
 import org.genericsystem.api.exception.RollbackException;
-import org.genericsystem.kernel.systemproperty.constraints.AliveConstraint;
-import org.genericsystem.kernel.systemproperty.constraints.Constraint;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint.CheckingType;
 
 public interface DefaultRoot<T extends AbstractVertex<T>> extends IRoot<T> {
-
-	static final List<Class<? extends Constraint>> SYSTEM_CONSTRAINTS = new ArrayList<Class<? extends Constraint>>() {
-		private static final long serialVersionUID = -950838421343460439L;
-
-		{
-			add(AliveConstraint.class);
-		}
-	};
 
 	@Override
 	default void discardWithException(Throwable exception) throws RollbackException {

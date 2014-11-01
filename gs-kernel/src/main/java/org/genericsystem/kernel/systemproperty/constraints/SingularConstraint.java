@@ -1,17 +1,20 @@
 package org.genericsystem.kernel.systemproperty.constraints;
 
+import java.io.Serializable;
+import java.util.Optional;
+
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.SingularConstraintViolationException;
 import org.genericsystem.kernel.AbstractVertex;
-import org.genericsystem.kernel.Statics;
 
 public class SingularConstraint<T extends AbstractVertex<T>> implements Constraint<T> {
 
 	@Override
-	public void check(T modified, T attribute) throws ConstraintViolationException {
-		T base = modified.getComponents().get(Statics.BASE_POSITION);
-		if (base.getHolders(attribute).size() > 1)
-			throw new SingularConstraintViolationException(modified + " has more than one " + attribute);
+	public void check(T modified, T attribute, Serializable value, int axe) throws ConstraintViolationException {
+		T base = modified.getComponents().get(axe);
+		Optional<T> optional = base.getHolders(attribute).get().filter(x -> !x.equals(modified)).findFirst();
+		if (optional.isPresent())
+			throw new SingularConstraintViolationException(base + " is already use by " + optional.get());
 	}
 
 	@Override

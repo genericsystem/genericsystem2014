@@ -1,13 +1,16 @@
 package org.genericsystem.cache;
 
 import org.genericsystem.cache.annotations.Components;
+import org.genericsystem.cache.annotations.Dependencies;
 import org.genericsystem.cache.annotations.InstanceClass;
 import org.genericsystem.cache.annotations.Meta;
 import org.genericsystem.cache.annotations.Supers;
 import org.genericsystem.cache.annotations.SystemGeneric;
+import org.genericsystem.cache.annotations.constraints.InstanceValueClassConstraint;
 import org.genericsystem.cache.annotations.constraints.PropertyConstraint;
 import org.genericsystem.cache.annotations.constraints.RequiredConstraint;
 import org.genericsystem.cache.annotations.constraints.SingularConstraint;
+import org.genericsystem.cache.annotations.constraints.UniqueValueConstraint;
 import org.genericsystem.cache.annotations.value.IntValue;
 import org.genericsystem.kernel.Statics;
 import org.testng.annotations.Test;
@@ -34,6 +37,8 @@ public class AnnotationTest extends AbstractTest {
 	public void test001_instanceof() {
 		Engine engine = new Engine(Vehicle.class);
 		assert engine.find(Vehicle.class) instanceof Vehicle;
+		assert engine.getInstance(Vehicle.class) instanceof Vehicle;
+		assert engine.getInstances().get().anyMatch(x -> x instanceof Vehicle);
 	}
 
 	public void test002_instanceof() {
@@ -337,6 +342,30 @@ public class AnnotationTest extends AbstractTest {
 		assert puissance.isSingularConstraintEnabled(0);
 	}
 
+	public void test018_uniqueValueConstraint() {
+		Engine engine = new Engine(Vehicle.class, Puissance.class);
+		Generic voiture = engine.find(Vehicle.class);
+		Generic puissance = engine.find(Puissance.class);
+
+		assert puissance.isUniqueValueEnabled();
+	}
+
+	public void test019_uniqueClassConstraint() {
+		Engine engine = new Engine(Vehicle.class, Puissance.class);
+		Generic voiture = engine.find(Vehicle.class);
+		Generic puissance = engine.find(Puissance.class);
+
+		assert puissance.getClassConstraint().equals(Integer.class);
+	}
+
+	public void test020_dependencies() {
+		Engine engine = new Engine(Voiture.class);
+		Generic puissance = engine.find(Puissance.class);
+		Generic couleur = engine.find(Couleur.class);
+		assert puissance instanceof Puissance;
+		assert couleur instanceof Couleur;
+	}
+
 	@SystemGeneric
 	public static class Games extends Generic {
 	}
@@ -450,9 +479,21 @@ public class AnnotationTest extends AbstractTest {
 	@SystemGeneric
 	@Components(Vehicle.class)
 	@PropertyConstraint
-	@SingularConstraint(value = 0)
+	@SingularConstraint(Statics.BASE_POSITION)
 	@RequiredConstraint
+	@UniqueValueConstraint
+	@InstanceValueClassConstraint(Integer.class)
+	@Dependencies(Couleur.class)
 	public static class Puissance extends Generic {
+
+	}
+
+	public static class Couleur extends Generic {
+
+	}
+
+	@Dependencies(Puissance.class)
+	public static class Voiture extends Generic {
 
 	}
 

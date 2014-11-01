@@ -1,5 +1,6 @@
 package org.genericsystem.kernel.systemproperty.constraints;
 
+import java.io.Serializable;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RequiredConstraintViolationException;
 import org.genericsystem.kernel.AbstractVertex;
@@ -7,7 +8,7 @@ import org.genericsystem.kernel.AbstractVertex;
 public class RequiredConstraint<T extends AbstractVertex<T>> implements Constraint<T> {
 
 	@Override
-	public void check(T modified, T attribute) throws ConstraintViolationException {
+	public void check(T modified, T attribute, Serializable value, int axe) throws ConstraintViolationException {
 		if (modified.isConcrete() && modified.getHolders(attribute).isEmpty())
 			throw new RequiredConstraintViolationException(modified + " has more than one " + attribute);
 	}
