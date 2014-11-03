@@ -20,7 +20,7 @@ class InheritanceComputer<T extends AbstractVertex<T>> extends HashSet<T> {
 	private final T origin;
 	private final int level;
 
-	public InheritanceComputer(T base, T origin, int level) {
+	InheritanceComputer(T base, T origin, int level) {
 		this.base = base;
 		this.origin = origin;
 		this.level = level;
