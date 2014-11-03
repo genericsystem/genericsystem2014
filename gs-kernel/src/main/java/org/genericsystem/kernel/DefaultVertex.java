@@ -37,12 +37,12 @@ public interface DefaultVertex<T extends AbstractVertex<T>> extends DefaultAnces
 	@SuppressWarnings("unchecked")
 	@Override
 	default T setInheritingNode(Serializable value) {
-		return setHolder((T) this, getMeta(), value, coerceToTArray());
+		return setHolder(getMeta(), (T) this, value, coerceToTArray());
 	}
 
 	@Override
 	default Snapshot<T> getSubNodes() {
-		return getInstances();
+		return () -> getCompositesByMeta(this.getMeta()).get();
 	}
 
 	@Override

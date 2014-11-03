@@ -56,7 +56,7 @@ public class TreeTest extends AbstractTest {
 		Vertex div = body.addNode("div");
 
 		assert !html.getSubNodes().contains(html);
-		assert html.getSubNodes().containsAll(Arrays.asList(head, body));
+		assert html.getSubNodes().containsAll(Arrays.asList(head, body)) : html.getSubNodes().info();
 		assert html.getSubNodes().size() == 2;
 		assert html.getAllNodes().containsAll(Arrays.asList(html, head, body, div));
 		assert html.getAllNodes().size() == 4;
@@ -152,4 +152,23 @@ public class TreeTest extends AbstractTest {
 		assert body.getHolders(treeColor).get().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(red);
 		assert div.getHolders(treeColor).get().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(green);
 	}
+
+	public void testInheritanceTree() {
+		Root root = new Root(Statics.ENGINE_VALUE);
+		Vertex tree = root.addTree("Tree");
+		Vertex rootTree = tree.addRoot("Root");
+		Vertex child = rootTree.addInheritingNode("Child");
+		rootTree.addInheritingNode("Child2");
+		child.addInheritingNode("Child3");
+	}
+
+	public void testSetInheritanceTree() {
+		Root root = new Root(Statics.ENGINE_VALUE);
+		Vertex tree = root.addTree("Tree");
+		Vertex rootTree = tree.addRoot("Root");
+		Vertex child = rootTree.setInheritingNode("Child");
+		rootTree.setInheritingNode("Child2");
+		child.setInheritingNode("Child3");
+	}
+
 }

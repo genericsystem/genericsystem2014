@@ -46,7 +46,8 @@ public class PersistenceTest {
 		root.addInstance(vehicle, "Truck");
 		car.remove();
 		root.close();
-		compareGraph(root, new Root(Statics.ENGINE_VALUE, snapshot));
+		Root root2 = new Root(Statics.ENGINE_VALUE, snapshot);
+		compareGraph(root, root2);
 	}
 
 	public void testLink() {

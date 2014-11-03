@@ -180,7 +180,7 @@ public class Archiver {
 					Vertex meta = loadAncestor(vertexMap);
 					List<Vertex> overrides = loadAncestors(vertexMap);
 					List<Vertex> components = loadAncestors(vertexMap);
-					vertexMap.put(ts, meta.buildInstance(null, false, overrides, value, components));
+					vertexMap.put(ts, meta.setInstance(null, overrides, value, components.toArray(new Vertex[components.size()])));
 				}
 		}
 
