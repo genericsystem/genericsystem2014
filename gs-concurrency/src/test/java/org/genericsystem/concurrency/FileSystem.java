@@ -1,7 +1,6 @@
 package org.genericsystem.concurrency;
 
 import java.util.Optional;
-
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.cache.annotations.Components;
 import org.genericsystem.cache.annotations.Dependencies;
@@ -91,8 +90,7 @@ public class FileSystem extends Generic {
 		@SingularConstraint
 		@Components(FileType.class)
 		@InstanceValueClassConstraint(byte[].class)
-		public static class FileContent extends Generic {
-		}
+		public static class FileContent extends Generic {}
 
 		public static class File extends Generic {
 			public byte[] getContent() {
@@ -110,11 +108,11 @@ public class FileSystem extends Generic {
 	}
 
 	public Snapshot<Generic> getRootDirectories() {
-		return () -> getSubNodes().get().filter(x -> x.getComponents().get(Statics.BASE_POSITION).equals(x));
+		return () -> getAllInstances().get().filter(x -> x.getComponents().get(Statics.BASE_POSITION).equals(x));
 	}
 
 	public Directory getRootDirectory(String name) {
-		Optional<Generic> optional = getSubNodes().get().filter(x -> x.getValue().equals(name)).findFirst();
+		Optional<Generic> optional = getRootDirectories().get().filter(x -> x.getValue().equals(name)).findFirst();
 		return optional.isPresent() ? (Directory) optional.get() : null;
 	}
 

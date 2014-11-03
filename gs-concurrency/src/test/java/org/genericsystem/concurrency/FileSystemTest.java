@@ -1,7 +1,6 @@
 package org.genericsystem.concurrency;
 
 import java.util.Arrays;
-
 import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.InstanceValueClassViolationConstraint;
 import org.genericsystem.cache.Cache;
@@ -78,9 +77,6 @@ public class FileSystemTest extends AbstractTest {
 		Cache<Generic, Vertex> mountAndStartNewCache = engine.getCurrentCache().mountAndStartNewCache();
 
 		catchAndCheckCause(() -> directory2.addDirectory("directory1"), ExistsException.class); // Exception
-
-		assert engine.getCurrentCache() != mountAndStartNewCache;
-		assert engine.getCurrentCache() == cache;
 
 		// assert false : fileSystem.getRootDirectories().toList();
 		directory1.addFile("fileName", new byte[] { Byte.MAX_VALUE });
