@@ -2,9 +2,9 @@ package org.genericsystem.concurrency;
 
 import java.util.Arrays;
 
-import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.InstanceValueClassViolationConstraint;
+import org.genericsystem.cache.Cache;
 import org.genericsystem.concurrency.FileSystem.Directory;
 import org.genericsystem.concurrency.FileSystem.FileType;
 import org.genericsystem.concurrency.FileSystem.FileType.File;
@@ -75,10 +75,11 @@ public class FileSystemTest extends AbstractTest {
 		final Directory directory2 = rootDirectory.addDirectory("directory2");
 		assert !directory2.addDirectory("directory1").equals(directory1); // No Exception
 		Cache cache = engine.getCurrentCache();
-		engine.getCurrentCache().mountAndStartNewCache();
+		Cache<Generic, Vertex> mountAndStartNewCache = engine.getCurrentCache().mountAndStartNewCache();
 
 		catchAndCheckCause(() -> directory2.addDirectory("directory1"), ExistsException.class); // Exception
 
+		assert engine.getCurrentCache() != mountAndStartNewCache;
 		assert engine.getCurrentCache() == cache;
 
 		// assert false : fileSystem.getRootDirectories().toList();
@@ -110,11 +111,12 @@ public class FileSystemTest extends AbstractTest {
 		catchAndCheckCause(() -> rootDirectory.addHolder(fileSystem, 2L), InstanceValueClassViolationConstraint.class); // Exception
 	}
 
+	// Modifier par rapport au test d'origine
 	public void testGetRootDirectories() {
 		Engine engine = new Engine(FileSystem.class);
 		FileSystem fileSystem = engine.find(FileSystem.class);
-		fileSystem.addRootDirectory("root");
-		Snapshot<Generic> rootDirectories = fileSystem.getRootDirectories();
-		assert !rootDirectories.isEmpty() : rootDirectories;
+		Directory root = fileSystem.addRootDirectory("root");
+		assert root.equals(fileSystem.getRootDirectory("root")) : fileSystem.getRootDirectories().info();
+		assert fileSystem.getRootDirectories().get().findFirst().get().equals(root);
 	}
 }

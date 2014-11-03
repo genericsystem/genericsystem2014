@@ -114,7 +114,7 @@ public class FileSystem extends Generic {
 	}
 
 	public Directory getRootDirectory(String name) {
-		Optional<Generic> optional = getRoot().getSubNodes().get().filter(x -> x.getValue().equals(name)).findFirst();
+		Optional<Generic> optional = getSubNodes().get().filter(x -> x.getValue().equals(name)).findFirst();
 		return optional.isPresent() ? (Directory) optional.get() : null;
 	}
 
