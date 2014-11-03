@@ -171,6 +171,23 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 		return () -> getDependenciesMap(metaCompositesDependencies, generic).get().flatMap(x -> x.getValue().get());
 	}
 
+	private static <T extends AbstractGeneric<T, ?>> Snapshot<T> getCompositesByIndex(Map<T, DependenciesMap<T>> multiMap, Supplier<Stream<T>> subStreamSupplier, T generic, T index) {
+		return () -> {
+			Dependencies<T> dependencies = getDependenciesMap(multiMap, generic).getByIndex(index);
+			return dependencies != null ? dependencies.get() : subStreamSupplier.get();
+		};
+	}
+
+	@Override
+	Snapshot<T> getCompositesByMeta(T generic, T meta) {
+		return getCompositesByIndex(metaCompositesDependencies, () -> subContext.getCompositesByMeta(generic, meta).get(), generic, meta);
+	}
+
+	@Override
+	Snapshot<T> getCompositesBySuper(T generic, T superT) {
+		return getCompositesByIndex(superCompositesDependencies, () -> subContext.getCompositesBySuper(generic, superT).get(), generic, superT);
+	}
+
 	private static <T extends AbstractGeneric<T, ?>> DependenciesMap<T> getDependenciesMap(Map<T, DependenciesMap<T>> multiMap, T generic) {
 		DependenciesMap<T> dependencies = multiMap.get(generic);
 		if (dependencies == null)
@@ -179,21 +196,11 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 	}
 
 	private static <T extends AbstractGeneric<T, ?>> Snapshot<T> getIndex(Map<T, DependenciesMap<T>> multiMap, Supplier<Stream<T>> subStreamSupplier, T generic, T index) {
-		DependenciesMap<T> dependencies = getDependenciesMap(multiMap, generic);
-		Dependencies<T> dependenciesByIndex = dependencies.getByIndex(index);
+		DependenciesMap<T> dependenciesMap = getDependenciesMap(multiMap, generic);
+		Dependencies<T> dependenciesByIndex = dependenciesMap.getByIndex(index);
 		if (dependenciesByIndex == null)
-			dependencies.add(new DependenciesEntry<>(index, dependenciesByIndex = generic.buildDependencies(subStreamSupplier)));
+			dependenciesMap.add(new DependenciesEntry<>(index, dependenciesByIndex = generic.buildDependencies(subStreamSupplier)));
 		return dependenciesByIndex;
-	}
-
-	@Override
-	Snapshot<T> getCompositesByMeta(T generic, T meta) {
-		return getIndex(metaCompositesDependencies, () -> subContext.getCompositesByMeta(generic, meta).get(), generic, meta);
-	}
-
-	@Override
-	Snapshot<T> getCompositesBySuper(T generic, T superT) {
-		return getIndex(superCompositesDependencies, () -> subContext.getCompositesBySuper(generic, superT).get(), generic, superT);
 	}
 
 	private static <T extends AbstractGeneric<T, ?>> T index(Map<T, DependenciesMap<T>> multiMap, Supplier<Stream<T>> subStreamSupplier, T generic, T index, T component) {
