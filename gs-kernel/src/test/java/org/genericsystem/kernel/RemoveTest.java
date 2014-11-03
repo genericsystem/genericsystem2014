@@ -12,7 +12,7 @@ public class RemoveTest extends AbstractTest {
 		Vertex myBmw = car.addInstance("myBmw");
 		Vertex myBmwRed = myBmw.addHolder(color, "red");
 
-		assert myBmw.getHolders(color).contains(myBmwRed);
+		assert myBmw.getHolders(color).contains(myBmwRed) : myBmw.getHolders(color).info();
 		assert myBmw.getHolders(color).size() == 1;
 
 		myBmwRed.remove();

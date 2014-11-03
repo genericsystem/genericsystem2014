@@ -1,7 +1,6 @@
 package org.genericsystem.kernel;
 
 import java.util.Arrays;
-
 import org.testng.annotations.Test;
 
 @Test
@@ -64,7 +63,7 @@ public class HolderTest extends AbstractTest {
 		assert vehicle.getHolders(power).size() == 1 : vehicle.getHolders(power);
 		assert vehicle.getHolders(power).contains(v1) : vehicle.getHolders(power);
 		assert car.getHolders(power) != null;
-		assert car.getHolders(power).size() == 1 : vehicle.getHolders(power);
+		assert car.getHolders(power).size() == 1 : vehicle.getHolders(power).info();
 		assert car.getHolders(power).contains(v2) : vehicle.getHolders(power);
 		assert power.getInstances() != null;
 		assert power.getInstances().size() == 2;
