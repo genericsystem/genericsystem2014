@@ -2,7 +2,6 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
 
@@ -25,7 +24,7 @@ public interface DefaultVertex<T extends AbstractVertex<T>> extends DefaultAnces
 
 	@Override
 	default T setNode(Serializable value) {
-		return addHolder(getMeta(), value, coerceToTArray());
+		return setHolder(getMeta(), value, coerceToTArray());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -47,7 +46,7 @@ public interface DefaultVertex<T extends AbstractVertex<T>> extends DefaultAnces
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default Snapshot<T> getAllNodes() {
-		return () -> Stream.concat(Stream.of((T) this), getSubNodes().get().flatMap(inheriting -> inheriting.getAllNodes().get())).distinct();
+	default Snapshot<T> getAllSubNodes() {
+		return () -> Stream.concat(Stream.of((T) this), getSubNodes().get().flatMap(node -> node.getAllSubNodes().get())).distinct();
 	}
 }

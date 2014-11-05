@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.util.Objects;
+
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.slf4j.Logger;
