@@ -14,6 +14,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
@@ -359,6 +360,39 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return true;
 	}
 
+	protected boolean genericEquals(IVertex<?> service) {
+		if (!Objects.equals(getValue(), service.getValue()))
+			return false;
+
+		if (isRoot()) {
+			if (!service.getMeta().isRoot())
+				return false;
+		} else if (!getMeta().genericEquals(service.getMeta()))
+			return false;
+
+		List<T> supersList = getSupers();
+		if (supersList.size() != service.getSupers().size())
+			return false;
+
+		for (int i = 0; i < supersList.size(); i++)
+			if (!supersList.get(i).genericEquals(service.getSupers().get(i)))
+				return false;
+
+		List<IVertex<?>> componentsList = (List<IVertex<?>>) getComponents();
+		if (componentsList.size() != service.getComponents().size())
+			return false;
+
+		for (int i = 0; i < componentsList.size(); i++) {
+			if (this == componentsList.get(i))
+				return true;
+			if (service == service.getComponents().get(i))
+				return true;
+			if (!((AbstractVertex<T>) componentsList.get(i)).genericEquals(service.getComponents().get(i)))
+				return false;
+		}
+		return true;
+	}
+
 	private void checkSameEngine(List<T> generics) {
 		if (generics.stream().anyMatch(generic -> generic != null && !generic.getRoot().equals(getRoot())))
 			getRoot().discardWithException(new CrossEnginesAssignementsException());
@@ -606,7 +640,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {}
+	public static class SystemMap {
+	}
 
 	protected boolean equals(ISignature<?> meta, List<? extends ISignature<?>> supers, Serializable value, List<? extends ISignature<?>> components) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComponents().equals(components.stream().map(NULL_TO_THIS).collect(Collectors.toList())) && getSupers().equals(supers);
