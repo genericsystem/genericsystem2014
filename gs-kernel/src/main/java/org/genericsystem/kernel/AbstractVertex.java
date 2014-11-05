@@ -14,7 +14,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
@@ -354,11 +353,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		List<? extends IVertex<?>> notNullComponents = components.stream().map(NULL_TO_THIS).collect(Collectors.toList());
 		List<T> componentsList = getComponents();
 		for (int i = 0; i < componentsList.size(); i++)
-			if (!isReferentialIntegrityEnabled(i) && isSingularConstraintEnabled(i) && componentsList.get(i).equiv(notNullComponents.get(i)))
+			if (!isReferentialIntegrityEnabled(i) && isSingularConstraintEnabled(i) && componentsList.get(i).equals(notNullComponents.get(i)))
 				return true;
 		for (int i = 0; i < componentsList.size(); i++) {
 			T component = componentsList.get(i);
-			if (!equals(component) && components.get(i) != null && !component.equiv(notNullComponents.get(i)))
+			if (!component.equals(notNullComponents.get(i)))
 				return false;
 		}
 		if (!meta.isPropertyConstraintEnabled())
@@ -613,8 +612,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {
-	}
+	public static class SystemMap {}
 
 	protected boolean equals(ISignature<?> meta, List<? extends ISignature<?>> supers, Serializable value, List<? extends ISignature<?>> components) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComponents().equals(components.stream().map(NULL_TO_THIS).collect(Collectors.toList())) && getSupers().equals(supers);
