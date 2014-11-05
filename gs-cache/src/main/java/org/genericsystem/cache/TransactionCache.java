@@ -3,6 +3,7 @@ package org.genericsystem.cache;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.AbstractVertex;
 
 public class TransactionCache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends HashMap<T, V> {
@@ -52,8 +53,7 @@ public class TransactionCache<T extends AbstractGeneric<T, V>, V extends Abstrac
 			assert vertex.getMeta() != vertex : this;
 			T meta = getByValue(vertex.getMeta());
 			// TODO null is KK
-			result = meta.newT(null, vertex.isThrowExistException(), meta, vertex.getSupers().stream().map(this::getByValue).collect(Collectors.toList()), vertex.getValue(), vertex.getComponents().stream().map(this::getByValue)
-					.collect(Collectors.toList()));
+			result = meta.newT(null, meta, vertex.getSupers().stream().map(this::getByValue).collect(Collectors.toList()), vertex.getValue(), vertex.getComponents().stream().map(this::getByValue).collect(Collectors.toList()));
 			put(result, vertex);
 		}
 		return result;

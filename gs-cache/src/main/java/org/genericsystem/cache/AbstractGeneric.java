@@ -96,8 +96,8 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 	}
 
 	@Override
-	protected T newT(Class<?> clazz, boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> composites) {
-		return getRoot().getOrBuildT(clazz, throwExistException, meta, supers, value, composites);
+	protected T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> composites) {
+		return getRoot().getOrBuildT(clazz, meta, supers, value, composites);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -128,8 +128,8 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 	protected abstract T newT();
 
 	@Override
-	protected T init(boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> composites) {
-		return super.init(throwExistException, meta, supers, value, composites);
+	protected T init(T meta, List<T> supers, Serializable value, List<T> composites) {
+		return super.init(meta, supers, value, composites);
 	}
 
 	@Override

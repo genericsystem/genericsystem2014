@@ -3,6 +3,7 @@ package org.genericsystem.concurrency;
 import java.util.Arrays;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.kernel.Statics;
 import org.testng.annotations.Test;
@@ -23,7 +24,6 @@ public class InstanciationTest extends AbstractTest {
 	public void test002_addInstance_Engine() {
 		Engine Engine = new Engine();
 		Generic car = Engine.addInstance("Car");
-		assert car.isThrowExistException();
 		assert Engine.getInstance("Car") == car;
 		assert car.getMeta().equals(Engine);
 		assert car.getSupers().isEmpty();
@@ -38,7 +38,6 @@ public class InstanciationTest extends AbstractTest {
 	public void test002_setInstance_Engine() {
 		Engine Engine = new Engine();
 		Generic car = Engine.setInstance("Car");
-		assert !car.isThrowExistException();
 		assert Engine.getInstance("Car") == car;
 		assert car.getMeta().equals(Engine);
 		assert car.getSupers().isEmpty();
@@ -83,7 +82,6 @@ public class InstanciationTest extends AbstractTest {
 		Engine Engine = new Engine();
 		Generic car = Engine.addInstance("Car");
 		Generic car2 = Engine.setInstance("Car");
-		assert car2.isThrowExistException();
 		assert car == car2;
 		assert car.getMeta().equals(Engine);
 		assert car.getSupers().isEmpty();
@@ -125,7 +123,6 @@ public class InstanciationTest extends AbstractTest {
 		Generic car = Engine.addInstance("Car");
 		Generic robot = Engine.addInstance("Robot");
 		Generic transformer = Engine.addInstance(Arrays.asList(car, robot), "Transformer");
-		assert transformer.isThrowExistException();
 		assert car.getMeta().equals(Engine);
 		assert robot.getMeta().equals(Engine);
 		assert transformer.getMeta().equals(Engine);
@@ -149,7 +146,6 @@ public class InstanciationTest extends AbstractTest {
 		Generic car = Engine.addInstance("Car");
 		Generic robot = Engine.addInstance("Robot");
 		Generic transformer = Engine.setInstance(Arrays.asList(car, robot), "Transformer");
-		assert !transformer.isThrowExistException();
 		assert car.getMeta().equals(Engine);
 		assert robot.getMeta().equals(Engine);
 		assert transformer.getMeta().equals(Engine);

@@ -3,6 +3,7 @@ package org.genericsystem.concurrency;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
+
 import org.genericsystem.kernel.Statics;
 
 public class Root extends Vertex implements DefaultRoot<Vertex> {
@@ -14,7 +15,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 	private final GarbageCollector<Vertex> garbageCollector;
 
 	Root(DefaultEngine<Generic, Vertex> engine, Serializable value) {
-		init(false, null, Collections.emptyList(), value, Collections.emptyList());
+		init(null, Collections.emptyList(), value, Collections.emptyList());
 		this.engine = engine;
 		long ts = pickNewTs();
 		restore(ts, 0L, 0L, Long.MAX_VALUE);

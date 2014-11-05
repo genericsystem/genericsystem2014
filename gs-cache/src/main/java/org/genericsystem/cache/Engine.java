@@ -3,6 +3,7 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.Statics;
 
@@ -17,7 +18,7 @@ public class Engine extends Generic implements DefaultEngine<Generic, Vertex> {
 	}
 
 	public Engine(Serializable engineValue, Class<?>... userClasses) {
-		init(false, null, Collections.emptyList(), engineValue, Collections.emptyList());
+		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
 		root = buildRoot(engineValue);
 
 		Cache<Generic, Vertex> cache = newCache().start();
@@ -33,8 +34,8 @@ public class Engine extends Generic implements DefaultEngine<Generic, Vertex> {
 	private final GenericsCache<Generic> genericsCache = new GenericsCache<>();
 
 	@Override
-	public Generic getOrBuildT(Class<?> clazz, boolean throwExistException, Generic meta, List<Generic> supers, Serializable value, List<Generic> composites) {
-		return genericsCache.getOrBuildT(clazz, throwExistException, meta, supers, value, composites);
+	public Generic getOrBuildT(Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> composites) {
+		return genericsCache.getOrBuildT(clazz, meta, supers, value, composites);
 	}
 
 	public Root buildRoot(Serializable value) {

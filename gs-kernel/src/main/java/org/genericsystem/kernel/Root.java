@@ -21,7 +21,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 	}
 
 	public Root(Serializable value, String persistentDirectoryPath, Class<?>... userClasses) {
-		init(false, null, Collections.emptyList(), value, Collections.emptyList());
+		init(null, Collections.emptyList(), value, Collections.emptyList());
 		Vertex metaAttribut = setInstance(this, getValue(), coerceToTArray(this));
 		setInstance(SystemMap.class, coerceToTArray(this)).enablePropertyConstraint();
 		metaAttribut.disableReferentialIntegrity(Statics.BASE_POSITION);

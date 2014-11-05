@@ -3,6 +3,7 @@ package org.genericsystem.kernel;
 import java.util.Arrays;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.exception.ExistsException;
 import org.testng.annotations.Test;
 
@@ -21,7 +22,6 @@ public class InstanciationTest extends AbstractTest {
 	public void test002_addInstance_root() {
 		Root root = new Root();
 		Vertex car = root.addInstance("Car");
-		assert car.isThrowExistException();
 		assert root.getInstance("Car") == car;
 		assert car.getMeta().equals(root);
 		assert car.getSupers().isEmpty();
@@ -36,7 +36,6 @@ public class InstanciationTest extends AbstractTest {
 	public void test002_setInstance_root() {
 		Root root = new Root();
 		Vertex car = root.setInstance("Car");
-		assert !car.isThrowExistException();
 		assert root.getInstance("Car") == car;
 		assert car.getMeta().equals(root);
 		assert car.getSupers().isEmpty();
@@ -80,7 +79,6 @@ public class InstanciationTest extends AbstractTest {
 		Root root = new Root();
 		Vertex car = root.addInstance("Car");
 		Vertex car2 = root.setInstance("Car");
-		assert car2.isThrowExistException();
 		assert car == car2;
 		assert car.getMeta().equals(root);
 		assert car.getSupers().isEmpty();
@@ -122,7 +120,6 @@ public class InstanciationTest extends AbstractTest {
 		Vertex car = root.addInstance("Car");
 		Vertex robot = root.addInstance("Robot");
 		Vertex transformer = root.addInstance(Arrays.asList(car, robot), "Transformer");
-		assert transformer.isThrowExistException();
 		assert car.getMeta().equals(root);
 		assert robot.getMeta().equals(root);
 		assert transformer.getMeta().equals(root);
@@ -146,7 +143,6 @@ public class InstanciationTest extends AbstractTest {
 		Vertex car = root.addInstance("Car");
 		Vertex robot = root.addInstance("Robot");
 		Vertex transformer = root.setInstance(Arrays.asList(car, robot), "Transformer");
-		assert !transformer.isThrowExistException();
 		assert car.getMeta().equals(root);
 		assert robot.getMeta().equals(root);
 		assert transformer.getMeta().equals(root);

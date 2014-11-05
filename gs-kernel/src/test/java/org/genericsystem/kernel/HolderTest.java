@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.util.Arrays;
+
 import org.testng.annotations.Test;
 
 @Test
@@ -12,7 +13,6 @@ public class HolderTest extends AbstractTest {
 		Vertex power = root.addInstance("Power", vehicle);
 		int powerValue = 1;
 		Vertex holder = power.addInstance(powerValue, vehicle);
-		assert holder.isThrowExistException();
 		assert holder.isInstanceOf(power);
 		assert vehicle.getHolders(power) != null;
 		assert vehicle.getHolders(power).size() == 1 : vehicle.getHolders(power);

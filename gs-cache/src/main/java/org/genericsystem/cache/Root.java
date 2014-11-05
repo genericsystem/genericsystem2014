@@ -8,7 +8,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 	private final Engine engine;
 
 	Root(Engine engine, Serializable value) {
-		init(false, null, Collections.emptyList(), value, Collections.emptyList());
+		init(null, Collections.emptyList(), value, Collections.emptyList());
 		this.engine = engine;
 	}
 

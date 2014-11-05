@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,8 +14,8 @@ public class GenericsCache<T extends AbstractGeneric<T, ?>> {
 	static Logger log = LoggerFactory.getLogger(GenericsCache.class);
 
 	@SuppressWarnings("unchecked")
-	public <subT extends T> subT getOrBuildT(Class<?> clazz, boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> composites) {
-		T disposable = meta.newT(clazz).init(throwExistException, meta, supers, value, composites);
+	public <subT extends T> subT getOrBuildT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> composites) {
+		T disposable = meta.newT(clazz).init(meta, supers, value, composites);
 		T result = map.get(disposable);
 		if (result != null)
 			return (subT) result;

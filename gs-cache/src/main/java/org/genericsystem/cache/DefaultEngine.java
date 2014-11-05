@@ -2,6 +2,7 @@ package org.genericsystem.cache;
 
 import java.io.Serializable;
 import java.util.List;
+
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.AbstractVertex;
 
@@ -31,6 +32,6 @@ public interface DefaultEngine<T extends AbstractGeneric<T, V>, V extends Abstra
 		getCurrentCache().rollbackWithException(exception);
 	}
 
-	T getOrBuildT(Class<?> clazz, boolean throwExistException, T meta, List<T> supers, Serializable value, List<T> composites);
+	T getOrBuildT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> composites);
 
 }

@@ -1,10 +1,15 @@
 package org.genericsystem.kernel;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
+import org.genericsystem.api.core.IVertex;
+import org.genericsystem.kernel.Archiver.AbstractWriterLoader.DependenciesOrder;
 import org.testng.annotations.Test;
 
 @Test
@@ -135,7 +140,7 @@ public class PersistenceTest extends AbstractTest {
 		ArrayDeque<Vertex> clone = readVisit.clone();
 		for (Vertex persist : persistVisit) {
 			Vertex read = readVisit.pop();
-			assert persist.equiv(read) : persistVisit + " \n " + clone;
+			assert equals(persist, read) : persistVisit + " \n " + clone;
 		}
 	}
 
@@ -150,25 +155,27 @@ public class PersistenceTest extends AbstractTest {
 		}
 		LOOP: for (Vertex persist : persistVisit) {
 			for (Vertex read : readVisit)
-				if (persist.equiv(read))
+				if (equals(persist, read))
 					continue LOOP;
 			assert false : persistVisit + " \n " + readVisit;
 		}
 	}
 
-	private class DependenciesOrder extends ArrayDeque<Vertex> {
-		private static final long serialVersionUID = -5970021419012502402L;
+	private static boolean equals(IVertex<?> node1, IVertex<?> node2) {
+		boolean equals = equals(node1, node2.getMeta(), node2.getSupers(), node2.getValue(), node2.getComponents());
+		System.out.println(node1.info() + " / " + node2.info() + " " + equals);
+		return equals;
+	}
 
-		private DependenciesOrder visit(Vertex node) {
-			if (!contains(node)) {
-				node.getComposites().forEach(this::visit);
-				node.getInheritings().forEach(this::visit);
-				node.getInstances().forEach(this::visit);
-				if (!node.isRoot())
-					super.push(node);
-			}
-			return this;
+	private static boolean equals(IVertex<?> node1, IVertex<?> meta, List<? extends IVertex<?>> supers, Serializable value, List<? extends IVertex<?>> components) {
+		List<IVertex<?>> componentsList = (List<IVertex<?>>) node1.getComponents();
+		for (int i = 0; i < componentsList.size(); i++) {
+			if (!node1.equals(componentsList.get(i)) && components.get(i) != null && !equals(componentsList.get(i), components.get(i)))
+				return false;
 		}
+		return (node1.isRoot() || node1.getMeta().equals(meta)) && Objects.equals(node1.getValue(), value)
+		/* && node1.getComponents().equals(components.stream().map(x -> x == null ? node1 : x).collect(Collectors.toList())) */
+		&& node1.getSupers().equals(supers);
 	}
 
 }

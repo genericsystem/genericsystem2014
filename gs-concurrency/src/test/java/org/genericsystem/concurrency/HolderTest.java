@@ -13,7 +13,6 @@ public class HolderTest extends AbstractTest {
 		Generic power = Engine.addInstance("Power", vehicle);
 		int powerValue = 1;
 		Generic holder = power.addInstance(powerValue, vehicle);
-		assert holder.isThrowExistException();
 		assert holder.isInstanceOf(power);
 		assert vehicle.getHolders(power) != null;
 		assert vehicle.getHolders(power).size() == 1 : vehicle.getHolders(power);

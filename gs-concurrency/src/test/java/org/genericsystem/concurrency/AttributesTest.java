@@ -12,7 +12,6 @@ public class AttributesTest extends AbstractTest {
 		Generic vehicle = Engine.addInstance("Vehicle");
 		assert vehicle.getLevel() == 1 : vehicle.getLevel();
 		Generic power = Engine.addInstance("Power", vehicle);
-		assert power.isThrowExistException();
 		assert Engine.getInstance("Power", vehicle) == power;
 		// assert Engine.selectInstances("Power").count() == 1;
 		// assert Engine.selectInstances("Power").anyMatch(x -> x.equals(power));
@@ -170,7 +169,6 @@ public class AttributesTest extends AbstractTest {
 		Generic power = Engine.addInstance("Power", vehicle);
 		Generic car = Engine.addInstance(vehicle, "Car");
 		Generic airconditioner = Engine.addInstance("AirConditioner", car);
-		assert airconditioner.isThrowExistException();
 		// assert vehicle.getAttributes(Engine).size() == 1;
 		assert vehicle.getAttributes(Engine).contains(power);
 		// assert car.getAttributes(Engine).size() == 2;

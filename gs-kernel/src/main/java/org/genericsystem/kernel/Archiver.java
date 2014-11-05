@@ -237,10 +237,10 @@ public class Archiver {
 			snapshotsMap.remove(ts);
 		}
 
-		private class DependenciesOrder extends ArrayDeque<Vertex> {
+		static class DependenciesOrder extends ArrayDeque<Vertex> {
 			private static final long serialVersionUID = -5970021419012502402L;
 
-			private DependenciesOrder visit(Vertex node) {
+			DependenciesOrder visit(Vertex node) {
 				if (!contains(node)) {
 					node.getComposites().forEach(this::visit);
 					node.getInheritings().forEach(this::visit);
