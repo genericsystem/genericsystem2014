@@ -4,11 +4,10 @@ import java.io.File;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Random;
-
 import org.testng.annotations.Test;
 
 @Test
-public class PersistenceTest {
+public class PersistenceTest extends AbstractTest {
 
 	private final String directoryPath = System.getenv("HOME") + "/test/snapshot_save";
 
@@ -119,11 +118,12 @@ public class PersistenceTest {
 	private void compareGraph(Vertex persistedNode, Vertex readNode) {
 		DependenciesOrder persistVisit = new DependenciesOrder().visit(persistedNode);
 		DependenciesOrder readVisit = new DependenciesOrder().visit(readNode);
+		assert persistVisit.size() == readVisit.size() : persistVisit + " \n " + readVisit;
 		LOOP: for (Vertex persist : persistVisit) {
 			for (Vertex read : readVisit)
 				if (persist.equiv(read))
 					continue LOOP;
-			assert false : persistVisit + " \n\t " + readVisit;
+			assert false : persistVisit + " \n " + readVisit;
 		}
 	}
 
@@ -135,7 +135,8 @@ public class PersistenceTest {
 				node.getComposites().forEach(this::visit);
 				node.getInheritings().forEach(this::visit);
 				node.getInstances().forEach(this::visit);
-				super.addFirst(node);
+				if (!node.isRoot())
+					super.push(node);
 			}
 			return this;
 		}
