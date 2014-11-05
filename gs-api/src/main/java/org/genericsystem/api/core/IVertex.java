@@ -755,7 +755,7 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 
 	T setInheritingNode(Serializable value);
 
-	Snapshot<T> getAllNodes();
+	Snapshot<T> getAllSubNodes();
 
 	Snapshot<T> getSubNodes();
 

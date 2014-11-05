@@ -58,21 +58,21 @@ public class TreeTest extends AbstractTest {
 		assert !html.getSubNodes().contains(html);
 		assert html.getSubNodes().containsAll(Arrays.asList(head, body)) : html.getSubNodes().info();
 		assert html.getSubNodes().size() == 2;
-		assert html.getAllNodes().containsAll(Arrays.asList(html, head, body, div));
-		assert html.getAllNodes().size() == 4;
+		assert html.getAllSubNodes().containsAll(Arrays.asList(html, head, body, div));
+		assert html.getAllSubNodes().size() == 4;
 
 		assert head.getSubNodes().isEmpty();
-		assert head.getAllNodes().contains(head);
-		assert head.getAllNodes().size() == 1;
+		assert head.getAllSubNodes().contains(head);
+		assert head.getAllSubNodes().size() == 1;
 
 		assert body.getSubNodes().contains(div);
 		assert body.getSubNodes().size() == 1;
-		assert body.getAllNodes().containsAll(Arrays.asList(body, div));
-		assert body.getAllNodes().size() == 2;
+		assert body.getAllSubNodes().containsAll(Arrays.asList(body, div));
+		assert body.getAllSubNodes().size() == 2;
 
 		assert div.getSubNodes().isEmpty();
-		assert div.getAllNodes().contains(div);
-		assert div.getAllNodes().size() == 1;
+		assert div.getAllSubNodes().contains(div);
+		assert div.getAllSubNodes().size() == 1;
 
 	}
 

@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Random;
-
 import org.testng.annotations.Test;
 
 @Test
@@ -135,7 +134,7 @@ public class PersistenceTest {
 				node.getComposites().forEach(this::visit);
 				node.getInheritings().forEach(this::visit);
 				node.getInstances().forEach(this::visit);
-				super.addFirst(node);
+				super.push(node);
 			}
 			return this;
 		}
