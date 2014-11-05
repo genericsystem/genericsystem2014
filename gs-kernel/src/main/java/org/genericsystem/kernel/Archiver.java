@@ -180,9 +180,7 @@ public class Archiver {
 					Vertex meta = loadAncestor(vertexMap);
 					List<Vertex> overrides = loadAncestors(vertexMap);
 					List<Vertex> components = loadAncestors(vertexMap);
-					Vertex vertex = meta.setInstance(null, overrides, value, components.toArray(new Vertex[components.size()]));
-					System.out.println("loadDependency " + vertex.info());
-					vertexMap.put(ts, vertex);
+					vertexMap.put(ts, meta.setInstance(null, overrides, value, components.toArray(new Vertex[components.size()])));
 				}
 		}
 
@@ -256,17 +254,15 @@ public class Archiver {
 
 		private void writeDependencies(DependenciesOrder dependencies, Set<Vertex> vertexSet) throws IOException {
 			outputStream.writeInt(dependencies.size());
-			for (Vertex dependency : dependencies) {
+			for (Vertex dependency : dependencies)
 				if (vertexSet.add(dependency)) {
 					outputStream.writeBoolean(true);
 					writeDependency(dependency);
 				} else
 					outputStream.writeBoolean(false);
-			}
 		}
 
 		protected void writeDependency(Vertex dependency) throws IOException {
-			System.out.println("writeDependency " + dependency.info());
 			outputStream.writeLong(getTs(dependency));
 			outputStream.writeObject(dependency.getValue());
 			outputStream.writeObject(dependency.getClass());
