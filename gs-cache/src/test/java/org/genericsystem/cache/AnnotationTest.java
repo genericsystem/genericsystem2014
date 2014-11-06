@@ -8,7 +8,6 @@ import org.genericsystem.cache.annotations.Supers;
 import org.genericsystem.cache.annotations.SystemGeneric;
 import org.genericsystem.cache.annotations.constraints.InstanceValueClassConstraint;
 import org.genericsystem.cache.annotations.constraints.PropertyConstraint;
-import org.genericsystem.cache.annotations.constraints.RequiredConstraint;
 import org.genericsystem.cache.annotations.constraints.SingularConstraint;
 import org.genericsystem.cache.annotations.constraints.UniqueValueConstraint;
 import org.genericsystem.cache.annotations.value.IntValue;
@@ -326,13 +325,13 @@ public class AnnotationTest extends AbstractTest {
 		assert puissance.isPropertyConstraintEnabled();
 	}
 
-	public void test016_requiredConstraint() {
-		Engine engine = new Engine(Vehicle.class, Puissance.class);
-		Generic voiture = engine.find(Vehicle.class);
-		Generic puissance = engine.find(Puissance.class);
-
-		assert puissance.isRequiredConstraintEnabled(Statics.NO_POSITION);
-	}
+	// public void test016_requiredConstraint() {
+	// Engine engine = new Engine(Vehicle.class, Puissance.class);
+	// Generic voiture = engine.find(Vehicle.class);
+	// Generic puissance = engine.find(Puissance.class);
+	//
+	// assert puissance.isRequiredConstraintEnabled(Statics.NO_POSITION);
+	// }
 
 	public void test017_singularConstraint() {
 		Engine engine = new Engine(Vehicle.class, Puissance.class);
@@ -480,7 +479,7 @@ public class AnnotationTest extends AbstractTest {
 	@Components(Vehicle.class)
 	@PropertyConstraint
 	@SingularConstraint(Statics.BASE_POSITION)
-	@RequiredConstraint
+	// @RequiredConstraint
 	@UniqueValueConstraint
 	@InstanceValueClassConstraint(Integer.class)
 	@Dependencies(Couleur.class)

@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Optional;
 
 import org.genericsystem.api.core.IVertex;
@@ -20,7 +21,7 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 	default Serializable getSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos) {
 		Optional<T> key = ((T) this).getKey(new AxedPropertyClass(propertyClass, pos));
 		if (key.isPresent()) {
-			Optional<T> result = getHolders(key.get()).get().filter(x -> this.equals(x.getComponents().get(Statics.BASE_POSITION))).findFirst();
+			Optional<T> result = getHolders(key.get()).get().filter(x -> this.isSpecializationOf(x.getComponents().get(Statics.BASE_POSITION))).findFirst();
 			if (result.isPresent())
 				return result.get().getValue();
 
@@ -39,26 +40,26 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 		return (T) this;
 	}
 
-	// default T setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value) {
-	// T map = ((T) this).getMap();
-	// T halfMap = map.getMeta().setInstance(map, propertyClass);
-	// halfMap.setInstance(map, pos, coerceToTArray(getRoot())).setInstance(value, coerceToTArray(this));
-	// return (T) this;
-	// }
+	default T propertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value) {
+		T map = ((T) this).getMap();
+		T halfMap = map.getMeta().setInstance(map, propertyClass);
+		halfMap.setInstance(map, pos, coerceToTArray(getRoot())).setInstance(value, coerceToTArray(this));
+		return (T) this;
+	}
 
-	// default T setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value, T... targets) {
-	// T map = ((T) this).getMap();
-	//
-	// Object[] rootArray = new Object[targets.length + 1];
-	// Arrays.fill(rootArray, getRoot());
-	//
-	// if (targets.length == 0)
-	// map.getMeta().setInstance(map, new AxedPropertyClass(propertyClass, pos), coerceToTArray(getRoot())).setInstance(value, coerceToTArray(this));
-	// else
-	// map.getMeta().setInstance(map, new AxedPropertyClass(propertyClass, pos), coerceToTArray(rootArray)).setInstance(value, addThisToTargets(targets));
-	//
-	// return (T) this;
-	// }
+	default T setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value, T... targets) {
+		T map = ((T) this).getMap();
+
+		Object[] rootArray = new Object[targets.length + 1];
+		Arrays.fill(rootArray, getRoot());
+
+		if (targets.length == 0)
+			map.getMeta().setInstance(map, new AxedPropertyClass(propertyClass, pos), coerceToTArray(getRoot())).setInstance(value, coerceToTArray(this));
+		else
+			map.getMeta().setInstance(map, new AxedPropertyClass(propertyClass, pos), coerceToTArray(rootArray)).setInstance(value, addThisToTargets(targets));
+
+		return (T) this;
+	}
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -68,8 +69,8 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 	}
 
 	default T enableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos, T... targets) {
-		// setSystemPropertyValue(propertyClass, pos, Boolean.TRUE, targets);
-		setSystemPropertyValue(propertyClass, pos, Boolean.TRUE);
+		setSystemPropertyValue(propertyClass, pos, Boolean.TRUE, targets);
+		// setSystemPropertyValue(propertyClass, pos, Boolean.TRUE);
 
 		return (T) this;
 	}
@@ -82,8 +83,8 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 	}
 
 	default T disableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos, T... targets) {
-		// setSystemPropertyValue(propertyClass, pos, Boolean.FALSE, targets);
-		setSystemPropertyValue(propertyClass, pos, Boolean.FALSE);
+		setSystemPropertyValue(propertyClass, pos, Boolean.FALSE, targets);
+		// setSystemPropertyValue(propertyClass, pos, Boolean.FALSE);
 
 		return (T) this;
 	}
@@ -168,14 +169,14 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 
 	@Override
 	default T enableRequiredConstraint(int pos) {
-		// return enableSystemProperty(RequiredConstraint.class, pos, this.getComponents().get(pos));
-		return enableSystemProperty(RequiredConstraint.class, pos);
+		return enableSystemProperty(RequiredConstraint.class, pos, this.getComponents().get(pos));
+		// return enableSystemProperty(RequiredConstraint.class, pos);
 	}
 
 	@Override
 	default T disableRequiredConstraint(int pos) {
-		return disableSystemProperty(RequiredConstraint.class, pos);
-		// return disableSystemProperty(RequiredConstraint.class, pos, this.getComponents().get(pos));
+		// return disableSystemProperty(RequiredConstraint.class, pos);
+		return disableSystemProperty(RequiredConstraint.class, pos, this.getComponents().get(pos));
 	}
 
 	@Override

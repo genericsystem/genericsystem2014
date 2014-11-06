@@ -22,9 +22,6 @@ public class RequiredConstraintTest extends AbstractTest {
 		assert !car.isRequiredConstraintEnabled(Statics.BASE_POSITION);
 		List<Generic> list = power.getHolders(engine).get().collect(Collectors.toList());
 
-		assert list.get(2).getMeta().getSupers().get(0).isPropertyConstraintEnabled() : list.get(2).getMeta().getSupers().get(0);
-		assert list.get(2).getMeta().isPropertyConstraintEnabled() : list.get(2).getMeta().info();
-		assert list.get(1).equiv(list.get(2));
 		assert !power.isRequiredConstraintEnabled(Statics.BASE_POSITION) : power.getHolders(engine).get().map(x -> x.info()).collect(Collectors.toList()).toString();
 	}
 
