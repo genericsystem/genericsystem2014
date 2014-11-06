@@ -153,6 +153,22 @@ public class SingularConstraintTest extends AbstractTest {
 		catchAndCheckCause(() -> myVehicle2.addHolder(vehicleColorLocation, "myVehicle2RedOutside", red, outside), SingularConstraintViolationException.class);
 	}
 
+	public void test010_enableSingularConstraint_inherintings() {
+
+		Root engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex myCar = car.addInstance("myCar");
+		Vertex color = engine.addInstance("Color");
+		Vertex red = color.addInstance("red");
+		Vertex yellow = color.addInstance("yellow");
+		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
+		vehicleColor.enableSingularConstraint(Statics.BASE_POSITION);
+		myCar.addHolder(vehicleColor, "myCarRed", red);
+		catchAndCheckCause(() -> myCar.addHolder(vehicleColor, "myCarYellow", yellow), SingularConstraintViolationException.class);
+
+	}
+
 	// public void test002_enablePropertyConstraint_addInstance() {
 	// Root engine = new Root();
 	// Vertex vehicle = engine.addInstance("Vehicle");

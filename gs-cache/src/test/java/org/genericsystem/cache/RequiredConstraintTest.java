@@ -1,33 +1,65 @@
 package org.genericsystem.cache;
 
-import org.genericsystem.kernel.Root;
+import org.genericsystem.api.exception.RequiredConstraintViolationException;
 import org.genericsystem.kernel.Statics;
-import org.genericsystem.kernel.Vertex;
 import org.testng.annotations.Test;
 
 @Test
 public class RequiredConstraintTest extends AbstractTest {
 
 	public void test001_enableRequired() {
-		Root engine = new Root();
-		Vertex power = engine.addInstance("Power");
-		power.enableRequiredConstraint(Statics.NO_POSITION);
+		Engine engine = new Engine();
+		Generic power = engine.addInstance("Power");
+		power.enableRequiredConstraint(Statics.BASE_POSITION);
 
-		assert power.isRequiredConstraintEnabled(Statics.NO_POSITION);
-		power.disableRequiredConstraint(Statics.NO_POSITION);
-		assert !power.isRequiredConstraintEnabled(Statics.NO_POSITION);
+		assert power.isRequiredConstraintEnabled(Statics.BASE_POSITION);
+		power.disableRequiredConstraint(Statics.BASE_POSITION);
+		assert !power.isRequiredConstraintEnabled(Statics.BASE_POSITION);
 	}
 
 	public void test002_removeAttribute() {
-		Root engine = new Root();
-		Vertex car = engine.addInstance("Car");
-		Vertex power = engine.addInstance("Power");
-		power.enableRequiredConstraint(Statics.NO_POSITION);
+		Engine engine = new Engine();
+		Generic car = engine.addInstance("Car");
+		Generic power = car.addAttribute("Power");
 
-		Vertex carPower = car.addAttribute("CarPower", power);
-		Vertex myBmw = car.addInstance("myBmw");
+		power.enableRequiredConstraint(Statics.BASE_POSITION);
+		Generic myBmw = car.addInstance("myBmw");
+		Generic v236 = myBmw.addHolder(power, 236);
+		assert power.isRequiredConstraintEnabled(Statics.BASE_POSITION);
+		Cache cache = engine.getCurrentCache();
+		cache.flush();
+		v236.remove();
+		catchAndCheckCause(() -> cache.flush(), RequiredConstraintViolationException.class);
 
 	}
+
+	public void test003_removeAttribute_inherintings() {
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = engine.addInstance(vehicle, "Car");
+		Generic power = vehicle.addAttribute("Power");
+
+		power.enableRequiredConstraint(Statics.BASE_POSITION);
+		Generic myBmw = car.addInstance("myBmw");
+		Generic v236 = myBmw.addHolder(power, 236);
+		assert power.isRequiredConstraintEnabled(Statics.BASE_POSITION);
+		Cache cache = engine.getCurrentCache();
+		cache.flush();
+		v236.remove();
+		catchAndCheckCause(() -> cache.flush(), RequiredConstraintViolationException.class);
+	}
+
+	// public void test004_addAttribute() {
+	// Engine engine = new Engine();
+	// Generic vehicle = engine.addInstance("Vehicle");
+	// Generic power = vehicle.addAttribute("Power");
+	//
+	// power.enableRequiredConstraint(Statics.BASE_POSITION);
+	// Generic myBmw = vehicle.addInstance("myBmw");
+	// Cache cache = engine.getCurrentCache();
+	// catchAndCheckCause(() -> cache.flush(), RequiredConstraintViolationException.class);
+	//
+	// }
 
 	// public void test001_enableRequiredConstraint_addInstance() {
 	// Engine engine = new Engine();
