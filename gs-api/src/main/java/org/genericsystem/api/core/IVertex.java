@@ -380,7 +380,8 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 *
 	 * @return this
 	 */
-	T setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value);
+	// TODO add targets to doc
+	T setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value, T... targets);
 
 	/**
 	 *
@@ -395,7 +396,8 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 *
 	 * @return this
 	 */
-	T enableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos);
+	// TODO document targets
+	T enableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos, T... targets);
 
 	/**
 	 *
@@ -410,7 +412,7 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 *
 	 * @return this
 	 */
-	T disableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos);
+	T disableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos, T... targets);
 
 	/**
 	 *

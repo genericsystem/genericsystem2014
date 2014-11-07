@@ -1,10 +1,11 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.genericsystem.api.core.IVertex;
+import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 import org.genericsystem.kernel.systemproperty.CascadeRemoveProperty;
 import org.genericsystem.kernel.systemproperty.NoReferentialIntegrityProperty;
@@ -25,49 +26,60 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 			if (result.isPresent())
 				return result.get().getValue();
 
-			// Iterator<Serializable> iterator = getValues(key.get()).iterator();
-			// if (iterator.hasNext())
-			// return iterator.next();
 		}
 		return null;
 	}
 
-	@Override
+	default Snapshot<T> getRequiredConstraintsOn() {
+		return getConstraintsOn(RequiredConstraint.class);
+	}
+
 	@SuppressWarnings("unchecked")
-	default T setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value) {
-		T map = ((T) this).getMap();
-		map.getMeta().setInstance(map, new AxedPropertyClass(propertyClass, pos), coerceToTArray(getRoot())).setInstance(value, coerceToTArray(this));
-		return (T) this;
+	default Snapshot<T> getConstraintsOn(Class<? extends SystemProperty> clazz) {
+		return () -> targetsByPos(((T) this).getKeys(clazz).flatMap(key -> ((T) this).filterByPos(key, Statics.TARGET_POSITION)), Statics.BASE_POSITION);
 	}
 
-	default T propertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value) {
-		T map = ((T) this).getMap();
-		T halfMap = map.getMeta().setInstance(map, propertyClass);
-		halfMap.setInstance(map, pos, coerceToTArray(getRoot())).setInstance(value, coerceToTArray(this));
-		return (T) this;
+	default Stream<T> filterByPos(T relation, int pos) {
+		return getHolders(relation).get().filter(x -> this.isSpecializationOf(x.getComponents().get(pos)));
 	}
 
+	public static <T extends AbstractVertex<T>> Stream<T> targetsByPos(Stream<T> links, int pos) {
+		return links.map(x -> x.getComponents().get(pos));
+	}
+
+	//
+	// @Override
+	// @SuppressWarnings("unchecked")
+	// default T setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value) {
+	// T map = ((T) this).getMap();
+	// map.getMeta().setInstance(map, new AxedPropertyClass(propertyClass, pos), coerceToTArray(getRoot())).setInstance(value, coerceToTArray(this));
+	// return (T) this;
+	// }
+
+	// default T propertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value) {
+	// T map = ((T) this).getMap();
+	// T halfMap = map.getMeta().setInstance(map, propertyClass);
+	// halfMap.setInstance(map, pos, coerceToTArray(getRoot())).setInstance(value, coerceToTArray(this));
+	// return (T) this;
+	// }
+
+	@SuppressWarnings("unchecked")
+	@Override
 	default T setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value, T... targets) {
 		T map = ((T) this).getMap();
-
-		Object[] rootArray = new Object[targets.length + 1];
-		Arrays.fill(rootArray, getRoot());
-
-		if (targets.length == 0)
-			map.getMeta().setInstance(map, new AxedPropertyClass(propertyClass, pos), coerceToTArray(getRoot())).setInstance(value, coerceToTArray(this));
-		else
-			map.getMeta().setInstance(map, new AxedPropertyClass(propertyClass, pos), coerceToTArray(rootArray)).setInstance(value, addThisToTargets(targets));
-
+		map.getMeta().setInstance(map, new AxedPropertyClass(propertyClass, pos), coerceToTArray(getRoot())).setInstance(value, addThisToTargets(targets));
 		return (T) this;
 	}
+
+	// @Override
+	// @SuppressWarnings("unchecked")
+	// default T enableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos) {
+	// setSystemPropertyValue(propertyClass, pos, Boolean.TRUE);
+	// return (T) this;
+	// }
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T enableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos) {
-		setSystemPropertyValue(propertyClass, pos, Boolean.TRUE);
-		return (T) this;
-	}
-
 	default T enableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos, T... targets) {
 		setSystemPropertyValue(propertyClass, pos, Boolean.TRUE, targets);
 		// setSystemPropertyValue(propertyClass, pos, Boolean.TRUE);
@@ -77,11 +89,6 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T disableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos) {
-		setSystemPropertyValue(propertyClass, pos, Boolean.FALSE);
-		return (T) this;
-	}
-
 	default T disableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos, T... targets) {
 		setSystemPropertyValue(propertyClass, pos, Boolean.FALSE, targets);
 		// setSystemPropertyValue(propertyClass, pos, Boolean.FALSE);
@@ -169,14 +176,14 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 
 	@Override
 	default T enableRequiredConstraint(int pos) {
-		return enableSystemProperty(RequiredConstraint.class, pos, this.getComponents().get(pos));
+		return enableSystemProperty(RequiredConstraint.class, pos, coerceToTArray(this.getComponents().get(pos)));
 		// return enableSystemProperty(RequiredConstraint.class, pos);
 	}
 
 	@Override
 	default T disableRequiredConstraint(int pos) {
 		// return disableSystemProperty(RequiredConstraint.class, pos);
-		return disableSystemProperty(RequiredConstraint.class, pos, this.getComponents().get(pos));
+		return disableSystemProperty(RequiredConstraint.class, pos, coerceToTArray(this.getComponents().get(pos)));
 	}
 
 	@Override
@@ -199,23 +206,4 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 		return isSystemPropertyEnabled(CascadeRemoveProperty.class, pos);
 	}
 
-	default boolean hasRequiredAttribute(int pos) {
-		Optional<T> key = ((T) this).getKey(new AxedPropertyClass(RequiredConstraint.class, pos));
-		if (key.isPresent()) {
-			Optional<T> result = getHolders(key.get()).get().filter(x -> this.equals(x.getComponents().get(Statics.TARGET_POSITION))).findFirst();
-			if (result.isPresent())
-				return true;
-		}
-		return false;
-	}
-
-	default T getRequiredAttribute(int pos) {
-		Optional<T> key = ((T) this).getKey(new AxedPropertyClass(RequiredConstraint.class, pos));
-		if (key.isPresent()) {
-			Optional<T> result = getHolders(key.get()).get().filter(x -> this.equals(x.getComponents().get(Statics.TARGET_POSITION))).findFirst();
-			if (result.isPresent())
-				return result.get().getComponents().get(Statics.BASE_POSITION);
-		}
-		return null;
-	}
 }

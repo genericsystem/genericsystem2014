@@ -636,7 +636,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	// TODO clean
 	@SuppressWarnings("unchecked")
-	T getMap() {
+	public T getMap() {
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
@@ -654,6 +654,10 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	Optional<T> getKey(AxedPropertyClass property) {
 		return getKeys().filter(x -> Objects.equals(x.getValue(), property)).findFirst();
+	}
+
+	Stream<T> getKeys(Class<?> propertyClass) {
+		return getKeys().filter(x -> Objects.equals(((AxedPropertyClass) x.getValue()).getClazz(), propertyClass));
 	}
 
 	void checkSystemConstraints(CheckingType checkingType, boolean isFlushTime) {

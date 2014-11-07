@@ -10,6 +10,76 @@ import org.testng.annotations.Test;
 @Test
 public class RequiredConstraintTest extends AbstractTest {
 
+	public void test00_Inheritance() {
+		Engine engine = new Engine();
+		Generic car = engine.addInstance("Car");
+		Generic power = engine.addAttribute(engine.getMap(), "Power");
+		Generic unit = engine.addInstance("Unit");
+
+		Generic v235 = car.addHolder(power, 235, unit);
+
+		assert car.getHolders(power).contains(v235);
+		assert unit.getHolders(power).contains(v235);
+
+	}
+
+	public void test01_Inheritance() {
+		Engine engine = new Engine();
+		Generic car = engine.addInstance("Car");
+		Generic power = engine.addAttribute("Power", engine);
+		Generic unit = engine.addInstance("Unit");
+
+		Generic v235 = car.addHolder(power, 235, unit);
+
+		assert car.getHolders(power).contains(v235);
+		assert unit.getHolders(power).contains(v235);
+
+	}
+
+	public void test000_Inheritance() {
+		Engine engine = new Engine();
+		Generic car = engine.addInstance("Car");
+		Generic power = car.addAttribute("Power");
+		Generic unit = engine.addInstance("Unit");
+
+		Generic myBmw = car.addInstance("myBmw");
+
+		Generic kw = unit.addInstance("kw");
+
+		Generic v235 = myBmw.addHolder(power, 235, kw);
+
+		assert myBmw.getHolders(power).contains(v235);
+		assert kw.getHolders(power).contains(v235);
+
+	}
+
+	public void test001_Inheritance() {
+		Engine engine = new Engine();
+		Generic car = engine.addInstance("Car");
+		Generic unit = engine.addInstance("Unit");
+		Generic power = car.addAttribute("Power", unit);
+		Generic myBmw = car.addInstance("myBmw");
+
+		Generic kw = unit.addInstance("kw");
+
+		Generic v235 = myBmw.addHolder(power, 235, kw);
+
+		assert myBmw.getHolders(power).contains(v235);
+		assert kw.getHolders(power).contains(v235);
+
+	}
+
+	public void test000_enableRequired() {
+		Engine engine = new Engine();
+		Generic car = engine.addInstance("Car");
+		Generic power = car.addAttribute("Power");
+		power.enableRequiredConstraint(Statics.BASE_POSITION);
+		assert power.isRequiredConstraintEnabled(Statics.BASE_POSITION);
+
+		assert car.getRequiredConstraintsOn().contains(power);
+		assert car.getRequiredConstraintsOn().size() == 1;
+	}
+
 	public void test001_enableRequired() {
 		Engine engine = new Engine();
 		Generic car = engine.addInstance("Car");
@@ -30,11 +100,11 @@ public class RequiredConstraintTest extends AbstractTest {
 		Generic car = engine.addInstance("Car");
 		Generic power = car.addAttribute("Power");
 
-		assert null == car.getRequiredAttribute(Statics.BASE_POSITION);
-		assert null == power.getRequiredAttribute(Statics.BASE_POSITION);
+		assert car.getRequiredConstraintsOn().size() == 0;
+		assert power.getRequiredConstraintsOn().size() == 0;
 		power.enableRequiredConstraint(Statics.BASE_POSITION);
-		assert power.equals(car.getRequiredAttribute(Statics.BASE_POSITION));
-		assert null == power.getRequiredAttribute(Statics.BASE_POSITION);
+		assert car.getRequiredConstraintsOn().contains(power);
+		assert power.getRequiredConstraintsOn().size() == 0;
 
 		Generic myBmw = car.addInstance("myBmw");
 		Generic v236 = myBmw.addHolder(power, 236);
