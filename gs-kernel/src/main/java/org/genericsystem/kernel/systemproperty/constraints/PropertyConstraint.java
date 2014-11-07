@@ -3,6 +3,7 @@ package org.genericsystem.kernel.systemproperty.constraints;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.PropertyConstraintViolationException;
 import org.genericsystem.kernel.AbstractVertex;
@@ -12,7 +13,7 @@ import org.genericsystem.kernel.Statics;
 public class PropertyConstraint<T extends AbstractVertex<T>> implements Constraint<T> {
 
 	@Override
-	public void check(T modified, T attribute, Serializable value, int axe) throws ConstraintViolationException {
+	public void check(T modified, T attribute, Serializable value, int axe, boolean isOnAdd, boolean isFlushTime, boolean isRevert) throws ConstraintViolationException {
 		// TODO KK
 		if (attribute.getValue().equals(SystemMap.class))
 			return;

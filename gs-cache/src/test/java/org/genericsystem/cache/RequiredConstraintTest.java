@@ -76,7 +76,7 @@ public class RequiredConstraintTest extends AbstractTest {
 		power.enableRequiredConstraint(Statics.BASE_POSITION);
 		assert power.isRequiredConstraintEnabled(Statics.BASE_POSITION);
 
-		assert car.getRequiredConstraintsOn().contains(power);
+		assert car.getRequiredConstraintsOn().get().findFirst().get().getComponents().contains(power);
 		assert car.getRequiredConstraintsOn().size() == 1;
 	}
 
@@ -103,13 +103,14 @@ public class RequiredConstraintTest extends AbstractTest {
 		assert car.getRequiredConstraintsOn().size() == 0;
 		assert power.getRequiredConstraintsOn().size() == 0;
 		power.enableRequiredConstraint(Statics.BASE_POSITION);
-		assert car.getRequiredConstraintsOn().contains(power);
+		assert car.getRequiredConstraintsOn().get().findFirst().get().getComponents().get(Statics.BASE_POSITION).equals(power);
 		assert power.getRequiredConstraintsOn().size() == 0;
 
 		Generic myBmw = car.addInstance("myBmw");
 		Generic v236 = myBmw.addHolder(power, 236);
 		assert power.isRequiredConstraintEnabled(Statics.BASE_POSITION);
 		Cache cache = engine.getCurrentCache();
+		assert myBmw.getHolders(power).contains(v236);
 		cache.flush();
 		v236.remove();
 		catchAndCheckCause(() -> cache.flush(), RequiredConstraintViolationException.class);
@@ -127,6 +128,7 @@ public class RequiredConstraintTest extends AbstractTest {
 		Generic v236 = myBmw.addHolder(power, 236);
 		assert power.isRequiredConstraintEnabled(Statics.BASE_POSITION);
 		Cache cache = engine.getCurrentCache();
+		// power.getComponents().stream().forEach(x -> System.out.println(x.detailedInfo()));
 		cache.flush();
 		v236.remove();
 		catchAndCheckCause(() -> cache.flush(), RequiredConstraintViolationException.class);

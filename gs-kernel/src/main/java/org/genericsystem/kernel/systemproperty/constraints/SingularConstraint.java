@@ -10,7 +10,7 @@ import org.genericsystem.kernel.AbstractVertex;
 public class SingularConstraint<T extends AbstractVertex<T>> implements Constraint<T> {
 
 	@Override
-	public void check(T modified, T attribute, Serializable value, int axe) throws ConstraintViolationException {
+	public void check(T modified, T attribute, Serializable value, int axe, boolean isOnAdd, boolean isFlushTime, boolean isRevert) throws ConstraintViolationException {
 		T base = modified.getComponents().get(axe);
 		Optional<T> optional = base.getHolders(attribute).get().filter(x -> !x.equals(modified)).findFirst();
 		if (optional.isPresent())

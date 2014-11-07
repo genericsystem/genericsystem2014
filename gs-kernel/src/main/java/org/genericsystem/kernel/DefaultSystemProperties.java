@@ -36,7 +36,7 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 
 	@SuppressWarnings("unchecked")
 	default Snapshot<T> getConstraintsOn(Class<? extends SystemProperty> clazz) {
-		return () -> targetsByPos(((T) this).getKeys(clazz).flatMap(key -> ((T) this).filterByPos(key, Statics.TARGET_POSITION)), Statics.BASE_POSITION);
+		return () -> ((T) this).getKeys(clazz).flatMap(key -> ((T) this).filterByPos(key, Statics.TARGET_POSITION));
 	}
 
 	default Stream<T> filterByPos(T relation, int pos) {
