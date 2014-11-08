@@ -1,7 +1,6 @@
 package org.genericsystem.kernel.systemproperty.constraints;
 
 import java.io.Serializable;
-
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RequiredConstraintViolationException;
 import org.genericsystem.kernel.AbstractVertex;
@@ -10,12 +9,11 @@ public class RequiredConstraint<T extends AbstractVertex<T>> implements Constrai
 
 	@Override
 	public void check(T modified, T attribute, Serializable value, int axe, boolean isOnAdd, boolean isFlushTime, boolean isRevert) throws ConstraintViolationException {
-		assert isOnAdd;
-		T base = !isRevert ? modified.getComponents().get(axe) : modified;
-
-		if (base.getHolders(attribute).isEmpty())
-			throw new RequiredConstraintViolationException(attribute + " is required for : " + base);
-
+		if (isRevert == isOnAdd) {
+			T base = isRevert ? modified : modified.getComponents().get(axe);
+			if (base.getHolders(attribute).isEmpty())
+				throw new RequiredConstraintViolationException(attribute + " is required for : " + base);
+		}
 	}
 
 	@Override

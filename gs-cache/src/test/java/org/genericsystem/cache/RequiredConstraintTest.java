@@ -2,7 +2,6 @@ package org.genericsystem.cache;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.genericsystem.api.exception.RequiredConstraintViolationException;
 import org.genericsystem.kernel.Statics;
 import org.testng.annotations.Test;
@@ -69,17 +68,6 @@ public class RequiredConstraintTest extends AbstractTest {
 
 	}
 
-	public void test000_enableRequired() {
-		Engine engine = new Engine();
-		Generic car = engine.addInstance("Car");
-		Generic power = car.addAttribute("Power");
-		power.enableRequiredConstraint(Statics.BASE_POSITION);
-		assert power.isRequiredConstraintEnabled(Statics.BASE_POSITION);
-
-		assert car.getRequiredConstraintsOn().get().findFirst().get().getComponents().contains(power);
-		assert car.getRequiredConstraintsOn().size() == 1;
-	}
-
 	public void test001_enableRequired() {
 		Engine engine = new Engine();
 		Generic car = engine.addInstance("Car");
@@ -99,13 +87,7 @@ public class RequiredConstraintTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic car = engine.addInstance("Car");
 		Generic power = car.addAttribute("Power");
-
-		assert car.getRequiredConstraintsOn().size() == 0;
-		assert power.getRequiredConstraintsOn().size() == 0;
 		power.enableRequiredConstraint(Statics.BASE_POSITION);
-		assert car.getRequiredConstraintsOn().get().findFirst().get().getComponents().get(Statics.BASE_POSITION).equals(power);
-		assert power.getRequiredConstraintsOn().size() == 0;
-
 		Generic myBmw = car.addInstance("myBmw");
 		Generic v236 = myBmw.addHolder(power, 236);
 		assert power.isRequiredConstraintEnabled(Statics.BASE_POSITION);

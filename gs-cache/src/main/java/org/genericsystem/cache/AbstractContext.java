@@ -3,7 +3,6 @@ package org.genericsystem.cache;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
-import org.genericsystem.kernel.AbstractVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

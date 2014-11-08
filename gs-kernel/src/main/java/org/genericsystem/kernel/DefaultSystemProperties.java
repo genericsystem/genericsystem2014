@@ -2,10 +2,7 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.Optional;
-import java.util.stream.Stream;
-
 import org.genericsystem.api.core.IVertex;
-import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 import org.genericsystem.kernel.systemproperty.CascadeRemoveProperty;
 import org.genericsystem.kernel.systemproperty.NoReferentialIntegrityProperty;
@@ -30,39 +27,6 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 		return null;
 	}
 
-	default Snapshot<T> getRequiredConstraintsOn() {
-		return getConstraintsOn(RequiredConstraint.class);
-	}
-
-	@SuppressWarnings("unchecked")
-	default Snapshot<T> getConstraintsOn(Class<? extends SystemProperty> clazz) {
-		return () -> ((T) this).getKeys(clazz).flatMap(key -> ((T) this).filterByPos(key, Statics.TARGET_POSITION));
-	}
-
-	default Stream<T> filterByPos(T relation, int pos) {
-		return getHolders(relation).get().filter(x -> this.isSpecializationOf(x.getComponents().get(pos)));
-	}
-
-	public static <T extends AbstractVertex<T>> Stream<T> targetsByPos(Stream<T> links, int pos) {
-		return links.map(x -> x.getComponents().get(pos));
-	}
-
-	//
-	// @Override
-	// @SuppressWarnings("unchecked")
-	// default T setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value) {
-	// T map = ((T) this).getMap();
-	// map.getMeta().setInstance(map, new AxedPropertyClass(propertyClass, pos), coerceToTArray(getRoot())).setInstance(value, coerceToTArray(this));
-	// return (T) this;
-	// }
-
-	// default T propertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value) {
-	// T map = ((T) this).getMap();
-	// T halfMap = map.getMeta().setInstance(map, propertyClass);
-	// halfMap.setInstance(map, pos, coerceToTArray(getRoot())).setInstance(value, coerceToTArray(this));
-	// return (T) this;
-	// }
-
 	@SuppressWarnings("unchecked")
 	@Override
 	default T setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value, T... targets) {
@@ -71,19 +35,10 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 		return (T) this;
 	}
 
-	// @Override
-	// @SuppressWarnings("unchecked")
-	// default T enableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos) {
-	// setSystemPropertyValue(propertyClass, pos, Boolean.TRUE);
-	// return (T) this;
-	// }
-
 	@Override
 	@SuppressWarnings("unchecked")
 	default T enableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos, T... targets) {
 		setSystemPropertyValue(propertyClass, pos, Boolean.TRUE, targets);
-		// setSystemPropertyValue(propertyClass, pos, Boolean.TRUE);
-
 		return (T) this;
 	}
 
@@ -91,8 +46,6 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 	@SuppressWarnings("unchecked")
 	default T disableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos, T... targets) {
 		setSystemPropertyValue(propertyClass, pos, Boolean.FALSE, targets);
-		// setSystemPropertyValue(propertyClass, pos, Boolean.FALSE);
-
 		return (T) this;
 	}
 

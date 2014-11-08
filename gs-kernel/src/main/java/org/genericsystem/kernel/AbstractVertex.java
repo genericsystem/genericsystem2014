@@ -14,7 +14,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
@@ -640,8 +639,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {
-	}
+	public static class SystemMap {}
 
 	protected boolean equals(ISignature<?> meta, List<? extends ISignature<?>> supers, Serializable value, List<? extends ISignature<?>> components) {
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComponents().equals(components.stream().map(NULL_TO_THIS).collect(Collectors.toList())) && getSupers().equals(supers);
@@ -660,14 +658,13 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Objects.equals(((AxedPropertyClass) x.getValue()).getClazz(), propertyClass));
 	}
 
-	void checkSystemConstraints(CheckingType checkingType, boolean isFlushTime) {
+	protected void checkSystemConstraints(CheckingType checkingType, boolean isFlushTime) {
 		// checkIsAlive();
 		checkDependsMetaComponents();
 		checkSupers();
 		checkDependsSuperComponents();
 		checkLevel();
 		checkLevelComponents();
-
 	}
 
 	private void checkDependsMetaComponents() {
@@ -707,38 +704,47 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	@SuppressWarnings("unchecked")
 	void checkConstraints(CheckingType checkingType, boolean isFlushTime) {
 		for (T constraintHolder : getConstraintsHolders()) {
-			Serializable value = constraintHolder.getValue();
-			Constraint<T> constraint = constraintHolder.getMeta().getConstraint();
-			if (isCheckable(constraint, checkingType, isFlushTime))
-				try {
-					constraint.check((T) this, constraintHolder.getComponents().get(Statics.BASE_POSITION), value, ((AxedPropertyClass) constraintHolder.getMeta().getValue()).getAxe(), checkingType == CheckingType.CHECK_ON_ADD ? true : false, isFlushTime,
-							false);
-				} catch (ConstraintViolationException e) {
-					getRoot().discardWithException(e);
-				}
-		}
-		for (T constraintHolder : getMeta().getRequiredConstraintsOn()) {
-			Serializable value = constraintHolder.getValue();
-			Constraint<T> constraint = constraintHolder.getMeta().getConstraint();
-			if (isCheckable(constraint, checkingType, isFlushTime))
-				try {
-					constraint.check((T) this, constraintHolder.getComponents().get(Statics.BASE_POSITION), value, ((AxedPropertyClass) constraintHolder.getMeta().getValue()).getAxe(), checkingType == CheckingType.CHECK_ON_ADD ? true : false, isFlushTime,
-							true);
-				} catch (ConstraintViolationException e) {
-					getRoot().discardWithException(e);
-				}
+			if (isSpecializationOf(constraintHolder.getComponents().get(Statics.BASE_POSITION))) {
+				Serializable value = constraintHolder.getValue();
+				Constraint<T> constraint = constraintHolder.getMeta().getConstraint();
+				if (isCheckable(constraint, checkingType, isFlushTime))
+					try {
+						constraint.check((T) this, constraintHolder.getComponents().get(Statics.BASE_POSITION), value, ((AxedPropertyClass) constraintHolder.getMeta().getValue()).getAxe(), checkingType == CheckingType.CHECK_ON_ADD ? true : false,
+								isFlushTime, false);
+					} catch (ConstraintViolationException e) {
+						getRoot().discardWithException(e);
+					}
+			}
+			if (constraintHolder.getComponents().size() >= 2 && isSpecializationOf(constraintHolder.getComponents().get(Statics.TARGET_POSITION))) {
+				Serializable value = constraintHolder.getValue();
+				Constraint<T> constraint = constraintHolder.getMeta().getConstraint();
+				if (isCheckable(constraint, checkingType, isFlushTime))
+					try {
+						constraint.check((T) this, constraintHolder.getComponents().get(Statics.BASE_POSITION), value, ((AxedPropertyClass) constraintHolder.getMeta().getValue()).getAxe(), checkingType == CheckingType.CHECK_ON_ADD ? true : false,
+								isFlushTime, true);
+					} catch (ConstraintViolationException e) {
+						getRoot().discardWithException(e);
+					}
+			}
 		}
 	}
 
-	public List<T> getConstraintsHolders() {
+	List<T> getConstraintsHolders() {
 		T map = getMap();
-		return map != null ? getMeta()
-				.getHolders(getMap())
-				.get()
-				.filter(holder -> holder.getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) holder.getMeta().getValue()).getClazz())
-						&& isSpecializationOf(holder.getComponents().get(Statics.BASE_POSITION))).filter(holder -> holder.getValue() != null && !Boolean.FALSE.equals(holder.getValue())).sorted(CONSTRAINT_PRIORITY).collect(Collectors.toList())
-				: Collections.emptyList();
+		if (map == null)
+			return Collections.emptyList();
+		return getMeta().getHolders(getMap()).get().filter(holder -> holder.getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) holder.getMeta().getValue()).getClazz()))
+				.filter(holder -> holder.getValue() != null && !Boolean.FALSE.equals(holder.getValue())).sorted(CONSTRAINT_PRIORITY).collect(Collectors.toList());
 	}
+
+	// @SuppressWarnings("unchecked")
+	// Snapshot<T> getConstraintsHoldersOn() {
+	// return () -> ((T) this).getKeys(clazz).flatMap(key -> getHolders(relation).get().filter(x -> this.isSpecializationOf(x.getComponents().get(pos))));
+	// }
+	//
+	// public static <T extends AbstractVertex<T>> Stream<T> targetsByPos(Stream<T> links, int pos) {
+	// return links.map(x -> x.getComponents().get(pos));
+	// }
 
 	@SuppressWarnings("unchecked")
 	Constraint<T> getConstraint() {

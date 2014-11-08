@@ -11,7 +11,6 @@ import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.RollbackException;
-import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.AbstractVertex.DependenciesMap;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;

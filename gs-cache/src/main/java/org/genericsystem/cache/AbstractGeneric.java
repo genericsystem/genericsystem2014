@@ -6,16 +6,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.cache.annotations.InstanceClass;
 import org.genericsystem.cache.annotations.SystemGeneric;
-import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint.CheckingType;
 
-public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends AbstractVertex<T> implements DefaultGeneric<T, V> {
+public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.kernel.AbstractVertex<T> implements DefaultGeneric<T, V> {
 
 	@SuppressWarnings("unchecked")
 	@Override

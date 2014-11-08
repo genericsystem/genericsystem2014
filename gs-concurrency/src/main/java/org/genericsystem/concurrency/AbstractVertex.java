@@ -1,6 +1,6 @@
 package org.genericsystem.concurrency;
 
-public abstract class AbstractVertex<V extends AbstractVertex<V>> extends org.genericsystem.kernel.AbstractVertex<V> implements DefaultVertex<V> {
+public abstract class AbstractVertex<V extends AbstractVertex<V>> extends org.genericsystem.cache.AbstractVertex<V> implements DefaultVertex<V> {
 
 	protected LifeManager lifeManager;
 

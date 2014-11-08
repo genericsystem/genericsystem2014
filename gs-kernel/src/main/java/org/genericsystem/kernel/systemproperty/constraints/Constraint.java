@@ -1,7 +1,6 @@
 package org.genericsystem.kernel.systemproperty.constraints;
 
 import java.io.Serializable;
-
 import org.genericsystem.api.core.IVertex.SystemProperty;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.kernel.AbstractVertex;
