@@ -22,7 +22,7 @@ public interface DefaultCompositesInheritance<T extends AbstractVertex<T>> exten
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getAttributes(int pos) {
-		return () -> getAttributes().get().filter(attribute -> pos >= 0 && pos < attribute.getComponents().size() && ((T) this).isSpecializationOf(attribute.getComponents().get(pos)));
+		return () -> getAttributes().get().filter(attribute -> attribute.getComponent(pos) != null && ((T) this).isSpecializationOf(attribute.getComponent(pos)));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -34,7 +34,7 @@ public interface DefaultCompositesInheritance<T extends AbstractVertex<T>> exten
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getHolders(T attribute, int pos) {
-		return () -> getHolders(attribute).get().filter(holder -> pos >= 0 && pos < holder.getComponents().size() && ((T) this).isSpecializationOf(holder.getComponents().get(pos)));
+		return () -> getHolders(attribute).get().filter(holder -> holder.getComponent(pos) != null && ((T) this).isSpecializationOf(holder.getComponent(pos)));
 
 	}
 

@@ -11,7 +11,6 @@ import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.cache.annotations.InstanceClass;
 import org.genericsystem.cache.annotations.SystemGeneric;
 import org.genericsystem.kernel.Dependencies;
-import org.genericsystem.kernel.systemproperty.constraints.Constraint.CheckingType;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.kernel.AbstractVertex<T> implements DefaultGeneric<T, V> {
 
@@ -19,15 +18,28 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 	@Override
 	protected T plug() {
 		T plug = getCurrentCache().plug((T) this);
-		getRoot().check(CheckingType.CHECK_ON_ADD, false, (T) this);
+		getRoot().check(true, false, (T) this);
 		return plug;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected boolean unplug() {
-		getRoot().check(CheckingType.CHECK_ON_ADD, false, (T) this);
+		getRoot().check(false, false, (T) this);
 		return getCurrentCache().unplug((T) this);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	protected T addInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
+		return super.addInstance(clazz, overrides, value, components);
+
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	protected T setInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
+		return super.setInstance(clazz, overrides, value, components);
 	}
 
 	@SuppressWarnings("unchecked")

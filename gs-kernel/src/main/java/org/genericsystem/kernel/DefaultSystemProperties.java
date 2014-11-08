@@ -19,7 +19,7 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 	default Serializable getSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos) {
 		Optional<T> key = ((T) this).getKey(new AxedPropertyClass(propertyClass, pos));
 		if (key.isPresent()) {
-			Optional<T> result = getHolders(key.get()).get().filter(x -> this.isSpecializationOf(x.getComponents().get(Statics.BASE_POSITION))).findFirst();
+			Optional<T> result = getHolders(key.get()).get().filter(x -> this.isSpecializationOf(x.getBaseComponent())).findFirst();
 			if (result.isPresent())
 				return result.get().getValue();
 

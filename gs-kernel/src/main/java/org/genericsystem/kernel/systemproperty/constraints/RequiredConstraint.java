@@ -17,8 +17,8 @@ public class RequiredConstraint<T extends AbstractVertex<T>> implements Constrai
 	}
 
 	@Override
-	public boolean isCheckedAt(T modified, CheckingType checkingType) {
-		return checkingType.equals(CheckingType.CHECK_ON_ADD) || checkingType.equals(CheckingType.CHECK_ON_REMOVE);
+	public boolean isCheckedAt(T modified, boolean isOnAdd) {
+		return true;
 	}
 
 	@Override

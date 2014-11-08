@@ -2,9 +2,7 @@ package org.genericsystem.api.core;
 
 import java.io.Serializable;
 import java.util.List;
-
 import javax.json.JsonObject;
-
 import org.genericsystem.api.exception.RollbackException;
 
 /**
@@ -568,7 +566,7 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 
 	/**
 	 * set the class value constraint of this vertex.
-	 * 
+	 *
 	 * @param constraintClass
 	 *            the value class of the constraint
 	 * @return this
@@ -952,5 +950,13 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	Snapshot<T> getCompositesByMeta(T meta);
 
 	Snapshot<T> getCompositesBySuper(T superT);
+
+	T getBaseComponent();
+
+	T getTargetComponent();
+
+	T getTernaryComponent();
+
+	T getComponent(int pos);
 
 }

@@ -30,7 +30,6 @@ import org.genericsystem.kernel.Statics.Supers;
 import org.genericsystem.kernel.annotations.Priority;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint;
-import org.genericsystem.kernel.systemproperty.constraints.Constraint.CheckingType;
 
 public abstract class AbstractVertex<T extends AbstractVertex<T>> implements DefaultVertex<T> {
 
@@ -118,12 +117,10 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return supers;
 	}
 
-	@SuppressWarnings("static-method")
 	protected Dependencies<T> buildDependencies() {
 		return new DependenciesImpl<>();
 	}
 
-	@SuppressWarnings("static-method")
 	protected DependenciesMap<T> buildDependenciesMap() {
 		return new DependenciesMapImpl<>();
 	}
@@ -155,6 +152,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		getOrderedDependenciesToRemove().forEach(x -> simpleRemove(x));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public T update(List<T> supersToAdd, Serializable newValue, T... newComponents) {
 		if (newComponents.length != getComponents().size())
@@ -202,7 +200,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 				visit((T) AbstractVertex.this);
 			}
 
-			// TODO clean
 			public void visit(T generic) {
 				if (add(generic)) {// protect from loop
 					if (!generic.getInheritings().isEmpty() || !generic.getInstances().isEmpty())
@@ -243,7 +240,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	T adjustMeta(Serializable value, List<T> components) {
 		T result = null;
 		for (T directInheriting : getInheritings()) {
-			if (isAdjusted(directInheriting, value, components)) {
+			if (!components.equals(getComponents()) && !directInheriting.equalsRegardlessSupers(this, value, components) && componentsDepends(components, directInheriting.getComponents())) {
 				if (result == null)
 					result = directInheriting;
 				else
@@ -253,12 +250,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return result == null ? (T) this : result.adjustMeta(value, components);
 	}
 
-	boolean isAdjusted(T directInheriting, Serializable value, List<T> components) {
-		return !components.equals(getComponents()) && !directInheriting.equalsRegardlessSupers(this, value, components)/* && Objects.equals(getValue(), directInheriting.getValue()) */
-				&& componentsDepends(components, directInheriting.getComponents());
-	}
-
-	// TODO KK if a component is null
 	T getDirectInstance(Serializable value, List<T> components) {
 		for (T instance : getInstances())
 			if (((AbstractVertex<?>) instance).equalsRegardlessSupers(this, value, components))
@@ -272,7 +263,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	@SuppressWarnings("unchecked")
-	public T addInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
+	protected T addInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
 		List<T> componentList = Arrays.asList(components);
 		checkSameEngine(componentList);
 		checkSameEngine(overrides);
@@ -284,13 +275,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	}
 
-	@Override
-	public T addInstance(List<T> overrides, Serializable value, T... components) {
-		return addInstance(null, overrides, value, components);
-	}
-
 	@SuppressWarnings("unchecked")
-	public T setInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
+	protected T setInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
 		List<T> componentList = Arrays.asList(components);
 		checkSameEngine(componentList);
 		checkSameEngine(overrides);
@@ -301,6 +287,13 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return rebuildAll(() -> adjustedMeta.buildInstance(clazz, overrides, value, componentList).plug(), adjustedMeta.computePotentialDependencies(overrides, value, componentList));
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public T addInstance(List<T> overrides, Serializable value, T... components) {
+		return addInstance(null, overrides, value, components);
+	}
+
+	@SuppressWarnings("unchecked")
 	@Override
 	public T setInstance(List<T> overrides, Serializable value, T... components) {
 		return setInstance(null, overrides, value, components);
@@ -351,7 +344,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 				return true;
 		for (int i = 0; i < componentsList.size(); i++) {
 			T component = componentsList.get(i);
-			if (!component.equals(notNullComponents.get(i)))
+			if (!component.equals(notNullComponents.get(i)))// TODO call equiv here ?
 				return false;
 		}
 		if (!meta.isPropertyConstraintEnabled())
@@ -377,16 +370,14 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 			if (!supersList.get(i).genericEquals(service.getSupers().get(i)))
 				return false;
 
-		List<IVertex<?>> componentsList = (List<IVertex<?>>) getComponents();
+		List<T> componentsList = getComponents();
 		if (componentsList.size() != service.getComponents().size())
 			return false;
 
 		for (int i = 0; i < componentsList.size(); i++) {
-			if (this == componentsList.get(i))
-				return true;
-			if (service == service.getComponents().get(i))
-				return true;
-			if (!((AbstractVertex<T>) componentsList.get(i)).genericEquals(service.getComponents().get(i)))
+			if (this == componentsList.get(i) && service == service.getComponents().get(i))
+				continue;
+			if (!(componentsList.get(i)).genericEquals(service.getComponents().get(i)))
 				return false;
 		}
 		return true;
@@ -519,13 +510,13 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		getSupers().forEach(superGeneric -> ((AbstractVertex<T>) superGeneric).indexInheriting((T) this));
 		getComponents().stream().filter(component -> !equals(component)).forEach(component -> ((AbstractVertex<T>) component).indexByMeta(getMeta(), (T) this));
 		getSupers().forEach(superGeneric -> getComponents().stream().filter(component -> !equals(component)).forEach(component -> ((AbstractVertex<T>) component).indexBySuper(superGeneric, (T) this)));
-		getRoot().check(CheckingType.CHECK_ON_ADD, true, (T) this);
+		getRoot().check(true, true, (T) this);
 		return (subT) result;
 	}
 
 	@SuppressWarnings("unchecked")
 	protected boolean unplug() {
-		getRoot().check(CheckingType.CHECK_ON_REMOVE, true, (T) this);
+		getRoot().check(false, true, (T) this);
 		boolean result = ((AbstractVertex<T>) getMeta()).unIndexInstance((T) this);
 		if (!result)
 			getRoot().discardWithException(new NotFoundException(this.info()));
@@ -633,9 +624,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return (isRoot() || getMeta().equals(meta)) && Objects.equals(getValue(), value) && getComponents().equals(components.stream().map(NULL_TO_THIS).collect(Collectors.toList()));
 	}
 
-	// TODO clean
 	@SuppressWarnings("unchecked")
-	public T getMap() {
+	T getMap() {
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
@@ -658,7 +648,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Objects.equals(((AxedPropertyClass) x.getValue()).getClazz(), propertyClass));
 	}
 
-	protected void checkSystemConstraints(CheckingType checkingType, boolean isFlushTime) {
+	protected void checkSystemConstraints(boolean isOnAdd, boolean isFlushTime) {
 		// checkIsAlive();
 		checkDependsMetaComponents();
 		checkSupers();
@@ -701,53 +691,37 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		});
 	}
 
-	@SuppressWarnings("unchecked")
-	void checkConstraints(CheckingType checkingType, boolean isFlushTime) {
-		for (T constraintHolder : getConstraintsHolders()) {
-			if (isSpecializationOf(constraintHolder.getComponents().get(Statics.BASE_POSITION))) {
-				Serializable value = constraintHolder.getValue();
-				Constraint<T> constraint = constraintHolder.getMeta().getConstraint();
-				if (isCheckable(constraint, checkingType, isFlushTime))
-					try {
-						constraint.check((T) this, constraintHolder.getComponents().get(Statics.BASE_POSITION), value, ((AxedPropertyClass) constraintHolder.getMeta().getValue()).getAxe(), checkingType == CheckingType.CHECK_ON_ADD ? true : false,
-								isFlushTime, false);
-					} catch (ConstraintViolationException e) {
-						getRoot().discardWithException(e);
-					}
-			}
-			if (constraintHolder.getComponents().size() >= 2 && isSpecializationOf(constraintHolder.getComponents().get(Statics.TARGET_POSITION))) {
-				Serializable value = constraintHolder.getValue();
-				Constraint<T> constraint = constraintHolder.getMeta().getConstraint();
-				if (isCheckable(constraint, checkingType, isFlushTime))
-					try {
-						constraint.check((T) this, constraintHolder.getComponents().get(Statics.BASE_POSITION), value, ((AxedPropertyClass) constraintHolder.getMeta().getValue()).getAxe(), checkingType == CheckingType.CHECK_ON_ADD ? true : false,
-								isFlushTime, true);
-					} catch (ConstraintViolationException e) {
-						getRoot().discardWithException(e);
-					}
-			}
+	void checkConstraints(boolean isOnAdd, boolean isFlushTime) {
+		T map = getMap();
+		if (map != null) {
+			Stream<T> contraintsHolders = getMeta().getHolders(getMap()).get().filter(holder -> holder.getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) holder.getMeta().getValue()).getClazz()))
+					.filter(holder -> holder.getValue() != null && !Boolean.FALSE.equals(holder.getValue())).sorted(CONSTRAINT_PRIORITY);
+			contraintsHolders.forEach(constraintHolder -> {
+				T baseComponent = constraintHolder.getBaseComponent();
+				if (isSpecializationOf(baseComponent))
+					check(constraintHolder, baseComponent, isFlushTime, isOnAdd, false);
+				T targetComponent = constraintHolder.getTargetComponent();
+				if (targetComponent != null && isSpecializationOf(targetComponent))
+					check(constraintHolder, baseComponent, isFlushTime, isOnAdd, true);
+			});
 		}
 	}
 
-	List<T> getConstraintsHolders() {
-		T map = getMap();
-		if (map == null)
-			return Collections.emptyList();
-		return getMeta().getHolders(getMap()).get().filter(holder -> holder.getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) holder.getMeta().getValue()).getClazz()))
-				.filter(holder -> holder.getValue() != null && !Boolean.FALSE.equals(holder.getValue())).sorted(CONSTRAINT_PRIORITY).collect(Collectors.toList());
+	@SuppressWarnings("unchecked")
+	void check(T constraintHolder, T baseComponent, boolean isFlushTime, boolean isOnAdd, boolean isRevert) {
+		int axe = ((AxedPropertyClass) constraintHolder.getMeta().getValue()).getAxe();
+		Serializable value = constraintHolder.getValue();
+		Constraint<T> constraint = constraintHolder.getMeta().statelessConstraint();
+		if ((isFlushTime || constraint.isImmediatelyCheckable()) && constraint.isCheckedAt((T) this, isOnAdd))
+			try {
+				constraint.check((T) this, baseComponent, value, axe, isOnAdd, isFlushTime, isRevert);
+			} catch (ConstraintViolationException e) {
+				getRoot().discardWithException(e);
+			}
 	}
 
-	// @SuppressWarnings("unchecked")
-	// Snapshot<T> getConstraintsHoldersOn() {
-	// return () -> ((T) this).getKeys(clazz).flatMap(key -> getHolders(relation).get().filter(x -> this.isSpecializationOf(x.getComponents().get(pos))));
-	// }
-	//
-	// public static <T extends AbstractVertex<T>> Stream<T> targetsByPos(Stream<T> links, int pos) {
-	// return links.map(x -> x.getComponents().get(pos));
-	// }
-
 	@SuppressWarnings("unchecked")
-	Constraint<T> getConstraint() {
+	Constraint<T> statelessConstraint() {
 		try {
 			return (Constraint<T>) ((AxedPropertyClass) getValue()).getClazz().newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
@@ -762,12 +736,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return priority != null ? priority.value() : 0;
 	}
 
-	@SuppressWarnings("unchecked")
-	private boolean isCheckable(Constraint<T> constraint, CheckingType checkingType, boolean isFlushTime) {
-		return (isFlushTime || constraint.isImmediatelyCheckable()) && constraint.isCheckedAt((T) this, checkingType);
-	}
-
-	void checkConsistency(CheckingType checkingType, boolean isFlushTime) {
+	void checkConsistency(boolean isOnAdd, boolean isFlushTime) {
 		// TODO impl
 	}
 

@@ -7,14 +7,10 @@ import org.genericsystem.kernel.AbstractVertex;
 
 public interface Constraint<T extends AbstractVertex<T>> extends SystemProperty {
 
-	enum CheckingType {
-		CHECK_ON_ADD, CHECK_ON_REMOVE
-	}
+	void check(T modified, T constraintBase, Serializable value, int axe, boolean isOnAdd, boolean isFlushTime, boolean isRevert) throws ConstraintViolationException;
 
-	void check(T modified, T constraintBase, Serializable value, int axe, boolean isOnAdd, boolean isFlushTime, boolean b) throws ConstraintViolationException;
-
-	default boolean isCheckedAt(T modified, CheckingType checkingType) {
-		return checkingType.equals(CheckingType.CHECK_ON_ADD);
+	default boolean isCheckedAt(T modified, boolean isOnAdd) {
+		return isOnAdd;
 	}
 
 	default boolean isImmediatelyCheckable() {

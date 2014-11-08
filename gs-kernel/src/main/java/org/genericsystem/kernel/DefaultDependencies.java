@@ -4,9 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
 
@@ -47,9 +45,9 @@ public interface DefaultDependencies<T extends AbstractVertex<T>> extends IVerte
 		return adjustedMeta.getDirectInstance(overrides, value, Arrays.asList(components));
 	}
 
-	@SuppressWarnings("unchecked")
-	default Optional<T> getInstanceInAll(List<T> overrides, Serializable value, T... components) {
-		Stream<T> adjustedMetas = Stream.of((T) this).flatMap(meta -> meta.getInheritings().get().filter(inheriting -> ((T) DefaultDependencies.this).isAdjusted(inheriting, value, Arrays.asList(components))));
-		return adjustedMetas.map(adjustedMeta -> adjustedMeta.getDirectInstance(overrides, value, Arrays.asList(components))).findFirst();
-	}
+	// @SuppressWarnings("unchecked")
+	// default Optional<T> getInstanceInAll(List<T> overrides, Serializable value, T... components) {
+	// Stream<T> adjustedMetas = Stream.of((T) this).flatMap(meta -> meta.getInheritings().get().filter(inheriting -> ((T) DefaultDependencies.this).isAdjusted(inheriting, value, Arrays.asList(components))));
+	// return adjustedMetas.map(adjustedMeta -> adjustedMeta.getDirectInstance(overrides, value, Arrays.asList(components))).findFirst();
+	// }
 }

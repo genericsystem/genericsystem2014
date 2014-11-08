@@ -12,7 +12,7 @@ public class RequiredConstraintTest extends AbstractTest {
 	public void test00_Inheritance() {
 		Engine engine = new Engine();
 		Generic car = engine.addInstance("Car");
-		Generic power = engine.addAttribute(engine.getMap(), "Power");
+		Generic power = engine.addAttribute("Power");
 		Generic unit = engine.addInstance("Unit");
 
 		Generic v235 = car.addHolder(power, 235, unit);

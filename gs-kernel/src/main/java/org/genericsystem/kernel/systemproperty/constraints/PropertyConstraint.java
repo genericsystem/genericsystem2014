@@ -3,7 +3,6 @@ package org.genericsystem.kernel.systemproperty.constraints;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.PropertyConstraintViolationException;
 import org.genericsystem.kernel.AbstractVertex;
@@ -17,8 +16,8 @@ public class PropertyConstraint<T extends AbstractVertex<T>> implements Constrai
 		// TODO KK
 		if (attribute.getValue().equals(SystemMap.class))
 			return;
-		T base = modified.getComponents().get(Statics.BASE_POSITION);
-		Stream<T> snapshot = base.getHolders(attribute).get().filter(x -> x.getComponents().get(Statics.BASE_POSITION).equals(base)).filter(next -> {
+		T base = modified.getBaseComponent();
+		Stream<T> snapshot = base.getHolders(attribute).get().filter(x -> x.getBaseComponent().equals(base)).filter(next -> {
 			for (int componentPos = Statics.TARGET_POSITION; componentPos < next.getComponents().size(); componentPos++)
 				if (!Objects.equals(next.getComponents().get(componentPos), modified.getComponents().get(componentPos)))
 					return false;
@@ -29,8 +28,7 @@ public class PropertyConstraint<T extends AbstractVertex<T>> implements Constrai
 	}
 
 	@Override
-	public boolean isCheckedAt(T modified, CheckingType checkingType) {
-		return checkingType.equals(CheckingType.CHECK_ON_ADD) || (modified.getValue() == null && checkingType.equals(CheckingType.CHECK_ON_REMOVE));
+	public boolean isCheckedAt(T modified, boolean isOnAdd) {
+		return isOnAdd || (modified.getValue() == null);
 	}
-
 }

@@ -1,7 +1,6 @@
 package org.genericsystem.kernel;
 
 import java.util.Objects;
-
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.slf4j.Logger;
@@ -84,5 +83,25 @@ public interface DefaultAncestors<T extends AbstractVertex<T>> extends IVertex<T
 	@Override
 	default boolean isCompositeOf(T vertex) {
 		return isRoot() || getComponents().stream().anyMatch(component -> vertex.isSpecializationOf(component));
+	}
+
+	@Override
+	default T getBaseComponent() {
+		return getComponent(Statics.BASE_POSITION);
+	}
+
+	@Override
+	default T getTargetComponent() {
+		return getComponent(Statics.TARGET_POSITION);
+	}
+
+	@Override
+	default T getTernaryComponent() {
+		return getComponent(Statics.TERNARY_POSITION);
+	}
+
+	@Override
+	default T getComponent(int pos) {
+		return pos >= 0 && pos < getComponents().size() ? getComponents().get(pos) : null;
 	}
 }

@@ -14,7 +14,6 @@ import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.AbstractVertex.DependenciesMap;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.Dependencies.DependenciesEntry;
-import org.genericsystem.kernel.systemproperty.constraints.Constraint.CheckingType;
 
 public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends AbstractContext<T, V> {
 
@@ -85,8 +84,8 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 
 	protected void checkConstraints() throws RollbackException {
 		DefaultEngine<T, V> engine = getEngine();
-		adds.forEach(x -> engine.check(CheckingType.CHECK_ON_ADD, true, x));
-		removes.forEach(x -> engine.check(CheckingType.CHECK_ON_REMOVE, true, x));
+		adds.forEach(x -> engine.check(true, true, x));
+		removes.forEach(x -> engine.check(false, true, x));
 	}
 
 	protected void rollbackWithException(Throwable exception) throws RollbackException {
