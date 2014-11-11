@@ -13,11 +13,11 @@ public class UniqueValueConstraintTest extends AbstractTest {
 		Vertex power = root.addInstance("Power", vehicle);
 		myVehicle.addHolder(power, "125");
 
-		assert !myVehicle.isUniqueValueEnabled();
-		myVehicle.enableUniqueValueConstraint();
-		assert myVehicle.isUniqueValueEnabled();
-		myVehicle.disableUniqueValueConstraint();
-		assert !myVehicle.isUniqueValueEnabled();
+		assert !vehicle.isUniqueValueEnabled();
+		vehicle.enableUniqueValueConstraint();
+		assert vehicle.isUniqueValueEnabled();
+		vehicle.disableUniqueValueConstraint();
+		assert !vehicle.isUniqueValueEnabled();
 
 	}
 

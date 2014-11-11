@@ -12,7 +12,7 @@ public interface DefaultDependencies<T extends AbstractVertex<T>> extends IVerte
 
 	@Override
 	default boolean isAncestorOf(T dependency) {
-		return equals(dependency) || (!dependency.isRoot() && isAncestorOf(dependency.getMeta())) || dependency.getSupers().stream().anyMatch(this::isAncestorOf)
+		return equals(dependency) || (!dependency.isMeta() && isAncestorOf(dependency.getMeta())) || dependency.getSupers().stream().anyMatch(this::isAncestorOf)
 				|| dependency.getComponents().stream().filter(component -> !dependency.equals(component)).anyMatch(this::isAncestorOf);
 	}
 
@@ -27,27 +27,22 @@ public interface DefaultDependencies<T extends AbstractVertex<T>> extends IVerte
 		return () -> getAllInheritings().get().flatMap(inheriting -> inheriting.getInstances().get());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	default T getInstance(T superT, Serializable value, @SuppressWarnings("unchecked") T... composites) {
+	default T getInstance(T superT, Serializable value, T... composites) {
 		return getInstance(Collections.singletonList(superT), value, composites);
 	}
 
-	@Override
 	@SuppressWarnings("unchecked")
+	@Override
 	default T getInstance(Serializable value, T... composites) {
 		return getInstance(Collections.emptyList(), value, composites);
 	}
 
-	@Override
 	@SuppressWarnings("unchecked")
+	@Override
 	default T getInstance(List<T> overrides, Serializable value, T... components) {
 		T adjustedMeta = ((T) this).adjustMeta(value, Arrays.asList(components));
 		return adjustedMeta.getDirectInstance(overrides, value, Arrays.asList(components));
 	}
-
-	// @SuppressWarnings("unchecked")
-	// default Optional<T> getInstanceInAll(List<T> overrides, Serializable value, T... components) {
-	// Stream<T> adjustedMetas = Stream.of((T) this).flatMap(meta -> meta.getInheritings().get().filter(inheriting -> ((T) DefaultDependencies.this).isAdjusted(inheriting, value, Arrays.asList(components))));
-	// return adjustedMetas.map(adjustedMeta -> adjustedMeta.getDirectInstance(overrides, value, Arrays.asList(components))).findFirst();
-	// }
 }

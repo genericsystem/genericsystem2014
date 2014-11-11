@@ -2,7 +2,6 @@ package org.genericsystem.kernel;
 
 import java.util.Arrays;
 import java.util.Collections;
-
 import org.genericsystem.api.exception.ConsistencyConstraintViolationException;
 import org.testng.annotations.Test;
 
@@ -92,6 +91,7 @@ public class AttributesTest extends AbstractTest {
 		assert power.getLevel() == 1;
 		// assert vehicle.getAttributes(root).size() == 0;
 		// assert car.getAttributes(root).size() == 1;
+		log.info("********************************************************");
 		assert car.getAttributes(root).contains(power);
 	}
 

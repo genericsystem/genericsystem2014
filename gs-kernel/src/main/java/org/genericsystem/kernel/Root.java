@@ -20,29 +20,31 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 	}
 
 	public Root(Serializable value, String persistentDirectoryPath, Class<?>... userClasses) {
-		init(null, Collections.emptyList(), value, Collections.emptyList());
-		Vertex metaAttribut = setInstance(this, getValue(), coerceToTArray(this));
+		init(null, Collections.emptyList(), value, Collections.emptyList());;
+		Vertex metaAttribute = setMeta(Statics.ATTRIBUTE_SIZE);
+		Vertex metaRelation = setMeta(Statics.RELATION_SIZE);
 		setInstance(SystemMap.class, coerceToTArray(this)).enablePropertyConstraint();
-		metaAttribut.disableReferentialIntegrity(Statics.BASE_POSITION);
+		metaAttribute.disableReferentialIntegrity(Statics.BASE_POSITION);
 		if (persistentDirectoryPath != null) {
 			archiver = new Archiver(this, persistentDirectoryPath);
 			archiver.startScheduler();
 		}
 	}
 
-	@Override
-	public Root getAlive() {
-		return this;
-	}
+	// protected T setInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
+	// List<T> componentList = Arrays.asList(components);
+	// checkSameEngine(componentList);
+	// checkSameEngine(overrides);
+	// T adjustedMeta = adjustMeta(value, components);
+	// T equivInstance = adjustedMeta.getDirectEquivInstance(value, componentList);
+	// if (equivInstance != null)
+	// return equivInstance.equalsRegardlessSupers(adjustedMeta, value, componentList) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : equivInstance.update(overrides, value, components);
+	// return rebuildAll(() -> adjustedMeta.build(clazz, adjustedMeta, overrides, value, componentList).plug(), adjustedMeta.computePotentialDependencies(overrides, value, componentList));
+	// }
 
 	@Override
 	public Root getRoot() {
-		return this;
-	}
-
-	@Override
-	public boolean isRoot() {
-		return true;
+		return (Root) super.getRoot();
 	}
 
 	// TODO mount this in API

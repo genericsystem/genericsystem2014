@@ -2,7 +2,6 @@ package org.genericsystem.kernel;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
-
 import org.genericsystem.api.exception.ExistsException;
 import org.testng.annotations.Test;
 
@@ -119,11 +118,11 @@ public class TreeTest extends AbstractTest {
 		Vertex div = body.addNode("div");
 		div.setHolder(treeColor, "divIsGreen", green);
 
-		assert tree.getHolders(treeColor).get().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(blue);
-		assert html.getHolders(treeColor).get().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(red);
-		assert head.getHolders(treeColor).get().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(blue);
-		assert body.getHolders(treeColor).get().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(blue);
-		assert div.getHolders(treeColor).get().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(green);
+		assert tree.getHolders(treeColor).first().getTargetComponent().equals(blue);
+		assert html.getHolders(treeColor).first().getTargetComponent().equals(red);
+		assert head.getHolders(treeColor).first().getTargetComponent().equals(blue);
+		assert body.getHolders(treeColor).first().getTargetComponent().equals(blue);
+		assert div.getHolders(treeColor).first().getTargetComponent().equals(green);
 	}
 
 	public void test008() {
@@ -146,11 +145,11 @@ public class TreeTest extends AbstractTest {
 		Vertex div = body.addInheritingNode("div");
 		div.setHolder(treeColor, "divIsGreen", green);
 
-		assert tree.getHolders(treeColor).get().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(blue);
-		assert html.getHolders(treeColor).get().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(red);
-		assert head.getHolders(treeColor).get().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(red);
-		assert body.getHolders(treeColor).get().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(red);
-		assert div.getHolders(treeColor).get().findFirst().get().getComponents().get(Statics.TARGET_POSITION).equals(green);
+		assert tree.getHolders(treeColor).first().getTargetComponent().equals(blue);
+		assert html.getHolders(treeColor).first().getTargetComponent().equals(red);
+		assert head.getHolders(treeColor).first().getTargetComponent().equals(red);
+		assert body.getHolders(treeColor).first().getTargetComponent().equals(red);
+		assert div.getHolders(treeColor).first().getTargetComponent().equals(green);
 	}
 
 	public void testInheritanceTree() {

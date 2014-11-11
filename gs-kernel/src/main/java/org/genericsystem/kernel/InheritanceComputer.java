@@ -50,12 +50,12 @@ class InheritanceComputer<T extends AbstractVertex<T>> extends HashSet<T> {
 			return fromAboveStream().flatMap(holder -> getStream(holder)).distinct();
 		}
 
-		private boolean hasIntermediateSuper() {
-			return localBase.isRoot() || localBase.getSupers().stream().filter(next -> localBase.getMeta().equals(next.getMeta())).count() != 0;
+		private boolean hasIntermediateSuperOrIsMeta() {
+			return localBase.isMeta() || localBase.getSupers().stream().filter(next -> localBase.getMeta().equals(next.getMeta())).count() != 0;
 		}
 
 		private Stream<T> metaAndSupersStream() {
-			return Stream.concat(hasIntermediateSuper() ? Stream.empty() : Stream.of(localBase.getMeta()), localBase.getSupers().stream()).distinct();
+			return Stream.concat(hasIntermediateSuperOrIsMeta() ? Stream.empty() : Stream.of(localBase.getMeta()), localBase.getSupers().stream()).distinct();
 		}
 
 		private Stream<T> fromAboveStream() {
@@ -63,10 +63,13 @@ class InheritanceComputer<T extends AbstractVertex<T>> extends HashSet<T> {
 		}
 
 		private Stream<T> getStream(final T holder) {
-			if (!localBase.getCompositesBySuper(holder).isEmpty())
+			// log.info("ZZZZZZZZZ" + localBase.info() + "   " + holder.info());
+			if (!localBase.getCompositesBySuper(holder).isEmpty()) {
 				add(holder);
+				// log.info("      " + localBase.getCompositesBySuper(holder).first().info());
+			}
 			Stream<T> indexStream = Stream.concat(holder.getLevel() < level ? localBase.getCompositesByMeta(holder).get() : Stream.empty(), localBase.getCompositesBySuper(holder).get());
-			return Stream.concat(Stream.of(holder), indexStream.flatMap(x -> getStream(x)).distinct());
+			return Stream.concat(Stream.of(holder), indexStream.filter(y -> !y.equals(holder)).flatMap(x -> getStream(x)).distinct());
 		}
 	}
 }

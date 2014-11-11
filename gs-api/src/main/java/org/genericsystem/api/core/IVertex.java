@@ -45,23 +45,23 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 */
 	void checkIsAlive();
 
-	/**
-	 * Returns the alive reference if it exists<br>
-	 *
-	 * @return the alive instance if it exists, null otherwise
-	 *
-	 */
-	T getAlive();
+	// /**
+	// * Returns the alive reference if it exists<br>
+	// *
+	// * @return the alive instance if it exists, null otherwise
+	// *
+	// */
+	// T getAlive();
 
-	/**
-	 * Indicates whether this vertex is equivalent to another<br>
-	 *
-	 * @param vertex
-	 *            the vertex reference to be tested for the equivalence
-	 * @return true if this instance is equivalent of the service
-	 *
-	 */
-	boolean equiv(IVertex<?> vertex);
+	// /**
+	// * Indicates whether this vertex is equivalent to another<br>
+	// *
+	// * @param vertex
+	// * the vertex reference to be tested for the equivalence
+	// * @return true if this instance is equivalent of the service
+	// *
+	// */
+	// boolean equiv(IVertex<?> vertex);
 
 	/**
 	 * Technical method for create a real array of T implementation for passing safe varags parameter and avoid heap pollution

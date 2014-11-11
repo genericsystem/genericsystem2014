@@ -117,13 +117,12 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test004_AdjustMeta_MetaLevel_metaAttribut() {
 		Root engine = new Root();
-		Vertex metaAttribute = engine.getMetaAttribute();
 		Vertex robot = engine.addInstance("Robot");
 		Vertex car = engine.addInstance("Car");
 		Vertex color = engine.addInstance("Color");
-		assert metaAttribute == engine.adjustMeta("CarColor", Arrays.asList(car, color));
+		assert engine.getMetaRelation() == engine.adjustMeta("CarColor", Arrays.asList(car, color));
 		Vertex carColor = engine.addInstance("CarColor", car, color);
-		assert metaAttribute == engine.adjustMeta("Radio", Arrays.asList(car));
+		assert engine.getMetaAttribute() == engine.adjustMeta("Radio", Arrays.asList(car));
 	}
 
 	public void test005_AdjustMeta_MetaLevel_metaRelation_ThreeComposites() {

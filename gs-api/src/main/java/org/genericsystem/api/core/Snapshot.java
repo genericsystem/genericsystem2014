@@ -2,6 +2,7 @@ package org.genericsystem.api.core;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -47,5 +48,10 @@ public interface Snapshot<T> extends Iterable<T> {
 
 	default String info() {
 		return get().collect(Collectors.toList()).toString();
+	}
+
+	default T first() {
+		Optional<T> first = get().findFirst();
+		return first.isPresent() ? first.get() : null;
 	}
 }

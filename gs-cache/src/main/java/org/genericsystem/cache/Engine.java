@@ -3,7 +3,6 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
-
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.Statics;
 
@@ -77,17 +76,7 @@ public class Engine extends Generic implements DefaultEngine<Generic, Vertex> {
 
 	@Override
 	public Engine getRoot() {
-		return this;
-	}
-
-	@Override
-	public Engine getAlive() {
-		return this;
-	}
-
-	@Override
-	public boolean isRoot() {
-		return true;
+		return (Engine) super.getRoot();
 	}
 
 	@Override

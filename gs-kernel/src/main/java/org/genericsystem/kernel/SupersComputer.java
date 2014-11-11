@@ -5,51 +5,61 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+//TODO revisit this
 public class SupersComputer<T extends AbstractVertex<T>> extends LinkedHashSet<T> {
+	private static Logger log = LoggerFactory.getLogger(SupersComputer.class);
 
 	private static final long serialVersionUID = -1078004898524170057L;
 
-	private final int level;
 	private final T meta;
 	private final List<T> overrides;
 	private final List<T> components;
 	private final Serializable value;
 
-	private final Map<T, Boolean> alreadyComputed = new HashMap<>();
+	private final Map<T, boolean[]> alreadyComputed = new HashMap<>();
 
-	@SuppressWarnings("unchecked")
-	public SupersComputer(int level, T meta, List<T> overrides, Serializable value, List<T> components) {
-		this.level = level;
+	public SupersComputer(T root, T meta, List<T> overrides, Serializable value, List<T> components) {
 		this.meta = meta;
 		this.overrides = overrides;
 		this.components = components;
 		this.value = value;
-		visit((T) meta.getRoot());
+		visit(root);
 	}
 
-	private boolean visit(T candidate) {
-		Boolean result = alreadyComputed.get(candidate);
+	private boolean[] visit(T candidate) {
+		boolean[] result = alreadyComputed.get(candidate);
 		if (result != null)
 			return result;
-		boolean isMeta = meta.isSpecializationOf(candidate);
+		boolean isMeta = meta == null ? false : meta.isSpecializationOf(candidate);
 		boolean isSuper = !isMeta && candidate.isSuperOf(meta, overrides, value, components);
 		if (!isMeta && !isSuper) {
-			alreadyComputed.put(candidate, false);
-			return false;
+			boolean[] selectableSelected = new boolean[] { true, false };
+			alreadyComputed.put(candidate, selectableSelected);
+			return selectableSelected;
 		}
 		boolean selectable = true;
-		for (T inheriting : candidate.getInheritings())
-			if (visit(inheriting))
+		for (T inheriting : candidate.getInheritings()) {
+			boolean[] subSelectionableSelectioned = visit(inheriting);
+			if (!subSelectionableSelectioned[0] || subSelectionableSelectioned[1])
 				selectable = false;
-		if (isMeta)
-			for (T instance : candidate.getInstances())
-				if (visit(instance))
+		}
+		if (isMeta) {
+			for (T instance : candidate.getInstances()) {
+				boolean[] subSelectableSelected = visit(instance);
+				if (!subSelectableSelected[0] || subSelectableSelected[1])
 					selectable = false;
-		result = alreadyComputed.put(candidate, selectable);
+			}
+		}
+		boolean[] selectableSelected = new boolean[] { selectable, true };
+		result = alreadyComputed.put(candidate, selectableSelected);
 		assert result == null : candidate.info();
-		if (selectable && candidate.getLevel() == level && !candidate.equals(meta, overrides, value, components))
+		if (selectableSelected[0] && selectableSelected[1] && (candidate.getLevel() == (meta == null ? 0 : meta.getLevel() + 1)) && !candidate.equals(meta, overrides, value, components)) {
 			add(candidate);
-		return selectable;
+			assert !candidate.isRoot();
+		}
+		return selectableSelected;
 	}
 }

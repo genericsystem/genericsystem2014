@@ -102,7 +102,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 
 	@Override
 	public DefaultEngine<T, V> getRoot() {
-		return getMeta().getRoot();
+		return (DefaultEngine<T, V>) super.getRoot();
 	}
 
 	@Override
@@ -149,7 +149,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 		if (!(obj instanceof ISignature<?>))
 			return false;
 		ISignature<?> service = (ISignature<?>) obj;
-		return equals(service.getMeta(), service.getSupers(), service.getValue(), service.getComponents());
+		return genericEquals(service);
 	}
 
 	@Override

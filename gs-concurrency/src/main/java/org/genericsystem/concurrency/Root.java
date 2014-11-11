@@ -3,7 +3,6 @@ package org.genericsystem.concurrency;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
-
 import org.genericsystem.kernel.Statics;
 
 public class Root extends Vertex implements DefaultRoot<Vertex> {
@@ -24,17 +23,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 
 	@Override
 	public Root getRoot() {
-		return this;
-	}
-
-	@Override
-	public Root getAlive() {
-		return this;
-	}
-
-	@Override
-	public boolean isRoot() {
-		return true;
+		return super.getRoot();
 	}
 
 	@Override

@@ -18,16 +18,6 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 	}
 
 	@Override
-	public Root getAlive() {
-		return this;
-	}
-
-	@Override
-	public boolean isRoot() {
-		return true;
-	}
-
-	@Override
 	public Engine getEngine() {
 		return engine;
 	}

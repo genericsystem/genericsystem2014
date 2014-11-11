@@ -1,7 +1,6 @@
 package org.genericsystem.kernel;
 
 import java.util.Arrays;
-
 import org.genericsystem.api.exception.PropertyConstraintViolationException;
 import org.testng.annotations.Test;
 
@@ -64,9 +63,9 @@ public class PropertyConstraintTest extends AbstractTest {
 	}
 
 	public void test001_disablePropertyConstraint_setInstance() {
-		Root Root = new Root();
-		Vertex vehicle = Root.addInstance("Vehicle");
-		Vertex power = Root.addInstance("Power", vehicle);
+		Root root = new Root();
+		Vertex vehicle = root.addInstance("Vehicle");
+		Vertex power = root.addInstance("Power", vehicle);
 		power.enablePropertyConstraint();
 		assert power.isPropertyConstraintEnabled();
 		power.setInstance("123", vehicle);

@@ -1,6 +1,5 @@
 package org.genericsystem.kernel;
 
-import java.util.Objects;
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.slf4j.Logger;
@@ -12,7 +11,7 @@ public interface DefaultAncestors<T extends AbstractVertex<T>> extends IVertex<T
 
 	@Override
 	default boolean isRoot() {
-		return false;
+		return this.equals(getRoot());
 	}
 
 	@Override
@@ -26,8 +25,10 @@ public interface DefaultAncestors<T extends AbstractVertex<T>> extends IVertex<T
 			getRoot().discardWithException(new AliveConstraintViolationException(info()));
 	}
 
-	@Override
+	// TODO not public
 	default T getAlive() {
+		if (isMeta())
+			return getRoot().getMeta(getComponents().size());
 		T aliveMeta = getMeta().getAlive();
 		if (aliveMeta != null)
 			for (T instance : aliveMeta.getInstances())
@@ -37,13 +38,8 @@ public interface DefaultAncestors<T extends AbstractVertex<T>> extends IVertex<T
 	}
 
 	@Override
-	default boolean equiv(IVertex<?> service) {
-		return equals(service) || ((AbstractVertex<?>) this).equiv(service.getMeta(), service.getValue(), service.getComponents());
-	}
-
-	@Override
 	default int getLevel() {
-		return isRoot() || Objects.equals(getValue(), getRoot().getValue()) || getComponents().stream().allMatch(c -> c.isRoot()) ? 0 : getMeta().getLevel() + 1;
+		return this == getMeta() ? 0 : getMeta().getLevel() + 1;
 	}
 
 	@Override

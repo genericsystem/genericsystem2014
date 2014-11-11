@@ -66,4 +66,10 @@ public interface IteratorSnapshot<T> extends Snapshot<T> {
 	default String info() {
 		return get().collect(Collectors.toList()).toString();
 	}
+
+	@Override
+	default T first() {
+		Iterator<T> iterator = iterator();
+		return iterator.hasNext() ? iterator.next() : null;
+	}
 }

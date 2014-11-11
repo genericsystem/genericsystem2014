@@ -79,6 +79,6 @@ public class Vertex extends AbstractVertex<Vertex> implements DefaultVertex<Vert
 
 	@Override
 	public Root getRoot() {
-		return getMeta().getRoot();
+		return (Root) super.getRoot();
 	}
 }

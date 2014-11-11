@@ -29,8 +29,8 @@ public interface DefaultDisplay<T extends AbstractVertex<T>> extends IVertex<T> 
 		s += "**********************************************************************\n";
 		for (T superGeneric : getSupers())
 			s += " Super       : " + superGeneric + " (" + System.identityHashCode(superGeneric) + ")\n";
-		for (T composite : getComponents())
-			s += " Composite   : " + composite + " (" + System.identityHashCode(composite) + ")\n";
+		for (T component : getComponents())
+			s += " Component   : " + component + " (" + System.identityHashCode(component) + ")\n";
 		s += "**********************************************************************\n";
 		// s += "**********************************************************************\n";
 		// s += "design date : " + new SimpleDateFormat(Statics.LOG_PATTERN).format(new Date(getDesignTs() / Statics.MILLI_TO_NANOSECONDS)) + "\n";
