@@ -2,7 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.Arrays;
 import java.util.Collections;
-import org.genericsystem.api.exception.ConsistencyConstraintViolationException;
+import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test
@@ -65,7 +65,7 @@ public class AttributesTest extends AbstractTest {
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
 		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		catchAndCheckCause(() -> myVehicle.addAttribute("Power", vehicle), ConsistencyConstraintViolationException.class);
+		catchAndCheckCause(() -> myVehicle.addAttribute("Power", vehicle), MetaRuleConstraintViolationException.class);
 	}
 
 	public void test1AttributWith2LevelsInheritance1AttributOnParent() {

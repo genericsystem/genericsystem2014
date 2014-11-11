@@ -1,7 +1,6 @@
 package org.genericsystem.kernel;
 
 import java.util.Arrays;
-
 import org.testng.annotations.Test;
 
 @Test
@@ -83,13 +82,13 @@ public class WeakEquivTest extends AbstractTest {
 	public void test006_weakEquiv_DefaultValue() {
 		Root engine = new Root();
 		Vertex car = engine.addInstance("Car");
-		Vertex color = engine.addInstance("Color");
+		Vertex color = car.addAttribute("Color");
 		Vertex defaultColor = color.addInstance("Red", car);
 		Vertex carColor = engine.addInstance("CarColor", car, color);
 		carColor.enableSingularConstraint(0);
 		carColor.enableReferentialIntegrity(0);
-		Vertex myBmw = engine.addInstance(car, "myBmw");
-		Vertex green = color.addInstance("green");
+		Vertex myBmw = car.addInstance("myBmw");
+		Vertex green = color.addInstance("green", myBmw);
 		Vertex myBmwGreen = carColor.addInstance("myBmwGreen", myBmw, green);
 		assert !myBmwGreen.equiv(carColor, "myBmwYellow", Arrays.asList(myBmw, defaultColor));
 	}

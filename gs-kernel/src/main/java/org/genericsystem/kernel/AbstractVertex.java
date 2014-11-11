@@ -16,10 +16,10 @@ import java.util.stream.Stream;
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
-import org.genericsystem.api.exception.ConsistencyConstraintViolationException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.CrossEnginesAssignementsException;
 import org.genericsystem.api.exception.ExistsException;
+import org.genericsystem.api.exception.MetaLevelConstraintViolationException;
 import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
 import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
@@ -709,7 +709,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 			checkIsAlive();
 			checkDependenciesAreEmpty();
 		}
-		checkDependsMetaComponents();// TODO check strict instanciation
+		checkDependsMetaComponents();
 		checkSupers();
 		checkDependsSuperComponents();
 		checkLevel();
@@ -729,7 +729,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	private void checkDependsMetaComponents() {
 		if (getMeta().getComponents().size() != getComponents().size())
-			getRoot().discardWithException(new MetaRuleConstraintViolationException("Added generic and its meta do not have the same components size. Added node components : " + getComponents() + "and meta components : " + getMeta().getComponents()));
+			getRoot().discardWithException(new MetaRuleConstraintViolationException("Added generic and its meta do not have the same components size. Added node components : " + getComponents() + " and meta components : " + getMeta().getComponents()));
 
 		for (int pos = 0; pos < getComponents().size(); pos++)
 			if (!getComponent(pos).isInstanceOf(getMeta().getComponent(pos)) && !getComponent(pos).inheritsFrom(getMeta().getComponent(pos)))
@@ -737,13 +737,14 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	private void checkLevelComponents() {
-		if (getComponents().stream().anyMatch(component -> component.getLevel() > getLevel()))
-			getRoot().discardWithException(new ConsistencyConstraintViolationException("Inconsistant level link between components : level " + getLevel() + " and another"));
+		for (T component : getComponents())
+			if (component.getLevel() > getLevel())
+				getRoot().discardWithException(new MetaLevelConstraintViolationException("Inappropriate component meta level : " + component.getLevel() + " for component : " + component + ". Component meta level for added node is : " + getLevel()));
 	}
 
 	private void checkLevel() {
 		if (getLevel() > Statics.CONCRETE)
-			getRoot().discardWithException(new ConsistencyConstraintViolationException("Unable to instanciate generic : " + getMeta() + " because it is already concrete."));
+			getRoot().discardWithException(new MetaLevelConstraintViolationException("Unable to instanciate a concrete generic : " + getMeta()));
 	}
 
 	private void checkSupers() {

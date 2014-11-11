@@ -1,7 +1,6 @@
 package org.genericsystem.kernel;
 
 import java.util.List;
-
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.testng.annotations.Test;
 
@@ -23,11 +22,10 @@ public class RelationTest extends AbstractTest {
 
 	public void test001_addInstance_NotAliveException_withMetaRelation() {
 		final Root root = new Root();
-		Vertex metaRelation = root.setInstance(root.getValue(), root, root);
 		Vertex car = root.addInstance("Car");
 		Vertex color = root.addInstance("Color");
 		final Vertex carColor = root.addInstance("CarColor", car, color);
-		assert carColor.isInstanceOf(metaRelation);
+		assert carColor.isInstanceOf(root.getMetaRelation());
 		final Vertex myCar = car.addInstance("myCar");
 		final Vertex green = color.addInstance("green");
 		myCar.remove();
@@ -48,11 +46,10 @@ public class RelationTest extends AbstractTest {
 
 	public void test002_addInstance_2composites_MetaRelation() {
 		final Root root = new Root();
-		Vertex metaRelation = root.setInstance(root.getValue(), root, root);
 		Vertex car = root.addInstance("Car");
 		Vertex color = root.addInstance("Color");
 		final Vertex carColor = root.addInstance("CarColor", car, color);
-		assert carColor.isInstanceOf(metaRelation);
+		assert carColor.isInstanceOf(root.getMetaRelation());
 		final Vertex myCar = car.addInstance("myCar");
 		final Vertex green = color.addInstance("green");
 		assert myCar.isAlive();
@@ -74,12 +71,11 @@ public class RelationTest extends AbstractTest {
 
 	public void test003_addInstance_reflexiveRelation_MetaRelation() {
 		final Root root = new Root();
-		Vertex metaRelation = root.setInstance(root.getValue(), root, root);
 		Vertex vehicle = root.addInstance("Vehicle");
 		Vertex car = vehicle.addInstance("Car");
 		Vertex caravane = vehicle.addInstance("Caravane");
 		Vertex vehicleHaveSameOwnerAsVehicle = root.addInstance("VehicleHaveSameOwnerAsVehicle", vehicle, vehicle);
-		assert vehicleHaveSameOwnerAsVehicle.isInstanceOf(metaRelation);
+		assert vehicleHaveSameOwnerAsVehicle.isInstanceOf(root.getMetaRelation());
 		Vertex myVehicleHaveSameOwnerAsVehicle = vehicleHaveSameOwnerAsVehicle.addInstance("myVehicleHaveSameOwnerAsVehicle", car, caravane);
 		List<Vertex> composites = myVehicleHaveSameOwnerAsVehicle.getComponents();
 		assert composites.size() == 2 : composites.size();
