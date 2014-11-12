@@ -4,7 +4,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.genericsystem.api.exception.MetaLevelConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test
@@ -403,19 +402,21 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert newCarBlueComposites.size() == 2;
 	}
 
-	public void test301_replaceCompositeWithValueModification_InsistentExceptionKO() {
+	public void test301_replaceCompositeWithValueModification_InsistentExceptionOK() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex car = engine.addInstance(vehicle, "Car");
 		Vertex myCar = car.addInstance("MyCar");
 		Vertex color = engine.addInstance("Color");
 		Vertex red = color.addInstance("Red");
-		Vertex green = color.addInstance("Green");
 		Vertex blue = color.addInstance("Blue");
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Vertex myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
 
-		catchAndCheckCause(() -> myCarRed.update("MyCarBlue", green, blue), MetaLevelConstraintViolationException.class);
+		Vertex myCarBlue = myCarRed.update("MyCarBlue", myCar, blue);
+		assert !myCarRed.isAlive();
+		assert myCarBlue.isAlive();
+		assert myCarBlue.getMeta().equals(vehicleColor);
 	}
 
 	public void test021_AddInstance_AttributeWithSameNameAlreadyExisting() {

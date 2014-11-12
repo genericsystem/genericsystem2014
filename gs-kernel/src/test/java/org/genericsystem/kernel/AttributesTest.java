@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.Arrays;
 import java.util.Collections;
+
 import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
 import org.testng.annotations.Test;
 
@@ -52,10 +53,9 @@ public class AttributesTest extends AbstractTest {
 	public void test003_isDependencyOf_ByMeta() {
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex power = root.addInstance("Power", vehicle);
+		Vertex power = vehicle.addAttribute("Power");
 		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		Vertex p123 = power.addInstance("123", myVehicle);
-		Vertex myVehicle123 = power.addInstance("myVehicle123", myVehicle, p123);
+		Vertex myVehicle123 = myVehicle.addHolder(power, "myVehicle123");
 
 		assert myVehicle123.dependsFrom(root, Collections.emptyList(), "Power", Collections.singletonList(vehicle));
 		assert !myVehicle123.inheritsFrom(root, "Power", Collections.singletonList(vehicle));
