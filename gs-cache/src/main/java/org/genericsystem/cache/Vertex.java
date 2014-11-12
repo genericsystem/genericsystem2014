@@ -6,8 +6,7 @@ public class Vertex extends AbstractVertex<Vertex> implements DefaultVertex<Vert
 
 	private final Dependencies<Vertex> instances = buildDependencies();
 	private final Dependencies<Vertex> inheritings = buildDependencies();
-	private final DependenciesMap<Vertex> superComponents = buildDependenciesMap();
-	private final DependenciesMap<Vertex> metaComponents = buildDependenciesMap();
+	private final Dependencies<Vertex> composites = buildDependencies();
 
 	@Override
 	protected Dependencies<Vertex> getInstancesDependencies() {
@@ -20,13 +19,8 @@ public class Vertex extends AbstractVertex<Vertex> implements DefaultVertex<Vert
 	}
 
 	@Override
-	protected DependenciesMap<Vertex> getMetaCompositesDependencies() {
-		return metaComponents;
-	}
-
-	@Override
-	protected DependenciesMap<Vertex> getSuperCompositesDependencies() {
-		return superComponents;
+	protected Dependencies<Vertex> getCompositesDependencies() {
+		return composites;
 	}
 
 	@Override

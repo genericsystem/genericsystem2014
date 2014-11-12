@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.testng.annotations.Test;
 
 @Test
@@ -48,5 +47,13 @@ public class MetasTests extends AbstractTest {
 		List<Vertex> supers = new ArrayList<>(new SupersComputer<>(engine, null, Collections.singletonList(engine.getMetaAttribute()), engine.getValue(), Arrays.asList(engine, engine, engine)));
 		assert supers.contains(engine.getMeta(2));
 		assert supers.size() == 1 : supers.stream().map(x -> x.detailedInfo()).collect(Collectors.toList());
+	};
+
+	public void test004() {
+		Root engine = new Root();
+		assert engine.setInstance(engine.getValue(), engine).equals(engine.getMetaAttribute());
+		assert engine.setInstance(engine.getValue(), engine, engine).equals(engine.getMetaRelation());
+		assert engine.setInstance(engine.getValue(), engine, engine, engine).equals(engine.getMeta(3));
+
 	};
 }

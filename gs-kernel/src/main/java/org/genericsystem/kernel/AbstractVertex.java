@@ -88,9 +88,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	protected abstract Dependencies<T> getInheritingsDependencies();
 
-	protected abstract DependenciesMap<T> getMetaCompositesDependencies();
-
-	protected abstract DependenciesMap<T> getSuperCompositesDependencies();
+	protected abstract Dependencies<T> getCompositesDependencies();
 
 	@SuppressWarnings("unchecked")
 	protected T init(T meta, List<T> supers, Serializable value, List<T> composites) {
@@ -114,10 +112,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	protected Dependencies<T> buildDependencies() {
 		return new DependenciesImpl<>();
-	}
-
-	protected DependenciesMap<T> buildDependenciesMap() {
-		return new DependenciesMapImpl<>();
 	}
 
 	protected void forceRemove() {
@@ -272,7 +266,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		if (isMeta()) {
 			T meta = getRoot().setMeta(componentList.size());
 			if (meta.equalsRegardlessSupers(meta, value, componentList) && Statics.areOverridesReached(overrides, meta.getSupers()))
-				return meta;
+				getRoot().discardWithException(new ExistsException("An equivalent instance already exists : " + meta.info()));
 		}
 		T adjustedMeta = adjustMeta(value, components);
 		T equivInstance = adjustedMeta.getDirectInstance(value, componentList);
@@ -574,15 +568,14 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	@Override
 	public Snapshot<T> getComposites() {
-		return () -> getMetaCompositesDependencies().get().flatMap(entry -> entry.getValue().get());
+		return getCompositesDependencies();
 	}
 
 	@SuppressWarnings("unchecked")
 	protected <subT extends T> subT plug() {
 		T result = this != getMeta() ? ((AbstractVertex<T>) getMeta()).indexInstance((T) this) : (T) this;
 		getSupers().forEach(superGeneric -> ((AbstractVertex<T>) superGeneric).indexInheriting((T) this));
-		getComponents().stream().filter(component -> !equals(component)).forEach(component -> ((AbstractVertex<T>) component).indexByMeta(getMeta(), (T) this));
-		getSupers().forEach(superGeneric -> getComponents().stream().filter(component -> !equals(component)).forEach(component -> ((AbstractVertex<T>) component).indexBySuper(superGeneric, (T) this)));
+		getComponents().stream().filter(component -> !equals(component)).forEach(component -> ((AbstractVertex<T>) component).indexComposite((T) this));
 		getRoot().check(true, true, (T) this);
 		return (subT) result;
 	}
@@ -594,34 +587,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		if (!result)
 			getRoot().discardWithException(new NotFoundException(this.info()));
 		getSupers().forEach(superGeneric -> ((AbstractVertex<T>) superGeneric).unIndexInheriting((T) this));
-		getComponents().stream().filter(component -> !equals(component)).forEach(component -> ((AbstractVertex<T>) component).unIndexByMeta(getMeta(), (T) this));
-		getSupers().forEach(superGeneric -> getComponents().stream().filter(component -> !equals(component)).forEach(component -> ((AbstractVertex<T>) component).unIndexBySuper(superGeneric, (T) this)));
+		getComponents().stream().filter(component -> !equals(component)).forEach(component -> ((AbstractVertex<T>) component).unIndexComposite((T) this));
 		return result;
-	}
-
-	private static <T> Snapshot<T> getCompositesByIndex(DependenciesMap<T> multiMap, T index) {
-		return () -> {
-			Dependencies<T> dependencies = multiMap.getByIndex(index);
-			return dependencies != null ? dependencies.get() : Stream.empty();
-		};
-	}
-
-	@Override
-	public Snapshot<T> getCompositesByMeta(T meta) {
-		return getCompositesByIndex(getMetaCompositesDependencies(), meta);
-	}
-
-	@Override
-	public Snapshot<T> getCompositesBySuper(T superT) {
-		return getCompositesByIndex(getSuperCompositesDependencies(), superT);
-	}
-
-	private T indexByMeta(T meta, T composite) {
-		return index(getMetaCompositesDependencies(), meta, composite);
-	}
-
-	private T indexBySuper(T superVertex, T composite) {
-		return index(getSuperCompositesDependencies(), superVertex, composite);
 	}
 
 	public static interface DependenciesMap<T> extends Dependencies<DependenciesEntry<T>> {
@@ -631,32 +598,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 					return entry.getValue();
 			return null;
 		}
-	}
-
-	public static class DependenciesMapImpl<T> extends DependenciesImpl<DependenciesEntry<T>> implements DependenciesMap<T> {
-
-	}
-
-	private static <T extends AbstractVertex<T>> T index(DependenciesMap<T> multimap, T index, T composite) {
-		Dependencies<T> dependencies = multimap.getByIndex(index);
-		if (dependencies == null)
-			multimap.set(new DependenciesEntry<>(index, dependencies = composite.buildDependencies()));
-		return dependencies.set(composite);
-	}
-
-	private static <T> boolean unIndex(DependenciesMap<T> multimap, T index, T composite) {
-		Dependencies<T> dependencies = multimap.getByIndex(index);
-		if (dependencies == null)
-			return false;
-		return dependencies.remove(composite);
-	}
-
-	private boolean unIndexByMeta(T meta, T composite) {
-		return unIndex(getMetaCompositesDependencies(), meta, composite);
-	}
-
-	private boolean unIndexBySuper(T superT, T composite) {
-		return unIndex(getSuperCompositesDependencies(), superT, composite);
 	}
 
 	private static <T> T index(Dependencies<T> dependencies, T dependency) {
@@ -685,12 +626,20 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return index(getInheritingsDependencies(), inheriting);
 	}
 
+	private T indexComposite(T composite) {
+		return index(getCompositesDependencies(), composite);
+	}
+
 	private boolean unIndexInstance(T instance) {
 		return unIndex(getInstancesDependencies(), instance);
 	}
 
 	private boolean unIndexInheriting(T inheriting) {
 		return unIndex(getInheritingsDependencies(), inheriting);
+	}
+
+	private boolean unIndexComposite(T composite) {
+		return unIndex(getCompositesDependencies(), composite);
 	}
 
 	@SuppressWarnings("unchecked")

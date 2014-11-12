@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
 
@@ -41,7 +42,7 @@ public interface DefaultVertex<T extends AbstractVertex<T>> extends DefaultAnces
 
 	@Override
 	default Snapshot<T> getSubNodes() {
-		return () -> getCompositesByMeta(this.getMeta()).get();
+		return () -> getComposites().get().filter(x -> x.getMeta().equals(getMeta()));
 	}
 
 	@Override

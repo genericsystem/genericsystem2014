@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.Collections;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,9 +21,9 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 	}
 
 	public Root(Serializable value, String persistentDirectoryPath, Class<?>... userClasses) {
-		init(null, Collections.emptyList(), value, Collections.emptyList());;
+		init(null, Collections.emptyList(), value, Collections.emptyList());
 		Vertex metaAttribute = setMeta(Statics.ATTRIBUTE_SIZE);
-		Vertex metaRelation = setMeta(Statics.RELATION_SIZE);
+		setMeta(Statics.RELATION_SIZE);
 		setInstance(SystemMap.class, coerceToTArray(this)).enablePropertyConstraint();
 		metaAttribute.disableReferentialIntegrity(Statics.BASE_POSITION);
 		if (persistentDirectoryPath != null) {
@@ -31,7 +32,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 		}
 	}
 
-	// protected T setInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
+	// TODO clean protected T setInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
 	// List<T> componentList = Arrays.asList(components);
 	// checkSameEngine(componentList);
 	// checkSameEngine(overrides);
@@ -53,6 +54,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 			archiver.close();
 	}
 
-	public static class MetaAttribute {}
+	public static class MetaAttribute {
+	}
 
 }

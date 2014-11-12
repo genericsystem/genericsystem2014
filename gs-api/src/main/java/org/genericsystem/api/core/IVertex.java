@@ -2,7 +2,9 @@ package org.genericsystem.api.core;
 
 import java.io.Serializable;
 import java.util.List;
+
 import javax.json.JsonObject;
+
 import org.genericsystem.api.exception.RollbackException;
 
 /**
@@ -946,10 +948,6 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 
 	@SuppressWarnings("unchecked")
 	T update(Serializable newValue, T... newComposites);
-
-	Snapshot<T> getCompositesByMeta(T meta);
-
-	Snapshot<T> getCompositesBySuper(T superT);
 
 	T getBaseComponent();
 

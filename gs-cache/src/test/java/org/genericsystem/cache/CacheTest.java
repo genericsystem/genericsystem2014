@@ -2,6 +2,7 @@ package org.genericsystem.cache;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
+
 import org.testng.annotations.Test;
 
 @Test
@@ -29,10 +30,10 @@ public class CacheTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic powerVehicle = engine.addInstance("power", vehicle);
-		assert vehicle.getCompositesByMeta(engine.getMetaAttribute()).contains(powerVehicle);
+		assert vehicle.getComposites().contains(powerVehicle);
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		Generic myVehicle123 = powerVehicle.addInstance("123", myVehicle);
-		assert myVehicle.getCompositesByMeta(powerVehicle).contains(myVehicle123);
+		assert myVehicle.getComposites().contains(myVehicle123);
 	}
 
 	public void test001_getSuperComponents() {
@@ -43,7 +44,7 @@ public class CacheTest extends AbstractTest {
 		Generic vehicle256 = powerVehicle.addInstance("256", vehicle);
 		Generic myVehicle123 = powerVehicle.addInstance(vehicle256, "123", myVehicle);
 		assert myVehicle123.inheritsFrom(vehicle256);
-		assert myVehicle.getCompositesBySuper(vehicle256).contains(myVehicle123);
+		assert myVehicle.getComposites().contains(myVehicle123);
 	}
 
 	public void test002_getSuperComponents() {
@@ -57,7 +58,7 @@ public class CacheTest extends AbstractTest {
 		Generic myVehicle123 = powerVehicle.addInstance("123", myVehicle);
 		assert !vehicle256.equals(myVehicle123);
 		assert myVehicle123.inheritsFrom(vehicle256);
-		assert myVehicle.getCompositesBySuper(vehicle256).contains(myVehicle123);
+		assert myVehicle.getComposites().contains(myVehicle123);
 	}
 
 	public void test002_flush() {
@@ -104,13 +105,13 @@ public class CacheTest extends AbstractTest {
 		Generic vehicleColor = color.addInstance("vehicleColor", vehicle);
 		Cache<Generic, Vertex> mountNewCache = currentCache.mountAndStartNewCache();
 		Generic vehicleColor2 = color.addInstance("vehicleColor2", vehicle);
-		assert vehicle.getCompositesByMeta(color).containsAll(Arrays.asList(vehicleColor, vehicleColor2)) : vehicle.getCompositesByMeta(color);
+		assert vehicle.getComposites().containsAll(Arrays.asList(vehicleColor, vehicleColor2)) : vehicle.getComposites();
 		mountNewCache.flush();
 		assert vehicle.isAlive();
 		assert color.isAlive();
 		assert vehicleColor.isAlive();
 		assert vehicleColor2.isAlive();
-		assert vehicle.getCompositesByMeta(color).containsAll(Arrays.asList(vehicleColor, vehicleColor2)) : vehicle.getCompositesByMeta(color);
+		assert vehicle.getComposites().containsAll(Arrays.asList(vehicleColor, vehicleColor2)) : vehicle.getComposites();
 	}
 
 	public void test005_TwoComponentsWithSameMetaInDifferentCaches_remove() {
@@ -120,12 +121,12 @@ public class CacheTest extends AbstractTest {
 		Generic vehiclePower = engine.addInstance("vehiclePower", vehicle);
 		Cache<Generic, Vertex> mountNewCache = currentCache.mountAndStartNewCache();
 		assert vehiclePower.isAlive();
-		assert !vehicle.getCompositesByMeta(engine.getMetaAttribute()).isEmpty() : vehicle.getCompositesByMeta(engine.getMetaAttribute()).get().collect(Collectors.toList());
+		assert !vehicle.getComposites().isEmpty() : vehicle.getComposites().get().collect(Collectors.toList());
 		vehiclePower.remove();
-		assert vehicle.getCompositesByMeta(engine.getMetaAttribute()).isEmpty() : vehicle.getCompositesByMeta(engine.getMetaAttribute()).get().collect(Collectors.toList());
+		assert vehicle.getComposites().isEmpty() : vehicle.getComposites().get().collect(Collectors.toList());
 		mountNewCache.flush();
 		assert vehicle.isAlive();
 		assert !vehiclePower.isAlive();
-		assert vehicle.getCompositesByMeta(engine.getMetaAttribute()).isEmpty() : vehicle.getCompositesByMeta(engine.getMetaAttribute()).get().collect(Collectors.toList());
+		assert vehicle.getComposites().isEmpty() : vehicle.getComposites().get().collect(Collectors.toList());
 	}
 }
