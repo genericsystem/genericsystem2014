@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
@@ -156,7 +157,15 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 				if (meta != null)
 					meta = meta.adjustMeta(dependency.getValue(), components);// necessary ?
 				List<T> supers = dependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
-				newDependency = dependency.build(null, meta, supers, dependency.getValue(), components).plug();
+				if (meta != null) {
+					T directInstance = meta.getDirectInstance(dependency.getValue(), components);
+					if (directInstance != null)
+						newDependency = directInstance;
+					else
+						newDependency = dependency.build(null, meta, supers, dependency.getValue(), components).plug();
+				} else
+					// TODO KK
+					newDependency = dependency.build(null, meta, supers, dependency.getValue(), components).plug();
 				put(dependency, newDependency);
 			}
 			return newDependency;
@@ -637,7 +646,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {}
+	public static class SystemMap {
+	}
 
 	Stream<T> getKeys() {
 		T map = getMap();
