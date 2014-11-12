@@ -224,7 +224,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		T result = null;
 		if (!components.equals(getComponents()))
 			for (T directInheriting : getInheritings()) {
-				if (!directInheriting.equalsRegardlessSupers(this, value, components) && componentsDepends(components, directInheriting.getComponents())) {
+				if (componentsDepends(components, directInheriting.getComponents())) {
 					if (result == null)
 						result = directInheriting;
 					else
@@ -263,6 +263,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		List<T> componentList = Arrays.asList(components);
 		checkSameEngine(componentList);
 		checkSameEngine(overrides);
+		if (isMeta()) {
+			T meta = getRoot().setMeta(componentList.size());
+			if (meta.equalsRegardlessSupers(meta, value, componentList) && Statics.areOverridesReached(overrides, meta.getSupers()))
+				getRoot().discardWithException(new ExistsException("An equivalent instance already exists : " + meta.info()));
+		}
 		T adjustedMeta = adjustMeta(value, components);
 		T equivInstance = adjustedMeta.getDirectInstance(value, componentList);
 		if (equivInstance != null)
@@ -276,6 +281,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		List<T> componentList = Arrays.asList(components);
 		checkSameEngine(componentList);
 		checkSameEngine(overrides);
+		if (isMeta()) {
+			T meta = getRoot().setMeta(componentList.size());
+			if (meta.equalsRegardlessSupers(meta, value, componentList) && Statics.areOverridesReached(overrides, meta.getSupers()))
+				return meta;
+		}
 		T adjustedMeta = adjustMeta(value, components);
 		T equivInstance = adjustedMeta.getDirectEquivInstance(value, componentList);
 		if (equivInstance != null)

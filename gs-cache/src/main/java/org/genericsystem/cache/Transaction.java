@@ -28,10 +28,9 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 		V vertex = unwrap(generic.getMeta());
 		// TODO null is KK
 		V result = null;
-		if (vertex == null) {
-			result = ((DefaultRoot<V>) unwrap((T) engine)).setMeta(generic.getComponents().size());
-		} else
-			result = vertex.setInstance(generic.getSupers().stream().map(this::unwrap).collect(Collectors.toList()), generic.getValue(), vertex.coerceToTArray(generic.getComponents().stream().map(this::unwrap).toArray()));
+		if (vertex == null)
+			vertex = unwrap((T) engine);
+		result = vertex.setInstance(generic.getSupers().stream().map(this::unwrap).collect(Collectors.toList()), generic.getValue(), vertex.coerceToTArray(generic.getComponents().stream().map(this::unwrap).toArray()));
 		vertices.put(generic, result);
 	}
 

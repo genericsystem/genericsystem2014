@@ -19,7 +19,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 	@Override
 	protected T plug() {
 		T plug = getCurrentCache().plug((T) this);
-		System.out.println("plug " + plug.info());
 		getRoot().check(true, false, (T) this);
 		return plug;
 	}

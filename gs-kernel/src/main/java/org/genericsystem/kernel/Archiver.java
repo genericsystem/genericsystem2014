@@ -29,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-
 import org.genericsystem.kernel.Archiver.AbstractWriterLoader.ZipWriterLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -164,8 +163,7 @@ public class Archiver {
 				Map<Long, Vertex> vertexMap = new HashMap<>();
 				for (;;)
 					loadDependency(vertexMap);
-			} catch (EOFException ignore) {
-			} catch (ClassNotFoundException | IOException e) {
+			} catch (EOFException ignore) {} catch (ClassNotFoundException | IOException e) {
 				log.error(e.getMessage(), e);
 			}
 		}
@@ -180,7 +178,7 @@ public class Archiver {
 					Vertex meta = loadAncestor(vertexMap);
 					List<Vertex> overrides = loadAncestors(vertexMap);
 					List<Vertex> components = loadAncestors(vertexMap);
-					vertexMap.put(ts, meta.setInstance(clazz, overrides, value, components.toArray(new Vertex[components.size()])));
+					vertexMap.put(ts, meta == null ? root.setMeta(components.size()) : meta.setInstance(clazz, overrides, value, components.toArray(new Vertex[components.size()])));
 				}
 		}
 
