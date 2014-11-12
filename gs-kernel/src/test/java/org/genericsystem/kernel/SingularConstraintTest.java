@@ -169,6 +169,23 @@ public class SingularConstraintTest extends AbstractTest {
 
 	}
 
+	public void test011_enableSingularConstraint_inherintings() {
+		Root engine = new Root();
+		Vertex car = engine.addInstance("Car");
+		Vertex myCar = car.addInstance("myCar");
+		Vertex color = engine.addInstance("Color");
+		Vertex red = color.addInstance("red");
+		Vertex yellow = color.addInstance("yellow");
+		Vertex carColor = car.addAttribute("vehicleColor", color);
+		carColor.enableSingularConstraint(Statics.BASE_POSITION);
+		carColor.enablePropertyConstraint();
+		Vertex carRed = car.addHolder(carColor, "CarRed", red);
+		Vertex myCarYellow = myCar.addHolder(carColor, "myCarRed", yellow);
+		assert myCar.getHolders(carColor).contains(myCarYellow);
+		assert myCar.getHolders(carColor).size() == 1;
+		assert yellow.getHolders(carColor).contains(myCarYellow);
+		assert yellow.getHolders(carColor).size() == 1;
+	}
 	// public void test002_enablePropertyConstraint_addInstance() {
 	// Root engine = new Root();
 	// Vertex vehicle = engine.addInstance("Vehicle");
