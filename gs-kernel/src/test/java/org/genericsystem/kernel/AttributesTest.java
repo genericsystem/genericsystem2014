@@ -53,6 +53,8 @@ public class AttributesTest extends AbstractTest {
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
 		Vertex power = root.addInstance("Power", vehicle);
+		assert !power.getMeta().equals(root);
+		assert power.getMeta().equals(root.getMetaAttribute());
 		Vertex myVehicle = vehicle.addInstance("myVehicle");
 		Vertex p123 = power.addInstance("123", myVehicle);
 		Vertex myVehicle123 = power.addInstance("myVehicle123", myVehicle, p123);

@@ -229,7 +229,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		T result = null;
 		if (!components.equals(getComponents()))
 			for (T directInheriting : getInheritings()) {
-				if (!directInheriting.equalsRegardlessSupers(this, value, components) && componentsDepends(components, directInheriting.getComponents())) {
+				if (componentsDepends(components, directInheriting.getComponents())) {
 					if (result == null)
 						result = directInheriting;
 					else
