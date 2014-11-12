@@ -3,6 +3,7 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.Statics;
 
@@ -21,7 +22,8 @@ public class Engine extends Generic implements DefaultEngine<Generic, Vertex> {
 		root = buildRoot(engineValue);
 
 		Cache<Generic, Vertex> cache = newCache().start();
-		Generic metaAttribute = setInstance(this, getValue(), coerceToTArray(this));
+		Generic metaAttribute = setMeta(Statics.ATTRIBUTE_SIZE);
+		setMeta(Statics.RELATION_SIZE);
 		setInstance(SystemMap.class, coerceToTArray(this)).enablePropertyConstraint();
 		metaAttribute.disableReferentialIntegrity(Statics.BASE_POSITION);
 		for (Class<?> clazz : userClasses)
@@ -30,7 +32,7 @@ public class Engine extends Generic implements DefaultEngine<Generic, Vertex> {
 		cache.flush();
 	}
 
-	private final GenericsCache<Generic> genericsCache = new GenericsCache<>();
+	private final GenericsCache<Generic> genericsCache = new GenericsCache<>(this);
 
 	@Override
 	public Generic getOrBuildT(Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> composites) {

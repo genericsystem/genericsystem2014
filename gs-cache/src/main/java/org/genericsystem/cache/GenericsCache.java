@@ -13,9 +13,15 @@ public class GenericsCache<T extends AbstractGeneric<T, ?>> {
 	private final Map<T, T> map = new ConcurrentHashMap<>();
 	static Logger log = LoggerFactory.getLogger(GenericsCache.class);
 
+	private final T engine;
+
+	public GenericsCache(T engine) {
+		this.engine = engine;
+	}
+
 	@SuppressWarnings("unchecked")
 	public <subT extends T> subT getOrBuildT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> composites) {
-		T disposable = meta.newT(clazz).init(meta, supers, value, composites);
+		T disposable = engine.newT(clazz).init(meta, supers, value, composites);
 		T result = map.get(disposable);
 		if (result != null)
 			return (subT) result;

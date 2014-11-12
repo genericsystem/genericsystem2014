@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.cache.annotations.InstanceClass;
@@ -18,6 +19,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 	@Override
 	protected T plug() {
 		T plug = getCurrentCache().plug((T) this);
+		System.out.println("plug " + plug.info());
 		getRoot().check(true, false, (T) this);
 		return plug;
 	}
@@ -70,29 +72,12 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Snapshot<T> getCompositesByMeta(T meta) {
-		return getCurrentCache().getCompositesByMeta((T) this, meta);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public Snapshot<T> getCompositesBySuper(T superVertex) {
-		return getCurrentCache().getCompositesBySuper((T) this, superVertex);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
 	public Snapshot<T> getComposites() {
 		return getCurrentCache().getComposites((T) this);
 	}
 
 	protected Dependencies<T> buildDependencies(Supplier<Stream<T>> subStreamSupplier) {
 		return new CacheDependencies<>(subStreamSupplier);
-	}
-
-	@Override
-	protected DependenciesMap<T> buildDependenciesMap() {
-		return new DependenciesMapImpl<>();
 	}
 
 	@Override
@@ -185,12 +170,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 	}
 
 	@Override
-	protected DependenciesMap<T> getMetaCompositesDependencies() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	protected DependenciesMap<T> getSuperCompositesDependencies() {
+	protected Dependencies<T> getCompositesDependencies() {
 		throw new UnsupportedOperationException();
 	}
 

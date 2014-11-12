@@ -10,10 +10,13 @@ public class TransactionCache<T extends AbstractGeneric<T, V>, V extends Abstrac
 
 	private final Map<V, T> reverseMap = new HashMap<>();
 
+	private final DefaultEngine<T, V> engine;
+
 	@SuppressWarnings("unchecked")
 	public TransactionCache(DefaultEngine<T, V> engine) {
 		assert engine.unwrap() != null;
 		put((T) engine, (V) engine.unwrap());
+		this.engine = engine;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -22,13 +25,23 @@ public class TransactionCache<T extends AbstractGeneric<T, V>, V extends Abstrac
 		T generic = (T) key;
 		V result = super.get(generic);
 		if (result == null) {
-			V pluggedMeta = get(generic.getMeta());
-			if (pluggedMeta != null)
-				for (V instance : pluggedMeta.getInstances())
-					if (generic.equals(instance)) {
-						put(generic, instance);
-						return instance;
-					}
+			if (generic.isMeta()) {
+				V pluggedSuper = get(generic.getSupers().get(0));
+				if (pluggedSuper != null)
+					for (V inheriting : pluggedSuper.getInheritings())
+						if (generic.equals(inheriting)) {
+							put(generic, inheriting);
+							return inheriting;
+						}
+			} else {
+				V pluggedMeta = get(generic.getMeta());
+				if (pluggedMeta != null)
+					for (V instance : pluggedMeta.getInstances())
+						if (generic.equals(instance)) {
+							put(generic, instance);
+							return instance;
+						}
+			}
 			put(generic, null);
 		}
 		return result;
@@ -48,10 +61,9 @@ public class TransactionCache<T extends AbstractGeneric<T, V>, V extends Abstrac
 	T getByValue(V vertex) {
 		T result = reverseMap.get(vertex);
 		if (result == null) {
-			assert vertex.getMeta() != vertex : this;
-			T meta = getByValue(vertex.getMeta());
+			T meta = vertex.isMeta() ? null : getByValue(vertex.getMeta());
 			// TODO null is KK
-			result = meta.newT(null, meta, vertex.getSupers().stream().map(this::getByValue).collect(Collectors.toList()), vertex.getValue(), vertex.getComponents().stream().map(this::getByValue).collect(Collectors.toList()));
+			result = ((AbstractGeneric<T, V>) engine).newT(null, meta, vertex.getSupers().stream().map(this::getByValue).collect(Collectors.toList()), vertex.getValue(), vertex.getComponents().stream().map(this::getByValue).collect(Collectors.toList()));
 			put(result, vertex);
 		}
 		return result;

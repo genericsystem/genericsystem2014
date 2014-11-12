@@ -2,6 +2,7 @@ package org.genericsystem.cache;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
@@ -26,14 +27,18 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 	protected void simpleAdd(T generic) {
 		V vertex = unwrap(generic.getMeta());
 		// TODO null is KK
-		V result = vertex.addInstance(generic.getSupers().stream().map(this::unwrap).collect(Collectors.toList()), generic.getValue(), vertex.coerceToTArray(generic.getComponents().stream().map(this::unwrap).toArray()));
+		V result = null;
+		if (vertex == null) {
+			result = ((DefaultRoot<V>) unwrap((T) engine)).setMeta(generic.getComponents().size());
+		} else
+			result = vertex.setInstance(generic.getSupers().stream().map(this::unwrap).collect(Collectors.toList()), generic.getValue(), vertex.coerceToTArray(generic.getComponents().stream().map(this::unwrap).toArray()));
 		vertices.put(generic, result);
 	}
 
 	// remove should return a boolean.
 	@Override
 	protected boolean simpleRemove(T generic) {
-		generic.unwrap().remove();
+		unwrap(generic).remove();
 		vertices.put(generic, null);
 		return true;
 	}
@@ -60,20 +65,10 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 	}
 
 	@Override
-	Snapshot<T> getCompositesByMeta(T generic, T meta) {
+	Snapshot<T> getComposites(T generic) {
 		return () -> {
-			V genericVertex = unwrap(generic);
-			V metaVertex = unwrap(meta);
-			return genericVertex != null && metaVertex != null ? genericVertex.getCompositesByMeta(metaVertex).get().map(generic::wrap) : Stream.empty();
-		};
-	}
-
-	@Override
-	Snapshot<T> getCompositesBySuper(T generic, T superT) {
-		return () -> {
-			V genericVertex = unwrap(generic);
-			V superVertex = unwrap(superT);
-			return genericVertex != null && superVertex != null ? genericVertex.getCompositesBySuper(superVertex).get().map(generic::wrap) : Stream.empty();
+			V vertex = unwrap(generic);
+			return vertex != null ? vertex.getComposites().get().map(generic::wrap) : Stream.empty();
 		};
 	}
 
