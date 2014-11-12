@@ -2,6 +2,7 @@ package org.genericsystem.cache;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.genericsystem.api.exception.RequiredConstraintViolationException;
 import org.genericsystem.kernel.Statics;
 import org.testng.annotations.Test;
@@ -13,13 +14,10 @@ public class RequiredConstraintTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic car = engine.addInstance("Car");
 		Generic power = engine.addAttribute("Power");
-		Generic unit = engine.addInstance("Unit");
 
-		Generic v235 = car.addHolder(power, 235, unit);
+		Generic v235 = car.addHolder(power, 235);
 
 		assert car.getHolders(power).contains(v235);
-		assert unit.getHolders(power).contains(v235);
-
 	}
 
 	public void test01_Inheritance() {
@@ -39,16 +37,12 @@ public class RequiredConstraintTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic car = engine.addInstance("Car");
 		Generic power = car.addAttribute("Power");
-		Generic unit = engine.addInstance("Unit");
 
 		Generic myBmw = car.addInstance("myBmw");
 
-		Generic kw = unit.addInstance("kw");
-
-		Generic v235 = myBmw.addHolder(power, 235, kw);
+		Generic v235 = myBmw.addHolder(power, 235);
 
 		assert myBmw.getHolders(power).contains(v235);
-		assert kw.getHolders(power).contains(v235);
 
 	}
 
