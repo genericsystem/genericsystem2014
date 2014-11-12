@@ -269,6 +269,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		checkSameEngine(componentList);
 		checkSameEngine(overrides);
 		T adjustedMeta = adjustMeta(value, components);
+		if (adjustedMeta.isMeta() && adjustedMeta.equalsRegardlessSupers(adjustedMeta, value, componentList) && Statics.areOverridesReached(overrides, adjustedMeta.getSupers()))
+			getRoot().discardWithException(new ExistsException("An equivalent instance already exists : " + adjustedMeta.info()));
 		T equivInstance = adjustedMeta.getDirectInstance(value, componentList);
 		if (equivInstance != null)
 			getRoot().discardWithException(new ExistsException("An equivalent instance already exists : " + equivInstance.info()));
@@ -281,7 +283,13 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		List<T> componentList = Arrays.asList(components);
 		checkSameEngine(componentList);
 		checkSameEngine(overrides);
-		T adjustedMeta = adjustMeta(value, components);
+		final T adjustedMeta = adjustMeta(value, components);
+		if (adjustedMeta.isMeta() && adjustedMeta.getValue().equals(value) && componentList.stream().allMatch(getRoot()::equals)) {
+			assert adjustedMeta.getComponents().size() <= componentList.size();
+			T result = adjustedMeta.getComponents().size() == componentList.size() ? adjustedMeta : getRoot().setMeta(componentList.size());
+			if (Statics.areOverridesReached(overrides, result.getSupers()))
+				return result;
+		}
 		T equivInstance = adjustedMeta.getDirectEquivInstance(value, componentList);
 		if (equivInstance != null)
 			return equivInstance.equalsRegardlessSupers(adjustedMeta, value, componentList) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : equivInstance.update(overrides, value, components);
