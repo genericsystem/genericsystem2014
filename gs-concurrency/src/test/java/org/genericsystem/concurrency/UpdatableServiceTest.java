@@ -1,8 +1,6 @@
 package org.genericsystem.concurrency;
 
 import java.util.List;
-
-import org.genericsystem.api.exception.MetaLevelConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test
@@ -425,8 +423,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		Generic blue = color.addInstance("Blue");
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Generic myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
-
-		catchAndCheckCause(() -> myCarRed.update("MyCarBlue", green, blue), MetaLevelConstraintViolationException.class);
+		myCarRed.update("MyCarBlue", myCar, blue);
 	}
 
 	public void test021_AddInstance_AttributeWithSameNameAlreadyExisting() {

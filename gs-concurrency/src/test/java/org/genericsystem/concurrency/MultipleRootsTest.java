@@ -1,7 +1,6 @@
 package org.genericsystem.concurrency;
 
 import java.util.Arrays;
-
 import org.genericsystem.api.exception.CrossEnginesAssignementsException;
 import org.genericsystem.kernel.Statics;
 import org.testng.annotations.Test;
@@ -20,7 +19,7 @@ public class MultipleRootsTest extends AbstractTest {
 		assert engine1.isAlive();
 		assert engine2.getMeta().equals(engine2);
 		assert engine2.getSupers().size() == 0;
-		assert engine2.getComposites().size() == 0;
+		assert engine2.getComponents().size() == 0;
 		assert engine2.getValue().equals(nameOfsecondEngine);
 		assert engine2.isAlive();
 	}

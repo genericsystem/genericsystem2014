@@ -1,7 +1,6 @@
 package org.genericsystem.concurrency;
 
 import java.util.Arrays;
-
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.testng.annotations.Test;
 
@@ -29,7 +28,7 @@ public class VertexTest extends AbstractTest {
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		Generic myVehicle123 = powerVehicle.addInstance("123", myVehicle);
 
-		assert myVehicle.getCompositesByMeta(powerVehicle).get().anyMatch(g -> g.equals(myVehicle123));
+		assert myVehicle.getComposites().get().anyMatch(g -> g.equals(myVehicle123));
 	}
 
 	public void test001_getSuperComponents() {
@@ -40,7 +39,7 @@ public class VertexTest extends AbstractTest {
 		Generic vehicle256 = powerVehicle.addInstance("256", vehicle);
 		Generic myVehicle123 = powerVehicle.addInstance(vehicle256, "123", myVehicle);
 
-		assert myVehicle.getCompositesBySuper(vehicle256).contains(myVehicle123);
+		assert myVehicle.getComposites().contains(myVehicle123);
 	}
 
 	public void test002_getSuperComponents() {
@@ -52,7 +51,7 @@ public class VertexTest extends AbstractTest {
 		Generic vehicle256 = powerVehicle.addInstance("256", vehicle);
 		Generic myVehicle123 = powerVehicle.addInstance("123", myVehicle);
 
-		assert myVehicle.getCompositesBySuper(vehicle256).contains(myVehicle123);
+		assert myVehicle.getComposites().contains(myVehicle123);
 	}
 
 	// public void test() {
