@@ -57,11 +57,11 @@ public class SingularConstraintTest extends AbstractTest {
 		Vertex red = color.addInstance("red");
 		Vertex today = time.addInstance("today");
 		Vertex yesterday = time.addInstance("yesterday");
-		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
-		vehicleColor.enableSingularConstraint(Statics.BASE_POSITION);
-		assert vehicleColor.isSingularConstraintEnabled(Statics.BASE_POSITION);
-		myVehicle.addHolder(vehicleColor, "vehicleRedToday", red, today);
-		catchAndCheckCause(() -> myVehicle.addHolder(vehicleColor, "vehicleRedYesterday", red, yesterday), SingularConstraintViolationException.class);
+		Vertex vehicleColorTime = vehicle.addAttribute("vehicleColor", color, time);
+		vehicleColorTime.enableSingularConstraint(Statics.BASE_POSITION);
+		assert vehicleColorTime.isSingularConstraintEnabled(Statics.BASE_POSITION);
+		myVehicle.addHolder(vehicleColorTime, "vehicleRedToday", red, today);
+		catchAndCheckCause(() -> myVehicle.addHolder(vehicleColorTime, "vehicleRedYesterday", red, yesterday), SingularConstraintViolationException.class);
 	}
 
 	public void test005_enableSingularConstraint_targetPosition() {

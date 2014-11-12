@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.testng.annotations.Test;
 
 @Test
@@ -12,12 +13,15 @@ public class MetasTests extends AbstractTest {
 
 	public void test001() {
 		Root engine = new Root();
+
 		Vertex metaAttribute = engine.getMetaAttribute();
+		assert metaAttribute == engine.adjustMeta(engine.getValue(), Arrays.asList(engine));
 		assert metaAttribute.getMeta() == metaAttribute;
 		assert metaAttribute.isMeta();
 		assert metaAttribute.getBaseComponent().equals(engine);
 		assert metaAttribute.inheritsFrom(engine);
 		Vertex metaRelation = engine.getMetaAttribute().getInheritings().first();
+		assert metaRelation == engine.adjustMeta(engine.getValue(), Arrays.asList(engine, engine));
 		assert metaRelation.isMeta();
 		assert metaRelation.getBaseComponent().equals(engine);
 		assert metaRelation.getTargetComponent().equals(engine);
