@@ -569,7 +569,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	@Override
 	public Snapshot<T> getComposites() {
 		return getCompositesDependencies();
-		// TODO clean return () -> getMetaCompositesDependencies().get().flatMap(entry -> entry.getValue().get());
 	}
 
 	@SuppressWarnings("unchecked")
