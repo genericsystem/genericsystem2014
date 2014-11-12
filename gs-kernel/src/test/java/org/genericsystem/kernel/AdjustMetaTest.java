@@ -150,6 +150,9 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test007_AdjustMeta_TypeLevel_Relation_TwoComposites_oneCompositeSpecializedByInheritance() {
 		Root engine = new Root();
+		assert engine.getMetaAttribute().equalsRegardlessSupers(engine.getMetaAttribute(), engine.getValue(), Collections.singletonList(engine));
+		engine.setInstance(engine.getValue(), engine);
+
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex color = engine.addInstance("Color");
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
