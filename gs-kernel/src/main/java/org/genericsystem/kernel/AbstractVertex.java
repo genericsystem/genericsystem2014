@@ -13,7 +13,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
@@ -25,7 +24,6 @@ import org.genericsystem.api.exception.MetaLevelConstraintViolationException;
 import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
 import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
-import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Statics.Supers;
 import org.genericsystem.kernel.annotations.Priority;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
@@ -592,15 +590,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return result;
 	}
 
-	public static interface DependenciesMap<T> extends Dependencies<DependenciesEntry<T>> {
-		public default Dependencies<T> getByIndex(T index) {
-			for (DependenciesEntry<T> entry : this)
-				if (index.equals(entry.getKey()))
-					return entry.getValue();
-			return null;
-		}
-	}
-
 	private static <T> T index(Dependencies<T> dependencies, T dependency) {
 		return dependencies.set(dependency);
 	}
@@ -648,8 +637,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {
-	}
+	public static class SystemMap {}
 
 	Stream<T> getKeys() {
 		T map = getMap();
