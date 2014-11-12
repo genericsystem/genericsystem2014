@@ -69,7 +69,6 @@ public class UpdateTest extends AbstractTest {
 
 		assert car.getSupers().contains(vehicle);
 		Vertex vehicleBis = root.addInstance("VehicleBis");
-		// add au lieu de replace ??
 		Vertex carBis = car.updateSupers(vehicleBis);
 
 		assert !car.isAlive();
@@ -95,14 +94,6 @@ public class UpdateTest extends AbstractTest {
 		Vertex powerType = root.addInstance("PowerType");
 
 		catchAndCheckCause(() -> power.update("carPower", powerType), MetaRuleConstraintViolationException.class);
-
-		assert root.getInstances().contains(car);
-		assert car.isAlive();
-		assert car.getInstances().contains(myCar);
-		// assert myCar.getHolders(power).contains(v233);
-		// assert myCar.getHolders(power).size() == 1;
-		// assert v233.getValue().equals(233);
-
 	}
 
 	public void test007_structurel_WithInheritings_AndInstances() {
@@ -126,6 +117,26 @@ public class UpdateTest extends AbstractTest {
 		assert vehicleUpdate.getInheritings().get().allMatch(x -> x.getInstances().get().allMatch(y -> y.getHolders(power).get().allMatch(z -> z.getValue().equals(233))));
 
 		assert v233.getValue().equals(233);
+	}
+
+	public void test008_updateToAlreadyExists() {
+		Root root = new Root();
+		Vertex vehicle = root.addInstance("Vehicle");
+		Vertex myVehicle = vehicle.addInstance("myVehicle");
+		Vertex car = root.addInstance("Car");
+		Vertex power = car.addAttribute("Power");
+		Vertex myCar = car.addInstance("myCar");
+		Vertex v233 = myCar.addHolder(power, 233);
+
+		Vertex carUpdate = car.update("Vehicle");
+
+		assert carUpdate.equals(vehicle);
+		assert !car.isAlive();
+		assert !myCar.isAlive();
+
+		assert vehicle.getInstance("myCar") != null;
+		assert vehicle.getInstance("myVehicle") != null;
+		assert vehicle.getInstances().size() == 2;
 
 	}
 }
