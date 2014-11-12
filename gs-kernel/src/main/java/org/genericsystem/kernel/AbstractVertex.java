@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
@@ -140,13 +141,13 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public T update(List<T> supersToAdd, Serializable newValue, T... newComponents) {
+	public T update(List<T> supers, Serializable newValue, T... newComponents) {
 		if (newComponents.length != getComponents().size())
 			getRoot().discardWithException(new IllegalArgumentException());
 		for (int i = 0; i < newComponents.length; i++)
 			if (equiv(newComponents[i]))
 				newComponents[i] = null;
-		return rebuildAll((T) this, () -> getMeta().setInstance(new Supers<>(getSupers(), supersToAdd), newValue, newComponents), computeDependencies());
+		return rebuildAll((T) this, () -> getMeta().setInstance(new Supers<>(supers), newValue, newComponents), computeDependencies());
 	}
 
 	private static class ConvertMap<T extends AbstractVertex<T>> extends HashMap<T, T> {
@@ -697,7 +698,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {}
+	public static class SystemMap {
+	}
 
 	Stream<T> getKeys() {
 		T map = getMap();
