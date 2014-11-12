@@ -129,7 +129,7 @@ public class AdjustMetaTest extends AbstractTest {
 	public void test005_AdjustMeta_MetaLevel_metaRelation_ThreeComposites() {
 		Root engine = new Root();
 		Vertex metaAttribute = engine.getMetaAttribute();
-		assert metaAttribute == engine.adjustMeta(engine.getValue(), Arrays.asList(engine, engine));
+		assert metaAttribute == engine.adjustMeta(engine.getValue(), Arrays.asList(engine));
 		Vertex metaRelation = engine.getMetaRelation();
 		Vertex car = engine.addInstance("Car");
 		Vertex color = engine.addInstance("Color");
@@ -177,6 +177,11 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex red = engine.addInstance(color, "red");
 		Vertex car = vehicle2.addInstance("Car");
 		assert vehicleColor == vehicleColor.adjustMeta("CarRed", Arrays.asList(car, red)) : engine.adjustMeta("CarRed", Arrays.asList(car, red));
+	}
+
+	public void testMeta() {
+		Root engine = new Root();
+		assert engine.getMetaAttribute().equals(engine.adjustMeta(engine.getValue(), Arrays.asList(engine)));
 	}
 
 	public void test010_AdjustMeta_TypeLevel_Relation_TwoComposites_TwoCompositeSpecializedByInstanciation() {

@@ -412,11 +412,11 @@ public class UpdatableServiceTest extends AbstractTest {
 		Vertex blue = color.addInstance("Blue");
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Vertex myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
-
 		Vertex myCarBlue = myCarRed.update("MyCarBlue", myCar, blue);
 		assert !myCarRed.isAlive();
 		assert myCarBlue.isAlive();
 		assert myCarBlue.getMeta().equals(vehicleColor);
+
 	}
 
 	public void test021_AddInstance_AttributeWithSameNameAlreadyExisting() {
