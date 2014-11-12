@@ -29,15 +29,14 @@ public class AdjustMetaTest extends AbstractTest {
 		assert metaRelation.equals(engine.adjustMeta("CarColor", car, color));
 	}
 
-	public void test004_AdjustMeta_MetaLevel_metaAttribut() {
+	public void test004_AdjustMeta_MetaLevel_metaAttribute() {
 		Engine engine = new Engine();
-		Generic metaRelation = engine.getMetaRelation();
 		engine.addInstance("Robot");
 		Generic car = engine.addInstance("Car");
 		Generic color = engine.addInstance("Color");
-		assert metaRelation.equals(engine.adjustMeta("CarColor", car, color));
+		assert engine.getMetaRelation().equals(engine.adjustMeta("CarColor", car, color));
 		engine.addInstance("CarColor", car, color);
-		assert metaRelation.equals(engine.adjustMeta("Radio", car));
+		assert engine.getMetaAttribute().equals(engine.adjustMeta("Radio", car));
 	}
 
 	public void test005_AdjustMeta_MetaLevel_metaRelation_ThreeComposites() {
