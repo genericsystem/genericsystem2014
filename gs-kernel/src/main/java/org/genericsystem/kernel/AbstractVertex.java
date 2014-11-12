@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
+import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.CrossEnginesAssignementsException;
@@ -576,13 +577,13 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		T result = this != getMeta() ? ((AbstractVertex<T>) getMeta()).indexInstance((T) this) : (T) this;
 		getSupers().forEach(superGeneric -> ((AbstractVertex<T>) superGeneric).indexInheriting((T) this));
 		getComponents().stream().filter(component -> !equals(component)).forEach(component -> ((AbstractVertex<T>) component).indexComposite((T) this));
-		getRoot().check(true, true, (T) this);
+		getRoot().check(true, false, (T) this);
 		return (subT) result;
 	}
 
 	@SuppressWarnings("unchecked")
 	protected boolean unplug() {
-		getRoot().check(false, true, (T) this);
+		getRoot().check(false, false, (T) this);
 		boolean result = this != getMeta() ? ((AbstractVertex<T>) getMeta()).unIndexInstance((T) this) : true;
 		if (!result)
 			getRoot().discardWithException(new NotFoundException(this.info()));
@@ -666,10 +667,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	protected void checkSystemConstraints(boolean isOnAdd, boolean isFlushTime) {
 		if (isMeta())
 			checkMeta();
-		if (!isOnAdd) {
+		if (!isFlushTime)
 			checkIsAlive();
+		else if (!isOnAdd && isAlive())
+			getRoot().discardWithException(new AliveConstraintViolationException(info()));
+		if (!isOnAdd)
 			checkDependenciesAreEmpty();
-		}
 		checkDependsMetaComponents();
 		checkSupers();
 		checkDependsSuperComponents();
