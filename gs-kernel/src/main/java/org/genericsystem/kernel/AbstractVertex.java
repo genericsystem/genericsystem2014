@@ -271,7 +271,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		if (isMeta()) {
 			T meta = getRoot().setMeta(componentList.size());
 			if (meta.equalsRegardlessSupers(meta, value, componentList) && Statics.areOverridesReached(overrides, meta.getSupers()))
-				return meta;
+				getRoot().discardWithException(new ExistsException("An equivalent instance already exists : " + meta.info()));
 		}
 		T adjustedMeta = adjustMeta(value, components);
 		T equivInstance = adjustedMeta.getDirectInstance(value, componentList);
