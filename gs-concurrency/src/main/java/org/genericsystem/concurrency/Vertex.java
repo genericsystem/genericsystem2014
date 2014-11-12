@@ -2,14 +2,12 @@ package org.genericsystem.concurrency;
 
 import java.util.Iterator;
 import org.genericsystem.kernel.Dependencies;
-import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 
 public class Vertex extends AbstractVertex<Vertex> implements DefaultVertex<Vertex> {
 
 	private final Dependencies<Vertex> instances = buildDependencies();
 	private final Dependencies<Vertex> inheritings = buildDependencies();
-	private final DependenciesMap<Vertex> superComponents = buildDependenciesMap();
-	private final DependenciesMap<Vertex> metaComponents = buildDependenciesMap();
+	private final Dependencies<Vertex> compositesDependencies = buildDependencies();
 
 	@Override
 	protected Dependencies<Vertex> getInstancesDependencies() {
@@ -22,13 +20,8 @@ public class Vertex extends AbstractVertex<Vertex> implements DefaultVertex<Vert
 	}
 
 	@Override
-	protected DependenciesMap<Vertex> getMetaCompositesDependencies() {
-		return metaComponents;
-	}
-
-	@Override
-	protected DependenciesMap<Vertex> getSuperCompositesDependencies() {
-		return superComponents;
+	protected Dependencies<Vertex> getCompositesDependencies() {
+		return compositesDependencies;
 	}
 
 	@Override
@@ -54,26 +47,6 @@ public class Vertex extends AbstractVertex<Vertex> implements DefaultVertex<Vert
 			public Iterator<Vertex> iterator() {
 				return iterator(getRoot().getEngine().getCurrentCache().getTs());
 			}
-		};
-	}
-
-	public static abstract class AbstractDependenciesMap<T> extends AbstractDependencies<DependenciesEntry<T>> implements DependenciesMap<T> {
-
-	}
-
-	@Override
-	protected DependenciesMap<Vertex> buildDependenciesMap() {
-		return new AbstractDependenciesMap<Vertex>() {
-			@Override
-			public Iterator<DependenciesEntry<Vertex>> iterator() {
-				return iterator(getRoot().getEngine().getCurrentCache().getTs());
-			}
-
-			@Override
-			public LifeManager getLifeManager() {
-				return lifeManager;
-			}
-
 		};
 	}
 

@@ -1,7 +1,9 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Optional;
+
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 import org.genericsystem.kernel.systemproperty.CascadeRemoveProperty;
@@ -31,7 +33,9 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 	@Override
 	default T setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value, T... targets) {
 		T map = ((T) this).getMap();
-		map.getMeta().setInstance(map, new AxedPropertyClass(propertyClass, pos), coerceToTArray(getRoot())).setInstance(value, addThisToTargets(targets));
+		T[] roots = ((AbstractVertex<T>) this).newTArray(targets.length + 1);
+		Arrays.fill(roots, getRoot());
+		map.getMeta().setInstance(map, new AxedPropertyClass(propertyClass, pos), roots).setInstance(value, addThisToTargets(targets));
 		return (T) this;
 	}
 

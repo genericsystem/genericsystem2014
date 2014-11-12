@@ -8,7 +8,7 @@ public interface DefaultRoot<V extends AbstractVertex<V>> extends org.genericsys
 
 	@Override
 	default void check(boolean isOnAdd, boolean isFlushTime, V v) throws RollbackException {
-		// Only system constraints must be checked in vertex layer
+		// TODO Only system constraints must be checked in vertex layer
 		v.checkSystemConstraints(isOnAdd, isFlushTime);
 		// t.checkConsistency(checkingType, isFlushTime);
 		// t.checkConstraints(checkingType, isFlushTime);

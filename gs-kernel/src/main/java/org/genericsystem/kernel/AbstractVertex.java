@@ -13,9 +13,9 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
+import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.CrossEnginesAssignementsException;
@@ -24,7 +24,6 @@ import org.genericsystem.api.exception.MetaLevelConstraintViolationException;
 import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
 import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
-import org.genericsystem.kernel.Dependencies.DependenciesEntry;
 import org.genericsystem.kernel.Statics.Supers;
 import org.genericsystem.kernel.annotations.Priority;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
@@ -576,28 +575,19 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		T result = this != getMeta() ? ((AbstractVertex<T>) getMeta()).indexInstance((T) this) : (T) this;
 		getSupers().forEach(superGeneric -> ((AbstractVertex<T>) superGeneric).indexInheriting((T) this));
 		getComponents().stream().filter(component -> !equals(component)).forEach(component -> ((AbstractVertex<T>) component).indexComposite((T) this));
-		getRoot().check(true, true, (T) this);
+		getRoot().check(true, false, (T) this);
 		return (subT) result;
 	}
 
 	@SuppressWarnings("unchecked")
 	protected boolean unplug() {
-		getRoot().check(false, true, (T) this);
+		getRoot().check(false, false, (T) this);
 		boolean result = this != getMeta() ? ((AbstractVertex<T>) getMeta()).unIndexInstance((T) this) : true;
 		if (!result)
 			getRoot().discardWithException(new NotFoundException(this.info()));
 		getSupers().forEach(superGeneric -> ((AbstractVertex<T>) superGeneric).unIndexInheriting((T) this));
 		getComponents().stream().filter(component -> !equals(component)).forEach(component -> ((AbstractVertex<T>) component).unIndexComposite((T) this));
 		return result;
-	}
-
-	public static interface DependenciesMap<T> extends Dependencies<DependenciesEntry<T>> {
-		public default Dependencies<T> getByIndex(T index) {
-			for (DependenciesEntry<T> entry : this)
-				if (index.equals(entry.getKey()))
-					return entry.getValue();
-			return null;
-		}
 	}
 
 	private static <T> T index(Dependencies<T> dependencies, T dependency) {
@@ -647,8 +637,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {
-	}
+	public static class SystemMap {}
 
 	Stream<T> getKeys() {
 		T map = getMap();
@@ -666,10 +655,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	protected void checkSystemConstraints(boolean isOnAdd, boolean isFlushTime) {
 		if (isMeta())
 			checkMeta();
-		if (!isOnAdd) {
+		if (!isFlushTime)
 			checkIsAlive();
+		else if (!isOnAdd && isAlive())
+			getRoot().discardWithException(new AliveConstraintViolationException(info()));
+		if (!isOnAdd)
 			checkDependenciesAreEmpty();
-		}
 		checkDependsMetaComponents();
 		checkSupers();
 		checkDependsSuperComponents();

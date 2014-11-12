@@ -23,28 +23,27 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test003_AdjustMeta_MetaLevel_metaAttribut_TwoComposites() {
 		Engine engine = new Engine();
-		Generic metaAttribute = engine.getMetaAttribute();
+		Generic metaRelation = engine.getMetaRelation();
 		Generic car = engine.addInstance("Car");
 		Generic color = engine.addInstance("Color");
-		assert metaAttribute.equals(engine.adjustMeta("CarColor", car, color));
+		assert metaRelation.equals(engine.adjustMeta("CarColor", car, color));
 	}
 
-	public void test004_AdjustMeta_MetaLevel_metaAttribut() {
+	public void test004_AdjustMeta_MetaLevel_metaAttribute() {
 		Engine engine = new Engine();
-		Generic metaAttribute = engine.getMetaAttribute();
 		engine.addInstance("Robot");
 		Generic car = engine.addInstance("Car");
 		Generic color = engine.addInstance("Color");
-		assert metaAttribute.equals(engine.adjustMeta("CarColor", car, color));
+		assert engine.getMetaRelation().equals(engine.adjustMeta("CarColor", car, color));
 		engine.addInstance("CarColor", car, color);
-		assert metaAttribute.equals(engine.adjustMeta("Radio", car));
+		assert engine.getMetaAttribute().equals(engine.adjustMeta("Radio", car));
 	}
 
 	public void test005_AdjustMeta_MetaLevel_metaRelation_ThreeComposites() {
 		Engine engine = new Engine();
-		Generic metaAttribute = engine.getMetaAttribute();
-		assert metaAttribute.equals(engine.adjustMeta(engine.getValue(), engine, engine));
-		Generic metaRelation = engine.addInstance(engine.getValue(), engine, engine);
+		Generic metaRelation = engine.getMetaRelation();
+		assert metaRelation.equals(engine.adjustMeta(engine.getValue(), engine, engine));
+		assert metaRelation.equals(engine.setInstance(engine.getValue(), engine, engine));
 		Generic car = engine.addInstance("Car");
 		Generic color = engine.addInstance("Color");
 		engine.addInstance("CarColor", car, color);

@@ -12,7 +12,7 @@ public class Engine extends Generic implements DefaultEngine<Generic, Vertex> {
 
 	protected final ThreadLocal<Cache<Generic, Vertex>> cacheLocal = new ThreadLocal<>();
 
-	private final GenericsCache<Generic> genericsCache = new GenericsCache<>();
+	private final GenericsCache<Generic> genericsCache = new GenericsCache<>(this);
 	private final SystemCache<Generic> systemCache = new SystemCache<>(this);
 	private final Root root;
 

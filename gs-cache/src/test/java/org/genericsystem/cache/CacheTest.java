@@ -1,6 +1,5 @@
 package org.genericsystem.cache;
 
-import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import org.testng.annotations.Test;
@@ -95,23 +94,6 @@ public class CacheTest extends AbstractTest {
 		assert ((AbstractGeneric<Generic, Vertex>) vehicle).unwrap() == null;
 		currentCache.flush();
 		assert vehicle.unwrap() != null;
-	}
-
-	public void test004_TwoComponentsWithSameMetaInDifferentCaches() {
-		Engine engine = new Engine();
-		Cache<Generic, Vertex> currentCache = engine.getCurrentCache();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic color = engine.addInstance("Color");
-		Generic vehicleColor = color.addInstance("vehicleColor", vehicle);
-		Cache<Generic, Vertex> mountNewCache = currentCache.mountAndStartNewCache();
-		Generic vehicleColor2 = color.addInstance("vehicleColor2", vehicle);
-		assert vehicle.getComposites().containsAll(Arrays.asList(vehicleColor, vehicleColor2)) : vehicle.getComposites();
-		mountNewCache.flush();
-		assert vehicle.isAlive();
-		assert color.isAlive();
-		assert vehicleColor.isAlive();
-		assert vehicleColor2.isAlive();
-		assert vehicle.getComposites().containsAll(Arrays.asList(vehicleColor, vehicleColor2)) : vehicle.getComposites();
 	}
 
 	public void test005_TwoComponentsWithSameMetaInDifferentCaches_remove() {

@@ -3,7 +3,6 @@ package org.genericsystem.cache;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.genericsystem.api.exception.MetaLevelConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test
@@ -388,18 +387,17 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert newCarBlueComposites.size() == 2;
 	}
 
-	public void test301_replaceCompositeWithValueModification_InsistentExceptionKO() {
+	public void test301_replaceCompositeWithValueModification() {
 		Generic engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic car = engine.addInstance(vehicle, "Car");
 		Generic myCar = car.addInstance("MyCar");
 		Generic color = engine.addInstance("Color");
 		Generic red = color.addInstance("Red");
-		Generic green = color.addInstance("Green");
 		Generic blue = color.addInstance("Blue");
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Generic myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
 
-		catchAndCheckCause(() -> myCarRed.update("MyCarBlue", green, blue), MetaLevelConstraintViolationException.class);
+		myCarRed.update("MyCarBlue", myCar, blue);
 	}
 }
