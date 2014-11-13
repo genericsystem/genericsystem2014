@@ -740,7 +740,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	private void checkGetInstance() {
 		if (getMeta().getInstances().get().filter(x -> ((AbstractVertex<?>) x).equalsRegardlessSupers(getMeta(), getValue(), getComponents())).count() > 1)
-			getRoot().discardWithException(new GetInstanceConstraintViolationException("get touch result for search : " + info()));
+			getRoot().discardWithException(new GetInstanceConstraintViolationException("get too many result for search : " + info()));
 	}
 
 	void checkConstraints(boolean isOnAdd, boolean isFlushTime) {
