@@ -14,27 +14,16 @@ public interface DefaultAncestors<T extends AbstractVertex<T>> extends IVertex<T
 		return this.equals(getRoot());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default boolean isAlive() {
-		return equals(getAlive());
+		return equals(((T) this).getAlive());
 	}
 
 	@Override
 	default void checkIsAlive() {
-		if (!equals(getAlive()))
+		if (!isAlive())
 			getRoot().discardWithException(new AliveConstraintViolationException(info()));
-	}
-
-	// TODO not public
-	default T getAlive() {
-		if (isMeta())
-			return getRoot().getMeta(getComponents().size());
-		T aliveMeta = getMeta().getAlive();
-		if (aliveMeta != null)
-			for (T instance : aliveMeta.getInstances())
-				if (equals(instance))
-					return instance;
-		return null;
 	}
 
 	@Override

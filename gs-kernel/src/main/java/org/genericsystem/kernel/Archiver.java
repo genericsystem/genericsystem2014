@@ -174,11 +174,11 @@ public class Archiver {
 				if (inputStream.readBoolean()) {
 					long ts = inputStream.readLong();
 					Serializable value = (Serializable) inputStream.readObject();
-					Class clazz = (Class) inputStream.readObject();
+					Class<?> clazz = (Class<?>) inputStream.readObject();
 					Vertex meta = loadAncestor(vertexMap);
-					List<Vertex> overrides = loadAncestors(vertexMap);
+					List<Vertex> supers = loadAncestors(vertexMap);
 					List<Vertex> components = loadAncestors(vertexMap);
-					vertexMap.put(ts, meta == null ? root.setMeta(components.size()) : meta.setInstance(clazz, overrides, value, components.toArray(new Vertex[components.size()])));
+					vertexMap.put(ts, root.setGeneric(clazz, meta, supers, value, components));
 				}
 		}
 

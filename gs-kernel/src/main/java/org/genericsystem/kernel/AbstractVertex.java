@@ -90,14 +90,14 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	protected abstract Dependencies<T> getCompositesDependencies();
 
 	@SuppressWarnings("unchecked")
-	protected T init(T meta, List<T> supers, Serializable value, List<T> composites) {
-		init(meta, value, composites);
+	protected T init(T meta, List<T> supers, Serializable value, List<T> components) {
+		init(meta, value, components);
 		this.supers = Collections.unmodifiableList(supers);
 		return (T) this;
 	}
 
-	protected T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> composites) {
-		return newT(clazz).init(meta, supers, value, composites);
+	protected T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
+		return newT(clazz).init(meta, supers, value, components);
 	}
 
 	protected T newT(Class<?> clazz) {
@@ -143,24 +143,95 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return rebuildAll((T) this, () -> getMeta().setInstance(new Supers<>(getSupers(), supersToAdd), newValue, newComponents), computeDependencies());
 	}
 
-	private static class ConvertMap<T extends AbstractVertex<T>> extends HashMap<T, T> {
+	private class ConvertMap extends HashMap<T, T> {
 		private static final long serialVersionUID = 5003546962293036021L;
 
 		T convert(T dependency) {
-			if (dependency.isAlive())// KK ?
+			if (dependency.isAlive())
 				return dependency;
 			T newDependency = get(dependency);
 			if (newDependency == null) {
-				List<T> components = dependency.getComponents().stream().map(x -> x.equals(dependency) ? null : convert(x)).collect(Collectors.toList());
-				T meta = dependency.isRoot() ? dependency : !dependency.isMeta() ? convert(dependency.getMeta()) : null;
-				if (meta != null)
+				if (dependency.isMeta()) {
+					newDependency = getRoot().setMeta(dependency.getComponents().size());
+				} else {
+					List<T> components = dependency.getComponents().stream().map(x -> x.equals(dependency) ? null : convert(x)).collect(Collectors.toList());
+					T meta = convert(dependency.getMeta());
 					meta = meta.adjustMeta(dependency.getValue(), components);// necessary ?
-				List<T> supers = dependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
-				newDependency = dependency.build(null, meta, supers, dependency.getValue(), components).plug();
+					List<T> overrides = dependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
+					@SuppressWarnings("unchecked")
+					List<T> supers = new ArrayList<>(new SupersComputer<>((T) getRoot(), meta, overrides, dependency.getValue(), components));
+					checkOverridesAreReached(overrides, supers);// TODO system constraints
+					T instance = meta.getDirectInstance(dependency.getValue(), components);
+					if (instance != null) {
+						checkOverridesAreReached(overrides, instance.getSupers());
+						newDependency = instance;
+					} else {
+						newDependency = dependency.newT(null, meta, supers, dependency.getValue(), components).plug();
+					}
+				}
 				put(dependency, newDependency);
 			}
 			return newDependency;
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	protected T addInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
+		List<T> componentList = Arrays.asList(components);
+		if (isMeta()) {
+			T meta = getRoot().setMeta(componentList.size());
+			if (meta.equalsRegardlessSupers(meta, value, componentList) && Statics.areOverridesReached(overrides, meta.getSupers()))
+				getRoot().discardWithException(new ExistsException("An equivalent instance already exists : " + meta.info()));
+		}
+
+		T adjustedMeta = adjustMeta(value, components);
+		T equivInstance = adjustedMeta.getDirectInstance(value, componentList);
+		if (equivInstance != null)
+			getRoot().discardWithException(new ExistsException("An equivalent instance already exists : " + equivInstance.info()));
+		return rebuildAll(null, () -> adjustedMeta.build(clazz, adjustedMeta, overrides, value, componentList).plug(), adjustedMeta.computePotentialDependencies(overrides, value, componentList));
+
+	}
+
+	@SuppressWarnings("unchecked")
+	protected T setInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
+		List<T> componentList = Arrays.asList(components);
+		if (isMeta()) {
+			T meta = getRoot().setMeta(componentList.size());
+			if (meta.equalsRegardlessSupers(meta, value, componentList) && Statics.areOverridesReached(overrides, meta.getSupers()))
+				return meta;
+		}
+		T adjustedMeta = adjustMeta(value, components);
+		T equivInstance = adjustedMeta.getDirectEquivInstance(value, componentList);
+		if (equivInstance != null)
+			return equivInstance.equalsRegardlessSupers(adjustedMeta, value, componentList) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : equivInstance.update(overrides, value, components);
+		return rebuildAll(null, () -> adjustedMeta.build(clazz, adjustedMeta, overrides, value, componentList).plug(), adjustedMeta.computePotentialDependencies(overrides, value, componentList));
+	}
+
+	@SuppressWarnings("unchecked")
+	T getAlive() {
+		if (isRoot())
+			return (T) this;
+		if (isMeta()) {
+			T aliveMeta = getSupers().get(0).getAlive();
+			if (aliveMeta != null)
+				for (T inheritings : aliveMeta.getInheritings())
+					if (equals(inheritings))
+						return inheritings;
+		} else {
+			T aliveMeta = getMeta().getAlive();
+			if (aliveMeta != null)
+				for (T instance : aliveMeta.getInstances())
+					if (equals(instance))
+						return instance;
+		}
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	T build(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
+		List<T> supers = new ArrayList<>(new SupersComputer<>((T) getRoot(), meta, overrides, value, components));// TODO Order supers
+		checkOverridesAreReached(overrides, supers);// TODO system constraints
+		return newT(clazz, meta, supers, value, components);
 	}
 
 	protected LinkedHashSet<T> computeDependencies() {
@@ -257,41 +328,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return result != null && Statics.areOverridesReached(overrides, result.getSupers()) ? result : null;
 	}
 
-	@SuppressWarnings("unchecked")
-	protected T addInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
-		List<T> componentList = Arrays.asList(components);
-		checkSameEngine(componentList);
-		checkSameEngine(overrides);
-		if (isMeta()) {
-			T meta = getRoot().setMeta(componentList.size());
-			if (meta.equalsRegardlessSupers(meta, value, componentList) && Statics.areOverridesReached(overrides, meta.getSupers()))
-				getRoot().discardWithException(new ExistsException("An equivalent instance already exists : " + meta.info()));
-		}
-		T adjustedMeta = adjustMeta(value, components);
-		T equivInstance = adjustedMeta.getDirectInstance(value, componentList);
-		if (equivInstance != null)
-			getRoot().discardWithException(new ExistsException("An equivalent instance already exists : " + equivInstance.info()));
-		return rebuildAll(null, () -> adjustedMeta.build(clazz, adjustedMeta, overrides, value, componentList).plug(), adjustedMeta.computePotentialDependencies(overrides, value, componentList));
-
-	}
-
-	@SuppressWarnings("unchecked")
-	protected T setInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
-		List<T> componentList = Arrays.asList(components);
-		checkSameEngine(componentList);
-		checkSameEngine(overrides);
-		if (isMeta()) {
-			T meta = getRoot().setMeta(componentList.size());
-			if (meta.equalsRegardlessSupers(meta, value, componentList) && Statics.areOverridesReached(overrides, meta.getSupers()))
-				return meta;
-		}
-		T adjustedMeta = adjustMeta(value, components);
-		T equivInstance = adjustedMeta.getDirectEquivInstance(value, componentList);
-		if (equivInstance != null)
-			return equivInstance.equalsRegardlessSupers(adjustedMeta, value, componentList) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : equivInstance.update(overrides, value, components);
-		return rebuildAll(null, () -> adjustedMeta.build(clazz, adjustedMeta, overrides, value, componentList).plug(), adjustedMeta.computePotentialDependencies(overrides, value, componentList));
-	}
-
 	boolean dependsFrom(T meta, List<T> overrides, Serializable value, List<T> components) {
 		return inheritsFrom(meta, value, components) || getComponents().stream().filter(component -> component != null && component != this).anyMatch(component -> component.dependsFrom(meta, overrides, value, components))
 				|| (!isMeta() && getMeta().dependsFrom(meta, overrides, value, components)) || (!components.isEmpty() && componentsDepends(getComponents(), components) && overrides.stream().anyMatch(override -> override.inheritsFrom(getMeta())));
@@ -381,11 +417,9 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 				ISignature<?> component = service.getComponents().get(i);
 				if (service == component)
 					return this == componentsList.get(i);
-				else {
-					if (this == componentsList.get(i))
-						return false;
-					return (componentsList.get(i).equiv(component));
-				}
+				if (this == componentsList.get(i))
+					return false;
+				return (componentsList.get(i).equiv(component));
 			}
 		for (int i = 0; i < componentsList.size(); i++) {
 			ISignature<?> component = service.getComponents().get(i);
@@ -419,8 +453,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 				ISignature<?> component = components.get(i);
 				if (component == null)
 					return this == componentsList.get(i);
-				else
-					return componentsList.get(i).equiv(component);
+				return componentsList.get(i).equiv(component);
 			}
 		for (int i = 0; i < componentsList.size(); i++) {
 			ISignature<?> component = components.get(i);
@@ -441,11 +474,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 			getRoot().discardWithException(new CrossEnginesAssignementsException());
 	}
 
-	static <T extends AbstractVertex<T>> T rebuildAll(T toRebuild, Supplier<T> rebuilder, LinkedHashSet<T> dependenciesToRebuild) {
+	T rebuildAll(T toRebuild, Supplier<T> rebuilder, LinkedHashSet<T> dependenciesToRebuild) {
 		dependenciesToRebuild.forEach(T::unplug);
 		T build = rebuilder.get();
 		dependenciesToRebuild.remove(toRebuild);
-		ConvertMap<T> convertMap = new ConvertMap<>();
+		ConvertMap convertMap = new ConvertMap();
 		convertMap.put(toRebuild, build);
 		dependenciesToRebuild.forEach(x -> convertMap.convert(x));
 		return build;
@@ -477,31 +510,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		System.arraycopy(targets, 0, composites, 1, targets.length);
 		return composites;
 	}
-
-	@SuppressWarnings("unchecked")
-	T build(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
-		// TODO chechMeta if meta is null
-		overrides.forEach(AbstractVertex::checkIsAlive);// TODO move to system constraint?// add checkMeta ?
-		components.stream().filter(x -> x != null).forEach(T::checkIsAlive);// TODO move to system constraint?
-
-		List<T> supers = new ArrayList<>(new SupersComputer<>((T) getRoot(), meta, overrides, value, components));// TODO Order supers
-
-		checkOverridesAreReached(overrides, supers);// TODO system constraints
-		return newT(clazz, meta, supers, value, components);
-	}
-
-	// @Override
-	// @SuppressWarnings("unchecked")
-	// default T setMeta(int dim) {
-	// T adjustedMeta = ((T) this).adjustMeta(dim);
-	// if (adjustedMeta.getComponents().size() == dim)
-	// return adjustedMeta;
-	// List<T> components = new ArrayList<>();
-	// for (int i = 0; i < dim; i++)
-	// components.add((T) this);
-	// List<T> supers = Collections.singletonList(adjustedMeta);
-	// return ((T) this).rebuildAll(() -> ((T) this).newT(null, null, Collections.singletonList(adjustedMeta), getValue(), components).plug(), adjustedMeta.computePotentialDependencies(supers, getValue(), components));
-	// }
 
 	void checkOverridesAreReached(List<T> overrides, List<T> supers) {
 		if (!Statics.areOverridesReached(overrides, supers))

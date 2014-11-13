@@ -2,7 +2,6 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.Collections;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,17 +31,6 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 		}
 	}
 
-	// TODO clean protected T setInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
-	// List<T> componentList = Arrays.asList(components);
-	// checkSameEngine(componentList);
-	// checkSameEngine(overrides);
-	// T adjustedMeta = adjustMeta(value, components);
-	// T equivInstance = adjustedMeta.getDirectEquivInstance(value, componentList);
-	// if (equivInstance != null)
-	// return equivInstance.equalsRegardlessSupers(adjustedMeta, value, componentList) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : equivInstance.update(overrides, value, components);
-	// return rebuildAll(() -> adjustedMeta.build(clazz, adjustedMeta, overrides, value, componentList).plug(), adjustedMeta.computePotentialDependencies(overrides, value, componentList));
-	// }
-
 	@Override
 	public Root getRoot() {
 		return (Root) super.getRoot();
@@ -54,7 +42,6 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 			archiver.close();
 	}
 
-	public static class MetaAttribute {
-	}
+	public static class MetaAttribute {}
 
 }
