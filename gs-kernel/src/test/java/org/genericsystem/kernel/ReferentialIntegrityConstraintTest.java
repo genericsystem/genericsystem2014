@@ -28,8 +28,8 @@ public class ReferentialIntegrityConstraintTest extends AbstractTest {
 		Vertex vehicle = engine.addType("Vehicle");
 		Vertex color = engine.addType("Color");
 		vehicle.addAttribute("VehicleColor", color);
-		engine.getMetaAttribute().disableReferentialIntegrity(Statics.TARGET_POSITION);
-		color.remove();
+		engine.getMetaAttribute().disableReferentialIntegrity(Statics.BASE_POSITION);
+		vehicle.remove();
 	}
 
 	public void test005_enableReferentialIntegrity_remove() {
@@ -75,7 +75,7 @@ public class ReferentialIntegrityConstraintTest extends AbstractTest {
 		Vertex red = color.addInstance("red");
 		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
 		myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
-		engine.getMetaAttribute().disableReferentialIntegrity(Statics.TARGET_POSITION);
-		red.remove();
+		engine.getMetaAttribute().disableReferentialIntegrity(Statics.BASE_POSITION);
+		myVehicle.remove();
 	}
 }

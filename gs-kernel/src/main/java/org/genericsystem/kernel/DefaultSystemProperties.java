@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import org.genericsystem.api.core.IVertex;
+import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 import org.genericsystem.kernel.systemproperty.CascadeRemoveProperty;
 import org.genericsystem.kernel.systemproperty.NoReferentialIntegrityProperty;
@@ -42,6 +43,8 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 	@Override
 	@SuppressWarnings("unchecked")
 	default T enableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos, T... targets) {
+		if (pos != Statics.NO_POSITION && getComponent(pos) == null)
+			getRoot().discardWithException(new NotFoundException("System property is not apply because no component exists for position : " + pos));
 		setSystemPropertyValue(propertyClass, pos, Boolean.TRUE, targets);
 		return (T) this;
 	}
@@ -131,10 +134,12 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 		return (T) this;
 	}
 
+	@Override
 	default T enableClassConstraint(Class<?> constraintClass) {
 		return setClassConstraint(constraintClass);
 	}
 
+	@Override
 	default T disableClassConstraint() {
 		return setClassConstraint(null);
 	}
