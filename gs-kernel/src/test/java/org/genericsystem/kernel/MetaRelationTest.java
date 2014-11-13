@@ -1,31 +1,30 @@
-//package org.genericsystem.kernel;
-//
-//import java.util.Collections;
-//
-//import org.testng.annotations.Test;
-//
-//@Test
-//public class MetaRelationTest extends AbstractTest {
-//
-//	public void test001_setMetaAttribute_engineEngine() {
-//
-//		Root engine = new Root();
-//		Vertex metaAttribute = engine.setMetaAttribute();
-//		Vertex metaRelation = engine.setMetaAttribute(Collections.singletonList(engine));
-//		assert metaRelation.getMeta() == metaAttribute;
-//		assert metaRelation.inheritsFrom(metaAttribute);
-//	}
-//
-//	public void test002_setMetaAttribute_relation() {
-//
-//		Root engine = new Root();
-//		Vertex metaAttribute = engine.setMetaAttribute();
-//		Vertex metaRelation = engine.setMetaAttribute(Collections.singletonList(engine));
-//		Vertex car = engine.addInstance("Car");
-//		Vertex power = engine.addInstance("Power", car);
-//		Vertex color = engine.addInstance("Color");
-//		Vertex carColor = engine.addInstance("carColor", new Vertex[] { car, color });
-//		assert carColor.isInstanceOf(metaRelation);
-//		assert power.isInstanceOf(metaAttribute);
-//	}
-// }
+package org.genericsystem.kernel;
+
+import org.testng.annotations.Test;
+
+@Test
+public class MetaRelationTest extends AbstractTest {
+
+	public void test001_metaRelation() {
+		Root engine = new Root();
+		Vertex metaRelation = engine.getMetaRelation();
+		assert metaRelation.getLevel() == 0;
+		assert metaRelation.isMeta();
+		assert metaRelation.getMeta() == metaRelation;
+		assert metaRelation.inheritsFrom(engine);
+		assert metaRelation.isInstanceOf(engine);
+		assert metaRelation.isInstanceOf(metaRelation);
+		assert !engine.getInstances().contains(metaRelation);
+		assert !engine.getAllInstances().contains(metaRelation);
+	}
+
+	public void test002_addInstance_metaRelation() {
+		Root engine = new Root();
+		Vertex metaRelation = engine.getMetaRelation();
+		Vertex car = engine.addInstance("Car");
+		Vertex color = engine.addInstance("Color");
+		Vertex carColor = engine.addInstance("carColor", new Vertex[] { car, color });
+		assert carColor.getMeta() == metaRelation;
+		assert carColor.isInstanceOf(metaRelation);
+	}
+}
