@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.util.Arrays;
+
 import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.SingularConstraintViolationException;
 import org.testng.annotations.Test;
@@ -94,10 +95,19 @@ public class BindingServiceTest extends AbstractTest {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex singular = engine.addInstance("Singular");
-		singular.enableSingularConstraint(Statics.BASE_POSITION);
-		assert singular.isSingularConstraintEnabled(Statics.BASE_POSITION);
 
 		Vertex vehiclePower = vehicle.addAttribute(singular, "Power");
+		catchAndCheckCause(() -> singular.enableSingularConstraint(Statics.BASE_POSITION), org.genericsystem.api.exception.NotFoundException.class);
+	}
+
+	public void test003_InheritanceFromType() {
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex singular = engine.addInstance("Singular");
+
+		Vertex vehiclePower = vehicle.addAttribute(singular, "Power");
+
+		vehiclePower.enableSingularConstraint(Statics.BASE_POSITION);
 		assert vehiclePower.isSingularConstraintEnabled(Statics.BASE_POSITION);
 		Vertex myBmw = vehicle.addInstance("myBmw");
 
