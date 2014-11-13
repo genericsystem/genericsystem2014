@@ -131,10 +131,12 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 		return (T) this;
 	}
 
+	@Override
 	default T enableClassConstraint(Class<?> constraintClass) {
 		return setClassConstraint(constraintClass);
 	}
 
+	@Override
 	default T disableClassConstraint() {
 		return setClassConstraint(null);
 	}
