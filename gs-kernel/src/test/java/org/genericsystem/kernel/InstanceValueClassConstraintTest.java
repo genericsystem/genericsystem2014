@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.util.stream.Stream;
+
 import org.genericsystem.api.exception.InstanceValueClassViolationConstraint;
 import org.testng.annotations.Test;
 
@@ -14,9 +15,11 @@ public class InstanceValueClassConstraintTest extends AbstractTest {
 		Vertex myVehicle = vehicle.addInstance("myVehicle");
 
 		assert myVehicle.getClassConstraint() == null;
-		vehicle.setClassConstraint(Integer.class);
-		assert Integer.class.equals(vehicle.getClassConstraint());
-		vehicle.setClassConstraint(null);
+		vehicle.setClassConstraint(String.class);
+		assert String.class.equals(vehicle.getClassConstraint());
+		vehicle.disableClassConstraint();
+		myVehicle.updateValue(null);
+
 		assert vehicle.getClassConstraint() == null;
 
 	}
@@ -54,6 +57,19 @@ public class InstanceValueClassConstraintTest extends AbstractTest {
 
 		myVehicle.addHolder(power, 125);
 		power.setClassConstraint(null);
+		myVehicle.addHolder(power, "230");
+	}
+
+	public void test05_DisableConstraint() {
+		Root root = new Root();
+		Vertex vehicle = root.addInstance("Vehicle");
+		Vertex myVehicle = vehicle.addInstance("myVehicle");
+		Vertex power = root.addInstance("Power");
+		vehicle.addAttribute(power, "Power");
+		power.enableClassConstraint(Integer.class);
+
+		myVehicle.addHolder(power, 125);
+		power.disableClassConstraint();
 		myVehicle.addHolder(power, "230");
 	}
 }

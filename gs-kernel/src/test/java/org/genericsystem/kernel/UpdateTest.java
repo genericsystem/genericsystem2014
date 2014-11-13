@@ -131,12 +131,12 @@ public class UpdateTest extends AbstractTest {
 
 		Vertex carUpdate = car.update("Vehicle");
 
-		assert carUpdate.equals(vehicle);
+		assert carUpdate.equals(vehicle) : carUpdate.info();
 		assert !car.isAlive();
 		assert !myCar.isAlive();
 
 		assert vehicle.getInstance("myCar") != null;
-		assert vehicle.getInstance("myVehicle") != null;
+		assert vehicle.getInstance("myVehicle") != null : carUpdate.getInstances().info();
 		assert vehicle.getInstances().size() == 2;
 	}
 
@@ -193,7 +193,23 @@ public class UpdateTest extends AbstractTest {
 		carColor.enablePropertyConstraint();
 
 		Vertex myCarRed = carColor.addInstance("myCarRed", myCar, red);
-		Vertex myCarYellow = carColor.addInstance("myCarYellow", myCar, yellow);
-		catchAndCheckCause(() -> myCarRed.update("myCarRed", car, yellow), PropertyConstraintViolationException.class);
+		carColor.addInstance("myCarYellow", myCar, yellow);
+		catchAndCheckCause(() -> myCarRed.update("myCarRed", myCar, yellow), PropertyConstraintViolationException.class);
+	}
+
+	public void test011_propertyConstraint() {
+		Root engine = new Root();
+		Vertex car = engine.addInstance("Car");
+		Vertex myCar = car.addInstance("myCar");
+
+		Vertex color = engine.addInstance("Color");
+		color.addInstance("red");
+		Vertex yellow = color.addInstance("yellow");
+
+		Vertex carColor = car.addAttribute("carColor", color);
+		carColor.enablePropertyConstraint();
+
+		carColor.addInstance("myCarYellow", myCar, yellow);
+		catchAndCheckCause(() -> carColor.addInstance("myCarRed", myCar, yellow), PropertyConstraintViolationException.class);
 	}
 }

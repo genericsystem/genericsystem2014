@@ -11,7 +11,7 @@ public class SingularConstraint<T extends AbstractVertex<T>> implements AxedChec
 
 	@Override
 	public void check(T modified, T attribute, Serializable value, int axe, boolean isRevert) throws ConstraintViolationException {
-		T base = modified.getComponents().get(axe);
+		T base = isRevert ? modified : modified.getComponents().get(axe);
 		if (base.getHolders(attribute).size() > 1)
 			throw new SingularConstraintViolationException(base + " has more than one link : " + base.getHolders(attribute).info() + " for attribute : " + attribute);
 	}
