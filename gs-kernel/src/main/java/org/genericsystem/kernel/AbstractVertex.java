@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
@@ -20,6 +21,7 @@ import org.genericsystem.api.exception.AmbiguousSelectionException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.CrossEnginesAssignementsException;
 import org.genericsystem.api.exception.ExistsException;
+import org.genericsystem.api.exception.GetInstanceConstraintViolationException;
 import org.genericsystem.api.exception.MetaLevelConstraintViolationException;
 import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
 import org.genericsystem.api.exception.NotFoundException;
@@ -649,7 +651,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {}
+	public static class SystemMap {
+	}
 
 	Stream<T> getKeys() {
 		T map = getMap();
@@ -731,12 +734,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	private void checkGetInstance() {
-		// List<T> result = new ArrayList<>();
-		// for (T instance : getMeta().getInstances())
-		// if (((AbstractVertex<?>) instance).equalsRegardlessSupers(getMeta(), getValue(), getComponents()))
-		// result.add(instance);
-		// if (result.size() != 1)
-		// getRoot().discardWithException(new GetInstanceConstraintViolationException("get : " + result + " for search : " + info()));
+		if (getMeta().getInstances().get().filter(x -> ((AbstractVertex<?>) x).equalsRegardlessSupers(getMeta(), getValue(), getComponents())).count() > 1)
+			getRoot().discardWithException(new GetInstanceConstraintViolationException("get too many result for search : " + info()));
 	}
 
 	void checkConstraints(boolean isOnAdd, boolean isFlushTime) {
