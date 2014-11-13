@@ -25,7 +25,6 @@ import org.genericsystem.api.exception.MetaLevelConstraintViolationException;
 import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
 import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
-import org.genericsystem.api.exception.SingularConstraintViolationException;
 import org.genericsystem.kernel.Statics.Supers;
 import org.genericsystem.kernel.annotations.Priority;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
@@ -730,8 +729,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	void checkConstraints(boolean isOnAdd, boolean isFlushTime) {
-		T map = getMap();
-		if (map != null) {
+		if (getMap() != null) {
 			Stream<T> contraintsHolders = getMeta().getHolders(getMap()).get().filter(holder -> holder.getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) holder.getMeta().getValue()).getClazz()))
 					.filter(holder -> holder.getValue() != null && !Boolean.FALSE.equals(holder.getValue())).sorted(CONSTRAINT_PRIORITY);
 			contraintsHolders.forEach(constraintHolder -> {
@@ -771,31 +769,9 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	void checkConsistency(boolean isOnAdd, boolean isFlushTime) {
-		if (getMap() != null && isInstanceOf(getMap())) {
-			System.out.println("****dddsds** " + ((AxedPropertyClass) getMeta().getValue()).getClazz());
-			if (getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) getMeta().getValue()).getClazz())) {
-
-				T attribute = getComponent(Statics.BASE_POSITION);
-				System.out.println("****** " + attribute.detailedInfo());
-				for (T base : attribute.getComponent(((AxedPropertyClass) getMeta().getValue()).getAxe()).getAllInstances()) {
-					// instance.checkConstraints(isOnAdd, isFlushTime);
-					if (base.getHolders(attribute).size() > 1)
-						try {
-							throw new SingularConstraintViolationException(base + " has more than one link : " + base.getHolders(attribute).info() + " for attribute : " + attribute);
-						} catch (SingularConstraintViolationException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-				}
-			}
-
-			// System.out.println("****** " + this.detailedInfo() + " / " + isOnAdd + " / " + isFlushTime);
-			//
-			// if (getComponent(Statics.BASE_POSITION) != null && getComponent(Statics.BASE_POSITION).getComponent(((AxedPropertyClass) getMeta().getValue()).getAxe()) != null) {
-			// System.out.println("ddddd " + getComponent(Statics.BASE_POSITION).getComponent(((AxedPropertyClass) getMeta().getValue()).getAxe()));
-			//
-			// getComponent(Statics.BASE_POSITION).getComponent(((AxedPropertyClass) getMeta().getValue()).getAxe()).checkConstraints(isOnAdd, isFlushTime);
-			// }
+		if (getMap() != null && getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) getMeta().getValue()).getClazz()) && !Boolean.FALSE.equals(getMeta().getValue())) {
+			T baseConstraint = getComponent(Statics.BASE_POSITION);
+			baseConstraint.getAllInstances().forEach(x -> x.check((T) this, baseConstraint, isFlushTime, isOnAdd, false));
 		}
 	}
 

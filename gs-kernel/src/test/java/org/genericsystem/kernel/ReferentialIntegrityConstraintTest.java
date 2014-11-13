@@ -32,8 +32,6 @@ public class ReferentialIntegrityConstraintTest extends AbstractTest {
 		color.remove();
 	}
 
-	// ------------------------
-
 	public void test005_enableReferentialIntegrity_remove() {
 		Root engine = new Root();
 		Vertex vehicle = engine.addType("Vehicle");
