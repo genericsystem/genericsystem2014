@@ -20,6 +20,7 @@ import org.genericsystem.api.exception.AmbiguousSelectionException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.CrossEnginesAssignementsException;
 import org.genericsystem.api.exception.ExistsException;
+import org.genericsystem.api.exception.GetInstanceConstraintViolationException;
 import org.genericsystem.api.exception.MetaLevelConstraintViolationException;
 import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
 import org.genericsystem.api.exception.NotFoundException;
@@ -157,6 +158,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 					List<T> components = dependency.getComponents().stream().map(x -> x.equals(dependency) ? null : convert(x)).collect(Collectors.toList());
 					T meta = convert(dependency.getMeta());
 					meta = meta.adjustMeta(dependency.getValue(), components);// necessary ?
+
 					List<T> overrides = dependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
 					@SuppressWarnings("unchecked")
 					List<T> supers = new ArrayList<>(new SupersComputer<>((T) getRoot(), meta, overrides, dependency.getValue(), components));
@@ -169,6 +171,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 						newDependency = dependency.newT(null, meta, supers, dependency.getValue(), components).plug();
 					}
 				}
+
 				put(dependency, newDependency);
 			}
 			return newDependency;
@@ -674,7 +677,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		checkDependsSuperComponents();
 		checkLevel();
 		checkLevelComponents();
-
+		checkGetInstance();
 	}
 
 	private void checkMeta() {
@@ -726,6 +729,15 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		});
 	}
 
+	private void checkGetInstance() {
+		List<T> result = new ArrayList<>();
+		for (T instance : getMeta().getInstances())
+			if (((AbstractVertex<?>) instance).equalsRegardlessSupers(getMeta(), getValue(), getComposites().get().collect(Collectors.toList())))
+				result.add(instance);
+		if (result.size() != 1)
+			getRoot().discardWithException(new GetInstanceConstraintViolationException("get : " + result + " for search : " + info()));
+	}
+
 	void checkConstraints(boolean isOnAdd, boolean isFlushTime) {
 		T map = getMap();
 		if (map != null) {
@@ -744,15 +756,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	@SuppressWarnings("unchecked")
 	void check(T constraintHolder, T baseComponent, boolean isFlushTime, boolean isOnAdd, boolean isRevert) {
-		int axe = ((AxedPropertyClass) constraintHolder.getMeta().getValue()).getAxe();
-		Serializable value = constraintHolder.getValue();
-		Constraint<T> constraint = constraintHolder.getMeta().statelessConstraint();
-		if ((isFlushTime || constraint.isImmediatelyCheckable()) && constraint.isCheckedAt((T) this, isOnAdd))
-			try {
-				constraint.check((T) this, baseComponent, value, axe, isOnAdd, isFlushTime, isRevert);
-			} catch (ConstraintViolationException e) {
-				getRoot().discardWithException(e);
-			}
+		try {
+			constraintHolder.getMeta().statelessConstraint().check((T) this, baseComponent, constraintHolder.getValue(), ((AxedPropertyClass) constraintHolder.getMeta().getValue()).getAxe(), isOnAdd, isFlushTime, isRevert);
+		} catch (ConstraintViolationException e) {
+			getRoot().discardWithException(e);
+		}
 	}
 
 	@SuppressWarnings("unchecked")

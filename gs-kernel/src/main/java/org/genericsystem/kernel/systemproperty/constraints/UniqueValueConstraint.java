@@ -6,12 +6,12 @@ import java.util.Objects;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.UniqueValueConstraintViolationException;
 import org.genericsystem.kernel.AbstractVertex;
+import org.genericsystem.kernel.systemproperty.constraints.Constraint.CheckedConstraint;
 
-public class UniqueValueConstraint<T extends AbstractVertex<T>> implements Constraint<T> {
+public class UniqueValueConstraint<T extends AbstractVertex<T>> implements CheckedConstraint<T> {
 
 	@Override
-	public void check(T modified, T attribute, Serializable value, int axe, boolean isOnAdd, boolean isFlushTime, boolean isRevert) throws ConstraintViolationException {
-
+	public void check(T modified, T attribute, Serializable value) throws ConstraintViolationException {
 		for (T instance : modified.getMeta().getAllInstances())
 			if (Objects.equals(instance.getValue(), modified.getValue()) && !instance.equals(modified))
 				throw new UniqueValueConstraintViolationException("Duplicate value : " + instance.getValue());

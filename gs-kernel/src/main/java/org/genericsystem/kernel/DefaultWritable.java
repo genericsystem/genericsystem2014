@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
 import org.genericsystem.api.core.IVertex;
 
 public interface DefaultWritable<T extends AbstractVertex<T>> extends IVertex<T> {
@@ -26,8 +27,8 @@ public interface DefaultWritable<T extends AbstractVertex<T>> extends IVertex<T>
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T updateSupers(T... supersToAdd) {
-		return update(Arrays.asList(supersToAdd), getValue(), coerceToTArray(getComponents().toArray()));
+	default T updateSupers(T... supers) {
+		return update(Arrays.asList(supers), getValue(), coerceToTArray(getComponents().toArray()));
 	}
 
 	@Override
