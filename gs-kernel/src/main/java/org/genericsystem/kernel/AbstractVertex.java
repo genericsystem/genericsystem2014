@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
@@ -637,7 +638,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {}
+	public static class SystemMap {
+	}
 
 	Stream<T> getKeys() {
 		T map = getMap();
@@ -736,15 +738,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	@SuppressWarnings("unchecked")
 	void check(T constraintHolder, T baseComponent, boolean isFlushTime, boolean isOnAdd, boolean isRevert) {
-		int axe = ((AxedPropertyClass) constraintHolder.getMeta().getValue()).getAxe();
-		Serializable value = constraintHolder.getValue();
-		Constraint<T> constraint = constraintHolder.getMeta().statelessConstraint();
-		if ((isFlushTime || constraint.isImmediatelyCheckable()) && constraint.isCheckedAt((T) this, isOnAdd))
-			try {
-				constraint.check((T) this, baseComponent, value, axe, isOnAdd, isFlushTime, isRevert);
-			} catch (ConstraintViolationException e) {
-				getRoot().discardWithException(e);
-			}
+		try {
+			constraintHolder.getMeta().statelessConstraint().check((T) this, baseComponent, constraintHolder.getValue(), ((AxedPropertyClass) constraintHolder.getMeta().getValue()).getAxe(), isOnAdd, isFlushTime, isRevert);
+		} catch (ConstraintViolationException e) {
+			getRoot().discardWithException(e);
+		}
 	}
 
 	@SuppressWarnings("unchecked")

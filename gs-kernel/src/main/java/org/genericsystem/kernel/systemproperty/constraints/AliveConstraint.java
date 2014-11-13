@@ -6,11 +6,12 @@ import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.DefaultVertex;
+import org.genericsystem.kernel.systemproperty.constraints.Constraint.CheckedConstraint;
 
-public class AliveConstraint<T extends AbstractVertex<T>> implements Constraint<T> {
+public class AliveConstraint<T extends AbstractVertex<T>> implements CheckedConstraint<T> {
 
 	@Override
-	public void check(T modified, T attribute, Serializable value, int axe, boolean isOnAdd, boolean isFlushTime, boolean isRevert) throws ConstraintViolationException {
+	public void check(T modified, T attribute, Serializable value) throws ConstraintViolationException {
 		assert modified.isAlive();
 		for (DefaultVertex<T> component : modified.getComponents())
 			if (!component.isAlive())
