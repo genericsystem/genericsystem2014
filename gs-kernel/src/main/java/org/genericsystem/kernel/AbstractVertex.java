@@ -13,7 +13,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
@@ -26,7 +25,6 @@ import org.genericsystem.api.exception.MetaLevelConstraintViolationException;
 import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
 import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
-import org.genericsystem.kernel.Statics.Supers;
 import org.genericsystem.kernel.annotations.Priority;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint;
@@ -136,12 +134,14 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public T update(List<T> supers, Serializable newValue, T... newComponents) {
+	public T update(List<T> overrides, Serializable newValue, T... newComponents) {
 		for (int i = 0; i < newComponents.length; i++)
 			if (equals(newComponents[i]))
 				newComponents[i] = null;
 		T newMeta = getMeta().isMeta() ? getRoot().setMeta(newComponents.length) : getMeta().adjustMeta(newValue, Arrays.asList(newComponents));
-		return rebuildAll((T) this, () -> newMeta.adjustMeta(newValue, Arrays.asList(newComponents)).buildIfNecessary(new Supers<>(supers), newValue, Arrays.asList(newComponents)), computeDependencies());
+		// List<T> supers = new ArrayList<>(new SupersComputer<>((T) getRoot(), newMeta, overrides, newValue, Arrays.asList(newComponents)));
+		// checkOverridesAreReached(overrides, supers);// TODO system constraints
+		return rebuildAll((T) this, () -> newMeta.adjustMeta(newValue, Arrays.asList(newComponents)).buildIfNecessary(overrides, newValue, Arrays.asList(newComponents)), computeDependencies());
 	}
 
 	private class ConvertMap extends HashMap<T, T> {
@@ -651,8 +651,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {
-	}
+	public static class SystemMap {}
 
 	Stream<T> getKeys() {
 		T map = getMap();
