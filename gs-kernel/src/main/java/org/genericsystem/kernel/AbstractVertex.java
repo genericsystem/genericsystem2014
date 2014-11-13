@@ -134,13 +134,13 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public T update(List<T> supersToAdd, Serializable newValue, T... newComponents) {
+	public T update(List<T> supers, Serializable newValue, T... newComponents) {
 		if (newComponents.length != getComponents().size())
 			getRoot().discardWithException(new IllegalArgumentException());
 		for (int i = 0; i < newComponents.length; i++)
 			if (equiv(newComponents[i]))
 				newComponents[i] = null;
-		return rebuildAll((T) this, () -> getMeta().setInstance(new Supers<>(getSupers(), supersToAdd), newValue, newComponents), computeDependencies());
+		return rebuildAll((T) this, () -> getMeta().setInstance(new Supers<>(supers), newValue, newComponents), computeDependencies());
 	}
 
 	private class ConvertMap extends HashMap<T, T> {
