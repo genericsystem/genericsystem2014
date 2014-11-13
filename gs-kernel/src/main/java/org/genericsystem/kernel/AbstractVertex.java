@@ -135,19 +135,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	@SuppressWarnings("unchecked")
 	@Override
 	public T update(List<T> supers, Serializable newValue, T... newComponents) {
-		if (newComponents.length != getComponents().size())
-			getRoot().discardWithException(new IllegalArgumentException());
 		for (int i = 0; i < newComponents.length; i++)
-			if (equiv(newComponents[i]))
+			if (equals(newComponents[i]))
 				newComponents[i] = null;
-		return rebuildAll((T) this, () -> getMeta().setInstance(new Supers<>(supers), newValue, newComponents), computeDependencies());
-		// T equivInstance = getMeta().getDirectEquivInstance(newValue, Arrays.asList(newComponents));
-		// if (equivInstance != null) {
-		// LinkedHashSet<T> computeDependencies = equivInstance.computeDependencies();
-		// computeDependencies.addAll(computeDependencies());
-		// return rebuildAll((T) this, () -> equivInstance.plug(), computeDependencies);
-		// }
-		// return rebuildAll((T) this, () -> getMeta().build(getClass(), getMeta(), new Supers<>(supers), newValue, Arrays.asList(newComponents)).plug(), computeDependencies());
+		T newMeta = getMeta().isMeta() ? getRoot().setMeta(newComponents.length) : getMeta().adjustMeta(newValue, Arrays.asList(newComponents));
+		return rebuildAll((T) this, () -> newMeta.adjustMeta(newValue, Arrays.asList(newComponents)).buildIfNecessary(new Supers<>(supers), newValue, Arrays.asList(newComponents)), computeDependencies());
 	}
 
 	private class ConvertMap extends HashMap<T, T> {
@@ -161,27 +153,30 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 				if (dependency.isMeta()) {
 					newDependency = getRoot().setMeta(dependency.getComponents().size());
 				} else {
+					Serializable value = dependency.getValue();
 					List<T> components = dependency.getComponents().stream().map(x -> x.equals(dependency) ? null : convert(x)).collect(Collectors.toList());
 					T meta = convert(dependency.getMeta());
-					meta = meta.adjustMeta(dependency.getValue(), components);// necessary ?
-
+					meta = meta.adjustMeta(value, components);
 					List<T> overrides = dependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
 					@SuppressWarnings("unchecked")
-					List<T> supers = new ArrayList<>(new SupersComputer<>((T) getRoot(), meta, overrides, dependency.getValue(), components));
+					List<T> supers = new ArrayList<>(new SupersComputer<>((T) getRoot(), meta, overrides, value, components));
 					checkOverridesAreReached(overrides, supers);// TODO system constraints
-					T instance = meta.getDirectInstance(dependency.getValue(), components);
-					if (instance != null) {
-						checkOverridesAreReached(overrides, instance.getSupers());
-						newDependency = instance;
-					} else {
-						newDependency = dependency.newT(null, meta, supers, dependency.getValue(), components).plug();
-					}
+					newDependency = meta.buildIfNecessary(supers, value, components);
 				}
-
 				put(dependency, newDependency);
 			}
 			return newDependency;
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	T buildIfNecessary(List<T> supers, Serializable value, List<T> components) {
+		T instance = getDirectInstance(value, components);
+		if (instance != null) {
+			checkOverridesAreReached(supers, instance.getSupers());
+			return instance;
+		}
+		return newT(null, (T) this, supers, value, components).plug();
 	}
 
 	@SuppressWarnings("unchecked")

@@ -3,7 +3,7 @@ package org.genericsystem.kernel;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test
@@ -372,8 +372,21 @@ public class UpdatableServiceTest extends AbstractTest {
 		Vertex blue = color.addInstance("Blue");
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Vertex myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
+		catchAndCheckCause(() -> myCarRed.updateComposites(blue), MetaRuleConstraintViolationException.class);
 
-		catchAndCheckCause(() -> myCarRed.updateComposites(blue), IllegalArgumentException.class);
+	}
+
+	public void test202_replaceComposite_OK() {
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex myCar = car.addInstance("MyCar");
+		Vertex color = engine.addInstance("Color");
+		Vertex date = engine.addInstance("Date");
+		Vertex red = color.addInstance("Red");
+		Vertex blue = color.addInstance("Blue");
+		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		vehicleColor.updateComposites(vehicle, color, date);
 
 	}
 
