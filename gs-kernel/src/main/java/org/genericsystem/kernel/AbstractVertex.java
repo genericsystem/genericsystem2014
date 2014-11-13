@@ -739,14 +739,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	private void checkGetInstance() {
-		if (getMeta().getInstances().isEmpty())
-			return;
-		List<T> result = new ArrayList<>();
-		for (T instance : getMeta().getInstances())
-			if (((AbstractVertex<?>) instance).equalsRegardlessSupers(getMeta(), getValue(), getComponents()))
-				result.add(instance);
-		if (result.size() != 1)
-			getRoot().discardWithException(new GetInstanceConstraintViolationException("get : " + result + " for search : " + info()));
+		if (getMeta().getInstances().get().filter(x -> ((AbstractVertex<?>) x).equalsRegardlessSupers(getMeta(), getValue(), getComponents())).count() > 1)
+			getRoot().discardWithException(new GetInstanceConstraintViolationException("get touch result for search : " + info()));
 	}
 
 	void checkConstraints(boolean isOnAdd, boolean isFlushTime) {
