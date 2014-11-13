@@ -25,6 +25,7 @@ import org.genericsystem.api.exception.MetaLevelConstraintViolationException;
 import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
 import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
+import org.genericsystem.api.exception.SingularConstraintViolationException;
 import org.genericsystem.kernel.Statics.Supers;
 import org.genericsystem.kernel.annotations.Priority;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
@@ -774,7 +775,32 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	void checkConsistency(boolean isOnAdd, boolean isFlushTime) {
-		// TODO impl
+		if (getMap() != null && isInstanceOf(getMap())) {
+			System.out.println("****dddsds** " + ((AxedPropertyClass) getMeta().getValue()).getClazz());
+			if (getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) getMeta().getValue()).getClazz())) {
+
+				T attribute = getComponent(Statics.BASE_POSITION);
+				System.out.println("****** " + attribute.detailedInfo());
+				for (T base : attribute.getComponent(((AxedPropertyClass) getMeta().getValue()).getAxe()).getAllInstances()) {
+					// instance.checkConstraints(isOnAdd, isFlushTime);
+					if (base.getHolders(attribute).size() > 1)
+						try {
+							throw new SingularConstraintViolationException(base + " has more than one link : " + base.getHolders(attribute).info() + " for attribute : " + attribute);
+						} catch (SingularConstraintViolationException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+				}
+			}
+
+			// System.out.println("****** " + this.detailedInfo() + " / " + isOnAdd + " / " + isFlushTime);
+			//
+			// if (getComponent(Statics.BASE_POSITION) != null && getComponent(Statics.BASE_POSITION).getComponent(((AxedPropertyClass) getMeta().getValue()).getAxe()) != null) {
+			// System.out.println("ddddd " + getComponent(Statics.BASE_POSITION).getComponent(((AxedPropertyClass) getMeta().getValue()).getAxe()));
+			//
+			// getComponent(Statics.BASE_POSITION).getComponent(((AxedPropertyClass) getMeta().getValue()).getAxe()).checkConstraints(isOnAdd, isFlushTime);
+			// }
+		}
 	}
 
 	private static final Comparator<AbstractVertex<?>> CONSTRAINT_PRIORITY = new Comparator<AbstractVertex<?>>() {
