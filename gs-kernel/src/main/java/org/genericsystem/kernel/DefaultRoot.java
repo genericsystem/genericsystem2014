@@ -7,8 +7,12 @@ import java.util.List;
 
 import org.genericsystem.api.core.IRoot;
 import org.genericsystem.api.exception.RollbackException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public interface DefaultRoot<T extends AbstractVertex<T>> extends IRoot<T> {
+
+	static Logger log = LoggerFactory.getLogger(DefaultRoot.class);
 
 	@Override
 	default void discardWithException(Throwable exception) throws RollbackException {
@@ -31,6 +35,21 @@ public interface DefaultRoot<T extends AbstractVertex<T>> extends IRoot<T> {
 		return getMeta(Statics.RELATION_SIZE);
 	}
 
+	@SuppressWarnings("unchecked")
+	default T setGeneric(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
+		if (meta == null)
+			return setMeta(components.size());
+		T instance = meta.getDirectInstance(value, components);
+		if (instance != null) {
+			if (!Statics.areOverridesReached(supers, instance.getSupers()))
+				log.warn("Found in graph : " + instance.info() + "but supers are not reached ! file supers : " + supers + " graph supers : " + instance.getSupers());
+			if (clazz != null && !clazz.equals(instance.getClass()))
+				log.warn("Found in graph : " + instance.info() + "but class is not the same !" + clazz + " / " + instance.getClass());
+			return instance;
+		}
+		return ((T) this).newT(clazz, meta, supers, value, components).plug();
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
 	default T getMeta(int dim) {
@@ -48,7 +67,7 @@ public interface DefaultRoot<T extends AbstractVertex<T>> extends IRoot<T> {
 		for (int i = 0; i < dim; i++)
 			components.add((T) this);
 		List<T> supers = Collections.singletonList(adjustedMeta);
-		return AbstractVertex.rebuildAll(null, () -> ((T) this).newT(null, null, Collections.singletonList(adjustedMeta), getValue(), components).plug(), adjustedMeta.computePotentialDependencies(supers, getValue(), components));
+		return ((T) this).rebuildAll(null, () -> ((T) this).newT(null, null, Collections.singletonList(adjustedMeta), getValue(), components).plug(), adjustedMeta.computePotentialDependencies(supers, getValue(), components));
 	}
 
 	@Override
