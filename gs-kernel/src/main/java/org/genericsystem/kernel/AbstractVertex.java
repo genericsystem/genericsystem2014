@@ -135,13 +135,13 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public T update(List<T> supersToAdd, Serializable newValue, T... newComponents) {
+	public T update(List<T> supers, Serializable newValue, T... newComponents) {
 		if (newComponents.length != getComponents().size())
 			getRoot().discardWithException(new IllegalArgumentException());
 		for (int i = 0; i < newComponents.length; i++)
 			if (equiv(newComponents[i]))
 				newComponents[i] = null;
-		return rebuildAll((T) this, () -> getMeta().setInstance(new Supers<>(getSupers(), supersToAdd), newValue, newComponents), computeDependencies());
+		return rebuildAll((T) this, () -> getMeta().setInstance(new Supers<>(supers), newValue, newComponents), computeDependencies());
 	}
 
 	private static class ConvertMap<T extends AbstractVertex<T>> extends HashMap<T, T> {
@@ -157,7 +157,15 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 				if (meta != null)
 					meta = meta.adjustMeta(dependency.getValue(), components);// necessary ?
 				List<T> supers = dependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
-				newDependency = dependency.build(null, meta, supers, dependency.getValue(), components).plug();
+				if (meta != null) {
+					T directInstance = meta.getDirectInstance(dependency.getValue(), components);
+					if (directInstance != null)
+						newDependency = directInstance;
+					else
+						newDependency = dependency.build(null, meta, supers, dependency.getValue(), components).plug();
+				} else
+					// TODO KK
+					newDependency = dependency.build(null, meta, supers, dependency.getValue(), components).plug();
 				put(dependency, newDependency);
 			}
 			return newDependency;
