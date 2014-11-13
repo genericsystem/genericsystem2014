@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
+import org.genericsystem.api.exception.PropertyConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test
@@ -130,12 +131,12 @@ public class UpdateTest extends AbstractTest {
 
 		Vertex carUpdate = car.update("Vehicle");
 
-		assert carUpdate.equals(vehicle);
+		assert carUpdate.equals(vehicle) : carUpdate.info();
 		assert !car.isAlive();
 		assert !myCar.isAlive();
 
 		assert vehicle.getInstance("myCar") != null;
-		assert vehicle.getInstance("myVehicle") != null;
+		assert vehicle.getInstance("myVehicle") != null : carUpdate.getInstances().info();
 		assert vehicle.getInstances().size() == 2;
 	}
 
@@ -171,15 +172,44 @@ public class UpdateTest extends AbstractTest {
 		assert !powerBis.isAlive();
 		assert !v233Bis.isAlive();
 
-		System.out.println(myCar.detailedInfo());
 		assert !myCar.getComposites().isEmpty();
-		System.out.println(myCar.getComposites().first().detailedInfo());
-		System.out.println(myVehicle.getComposites().first().detailedInfo());
 		assert !myVehicle.getHolders(power).isEmpty();
 		assert !myCar.getHolders(power).isEmpty();
 
 		assert myVehicle.getHolders(power).first().getValue().equals(233);
 		assert myVehicle.getHolders(power).first().getValue().equals(233);
+	}
 
+	public void test010_propertyConstraint() {
+		Root engine = new Root();
+		Vertex car = engine.addInstance("Car");
+		Vertex myCar = car.addInstance("myCar");
+
+		Vertex color = engine.addInstance("Color");
+		Vertex red = color.addInstance("red");
+		Vertex yellow = color.addInstance("yellow");
+
+		Vertex carColor = car.addAttribute("carColor", color);
+		carColor.enablePropertyConstraint();
+
+		Vertex myCarRed = carColor.addInstance("myCarRed", myCar, red);
+		carColor.addInstance("myCarYellow", myCar, yellow);
+		catchAndCheckCause(() -> myCarRed.update("myCarRed", myCar, yellow), PropertyConstraintViolationException.class);
+	}
+
+	public void test011_propertyConstraint() {
+		Root engine = new Root();
+		Vertex car = engine.addInstance("Car");
+		Vertex myCar = car.addInstance("myCar");
+
+		Vertex color = engine.addInstance("Color");
+		color.addInstance("red");
+		Vertex yellow = color.addInstance("yellow");
+
+		Vertex carColor = car.addAttribute("carColor", color);
+		carColor.enablePropertyConstraint();
+
+		carColor.addInstance("myCarYellow", myCar, yellow);
+		catchAndCheckCause(() -> carColor.addInstance("myCarRed", myCar, yellow), PropertyConstraintViolationException.class);
 	}
 }

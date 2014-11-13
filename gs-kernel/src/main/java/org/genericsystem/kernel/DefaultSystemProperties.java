@@ -131,6 +131,14 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 		return (T) this;
 	}
 
+	default T enableClassConstraint(Class<?> constraintClass) {
+		return setClassConstraint(constraintClass);
+	}
+
+	default T disableClassConstraint() {
+		return setClassConstraint(null);
+	}
+
 	@Override
 	default T enableRequiredConstraint(int pos) {
 		return enableSystemProperty(RequiredConstraint.class, pos, coerceToTArray(this.getComponents().get(pos)));

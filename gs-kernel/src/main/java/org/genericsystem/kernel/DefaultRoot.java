@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import org.genericsystem.api.core.IRoot;
 import org.genericsystem.api.exception.RollbackException;
 import org.slf4j.Logger;
@@ -20,7 +21,7 @@ public interface DefaultRoot<T extends AbstractVertex<T>> extends IRoot<T> {
 
 	default void check(boolean isOnAdd, boolean isFlushTime, T t) throws RollbackException {
 		t.checkSystemConstraints(isOnAdd, isFlushTime);
-		t.checkConsistency(isOnAdd, isFlushTime);
+		t.checkConsistency();
 		t.checkConstraints(isOnAdd, isFlushTime);
 	}
 

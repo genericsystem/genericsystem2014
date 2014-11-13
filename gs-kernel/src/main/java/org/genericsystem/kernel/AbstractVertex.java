@@ -143,6 +143,13 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 			if (equiv(newComponents[i]))
 				newComponents[i] = null;
 		return rebuildAll((T) this, () -> getMeta().setInstance(new Supers<>(supers), newValue, newComponents), computeDependencies());
+		// T equivInstance = getMeta().getDirectEquivInstance(newValue, Arrays.asList(newComponents));
+		// if (equivInstance != null) {
+		// LinkedHashSet<T> computeDependencies = equivInstance.computeDependencies();
+		// computeDependencies.addAll(computeDependencies());
+		// return rebuildAll((T) this, () -> equivInstance.plug(), computeDependencies);
+		// }
+		// return rebuildAll((T) this, () -> getMeta().build(getClass(), getMeta(), new Supers<>(supers), newValue, Arrays.asList(newComponents)).plug(), computeDependencies());
 	}
 
 	private class ConvertMap extends HashMap<T, T> {
@@ -743,8 +750,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	void checkConstraints(boolean isOnAdd, boolean isFlushTime) {
-		T map = getMap();
-		if (map != null) {
+		if (getMap() != null) {
 			Stream<T> contraintsHolders = getMeta().getHolders(getMap()).get().filter(holder -> holder.getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) holder.getMeta().getValue()).getClazz()))
 					.filter(holder -> holder.getValue() != null && !Boolean.FALSE.equals(holder.getValue())).sorted(CONSTRAINT_PRIORITY);
 			contraintsHolders.forEach(constraintHolder -> {
@@ -783,8 +789,18 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return priority != null ? priority.value() : 0;
 	}
 
-	void checkConsistency(boolean isOnAdd, boolean isFlushTime) {
-		// TODO impl
+	void checkConsistency() {
+		if (getMap() != null && getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) getMeta().getValue()).getClazz()) && getValue() != null && !Boolean.FALSE.equals(getValue())) {
+			T baseConstraint = getComponent(Statics.BASE_POSITION);
+			int axe = ((AxedPropertyClass) getMeta().getValue()).getAxe();
+			if (axe == Statics.NO_POSITION) {
+				// for (int i = 0; i < baseConstraint.getComponents().size(); i++)
+				// baseConstraint.getComponents().get(0).getAllInstances().forEach(x -> x.check((T) this, baseConstraint, true, true, false));
+				baseConstraint.getAllInstances().forEach(x -> x.check((T) this, baseConstraint, true, true, false));
+			} else
+				baseConstraint.getComponents().get(axe).getAllInstances().forEach(x -> x.check((T) this, baseConstraint, true, true, true));
+		}
+
 	}
 
 	private static final Comparator<AbstractVertex<?>> CONSTRAINT_PRIORITY = new Comparator<AbstractVertex<?>>() {

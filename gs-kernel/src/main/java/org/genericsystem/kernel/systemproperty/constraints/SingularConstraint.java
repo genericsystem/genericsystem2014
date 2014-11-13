@@ -1,7 +1,6 @@
 package org.genericsystem.kernel.systemproperty.constraints;
 
 import java.io.Serializable;
-import java.util.Optional;
 
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.SingularConstraintViolationException;
@@ -12,9 +11,8 @@ public class SingularConstraint<T extends AbstractVertex<T>> implements AxedChec
 
 	@Override
 	public void check(T modified, T attribute, Serializable value, int axe, boolean isRevert) throws ConstraintViolationException {
-		T base = modified.getComponents().get(axe);
-		Optional<T> optional = base.getHolders(attribute).get().filter(x -> !x.equals(modified)).findFirst();
-		if (optional.isPresent())
-			throw new SingularConstraintViolationException(base + " is already use by " + optional.get());
+		T base = isRevert ? modified : modified.getComponents().get(axe);
+		if (base.getHolders(attribute).size() > 1)
+			throw new SingularConstraintViolationException(base + " has more than one link : " + base.getHolders(attribute).info() + " for attribute : " + attribute);
 	}
 }
