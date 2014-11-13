@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import org.genericsystem.api.core.IRoot;
 import org.genericsystem.api.exception.RollbackException;
 import org.slf4j.Logger;
@@ -33,21 +32,6 @@ public interface DefaultRoot<T extends AbstractVertex<T>> extends IRoot<T> {
 	@Override
 	default T getMetaRelation() {
 		return getMeta(Statics.RELATION_SIZE);
-	}
-
-	@SuppressWarnings("unchecked")
-	default T setGeneric(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
-		if (meta == null)
-			return setMeta(components.size());
-		T instance = meta.getDirectInstance(value, components);
-		if (instance != null) {
-			if (!Statics.areOverridesReached(supers, instance.getSupers()))
-				log.warn("Found in graph : " + instance.info() + "but supers are not reached ! file supers : " + supers + " graph supers : " + instance.getSupers());
-			if (clazz != null && !clazz.equals(instance.getClass()))
-				log.warn("Found in graph : " + instance.info() + "but class is not the same !" + clazz + " / " + instance.getClass());
-			return instance;
-		}
-		return ((T) this).newT(clazz, meta, supers, value, components).plug();
 	}
 
 	@Override

@@ -138,10 +138,15 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		for (int i = 0; i < newComponents.length; i++)
 			if (equals(newComponents[i]))
 				newComponents[i] = null;
-		T newMeta = getMeta().isMeta() ? getRoot().setMeta(newComponents.length) : getMeta().adjustMeta(newValue, Arrays.asList(newComponents));
-		// List<T> supers = new ArrayList<>(new SupersComputer<>((T) getRoot(), newMeta, overrides, newValue, Arrays.asList(newComponents)));
-		// checkOverridesAreReached(overrides, supers);// TODO system constraints
-		return rebuildAll((T) this, () -> newMeta.adjustMeta(newValue, Arrays.asList(newComponents)).buildIfNecessary(overrides, newValue, Arrays.asList(newComponents)), computeDependencies());
+		return rebuildAll((T) this, () -> internalUpdate(getMeta(), overrides, newValue, Arrays.asList(newComponents)), computeDependencies());
+	}
+
+	@SuppressWarnings("unchecked")
+	private T internalUpdate(T meta, List<T> overrides, Serializable value, List<T> components) {
+		T newMeta = getMeta().isMeta() ? getRoot().setMeta(components.size()) : getMeta().adjustMeta(value, components);
+		List<T> supers = new ArrayList<>(new SupersComputer<>((T) getRoot(), meta, overrides, value, components));
+		checkOverridesAreReached(overrides, supers);// TODO system constraints
+		return newMeta.adjustMeta(value, components).buildIfNecessary(supers, value, components);
 	}
 
 	private class ConvertMap extends HashMap<T, T> {
@@ -211,6 +216,21 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		if (equivInstance != null)
 			return equivInstance.equalsRegardlessSupers(adjustedMeta, value, componentList) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : equivInstance.update(overrides, value, components);
 		return rebuildAll(null, () -> adjustedMeta.build(clazz, adjustedMeta, overrides, value, componentList).plug(), adjustedMeta.computePotentialDependencies(overrides, value, componentList));
+	}
+
+	@SuppressWarnings("unchecked")
+	T setGeneric(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
+		if (meta == null)
+			return getRoot().setMeta(components.size());
+		T instance = meta.getDirectInstance(value, components);
+		if (instance != null) {
+			if (!Statics.areOverridesReached(supers, instance.getSupers()))
+				log.warn("Found in graph : " + instance.info() + "but supers are not reached ! file supers : " + supers + " graph supers : " + instance.getSupers());
+			if (clazz != null && !clazz.equals(instance.getClass()))
+				log.warn("Found in graph : " + instance.info() + "but class is not the same !" + clazz + " / " + instance.getClass());
+			return instance;
+		}
+		return ((T) this).newT(clazz, meta, supers, value, components).plug();
 	}
 
 	@SuppressWarnings("unchecked")
