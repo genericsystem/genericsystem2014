@@ -151,7 +151,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Generic red = color.addInstance("red");
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Generic carRed = vehicleColor.addInstance("CarRed", car, red);
-		engine.getRoot().getMetaAttribute().disableReferentialIntegrity(Statics.TARGET_POSITION);
+		engine.getRoot().getMetaRelation().disableReferentialIntegrity(Statics.TARGET_POSITION);
 
 		// when
 		red.remove();
