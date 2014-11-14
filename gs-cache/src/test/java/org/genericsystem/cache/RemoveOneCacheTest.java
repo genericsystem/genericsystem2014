@@ -107,6 +107,22 @@ public class RemoveOneCacheTest extends AbstractTest {
 		assert myBmw.getHolders(color).size() == 1;
 	}
 
+	public void test004_removeAndAdd() {
+		Engine engine = new Engine();
+		Cache cache = engine.getCurrentCache();
+		Generic car = engine.addInstance("Car");
+		Generic myBmw = car.addInstance("myBmw");
+		cache.flush();
+		myBmw.remove();
+		Generic myBmw2 = car.addInstance("myBmw");
+
+		assert myBmw == myBmw2;
+
+		assert myBmw.equals(myBmw2);
+		assert myBmw.isAlive();
+		assert myBmw2.isAlive();
+	}
+
 	public void test004_removeAndAddAndRemove() {
 		Engine engine = new Engine();
 		Cache cache = engine.getCurrentCache();
