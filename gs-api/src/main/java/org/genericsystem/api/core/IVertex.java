@@ -957,4 +957,8 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 
 	T getComponent(int pos);
 
+	T enableClassConstraint(Class<?> constraintClass);
+
+	T disableClassConstraint();
+
 }

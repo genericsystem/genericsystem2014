@@ -13,7 +13,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
@@ -26,7 +25,6 @@ import org.genericsystem.api.exception.MetaLevelConstraintViolationException;
 import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
 import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
-import org.genericsystem.kernel.Statics.Supers;
 import org.genericsystem.kernel.annotations.Priority;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint;
@@ -136,20 +134,19 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public T update(List<T> supers, Serializable newValue, T... newComponents) {
-		if (newComponents.length != getComponents().size())
-			getRoot().discardWithException(new IllegalArgumentException());
+	public T update(List<T> overrides, Serializable newValue, T... newComponents) {
 		for (int i = 0; i < newComponents.length; i++)
-			if (equiv(newComponents[i]))
+			if (equals(newComponents[i]))
 				newComponents[i] = null;
-		return rebuildAll((T) this, () -> getMeta().setInstance(new Supers<>(supers), newValue, newComponents), computeDependencies());
-		// T equivInstance = getMeta().getDirectEquivInstance(newValue, Arrays.asList(newComponents));
-		// if (equivInstance != null) {
-		// LinkedHashSet<T> computeDependencies = equivInstance.computeDependencies();
-		// computeDependencies.addAll(computeDependencies());
-		// return rebuildAll((T) this, () -> equivInstance.plug(), computeDependencies);
-		// }
-		// return rebuildAll((T) this, () -> getMeta().build(getClass(), getMeta(), new Supers<>(supers), newValue, Arrays.asList(newComponents)).plug(), computeDependencies());
+		return rebuildAll((T) this, () -> internalUpdate(getMeta(), overrides, newValue, Arrays.asList(newComponents)), computeDependencies());
+	}
+
+	@SuppressWarnings("unchecked")
+	private T internalUpdate(T meta, List<T> overrides, Serializable value, List<T> components) {
+		T newMeta = getMeta().isMeta() ? getRoot().setMeta(components.size()) : getMeta().adjustMeta(value, components);
+		List<T> supers = new ArrayList<>(new SupersComputer<>((T) getRoot(), meta, overrides, value, components));
+		checkOverridesAreReached(overrides, supers);// TODO system constraints
+		return newMeta.adjustMeta(value, components).buildIfNecessary(supers, value, components);
 	}
 
 	private class ConvertMap extends HashMap<T, T> {
@@ -163,27 +160,30 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 				if (dependency.isMeta()) {
 					newDependency = getRoot().setMeta(dependency.getComponents().size());
 				} else {
+					Serializable value = dependency.getValue();
 					List<T> components = dependency.getComponents().stream().map(x -> x.equals(dependency) ? null : convert(x)).collect(Collectors.toList());
 					T meta = convert(dependency.getMeta());
-					meta = meta.adjustMeta(dependency.getValue(), components);// necessary ?
-
+					meta = meta.adjustMeta(value, components);
 					List<T> overrides = dependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
 					@SuppressWarnings("unchecked")
-					List<T> supers = new ArrayList<>(new SupersComputer<>((T) getRoot(), meta, overrides, dependency.getValue(), components));
+					List<T> supers = new ArrayList<>(new SupersComputer<>((T) getRoot(), meta, overrides, value, components));
 					checkOverridesAreReached(overrides, supers);// TODO system constraints
-					T instance = meta.getDirectInstance(dependency.getValue(), components);
-					if (instance != null) {
-						checkOverridesAreReached(overrides, instance.getSupers());
-						newDependency = instance;
-					} else {
-						newDependency = dependency.newT(null, meta, supers, dependency.getValue(), components).plug();
-					}
+					newDependency = meta.buildIfNecessary(supers, value, components);
 				}
-
 				put(dependency, newDependency);
 			}
 			return newDependency;
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	T buildIfNecessary(List<T> supers, Serializable value, List<T> components) {
+		T instance = getDirectInstance(value, components);
+		if (instance != null) {
+			checkOverridesAreReached(supers, instance.getSupers());
+			return instance;
+		}
+		return newT(null, (T) this, supers, value, components).plug();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -216,6 +216,21 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		if (equivInstance != null)
 			return equivInstance.equalsRegardlessSupers(adjustedMeta, value, componentList) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : equivInstance.update(overrides, value, components);
 		return rebuildAll(null, () -> adjustedMeta.build(clazz, adjustedMeta, overrides, value, componentList).plug(), adjustedMeta.computePotentialDependencies(overrides, value, componentList));
+	}
+
+	@SuppressWarnings("unchecked")
+	T setGeneric(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
+		if (meta == null)
+			return getRoot().setMeta(components.size());
+		T instance = meta.getDirectInstance(value, components);
+		if (instance != null) {
+			if (!Statics.areOverridesReached(supers, instance.getSupers()))
+				log.warn("Found in graph : " + instance.info() + "but supers are not reached ! file supers : " + supers + " graph supers : " + instance.getSupers());
+			if (clazz != null && !clazz.equals(instance.getClass()))
+				log.warn("Found in graph : " + instance.info() + "but class is not the same !" + clazz + " / " + instance.getClass());
+			return instance;
+		}
+		return ((T) this).newT(clazz, meta, supers, value, components).plug();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -656,8 +671,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {
-	}
+	public static class SystemMap {}
 
 	Stream<T> getKeys() {
 		T map = getMap();
