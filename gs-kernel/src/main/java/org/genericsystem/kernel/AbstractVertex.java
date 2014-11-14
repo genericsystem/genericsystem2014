@@ -787,14 +787,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		if (getMap() != null && getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) getMeta().getValue()).getClazz()) && getValue() != null && !Boolean.FALSE.equals(getValue())) {
 			T baseConstraint = getComponent(Statics.BASE_POSITION);
 			int axe = ((AxedPropertyClass) getMeta().getValue()).getAxe();
-			if (axe == Statics.NO_POSITION) {
-				// for (int i = 0; i < baseConstraint.getComponents().size(); i++)
-				// baseConstraint.getComponents().get(0).getAllInstances().forEach(x -> x.check((T) this, baseConstraint, true, true, false));
+			if (((AxedPropertyClass) getMeta().getValue()).getAxe() == Statics.NO_POSITION)
 				baseConstraint.getAllInstances().forEach(x -> x.check((T) this, baseConstraint, true, true, false));
-			} else
+			else
 				baseConstraint.getComponents().get(axe).getAllInstances().forEach(x -> x.check((T) this, baseConstraint, true, true, true));
 		}
-
 	}
 
 	private static final Comparator<AbstractVertex<?>> CONSTRAINT_PRIORITY = new Comparator<AbstractVertex<?>>() {
