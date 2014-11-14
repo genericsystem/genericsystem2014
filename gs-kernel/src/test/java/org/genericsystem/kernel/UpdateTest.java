@@ -97,6 +97,18 @@ public class UpdateTest extends AbstractTest {
 		catchAndCheckCause(() -> power.update("carPower", powerType), MetaRuleConstraintViolationException.class);
 	}
 
+	public void test006_relationToAttribute_noLink() {
+		Root root = new Root();
+		Vertex car = root.addInstance("Car");
+		Vertex power = root.addInstance("Power");
+		Vertex carPower = car.addAttribute("carPower", power);
+
+		Vertex myCar = car.addInstance("MyCar");
+		Vertex v233 = power.addInstance("v233");
+		carPower.update("PowerAttribute", car);
+		assert power.isAlive();
+	}
+
 	public void test006_relationToAttribute() {
 		Root root = new Root();
 		Vertex car = root.addInstance("Car");
