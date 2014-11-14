@@ -1,6 +1,8 @@
 package org.genericsystem.concurrency;
 
 import java.util.List;
+
+import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test
@@ -384,7 +386,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Generic myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
 
-		catchAndCheckCause(() -> myCarRed.updateComposites(blue), IllegalArgumentException.class);
+		catchAndCheckCause(() -> myCarRed.updateComposites(blue), MetaRuleConstraintViolationException.class);
 	}
 
 	// public void test300_replaceCompositeWithValueModification() {
