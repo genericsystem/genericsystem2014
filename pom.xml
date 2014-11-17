@@ -43,7 +43,6 @@
 		<module>gs-kernel</module>
 		<module>gs-cache</module>	
 		<module>gs-concurrency</module>
-		<module>gs-mutability</module>
 		<module>gs-cdi</module>
 <!-- 		<module>gs-tracker</module> -->
 <!-- 		<module>gs-framework</module> -->
