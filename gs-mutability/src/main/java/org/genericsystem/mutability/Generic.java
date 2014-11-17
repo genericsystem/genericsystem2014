@@ -11,4 +11,5 @@ public class Generic extends AbstractGeneric<Generic, Vertex> implements Default
 	protected Generic[] newTArray(int dim) {
 		return new Generic[dim];
 	}
+
 }

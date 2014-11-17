@@ -1,91 +1,97 @@
 package org.genericsystem.mutability;
 
-import java.util.HashSet;
+import java.io.Serializable;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
-import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
 
-public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.cache.Transaction<T, V> {
+public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends AbstractContext<T, V> {
 
-	private final long ts;
+	private transient final DefaultEngine<T, V> engine;
+
+	protected final TransactionCache<T, V> vertices;
+
+	protected Transaction(DefaultEngine<T, V> engine) {
+		this.engine = engine;
+		vertices = new TransactionCache<>(engine);
+	}
 
 	@Override
-	public DefaultEngine<T, V> getEngine() {
-		return (DefaultEngine<T, V>) super.getEngine();
-	}
-
-	Transaction(DefaultEngine<T, V> engine) {
-		this(engine.unwrap().pickNewTs(), engine);
-	}
-
-	Transaction(long ts, DefaultEngine<T, V> engine) {
-		super(engine);
-		this.ts = ts;
-	}
-
-	public long getTs() {
-		return ts;
+	protected T getOrBuildT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
+		return vertices.getOrBuildT(clazz, meta, supers, value, components);
 	}
 
 	@Override
 	public boolean isAlive(T generic) {
-		V vertex = unwrap(generic);
-		return vertex != null && vertex.getLifeManager().isAlive(getTs());
+		AbstractVertex<?> vertex = generic.unwrap();
+		return vertex != null && vertex.isAlive();
+	}
+
+	@Override
+	protected void simpleAdd(T generic) {
+		V vertex = unwrap(generic.getMeta());
+		// TODO null is KK
+		V result = null;
+		if (vertex == null)
+			vertex = unwrap((T) engine);
+		result = vertex.setInstance(generic.getSupers().stream().map(this::unwrap).collect(Collectors.toList()), generic.getValue(), vertex.coerceToTArray(generic.getComponents().stream().map(this::unwrap).toArray()));
+
+		vertices.put(generic, result);// ***
+	}
+
+	// remove should return a boolean.
+	@Override
+	protected boolean simpleRemove(T generic) {
+		unwrap(generic).remove();
+		vertices.put(generic, null);// ***
+		return true;
+	}
+
+	@Override
+	public DefaultEngine<T, V> getEngine() {
+		return engine;
+	}
+
+	@Override
+	Snapshot<T> getInheritings(T generic) {
+		return () -> {
+			V vertex = unwrap(generic);
+			return vertex != null ? vertex.getInheritings().get().map(generic::wrap) : Stream.empty();
+		};
+	}
+
+	@Override
+	Snapshot<T> getInstances(T generic) {
+		return () -> {
+			V vertex = unwrap(generic);
+			return vertex != null ? vertex.getInstances().get().map(generic::wrap) : Stream.empty();
+		};
+	}
+
+	@Override
+	Snapshot<T> getComposites(T generic) {
+		return () -> {
+			V vertex = unwrap(generic);
+			return vertex != null ? vertex.getComposites().get().map(generic::wrap) : Stream.empty();
+		};
+	}
+
+	@Override
+	protected V unwrap(T generic) {
+		return vertices.get(generic);
 	}
 
 	@Override
 	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
-		synchronized (getEngine()) {
-			LockedLifeManager lockedLifeManager = new LockedLifeManager();
-			try {
-				lockedLifeManager.writeLockAllAndCheckMvcc(adds, removes);
-				super.apply(adds, removes);
-			} finally {
-				lockedLifeManager.writeUnlockAll();
-			}
-		}
+		super.apply(adds, removes);
 	}
 
 	@Override
-	protected boolean simpleRemove(T generic) {
-		unwrap(generic).getLifeManager().kill(getTs());
-		getEngine().unwrap().getGarbageCollector().add(unwrap(generic));
-		vertices.put(generic, null);
-		return true;
-	}
-
-	private class LockedLifeManager extends HashSet<LifeManager> {
-
-		private static final long serialVersionUID = -8771313495837238881L;
-
-		private void writeLockAllAndCheckMvcc(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
-			for (T remove : removes)
-				writeLockAndCheckMvcc(remove);
-			for (T add : adds) {
-				writeLockAndCheckMvcc(add.getMeta());
-				for (T superT : add.getSupers())
-					writeLockAndCheckMvcc(superT);
-				for (T composite : add.getComponents())
-					writeLockAndCheckMvcc(composite);
-				writeLockAndCheckMvcc(add);
-			}
-		}
-
-		private void writeLockAndCheckMvcc(T generic) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
-			V vertex = unwrap(generic);
-			if (vertex != null) {
-				LifeManager manager = vertex.getLifeManager();
-				if (!contains(manager)) {
-					manager.writeLock();
-					add(manager);
-					manager.checkMvcc(getTs());
-				}
-			}
-		}
-
-		private void writeUnlockAll() {
-			for (LifeManager lifeManager : this)
-				lifeManager.writeUnlock();
-		}
+	T wrap(V vertex) {
+		return vertices.getByValue(vertex);
 	}
 }

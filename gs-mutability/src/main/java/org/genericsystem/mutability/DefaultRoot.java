@@ -1,12 +1,16 @@
 package org.genericsystem.mutability;
 
-public interface DefaultRoot<V extends AbstractVertex<V>> extends org.genericsystem.cache.DefaultRoot<V>, DefaultVertex<V> {
+import org.genericsystem.api.exception.RollbackException;
 
-	@Override
+public interface DefaultRoot<V extends AbstractVertex<V>> extends org.genericsystem.kernel.DefaultRoot<V>, DefaultVertex<V> {
+
 	DefaultEngine<?, V> getEngine();
 
-	long pickNewTs();
-
-	GarbageCollector<V> getGarbageCollector();
-
+	@Override
+	default void check(boolean isOnAdd, boolean isFlushTime, V v) throws RollbackException {
+		// TODO Only system constraints must be checked in vertex layer
+		v.checkSystemConstraints(isOnAdd, isFlushTime);
+		// t.checkConsistency(checkingType, isFlushTime);
+		// t.checkConstraints(checkingType, isFlushTime);
+	}
 }

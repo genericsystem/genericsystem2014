@@ -1,21 +1,8 @@
 package org.genericsystem.mutability;
 
-public abstract class AbstractVertex<V extends AbstractVertex<V>> extends org.genericsystem.cache.AbstractVertex<V> implements DefaultVertex<V> {
-
-	protected LifeManager lifeManager;
-
-	@SuppressWarnings("unchecked")
-	protected V restore(Long designTs, long birthTs, long lastReadTs, long deathTs) {
-		lifeManager = new LifeManager(designTs, birthTs, lastReadTs, deathTs);
-		return (V) this;
-	}
-
+public abstract class AbstractVertex<V extends AbstractVertex<V>> extends org.genericsystem.kernel.AbstractVertex<V> implements DefaultVertex<V> {
 	@Override
-	public LifeManager getLifeManager() {
-		return lifeManager;
-	}
-
-	public boolean isAlive(long ts) {
-		return lifeManager.isAlive(ts);
+	protected void checkSystemConstraints(boolean isOnAdd, boolean isFlushTime) {
+		super.checkSystemConstraints(isOnAdd, isFlushTime);
 	}
 }

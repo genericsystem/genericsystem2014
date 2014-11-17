@@ -1,27 +1,33 @@
 package org.genericsystem.mutability;
 
-public interface DefaultEngine<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.cache.DefaultEngine<T, V>, DefaultGeneric<T, V> {
+import org.genericsystem.api.exception.RollbackException;
 
-	@Override
-	default Cache<T, V> buildCache(org.genericsystem.cache.AbstractContext<T, V> subContext) {
-		return new Cache<>(subContext);
-	}
+public interface DefaultEngine<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.kernel.DefaultRoot<T>, DefaultGeneric<T, V> {
 
-	@Override
+	<subT extends T> subT find(Class<subT> clazz);
+
 	default Cache<T, V> newCache() {
 		return buildCache(new Transaction<>(getRoot()));
 	}
 
-	@Override
-	Cache<T, V> start(org.genericsystem.cache.Cache<T, V> cache);
+	default Cache<T, V> buildCache(AbstractContext<T, V> subContext) {
+		return new Cache<>(subContext);
+	}
 
-	@Override
-	void stop(org.genericsystem.cache.Cache<T, V> cache);
+	Cache<T, V> start(Cache<T, V> cache);
+
+	void stop(Cache<T, V> cache);
 
 	@Override
 	public Cache<T, V> getCurrentCache();
 
+	DefaultRoot<V> unwrap();
+
 	@Override
-	public DefaultRoot<V> unwrap();
+	default void discardWithException(Throwable exception) throws RollbackException {
+		getCurrentCache().rollbackWithException(exception);
+	}
+
+	// T getOrBuildT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> composites);
 
 }
