@@ -68,8 +68,4 @@ public interface IRoot<T extends IVertex<T>> extends IVertex<T> {
 	T getMetaRelation();
 
 	void discardWithException(Throwable exception);
-
-	T getMeta(int dim);
-
-	T setMeta(int dim);
 }
