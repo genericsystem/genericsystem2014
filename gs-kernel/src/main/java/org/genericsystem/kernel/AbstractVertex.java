@@ -140,7 +140,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 			if (equals(newComponents[i]))
 				newComponents[i] = null;
 		List<T> newComponentsList = Arrays.asList(newComponents);
-		T adjustMeta = getMeta().isMeta() ? setMeta(newComponentsList.size()) : getMeta().adjustMeta(newValue, newComponentsList);
+		T adjustMeta = getMeta().ajustOrBuildMeta(newValue, newComponentsList);
 		return rebuildAll((T) this, () -> {
 			T equivInstance = adjustMeta.getDirectInstance(newValue, newComponentsList);
 			return equivInstance != null ? equivInstance : build(getClass(), adjustMeta, overrides, newValue, newComponentsList);
@@ -173,7 +173,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	@SuppressWarnings("unchecked")
 	protected T addInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
 		List<T> componentList = Arrays.asList(components);
-		T adjustedMeta = isMeta() ? setMeta(componentList.size()) : adjustMeta(value, componentList);
+		T adjustedMeta = ajustOrBuildMeta(value, componentList);
 		if (adjustedMeta.equalsRegardlessSupers(adjustedMeta, value, componentList) && Statics.areOverridesReached(overrides, adjustedMeta.getSupers()))
 			getRoot().discardWithException(new ExistsException("An equivalent instance already exists : " + adjustedMeta.info()));
 
@@ -186,7 +186,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	@SuppressWarnings("unchecked")
 	protected T setInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
 		List<T> componentList = Arrays.asList(components);
-		T adjustedMeta = isMeta() ? setMeta(componentList.size()) : adjustMeta(value, componentList);
+		T adjustedMeta = ajustOrBuildMeta(value, componentList);
 		if (adjustedMeta.equalsRegardlessSupers(adjustedMeta, value, componentList) && Statics.areOverridesReached(overrides, adjustedMeta.getSupers()))
 			return adjustedMeta;
 
@@ -204,15 +204,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	@SuppressWarnings("unchecked")
 	public T setMeta(int dim) {
-		T root = (T) getRoot();
-		T adjustedMeta = root.adjustMeta(dim);
-		if (adjustedMeta.getComponents().size() == dim)
-			return adjustedMeta;
-		List<T> components = new ArrayList<>();
-		for (int i = 0; i < dim; i++)
-			components.add(root);
-		List<T> supers = Collections.singletonList(adjustedMeta);
-		return root.rebuildAll(null, () -> root.newT(null, null, Collections.singletonList(adjustedMeta), root.getValue(), components).plug(), adjustedMeta.computePotentialDependencies(supers, root.getValue(), components));
+		T adjustedMeta = ((T) getRoot()).adjustMeta(dim);
+		return adjustedMeta.getComponents().size() == dim ? adjustedMeta : buildMeta(adjustedMeta, dim);
 	}
 
 	// protected T setInheriting(Class<?> clazz, T meta, List<T> overrides, Serializable value, T... components) {
@@ -307,15 +300,23 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	@SuppressWarnings("unchecked")
-	private LinkedHashSet<T> computePotentialDependencies(T meta, List<T> overrides, Serializable value, List<T> components) {
-		return new DependenciesComputer<T>() {
-			private static final long serialVersionUID = -3611136800445783634L;
+	T ajustOrBuildMeta(Serializable value, List<T> components) {
+		if (isMeta()) {
+			T adjustedMeta = ((T) getRoot()).adjustMeta(components.size());
+			return adjustedMeta.getComponents().size() == components.size() ? adjustedMeta : buildMeta(adjustedMeta, components.size());
+		}
+		return adjustMeta(value, components);
+	}
 
-			@Override
-			boolean checkDependency(T node) {
-				return node.dependsFrom(meta, overrides, value, components);
-			}
-		}.visit((T) this);
+	@SuppressWarnings("unchecked")
+	T buildMeta(T adjustedMeta, int dim) {
+		T root = (T) getRoot();
+		List<T> components = new ArrayList<>();
+		for (int i = 0; i < dim; i++)
+			components.add(root);
+		List<T> supers = Collections.singletonList(adjustedMeta);
+		return root.rebuildAll(null, () -> root.newT(null, null, supers, root.getValue(), components).plug(), adjustedMeta.computePotentialDependencies(supers, root.getValue(), components));
+
 	}
 
 	public T adjustMeta(Serializable value, @SuppressWarnings("unchecked") T... components) {

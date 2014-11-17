@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
 
@@ -42,7 +43,6 @@ public interface DefaultDependencies<T extends AbstractVertex<T>> extends IVerte
 	@SuppressWarnings("unchecked")
 	@Override
 	default T getInstance(List<T> overrides, Serializable value, T... components) {
-		T adjustedMeta = ((T) this).adjustMeta(value, Arrays.asList(components));
-		return adjustedMeta.getDirectInstance(overrides, value, Arrays.asList(components));
+		return ((T) this).adjustMeta(value, Arrays.asList(components)).getDirectInstance(overrides, value, Arrays.asList(components));
 	}
 }
