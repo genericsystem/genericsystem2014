@@ -1,5 +1,9 @@
 package org.genericsystem.concurrency;
 
+import java.util.Iterator;
+
+import org.genericsystem.kernel.Dependencies;
+
 public abstract class AbstractVertex<V extends AbstractVertex<V>> extends org.genericsystem.cache.AbstractVertex<V> implements DefaultVertex<V> {
 
 	protected LifeManager lifeManager;
@@ -17,5 +21,26 @@ public abstract class AbstractVertex<V extends AbstractVertex<V>> extends org.ge
 
 	public boolean isAlive(long ts) {
 		return lifeManager.isAlive(ts);
+	}
+
+	@Override
+	protected Dependencies<V> buildDependencies() {
+		return new AbstractDependencies<V>() {
+
+			@Override
+			public LifeManager getLifeManager() {
+				return lifeManager;
+			}
+
+			@Override
+			public Iterator<V> iterator() {
+				return iterator(getRoot().getEngine().getCurrentCache().getTs());
+			}
+		};
+	}
+
+	@Override
+	public DefaultRoot<V> getRoot() {
+		return (DefaultRoot<V>) super.getRoot();
 	}
 }

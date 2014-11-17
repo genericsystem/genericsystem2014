@@ -1,7 +1,5 @@
 package org.genericsystem.mutability;
 
-import org.genericsystem.kernel.AbstractVertex;
-
-public interface DefaultVertex<T extends AbstractVertex<T>> extends org.genericsystem.kernel.DefaultVertex<T> {
+public interface DefaultVertex<T extends AbstractVertex<T>> extends org.genericsystem.concurrency.DefaultVertex<T> {
 
 }

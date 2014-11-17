@@ -7,7 +7,7 @@ import org.genericsystem.kernel.Statics;
 
 public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.cache.Cache<T, V> {
 
-	protected Cache(DefaultEngine<T, V> engine) {
+	Cache(DefaultEngine<T, V> engine) {
 		this(new Transaction<>(engine));
 	}
 

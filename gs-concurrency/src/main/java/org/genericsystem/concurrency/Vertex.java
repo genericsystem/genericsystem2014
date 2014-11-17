@@ -1,6 +1,5 @@
 package org.genericsystem.concurrency;
 
-import java.util.Iterator;
 import org.genericsystem.kernel.Dependencies;
 
 public class Vertex extends AbstractVertex<Vertex> implements DefaultVertex<Vertex> {
@@ -35,23 +34,8 @@ public class Vertex extends AbstractVertex<Vertex> implements DefaultVertex<Vert
 	}
 
 	@Override
-	protected Dependencies<Vertex> buildDependencies() {
-		return new AbstractDependencies<Vertex>() {
-
-			@Override
-			public LifeManager getLifeManager() {
-				return lifeManager;
-			}
-
-			@Override
-			public Iterator<Vertex> iterator() {
-				return iterator(getRoot().getEngine().getCurrentCache().getTs());
-			}
-		};
-	}
-
-	@Override
 	public Root getRoot() {
 		return (Root) super.getRoot();
 	}
+
 }

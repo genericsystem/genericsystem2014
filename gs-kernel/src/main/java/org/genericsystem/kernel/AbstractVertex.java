@@ -349,7 +349,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return directInheriting != null && directInheriting.getComponents().size() <= dim ? directInheriting.adjustMeta(dim) : (T) this;
 	}
 
-	T getDirectInstance(Serializable value, List<T> components) {
+	protected T getDirectInstance(Serializable value, List<T> components) {
 		for (T instance : getInstances())
 			if (((AbstractVertex<?>) instance).equalsRegardlessSupers(this, value, components))
 				return instance;
