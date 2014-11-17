@@ -1,9 +1,8 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+
 import org.genericsystem.api.core.IRoot;
 import org.genericsystem.api.exception.RollbackException;
 import org.slf4j.Logger;
@@ -26,32 +25,12 @@ public interface DefaultRoot<T extends AbstractVertex<T>> extends IRoot<T> {
 
 	@Override
 	default T getMetaAttribute() {
-		return getMeta(Statics.ATTRIBUTE_SIZE);
+		return ((T) this).getMeta(Statics.ATTRIBUTE_SIZE);
 	}
 
 	@Override
 	default T getMetaRelation() {
-		return getMeta(Statics.RELATION_SIZE);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	default T getMeta(int dim) {
-		T adjustedMeta = ((T) this).adjustMeta(dim);
-		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	default T setMeta(int dim) {
-		T adjustedMeta = ((T) this).adjustMeta(dim);
-		if (adjustedMeta.getComponents().size() == dim)
-			return adjustedMeta;
-		List<T> components = new ArrayList<>();
-		for (int i = 0; i < dim; i++)
-			components.add((T) this);
-		List<T> supers = Collections.singletonList(adjustedMeta);
-		return ((T) this).rebuildAll(null, () -> ((T) this).newT(null, null, Collections.singletonList(adjustedMeta), getValue(), components).plug(), adjustedMeta.computePotentialDependencies(supers, getValue(), components));
+		return ((T) this).getMeta(Statics.RELATION_SIZE);
 	}
 
 	@Override
