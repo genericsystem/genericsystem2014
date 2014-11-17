@@ -7,8 +7,8 @@
 		<version>3.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>gs-concurrency</artifactId>
-	<name>Generic System Concurrency</name>
+	<artifactId>gs-mutability</artifactId>
+	<name>Generic System Mutability</name>
 	<packaging>jar</packaging>
 
 	<dependencies>
