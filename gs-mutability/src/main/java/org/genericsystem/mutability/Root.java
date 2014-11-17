@@ -1,4 +1,4 @@
-package org.genericsystem.concurrency;
+package org.genericsystem.mutability;
 
 import java.io.Serializable;
 import java.util.Collections;

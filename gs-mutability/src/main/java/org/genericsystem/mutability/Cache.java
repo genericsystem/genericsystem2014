@@ -1,4 +1,4 @@
-package org.genericsystem.concurrency;
+package org.genericsystem.mutability;
 
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.RollbackException;

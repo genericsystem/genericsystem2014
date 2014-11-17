@@ -1,4 +1,4 @@
-package org.genericsystem.concurrency;
+package org.genericsystem.mutability;
 
 public abstract class AbstractVertex<V extends AbstractVertex<V>> extends org.genericsystem.cache.AbstractVertex<V> implements DefaultVertex<V> {
 

@@ -1,4 +1,4 @@
-package org.genericsystem.concurrency;
+package org.genericsystem.mutability;
 
 import java.util.HashSet;
 import org.genericsystem.api.exception.ConcurrencyControlException;

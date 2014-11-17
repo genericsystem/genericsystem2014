@@ -1,4 +1,4 @@
-package org.genericsystem.concurrency;
+package org.genericsystem.mutability;
 
 public class Generic extends AbstractGeneric<Generic, Vertex> implements DefaultGeneric<Generic, Vertex> {
 
