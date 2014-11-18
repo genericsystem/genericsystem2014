@@ -10,7 +10,7 @@ import org.genericsystem.cache.SystemCache;
 import org.genericsystem.kernel.Statics;
 
 public class Engine extends Generic implements DefaultEngine<Generic, Vertex> {
-	protected final ThreadLocal<Cache<Generic, Vertex>> cacheLocal = new ThreadLocal<>();
+	protected final ThreadLocal<org.genericsystem.cache.Cache<Generic, Vertex>> cacheLocal = new ThreadLocal<>();
 
 	private final GenericsCache<Generic> genericsCache = new GenericsCache<>(this);
 	private final SystemCache<Generic> systemCache = new SystemCache<>(this);
@@ -52,12 +52,12 @@ public class Engine extends Generic implements DefaultEngine<Generic, Vertex> {
 	}
 
 	@Override
-	public Cache<Generic, Vertex> start(org.genericsystem.cache.Cache<Generic, Vertex> cache) {
+	public org.genericsystem.concurrency.Cache<Generic, Vertex> start(org.genericsystem.cache.Cache<Generic, Vertex> cache) {
 		if (!equals(cache.getEngine()))
 			throw new IllegalStateException();
 		// TODO KK
-		cacheLocal.set((Cache<Generic, Vertex>) cache);
-		return (Cache<Generic, Vertex>) cache;
+		cacheLocal.set(cache);
+		return (org.genericsystem.concurrency.Cache<Generic, Vertex>) cache;
 	}
 
 	@Override
@@ -66,11 +66,11 @@ public class Engine extends Generic implements DefaultEngine<Generic, Vertex> {
 	}
 
 	@Override
-	public Cache<Generic, Vertex> getCurrentCache() {
-		Cache<Generic, Vertex> currentCache = cacheLocal.get();
+	public org.genericsystem.concurrency.Cache<Generic, Vertex> getCurrentCache() {
+		org.genericsystem.cache.Cache<Generic, Vertex> currentCache = cacheLocal.get();
 		if (currentCache == null)
 			throw new IllegalStateException("Unable to find the current cache. Did you miss to call start() method on it ?");
-		return currentCache;
+		return (org.genericsystem.concurrency.Cache<Generic, Vertex>) currentCache;
 	}
 
 	@SuppressWarnings("unchecked")
