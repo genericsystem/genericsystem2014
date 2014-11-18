@@ -1,5 +1,7 @@
 package org.genericsystem.mutability;
 
-public interface DefaultEngine<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.concurrency.DefaultEngine<T, V>, DefaultGeneric<T, V> {
+import org.genericsystem.concurrency.AbstractVertex;
+
+public interface DefaultEngine<M extends AbstractGeneric<M, T, V>, T extends org.genericsystem.concurrency.AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.cache.DefaultEngine<M, V>, DefaultGeneric<M, T, V> {
 
 }

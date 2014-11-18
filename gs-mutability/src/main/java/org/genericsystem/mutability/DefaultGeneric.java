@@ -1,8 +1,10 @@
 package org.genericsystem.mutability;
 
-public interface DefaultGeneric<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.concurrency.DefaultGeneric<T, V> {
+import org.genericsystem.concurrency.AbstractVertex;
+
+public interface DefaultGeneric<M extends AbstractGeneric<M, T, V>, T extends org.genericsystem.concurrency.AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.cache.DefaultVertex<M> {
 
 	@Override
-	abstract DefaultEngine<T, V> getRoot();
+	abstract DefaultEngine<M, T, V> getRoot();
 
 }
