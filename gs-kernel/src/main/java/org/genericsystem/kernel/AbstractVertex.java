@@ -184,7 +184,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	@SuppressWarnings("unchecked")
-	protected T setInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
+	public T setInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
 		List<T> componentList = Arrays.asList(components);
 		T adjustedMeta = isMeta() ? setMeta(componentList.size()) : adjustMeta(value, componentList);
 		if (adjustedMeta.equalsRegardlessSupers(adjustedMeta, value, componentList) && Statics.areOverridesReached(overrides, adjustedMeta.getSupers()))

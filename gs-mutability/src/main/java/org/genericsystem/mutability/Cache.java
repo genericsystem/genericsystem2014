@@ -1,36 +1,93 @@
 package org.genericsystem.mutability;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
+import org.genericsystem.api.core.Snapshot;
+import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.concurrency.AbstractVertex;
 
-public class Cache<M extends AbstractGeneric<M, T, V>, T extends org.genericsystem.concurrency.AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.cache.Cache<M, V> {
-	private final Map<T, List<M>> reverseMap = new HashMap<>();
+public class Cache<M extends AbstractGeneric<M, T, V>, T extends org.genericsystem.concurrency.AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends HashMap<M, T> {
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public T get(Object key) {
-		M mutable = (M) key;
-		T result = super.get(mutable);
+	private static final long serialVersionUID = 8968934842928259504L;
+	private final DefaultEngine<M, T, V> engine;
+	private final org.genericsystem.concurrency.Cache<T, V> concurrencyCache;
 
+	protected Cache(DefaultEngine<M, T, V> engine, org.genericsystem.concurrency.Cache<T, V> concurrencyCache) {
+		this.engine = engine;
+		this.concurrencyCache = concurrencyCache;
+	}
+
+	public DefaultEngine<M, T, V> getEngine() {
+		return engine;
+	}
+
+	public Cache<M, T, V> start() {
+		return getEngine().start(this);
+	}
+
+	public void stop() {
+		getEngine().stop(this);
+	}
+
+	public void flush() throws RollbackException {
+		concurrencyCache.flush();
+	}
+
+	protected void rollbackWithException(Throwable exception) throws RollbackException {
+		clear();
+		concurrencyCache.clear();
+		throw new RollbackException(exception);
+	}
+
+	Snapshot<M> getInstances(M generic) {
+		return () -> concurrencyCache.getInstances(unwrap(generic)).get().map(this::wrap);
+	}
+
+	Snapshot<M> getInheritings(M generic) {
+		return () -> concurrencyCache.getInheritings(unwrap(generic)).get().map(this::wrap);
+	}
+
+	Snapshot<M> getComposites(M generic) {
+		return () -> concurrencyCache.getComposites(unwrap(generic)).get().map(this::wrap);
+	}
+
+	M plug(M generic) {
+		M result = wrap(concurrencyCache.plug(unwrap(generic)));
+		// TODO: a dev ...
 		return result;
 	}
 
-	@Override
-	public T put(M key, T value) {
-		List<M> reverseResult = reverseMap.get(value);
-		if (reverseResult == null) {
-			List<M> mList = new ArrayList<>();
-			mList.add(key);
-		} else
-			reverseResult.add(key);
-		return super.put(key, value);
+	boolean unplug(M generic) {
+		// TODO:a dev ...
+		return concurrencyCache.unplug(unwrap(generic));
 	}
 
-	List<M> getByValue(T generic) {
-		return reverseMap.get(generic);
+	@Override
+	public void clear() {
+		// TODO: a dev ...
+	}
+
+	T unwrap(M generic) {
+		return null;
+		// TODO:a dev..
+	}
+
+	M wrap(T vertex) {
+		return null;
+		// TODO:a dev..
+	}
+
+	public boolean isAlive(M generic) {
+		return false;
+		// TODO:a dev..
+	}
+
+	public long getTs() {
+		return concurrencyCache.getTs();
+	}
+
+	public void pickNewTs() {
+		concurrencyCache.pickNewTs();
+
 	}
 }

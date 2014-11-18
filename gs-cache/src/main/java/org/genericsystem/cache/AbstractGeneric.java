@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.cache.annotations.InstanceClass;
@@ -38,7 +39,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 
 	@Override
 	@SuppressWarnings("unchecked")
-	protected T setInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
+	public T setInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
 		return super.setInstance(clazz, overrides, value, components);
 	}
 

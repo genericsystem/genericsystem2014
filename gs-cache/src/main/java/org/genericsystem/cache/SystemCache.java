@@ -20,7 +20,7 @@ import org.genericsystem.kernel.AbstractVertex.SystemMap;
 import org.genericsystem.kernel.Root.MetaAttribute;
 import org.genericsystem.kernel.Statics;
 
-public class SystemCache<T extends AbstractGeneric<T, ?>> extends HashMap<Class<?>, T> {
+public class SystemCache<T extends org.genericsystem.kernel.AbstractVertex<T>> extends HashMap<Class<?>, T> {
 
 	private static final long serialVersionUID = 1150085123612887245L;
 

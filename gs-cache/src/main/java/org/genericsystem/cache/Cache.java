@@ -129,17 +129,17 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 	}
 
 	@Override
-	Snapshot<T> getInstances(T generic) {
+	public Snapshot<T> getInstances(T generic) {
 		return getDependencies(instancesDependencies, () -> subContext.getInstances(generic).get(), generic);
 	}
 
 	@Override
-	Snapshot<T> getInheritings(T generic) {
+	public Snapshot<T> getInheritings(T generic) {
 		return getDependencies(inheritingsDependencies, () -> subContext.getInheritings(generic).get(), generic);
 	}
 
 	@Override
-	Snapshot<T> getComposites(T generic) {
+	public Snapshot<T> getComposites(T generic) {
 		return getDependencies(compositesDependencies, () -> subContext.getComposites(generic).get(), generic);
 	}
 
@@ -175,7 +175,7 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 		return unIndex(compositesDependencies, () -> subContext.getComposites(generic).get(), generic, composite);
 	}
 
-	T plug(T generic) {
+	public T plug(T generic) {
 		T result = generic != generic.getMeta() ? indexInstance(generic.getMeta(), generic) : (T) generic;
 		assert result == generic;
 		generic.getSupers().forEach(superGeneric -> indexInheriting(superGeneric, generic));
@@ -184,7 +184,7 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 		return result;
 	}
 
-	boolean unplug(T generic) {
+	public boolean unplug(T generic) {
 		boolean result = generic != generic.getMeta() ? unIndexInstance(generic.getMeta(), generic) : true;
 		if (!result)
 			getEngine().discardWithException(new NotFoundException(generic.info()));

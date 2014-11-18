@@ -1,6 +1,5 @@
 package org.genericsystem.mutability;
 
-import org.genericsystem.concurrency.Cache;
 import org.testng.annotations.Test;
 
 @Test

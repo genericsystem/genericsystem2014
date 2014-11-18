@@ -2,21 +2,16 @@ package org.genericsystem.mutability;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
-import org.genericsystem.cache.GenericsCache;
 import org.genericsystem.cache.SystemCache;
-import org.genericsystem.concurrency.Root;
 import org.genericsystem.concurrency.Vertex;
 import org.genericsystem.kernel.Statics;
 
 public class Engine extends Generic implements DefaultEngine<Generic, org.genericsystem.concurrency.Generic, Vertex> {
-	protected final ThreadLocal<Cache<Generic, org.genericsystem.concurrency.Generic, Vertex>> cacheLocal = new ThreadLocal<>();
 
-	private final GenericsCache<Generic> genericsCache = new GenericsCache<>(this);
+	private final ThreadLocal<Cache<Generic, org.genericsystem.concurrency.Generic, Vertex>> cacheLocal = new ThreadLocal<>();
+	private final org.genericsystem.concurrency.Engine concurrencyEngine;
 	private final SystemCache<Generic> systemCache = new SystemCache<>(this);
-	private final Root root;
 
 	public Engine(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
@@ -24,7 +19,7 @@ public class Engine extends Generic implements DefaultEngine<Generic, org.generi
 
 	public Engine(Serializable engineValue, Class<?>... userClasses) {
 		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
-		root = buildRoot(engineValue);
+		concurrencyEngine = buildEngine(engineValue);
 
 		Cache<Generic, org.genericsystem.concurrency.Generic, Vertex> cache = newCache().start();
 		mountSystemProperties(cache);
@@ -33,46 +28,38 @@ public class Engine extends Generic implements DefaultEngine<Generic, org.generi
 		cache.flush();
 	}
 
+	@Override
+	public Cache<Generic, org.genericsystem.concurrency.Generic, Vertex> buildCache(DefaultEngine<Generic, org.genericsystem.concurrency.Generic, Vertex> engine) {
+		return new Cache<>(engine, concurrencyEngine.newCache());
+	};
+
 	private void mountSystemProperties(Cache<Generic, org.genericsystem.concurrency.Generic, Vertex> cache) {
 		Generic metaAttribute = setInstance(this, getValue(), coerceToTArray(this));
 		setInstance(SystemMap.class, coerceToTArray(this)).enablePropertyConstraint();
 		metaAttribute.disableReferentialIntegrity(Statics.BASE_POSITION);
 	}
 
-	private Root buildRoot(Serializable value) {
-		return new Root(this, value);
+	private org.genericsystem.concurrency.Engine buildEngine(Serializable engineValue, Class<?>... userClasses) {
+		return new org.genericsystem.concurrency.Engine(engineValue, userClasses);
 	}
 
 	@Override
-	public Root unwrap() {
-		return root;
+	public Engine getRoot() {
+		return (Engine) super.getRoot();
 	}
 
 	@Override
-	public Generic getOrBuildT(Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> composites) {
-		return genericsCache.getOrBuildT(clazz, meta, supers, value, composites);
-	}
-
-	@Override
-	public Cache<Generic, org.genericsystem.concurrency.Generic, Vertex> start(org.genericsystem.cache.Cache<Generic, Vertex> cache) {
+	public Cache<Generic, org.genericsystem.concurrency.Generic, Vertex> start(Cache<Generic, org.genericsystem.concurrency.Generic, Vertex> cache) {
 		if (!equals(cache.getEngine()))
 			throw new IllegalStateException();
-		// TODO KK
-		cacheLocal.set((Cache<Generic, org.genericsystem.concurrency.Generic, Vertex>) cache);
-		return (Cache<Generic, org.genericsystem.concurrency.Generic, Vertex>) cache;
+		cacheLocal.set(cache);
+		return cache;
 	}
 
 	@Override
-	public void stop(org.genericsystem.cache.Cache<Generic, Vertex> cache) {
+	public void stop(Cache<Generic, org.genericsystem.concurrency.Generic, Vertex> cache) {
+		assert cacheLocal.get() == cache;
 		cacheLocal.set(null);
-	}
-
-	@Override
-	public Cache<Generic, org.genericsystem.concurrency.Generic, Vertex> getCurrentCache() {
-		Cache<Generic, org.genericsystem.concurrency.Generic, Vertex> currentCache = cacheLocal.get();
-		if (currentCache == null)
-			throw new IllegalStateException("Unable to find the current cache. Did you miss to call start() method on it ?");
-		return currentCache;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -82,25 +69,8 @@ public class Engine extends Generic implements DefaultEngine<Generic, org.generi
 	}
 
 	@Override
-	public Engine getRoot() {
-		return (Engine) super.getRoot();
-	}
-
-	static class TsGenerator {
-		private final long startTime = System.currentTimeMillis() * Statics.MILLI_TO_NANOSECONDS - System.nanoTime();
-		private final AtomicLong lastTime = new AtomicLong(0L);
-
-		long pickNewTs() {
-			long nanoTs;
-			long current;
-			for (;;) {
-				nanoTs = startTime + System.nanoTime();
-				current = lastTime.get();
-				if (nanoTs - current > 0)
-					if (lastTime.compareAndSet(current, nanoTs))
-						return nanoTs;
-			}
-		}
+	public org.genericsystem.concurrency.Engine unwrap() {
+		return concurrencyEngine;
 	}
 
 }

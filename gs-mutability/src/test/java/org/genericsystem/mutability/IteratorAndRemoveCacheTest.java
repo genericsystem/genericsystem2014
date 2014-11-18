@@ -3,7 +3,6 @@ package org.genericsystem.mutability;
 import java.util.Iterator;
 
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.concurrency.Cache;
 import org.testng.annotations.Test;
 
 @Test

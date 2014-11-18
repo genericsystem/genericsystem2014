@@ -33,4 +33,9 @@ public class Generic extends AbstractGeneric<Generic, org.genericsystem.concurre
 	protected Generic[] newTArray(int dim) {
 		return new Generic[dim];
 	}
+
+	@Override
+	public DefaultEngine<Generic, org.genericsystem.concurrency.Generic, Vertex> getRoot() {
+		return (DefaultEngine<Generic, org.genericsystem.concurrency.Generic, Vertex>) super.getRoot();
+	}
 }

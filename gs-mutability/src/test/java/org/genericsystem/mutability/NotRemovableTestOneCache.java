@@ -2,7 +2,6 @@ package org.genericsystem.mutability;
 
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
-import org.genericsystem.concurrency.Cache;
 import org.testng.annotations.Test;
 
 @Test
