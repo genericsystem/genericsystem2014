@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.genericsystem.api.exception.RollbackException;
+import org.genericsystem.kernel.DefaultContext;
 
 public interface DefaultEngine<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.kernel.DefaultRoot<T>, DefaultGeneric<T, V> {
 
@@ -13,7 +14,7 @@ public interface DefaultEngine<T extends AbstractGeneric<T, V>, V extends Abstra
 		return buildCache(new Transaction<>(getRoot()));
 	}
 
-	default Cache<T, V> buildCache(DefaultContext<T, V> subContext) {
+	default Cache<T, V> buildCache(DefaultContext<T> subContext) {
 		return new Cache<>(subContext);
 	}
 

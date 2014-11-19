@@ -14,11 +14,12 @@ import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.Context;
+import org.genericsystem.kernel.DefaultContext;
 import org.genericsystem.kernel.Dependencies;
 
-public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends Context<T> implements org.genericsystem.kernel.DefaultContext<T>, DefaultContext<T, V> {
+public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends Context<T> implements DefaultContext<T> {
 
-	protected DefaultContext<T, V> subContext;
+	protected DefaultContext<T> subContext;
 
 	private transient Map<T, Dependencies<T>> inheritingsDependencies;
 	private transient Map<T, Dependencies<T>> instancesDependencies;
@@ -39,7 +40,7 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 		this(new Transaction<>(engine));
 	}
 
-	protected Cache(DefaultContext<T, V> subContext) {
+	protected Cache(DefaultContext<T> subContext) {
 		super(subContext.getRoot());
 		this.subContext = subContext;
 		clear();
@@ -96,19 +97,18 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 	}
 
 	protected void applyChangesToSubContext() throws ConcurrencyControlException, ConstraintViolationException {
-		DefaultContext<T, V> subContext = getSubContext();
+		DefaultContext<T> subContext = getSubContext();
 		if (subContext instanceof Cache) {
 			Cache<T, V> subCache = (Cache<T, V>) subContext;
 			subCache.start();
 			subCache.apply(adds, removes);
 			subCache.stop();
 		} else
-			subContext.apply(adds, removes);
+			((Transaction<T, V>) subContext).apply(adds, removes);
 		start();
 	}
 
-	@Override
-	public void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
+	private void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
 		removes.forEach(this::unplug);
 		adds.forEach(this::plug);
 	}
@@ -132,7 +132,7 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 		return (DefaultEngine<T, V>) subContext.getRoot();
 	}
 
-	protected DefaultContext<T, V> getSubContext() {
+	protected DefaultContext<T> getSubContext() {
 		return subContext;
 	}
 

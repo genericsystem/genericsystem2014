@@ -40,17 +40,17 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 		return result;
 	}
 
-	@Override
+	// @Override
 	public Snapshot<T> getInstances(T vertex) {
 		return vertex.getInstancesDependencies();
 	}
 
-	@Override
+	// @Override
 	public Snapshot<T> getInheritings(T vertex) {
 		return vertex.getInheritingsDependencies();
 	}
 
-	@Override
+	// @Override
 	public Snapshot<T> getComposites(T vertex) {
 		return vertex.getCompositesDependencies();
 	}

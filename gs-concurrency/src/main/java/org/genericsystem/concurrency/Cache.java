@@ -3,7 +3,7 @@ package org.genericsystem.concurrency;
 import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.RollbackException;
-import org.genericsystem.cache.DefaultContext;
+import org.genericsystem.kernel.DefaultContext;
 import org.genericsystem.kernel.Statics;
 
 public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.cache.Cache<T, V> {
@@ -12,12 +12,12 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 		this(new Transaction<>(engine));
 	}
 
-	protected Cache(org.genericsystem.cache.DefaultContext<T, V> subContext) {
+	protected Cache(DefaultContext<T> subContext) {
 		super(subContext);
 	}
 
 	public long getTs() {
-		DefaultContext<T, V> context = getSubContext();
+		DefaultContext<T> context = getSubContext();
 		return context instanceof Cache ? ((Cache<T, V>) context).getTs() : ((Transaction<T, V>) context).getTs();
 	}
 
