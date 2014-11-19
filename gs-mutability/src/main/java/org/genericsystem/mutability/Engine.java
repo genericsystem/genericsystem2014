@@ -20,8 +20,6 @@ public class Engine extends Generic implements DefaultEngine<Generic, org.generi
 	public Engine(Serializable engineValue, Class<?>... userClasses) {
 		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
 		concurrencyEngine = buildEngine(engineValue);
-		System.out.println("AAAAAAAAAAAAAa " + info());
-		System.out.println("BBBBBBBBBBBBBBBBBBB " + concurrencyEngine.info());
 
 		Cache<Generic, org.genericsystem.concurrency.Generic, Vertex> cache = newCache().start();
 		mountSystemProperties(cache);
@@ -34,7 +32,7 @@ public class Engine extends Generic implements DefaultEngine<Generic, org.generi
 
 	@Override
 	public Cache<Generic, org.genericsystem.concurrency.Generic, Vertex> buildCache(DefaultEngine<Generic, org.genericsystem.concurrency.Generic, Vertex> engine) {
-		return new Cache<>(engine, concurrencyEngine.newCache());
+		return new Cache<>(engine, concurrencyEngine.newCache(), concurrencyEngine);
 	};
 
 	private void mountSystemProperties(Cache<Generic, org.genericsystem.concurrency.Generic, Vertex> cache) {

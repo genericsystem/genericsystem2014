@@ -3,9 +3,11 @@ package org.genericsystem.mutability;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.cache.CacheDependencies;
 import org.genericsystem.cache.annotations.InstanceClass;
@@ -138,6 +140,22 @@ public abstract class AbstractGeneric<M extends AbstractGeneric<M, T, V>, T exte
 	@Override
 	protected Dependencies<M> getCompositesDependencies() {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof ISignature<?>))
+			return false;
+		ISignature<?> service = (ISignature<?>) obj;
+		return genericEquals(service);
+	}
+
+	@Override
+	public int hashCode() {
+		// TODO introduce : meta and components length
+		return Objects.hashCode(getValue());
 	}
 
 }
