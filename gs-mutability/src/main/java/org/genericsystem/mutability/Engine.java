@@ -20,12 +20,16 @@ public class Engine extends Generic implements DefaultEngine<Generic, org.generi
 	public Engine(Serializable engineValue, Class<?>... userClasses) {
 		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
 		concurrencyEngine = buildEngine(engineValue);
+		System.out.println("AAAAAAAAAAAAAa " + info());
+		System.out.println("BBBBBBBBBBBBBBBBBBB " + concurrencyEngine.info());
 
 		Cache<Generic, org.genericsystem.concurrency.Generic, Vertex> cache = newCache().start();
 		mountSystemProperties(cache);
+
 		for (Class<?> clazz : userClasses)
 			systemCache.set(clazz);
 		cache.flush();
+
 	}
 
 	@Override
@@ -71,6 +75,14 @@ public class Engine extends Generic implements DefaultEngine<Generic, org.generi
 	@Override
 	public org.genericsystem.concurrency.Engine unwrap() {
 		return concurrencyEngine;
+	}
+
+	@Override
+	public Cache<Generic, org.genericsystem.concurrency.Generic, Vertex> getCurrentCache() {
+		Cache<Generic, org.genericsystem.concurrency.Generic, Vertex> currentCache = cacheLocal.get();
+		if (currentCache == null)
+			throw new IllegalStateException("Unable to find the current cache. Did you miss to call start() method on it ?");
+		return currentCache;
 	}
 
 }

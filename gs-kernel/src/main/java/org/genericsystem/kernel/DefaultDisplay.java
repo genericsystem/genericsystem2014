@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.io.StringWriter;
 import java.util.HashMap;
+
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
@@ -9,6 +10,7 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import javax.json.JsonWriter;
 import javax.json.stream.JsonGenerator;
+
 import org.genericsystem.api.core.IVertex;
 
 public interface DefaultDisplay<T extends AbstractVertex<T>> extends IVertex<T> {

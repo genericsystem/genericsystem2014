@@ -1,20 +1,20 @@
 package org.genericsystem.mutability;
 
-import java.util.HashMap;
-
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.concurrency.AbstractVertex;
 
-public class Cache<M extends AbstractGeneric<M, T, V>, T extends org.genericsystem.concurrency.AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends HashMap<M, T> {
+public class Cache<M extends AbstractGeneric<M, T, V>, T extends org.genericsystem.concurrency.AbstractGeneric<T, V>, V extends AbstractVertex<V>> {
 
-	private static final long serialVersionUID = 8968934842928259504L;
 	private final DefaultEngine<M, T, V> engine;
 	private final org.genericsystem.concurrency.Cache<T, V> concurrencyCache;
+
+	protected MutabilityCache<M, T, V> mutabilityCache;
 
 	protected Cache(DefaultEngine<M, T, V> engine, org.genericsystem.concurrency.Cache<T, V> concurrencyCache) {
 		this.engine = engine;
 		this.concurrencyCache = concurrencyCache;
+		this.mutabilityCache = new MutabilityCache<M, T, V>(engine);
 	}
 
 	public DefaultEngine<M, T, V> getEngine() {
@@ -44,42 +44,12 @@ public class Cache<M extends AbstractGeneric<M, T, V>, T extends org.genericsyst
 	}
 
 	Snapshot<M> getInheritings(M generic) {
+		System.out.println("getInheritings " + generic.info());
 		return () -> concurrencyCache.getInheritings(unwrap(generic)).get().map(this::wrap);
 	}
 
 	Snapshot<M> getComposites(M generic) {
 		return () -> concurrencyCache.getComposites(unwrap(generic)).get().map(this::wrap);
-	}
-
-	M plug(M generic) {
-		M result = wrap(concurrencyCache.plug(unwrap(generic)));
-		// TODO: a dev ...
-		return result;
-	}
-
-	boolean unplug(M generic) {
-		// TODO:a dev ...
-		return concurrencyCache.unplug(unwrap(generic));
-	}
-
-	@Override
-	public void clear() {
-		// TODO: a dev ...
-	}
-
-	T unwrap(M generic) {
-		return null;
-		// TODO:a dev..
-	}
-
-	M wrap(T vertex) {
-		return null;
-		// TODO:a dev..
-	}
-
-	public boolean isAlive(M generic) {
-		return false;
-		// TODO:a dev..
 	}
 
 	public long getTs() {
@@ -88,6 +58,29 @@ public class Cache<M extends AbstractGeneric<M, T, V>, T extends org.genericsyst
 
 	public void pickNewTs() {
 		concurrencyCache.pickNewTs();
+	}
 
+	M plug(M mutable) {
+		return wrap(concurrencyCache.plug(unwrap(mutable)));
+	}
+
+	boolean unplug(M mutable) {
+		return concurrencyCache.unplug(unwrap(mutable));
+	}
+
+	void clear() {
+		mutabilityCache = new MutabilityCache(engine);
+	}
+
+	T unwrap(M mutable) {
+		return mutabilityCache.get(mutable);
+	}
+
+	M wrap(T generic) {
+		return mutabilityCache.getByValue(generic);
+	}
+
+	public boolean isAlive(M mutable) {
+		return unwrap(mutable).isAlive();
 	}
 }

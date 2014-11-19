@@ -123,6 +123,8 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 
 	private static <T extends AbstractGeneric<T, ?>> Snapshot<T> getDependencies(Map<T, Dependencies<T>> multiMap, Supplier<Stream<T>> subStreamSupplier, T generic) {
 		Dependencies<T> dependencies = multiMap.get(generic);
+		assert generic != null;
+		assert multiMap != null;
 		if (dependencies == null)
 			multiMap.put(generic, dependencies = generic.buildDependencies(subStreamSupplier));
 		return dependencies;
