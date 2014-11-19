@@ -45,7 +45,6 @@ public abstract class AbstractGeneric<M extends AbstractGeneric<M, T, V>, T exte
 	@SuppressWarnings("unchecked")
 	protected M addInstance(Class<?> clazz, List<M> overrides, Serializable value, M... components) {
 		return super.addInstance(clazz, overrides, value, components);
-
 	}
 
 	@Override

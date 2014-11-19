@@ -17,7 +17,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected T plug() {
+	public T plug() {
 		T plug = getCurrentCache().plug((T) this);
 		getRoot().check(true, false, (T) this);
 		return plug;
@@ -34,7 +34,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 	@SuppressWarnings("unchecked")
 	protected T addInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
 		return super.addInstance(clazz, overrides, value, components);
-
 	}
 
 	@Override

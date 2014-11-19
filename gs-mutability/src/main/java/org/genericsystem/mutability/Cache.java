@@ -8,11 +8,11 @@ public class Cache<M extends AbstractGeneric<M, T, V>, T extends org.genericsyst
 
 	private final DefaultEngine<M, T, V> engine;
 	private final org.genericsystem.concurrency.Cache<T, V> concurrencyCache;
-	private final org.genericsystem.concurrency.Engine concurrencyEngine;
+	private final org.genericsystem.concurrency.DefaultEngine<T, V> concurrencyEngine;
 
 	protected MutabilityCache<M, T, V> mutabilityCache;
 
-	protected Cache(DefaultEngine<M, T, V> engine, org.genericsystem.concurrency.Cache<T, V> concurrencyCache, org.genericsystem.concurrency.Engine concurrencyEngine) {
+	protected Cache(DefaultEngine<M, T, V> engine, org.genericsystem.concurrency.Cache<T, V> concurrencyCache, org.genericsystem.concurrency.DefaultEngine<T, V> concurrencyEngine) {
 		this.engine = engine;
 		this.concurrencyCache = concurrencyCache;
 		this.concurrencyEngine = concurrencyEngine;
@@ -62,9 +62,8 @@ public class Cache<M extends AbstractGeneric<M, T, V>, T extends org.genericsyst
 	}
 
 	M plug(M mutable) {
-		System.out.println("mutable: " + mutable.detailedInfo());
-		System.out.println("unwrap(mutable): " + unwrap(mutable));
 		return wrap(concurrencyCache.plug(unwrap(mutable)));
+
 	}
 
 	boolean unplug(M mutable) {
@@ -72,7 +71,7 @@ public class Cache<M extends AbstractGeneric<M, T, V>, T extends org.genericsyst
 	}
 
 	void clear() {
-		mutabilityCache = new MutabilityCache(engine, concurrencyEngine);
+		mutabilityCache = new MutabilityCache<>(engine, concurrencyEngine);
 	}
 
 	T unwrap(M mutable) {
@@ -84,7 +83,7 @@ public class Cache<M extends AbstractGeneric<M, T, V>, T extends org.genericsyst
 	}
 
 	public boolean isAlive(M mutable) {
-		return unwrap(mutable).isAlive();
+		return mutable.isAlive();
 	}
 
 }

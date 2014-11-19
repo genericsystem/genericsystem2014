@@ -7,22 +7,62 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.genericsystem.concurrency.AbstractVertex;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MutabilityCache<M extends AbstractGeneric<M, T, V>, T extends org.genericsystem.concurrency.AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends HashMap<M, T> {
 
+	private static Logger log = LoggerFactory.getLogger(MutabilityCache.class);
 	private static final long serialVersionUID = -3394154384323595664L;
 	private final DefaultEngine<M, T, V> engine;
+	private final org.genericsystem.concurrency.DefaultEngine<T, V> concurrencyEngine;
+
 	private final Map<T, List<M>> reverseMap = new HashMap<>();
 
-	public MutabilityCache(DefaultEngine<M, T, V> engine, org.genericsystem.concurrency.Engine concurrencyEngine) {
+	public MutabilityCache(DefaultEngine<M, T, V> engine, org.genericsystem.concurrency.DefaultEngine<T, V> concurrencyEngine) {
 		this.engine = engine;
 		this.put((M) engine, (T) concurrencyEngine);
+		this.concurrencyEngine = concurrencyEngine;
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public T get(Object key) {
-		return super.get(key);
+		M mutable = (M) key;
+		T result = super.get(mutable);
+		if (result == null) {
+			if (mutable.isMeta()) {
+				T pluggedSuper = get(mutable.getSupers().get(0));
+				if (pluggedSuper != null) {
+					for (T inheriting : pluggedSuper.getInheritings())
+						if (mutable.equals(inheriting)) {
+							put(mutable, inheriting);
+							return inheriting;
+						}
+
+					result = pluggedSuper.setMeta(mutable.getComponents().size());// .init(null, mutable.getSupers().stream().map(this::get).collect(Collectors.toList()), mutable.getValue(),
+																					// mutable.getComponents().stream().map(this::get).collect(Collectors.toList())).plug();
+					put(mutable, result);
+					return result;
+				}
+			} else {
+				T pluggedMeta = get(mutable.getMeta());
+				if (pluggedMeta != null) {
+					for (T instance : pluggedMeta.getInstances())
+						if (mutable.equals(instance)) {
+							put(mutable, instance);
+							return instance;
+						}
+					// mutable.getComponents().stream().map(this::get).peek(x -> log.info("" + x)).forEach(T::checkIsAlive);
+					result = ((T) concurrencyEngine).newT().init(pluggedMeta, mutable.getSupers().stream().map(this::get).collect(Collectors.toList()), mutable.getValue(), mutable.getComponents().stream().map(this::get).collect(Collectors.toList()))
+							.plug();
+					put(mutable, result);
+					return result;
+				}
+			}
+		}
+		return result;
 	}
 
 	@Override

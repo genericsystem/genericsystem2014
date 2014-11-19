@@ -5,6 +5,14 @@ import org.testng.annotations.Test;
 @Test
 public class RemoveTest extends AbstractTest {
 
+	public void test000_simpleHolder() {
+		Engine engine = new Engine();
+		engine.setMeta(3);
+		engine.getCurrentCache().flush();
+		assert engine.getMeta(3) != null;
+		assert engine.unwrap().getMeta(3) != null;
+	}
+
 	public void test001_simpleHolder() {
 		Engine engine = new Engine();
 		Generic car = engine.addInstance("Car");

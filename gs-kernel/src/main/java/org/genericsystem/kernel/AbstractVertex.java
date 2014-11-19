@@ -197,7 +197,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	@SuppressWarnings("unchecked")
-	T getMeta(int dim) {
+	public T getMeta(int dim) {
 		T adjustedMeta = ((T) getRoot()).adjustMeta(dim);
 		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
 	}
