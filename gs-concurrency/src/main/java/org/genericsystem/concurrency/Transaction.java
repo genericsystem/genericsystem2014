@@ -1,6 +1,7 @@
 package org.genericsystem.concurrency;
 
 import java.util.HashSet;
+
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
@@ -10,8 +11,8 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 	private final long ts;
 
 	@Override
-	public DefaultEngine<T, V> getEngine() {
-		return (DefaultEngine<T, V>) super.getEngine();
+	public DefaultEngine<T, V> getRoot() {
+		return (DefaultEngine<T, V>) super.getRoot();
 	}
 
 	Transaction(DefaultEngine<T, V> engine) {
@@ -34,8 +35,8 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 	}
 
 	@Override
-	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
-		synchronized (getEngine()) {
+	public void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
+		synchronized (getRoot()) {
 			LockedLifeManager lockedLifeManager = new LockedLifeManager();
 			try {
 				lockedLifeManager.writeLockAllAndCheckMvcc(adds, removes);
@@ -49,7 +50,7 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 	@Override
 	protected boolean simpleRemove(T generic) {
 		unwrap(generic).getLifeManager().kill(getTs());
-		getEngine().unwrap().getGarbageCollector().add(unwrap(generic));
+		getRoot().unwrap().getGarbageCollector().add(unwrap(generic));
 		vertices.put(generic, null);
 		return true;
 	}

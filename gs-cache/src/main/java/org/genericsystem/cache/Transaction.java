@@ -6,25 +6,34 @@ import java.util.stream.Stream;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
+import org.genericsystem.kernel.Context;
 
-public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends AbstractContext<T, V> {
+public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> implements DefaultContext<T, V> {
 
 	private transient final DefaultEngine<T, V> engine;
 	protected final TransactionCache<T, V> vertices;
 
+	private final Context<V> context;
+
 	protected Transaction(DefaultEngine<T, V> engine) {
 		this.engine = engine;
 		vertices = new TransactionCache<>(engine);
+		context = unwrap((T) engine).getCurrentCache();
 	}
 
 	@Override
 	public boolean isAlive(T generic) {
-		AbstractVertex<?> vertex = generic.unwrap();
+		AbstractVertex<?> vertex = unwrap(generic);
 		return vertex != null && vertex.isAlive();
 	}
 
 	@Override
-	protected void simpleAdd(T generic) {
+	public void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
+		removes.forEach(this::simpleRemove);
+		adds.forEach(this::simpleAdd);
+	}
+
+	private T simpleAdd(T generic) {
 		V vertex = unwrap(generic.getMeta());
 		// TODO null is KK
 		V result = null;
@@ -32,10 +41,10 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 			vertex = unwrap((T) engine);
 		result = vertex.setInstance(generic.getSupers().stream().map(this::unwrap).collect(Collectors.toList()), generic.getValue(), vertex.coerceToTArray(generic.getComponents().stream().map(this::unwrap).toArray()));
 		vertices.put(generic, result);
+		return generic;
 	}
 
-	// remove should return a boolean.
-	@Override
+	// TODO remove should return a boolean.
 	protected boolean simpleRemove(T generic) {
 		unwrap(generic).remove();
 		vertices.put(generic, null);
@@ -43,46 +52,39 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 	}
 
 	@Override
-	public DefaultEngine<T, V> getEngine() {
+	public DefaultEngine<T, V> getRoot() {
 		return engine;
 	}
 
 	@Override
-	Snapshot<T> getInheritings(T generic) {
+	public Snapshot<T> getInheritings(T generic) {
 		return () -> {
 			V vertex = unwrap(generic);
-			return vertex != null ? vertex.getInheritings().get().map(generic::wrap) : Stream.empty();
+			return vertex != null ? context.getInheritings(vertex).get().map(this::wrap) : Stream.empty();
 		};
 	}
 
 	@Override
-	Snapshot<T> getInstances(T generic) {
+	public Snapshot<T> getInstances(T generic) {
 		return () -> {
 			V vertex = unwrap(generic);
-			return vertex != null ? vertex.getInstances().get().map(generic::wrap) : Stream.empty();
+			return vertex != null ? context.getInstances(vertex).get().map(this::wrap) : Stream.empty();
 		};
 	}
 
 	@Override
-	Snapshot<T> getComposites(T generic) {
+	public Snapshot<T> getComposites(T generic) {
 		return () -> {
 			V vertex = unwrap(generic);
-			return vertex != null ? vertex.getComposites().get().map(generic::wrap) : Stream.empty();
+			return vertex != null ? context.getComposites(vertex).get().map(this::wrap) : Stream.empty();
 		};
 	}
 
-	@Override
 	protected V unwrap(T generic) {
 		return vertices.get(generic);
 	}
 
-	@Override
-	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
-		super.apply(adds, removes);
-	}
-
-	@Override
-	T wrap(V vertex) {
+	private T wrap(V vertex) {
 		return vertices.getByValue(vertex);
 	}
 }

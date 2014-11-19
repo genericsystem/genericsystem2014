@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+
 import org.genericsystem.cache.GenericsCache;
 import org.genericsystem.cache.SystemCache;
 import org.genericsystem.kernel.Statics;
@@ -53,7 +54,7 @@ public class Engine extends Generic implements DefaultEngine<Generic, Vertex> {
 
 	@Override
 	public Cache<Generic, Vertex> start(org.genericsystem.cache.Cache<Generic, Vertex> cache) {
-		if (!equals(cache.getEngine()))
+		if (!equals(cache.getRoot()))
 			throw new IllegalStateException();
 		// TODO KK
 		cacheLocal.set((Cache<Generic, Vertex>) cache);

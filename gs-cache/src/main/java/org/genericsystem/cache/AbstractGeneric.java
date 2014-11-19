@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.cache.annotations.InstanceClass;
@@ -14,18 +15,20 @@ import org.genericsystem.kernel.Dependencies;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.kernel.AbstractVertex<T> implements DefaultGeneric<T, V> {
 
+	@Override
+	public Cache<T, V> getCurrentCache() {
+		return getRoot().getCurrentCache();
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	protected T plug() {
-		T plug = getCurrentCache().plug((T) this);
-		getRoot().check(true, false, (T) this);
-		return plug;
+		return getCurrentCache().plug((T) this);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected boolean unplug() {
-		getRoot().check(false, false, (T) this);
 		return getCurrentCache().unplug((T) this);
 	}
 
@@ -40,15 +43,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 	@SuppressWarnings("unchecked")
 	protected T setInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
 		return super.setInstance(clazz, overrides, value, components);
-	}
-
-	@SuppressWarnings("unchecked")
-	protected V unwrap() {
-		return getCurrentCache().unwrap((T) this);
-	}
-
-	protected T wrap(V vertex) {
-		return getCurrentCache().wrap(vertex);
 	}
 
 	@Override

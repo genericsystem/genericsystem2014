@@ -3,7 +3,7 @@ package org.genericsystem.concurrency;
 public interface DefaultEngine<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.cache.DefaultEngine<T, V>, DefaultGeneric<T, V> {
 
 	@Override
-	default Cache<T, V> buildCache(org.genericsystem.cache.AbstractContext<T, V> subContext) {
+	default Cache<T, V> buildCache(org.genericsystem.cache.DefaultContext<T, V> subContext) {
 		return new Cache<>(subContext);
 	}
 

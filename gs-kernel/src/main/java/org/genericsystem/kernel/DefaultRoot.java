@@ -5,12 +5,10 @@ import java.util.List;
 
 import org.genericsystem.api.core.IRoot;
 import org.genericsystem.api.exception.RollbackException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public interface DefaultRoot<T extends AbstractVertex<T>> extends IRoot<T> {
 
-	static Logger log = LoggerFactory.getLogger(DefaultRoot.class);
+	Context<T> getCurrentCache();
 
 	@Override
 	default void discardWithException(Throwable exception) throws RollbackException {
