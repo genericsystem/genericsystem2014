@@ -7,6 +7,7 @@ public class RemoveTest extends AbstractTest {
 
 	public void test001_simpleHolder() {
 		Engine engine = new Engine();
+		assert engine.getCurrentCache() != null;
 		Generic car = engine.addInstance("Car");
 		assert car.isAlive();
 		Generic color = car.addAttribute("Color");

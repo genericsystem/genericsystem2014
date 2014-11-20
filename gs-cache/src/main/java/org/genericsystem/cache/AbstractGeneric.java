@@ -22,7 +22,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected T plug() {
+	public T plug() {
 		return getCurrentCache().plug((T) this);
 	}
 

@@ -137,14 +137,14 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 	}
 
 	@Override
-	protected T plug(T generic) {
+	public T plug(T generic) {
 		T result = super.plug(generic);
 		simpleAdd(generic);
 		return result;
 	}
 
 	@Override
-	protected boolean unplug(T generic) {
+	public boolean unplug(T generic) {
 		boolean result = super.unplug(generic);
 		return result && simpleRemove(generic);
 	}

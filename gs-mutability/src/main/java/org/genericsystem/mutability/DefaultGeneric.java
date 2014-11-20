@@ -7,6 +7,7 @@ public interface DefaultGeneric<M extends AbstractGeneric<M, T, V>, T extends or
 	@Override
 	abstract DefaultEngine<M, T, V> getRoot();
 
+	@Override
 	default Cache<M, T, V> getCurrentCache() {
 		return getRoot().getCurrentCache();
 	}

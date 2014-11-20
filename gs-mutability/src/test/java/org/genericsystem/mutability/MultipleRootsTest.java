@@ -1,6 +1,7 @@
 package org.genericsystem.mutability;
 
 import java.util.Arrays;
+
 import org.genericsystem.api.exception.CrossEnginesAssignementsException;
 import org.genericsystem.kernel.Statics;
 import org.testng.annotations.Test;
@@ -45,6 +46,8 @@ public class MultipleRootsTest extends AbstractTest {
 		Engine engine2 = new Engine("SecondEngine");
 		Generic car = engine1.addInstance("Car");
 		Generic car2 = engine2.addInstance("Car");
+		Generic car1 = engine1.addInstance("Car1");
+		Generic car22 = engine2.addInstance("Car22");
 		catchAndCheckCause(() -> engine2.addInstance("Power", car), CrossEnginesAssignementsException.class);
 	}
 

@@ -17,8 +17,8 @@ public interface DefaultEngine<M extends AbstractGeneric<M, T, V>, T extends org
 
 	void stop(Cache<M, T, V> cache);
 
-	@Override
-	public Cache<M, T, V> getCurrentCache();
+	// @Override
+	// Cache<M, T, V> getCurrentCache();
 
 	org.genericsystem.concurrency.DefaultEngine<T, V> unwrap();
 

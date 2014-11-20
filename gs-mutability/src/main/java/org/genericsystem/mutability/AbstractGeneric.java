@@ -38,7 +38,7 @@ public abstract class AbstractGeneric<M extends AbstractGeneric<M, T, V>, T exte
 	@SuppressWarnings("unchecked")
 	@Override
 	protected boolean unplug() {
-		getRoot().check(false, false, (M) this);
+		// getRoot().check(false, false, (M) this);
 		return getCurrentCache().unplug((M) this);
 	}
 

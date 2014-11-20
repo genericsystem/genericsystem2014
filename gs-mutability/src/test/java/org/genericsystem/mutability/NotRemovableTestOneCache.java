@@ -7,6 +7,13 @@ import org.testng.annotations.Test;
 @Test
 public class NotRemovableTestOneCache extends AbstractTest {
 
+	public void test000_aliveEx() {
+		Engine engine = new Engine();
+		Cache cache = engine.getCurrentCache();
+		Generic car = engine.addInstance("Car");
+		assert car.isAlive();
+	}
+
 	public void test001_aliveEx() {
 		Engine engine = new Engine();
 		Cache cache = engine.getCurrentCache();
@@ -15,6 +22,7 @@ public class NotRemovableTestOneCache extends AbstractTest {
 		Generic myBmw = car.addInstance("myBmw");
 		Generic myBmwRed = myBmw.addHolder(color, "red");
 		cache.clear();
+		assert !myBmwRed.isAlive();
 		catchAndCheckCause(() -> myBmwRed.remove(), AliveConstraintViolationException.class);
 	}
 

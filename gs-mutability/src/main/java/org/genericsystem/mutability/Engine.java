@@ -27,13 +27,12 @@ public class Engine extends Generic implements DefaultEngine<Generic, org.generi
 		for (Class<?> clazz : userClasses)
 			systemCache.set(clazz);
 		cache.flush();
-
 	}
 
 	@Override
 	public Cache<Generic, org.genericsystem.concurrency.Generic, Vertex> buildCache(DefaultEngine<Generic, org.genericsystem.concurrency.Generic, Vertex> engine) {
 		return new Cache<>(engine, concurrencyEngine.newCache(), concurrencyEngine);
-	};
+	}
 
 	private void mountSystemProperties(Cache<Generic, org.genericsystem.concurrency.Generic, Vertex> cache) {
 		Generic metaAttribute = setInstance(this, getValue(), coerceToTArray(this));
