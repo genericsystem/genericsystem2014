@@ -17,7 +17,7 @@ public class Cache<M extends AbstractGeneric<M, T, V>, T extends org.genericsyst
 	private final org.genericsystem.concurrency.Cache<T, V> concurrencyCache;
 	private final org.genericsystem.concurrency.DefaultEngine<T, V> concurrencyEngine;
 
-	private HashMap<M, T> mutabilityC = new HashMap<>();
+	private HashMap<M, T> mutabilityCache = new HashMap<>();
 	private Map<T, IdentityHashMap<M, Boolean>> reverseMap = new HashMap<>();
 
 	protected Cache(DefaultEngine<M, T, V> engine, org.genericsystem.concurrency.Cache<T, V> concurrencyCache, org.genericsystem.concurrency.DefaultEngine<T, V> concurrencyEngine) {
@@ -89,7 +89,7 @@ public class Cache<M extends AbstractGeneric<M, T, V>, T extends org.genericsyst
 
 	void clear() {
 		concurrencyCache.clear();
-		mutabilityC = new HashMap<>();
+		mutabilityCache = new HashMap<>();
 	}
 
 	T unwrap(M mutable) {
@@ -107,7 +107,7 @@ public class Cache<M extends AbstractGeneric<M, T, V>, T extends org.genericsyst
 
 	private T get(Object key) {
 		M mutable = (M) key;
-		T result = mutabilityC.get(mutable);
+		T result = mutabilityCache.get(mutable);
 		if (result == null) {
 			if (mutable.isMeta()) {
 				T pluggedSuper = get(mutable.getSupers().get(0));
@@ -147,7 +147,7 @@ public class Cache<M extends AbstractGeneric<M, T, V>, T extends org.genericsyst
 			reverseMap.put(value, idHashMap);
 		} else
 			reverseResult.put(key, true);
-		return mutabilityC.put(key, value);
+		return mutabilityCache.put(key, value);
 	}
 
 	private M getByValue(T generic) {
