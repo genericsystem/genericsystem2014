@@ -122,14 +122,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		computeDependencies().forEach(T::unplug);
 	}
 
-	private Iterable<T> reverseLinkedHashSet(LinkedHashSet<T> linkedHashSet) {
-		List<T> dependencies = new ArrayList<>(linkedHashSet);
-		Collections.reverse(dependencies);
-		return dependencies;
-	}
-
 	private Iterable<T> getOrderedDependenciesToRemove() {
-		return reverseLinkedHashSet(buildOrderedDependenciesToRemove());
+		return Statics.reverseCollections(buildOrderedDependenciesToRemove());
 	}
 
 	@Override
@@ -413,7 +407,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return true;
 	}
 
-	protected boolean genericEquals(ISignature<?> service) {
+	public boolean genericEquals(ISignature<?> service) {
 		if (this == service)
 			return true;
 		if (!Objects.equals(getValue(), service.getValue()))

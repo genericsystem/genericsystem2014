@@ -12,11 +12,11 @@ import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -214,7 +214,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 			String fileName = getFilename(pickNewTs());
 			try (FileOutputStream fileOutputStream = new FileOutputStream(directory.getAbsolutePath() + File.separator + fileName + fileManager.getExtension() + PART_EXTENSION);) {
 				outputStream = fileManager.newOutputStream(fileOutputStream, fileName);
-				writeDependencies(new DependenciesOrder<T>().visit(root), new HashSet<>());
+				writeDependencies(getOrderedVertex(), new HashSet<>());
 				outputStream.flush();
 				outputStream.close();
 				new File(directory.getAbsolutePath() + File.separator + fileName + fileManager.getExtension() + PART_EXTENSION).renameTo(new File(directory.getAbsolutePath() + File.separator + fileName + fileManager.getExtension()));
@@ -250,22 +250,26 @@ public class Archiver<T extends AbstractVertex<T>> {
 			snapshotsMap.remove(ts);
 		}
 
-		static class DependenciesOrder<T extends AbstractVertex<T>> extends ArrayDeque<T> {
+		protected List<T> getOrderedVertex() {
+			return Statics.reverseCollections(new DependenciesOrder<T>().visit(root));
+		}
+
+		public static class DependenciesOrder<T extends AbstractVertex<T>> extends LinkedHashSet<T> {
 			private static final long serialVersionUID = -5970021419012502402L;
 
-			DependenciesOrder<T> visit(T node) {
+			public DependenciesOrder<T> visit(T node) {
 				if (!contains(node)) {
 					node.getCompositesDependencies().forEach(this::visit);
 					node.getInheritingsDependencies().forEach(this::visit);
 					node.getInstancesDependencies().forEach(this::visit);
 					if (!node.isRoot())
-						super.push(node);
+						add(node);
 				}
 				return this;
 			}
 		}
 
-		private void writeDependencies(DependenciesOrder<T> dependencies, Set<T> vertexSet) throws IOException {
+		private void writeDependencies(List<T> dependencies, Set<T> vertexSet) throws IOException {
 			outputStream.writeInt(dependencies.size());
 			for (T dependency : dependencies)
 				if (vertexSet.add(dependency)) {

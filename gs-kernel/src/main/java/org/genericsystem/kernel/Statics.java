@@ -1,8 +1,11 @@
 package org.genericsystem.kernel;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
 import org.genericsystem.api.core.IVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,6 +163,12 @@ public class Statics {
 
 	public static <T extends IVertex<T>> boolean areOverridesReached(List<T> overrides, List<T> supers) {
 		return overrides.stream().allMatch(override -> supers.stream().anyMatch(superVertex -> superVertex.inheritsFrom(override)));
+	}
+
+	public static <T extends IVertex<T>> List<T> reverseCollections(Collection<T> linkedHashSet) {
+		List<T> dependencies = new ArrayList<>(linkedHashSet);
+		Collections.reverse(dependencies);
+		return dependencies;
 	}
 
 }
