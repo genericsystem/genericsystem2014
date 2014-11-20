@@ -31,7 +31,7 @@ public abstract class AbstractGeneric<M extends AbstractGeneric<M, T, V>, T exte
 	@Override
 	protected M plug() {
 		M plug = getCurrentCache().plug((M) this);
-		getRoot().check(true, false, (M) this);
+		// getRoot().check(true, false, (M) this);
 		return plug;
 	}
 
@@ -162,8 +162,14 @@ public abstract class AbstractGeneric<M extends AbstractGeneric<M, T, V>, T exte
 
 	@Override
 	public int hashCode() {
-		// TODO introduce : meta and components length
 		return Objects.hashCode(getValue());
 	}
 
+	// @Override
+	// public M updateValue(Serializable value) {
+	// System.out.println("UPDATE");
+	//
+	// return wrap(unwrap().updateValue(value));
+	//
+	// }
 }

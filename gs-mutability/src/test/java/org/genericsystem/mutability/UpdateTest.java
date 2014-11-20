@@ -9,7 +9,7 @@ public class UpdateTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic car = engine.addInstance("Car");
 
-		Generic carRename = car.update("CarRename");
+		Generic carRename = car.updateValue("CarRename");
 
 		assert carRename.isAlive();
 		assert carRename.equals(car);
