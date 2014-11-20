@@ -3,9 +3,13 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.Collections;
 
+import org.genericsystem.kernel.Context;
+
 public class Root extends Vertex implements DefaultRoot<Vertex> {
 
 	private final Engine engine;
+
+	private final Context<Vertex> context = new Context<Vertex>(this);
 
 	Root(Engine engine, Serializable value) {
 		init(null, Collections.emptyList(), value, Collections.emptyList());
@@ -13,8 +17,8 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 	}
 
 	@Override
-	public Root getRoot() {
-		return this;
+	public Context<Vertex> getCurrentCache() {
+		return context;
 	}
 
 	@Override

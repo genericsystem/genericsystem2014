@@ -1,7 +1,6 @@
 package org.genericsystem.cache;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -51,7 +50,7 @@ public class Engine extends Generic implements DefaultEngine<Generic, Vertex> {
 
 	@Override
 	public Cache<Generic, Vertex> start(Cache<Generic, Vertex> cache) {
-		if (!equals(cache.getEngine()))
+		if (!equals(cache.getRoot()))
 			throw new IllegalStateException();
 		cacheLocal.set(cache);
 		return cache;
@@ -75,11 +74,6 @@ public class Engine extends Generic implements DefaultEngine<Generic, Vertex> {
 	@Override
 	public <subT extends Generic> subT find(Class<subT> clazz) {
 		return (subT) systemCache.get(clazz);
-	}
-
-	@Override
-	public Engine getRoot() {
-		return (Engine) super.getRoot();
 	}
 
 	@Override

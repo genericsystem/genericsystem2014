@@ -8,6 +8,8 @@ import org.genericsystem.api.core.Snapshot;
 
 public interface DefaultVertex<T extends AbstractVertex<T>> extends DefaultAncestors<T>, DefaultDependencies<T>, DefaultDisplay<T>, DefaultSystemProperties<T>, DefaultCompositesInheritance<T>, DefaultWritable<T>, IVertex<T> {
 
+	Context<T> getCurrentCache();
+
 	@Override
 	default T addRoot(Serializable value) {
 		return addInstance(value, coerceToTArray(new Object[getMeta().getComponents().size()]));

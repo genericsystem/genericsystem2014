@@ -3,6 +3,8 @@ package org.genericsystem.concurrency;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
+
+import org.genericsystem.kernel.Context;
 import org.genericsystem.kernel.Statics;
 
 public class Root extends Vertex implements DefaultRoot<Vertex> {
@@ -10,6 +12,8 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 	private final TsGenerator generator = new TsGenerator();
 
 	private final DefaultEngine<Generic, Vertex> engine;
+
+	private final Context<Vertex> context = new Context<>(this);
 
 	private final GarbageCollector<Vertex> garbageCollector;
 
@@ -24,6 +28,11 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 	@Override
 	public Root getRoot() {
 		return super.getRoot();
+	}
+
+	@Override
+	public Context<Vertex> getCurrentCache() {
+		return context;
 	}
 
 	@Override

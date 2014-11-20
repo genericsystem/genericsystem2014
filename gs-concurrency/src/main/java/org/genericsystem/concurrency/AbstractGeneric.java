@@ -5,4 +5,9 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 	public DefaultEngine<T, V> getRoot() {
 		return (DefaultEngine<T, V>) super.getRoot();
 	}
+
+	@Override
+	public Cache<T, V> getCurrentCache() {
+		return getRoot().getCurrentCache();
+	}
 }
