@@ -1,41 +1,70 @@
 package org.genericsystem.mutability;
 
-import org.genericsystem.concurrency.Vertex;
-import org.genericsystem.kernel.Dependencies;
+import java.io.Serializable;
+import java.util.List;
 
-public class Generic extends AbstractGeneric<Generic, org.genericsystem.concurrency.Generic, Vertex> implements DefaultGeneric<Generic, org.genericsystem.concurrency.Generic, Vertex> {
+import org.genericsystem.api.core.ISignature;
+import org.genericsystem.api.core.Snapshot;
 
-	private final Dependencies<Generic> instances = buildDependencies();
-	private final Dependencies<Generic> inheritings = buildDependencies();
-	private final Dependencies<Generic> composites = buildDependencies();
+public class Generic implements ISignature<Generic> {
+	protected Cache cache;
 
-	@Override
-	protected Dependencies<Generic> getInstancesDependencies() {
-		return instances;
+	Snapshot<Generic> getInstances() {
+		return null;
+	}
+
+	Snapshot<Generic> getInheritings() {
+		return null;
+	}
+
+	Snapshot<Generic> getComposites() {
+		return null;
+	}
+
+	boolean isAlive() {
+		return false;
+	}
+
+	Generic addInstance(Generic override, Serializable value, Generic... components) {
+		return null;
+	}
+
+	Generic addInstance(Serializable value, Generic... components) {
+		return null;
+	}
+
+	public Generic updateValue(Serializable newValue) {
+		return null;
+	}
+
+	public Generic update(Generic override, Serializable newValue, Generic... components) {
+		return null;
 	}
 
 	@Override
-	protected Dependencies<Generic> getInheritingsDependencies() {
-		return inheritings;
+	public Generic getMeta() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	protected Dependencies<Generic> getCompositesDependencies() {
-		return composites;
+	public List<Generic> getSupers() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	protected Generic newT() {
-		return new Generic();
+	public Serializable getValue() {
+		return cache.get(this).getValue();
 	}
 
 	@Override
-	protected Generic[] newTArray(int dim) {
-		return new Generic[dim];
+	public List<Generic> getComponents() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	@Override
-	public DefaultEngine<Generic, org.genericsystem.concurrency.Generic, Vertex> getRoot() {
-		return (DefaultEngine<Generic, org.genericsystem.concurrency.Generic, Vertex>) super.getRoot();
+	public void remove() {
+
 	}
 }

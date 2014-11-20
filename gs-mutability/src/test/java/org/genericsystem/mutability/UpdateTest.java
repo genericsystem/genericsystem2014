@@ -27,7 +27,7 @@ public class UpdateTest extends AbstractTest {
 		assert car.getSupers().size() == 1;
 		assert vehicle.getInheritings().contains(car);
 
-		Generic carUpdate = car.updateSupers(otherVehicle);
+		Generic carUpdate = car.update(otherVehicle, "Car");
 
 		assert car.getSupers().contains(otherVehicle);
 		assert car.getSupers().size() == 1;
