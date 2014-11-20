@@ -38,6 +38,7 @@ public class Engine extends Generic implements DefaultEngine<Generic, org.generi
 	private void mountSystemProperties(Cache<Generic, org.genericsystem.concurrency.Generic, Vertex> cache) {
 		Generic metaAttribute = setInstance(this, getValue(), coerceToTArray(this));
 		setInstance(SystemMap.class, coerceToTArray(this)).enablePropertyConstraint();
+		setMeta(Statics.RELATION_SIZE);
 		metaAttribute.disableReferentialIntegrity(Statics.BASE_POSITION);
 	}
 

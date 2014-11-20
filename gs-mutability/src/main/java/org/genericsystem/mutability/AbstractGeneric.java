@@ -11,6 +11,7 @@ import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.cache.CacheDependencies;
 import org.genericsystem.cache.annotations.InstanceClass;
+import org.genericsystem.cache.annotations.SystemGeneric;
 import org.genericsystem.concurrency.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 
@@ -51,6 +52,14 @@ public abstract class AbstractGeneric<M extends AbstractGeneric<M, T, V>, T exte
 	@SuppressWarnings("unchecked")
 	public M setInstance(Class<?> clazz, List<M> overrides, Serializable value, M... components) {
 		return super.setInstance(clazz, overrides, value, components);
+	}
+
+	@Override
+	public void remove() {
+		// TODO KK this verification must go in simpleRemove....
+		if (getClass().getAnnotation(SystemGeneric.class) != null)
+			getRoot().discardWithException(new IllegalAccessException("@SystemGeneric annoted generic can't be removed"));
+		super.remove();
 	}
 
 	@SuppressWarnings("unchecked")

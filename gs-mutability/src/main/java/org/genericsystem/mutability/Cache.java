@@ -86,4 +86,9 @@ public class Cache<M extends AbstractGeneric<M, T, V>, T extends org.genericsyst
 		return mutable.isAlive();
 	}
 
+	// public void remove(M mutable) {
+	// unplug(mutable);
+	// mutabilityCache.put(mutable, null);
+	// }
+
 }

@@ -8,6 +8,19 @@ import org.testng.annotations.Test;
 @Test
 public class NotRemovableTestManyCaches extends AbstractTest {
 
+	public void test000_() {
+		Engine engine = new Engine();
+		Cache cache1 = engine.getCurrentCache();
+		Generic car = engine.addInstance("Car");
+
+		cache1.flush();
+		car.remove();
+		cache1.flush();
+		// Cache cache2 = engine.newCache().start();
+		// catchAndCheckCause(() -> myCar1.remove(), AliveConstraintViolationException.class);
+		// cache2.flush();
+	}
+
 	public void test001_aliveEx() {
 		Engine engine = new Engine();
 		Cache cache = engine.getCurrentCache();
