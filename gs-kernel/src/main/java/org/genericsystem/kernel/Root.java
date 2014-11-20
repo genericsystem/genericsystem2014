@@ -12,6 +12,8 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 
 	private Archiver archiver;
 
+	private final Context<Vertex> context = new Context<Vertex>(this);
+
 	public Root(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
 	}
@@ -33,8 +35,8 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 	}
 
 	@Override
-	public Root getRoot() {
-		return (Root) super.getRoot();
+	public Context<Vertex> getCurrentCache() {
+		return context;
 	}
 
 	// TODO mount this in API

@@ -15,18 +15,20 @@ import org.genericsystem.kernel.Dependencies;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.kernel.AbstractVertex<T> implements DefaultGeneric<T, V> {
 
+	@Override
+	public Cache<T, V> getCurrentCache() {
+		return getRoot().getCurrentCache();
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
-	public T plug() {
-		T plug = getCurrentCache().plug((T) this);
-		getRoot().check(true, false, (T) this);
-		return plug;
+	protected T plug() {
+		return getCurrentCache().plug((T) this);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected boolean unplug() {
-		getRoot().check(false, false, (T) this);
 		return getCurrentCache().unplug((T) this);
 	}
 
@@ -40,15 +42,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 	@SuppressWarnings("unchecked")
 	public T setInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
 		return super.setInstance(clazz, overrides, value, components);
-	}
-
-	@SuppressWarnings("unchecked")
-	protected V unwrap() {
-		return getCurrentCache().unwrap((T) this);
-	}
-
-	protected T wrap(V vertex) {
-		return getCurrentCache().wrap(vertex);
 	}
 
 	@Override

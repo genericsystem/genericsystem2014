@@ -248,9 +248,9 @@ public class Archiver {
 
 			DependenciesOrder visit(Vertex node) {
 				if (!contains(node)) {
-					node.getComposites().forEach(this::visit);
-					node.getInheritings().forEach(this::visit);
-					node.getInstances().forEach(this::visit);
+					node.getCompositesDependencies().forEach(this::visit);
+					node.getInheritingsDependencies().forEach(this::visit);
+					node.getInstancesDependencies().forEach(this::visit);
 					if (!node.isRoot())
 						super.push(node);
 				}

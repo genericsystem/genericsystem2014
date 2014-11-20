@@ -9,14 +9,17 @@ import java.util.stream.Stream;
 
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
+import org.genericsystem.api.exception.CacheNoStartedException;
+import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
-import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.RollbackException;
+import org.genericsystem.kernel.Context;
+import org.genericsystem.kernel.DefaultContext;
 import org.genericsystem.kernel.Dependencies;
 
-public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends AbstractContext<T, V> {
+public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends Context<T> implements DefaultContext<T> {
 
-	protected AbstractContext<T, V> subContext;
+	protected DefaultContext<T> subContext;
 
 	private transient Map<T, Dependencies<T>> inheritingsDependencies;
 	private transient Map<T, Dependencies<T>> instancesDependencies;
@@ -37,7 +40,8 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 		this(new Transaction<>(engine));
 	}
 
-	protected Cache(AbstractContext<T, V> subContext) {
+	protected Cache(DefaultContext<T> subContext) {
+		super(subContext.getRoot());
 		this.subContext = subContext;
 		clear();
 	}
@@ -48,7 +52,7 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 	}
 
 	public Cache<T, V> mountAndStartNewCache() {
-		return getEngine().buildCache(this).start();
+		return getRoot().buildCache(this).start();
 	}
 
 	public Cache<T, V> flushAndUnmount() {
@@ -62,25 +66,27 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 	}
 
 	public Cache<T, V> start() {
-		return getEngine().start(this);
+		return getRoot().start(this);
 	}
 
 	public void stop() {
-		getEngine().stop(this);
+		getRoot().stop(this);
 	}
 
 	public void flush() throws RollbackException {
+		if (!equals(getRoot().getCurrentCache()))
+			getRoot().discardWithException(new CacheNoStartedException("The Cache isn't started"));
 		checkConstraints();
 		try {
-			getSubContext().apply(adds, removes);
+			applyChangesToSubContext();
 		} catch (ConstraintViolationException e) {
-			getEngine().discardWithException(e);
+			getRoot().discardWithException(e);
 		}
 		clear();
 	}
 
 	protected void checkConstraints() throws RollbackException {
-		DefaultEngine<T, V> engine = getEngine();
+		DefaultEngine<T, V> engine = getRoot();
 		adds.forEach(x -> engine.check(true, true, x));
 		removes.forEach(x -> engine.check(false, true, x));
 	}
@@ -90,35 +96,57 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 		throw new RollbackException(exception);
 	}
 
-	@Override
-	protected void apply(Iterable<T> adds, Iterable<T> removes) {
+	protected void applyChangesToSubContext() throws ConcurrencyControlException, ConstraintViolationException {
+		DefaultContext<T> subContext = getSubContext();
+		if (subContext instanceof Cache) {
+			Cache<T, V> subCache = (Cache<T, V>) subContext;
+			subCache.start();
+			subCache.apply(adds, removes);
+			subCache.stop();
+		} else
+			((Transaction<T, V>) subContext).apply(adds, removes);
+		start();
+	}
+
+	private void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
 		removes.forEach(this::unplug);
 		adds.forEach(this::plug);
 	}
 
-	@Override
-	protected void simpleAdd(T generic) {
+	private void simpleAdd(T generic) {
 		if (!removes.remove(generic))
 			adds.add(generic);
-
 	}
 
-	@Override
-	protected boolean simpleRemove(T generic) {
+	private boolean simpleRemove(T generic) {
 		if (!isAlive(generic))
-			getEngine().discardWithException(new AliveConstraintViolationException(generic + " is not alive"));
+			getRoot().discardWithException(new AliveConstraintViolationException(generic + " is not alive"));
 		if (!adds.remove(generic))
 			return removes.add(generic);
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public DefaultEngine<T, V> getEngine() {
-		return subContext.getEngine();
+	public DefaultEngine<T, V> getRoot() {
+		return (DefaultEngine<T, V>) subContext.getRoot();
 	}
 
-	protected AbstractContext<T, V> getSubContext() {
+	protected DefaultContext<T> getSubContext() {
 		return subContext;
+	}
+
+	@Override
+	protected T plug(T generic) {
+		T result = super.plug(generic);
+		simpleAdd(generic);
+		return result;
+	}
+
+	@Override
+	protected boolean unplug(T generic) {
+		boolean result = super.unplug(generic);
+		return result && simpleRemove(generic);
 	}
 
 	private static <T extends AbstractGeneric<T, ?>> Snapshot<T> getDependencies(Map<T, Dependencies<T>> multiMap, Supplier<Stream<T>> subStreamSupplier, T generic) {
@@ -145,63 +173,33 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 		return getDependencies(compositesDependencies, () -> subContext.getComposites(generic).get(), generic);
 	}
 
-	private T index(Map<T, Dependencies<T>> multiMap, Supplier<Stream<T>> subStreamSupplier, T generic, T composite) {
-		return ((Dependencies<T>) getDependencies(multiMap, subStreamSupplier, generic)).set(composite);
-	}
-
-	private boolean unIndex(Map<T, Dependencies<T>> multiMap, Supplier<Stream<T>> subStreamSupplier, T generic, T composite) {
-		return ((Dependencies<T>) getDependencies(multiMap, subStreamSupplier, generic)).remove(composite);
-	}
-
-	private T indexInstance(T generic, T instance) {
-		return index(instancesDependencies, () -> subContext.getInstances(generic).get(), generic, instance);
-	}
-
-	private T indexInheriting(T generic, T inheriting) {
-		return index(inheritingsDependencies, () -> subContext.getInheritings(generic).get(), generic, inheriting);
-	}
-
-	private T indexComposite(T generic, T composite) {
-		return index(compositesDependencies, () -> subContext.getComposites(generic).get(), generic, composite);
-	}
-
-	private boolean unIndexInstance(T generic, T instance) {
-		return unIndex(instancesDependencies, () -> subContext.getInstances(generic).get(), generic, instance);
-	}
-
-	private boolean unIndexInheriting(T generic, T inheriting) {
-		return unIndex(inheritingsDependencies, () -> subContext.getInheritings(generic).get(), generic, inheriting);
-	}
-
-	private boolean unIndexComposite(T generic, T composite) {
-		return unIndex(compositesDependencies, () -> subContext.getComposites(generic).get(), generic, composite);
-	}
-
-	public T plug(T generic) {
-		T result = generic != generic.getMeta() ? indexInstance(generic.getMeta(), generic) : (T) generic;
-		assert result == generic;
-		generic.getSupers().forEach(superGeneric -> indexInheriting(superGeneric, generic));
-		generic.getComponents().stream().filter(component -> !generic.equals(component)).forEach(component -> indexComposite(component, generic));
-		simpleAdd(generic);
-		return result;
-	}
-
-	public boolean unplug(T generic) {
-		boolean result = generic != generic.getMeta() ? unIndexInstance(generic.getMeta(), generic) : true;
-		if (!result)
-			getEngine().discardWithException(new NotFoundException(generic.info()));
-		generic.getSupers().forEach(superGeneric -> unIndexInheriting(superGeneric, generic));
-		generic.getComponents().stream().filter(component -> !generic.equals(component)).forEach(component -> unIndexComposite(component, generic));
-		return result && simpleRemove(generic);
+	@Override
+	protected T indexInstance(T generic, T instance) {
+		return index((Dependencies<T>) getDependencies(instancesDependencies, () -> subContext.getInstances(generic).get(), generic), instance);
 	}
 
 	@Override
-	V unwrap(T generic) {
-		return getSubContext().unwrap(generic);
+	protected T indexInheriting(T generic, T inheriting) {
+		return index(((Dependencies<T>) getDependencies(inheritingsDependencies, () -> subContext.getInheritings(generic).get(), generic)), inheriting);
 	}
 
 	@Override
-	T wrap(V vertex) {
-		return getSubContext().wrap(vertex);
+	protected T indexComposite(T generic, T composite) {
+		return index(((Dependencies<T>) getDependencies(compositesDependencies, () -> subContext.getComposites(generic).get(), generic)), composite);
+	}
+
+	@Override
+	protected boolean unIndexInstance(T generic, T instance) {
+		return unIndex(((Dependencies<T>) getDependencies(instancesDependencies, () -> subContext.getInstances(generic).get(), generic)), instance);
+	}
+
+	@Override
+	protected boolean unIndexInheriting(T generic, T inheriting) {
+		return unIndex(((Dependencies<T>) getDependencies(inheritingsDependencies, () -> subContext.getInheritings(generic).get(), generic)), inheriting);
+	}
+
+	@Override
+	protected boolean unIndexComposite(T generic, T composite) {
+		return unIndex(((Dependencies<T>) getDependencies(compositesDependencies, () -> subContext.getComposites(generic).get(), generic)), composite);
 	}
 }
