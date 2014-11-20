@@ -24,7 +24,6 @@ import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.GetInstanceConstraintViolationException;
 import org.genericsystem.api.exception.MetaLevelConstraintViolationException;
 import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
-import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.kernel.annotations.Priority;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
@@ -75,6 +74,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	@Override
 	public Serializable getValue() {
 		return value;
+	}
+
+	@Override
+	public Context<T> getCurrentCache() {
+		return getRoot().getCurrentCache();
 	}
 
 	@Override
@@ -614,71 +618,32 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Snapshot<T> getComposites() {
-		return getCompositesDependencies();
+		return getCurrentCache().getComposites((T) this);
 	}
 
 	@SuppressWarnings("unchecked")
 	protected <subT extends T> subT plug() {
-		T result = this != getMeta() ? ((AbstractVertex<T>) getMeta()).indexInstance((T) this) : (T) this;
-		getSupers().forEach(superGeneric -> ((AbstractVertex<T>) superGeneric).indexInheriting((T) this));
-		getComponents().stream().filter(component -> !equals(component)).forEach(component -> ((AbstractVertex<T>) component).indexComposite((T) this));
-		getRoot().check(true, false, (T) this);
-		return (subT) result;
+		return (subT) getCurrentCache().plug((T) this);
 	}
 
 	@SuppressWarnings("unchecked")
 	protected boolean unplug() {
-		getRoot().check(false, false, (T) this);
-		boolean result = this != getMeta() ? ((AbstractVertex<T>) getMeta()).unIndexInstance((T) this) : true;
-		if (!result)
-			getRoot().discardWithException(new NotFoundException(this.info()));
-		getSupers().forEach(superGeneric -> ((AbstractVertex<T>) superGeneric).unIndexInheriting((T) this));
-		getComponents().stream().filter(component -> !equals(component)).forEach(component -> ((AbstractVertex<T>) component).unIndexComposite((T) this));
-		return result;
+		return getCurrentCache().unplug((T) this);
 	}
 
-	private static <T> T index(Dependencies<T> dependencies, T dependency) {
-		return dependencies.set(dependency);
-	}
-
-	private static <T> boolean unIndex(Dependencies<T> dependencies, T dependency) {
-		return dependencies.remove(dependency);
-	}
-
+	@SuppressWarnings("unchecked")
 	@Override
 	public Snapshot<T> getInstances() {
-		return getInstancesDependencies();
+		return getCurrentCache().getInstances((T) this);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Snapshot<T> getInheritings() {
-		return getInheritingsDependencies();
-	}
-
-	private T indexInstance(T instance) {
-		return index(getInstancesDependencies(), instance);
-	}
-
-	private T indexInheriting(T inheriting) {
-		return index(getInheritingsDependencies(), inheriting);
-	}
-
-	private T indexComposite(T composite) {
-		return index(getCompositesDependencies(), composite);
-	}
-
-	private boolean unIndexInstance(T instance) {
-		return unIndex(getInstancesDependencies(), instance);
-	}
-
-	private boolean unIndexInheriting(T inheriting) {
-		return unIndex(getInheritingsDependencies(), inheriting);
-	}
-
-	private boolean unIndexComposite(T composite) {
-		return unIndex(getCompositesDependencies(), composite);
+		return getCurrentCache().getInheritings((T) this);
 	}
 
 	@SuppressWarnings("unchecked")
