@@ -1,10 +1,12 @@
 package org.genericsystem.mutability;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.genericsystem.api.core.ISignature;
@@ -165,11 +167,18 @@ public abstract class AbstractGeneric<M extends AbstractGeneric<M, T, V>, T exte
 		return Objects.hashCode(getValue());
 	}
 
-	// @Override
-	// public M updateValue(Serializable value) {
-	// System.out.println("UPDATE");
-	//
-	// return wrap(unwrap().updateValue(value));
-	//
-	// }
+	@Override
+	public M updateValue(Serializable value) {
+		getCurrentCache().put((M) this, unwrap().updateValue(value));
+		return (M) this;
+	}
+
+	@Override
+	public M update(List<M> overrides, Serializable newValue, M... newComposites) {
+		T unwrap = unwrap();
+		getCurrentCache()
+				.put((M) this, unwrap.update(overrides.stream().map(x -> x.unwrap()).collect(Collectors.toList()), newValue, unwrap.coerceToTArray(Arrays.asList(newComposites).stream().map(x -> x.unwrap()).collect(Collectors.toList()).toArray())));
+		return (M) this;
+	}
+
 }

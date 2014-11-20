@@ -1,5 +1,6 @@
 package org.genericsystem.mutability;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
@@ -105,6 +106,10 @@ public class Cache<M extends AbstractGeneric<M, T, V>, T extends org.genericsyst
 		return mutable.isAlive();
 	}
 
+	Serializable getValue(M mutable) {
+		return get(mutable).getValue();
+	}
+
 	private T get(Object key) {
 		M mutable = (M) key;
 		T result = mutabilityCache.get(mutable);
@@ -139,7 +144,7 @@ public class Cache<M extends AbstractGeneric<M, T, V>, T extends org.genericsyst
 		return result;
 	}
 
-	private T put(M key, T value) {
+	protected T put(M key, T value) {
 		IdentityHashMap<M, Boolean> reverseResult = reverseMap.get(value);
 		if (reverseResult == null) {
 			IdentityHashMap<M, Boolean> idHashMap = new IdentityHashMap<>();
