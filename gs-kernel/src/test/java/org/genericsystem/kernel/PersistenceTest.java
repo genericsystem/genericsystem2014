@@ -5,7 +5,7 @@ import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Random;
 
-import org.genericsystem.kernel.Archiver.AbstractWriterLoader.DependenciesOrder;
+import org.genericsystem.kernel.Archiver.WriterLoaderManager.DependenciesOrder;
 import org.testng.annotations.Test;
 
 @Test
@@ -125,8 +125,8 @@ public class PersistenceTest extends AbstractTest {
 	}
 
 	private void compareOrderGraph(Vertex persistedNode, Vertex readNode) {
-		DependenciesOrder persistVisit = new DependenciesOrder().visit(persistedNode);
-		DependenciesOrder readVisit = new DependenciesOrder().visit(readNode);
+		DependenciesOrder<Vertex> persistVisit = new DependenciesOrder<Vertex>().visit(persistedNode);
+		DependenciesOrder<Vertex> readVisit = new DependenciesOrder<Vertex>().visit(readNode);
 		assert persistVisit.size() == readVisit.size() : persistVisit + " \n " + readVisit;
 		for (Vertex persist : persistVisit) {
 			for (Vertex read : readVisit)
@@ -141,8 +141,8 @@ public class PersistenceTest extends AbstractTest {
 	}
 
 	private void compareGraph(Vertex persistedNode, Vertex readNode) {
-		DependenciesOrder persistVisit = new DependenciesOrder().visit(persistedNode);
-		DependenciesOrder readVisit = new DependenciesOrder().visit(readNode);
+		DependenciesOrder<Vertex> persistVisit = new DependenciesOrder<Vertex>().visit(persistedNode);
+		DependenciesOrder<Vertex> readVisit = new DependenciesOrder<Vertex>().visit(readNode);
 		assert persistVisit.size() == readVisit.size() : persistVisit + " \n " + readVisit;
 		for (Vertex persist : persistVisit) {
 			for (Vertex read : readVisit)

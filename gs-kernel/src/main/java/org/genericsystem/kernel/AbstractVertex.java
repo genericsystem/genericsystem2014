@@ -52,9 +52,9 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		List<T> _components = new ArrayList<>(components);
 		for (int i = 0; i < _components.size(); i++) {
 			T component = _components.get(i);
-			if (component != null) {
+			if (component != null)
 				component.checkIsAlive();
-			} else
+			else
 				_components.set(i, (T) this);
 		}
 		this.components = Collections.unmodifiableList(_components);

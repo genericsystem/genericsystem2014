@@ -22,24 +22,37 @@ public class Engine extends Generic implements DefaultEngine<Generic, Vertex> {
 	}
 
 	public Engine(Serializable engineValue, Class<?>... userClasses) {
+		this(engineValue, null, userClasses);
+
+	}
+
+	public Engine(Serializable engineValue, String persistentDirectoryPath, Class<?>... userClasses) {
 		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
-		root = buildRoot(engineValue);
+		root = buildRoot();
 
 		Cache<Generic, Vertex> cache = newCache().start();
 		mountSystemProperties(cache);
 		for (Class<?> clazz : userClasses)
 			systemCache.set(clazz);
+
 		cache.flush();
+		root.buildAndStartArchiver(persistentDirectoryPath);
 	}
 
 	private void mountSystemProperties(Cache<Generic, Vertex> cache) {
-		Generic metaAttribute = setInstance(this, getValue(), coerceToTArray(this));
+		Generic metaAttribute = setMeta(Statics.ATTRIBUTE_SIZE);
+		setMeta(Statics.RELATION_SIZE);
 		setInstance(SystemMap.class, coerceToTArray(this)).enablePropertyConstraint();
 		metaAttribute.disableReferentialIntegrity(Statics.BASE_POSITION);
 	}
 
-	private Root buildRoot(Serializable value) {
-		return new Root(this, value);
+	private Root buildRoot() {
+		return new Root(this);
+	}
+
+	// TODO mount this in API
+	public void close() {
+		root.close();
 	}
 
 	@Override
