@@ -5,7 +5,7 @@ import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public interface DefaultAncestors<T extends AbstractVertex<T>> extends IVertex<T> {
+public interface DefaultAncestors<T extends DefaultVertex<T>> extends IVertex<T> {
 
 	static Logger log = LoggerFactory.getLogger(DefaultAncestors.class);
 

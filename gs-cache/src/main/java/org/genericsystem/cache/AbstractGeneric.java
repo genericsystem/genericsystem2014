@@ -166,4 +166,8 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 		throw new UnsupportedOperationException();
 	}
 
+	protected T adjustMeta(Serializable value, List<T> components) {
+		return super.adjustMeta(value, components);
+	}
+
 }

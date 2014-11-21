@@ -7,18 +7,7 @@ import java.util.List;
 
 import org.genericsystem.api.core.IVertex;
 
-public interface DefaultWritable<T extends AbstractVertex<T>> extends IVertex<T> {
-	@SuppressWarnings("unchecked")
-	@Override
-	default T addInstance(List<T> overrides, Serializable value, T... components) {
-		return ((T) this).addInstance(null, overrides, value, components);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	default T setInstance(List<T> overrides, Serializable value, T... components) {
-		return ((T) this).setInstance(null, overrides, value, components);
-	}
+public interface DefaultWritable<T extends DefaultVertex<T>> extends IVertex<T> {
 
 	@Override
 	default T updateValue(Serializable newValue) {

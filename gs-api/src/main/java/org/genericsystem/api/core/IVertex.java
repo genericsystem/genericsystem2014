@@ -961,4 +961,6 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 
 	T disableClassConstraint();
 
+	IContext<T> getCurrentCache();
+
 }

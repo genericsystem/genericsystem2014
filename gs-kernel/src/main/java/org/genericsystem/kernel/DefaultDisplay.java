@@ -13,7 +13,7 @@ import javax.json.stream.JsonGenerator;
 
 import org.genericsystem.api.core.IVertex;
 
-public interface DefaultDisplay<T extends AbstractVertex<T>> extends IVertex<T> {
+public interface DefaultDisplay<T extends DefaultVertex<T>> extends IVertex<T> {
 
 	@Override
 	default String info() {

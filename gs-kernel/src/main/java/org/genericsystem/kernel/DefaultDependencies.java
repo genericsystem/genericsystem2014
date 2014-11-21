@@ -1,15 +1,13 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.stream.Stream;
 
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
 
-public interface DefaultDependencies<T extends AbstractVertex<T>> extends IVertex<T> {
+public interface DefaultDependencies<T extends DefaultVertex<T>> extends IVertex<T> {
 
 	@Override
 	default boolean isAncestorOf(T dependency) {
@@ -40,9 +38,4 @@ public interface DefaultDependencies<T extends AbstractVertex<T>> extends IVerte
 		return getInstance(Collections.emptyList(), value, composites);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	default T getInstance(List<T> overrides, Serializable value, T... components) {
-		return ((T) this).adjustMeta(value, Arrays.asList(components)).getDirectInstance(overrides, value, Arrays.asList(components));
-	}
 }

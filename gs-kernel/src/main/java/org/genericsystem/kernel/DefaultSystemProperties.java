@@ -1,12 +1,9 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Optional;
 
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.exception.NotFoundException;
-import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 import org.genericsystem.kernel.systemproperty.CascadeRemoveProperty;
 import org.genericsystem.kernel.systemproperty.NoReferentialIntegrityProperty;
 import org.genericsystem.kernel.systemproperty.constraints.InstanceValueClassConstraint;
@@ -15,30 +12,7 @@ import org.genericsystem.kernel.systemproperty.constraints.RequiredConstraint;
 import org.genericsystem.kernel.systemproperty.constraints.SingularConstraint;
 import org.genericsystem.kernel.systemproperty.constraints.UniqueValueConstraint;
 
-public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IVertex<T> {
-
-	@Override
-	@SuppressWarnings("unchecked")
-	default Serializable getSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos) {
-		Optional<T> key = ((T) this).getKey(new AxedPropertyClass(propertyClass, pos));
-		if (key.isPresent()) {
-			Optional<T> result = getHolders(key.get()).get().filter(x -> this.isSpecializationOf(x.getBaseComponent())).findFirst();
-			if (result.isPresent())
-				return result.get().getValue();
-
-		}
-		return null;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	default T setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value, T... targets) {
-		T map = ((T) this).getMap();
-		T[] roots = ((AbstractVertex<T>) this).newTArray(targets.length + 1);
-		Arrays.fill(roots, getRoot());
-		map.getMeta().setInstance(map, new AxedPropertyClass(propertyClass, pos), roots).setInstance(value, addThisToTargets(targets));
-		return (T) this;
-	}
+public interface DefaultSystemProperties<T extends DefaultVertex<T>> extends IVertex<T> {
 
 	@Override
 	@SuppressWarnings("unchecked")

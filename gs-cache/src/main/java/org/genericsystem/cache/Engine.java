@@ -81,4 +81,9 @@ public class Engine extends Generic implements DefaultEngine<Generic, Vertex> {
 		DefaultEngine.super.discardWithException(exception);
 	}
 
+	@Override
+	protected Generic getMeta(int dim) {
+		return super.getMeta(dim);
+	}
+
 }

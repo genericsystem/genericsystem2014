@@ -8,8 +8,6 @@ import org.genericsystem.api.exception.RollbackException;
 
 public interface DefaultRoot<T extends AbstractVertex<T>> extends IRoot<T> {
 
-	Context<T> getCurrentCache();
-
 	@Override
 	default void discardWithException(Throwable exception) throws RollbackException {
 		throw new RollbackException(exception);

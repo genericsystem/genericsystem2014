@@ -26,4 +26,9 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 		return engine;
 	}
 
+	@Override
+	protected Vertex getMeta(int dim) {
+		return super.getMeta(dim);
+	}
+
 }

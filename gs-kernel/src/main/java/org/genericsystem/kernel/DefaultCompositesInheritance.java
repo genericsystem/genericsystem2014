@@ -1,19 +1,15 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
+
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.IteratorSnapshot;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.kernel.iterator.AbstractProjectionIterator;
 
-public interface DefaultCompositesInheritance<T extends AbstractVertex<T>> extends IVertex<T> {
+public interface DefaultCompositesInheritance<T extends DefaultVertex<T>> extends IVertex<T> {
 
 	@SuppressWarnings("unchecked")
-	@Override
-	default Snapshot<T> getAttributes(T attribute) {
-		return ((T) this).getInheritings(attribute, Statics.STRUCTURAL);
-	}
-
 	@Override
 	default Snapshot<T> getAttributes() {
 		return getAttributes(getRoot().getMetaAttribute());
@@ -23,12 +19,6 @@ public interface DefaultCompositesInheritance<T extends AbstractVertex<T>> exten
 	@Override
 	default Snapshot<T> getAttributes(int pos) {
 		return () -> getAttributes().get().filter(attribute -> attribute.getComponent(pos) != null && ((T) this).isSpecializationOf(attribute.getComponent(pos)));
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	default Snapshot<T> getHolders(T attribute) {
-		return ((T) this).getInheritings(attribute, Statics.CONCRETE);
 	}
 
 	@SuppressWarnings("unchecked")
