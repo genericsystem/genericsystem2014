@@ -499,32 +499,38 @@ public class Generic implements IVertex<Generic> {
 
 	@Override
 	public Generic updateValue(Serializable newValue) {
-		return wrap(unwrap(this).updateValue(newValue));
+		getCurrentCache().put(this, unwrap(this).updateValue(newValue));
+		return this;
 	}
 
 	@Override
 	public Generic updateSupers(Generic... overrides) {
-		return wrap(unwrap(this).updateSupers(unwrap(overrides)));
+		getCurrentCache().put(this, unwrap(this).updateSupers(unwrap(overrides)));
+		return this;
 	}
 
 	@Override
 	public Generic updateComposites(Generic... newComposites) {
-		return wrap(unwrap(this).updateComposites(unwrap(newComposites)));
+		getCurrentCache().put(this, unwrap(this).updateComposites(unwrap(newComposites)));
+		return this;
 	}
 
 	@Override
 	public Generic update(List<Generic> overrides, Serializable newValue, Generic... newComposites) {
-		return wrap(unwrap(this).update(unwrap(overrides), newValue, unwrap(newComposites)));
+		getCurrentCache().put(this, unwrap(this).update(unwrap(overrides), newValue, unwrap(newComposites)));
+		return this;
 	}
 
 	@Override
 	public Generic update(Serializable newValue, Generic... newComposites) {
-		return wrap(unwrap(this).update(newValue, unwrap(newComposites)));
+		getCurrentCache().put(this, unwrap(this).update(newValue, unwrap(newComposites)));
+		return this;
 	}
 
 	@Override
 	public Generic update(Generic override, Serializable newValue, Generic... newComposites) {
-		return wrap(unwrap(this).update(unwrap(override), newValue, unwrap(newComposites)));
+		getCurrentCache().put(this, unwrap(this).update(unwrap(override), newValue, unwrap(newComposites)));
+		return this;
 	}
 
 	@Override
