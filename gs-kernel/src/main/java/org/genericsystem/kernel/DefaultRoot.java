@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 
 import org.genericsystem.api.core.IRoot;
@@ -66,9 +67,12 @@ public interface DefaultRoot<T extends AbstractVertex<T>> extends IRoot<T> {
 		return addTree(value, 1);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default T addTree(Serializable value, int parentsCount) {
-		return addInstance(value, coerceToTArray(new Object[parentsCount]));
+		T[] newTArray = ((AbstractVertex<T>) this).newTArray(parentsCount);
+		Arrays.fill(newTArray, null);
+		return addInstance(value, newTArray);
 	}
 
 	@Override
@@ -79,7 +83,9 @@ public interface DefaultRoot<T extends AbstractVertex<T>> extends IRoot<T> {
 	@Override
 	@SuppressWarnings("unchecked")
 	default T setTree(Serializable value, int parentsCount) {
-		return setInstance(value, (T[]) new Object[parentsCount]);
+		T[] newTArray = ((AbstractVertex<T>) this).newTArray(parentsCount);
+		Arrays.fill(newTArray, null);
+		return setInstance(value, newTArray);
 
 	}
 

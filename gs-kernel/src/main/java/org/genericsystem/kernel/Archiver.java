@@ -299,7 +299,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 		}
 
 		private void writeAncestor(T ancestor) throws IOException {
-			outputStream.writeLong(ancestor.isRoot() ? -1 : getTs(ancestor));
+			outputStream.writeLong(ancestor == null ? 0 : (ancestor.isRoot() ? -1 : getTs(ancestor)));
 		}
 
 	}

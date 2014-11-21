@@ -25,7 +25,7 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 		T result = generic != generic.getMeta() ? indexInstance(generic.getMeta(), generic) : (T) generic;
 		assert result == generic;
 		generic.getSupers().forEach(superGeneric -> indexInheriting(superGeneric, generic));
-		generic.getComponents().stream().filter(component -> !generic.equals(component)).forEach(component -> indexComposite(component, generic));
+		generic.getComponents().stream().filter(component -> component != null).forEach(component -> indexComposite(component, generic));
 		getRoot().check(true, false, generic);
 		return result;
 	}
@@ -36,21 +36,21 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 		if (!result)
 			getRoot().discardWithException(new NotFoundException(generic.info()));
 		generic.getSupers().forEach(superGeneric -> unIndexInheriting(superGeneric, generic));
-		generic.getComponents().stream().filter(component -> !generic.equals(component)).forEach(component -> unIndexComposite(component, generic));
+		generic.getComponents().stream().filter(component -> component != null).forEach(component -> unIndexComposite(component, generic));
 		return result;
 	}
 
-	// @Override
+	@Override
 	public Snapshot<T> getInstances(T vertex) {
 		return vertex.getInstancesDependencies();
 	}
 
-	// @Override
+	@Override
 	public Snapshot<T> getInheritings(T vertex) {
 		return vertex.getInheritingsDependencies();
 	}
 
-	// @Override
+	@Override
 	public Snapshot<T> getComposites(T vertex) {
 		return vertex.getCompositesDependencies();
 	}

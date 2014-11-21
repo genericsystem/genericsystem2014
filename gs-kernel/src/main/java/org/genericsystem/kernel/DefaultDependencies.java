@@ -13,8 +13,7 @@ public interface DefaultDependencies<T extends AbstractVertex<T>> extends IVerte
 
 	@Override
 	default boolean isAncestorOf(T dependency) {
-		return equals(dependency) || (!dependency.isMeta() && isAncestorOf(dependency.getMeta())) || dependency.getSupers().stream().anyMatch(this::isAncestorOf)
-				|| dependency.getComponents().stream().filter(component -> !dependency.equals(component)).anyMatch(this::isAncestorOf);
+		return equals(dependency) || (!dependency.isMeta() && isAncestorOf(dependency.getMeta())) || dependency.getSupers().stream().anyMatch(this::isAncestorOf) || dependency.getComponents().stream().filter(x -> x != null).anyMatch(this::isAncestorOf);
 	}
 
 	@SuppressWarnings("unchecked")
