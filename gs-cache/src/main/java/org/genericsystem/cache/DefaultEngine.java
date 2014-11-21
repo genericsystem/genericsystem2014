@@ -25,6 +25,11 @@ public interface DefaultEngine<T extends AbstractGeneric<T, V>, V extends Abstra
 	DefaultRoot<V> unwrap();
 
 	@Override
+	default Cache<T, V> getCurrentCache() {
+		return getRoot().getCurrentCache();
+	}
+
+	@Override
 	default void discardWithException(Throwable exception) throws RollbackException {
 		getCurrentCache().rollbackWithException(exception);
 	}

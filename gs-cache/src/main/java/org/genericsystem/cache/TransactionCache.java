@@ -26,6 +26,8 @@ public class TransactionCache<T extends AbstractGeneric<T, V>, V extends Abstrac
 		V result = super.get(generic);
 		if (result == null) {
 			if (generic.isMeta()) {
+				if (generic.getSupers().isEmpty())
+					return null;
 				V pluggedSuper = get(generic.getSupers().get(0));
 				if (pluggedSuper != null)
 					for (V inheriting : pluggedSuper.getInheritings())

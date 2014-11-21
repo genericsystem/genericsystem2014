@@ -130,7 +130,6 @@ public class PersistenceTest extends AbstractTest {
 		List<Vertex> readVisit = Statics.reverseCollections(new DependenciesOrder<Vertex>().visit(readNode));
 		assert persistVisit.size() == readVisit.size() : persistVisit + " \n " + readVisit;
 		for (int i = 0; i < persistVisit.size(); i++) {
-			System.out.println(persistVisit.get(i).info() + " / " + readVisit.get(i).info() + " => " + persistVisit.get(i).compareTo(readVisit.get(i)));
 			assert persistVisit.get(i).genericEquals(readVisit.get(i)) : persistVisit + " \n " + readVisit;
 			assert !(persistVisit.get(i) == readVisit.get(i));
 		}
