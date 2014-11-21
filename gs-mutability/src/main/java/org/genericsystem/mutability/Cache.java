@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-public class Cache {
+import org.genericsystem.api.core.IContext;
+
+public class Cache implements IContext<Generic> {
 
 	private static Cache cache = new Cache();
 
@@ -37,7 +39,12 @@ public class Cache {
 
 	public Generic getByValue(org.genericsystem.concurrency.Generic genericT) {
 		IdentityHashMap<Generic, Boolean> reverseResult = reverseMap.get(genericT);
-		return reverseResult.keySet().iterator().next();
+		if (reverseResult != null)
+			return reverseResult.keySet().iterator().next();
+		else {
+			Generic genericM = new Generic((Engine) getByValue((org.genericsystem.concurrency.Generic) genericT.getRoot()));
+			put(genericM, genericT);
+			return genericM;
+		}
 	}
-
 }

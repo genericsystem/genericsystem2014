@@ -163,6 +163,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		}, computeDependencies());
 	}
 
+	@Override
+	public T update(T override, Serializable newValue, T... newComponents) {
+		return update(Collections.singletonList(override), newValue, newComponents);
+	}
+
 	private class ConvertMap extends HashMap<T, T> {
 		private static final long serialVersionUID = 5003546962293036021L;
 
@@ -679,7 +684,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	private void checkSupers() {
-		getSupers().forEach(DefaultAncestors::checkIsAlive);
+		getSupers().forEach(AbstractVertex::checkIsAlive);
 		if (!getSupers().stream().allMatch(superVertex -> superVertex.getLevel() == getLevel()))
 			getRoot().discardWithException(new IllegalStateException("Inconsistant supers (bad level) : " + getSupers()));
 		if (!getSupers().stream().allMatch(superVertex -> getMeta().inheritsFrom(superVertex.getMeta())))
