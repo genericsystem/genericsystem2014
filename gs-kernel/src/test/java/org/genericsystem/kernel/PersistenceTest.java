@@ -1,11 +1,10 @@
 package org.genericsystem.kernel;
 
 import java.io.File;
-import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Random;
 
-import org.genericsystem.kernel.Archiver.AbstractWriterLoader.DependenciesOrder;
+import org.genericsystem.kernel.Archiver.WriterLoaderManager.DependenciesOrder;
 import org.testng.annotations.Test;
 
 @Test
@@ -61,14 +60,7 @@ public class PersistenceTest extends AbstractTest {
 		Vertex red = color.addInstance("red");
 		myVehicle.setHolder(vehicleColor, "myVehicleRed", red);
 		root.close();
-
 		compareGraph(root, new Root(Statics.ENGINE_VALUE, snapshot));
-
-		// Root root2 = new Root(Statics.ENGINE_VALUE, snapshot);
-		// root2.close();
-		// Root root3 = new Root(Statics.ENGINE_VALUE, snapshot);
-		// root3.close();
-		// compareOrderGraph(root2, root3);
 	}
 
 	public void testHeritageMultiple() {
@@ -124,25 +116,25 @@ public class PersistenceTest extends AbstractTest {
 		return directoryPath;
 	}
 
-	private void compareOrderGraph(Vertex persistedNode, Vertex readNode) {
-		DependenciesOrder persistVisit = new DependenciesOrder().visit(persistedNode);
-		DependenciesOrder readVisit = new DependenciesOrder().visit(readNode);
-		assert persistVisit.size() == readVisit.size() : persistVisit + " \n " + readVisit;
-		for (Vertex persist : persistVisit) {
-			for (Vertex read : readVisit)
-				if (persist == read)
-					assert false : persistVisit + " \n " + readVisit;
-		}
-		ArrayDeque<Vertex> clone = readVisit.clone();
-		for (Vertex persist : persistVisit) {
-			Vertex read = readVisit.pop();
-			assert persist.genericEquals(read) : persistVisit + " \n " + clone;
-		}
-	}
+	// private void compareOrderGraph(Vertex persistedNode, Vertex readNode) {
+	// DependenciesOrder<Vertex> persistVisit = new DependenciesOrder<Vertex>().visit(persistedNode);
+	// DependenciesOrder<Vertex> readVisit = new DependenciesOrder<Vertex>().visit(readNode);
+	// assert persistVisit.size() == readVisit.size() : persistVisit + " \n " + readVisit;
+	// for (Vertex persist : persistVisit) {
+	// for (Vertex read : readVisit)
+	// if (persist == read)
+	// assert false : persistVisit + " \n " + readVisit;
+	// }
+	// ArrayDeque<Vertex> clone = readVisit.clone();
+	// for (Vertex persist : persistVisit) {
+	// Vertex read = readVisit.pop();
+	// assert persist.genericEquals(read) : persistVisit + " \n " + clone;
+	// }
+	// }
 
 	private void compareGraph(Vertex persistedNode, Vertex readNode) {
-		DependenciesOrder persistVisit = new DependenciesOrder().visit(persistedNode);
-		DependenciesOrder readVisit = new DependenciesOrder().visit(readNode);
+		DependenciesOrder<Vertex> persistVisit = new DependenciesOrder<Vertex>().visit(persistedNode);
+		DependenciesOrder<Vertex> readVisit = new DependenciesOrder<Vertex>().visit(readNode);
 		assert persistVisit.size() == readVisit.size() : persistVisit + " \n " + readVisit;
 		for (Vertex persist : persistVisit) {
 			for (Vertex read : readVisit)

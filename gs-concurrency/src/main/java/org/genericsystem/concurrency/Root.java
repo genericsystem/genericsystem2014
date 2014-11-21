@@ -1,6 +1,5 @@
 package org.genericsystem.concurrency;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -13,16 +12,31 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 
 	private final DefaultEngine<Generic, Vertex> engine;
 
+	private Archiver<Vertex> archiver;
+
 	private final Context<Vertex> context = new Context<>(this);
 
 	private final GarbageCollector<Vertex> garbageCollector;
 
-	Root(DefaultEngine<Generic, Vertex> engine, Serializable value) {
-		init(null, Collections.emptyList(), value, Collections.emptyList());
+	public Root(DefaultEngine<Generic, Vertex> engine) {
+		init(null, Collections.emptyList(), engine.getValue(), Collections.emptyList());
 		this.engine = engine;
 		long ts = pickNewTs();
 		restore(ts, 0L, 0L, Long.MAX_VALUE);
 		garbageCollector = new GarbageCollector<>(this);
+	}
+
+	public void buildAndStartArchiver(String persistentDirectoryPath) {
+		if (persistentDirectoryPath != null && archiver == null) {
+			archiver = new Archiver<Vertex>(this, persistentDirectoryPath);
+			archiver.startScheduler();
+		}
+	}
+
+	// TODO mount this in API
+	public void close() {
+		if (archiver != null)
+			archiver.close();
 	}
 
 	@Override
