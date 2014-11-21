@@ -6,15 +6,14 @@ import java.util.List;
 import org.genericsystem.api.core.IRoot;
 
 public class Engine extends Generic implements IRoot<Generic> {
-	public final static org.genericsystem.concurrency.Engine engineT = new org.genericsystem.concurrency.Engine();
 
 	private Cache cache;
 
 	public Engine() {
 		super(null);
-		engine = this;
-		cache = Cache.getCache();
-		cache.put(this, engineT);
+		this.engine = this;
+		cache = new Cache(this);
+		cache.put(this, new org.genericsystem.concurrency.Engine());
 	}
 
 	public Cache getCache() {
@@ -23,80 +22,67 @@ public class Engine extends Generic implements IRoot<Generic> {
 
 	@Override
 	public Generic addType(Serializable value) {
-		// TODO Auto-generated method stub
-		return null;
+		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).addType(value));
 	}
 
 	@Override
 	public Generic addType(Generic override, Serializable value) {
-		// TODO Auto-generated method stub
-		return null;
+		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).addType(unwrap(override), value));
 	}
 
 	@Override
 	public Generic addType(List<Generic> overrides, Serializable value) {
-		// TODO Auto-generated method stub
-		return null;
+		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).addType(unwrap(overrides), value));
 	}
 
 	@Override
 	public Generic setType(Serializable value) {
-		// TODO Auto-generated method stub
-		return null;
+		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).setType(value));
 	}
 
 	@Override
 	public Generic setType(Generic override, Serializable value) {
-		// TODO Auto-generated method stub
-		return null;
+		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).setType(unwrap(override), value));
 	}
 
 	@Override
 	public Generic setType(List<Generic> overrides, Serializable value) {
-		// TODO Auto-generated method stub
-		return null;
+		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).setType(unwrap(overrides), value));
 	}
 
 	@Override
 	public Generic addTree(Serializable value) {
-		// TODO Auto-generated method stub
-		return null;
+		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).addTree(value));
 	}
 
 	@Override
 	public Generic addTree(Serializable value, int parentsNumber) {
-		// TODO Auto-generated method stub
-		return null;
+		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).addTree(value, parentsNumber));
 	}
 
 	@Override
 	public Generic setTree(Serializable value) {
-		// TODO Auto-generated method stub
-		return null;
+		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).setTree(value));
 	}
 
 	@Override
 	public Generic setTree(Serializable value, int parentsNumber) {
-		// TODO Auto-generated method stub
-		return null;
+		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).setTree(value, parentsNumber));
 	}
 
 	@Override
 	public Generic getMetaAttribute() {
-		// TODO Auto-generated method stub
-		return null;
+		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).getMetaAttribute());
 	}
 
 	@Override
 	public Generic getMetaRelation() {
-		// TODO Auto-generated method stub
-		return null;
+		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).getMetaRelation());
 	}
 
 	@Override
 	public void discardWithException(Throwable exception) {
-		// TODO Auto-generated method stub
-
+		((org.genericsystem.concurrency.Engine) unwrap(this)).discardWithException(exception);
 	}
 
 }

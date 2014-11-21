@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import javax.json.JsonObject;
 
-import org.genericsystem.api.core.IContext;
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
 
@@ -19,27 +18,27 @@ public class Generic implements IVertex<Generic> {
 		this.engine = engine;
 	}
 
-	private Generic wrap(org.genericsystem.concurrency.Generic genericT) {
-		return ((Cache) getCurrentCache()).getByValue(genericT);
+	protected Generic wrap(org.genericsystem.concurrency.Generic genericT) {
+		return getCurrentCache().getByValue(genericT);
 	}
 
-	private org.genericsystem.concurrency.Generic unwrap(Generic genericM) {
-		return ((Cache) getCurrentCache()).get(genericM);
+	protected org.genericsystem.concurrency.Generic unwrap(Generic genericM) {
+		return getCurrentCache().get(genericM);
 	}
 
-	private List<Generic> wrap(List<org.genericsystem.concurrency.Generic> listT) {
+	protected List<Generic> wrap(List<org.genericsystem.concurrency.Generic> listT) {
 		return listT.stream().map(this::wrap).collect(Collectors.toList());
 	}
 
-	private List<org.genericsystem.concurrency.Generic> unwrap(List<Generic> listM) {
+	protected List<org.genericsystem.concurrency.Generic> unwrap(List<Generic> listM) {
 		return listM.stream().map(this::unwrap).collect(Collectors.toList());
 	}
 
-	private Generic[] wrap(org.genericsystem.concurrency.Generic... listT) {
+	protected Generic[] wrap(org.genericsystem.concurrency.Generic... listT) {
 		return engine.coerceToTArray(Arrays.asList(listT).stream().map(this::wrap).collect(Collectors.toList()).toArray());
 	}
 
-	private org.genericsystem.concurrency.Generic[] unwrap(Generic... listM) {
+	protected org.genericsystem.concurrency.Generic[] unwrap(Generic... listM) {
 		return unwrap(engine).coerceToTArray(Arrays.asList(listM).stream().map(this::unwrap).collect(Collectors.toList()).toArray());
 	}
 
@@ -559,7 +558,7 @@ public class Generic implements IVertex<Generic> {
 	}
 
 	@Override
-	public IContext<Generic> getCurrentCache() {
+	public Cache getCurrentCache() {
 		return engine.getCache();
 	}
 

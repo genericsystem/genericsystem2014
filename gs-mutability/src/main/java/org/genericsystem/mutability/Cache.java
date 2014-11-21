@@ -8,20 +8,16 @@ import org.genericsystem.api.core.IContext;
 
 public class Cache implements IContext<Generic> {
 
-	private static Cache cache = new Cache();
+	private Engine engine;
 
 	private HashMap<Generic, org.genericsystem.concurrency.Generic> mutabilityCache = new HashMap<>();
 	private Map<org.genericsystem.concurrency.Generic, IdentityHashMap<Generic, Boolean>> reverseMap = new HashMap<>();
 
-	private Cache() {
-
+	public Cache(Engine engine) {
+		this.engine = engine;
 	}
 
-	public static Cache getCache() {
-		return cache;
-	}
-
-	public void put(Generic mutable, org.genericsystem.concurrency.Generic generic) {
+	protected void put(Generic mutable, org.genericsystem.concurrency.Generic generic) {
 		mutabilityCache.put(mutable, generic);
 
 		IdentityHashMap<Generic, Boolean> reverseResult = reverseMap.get(generic);
@@ -33,11 +29,13 @@ public class Cache implements IContext<Generic> {
 			reverseResult.put(mutable, true);
 	}
 
-	public org.genericsystem.concurrency.Generic get(Generic mutable) {
+	protected org.genericsystem.concurrency.Generic get(Generic mutable) {
 		return mutabilityCache.get(mutable);
 	}
 
-	public Generic getByValue(org.genericsystem.concurrency.Generic genericT) {
+	protected Generic getByValue(org.genericsystem.concurrency.Generic genericT) {
+		if (genericT == null)
+			return null;
 		IdentityHashMap<Generic, Boolean> reverseResult = reverseMap.get(genericT);
 		if (reverseResult != null)
 			return reverseResult.keySet().iterator().next();
@@ -47,4 +45,9 @@ public class Cache implements IContext<Generic> {
 			return genericM;
 		}
 	}
+
+	public void flush() {
+		get(engine).getCurrentCache().flush();
+	}
+
 }
