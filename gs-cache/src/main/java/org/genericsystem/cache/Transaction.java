@@ -39,7 +39,7 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 		V result = null;
 		if (vertex == null)
 			vertex = unwrap((T) engine);
-		result = vertex.setInstance(generic.getSupers().stream().map(this::unwrap).collect(Collectors.toList()), generic.getValue(), vertex.coerceToTArray(generic.getComponents().stream().map(this::unwrap).toArray()));
+		result = vertex.setInstance(generic.getSupers().stream().map(this::unwrap).collect(Collectors.toList()), generic.getValue(), vertex.coerceToTArray(generic.getComponents().stream().map(x -> x == null ? x : unwrap(x)).toArray()));
 		vertices.put(generic, result);
 		return generic;
 	}

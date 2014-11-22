@@ -67,7 +67,8 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 				for (T superT : add.getSupers())
 					writeLockAndCheckMvcc(superT);
 				for (T composite : add.getComponents())
-					writeLockAndCheckMvcc(composite);
+					if (composite != null)
+						writeLockAndCheckMvcc(composite);
 				writeLockAndCheckMvcc(add);
 			}
 		}

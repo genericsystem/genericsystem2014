@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.util.Arrays;
+
 import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
 import org.testng.annotations.Test;
 
@@ -35,7 +36,7 @@ public class MultipleRootsTest extends AbstractTest {
 		Root engine1 = new Root();
 		Root engine2 = new Root("SecondEngine");
 		Vertex car = engine1.addInstance("Car");
-		Vertex car2 = engine2.addInstance("Car");
+		engine2.addInstance("Car");
 		catchAndCheckCause(() -> engine2.addInstance("Power", car), MetaRuleConstraintViolationException.class);
 	}
 
@@ -43,7 +44,7 @@ public class MultipleRootsTest extends AbstractTest {
 		Root engine1 = new Root("FirstEngine");
 		Root engine2 = new Root("SecondEngine");
 		Vertex car = engine1.addInstance("Car");
-		Vertex car2 = engine2.addInstance("Car");
+		engine2.addInstance("Car");
 		catchAndCheckCause(() -> engine2.addInstance("Power", car), MetaRuleConstraintViolationException.class);
 	}
 

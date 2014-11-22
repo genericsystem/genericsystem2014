@@ -26,6 +26,8 @@ public class TransactionCache<T extends AbstractGeneric<T, V>, V extends Abstrac
 		V result = super.get(generic);
 		if (result == null) {
 			if (generic.isMeta()) {
+				if (generic.getSupers().isEmpty())
+					return null;
 				V pluggedSuper = get(generic.getSupers().get(0));
 				if (pluggedSuper != null)
 					for (V inheriting : pluggedSuper.getInheritings())
@@ -63,7 +65,8 @@ public class TransactionCache<T extends AbstractGeneric<T, V>, V extends Abstrac
 		if (result == null) {
 			T meta = vertex.isMeta() ? null : getByValue(vertex.getMeta());
 			// TODO null is KK
-			result = ((AbstractGeneric<T, V>) engine).newT(null, meta, vertex.getSupers().stream().map(this::getByValue).collect(Collectors.toList()), vertex.getValue(), vertex.getComponents().stream().map(this::getByValue).collect(Collectors.toList()));
+			result = ((AbstractGeneric<T, V>) engine).newT(null, meta, vertex.getSupers().stream().map(this::getByValue).collect(Collectors.toList()), vertex.getValue(), vertex.getComponents().stream().map(x -> vertex.equals(x) ? null : getByValue(x))
+					.collect(Collectors.toList()));
 			put(result, vertex);
 		}
 		return result;

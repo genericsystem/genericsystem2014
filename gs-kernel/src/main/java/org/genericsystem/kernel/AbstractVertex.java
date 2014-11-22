@@ -381,7 +381,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return componentsList.equals(components);
 	}
 
-	protected boolean genericEquals(ISignature<?> service) {
+	public boolean genericEquals(ISignature<?> service) {
 		if (this == service)
 			return true;
 		if (!Objects.equals(getValue(), service.getValue()))
@@ -418,7 +418,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	boolean equiv(ISignature<?> service) {
-		if(this==service)
+		if (this == service)
 			return true;
 		if (this == getMeta()) {
 			if (service.getMeta() != service.getMeta().getMeta())
@@ -431,9 +431,9 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		List<T> componentsList = getComponents();
 		for (int i = 0; i < componentsList.size(); i++)
 			if (!isReferentialIntegrityEnabled(i) && isSingularConstraintEnabled(i))
-				return componentEquiv(componentsList.get(i), components.get(i));		
-		for (int i = 0; i < componentsList.size(); i++) 
-			if(!componentEquiv(componentsList.get(i), components.get(i)))
+				return componentEquiv(componentsList.get(i), components.get(i));
+		for (int i = 0; i < componentsList.size(); i++)
+			if (!componentEquiv(componentsList.get(i), components.get(i)))
 				return false;
 		if (!getMeta().isPropertyConstraintEnabled())
 			return Objects.equals(getValue(), service.getValue());
@@ -452,9 +452,9 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 			return false;
 		for (int i = 0; i < componentsList.size(); i++)
 			if (!isReferentialIntegrityEnabled(i) && isSingularConstraintEnabled(i))
-				return componentEquiv(componentsList.get(i), components.get(i));		
-		for (int i = 0; i < componentsList.size(); i++) 
-			if(!componentEquiv(componentsList.get(i), components.get(i)))
+				return componentEquiv(componentsList.get(i), components.get(i));
+		for (int i = 0; i < componentsList.size(); i++)
+			if (!componentEquiv(componentsList.get(i), components.get(i)))
 				return false;
 		if (!getMeta().isPropertyConstraintEnabled())
 			return Objects.equals(getValue(), value);
@@ -530,7 +530,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		loop: for (T superComponent : superComponents) {
 			for (; subIndex < subComponents.size(); subIndex++) {
 				T subComponent = subComponents.get(subIndex);
-				if ((subComponent == null && superComponent==null)  || (subComponent != null && superComponent != null && subComponent.isSpecializationOf(superComponent))) {
+				if ((subComponent == null && superComponent == null) || (subComponent != null && superComponent != null && subComponent.isSpecializationOf(superComponent))) {
 					if (singulars.get(subIndex))
 						return true;
 					subIndex++;
@@ -598,8 +598,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {
-	}
+	public static class SystemMap {}
 
 	private Stream<T> getKeys() {
 		T map = getMap();
@@ -646,11 +645,10 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 			getRoot().discardWithException(new MetaRuleConstraintViolationException("Added generic and its meta do not have the same components size. Added node components : " + getComponents() + " and meta components : " + getMeta().getComponents()));
 
 		for (int pos = 0; pos < getComponents().size(); pos++) {
-			if(getComponent(pos)!=null && getMeta().getComponent(pos)!=null){
+			if (getComponent(pos) != null && getMeta().getComponent(pos) != null) {
 				if (getComponent(pos).isInstanceOf(getMeta().getComponent(pos)) || getComponent(pos).inheritsFrom(getMeta().getComponent(pos)))
 					continue;
-			}
-			else if(getComponent(pos)==null && getMeta().getComponent(pos)==null)
+			} else if (getComponent(pos) == null && getMeta().getComponent(pos) == null)
 				continue;
 			getRoot().discardWithException(new MetaRuleConstraintViolationException("Component of added generic : " + getComponent(pos) + " must be instance of or must inherits from the component of its meta : " + getMeta().getComponent(pos)));
 		}

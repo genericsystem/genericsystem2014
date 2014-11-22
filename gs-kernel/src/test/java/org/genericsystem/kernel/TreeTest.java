@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
+
 import org.genericsystem.api.exception.ExistsException;
 import org.testng.annotations.Test;
 
@@ -12,7 +13,7 @@ public class TreeTest extends AbstractTest {
 		Root root = new Root();
 		Vertex tree = root.addTree("Tree");
 		assert root.getMetaAttribute().equals(tree.getMeta());
-		assert tree.getComponents().contains(tree);
+		assert tree.getComponents().contains(null) : tree.getComponents();
 		assert tree.getComponents().size() == 1;
 		assert tree.getSupers().isEmpty();
 
@@ -25,7 +26,7 @@ public class TreeTest extends AbstractTest {
 		Vertex rootNode = tree.addRoot("rootNode");
 
 		assert tree.equals(rootNode.getMeta()) : rootNode.detailedInfo();
-		assert rootNode.getComponents().contains(rootNode);
+		assert rootNode.getComponents().contains(null);
 		assert rootNode.getComponents().size() == 1;
 		assert rootNode.getSupers().isEmpty();
 
@@ -41,7 +42,7 @@ public class TreeTest extends AbstractTest {
 		Vertex tree = root.addTree("tree");
 		Vertex html = tree.addRoot("html");
 		assert html.getMeta().equals(tree);
-		assert html.getComponents().contains(html);
+		assert html.getComponents().contains(null);
 		assert html.getComponents().size() == 1;
 		assert html.getSupers().isEmpty();
 	}

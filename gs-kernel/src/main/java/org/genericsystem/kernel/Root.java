@@ -10,7 +10,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 
 	protected final static Logger log = LoggerFactory.getLogger(Root.class);
 
-	private Archiver archiver;
+	private Archiver<Vertex> archiver;
 
 	private final Context<Vertex> context = new Context<Vertex>(this);
 
@@ -29,7 +29,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 		setInstance(SystemMap.class, coerceToTArray(this)).enablePropertyConstraint();
 		metaAttribute.disableReferentialIntegrity(Statics.BASE_POSITION);
 		if (persistentDirectoryPath != null) {
-			archiver = new Archiver(this, persistentDirectoryPath);
+			archiver = new Archiver<Vertex>(this, persistentDirectoryPath);
 			archiver.startScheduler();
 		}
 	}

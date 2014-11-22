@@ -1,8 +1,11 @@
 package org.genericsystem.concurrency;
 
 import java.util.Arrays;
-import org.genericsystem.api.exception.CrossEnginesAssignementsException;
+
+import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
+import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.Vertex;
 import org.testng.annotations.Test;
 
 @Test
@@ -27,56 +30,34 @@ public class MultipleRootsTest extends AbstractTest {
 	public void test002_addInstance_attribute() {
 		Engine engine1 = new Engine();
 		Engine engine2 = new Engine("SecondEngine");
-		Generic car = engine1.addInstance("Car");
+		engine1.addInstance("Car");
 		Generic car2 = engine2.addInstance("Car");
-		catchAndCheckCause(() -> engine1.addInstance("Power", car2), CrossEnginesAssignementsException.class);
+		catchAndCheckCause(() -> engine1.addInstance("Power", car2), MetaRuleConstraintViolationException.class);
 	}
 
 	public void test003_addInstance_attribute() {
 		Engine engine1 = new Engine();
 		Engine engine2 = new Engine("SecondEngine");
 		Generic car = engine1.addInstance("Car");
-		Generic car2 = engine2.addInstance("Car");
-		catchAndCheckCause(() -> engine2.addInstance("Power", car), CrossEnginesAssignementsException.class);
+		engine2.addInstance("Car");
+		catchAndCheckCause(() -> engine2.addInstance("Power", car), MetaRuleConstraintViolationException.class);
 	}
 
 	public void test004_addInstance_attribute() {
 		Engine engine1 = new Engine("FirstEngine");
 		Engine engine2 = new Engine("SecondEngine");
 		Generic car = engine1.addInstance("Car");
-		Generic car2 = engine2.addInstance("Car");
-		catchAndCheckCause(() -> engine2.addInstance("Power", car), CrossEnginesAssignementsException.class);
+		engine2.addInstance("Car");
+		catchAndCheckCause(() -> engine2.addInstance("Power", car), MetaRuleConstraintViolationException.class);
 	}
 
-	// public void test005_setMetaAttribute_attribute() {
-	// Engine engine1 = new Engine();
-	// Engine engine2 = new Engine("SecondEngine");
-	// Generic metaAttribute = engine2.setMetaAttribute();
-	// new RollbackCatcher() {
-	// @Override
-	// public void intercept() {
-	// Generic metaRelation = engine2.setMetaAttribute(engine1);
-	// }
-	// }.assertIsCausedBy(CrossEnginesAssignementsException.class);
-	// }
-
-	// public void test006_setMetaAttribute_attribute() {
-	// Engine engine1 = new Engine();
-	// Engine engine2 = new Engine("SecondEngine");
-	// Generic metaAttribute = engine2.setMetaAttribute();
-	// new RollbackCatcher() {
-	// @Override
-	// public void intercept() {
-	// Generic metaRelation = engine2.setMetaAttribute(engine1);
-	// }
-	// }.assertIsCausedBy(CrossEnginesAssignementsException.class);
-	// }
-
-	public void test007_addInstance_overrides() {
-		Engine engine1 = new Engine();
-		Engine engine2 = new Engine("SecondEngine");
-		Generic car = engine2.addInstance("Car");
-		Generic robot = engine2.addInstance("Robot");
-		catchAndCheckCause(() -> engine1.addInstance(Arrays.asList(car, robot), "Transformer"), CrossEnginesAssignementsException.class);
+	public void test005_addInstance_overrides() {
+		Root engine1 = new Root();
+		Root engine2 = new Root("SecondEngine");
+		Vertex car = engine2.addInstance("Car");
+		Vertex robot = engine2.addInstance("Robot");
+		// catchAndCheckCause(() -> engine1.addInstance(Arrays.asList(car, robot), "Transformer"), CrossEnginesAssignementsException.class);
+		catchAndCheckCause(() -> engine1.addInstance(Arrays.asList(car, robot), "Transformer"), IllegalStateException.class);
 	}
+
 }
