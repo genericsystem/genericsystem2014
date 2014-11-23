@@ -947,6 +947,9 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	T update(List<T> overrides, Serializable newValue, T... newComposites);
 
 	@SuppressWarnings("unchecked")
+	T update(T override, Serializable newValue, T... newComposites);
+
+	@SuppressWarnings("unchecked")
 	T update(Serializable newValue, T... newComposites);
 
 	T getBaseComponent();
@@ -960,5 +963,7 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	T enableClassConstraint(Class<?> constraintClass);
 
 	T disableClassConstraint();
+
+	IContext<T> getCurrentCache();
 
 }

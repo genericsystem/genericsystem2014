@@ -7,6 +7,7 @@ import org.genericsystem.api.exception.RollbackException;
 
 public interface DefaultRoot<T extends AbstractVertex<T>> extends IRoot<T> {
 
+	@Override
 	Context<T> getCurrentCache();
 
 	@Override

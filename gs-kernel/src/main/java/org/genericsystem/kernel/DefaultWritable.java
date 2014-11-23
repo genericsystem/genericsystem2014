@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import org.genericsystem.api.core.IVertex;
 
 public interface DefaultWritable<T extends AbstractVertex<T>> extends IVertex<T> {
@@ -41,6 +40,18 @@ public interface DefaultWritable<T extends AbstractVertex<T>> extends IVertex<T>
 	@SuppressWarnings("unchecked")
 	default T update(Serializable newValue, T... newComposites) {
 		return update(Collections.emptyList(), newValue, newComposites);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default T update(List<T> overrides, Serializable newValue, T... newComposites) {
+		return update(overrides, newValue, newComposites);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default public T update(T override, Serializable newValue, T... newComposites) {
+		return update(Collections.singletonList(override), newValue, newComposites);
 	}
 
 	@Override

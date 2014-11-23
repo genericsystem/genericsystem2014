@@ -1,8 +1,9 @@
 package org.genericsystem.kernel;
 
+import org.genericsystem.api.core.IContext;
 import org.genericsystem.api.core.Snapshot;
 
-public interface DefaultContext<T extends AbstractVertex<T>> {
+public interface DefaultContext<T extends AbstractVertex<T>> extends IContext<T> {
 
 	DefaultRoot<T> getRoot();
 
