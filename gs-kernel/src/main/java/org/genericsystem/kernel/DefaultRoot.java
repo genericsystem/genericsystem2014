@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.List;
+
 import org.genericsystem.api.core.IRoot;
 import org.genericsystem.api.exception.RollbackException;
 
@@ -13,12 +14,6 @@ public interface DefaultRoot<T extends AbstractVertex<T>> extends IRoot<T> {
 	@Override
 	default void discardWithException(Throwable exception) throws RollbackException {
 		throw new RollbackException(exception);
-	}
-
-	default void check(boolean isOnAdd, boolean isFlushTime, T t) throws RollbackException {
-		t.checkSystemConstraints(isOnAdd, isFlushTime);
-		t.checkConsistency();
-		t.checkConstraints(isOnAdd, isFlushTime);
 	}
 
 	@Override
