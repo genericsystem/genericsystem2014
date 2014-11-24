@@ -39,13 +39,14 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 */
 	boolean isAlive();
 
-	/**
-	 * Checks if this instance is alive. If not the discardAndRollback() method is called on graph's root.
-	 *
-	 * @throws RollbackException
-	 *             if this signature is not alive
-	 */
-	void checkIsAlive();
+	// TODO clean
+	// /**
+	// * Checks if this instance is alive. If not the discardAndRollback() method is called on graph's root.
+	// *
+	// * @throws RollbackException
+	// * if this signature is not alive
+	// */
+	// void checkIsAlive();
 
 	// /**
 	// * Returns the alive reference if it exists<br>

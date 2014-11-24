@@ -13,6 +13,7 @@ import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
+import org.genericsystem.kernel.Checker;
 import org.genericsystem.kernel.Context;
 import org.genericsystem.kernel.DefaultContext;
 import org.genericsystem.kernel.Dependencies;
@@ -27,6 +28,8 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 
 	protected Set<T> adds = new LinkedHashSet<>();
 	protected Set<T> removes = new LinkedHashSet<>();
+
+	final Checker<T> checker;
 
 	public void clear() {
 		inheritingsDependencies = new HashMap<>();
@@ -43,6 +46,7 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 	protected Cache(DefaultContext<T> subContext) {
 		super(subContext.getRoot());
 		this.subContext = subContext;
+		checker = new Checker<T>(getRoot());
 		clear();
 	}
 
@@ -86,9 +90,8 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 	}
 
 	protected void checkConstraints() throws RollbackException {
-		DefaultEngine<T, V> engine = getRoot();
-		adds.forEach(x -> engine.check(true, true, x));
-		removes.forEach(x -> engine.check(false, true, x));
+		adds.forEach(x -> checker.check(true, true, x));
+		removes.forEach(x -> checker.check(false, true, x));
 	}
 
 	protected void rollbackWithException(Throwable exception) throws RollbackException {
