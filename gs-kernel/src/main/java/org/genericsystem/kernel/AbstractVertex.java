@@ -4,29 +4,20 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
-import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.CrossEnginesAssignementsException;
 import org.genericsystem.api.exception.ExistsException;
-import org.genericsystem.api.exception.GetInstanceConstraintViolationException;
-import org.genericsystem.api.exception.MetaLevelConstraintViolationException;
-import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
-import org.genericsystem.kernel.annotations.Priority;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
-import org.genericsystem.kernel.systemproperty.constraints.Constraint;
 
 public abstract class AbstractVertex<T extends AbstractVertex<T>> implements DefaultVertex<T> {
 
@@ -42,13 +33,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	@SuppressWarnings("unchecked")
 	protected T init(T meta, Serializable value, List<T> components) {
-		if (meta != null) {
-			meta.checkIsAlive();
-			this.meta = meta;
-		} else
-			this.meta = (T) this;
+		this.meta = meta != null ? meta : (T) this;
 		this.value = value;
-		components.stream().filter(x -> x != null).forEach(x -> x.checkIsAlive());
 		this.components = Collections.unmodifiableList(components);
 		return (T) this;
 	}
@@ -94,6 +80,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	protected T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
+		Context<T> currentCache = getCurrentCache();
+		if (meta != null)
+			currentCache.checker.checkIsAlive(meta);
+		supers.forEach(x -> currentCache.checker.checkIsAlive(x));
+		components.stream().filter(component -> component != null).forEach(x -> currentCache.checker.checkIsAlive(x));
 		return newT(clazz).init(meta, supers, value, components);
 	}
 
@@ -134,29 +125,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		}, computeDependencies());
 	}
 
-	private class ConvertMap extends HashMap<T, T> {
-		private static final long serialVersionUID = 5003546962293036021L;
-
-		T convert(T dependency) {
-			if (dependency.isAlive())
-				return dependency;
-			T newDependency = get(dependency);
-			if (newDependency == null) {
-				if (dependency.isMeta())
-					newDependency = setMeta(dependency.getComponents().size());
-				else {
-					List<T> overrides = dependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
-					List<T> components = dependency.getComponents().stream().map(x -> x != null ? convert(x) : null).collect(Collectors.toList());
-					T adjustMeta = convert(dependency.getMeta()).adjustMeta(dependency.getValue(), components);
-					T equivInstance = adjustMeta.getDirectInstance(dependency.getValue(), components);
-					newDependency = equivInstance != null ? equivInstance : build(dependency.getClass(), adjustMeta, overrides, dependency.getValue(), components);
-				}
-				put(dependency, newDependency);
-			}
-			return newDependency;
-		}
-	}
-
 	@SuppressWarnings("unchecked")
 	protected T addInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
 		List<T> componentList = Arrays.asList(components);
@@ -194,19 +162,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		T adjustedMeta = ((T) getRoot()).adjustMeta(dim);
 		return adjustedMeta.getComponents().size() == dim ? adjustedMeta : buildMeta(adjustedMeta, dim);
 	}
-
-	// protected T setInheriting(Class<?> clazz, T meta, List<T> overrides, Serializable value, T... components) {
-	// overrides.add((T) this);
-	// List<T> componentList = Arrays.asList(components);
-	// T adjustedMeta = adjustMeta(components.length);
-	// if (adjustedMeta.getComponents().size() == components.length)
-	// return adjustedMeta;
-	//
-	// T equivInheriting = getDirectEquivInheriting(meta, value, componentList);
-	// if (equivInheriting != null)
-	// return equivInheriting.equalsRegardlessSupers(adjustedMeta, value, componentList) && Statics.areOverridesReached(overrides, equivInheriting.getSupers()) ? equivInheriting : equivInheriting.update(overrides, value, components);
-	// return rebuildAll(null, () -> build(clazz, meta, overrides, value, componentList), computePotentialDependencies(meta, overrides, value, componentList));
-	// }
 
 	@SuppressWarnings("unchecked")
 	T build(Class<?> clazz, T adjustMeta, List<T> overrides, Serializable value, List<T> components) {
@@ -337,7 +292,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return directInheriting != null && directInheriting.getComponents().size() <= dim ? directInheriting.adjustMeta(dim) : (T) this;
 	}
 
-	T getDirectInstance(Serializable value, List<T> components) {
+	protected T getDirectInstance(Serializable value, List<T> components) {
 		for (T instance : getInstances())
 			if (((AbstractVertex<?>) instance).equalsRegardlessSupers(this, value, components))
 				return instance;
@@ -474,7 +429,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		dependenciesToRebuild.forEach(T::unplug);
 		T build = rebuilder.get();
 		dependenciesToRebuild.remove(toRebuild);
-		ConvertMap convertMap = new ConvertMap();
+		Context<T>.ConvertMap convertMap = getCurrentCache().new ConvertMap();
 		convertMap.put(toRebuild, build);
 		dependenciesToRebuild.forEach(x -> convertMap.convert(x));
 		return build;
@@ -560,6 +515,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 					if (singulars.get(subIndex))
 						return true;
 					subIndex++;
+					getCurrentCache().checker.checkIsAlive((T) this);
 					continue loop;
 				}
 			}
@@ -624,7 +580,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {}
+	public static class SystemMap {
+	}
 
 	private Stream<T> getKeys() {
 		T map = getMap();
@@ -638,144 +595,5 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	private Stream<T> getKeys(Class<?> propertyClass) {
 		return getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Objects.equals(((AxedPropertyClass) x.getValue()).getClazz(), propertyClass));
 	}
-
-	protected void checkSystemConstraints(boolean isOnAdd, boolean isFlushTime) {
-		if (isMeta())
-			checkMeta();
-		if (!isFlushTime)
-			checkIsAlive();
-		else if (!isOnAdd && isAlive())
-			getRoot().discardWithException(new AliveConstraintViolationException(info()));
-		if (!isOnAdd)
-			checkDependenciesAreEmpty();
-		checkDependsMetaComponents();
-		checkSupers();
-		checkDependsSuperComponents();
-		checkLevel();
-		checkLevelComponents();
-		checkGetInstance();
-	}
-
-	private void checkMeta() {
-		if (!getComponents().stream().allMatch(c -> c.isRoot()) || !Objects.equals(getValue(), getRoot().getValue()) || getSupers().size() != 1 || !getSupers().get(0).isMeta())
-			getRoot().discardWithException(new IllegalStateException("Malformed meta : " + info()));
-	}
-
-	private void checkDependenciesAreEmpty() {
-		if (!getInstances().isEmpty() || !getInheritings().isEmpty() || !getComposites().isEmpty())
-			getRoot().discardWithException(new ReferentialIntegrityConstraintViolationException("Unable to remove : " + info() + " cause it has dependencies"));
-	}
-
-	@SuppressWarnings("unchecked")
-	private void checkDependsMetaComponents() {
-		if (getMeta().getComponents().size() != getComponents().size())
-			getRoot().discardWithException(new MetaRuleConstraintViolationException("Added generic and its meta do not have the same components size. Added node components : " + getComponents() + " and meta components : " + getMeta().getComponents()));
-		for (int pos = 0; pos < getComponents().size(); pos++) {
-			T component = getComponent(pos);
-			T metaComponent = getMeta().getComponent(pos);
-			if (component == null)
-				if (metaComponent == null)
-					continue;
-				else
-					component = (T) this;
-			else if (metaComponent == null)
-				metaComponent = getMeta();
-			if (!component.isInstanceOf(metaComponent) && !component.inheritsFrom(metaComponent))
-				getRoot().discardWithException(new MetaRuleConstraintViolationException("Component of added generic : " + component + " must be instance of or must inherits from the component of its meta : " + metaComponent));
-		}
-	}
-
-	private void checkLevelComponents() {
-		for (T component : getComponents())
-			if ((component == null ? getLevel() : component.getLevel()) > getLevel())
-				getRoot().discardWithException(new MetaLevelConstraintViolationException("Inappropriate component meta level : " + component.getLevel() + " for component : " + component + ". Component meta level for added node is : " + getLevel()));
-	}
-
-	private void checkLevel() {
-		if (getLevel() > Statics.CONCRETE)
-			getRoot().discardWithException(new MetaLevelConstraintViolationException("Unable to instanciate a concrete generic : " + getMeta()));
-	}
-
-	private void checkSupers() {
-		supers.forEach(AbstractVertex::checkIsAlive);
-		if (!supers.stream().allMatch(superVertex -> superVertex.getLevel() == getLevel()))
-			getRoot().discardWithException(new IllegalStateException("Inconsistant supers (bad level) : " + supers));
-		if (!supers.stream().allMatch(superVertex -> getMeta().inheritsFrom(superVertex.getMeta())))
-			getRoot().discardWithException(new IllegalStateException("Inconsistant supers : " + supers));
-		if (!supers.stream().noneMatch(this::equals))
-			getRoot().discardWithException(new IllegalStateException("Supers loop detected : " + info()));
-		if (supers.stream().anyMatch(superVertex -> Objects.equals(superVertex.getValue(), getValue()) && superVertex.getComponents().equals(getComponents()) && getMeta().inheritsFrom(superVertex.getMeta())))
-			getRoot().discardWithException(new IllegalStateException("Collision detected : " + info()));
-	}
-
-	private void checkDependsSuperComponents() {
-		getSupers().forEach(superVertex -> {
-			if (!superVertex.isSuperOf(getMeta(), supers, getValue(), getComponents()))
-				getRoot().discardWithException(new IllegalStateException("Inconsistant components : " + getComponents()));
-		});
-	}
-
-	private void checkGetInstance() {
-		if (getMeta().getInstances().get().filter(x -> ((AbstractVertex<?>) x).equalsRegardlessSupers(getMeta(), getValue(), getComponents())).count() > 1)
-			getRoot().discardWithException(new GetInstanceConstraintViolationException("get too many result for search : " + info()));
-	}
-
-	void checkConstraints(boolean isOnAdd, boolean isFlushTime) {
-		if (getMap() != null) {
-			Stream<T> contraintsHolders = getMeta().getHolders(getMap()).get().filter(holder -> holder.getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) holder.getMeta().getValue()).getClazz()))
-					.filter(holder -> holder.getValue() != null && !Boolean.FALSE.equals(holder.getValue())).sorted(CONSTRAINT_PRIORITY);
-			contraintsHolders.forEach(constraintHolder -> {
-				T baseComponent = constraintHolder.getBaseComponent();
-				if (isSpecializationOf(baseComponent))
-					check(constraintHolder, baseComponent, isFlushTime, isOnAdd, false);
-				T targetComponent = constraintHolder.getTargetComponent();
-				if (targetComponent != null && isSpecializationOf(targetComponent))
-					check(constraintHolder, baseComponent, isFlushTime, isOnAdd, true);
-			});
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	void check(T constraintHolder, T baseComponent, boolean isFlushTime, boolean isOnAdd, boolean isRevert) {
-		try {
-			constraintHolder.getMeta().statelessConstraint().check((T) this, baseComponent, constraintHolder.getValue(), ((AxedPropertyClass) constraintHolder.getMeta().getValue()).getAxe(), isOnAdd, isFlushTime, isRevert);
-		} catch (ConstraintViolationException e) {
-			getRoot().discardWithException(e);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	Constraint<T> statelessConstraint() {
-		try {
-			return (Constraint<T>) ((AxedPropertyClass) getValue()).getClazz().newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
-			getRoot().discardWithException(e);
-		}
-		return null;
-	}
-
-	int getConstraintPriority() {
-		Class<?> clazz = ((AxedPropertyClass) getValue()).getClazz();
-		Priority priority = clazz.getAnnotation(Priority.class);
-		return priority != null ? priority.value() : 0;
-	}
-
-	void checkConsistency() {
-		if (getMap() != null && getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) getMeta().getValue()).getClazz()) && getValue() != null && !Boolean.FALSE.equals(getValue())) {
-			T baseConstraint = getComponent(Statics.BASE_POSITION);
-			int axe = ((AxedPropertyClass) getMeta().getValue()).getAxe();
-			if (((AxedPropertyClass) getMeta().getValue()).getAxe() == Statics.NO_POSITION)
-				baseConstraint.getAllInstances().forEach(x -> x.check((T) this, baseConstraint, true, true, false));
-			else
-				baseConstraint.getComponents().get(axe).getAllInstances().forEach(x -> x.check((T) this, baseConstraint, true, true, true));
-		}
-	}
-
-	private static final Comparator<AbstractVertex<?>> CONSTRAINT_PRIORITY = new Comparator<AbstractVertex<?>>() {
-		@Override
-		public int compare(AbstractVertex<?> constraintHolder, AbstractVertex<?> compareConstraintHolder) {
-			return constraintHolder.getMeta().getConstraintPriority() < compareConstraintHolder.getMeta().getConstraintPriority() ? -1 : 1;
-		}
-	};
 
 }
