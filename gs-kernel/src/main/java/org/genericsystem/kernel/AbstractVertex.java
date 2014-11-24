@@ -13,7 +13,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
@@ -71,7 +70,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	@Override
-	public DefaultContext<T> getCurrentCache() {
+	public Context<T> getCurrentCache() {
 		return getRoot().getCurrentCache();
 	}
 
@@ -618,8 +617,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {
-	}
+	public static class SystemMap {}
 
 	private Stream<T> getKeys() {
 		T map = getMap();
