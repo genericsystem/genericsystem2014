@@ -5,13 +5,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
@@ -134,29 +132,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		}, computeDependencies());
 	}
 
-	private class ConvertMap extends HashMap<T, T> {
-		private static final long serialVersionUID = 5003546962293036021L;
-
-		T convert(T dependency) {
-			if (dependency.isAlive())
-				return dependency;
-			T newDependency = get(dependency);
-			if (newDependency == null) {
-				if (dependency.isMeta())
-					newDependency = setMeta(dependency.getComponents().size());
-				else {
-					List<T> overrides = dependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
-					List<T> components = dependency.getComponents().stream().map(x -> x != null ? convert(x) : null).collect(Collectors.toList());
-					T adjustMeta = convert(dependency.getMeta()).adjustMeta(dependency.getValue(), components);
-					T equivInstance = adjustMeta.getDirectInstance(dependency.getValue(), components);
-					newDependency = equivInstance != null ? equivInstance : build(dependency.getClass(), adjustMeta, overrides, dependency.getValue(), components);
-				}
-				put(dependency, newDependency);
-			}
-			return newDependency;
-		}
-	}
-
 	@SuppressWarnings("unchecked")
 	protected T addInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
 		List<T> componentList = Arrays.asList(components);
@@ -194,19 +169,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		T adjustedMeta = ((T) getRoot()).adjustMeta(dim);
 		return adjustedMeta.getComponents().size() == dim ? adjustedMeta : buildMeta(adjustedMeta, dim);
 	}
-
-	// protected T setInheriting(Class<?> clazz, T meta, List<T> overrides, Serializable value, T... components) {
-	// overrides.add((T) this);
-	// List<T> componentList = Arrays.asList(components);
-	// T adjustedMeta = adjustMeta(components.length);
-	// if (adjustedMeta.getComponents().size() == components.length)
-	// return adjustedMeta;
-	//
-	// T equivInheriting = getDirectEquivInheriting(meta, value, componentList);
-	// if (equivInheriting != null)
-	// return equivInheriting.equalsRegardlessSupers(adjustedMeta, value, componentList) && Statics.areOverridesReached(overrides, equivInheriting.getSupers()) ? equivInheriting : equivInheriting.update(overrides, value, components);
-	// return rebuildAll(null, () -> build(clazz, meta, overrides, value, componentList), computePotentialDependencies(meta, overrides, value, componentList));
-	// }
 
 	@SuppressWarnings("unchecked")
 	T build(Class<?> clazz, T adjustMeta, List<T> overrides, Serializable value, List<T> components) {
@@ -474,7 +436,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		dependenciesToRebuild.forEach(T::unplug);
 		T build = rebuilder.get();
 		dependenciesToRebuild.remove(toRebuild);
-		ConvertMap convertMap = new ConvertMap();
+		Context<T>.ConvertMap convertMap = getCurrentCache().new ConvertMap();
 		convertMap.put(toRebuild, build);
 		dependenciesToRebuild.forEach(x -> convertMap.convert(x));
 		return build;
