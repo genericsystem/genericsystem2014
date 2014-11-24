@@ -2,11 +2,12 @@ package org.genericsystem.mutability;
 
 import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.genericsystem.api.core.IContext;
 
-public class Cache implements IContext<Generic> {
+public class Cache<T extends org.genericsystem.concurrency.Generic> implements IContext<Generic>, org.genericsystem.concurrency.Cache.Listener<T> {
 
 	private Engine engine;
 	private org.genericsystem.concurrency.Cache<?, ?> concurrencyCache;
@@ -18,6 +19,7 @@ public class Cache implements IContext<Generic> {
 		this.engine = engine;
 		put(engine, concurrencyEngine);
 		this.concurrencyCache = concurrencyEngine.newCache();
+		concurrencyCache.setListener(this);
 	}
 
 	public Engine getRoot() {
@@ -33,15 +35,23 @@ public class Cache implements IContext<Generic> {
 	}
 
 	protected void put(Generic mutable, org.genericsystem.concurrency.Generic generic) {
-		mutabilityCache.put(mutable, generic);
 
+		org.genericsystem.concurrency.Generic oldGeneric = mutabilityCache.get(mutable);
+
+		IdentityHashMap<Generic, Boolean> reverseOldResult = reverseMap.get(oldGeneric);
 		IdentityHashMap<Generic, Boolean> reverseResult = reverseMap.get(generic);
 		if (reverseResult == null) {
 			IdentityHashMap<Generic, Boolean> idHashMap = new IdentityHashMap<>();
 			idHashMap.put(mutable, true);
 			reverseMap.put(generic, idHashMap);
-		} else
-			reverseResult.put(mutable, true);
+		} else {
+
+			Iterator it = reverseResult.keySet().iterator();
+			while (it.hasNext())
+				// it.next()
+				reverseResult.put(mutable, true);
+		}
+		mutabilityCache.put(mutable, generic);
 	}
 
 	protected org.genericsystem.concurrency.Generic get(Generic mutable) {
@@ -71,6 +81,11 @@ public class Cache implements IContext<Generic> {
 
 	public org.genericsystem.concurrency.Cache<?, ?> getConcurrencyCache() {
 		return concurrencyCache;
+	}
+
+	@Override
+	public void triggersDependencyUpdate(T oldDependency, T newDependency) {
+		put(getByValue(oldDependency), newDependency);
 	}
 
 }

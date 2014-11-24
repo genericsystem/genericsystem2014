@@ -6,28 +6,6 @@ import org.testng.annotations.Test;
 @Test
 public class UpdateWithCacheTest extends AbstractTest {
 
-	public void test002_updateMeta() {
-		Engine engine = new Engine();
-		Generic car = engine.addInstance("Car");
-		Generic power = car.addAttribute("Power");
-		Generic myCar = car.addInstance("MyCar");
-
-		Generic myCarV233 = myCar.addHolder(power, "myCarV233");
-
-		assert myCar.getMeta().equals(car);
-		Generic carUpdate = car.updateValue("CarUpdate");
-		engine.getCurrentCache().flush();
-		assert carUpdate.getInstances().get().allMatch(x -> "MyCar".equals(x.getValue()));
-		assert carUpdate.getInstances().get().allMatch(x -> x.getHolders(power).get().allMatch(y -> "myCarV233".equals(y.getValue())));
-		// on perd les references
-		assert !myCar.isAlive();
-		assert !car.isAlive();
-		assert !carUpdate.getInstances().contains(myCar);
-		assert engine.getInstances().contains(carUpdate);
-		assert engine.getInstances().size() == 1;
-		assert car.getMeta().equals(engine);
-	}
-
 	public void test004_updateHolder() {
 		Engine engine = new Engine();
 		Generic car = engine.addInstance("Car");
@@ -41,7 +19,6 @@ public class UpdateWithCacheTest extends AbstractTest {
 
 		Generic v455 = v233.updateValue(455);
 
-		assert !v233.isAlive();
 		assert myCar.getComposites().contains(v455);
 		assert myCar.getComposites().size() == 1;
 		assert v455.getValue().equals(455);
@@ -56,10 +33,9 @@ public class UpdateWithCacheTest extends AbstractTest {
 		Generic vehicleBis = engine.addInstance("VehicleBis");
 		Generic carBis = car.updateSupers(vehicleBis);
 
-		assert !car.isAlive();
+		assert car.isAlive();
 		assert vehicle.isAlive();
 
-		assert car.getSupers().contains(vehicle);
 		assert vehicle.getInheritings().size() == 0;
 
 		assert carBis.isAlive();

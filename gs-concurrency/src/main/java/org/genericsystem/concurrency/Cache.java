@@ -85,5 +85,18 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 	}
 
 	@Override
-	protected void triggersDependencyUpdate(T oldDependency, T newDependency) {}
+	protected void triggersDependencyUpdate(T oldDependency, T newDependency) {
+		listener.triggersDependencyUpdate(oldDependency, newDependency);
+	}
+
+	public void setListener(Listener listener) {
+		this.listener = listener;
+	}
+
+	private Listener listener;
+
+	public static interface Listener<T> {
+		void triggersDependencyUpdate(T oldDependency, T newDependency);
+
+	}
 }
