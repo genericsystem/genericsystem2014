@@ -1,5 +1,6 @@
 package org.genericsystem.cache;
 
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -12,6 +13,8 @@ import org.genericsystem.kernel.DefaultContext;
 public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> implements DefaultContext<T> {
 
 	private transient final DefaultEngine<T, V> engine;
+	private final V root;
+
 	protected final TransactionCache<T, V> vertices;
 
 	private final Context<V> context;
@@ -19,7 +22,8 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 	protected Transaction(DefaultEngine<T, V> engine) {
 		this.engine = engine;
 		vertices = new TransactionCache<>(engine);
-		context = unwrap((T) engine).getCurrentCache();
+		root = unwrap((T) engine);
+		context = (Context<V>) unwrap((T) engine).getCurrentCache();
 	}
 
 	@Override
@@ -29,23 +33,28 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 	}
 
 	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
-		removes.forEach(this::simpleRemove);
-		adds.forEach(this::simpleAdd);
+		removes.forEach(this::unplug);
+		adds.forEach(this::plug);
 	}
 
-	private T simpleAdd(T generic) {
-		V vertex = unwrap(generic.getMeta());
-		// TODO null is KK
-		V result = null;
-		if (vertex == null)
-			vertex = unwrap((T) engine);
-		result = vertex.setInstance(generic.getSupers().stream().map(this::unwrap).collect(Collectors.toList()), generic.getValue(), vertex.coerceToTArray(generic.getComponents().stream().map(x -> x == null ? x : unwrap(x)).toArray()));
-		vertices.put(generic, result);
-		return generic;
+	@Override
+	public <subT extends T> subT plug(T generic) {
+		V meta = unwrap(generic.getMeta());
+		List<V> supers = generic.getSupers().stream().map(this::unwrap).collect(Collectors.toList());
+		List<V> components = generic.getComponents().stream().map(this::unwrap).collect(Collectors.toList());
+		if (meta == null) {
+			V adjustedMeta = root.adjustMeta(components.size());
+			vertices.put(generic, adjustedMeta.getComponents().size() == components.size() ? adjustedMeta : root.newT(null, meta, supers, generic.getValue(), components).plug());
+		} else {
+			V instance = meta.getDirectInstance(generic.getValue(), components);
+			vertices.put(generic, instance != null ? instance : unwrap((T) engine).newT(null, meta, supers, generic.getValue(), components).plug());
+		}
+		return (subT) generic;
 	}
 
 	// TODO remove should return a boolean.
-	protected boolean simpleRemove(T generic) {
+	@Override
+	public boolean unplug(T generic) {
 		unwrap(generic).remove();
 		vertices.put(generic, null);
 		return true;
@@ -81,7 +90,7 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 	}
 
 	protected V unwrap(T generic) {
-		return vertices.get(generic);
+		return generic == null ? null : vertices.get(generic);
 	}
 
 	private T wrap(V vertex) {
