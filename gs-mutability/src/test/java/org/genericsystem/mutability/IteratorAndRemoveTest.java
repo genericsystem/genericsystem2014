@@ -58,7 +58,7 @@ public class IteratorAndRemoveTest extends AbstractTest {
 			if (cpt == 0)
 				myCar3.remove();
 			if (iterator.next().equals(myCar3))
-				assert false : "Remove Object founded alive";
+				assert false : "Remove Object founded";
 			cpt++;
 		}
 		assert cpt == 3 : cpt;

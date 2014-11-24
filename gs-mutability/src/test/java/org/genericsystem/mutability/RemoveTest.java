@@ -7,17 +7,17 @@ public class RemoveTest extends AbstractTest {
 
 	public void test001_simpleHolder() {
 		Engine engine = new Engine();
-		Generic car = engine.addInstance("Car");
-		Generic color = car.addAttribute("Color");
-		Generic myBmw = car.addInstance("myBmw");
-		Generic myBmwRed = myBmw.addHolder(color, "red");
-
-		assert myBmw.getHolders(color).contains(myBmwRed);
-		assert myBmw.getHolders(color).size() == 1;
-
-		myBmwRed.remove();
-
-		assert myBmw.getHolders(color).size() == 0;
+		// Generic car = engine.addInstance("Car");
+		// Generic color = car.addAttribute("Color");
+		// Generic myBmw = car.addInstance("myBmw");
+		// Generic myBmwRed = myBmw.addHolder(color, "red");
+		//
+		// assert myBmw.getHolders(color).contains(myBmwRed);
+		// assert myBmw.getHolders(color).size() == 1;
+		//
+		// myBmwRed.remove();
+		//
+		// assert myBmw.getHolders(color).size() == 0;
 	}
 
 	public void test002_multipleHolders() {
@@ -64,15 +64,7 @@ public class RemoveTest extends AbstractTest {
 		Generic myBmwBlue = myBmw.addHolder(color, "blue");
 
 		myBmwRed.remove();
-		assert !myBmwRed.isAlive();
-		engine.getCurrentCache().flush();
-		assert !myBmwRed.isAlive();
-		Generic myBmwRed2 = myBmw.addHolder(color, "red");
-		engine.getCurrentCache().flush();
-		assert myBmwRed2.equals(myBmwRed);
-		assert myBmwRed2 == myBmwRed;
-		assert myBmwRed.isAlive();
-		assert myBmwRed2.isAlive();
+		myBmwRed = myBmw.addHolder(color, "red");
 		myBmwRed.remove();
 
 		assert myBmw.getHolders(color).contains(myBmwBlue);

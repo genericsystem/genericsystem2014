@@ -9,12 +9,27 @@ import org.genericsystem.api.core.IContext;
 public class Cache implements IContext<Generic> {
 
 	private Engine engine;
+	private org.genericsystem.concurrency.Cache<?, ?> concurrencyCache;
 
 	private HashMap<Generic, org.genericsystem.concurrency.Generic> mutabilityCache = new HashMap<>();
 	private Map<org.genericsystem.concurrency.Generic, IdentityHashMap<Generic, Boolean>> reverseMap = new HashMap<>();
 
-	public Cache(Engine engine) {
+	public Cache(Engine engine, org.genericsystem.concurrency.Engine concurrencyEngine) {
 		this.engine = engine;
+		put(engine, concurrencyEngine);
+		this.concurrencyCache = concurrencyEngine.newCache();
+	}
+
+	public Engine getRoot() {
+		return engine;
+	}
+
+	public Cache start() {
+		return engine.start(this);
+	}
+
+	public void stop() {
+		engine.stop(this);
 	}
 
 	protected void put(Generic mutable, org.genericsystem.concurrency.Generic generic) {
@@ -47,7 +62,15 @@ public class Cache implements IContext<Generic> {
 	}
 
 	public void flush() {
-		get(engine).getCurrentCache().flush();
+		getConcurrencyCache().flush();
+	}
+
+	public void clear() {
+		getConcurrencyCache().clear();
+	}
+
+	public org.genericsystem.concurrency.Cache<?, ?> getConcurrencyCache() {
+		return concurrencyCache;
 	}
 
 }

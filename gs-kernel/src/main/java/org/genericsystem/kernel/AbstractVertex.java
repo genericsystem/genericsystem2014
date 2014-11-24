@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
@@ -132,29 +133,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 			T equivInstance = adjustMeta.getDirectInstance(newValue, newComponentsList);
 			return equivInstance != null ? equivInstance : build(getClass(), adjustMeta, overrides, newValue, newComponentsList);
 		}, computeDependencies());
-	}
-
-	private class ConvertMap extends HashMap<T, T> {
-		private static final long serialVersionUID = 5003546962293036021L;
-
-		T convert(T dependency) {
-			if (dependency.isAlive())
-				return dependency;
-			T newDependency = get(dependency);
-			if (newDependency == null) {
-				if (dependency.isMeta())
-					newDependency = setMeta(dependency.getComponents().size());
-				else {
-					List<T> overrides = dependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
-					List<T> components = dependency.getComponents().stream().map(x -> x != null ? convert(x) : null).collect(Collectors.toList());
-					T adjustMeta = convert(dependency.getMeta()).adjustMeta(dependency.getValue(), components);
-					T equivInstance = adjustMeta.getDirectInstance(dependency.getValue(), components);
-					newDependency = equivInstance != null ? equivInstance : build(dependency.getClass(), adjustMeta, overrides, dependency.getValue(), components);
-				}
-				put(dependency, newDependency);
-			}
-			return newDependency;
-		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -480,6 +458,34 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return build;
 	}
 
+	private class ConvertMap extends HashMap<T, T> {
+		private static final long serialVersionUID = 5003546962293036021L;
+
+		T convert(T dependency) {
+			if (dependency.isAlive())
+				return dependency;
+			T newDependency = get(dependency);
+			if (newDependency == null) {
+				if (dependency.isMeta())
+					newDependency = setMeta(dependency.getComponents().size());
+				else {
+					List<T> overrides = dependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
+					List<T> components = dependency.getComponents().stream().map(x -> x != null ? convert(x) : null).collect(Collectors.toList());
+					T adjustMeta = convert(dependency.getMeta()).adjustMeta(dependency.getValue(), components);
+					T equivInstance = adjustMeta.getDirectInstance(dependency.getValue(), components);
+					newDependency = equivInstance != null ? equivInstance : build(dependency.getClass(), adjustMeta, overrides, dependency.getValue(), components);
+				}
+				put(dependency, newDependency);
+				hookUpdateForMutability(dependency, newDependency);
+			}
+			return newDependency;
+		}
+	}
+
+	protected void hookUpdateForMutability(T dependency, T newDependency) {
+
+	}
+
 	@SuppressWarnings("unchecked")
 	Snapshot<T> getInheritings(final T origin, final int level) {
 		return () -> new InheritanceComputer<>((T) AbstractVertex.this, origin, level).inheritanceStream();
@@ -624,7 +630,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {}
+	public static class SystemMap {
+	}
 
 	private Stream<T> getKeys() {
 		T map = getMap();

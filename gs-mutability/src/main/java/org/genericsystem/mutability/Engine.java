@@ -7,17 +7,41 @@ import org.genericsystem.api.core.IRoot;
 
 public class Engine extends Generic implements IRoot<Generic> {
 
-	private Cache cache;
+	private final ThreadLocal<Cache> cacheLocal = new ThreadLocal<>();
+
+	private org.genericsystem.concurrency.Engine concurrencyEngine;
 
 	public Engine() {
 		super(null);
 		this.engine = this;
-		cache = new Cache(this);
-		cache.put(this, new org.genericsystem.concurrency.Engine());
+		this.concurrencyEngine = new org.genericsystem.concurrency.Engine();
+		newCache().start();
 	}
 
-	public Cache getCache() {
+	public Cache newCache() {
+		return new Cache(this, concurrencyEngine);
+	}
+
+	public Cache start(Cache cache) {
+		if (!equals(cache.getRoot()))
+			throw new IllegalStateException();
+		cacheLocal.set(cache);
+		cache.getConcurrencyCache().start();
 		return cache;
+	}
+
+	public void stop(Cache cache) {
+		assert cacheLocal.get() == cache;
+		cache.getConcurrencyCache().stop();
+		cacheLocal.set(null);
+	}
+
+	@Override
+	public Cache getCurrentCache() {
+		Cache currentCache = cacheLocal.get();
+		if (currentCache == null)
+			throw new IllegalStateException();
+		return currentCache;
 	}
 
 	@Override

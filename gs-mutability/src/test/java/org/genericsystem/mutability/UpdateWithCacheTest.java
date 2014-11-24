@@ -4,25 +4,7 @@ import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test
-public class UpdateTest extends AbstractTest {
-
-	public void test001_updateValue() {
-		Engine engine = new Engine();
-		Generic car = engine.addInstance("Car");
-		assert "Car".equals(car.getValue());
-		Generic carRename = car.update("CarRename");
-		assert !car.isAlive();
-		assert "CarRename".equals(carRename.getValue());
-	}
-
-	public void test002_updateValue() {
-		Engine engine = new Engine();
-		Generic car = engine.addInstance("Car");
-		assert "Car".equals(car.getValue());
-		Generic carRename = car.updateValue("CarRename");
-		assert !car.isAlive();
-		assert "CarRename".equals(carRename.getValue());
-	}
+public class UpdateWithCacheTest extends AbstractTest {
 
 	public void test002_updateMeta() {
 		Engine engine = new Engine();
@@ -34,10 +16,13 @@ public class UpdateTest extends AbstractTest {
 
 		assert myCar.getMeta().equals(car);
 		Generic carUpdate = car.updateValue("CarUpdate");
+		engine.getCurrentCache().flush();
 		assert carUpdate.getInstances().get().allMatch(x -> "MyCar".equals(x.getValue()));
 		assert carUpdate.getInstances().get().allMatch(x -> x.getHolders(power).get().allMatch(y -> "myCarV233".equals(y.getValue())));
+		// on perd les references
 		assert !myCar.isAlive();
 		assert !car.isAlive();
+		assert !carUpdate.getInstances().contains(myCar);
 		assert engine.getInstances().contains(carUpdate);
 		assert engine.getInstances().size() == 1;
 		assert car.getMeta().equals(engine);
@@ -121,9 +106,15 @@ public class UpdateTest extends AbstractTest {
 		assert engine.getInstances().contains(vehicleUpdate.getInheritings().first());
 		assert engine.getInstances().size() == 2;
 
+		assert !car.isAlive();
+		assert !power.isAlive();
+		assert !myCar.isAlive();
+
 		assert vehicleUpdate.getInheritings().get().allMatch(x -> "Car".equals(x.getValue()));
 		assert vehicleUpdate.getInheritings().get().allMatch(x -> x.getInstances().get().allMatch(y -> "myCar".equals(y.getValue())));
 		assert vehicleUpdate.getInheritings().get().allMatch(x -> x.getInstances().get().allMatch(y -> y.getHolders(power).get().allMatch(z -> z.getValue().equals(233))));
+
+		engine.getCurrentCache().flush();
 
 		assert v233.getValue().equals(233);
 

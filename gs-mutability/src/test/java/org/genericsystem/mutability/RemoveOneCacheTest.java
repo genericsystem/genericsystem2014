@@ -2,9 +2,6 @@ package org.genericsystem.mutability;
 
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
-import org.genericsystem.cache.Cache;
-import org.genericsystem.cache.Engine;
-import org.genericsystem.cache.Generic;
 import org.testng.annotations.Test;
 
 @Test
@@ -86,7 +83,6 @@ public class RemoveOneCacheTest extends AbstractTest {
 		Generic myBmwGreen = myBmw.addHolder(color, "green");
 		cache.flush();
 		catchAndCheckCause(() -> myBmwBlue.remove(), AliveConstraintViolationException.class);
-
 		assert myBmw.getHolders(color).contains(myBmwGreen);
 		assert myBmw.getHolders(color).size() == 1;
 	}
@@ -127,20 +123,6 @@ public class RemoveOneCacheTest extends AbstractTest {
 
 		assert myBmw.getHolders(color).contains(myBmwBlue);
 		assert myBmw.getHolders(color).size() == 1;
-	}
-
-	public void test004_removeAndAdd() {
-		Engine engine = new Engine();
-		Cache cache = engine.getCurrentCache();
-		Generic car = engine.addInstance("Car");
-		Generic myBmw = car.addInstance("myBmw");
-		cache.flush();
-		myBmw.remove();
-		Generic myBmw2 = car.addInstance("myBmw");
-
-		assert myBmw.equals(myBmw2);
-		assert myBmw.isAlive();
-		assert myBmw2.isAlive();
 	}
 
 	public void test005_removeAndAddAndRemove() {

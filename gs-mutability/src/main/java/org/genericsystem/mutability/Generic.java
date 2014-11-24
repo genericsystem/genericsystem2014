@@ -39,6 +39,7 @@ public class Generic implements IVertex<Generic> {
 	}
 
 	protected org.genericsystem.concurrency.Generic[] unwrap(Generic... listM) {
+		assert unwrap(engine) != null;
 		return unwrap(engine).coerceToTArray(Arrays.asList(listM).stream().map(this::unwrap).collect(Collectors.toList()).toArray());
 	}
 
@@ -565,7 +566,7 @@ public class Generic implements IVertex<Generic> {
 
 	@Override
 	public Cache getCurrentCache() {
-		return engine.getCache();
+		return engine.getCurrentCache();
 	}
 
 }
