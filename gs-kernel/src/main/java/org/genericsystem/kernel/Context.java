@@ -24,16 +24,18 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 		return vertex != null && vertex.isAlive();
 	}
 
-	protected T plug(T generic) {
+	@Override
+	public <subT extends T> subT plug(T generic) {
 		T result = generic != generic.getMeta() ? indexInstance(generic.getMeta(), generic) : (T) generic;
 		assert result == generic;
 		generic.getSupers().forEach(superGeneric -> indexInheriting(superGeneric, generic));
 		generic.getComponents().stream().filter(component -> component != null).forEach(component -> indexComposite(component, generic));
 		getRoot().check(true, false, generic);
-		return result;
+		return (subT) result;
 	}
 
-	protected boolean unplug(T generic) {
+	@Override
+	public boolean unplug(T generic) {
 		getRoot().check(false, false, generic);
 		boolean result = generic != generic.getMeta() ? unIndexInstance(generic.getMeta(), generic) : true;
 		if (!result)

@@ -22,13 +22,13 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected T plug() {
+	public <subT extends T> subT plug() {
 		return getCurrentCache().plug((T) this);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected boolean unplug() {
+	public boolean unplug() {
 		return getCurrentCache().unplug((T) this);
 	}
 
