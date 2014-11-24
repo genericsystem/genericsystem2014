@@ -16,4 +16,5 @@ public abstract class AbstractVertex<V extends AbstractVertex<V>> extends org.ge
 
 	@Override
 	protected abstract Dependencies<V> getCompositesDependencies();
+
 }
