@@ -2,12 +2,12 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.List;
-
 import org.genericsystem.api.core.IRoot;
 import org.genericsystem.api.exception.RollbackException;
 
 public interface DefaultRoot<T extends AbstractVertex<T>> extends IRoot<T> {
 
+	@Override
 	Context<T> getCurrentCache();
 
 	@Override
@@ -80,7 +80,6 @@ public interface DefaultRoot<T extends AbstractVertex<T>> extends IRoot<T> {
 	@SuppressWarnings("unchecked")
 	default T setTree(Serializable value, int parentsCount) {
 		return setInstance(value, (T[]) new Object[parentsCount]);
-
 	}
 
 }

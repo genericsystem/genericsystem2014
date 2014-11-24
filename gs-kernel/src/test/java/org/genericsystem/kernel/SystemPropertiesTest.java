@@ -57,6 +57,7 @@ public class SystemPropertiesTest extends AbstractTest {
 		Vertex power = root.addInstance("Power", vehicle);
 		Vertex carPower = root.addInstance("Power", car);
 		power.enablePropertyConstraint();
+		assert power.isPropertyConstraintEnabled();
 		assert carPower.isPropertyConstraintEnabled();
 		carPower.disablePropertyConstraint();
 		assert !carPower.isPropertyConstraintEnabled();
