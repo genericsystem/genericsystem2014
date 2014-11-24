@@ -25,6 +25,7 @@ import org.genericsystem.api.exception.GetInstanceConstraintViolationException;
 import org.genericsystem.api.exception.MetaLevelConstraintViolationException;
 import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
+import org.genericsystem.kernel.Context.ConvertMap;
 import org.genericsystem.kernel.annotations.Priority;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint;
@@ -70,7 +71,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	@Override
-	public Context<T> getCurrentCache() {
+	public DefaultContext<T> getCurrentCache() {
 		return getRoot().getCurrentCache();
 	}
 
@@ -172,19 +173,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		T adjustedMeta = ((T) getRoot()).adjustMeta(dim);
 		return adjustedMeta.getComponents().size() == dim ? adjustedMeta : buildMeta(adjustedMeta, dim);
 	}
-
-	// protected T setInheriting(Class<?> clazz, T meta, List<T> overrides, Serializable value, T... components) {
-	// overrides.add((T) this);
-	// List<T> componentList = Arrays.asList(components);
-	// T adjustedMeta = adjustMeta(components.length);
-	// if (adjustedMeta.getComponents().size() == components.length)
-	// return adjustedMeta;
-	//
-	// T equivInheriting = getDirectEquivInheriting(meta, value, componentList);
-	// if (equivInheriting != null)
-	// return equivInheriting.equalsRegardlessSupers(adjustedMeta, value, componentList) && Statics.areOverridesReached(overrides, equivInheriting.getSupers()) ? equivInheriting : equivInheriting.update(overrides, value, components);
-	// return rebuildAll(null, () -> build(clazz, meta, overrides, value, componentList), computePotentialDependencies(meta, overrides, value, componentList));
-	// }
 
 	@SuppressWarnings("unchecked")
 	T build(Class<?> clazz, T adjustMeta, List<T> overrides, Serializable value, List<T> components) {
@@ -315,7 +303,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return directInheriting != null && directInheriting.getComponents().size() <= dim ? directInheriting.adjustMeta(dim) : (T) this;
 	}
 
-	T getDirectInstance(Serializable value, List<T> components) {
+	protected T getDirectInstance(Serializable value, List<T> components) {
 		for (T instance : getInstances())
 			if (((AbstractVertex<?>) instance).equalsRegardlessSupers(this, value, components))
 				return instance;
@@ -452,7 +440,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		dependenciesToRebuild.forEach(T::unplug);
 		T build = rebuilder.get();
 		dependenciesToRebuild.remove(toRebuild);
-		ConvertMap convertMap = new ConvertMap();
+		Context<T>.ConvertMap convertMap = getCurrentCache().new ConvertMap();
 		convertMap.put(toRebuild, build);
 		dependenciesToRebuild.forEach(x -> convertMap.convert(x));
 		return build;

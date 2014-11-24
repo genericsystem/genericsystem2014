@@ -15,4 +15,8 @@ public interface DefaultContext<T extends AbstractVertex<T>> extends IContext<T>
 
 	Snapshot<T> getComposites(T vertex);
 
+	<subT extends T> subT plug(T vertex);
+
+	boolean unplug(T vertex);
+
 }
