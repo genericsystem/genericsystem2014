@@ -3,6 +3,7 @@ package org.genericsystem.kernel;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.NotFoundException;
 
@@ -10,8 +11,11 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 
 	private transient final DefaultRoot<T> root;
 
+	final Checker<T> checker;
+
 	public Context(DefaultRoot<T> root) {
 		this.root = root;
+		checker = new Checker<T>(root);
 	}
 
 	@Override
@@ -30,13 +34,13 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 		assert result == generic;
 		generic.getSupers().forEach(superGeneric -> indexInheriting(superGeneric, generic));
 		generic.getComponents().stream().filter(component -> component != null).forEach(component -> indexComposite(component, generic));
-		getRoot().check(true, false, generic);
+		checker.check(true, false, generic);
 		return (subT) result;
 	}
 
 	@Override
 	public boolean unplug(T generic) {
-		getRoot().check(false, false, generic);
+		checker.check(false, false, generic);
 		boolean result = generic != generic.getMeta() ? unIndexInstance(generic.getMeta(), generic) : true;
 		if (!result)
 			getRoot().discardWithException(new NotFoundException(generic.info()));
