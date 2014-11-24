@@ -37,21 +37,21 @@ public class Cache<T extends org.genericsystem.concurrency.Generic> implements I
 	protected void put(Generic mutable, org.genericsystem.concurrency.Generic generic) {
 
 		org.genericsystem.concurrency.Generic oldGeneric = mutabilityCache.get(mutable);
-
-		IdentityHashMap<Generic, Boolean> reverseOldResult = reverseMap.get(oldGeneric);
 		IdentityHashMap<Generic, Boolean> reverseResult = reverseMap.get(generic);
-		if (reverseResult == null) {
-			IdentityHashMap<Generic, Boolean> idHashMap = new IdentityHashMap<>();
-			idHashMap.put(mutable, true);
-			reverseMap.put(generic, idHashMap);
-		} else {
+		if (reverseResult == null)
+			reverseResult = new IdentityHashMap<>();
+		if (oldGeneric != null) {
+			IdentityHashMap<Generic, Boolean> reverseOldResult = reverseMap.get(oldGeneric);
 
-			Iterator it = reverseResult.keySet().iterator();
+			Iterator<Generic> it = reverseOldResult.keySet().iterator();
 			while (it.hasNext())
-				// it.next()
-				reverseResult.put(mutable, true);
-		}
-		mutabilityCache.put(mutable, generic);
+				mutabilityCache.put(it.next(), generic);
+			reverseResult.putAll(reverseOldResult);
+		} else
+			mutabilityCache.put(mutable, generic);
+		reverseResult.put(mutable, true);
+		reverseMap.put(generic, reverseResult);
+		reverseMap.put(oldGeneric, null);
 	}
 
 	protected org.genericsystem.concurrency.Generic get(Generic mutable) {
