@@ -48,6 +48,13 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 	}
 
 	@Override
+	public <subT extends T> subT plug(T generic) {
+		subT plug = super.plug(generic);
+		// unwrap(generic).getLifeManager().beginLife(getTs());
+		return plug;
+	}
+
+	@Override
 	public boolean unplug(T generic) {
 		unwrap(generic).getLifeManager().kill(getTs());
 		getRoot().unwrap().getGarbageCollector().add(unwrap(generic));

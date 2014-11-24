@@ -1,10 +1,27 @@
 package org.genericsystem.concurrency;
 
-import org.genericsystem.cache.Cache;
 import org.testng.annotations.Test;
 
 @Test
 public class ConcurrentTest extends AbstractTest {
+
+	public void test() {
+		Engine engine = new Engine();
+		Cache<Generic, Vertex> cache = engine.getCurrentCache();
+		Cache<Generic, Vertex> cache2 = engine.newCache().start();
+		Generic car = engine.addInstance("Car");
+
+		assert cache2.isAlive(car);
+		assert !cache.isAlive(car);
+
+		cache2.flush();
+
+		assert cache2.isAlive(car);
+		cache.start();
+		assert !cache.isAlive(car);
+		cache.pickNewTs();
+		assert cache.isAlive(car);
+	}
 
 	public void testNonFlushedModificationsStillAliveInCache() {
 		Engine engine = new Engine();
