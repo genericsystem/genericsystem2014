@@ -44,10 +44,10 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 		List<V> components = generic.getComponents().stream().map(this::unwrap).collect(Collectors.toList());
 		if (meta == null) {
 			V adjustedMeta = root.adjustMeta(components.size());
-			vertices.put(generic, adjustedMeta.getComponents().size() == components.size() ? adjustedMeta : root.newT(null, meta, supers, generic.getValue(), components).plug());
+			vertices.put(generic, adjustedMeta.getComponents().size() == components.size() ? adjustedMeta : context.getBuilder().newT(null, meta, supers, generic.getValue(), components).plug());
 		} else {
 			V instance = meta.getDirectInstance(generic.getValue(), components);
-			vertices.put(generic, instance != null ? instance : unwrap((T) engine).newT(null, meta, supers, generic.getValue(), components).plug());
+			vertices.put(generic, instance != null ? instance : context.getBuilder().newT(null, meta, supers, generic.getValue(), components).plug());
 		}
 		return generic;
 	}
