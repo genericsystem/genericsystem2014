@@ -134,13 +134,15 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 		return subContext;
 	}
 
+	// TODO Not public
 	@Override
-	public <subT extends T> subT plug(T generic) {
+	public T plug(T generic) {
 		T result = super.plug(generic);
 		simpleAdd(generic);
-		return (subT) result;
+		return result;
 	}
 
+	// TODO Not public
 	@Override
 	public boolean unplug(T generic) {
 		boolean result = super.unplug(generic);

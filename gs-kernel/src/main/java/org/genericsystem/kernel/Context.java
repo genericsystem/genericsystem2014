@@ -32,13 +32,13 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 	}
 
 	@Override
-	public <subT extends T> subT plug(T generic) {
+	public T plug(T generic) {
 		T result = generic != generic.getMeta() ? indexInstance(generic.getMeta(), generic) : (T) generic;
 		assert result == generic;
 		generic.getSupers().forEach(superGeneric -> indexInheriting(superGeneric, generic));
 		generic.getComponents().stream().filter(component -> component != null).forEach(component -> indexComposite(component, generic));
 		checker.check(true, false, generic);
-		return (subT) result;
+		return result;
 	}
 
 	@Override
@@ -102,6 +102,7 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 	class ConvertMap extends HashMap<T, T> {
 		private static final long serialVersionUID = 5003546962293036021L;
 
+		@SuppressWarnings("unchecked")
 		T convert(T dependency) {
 			if (dependency.isAlive())
 				return dependency;

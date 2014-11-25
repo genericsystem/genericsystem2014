@@ -3,7 +3,6 @@ package org.genericsystem.cache;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
@@ -23,7 +22,7 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 		this.engine = engine;
 		vertices = new TransactionCache<>(engine);
 		root = unwrap((T) engine);
-		context = (Context<V>) unwrap((T) engine).getCurrentCache();
+		context = unwrap((T) engine).getCurrentCache();
 	}
 
 	@Override
@@ -37,8 +36,9 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 		adds.forEach(this::plug);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public <subT extends T> subT plug(T generic) {
+	public T plug(T generic) {
 		V meta = unwrap(generic.getMeta());
 		List<V> supers = generic.getSupers().stream().map(this::unwrap).collect(Collectors.toList());
 		List<V> components = generic.getComponents().stream().map(this::unwrap).collect(Collectors.toList());
@@ -49,7 +49,7 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 			V instance = meta.getDirectInstance(generic.getValue(), components);
 			vertices.put(generic, instance != null ? instance : unwrap((T) engine).newT(null, meta, supers, generic.getValue(), components).plug());
 		}
-		return (subT) generic;
+		return generic;
 	}
 
 	// TODO remove should return a boolean.

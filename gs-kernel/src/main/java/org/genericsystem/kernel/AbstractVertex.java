@@ -117,7 +117,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	@Override
 	public T update(List<T> overrides, Serializable newValue, T... newComponents) {
 		List<T> newComponentsList = Arrays.asList(newComponents);
-		T adjustMeta = getMeta().ajustOrBuildMeta(newValue, newComponentsList);
+		T adjustMeta = getMeta().adjustOrBuildMeta(newValue, newComponentsList);
 		return rebuildAll((T) this, () -> {
 			T equivInstance = adjustMeta.getDirectInstance(newValue, newComponentsList);
 			return equivInstance != null ? equivInstance : build(getClass(), adjustMeta, overrides, newValue, newComponentsList);
@@ -127,7 +127,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	@SuppressWarnings("unchecked")
 	protected T addInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
 		List<T> componentList = Arrays.asList(components);
-		T adjustedMeta = ajustOrBuildMeta(value, componentList);
+		T adjustedMeta = adjustOrBuildMeta(value, componentList);
 		if (adjustedMeta.equalsRegardlessSupers(adjustedMeta, value, componentList) && Statics.areOverridesReached(overrides, adjustedMeta.getSupers()))
 			getRoot().discardWithException(new ExistsException("An equivalent instance already exists : " + adjustedMeta.info()));
 
@@ -140,7 +140,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	@SuppressWarnings("unchecked")
 	protected T setInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
 		List<T> componentList = Arrays.asList(components);
-		T adjustedMeta = ajustOrBuildMeta(value, componentList);
+		T adjustedMeta = adjustOrBuildMeta(value, componentList);
 		if (adjustedMeta.equalsRegardlessSupers(adjustedMeta, value, componentList) && Statics.areOverridesReached(overrides, adjustedMeta.getSupers()))
 			return adjustedMeta;
 
@@ -241,7 +241,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	@SuppressWarnings("unchecked")
-	T ajustOrBuildMeta(Serializable value, List<T> components) {
+	T adjustOrBuildMeta(Serializable value, List<T> components) {
 		if (isMeta()) {
 			T adjustedMeta = ((T) getRoot()).adjustMeta(components.size());
 			return adjustedMeta.getComponents().size() == components.size() ? adjustedMeta : buildMeta(adjustedMeta, components.size());
@@ -260,7 +260,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	}
 
-	public T adjustMeta(Serializable value, @SuppressWarnings("unchecked") T... components) {
+	protected T adjustMeta(Serializable value, @SuppressWarnings("unchecked") T... components) {
 		return adjustMeta(value, Arrays.asList(components));
 	}
 
@@ -280,7 +280,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	@SuppressWarnings("unchecked")
-	T adjustMeta(int dim) {
+	protected T adjustMeta(int dim) {
 		assert isMeta();
 		int size = getComponents().size();
 		if (size > dim)
@@ -553,8 +553,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	@SuppressWarnings("unchecked")
-	protected <subT extends T> subT plug() {
-		return (subT) getCurrentCache().plug((T) this);
+	protected T plug() {
+		return getCurrentCache().plug((T) this);
 	}
 
 	@SuppressWarnings("unchecked")

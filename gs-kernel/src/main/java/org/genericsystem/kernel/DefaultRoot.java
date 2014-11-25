@@ -2,7 +2,6 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.List;
-
 import org.genericsystem.api.core.IRoot;
 import org.genericsystem.api.exception.RollbackException;
 
@@ -16,11 +15,13 @@ public interface DefaultRoot<T extends AbstractVertex<T>> extends IRoot<T> {
 		throw new RollbackException(exception);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default T getMetaAttribute() {
 		return ((T) this).getMeta(Statics.ATTRIBUTE_SIZE);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default T getMetaRelation() {
 		return ((T) this).getMeta(Statics.RELATION_SIZE);
