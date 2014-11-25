@@ -67,11 +67,7 @@ public class UpdateTest extends AbstractTest {
 		Generic car = engine.addInstance("Car");
 		Generic power = car.addAttribute("Power");
 		Generic myCar = car.addInstance("myCar");
-		assert power.isAlive();
-		assert myCar.isAlive();
 		car.update("newCar");
-		engine.getCurrentCache().showMutabilityCache();
-		engine.getCurrentCache().showReverseMap();
 		assert power.isAlive();
 		assert myCar.isAlive();
 	}
