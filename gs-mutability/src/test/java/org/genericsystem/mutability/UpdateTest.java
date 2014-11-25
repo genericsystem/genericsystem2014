@@ -64,11 +64,13 @@ public class UpdateTest extends AbstractTest {
 
 	public void test001_dependencies() {
 		Engine engine = new Engine();
-		Generic car = engine.addInstance("Car");
-		Generic power = car.addAttribute("Power");
-		Generic myCar = car.addInstance("myCar");
-		car.update("newCar");
-		assert power.isAlive();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = engine.addInstance(vehicle, "Car");
+		Generic superCar = engine.addInstance(car, "SuperCar");
+		Generic myCar = superCar.addInstance("myCar");
+		vehicle.update("newVehicle");
+		//
+		// assert power.isAlive();
 		assert myCar.isAlive();
 	}
 
@@ -96,8 +98,6 @@ public class UpdateTest extends AbstractTest {
 		cache2.flush();
 		cache1.start();
 		assert car.isAlive();
-		engine.getCurrentCache().showMutabilityCache();
-		engine.getCurrentCache().showReverseMap();
 		cache1.pickNewTs();
 		catchAndCheckCause(() -> !car.isAlive(), AliveConstraintViolationException.class);
 	}

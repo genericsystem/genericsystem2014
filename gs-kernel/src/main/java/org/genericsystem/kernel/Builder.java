@@ -91,7 +91,7 @@ public class Builder<T extends AbstractVertex<T>> {
 		dependenciesToRebuild.remove(toRebuild);
 		ConvertMap convertMap = new ConvertMap();
 		convertMap.put(toRebuild, build);
-		dependenciesToRebuild.forEach(x -> convertMap.convert(x));
+		Statics.reverseCollections(dependenciesToRebuild).forEach(x -> convertMap.convert(x));
 		return build;
 	}
 
