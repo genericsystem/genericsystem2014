@@ -3,6 +3,7 @@ package org.genericsystem.cache;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
@@ -42,13 +43,7 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 		V meta = unwrap(generic.getMeta());
 		List<V> supers = generic.getSupers().stream().map(this::unwrap).collect(Collectors.toList());
 		List<V> components = generic.getComponents().stream().map(this::unwrap).collect(Collectors.toList());
-		if (meta == null) {
-			V adjustedMeta = root.adjustMeta(components.size());
-			vertices.put(generic, adjustedMeta.getComponents().size() == components.size() ? adjustedMeta : context.getBuilder().newT(null, meta, supers, generic.getValue(), components).plug());
-		} else {
-			V instance = meta.getDirectInstance(generic.getValue(), components);
-			vertices.put(generic, instance != null ? instance : context.getBuilder().newT(null, meta, supers, generic.getValue(), components).plug());
-		}
+		context.getBuilder().getOrNewT(null, meta, supers, generic.getValue(), components).plug();
 		return generic;
 	}
 

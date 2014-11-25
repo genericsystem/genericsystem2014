@@ -18,23 +18,13 @@ public class Builder<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V
 	}
 
 	@Override
-	protected T newT() {
-		return ((AbstractGeneric<T, V>) getRoot()).newT();
-	}
-
-	@Override
-	protected T[] newTArray(int dim) {
-		return ((AbstractGeneric<T, V>) getRoot()).newTArray(dim);
-	}
-
-	@Override
 	public T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> composites) {
 		return getRoot().getOrBuildT(clazz, meta, supers, value, composites);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public T newT(Class<?> clazz, T meta) {
+	protected T newT(Class<?> clazz, T meta) {
 		InstanceClass metaAnnotation = meta == null ? null : meta.getClass().getAnnotation(InstanceClass.class);
 		if (metaAnnotation != null)
 			if (clazz == null || clazz.isAssignableFrom(metaAnnotation.value()))
@@ -55,19 +45,5 @@ public class Builder<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V
 			getRoot().discardWithException(new InstantiationException(clazz + " must extends " + newT.getClass()));
 		return null; // Not reached
 	}
-
-	// class GenericsCache {
-	//
-	// private final Map<T, T> map = new ConcurrentHashMap<>();
-	//
-	// public T getOrBuildT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> composites) {
-	// T disposable = newT(clazz, meta).init(meta, supers, value, composites);
-	// T result = map.get(disposable);
-	// if (result != null)
-	// return result;
-	// T alreadyPresent = map.putIfAbsent(disposable, disposable);
-	// return alreadyPresent != null ? alreadyPresent : disposable;
-	// }
-	// }
 
 }
