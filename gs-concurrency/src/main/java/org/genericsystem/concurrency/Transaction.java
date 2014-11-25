@@ -1,6 +1,7 @@
 package org.genericsystem.concurrency;
 
 import java.util.HashSet;
+
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
@@ -8,11 +9,6 @@ import org.genericsystem.api.exception.OptimisticLockConstraintViolationExceptio
 public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.cache.Transaction<T, V> {
 
 	private final long ts;
-
-	@Override
-	public DefaultEngine<T, V> getRoot() {
-		return (DefaultEngine<T, V>) super.getRoot();
-	}
 
 	Transaction(DefaultEngine<T, V> engine) {
 		this(engine.unwrap().pickNewTs(), engine);
@@ -59,6 +55,11 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 		getRoot().unwrap().getGarbageCollector().add(unwrap(generic));
 		vertices.put(generic, null);
 		return true;
+	}
+
+	@Override
+	public DefaultEngine<T, V> getRoot() {
+		return (DefaultEngine<T, V>) super.getRoot();
 	}
 
 	private class LockedLifeManager extends HashSet<LifeManager> {
