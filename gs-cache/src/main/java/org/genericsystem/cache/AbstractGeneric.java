@@ -6,10 +6,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.cache.annotations.InstanceClass;
 import org.genericsystem.cache.annotations.SystemGeneric;
 import org.genericsystem.kernel.Dependencies;
 
@@ -22,7 +20,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <subT extends T> subT plug() {
+	public T plug() {
 		return getCurrentCache().plug((T) this);
 	}
 
@@ -84,35 +82,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 	}
 
 	@Override
-	protected T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> composites) {
-		return getRoot().getOrBuildT(clazz, meta, supers, value, composites);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	protected T newT(Class<?> clazz) {
-		InstanceClass metaAnnotation = getClass().getAnnotation(InstanceClass.class);
-		if (metaAnnotation != null)
-			if (clazz == null || clazz.isAssignableFrom(metaAnnotation.value()))
-				clazz = metaAnnotation.value();
-			else if (!metaAnnotation.value().isAssignableFrom(clazz))
-				getRoot().discardWithException(new InstantiationException(clazz + " must extends " + metaAnnotation.value()));
-		T newT = newT();// Instantiates T in all cases...
-
-		if (clazz == null || clazz.isAssignableFrom(newT.getClass()))
-			return newT;
-		if (newT.getClass().isAssignableFrom(clazz))
-			try {
-				return (T) clazz.newInstance();
-			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
-				getRoot().discardWithException(e);
-			}
-		else
-			getRoot().discardWithException(new InstantiationException(clazz + " must extends " + newT.getClass()));
-		return null; // Not reached
-	}
-
-	@Override
 	protected abstract T newT();
 
 	@Override
@@ -138,14 +107,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 		super.remove();
 	}
 
-	// // TODO KK should be protected
-	// @Override
-	// public T bindInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
-	//
-	// clazz = specializeInstanceClass(clazz);
-	// super.bindInstance(clazz, throwExistException, overrides, value, components);
-	// }
-
 	@Override
 	public int hashCode() {
 		// TODO introduce : meta and composites length
@@ -165,6 +126,13 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 	@Override
 	protected Dependencies<T> getCompositesDependencies() {
 		throw new UnsupportedOperationException();
+	}
+
+	// TODO remove this and tests of adjustMeta in cache layer ???
+	@SuppressWarnings("unchecked")
+	@Override
+	protected T adjustMeta(Serializable value, T... components) {
+		return super.adjustMeta(value, components);
 	}
 
 }

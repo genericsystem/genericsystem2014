@@ -3,7 +3,6 @@ package org.genericsystem.kernel;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.GetInstanceConstraintViolationException;
@@ -17,16 +16,16 @@ import org.genericsystem.kernel.systemproperty.constraints.Constraint;
 
 public class Checker<T extends AbstractVertex<T>> {
 
-	private transient final DefaultRoot<T> root;
+	private final DefaultRoot<T> root;
 
 	public Checker(DefaultRoot<T> root) {
 		this.root = root;
 	}
 
-	public void check(boolean isOnAdd, boolean isFlushTime, T t) throws RollbackException {
-		checkSystemConstraints(isOnAdd, isFlushTime, t);
-		checkConsistency(t);
-		checkConstraints(isOnAdd, isFlushTime, t);
+	public void check(boolean isOnAdd, boolean isFlushTime, T vertex) throws RollbackException {
+		checkSystemConstraints(isOnAdd, isFlushTime, vertex);
+		checkConsistency(vertex);
+		checkConstraints(isOnAdd, isFlushTime, vertex);
 	}
 
 	public DefaultRoot<T> getRoot() {

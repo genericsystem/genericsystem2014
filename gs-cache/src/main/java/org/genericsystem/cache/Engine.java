@@ -2,7 +2,6 @@ package org.genericsystem.cache;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.List;
 
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.Statics;
@@ -32,12 +31,12 @@ public class Engine extends Generic implements DefaultEngine<Generic, Vertex> {
 		cache.flush();
 	}
 
-	private final GenericsCache<Generic> genericsCache = new GenericsCache<>(this);
-
-	@Override
-	public Generic getOrBuildT(Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> composites) {
-		return genericsCache.getOrBuildT(clazz, meta, supers, value, composites);
-	}
+	// private final GenericsCache<Generic> genericsCache = new GenericsCache<>(this);
+	//
+	// @Override
+	// public Generic getOrBuildT(Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> composites) {
+	// return genericsCache.getOrBuildT(clazz, meta, supers, value, composites);
+	// }
 
 	public Root buildRoot(Serializable value) {
 		return new Root(this, value);

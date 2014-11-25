@@ -1,16 +1,13 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
@@ -25,10 +22,13 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	private List<T> components;
 	private Serializable value;
 
+	protected List<T> supers;
+
 	@SuppressWarnings("unchecked")
-	@Override
-	public DefaultRoot<T> getRoot() {
-		return this != meta ? meta.getRoot() : getSupers().isEmpty() ? (DefaultRoot<T>) this : getSupers().get(0).getRoot();
+	protected T init(T meta, List<T> supers, Serializable value, List<T> components) {
+		init(meta, value, components);
+		this.supers = Collections.unmodifiableList(supers);
+		return (T) this;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -55,6 +55,17 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	@Override
+	public List<T> getSupers() {
+		return supers;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public DefaultRoot<T> getRoot() {
+		return this != meta ? meta.getRoot() : getSupers().isEmpty() ? (DefaultRoot<T>) this : getSupers().get(0).getRoot();
+	}
+
+	@Override
 	public Context<T> getCurrentCache() {
 		return getRoot().getCurrentCache();
 	}
@@ -64,38 +75,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return Objects.toString(getValue());
 	}
 
-	protected List<T> supers;
-
 	protected abstract Dependencies<T> getInstancesDependencies();
 
 	protected abstract Dependencies<T> getInheritingsDependencies();
 
 	protected abstract Dependencies<T> getCompositesDependencies();
-
-	@SuppressWarnings("unchecked")
-	protected T init(T meta, List<T> supers, Serializable value, List<T> components) {
-		init(meta, value, components);
-		this.supers = Collections.unmodifiableList(supers);
-		return (T) this;
-	}
-
-	protected T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
-		Context<T> currentCache = getCurrentCache();
-		if (meta != null)
-			currentCache.checker.checkIsAlive(meta);
-		supers.forEach(x -> currentCache.checker.checkIsAlive(x));
-		components.stream().filter(component -> component != null).forEach(x -> currentCache.checker.checkIsAlive(x));
-		return newT(clazz).init(meta, supers, value, components);
-	}
-
-	protected T newT(Class<?> clazz) {
-		return newT();
-	}
-
-	@Override
-	public List<T> getSupers() {
-		return supers;
-	}
 
 	protected Dependencies<T> buildDependencies() {
 		return new DependenciesImpl<>();
@@ -118,37 +102,37 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	@Override
 	public T update(List<T> overrides, Serializable newValue, T... newComponents) {
 		List<T> newComponentsList = Arrays.asList(newComponents);
-		T adjustMeta = getMeta().ajustOrBuildMeta(newValue, newComponentsList);
-		return rebuildAll((T) this, () -> {
+		T adjustMeta = getMeta().adjustOrBuildMeta(newValue, newComponentsList);
+		return getCurrentCache().getBuilder().rebuildAll((T) this, () -> {
 			T equivInstance = adjustMeta.getDirectInstance(newValue, newComponentsList);
-			return equivInstance != null ? equivInstance : build(getClass(), adjustMeta, overrides, newValue, newComponentsList);
+			return equivInstance != null ? equivInstance : getCurrentCache().getBuilder().build(getClass(), adjustMeta, overrides, newValue, newComponentsList);
 		}, computeDependencies());
 	}
 
 	@SuppressWarnings("unchecked")
 	protected T addInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
 		List<T> componentList = Arrays.asList(components);
-		T adjustedMeta = ajustOrBuildMeta(value, componentList);
+		T adjustedMeta = adjustOrBuildMeta(value, componentList);
 		if (adjustedMeta.equalsRegardlessSupers(adjustedMeta, value, componentList) && Statics.areOverridesReached(overrides, adjustedMeta.getSupers()))
 			getRoot().discardWithException(new ExistsException("An equivalent instance already exists : " + adjustedMeta.info()));
 
 		T equivInstance = adjustedMeta.getDirectInstance(value, componentList);
 		if (equivInstance != null)
 			getRoot().discardWithException(new ExistsException("An equivalent instance already exists : " + equivInstance.info()));
-		return rebuildAll(null, () -> adjustedMeta.build(clazz, adjustedMeta, overrides, value, componentList), adjustedMeta.computePotentialDependencies(overrides, value, componentList));
+		return getCurrentCache().getBuilder().rebuildAll(null, () -> getCurrentCache().getBuilder().build(clazz, adjustedMeta, overrides, value, componentList), adjustedMeta.computePotentialDependencies(overrides, value, componentList));
 	}
 
 	@SuppressWarnings("unchecked")
 	protected T setInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
 		List<T> componentList = Arrays.asList(components);
-		T adjustedMeta = ajustOrBuildMeta(value, componentList);
+		T adjustedMeta = adjustOrBuildMeta(value, componentList);
 		if (adjustedMeta.equalsRegardlessSupers(adjustedMeta, value, componentList) && Statics.areOverridesReached(overrides, adjustedMeta.getSupers()))
 			return adjustedMeta;
 
 		T equivInstance = adjustedMeta.getDirectEquivInstance(value, componentList);
 		if (equivInstance != null)
 			return equivInstance.equalsRegardlessSupers(adjustedMeta, value, componentList) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : equivInstance.update(overrides, value, components);
-		return rebuildAll(null, () -> adjustedMeta.build(clazz, adjustedMeta, overrides, value, componentList), adjustedMeta.computePotentialDependencies(overrides, value, componentList));
+		return getCurrentCache().getBuilder().rebuildAll(null, () -> getCurrentCache().getBuilder().build(clazz, adjustedMeta, overrides, value, componentList), adjustedMeta.computePotentialDependencies(overrides, value, componentList));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -160,14 +144,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	@SuppressWarnings("unchecked")
 	public T setMeta(int dim) {
 		T adjustedMeta = ((T) getRoot()).adjustMeta(dim);
-		return adjustedMeta.getComponents().size() == dim ? adjustedMeta : buildMeta(adjustedMeta, dim);
-	}
-
-	@SuppressWarnings("unchecked")
-	T build(Class<?> clazz, T adjustMeta, List<T> overrides, Serializable value, List<T> components) {
-		List<T> supers = new ArrayList<>(new SupersComputer<>((T) getRoot(), adjustMeta, overrides, value, components));// TODO Order supers
-		checkOverridesAreReached(overrides, supers);// TODO system constraints
-		return newT(clazz, adjustMeta, supers, value, components).plug();
+		return adjustedMeta.getComponents().size() == dim ? adjustedMeta : getCurrentCache().getBuilder().buildMeta(adjustedMeta, dim);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -242,26 +219,15 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	@SuppressWarnings("unchecked")
-	T ajustOrBuildMeta(Serializable value, List<T> components) {
+	T adjustOrBuildMeta(Serializable value, List<T> components) {
 		if (isMeta()) {
 			T adjustedMeta = ((T) getRoot()).adjustMeta(components.size());
-			return adjustedMeta.getComponents().size() == components.size() ? adjustedMeta : buildMeta(adjustedMeta, components.size());
+			return adjustedMeta.getComponents().size() == components.size() ? adjustedMeta : getCurrentCache().getBuilder().buildMeta(adjustedMeta, components.size());
 		}
 		return adjustMeta(value, components);
 	}
 
-	@SuppressWarnings("unchecked")
-	T buildMeta(T adjustedMeta, int dim) {
-		T root = (T) getRoot();
-		List<T> components = new ArrayList<>();
-		for (int i = 0; i < dim; i++)
-			components.add(root);
-		List<T> supers = Collections.singletonList(adjustedMeta);
-		return root.rebuildAll(null, () -> root.newT(null, null, supers, root.getValue(), components).plug(), adjustedMeta.computePotentialDependencies(supers, root.getValue(), components));
-
-	}
-
-	public T adjustMeta(Serializable value, @SuppressWarnings("unchecked") T... components) {
+	protected T adjustMeta(Serializable value, @SuppressWarnings("unchecked") T... components) {
 		return adjustMeta(value, Arrays.asList(components));
 	}
 
@@ -281,7 +247,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	@SuppressWarnings("unchecked")
-	T adjustMeta(int dim) {
+	protected T adjustMeta(int dim) {
 		assert isMeta();
 		int size = getComponents().size();
 		if (size > dim)
@@ -425,16 +391,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 			getRoot().discardWithException(new CrossEnginesAssignementsException());
 	}
 
-	T rebuildAll(T toRebuild, Supplier<T> rebuilder, LinkedHashSet<T> dependenciesToRebuild) {
-		dependenciesToRebuild.forEach(T::unplug);
-		T build = rebuilder.get();
-		dependenciesToRebuild.remove(toRebuild);
-		Context<T>.ConvertMap convertMap = getCurrentCache().new ConvertMap();
-		convertMap.put(toRebuild, build);
-		dependenciesToRebuild.forEach(x -> convertMap.convert(x));
-		return build;
-	}
-
 	@SuppressWarnings("unchecked")
 	Snapshot<T> getInheritings(final T origin, final int level) {
 		return () -> new InheritanceComputer<>((T) AbstractVertex.this, origin, level).inheritanceStream();
@@ -447,7 +403,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	@SuppressWarnings("unchecked")
 	@Override
 	public T[] coerceToTArray(Object... array) {
-		T[] result = newTArray(array.length);
+		T[] result = getCurrentCache().getBuilder().newTArray(array.length);
 		for (int i = 0; i < array.length; i++)
 			result[i] = (T) array[i];
 		return result;
@@ -456,15 +412,10 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	@SuppressWarnings("unchecked")
 	@Override
 	public T[] addThisToTargets(T... targets) {
-		T[] composites = newTArray(targets.length + 1);
+		T[] composites = getCurrentCache().getBuilder().newTArray(targets.length + 1);
 		composites[0] = (T) this;
 		System.arraycopy(targets, 0, composites, 1, targets.length);
 		return composites;
-	}
-
-	void checkOverridesAreReached(List<T> overrides, List<T> supers) {
-		if (!Statics.areOverridesReached(overrides, supers))
-			getRoot().discardWithException(new IllegalStateException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
 	}
 
 	static interface SingularsLazyCache {
@@ -515,7 +466,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 					if (singulars.get(subIndex))
 						return true;
 					subIndex++;
-					getCurrentCache().checker.checkIsAlive((T) this);
+					getCurrentCache().getChecker().checkIsAlive((T) this);
 					continue loop;
 				}
 			}
@@ -554,8 +505,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	@SuppressWarnings("unchecked")
-	protected <subT extends T> subT plug() {
-		return (subT) getCurrentCache().plug((T) this);
+	protected T plug() {
+		return getCurrentCache().plug((T) this);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -580,8 +531,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {
-	}
+	public static class SystemMap {}
 
 	private Stream<T> getKeys() {
 		T map = getMap();
