@@ -60,6 +60,7 @@ public class Cache<T extends org.genericsystem.concurrency.Generic> implements I
 			mutabilityCache.put(mutable, generic);
 		reverseResult.put(mutable, true);
 		reverseMap.put(generic, reverseResult);
+
 	}
 
 	protected org.genericsystem.concurrency.Generic get(Generic mutable) {
