@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.genericsystem.api.core.IContext;
 
@@ -35,7 +36,6 @@ public class Cache<T extends org.genericsystem.concurrency.Generic> implements I
 	}
 
 	protected void put(Generic mutable, org.genericsystem.concurrency.Generic generic) {
-
 		org.genericsystem.concurrency.Generic oldGeneric = mutabilityCache.get(mutable);
 		IdentityHashMap<Generic, Boolean> reverseResult = reverseMap.get(generic);
 		if (reverseResult == null)
@@ -47,11 +47,13 @@ public class Cache<T extends org.genericsystem.concurrency.Generic> implements I
 			while (it.hasNext())
 				mutabilityCache.put(it.next(), generic);
 			reverseResult.putAll(reverseOldResult);
+			// reverseMap.put(oldGeneric, null);
+			System.out.println("Remove: " + oldGeneric);
+			reverseMap.remove(oldGeneric);
 		} else
 			mutabilityCache.put(mutable, generic);
 		reverseResult.put(mutable, true);
 		reverseMap.put(generic, reverseResult);
-		reverseMap.put(oldGeneric, null);
 	}
 
 	protected org.genericsystem.concurrency.Generic get(Generic mutable) {
@@ -88,4 +90,44 @@ public class Cache<T extends org.genericsystem.concurrency.Generic> implements I
 		put(getByValue(oldDependency), newDependency);
 	}
 
+	public void showMutabilityCache() {
+		System.out.println("SHOW mutabilityCache");
+		Iterator<Generic> it = mutabilityCache.keySet().iterator();
+		Generic mutable;
+		while (it.hasNext()) {
+			mutable = it.next();
+			System.out.println("for mutable: " + mutable + " , generic: " + mutabilityCache.get(mutable));
+		}
+	}
+
+	public void showReverseMap() {
+		System.out.println("SHOW reverseMap");
+		Iterator<org.genericsystem.concurrency.Generic> it = reverseMap.keySet().iterator();
+		org.genericsystem.concurrency.Generic generic;
+		while (it.hasNext()) {
+			generic = it.next();
+			System.out.println("for generic: " + generic + " , mutable(s): ");
+			if (reverseMap.get(generic) != null) {
+				Iterator<Generic> it2 = reverseMap.get(generic).keySet().iterator();
+				Generic mutable;
+				while (it2.hasNext()) {
+					mutable = it2.next();
+					System.out.println("- " + mutable);
+				}
+			}
+		}
+	}
+
+	public void pickNewTs() {
+		getConcurrencyCache().pickNewTs();
+		Iterator<Entry<org.genericsystem.concurrency.Generic, IdentityHashMap<Generic, Boolean>>> itReverse = reverseMap.entrySet().iterator();
+
+		while (itReverse.hasNext()) {
+			Entry<org.genericsystem.concurrency.Generic, IdentityHashMap<Generic, Boolean>> genericConcurrency = itReverse.next();
+			if (!genericConcurrency.getKey().isAlive()) {
+				mutabilityCache.remove(genericConcurrency.getValue().keySet().iterator().next());
+				itReverse.remove();
+			}
+		}
+	}
 }

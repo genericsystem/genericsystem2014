@@ -1,5 +1,6 @@
 package org.genericsystem.mutability;
 
+import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test
@@ -80,5 +81,34 @@ public class UpdateTest extends AbstractTest {
 		assert car2.isAlive();
 		car2.update("Car3");
 		assert "Car3".equals(car.getValue());
+	}
+
+	public void test001_pickNewTs() {
+		Engine engine = new Engine();
+		Cache cache1 = engine.getCurrentCache();
+		Generic car = engine.addInstance("Car");
+		cache1.flush();
+		Cache cache2 = engine.newCache().start();
+		Generic car2 = engine.getInstances().get().filter(x -> "Car".equals(x.getValue())).findFirst().get();
+		assert car2.isAlive();
+		car2.remove();
+		assert !car2.isAlive();
+		cache2.flush();
+		cache1.start();
+		assert car.isAlive();
+		engine.getCurrentCache().showMutabilityCache();
+		engine.getCurrentCache().showReverseMap();
+		cache1.pickNewTs();
+		catchAndCheckCause(() -> !car.isAlive(), AliveConstraintViolationException.class);
+	}
+
+	public void test002_clear() {
+		Engine engine = new Engine();
+		Cache cache1 = engine.getCurrentCache();
+		Generic car = engine.addInstance("Car");
+		cache1.clear();
+		assert !car.isAlive();
+		catchAndCheckCause(() -> car.addInstance("myCar"), AliveConstraintViolationException.class);
+		;
 	}
 }

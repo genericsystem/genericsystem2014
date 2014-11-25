@@ -109,4 +109,8 @@ public class Engine extends Generic implements IRoot<Generic> {
 		((org.genericsystem.concurrency.Engine) unwrap(this)).discardWithException(exception);
 	}
 
+	public org.genericsystem.concurrency.Engine getConcurrencyEngine() {
+		return concurrencyEngine;
+	}
+
 }
