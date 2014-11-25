@@ -60,13 +60,14 @@ public class TransactionCache<T extends AbstractGeneric<T, V>, V extends Abstrac
 		return old;
 	}
 
+	@SuppressWarnings("unchecked")
 	T getByValue(V vertex) {
 		T result = reverseMap.get(vertex);
 		if (result == null) {
 			T meta = vertex.isMeta() ? null : getByValue(vertex.getMeta());
 			// TODO null is KK
-			result = ((AbstractGeneric<T, V>) engine).newT(null, meta, vertex.getSupers().stream().map(this::getByValue).collect(Collectors.toList()), vertex.getValue(), vertex.getComponents().stream().map(x -> vertex.equals(x) ? null : getByValue(x))
-					.collect(Collectors.toList()));
+			result = ((T) engine).newT(null, meta, vertex.getSupers().stream().map(this::getByValue).collect(Collectors.toList()), vertex.getValue(),
+					vertex.getComponents().stream().map(x -> vertex.equals(x) ? null : getByValue(x)).collect(Collectors.toList()));
 			put(result, vertex);
 		}
 		return result;
