@@ -1,7 +1,6 @@
 package org.genericsystem.concurrency;
 
 import java.util.HashSet;
-
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
@@ -48,8 +47,8 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 	}
 
 	@Override
-	public <subT extends T> subT plug(T generic) {
-		subT plug = super.plug(generic);
+	public T plug(T generic) {
+		T plug = super.plug(generic);
 		// unwrap(generic).getLifeManager().beginLife(getTs());
 		return plug;
 	}

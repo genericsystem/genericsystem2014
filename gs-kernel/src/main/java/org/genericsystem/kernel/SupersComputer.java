@@ -20,8 +20,8 @@ public class SupersComputer<T extends AbstractVertex<T>> extends LinkedHashSet<T
 
 	public SupersComputer(T root, T meta, List<T> overrides, Serializable value, List<T> components) {
 		Context<T> currentCache = root.getCurrentCache();
-		overrides.forEach(x -> currentCache.checker.checkIsAlive(x));
-		components.stream().filter(component -> component != null).forEach(x -> currentCache.checker.checkIsAlive(x));
+		overrides.forEach(x -> currentCache.getChecker().checkIsAlive(x));
+		components.stream().filter(component -> component != null).forEach(x -> currentCache.getChecker().checkIsAlive(x));
 		this.meta = meta;
 		this.overrides = overrides;
 		this.components = components;
