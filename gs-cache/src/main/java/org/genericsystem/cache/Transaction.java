@@ -92,7 +92,7 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 		return generic == null ? null : vertices.get(generic);
 	}
 
-	private T wrap(V vertex) {
+	protected T wrap(V vertex) {
 		return vertices.getByValue(vertex);
 	}
 }
