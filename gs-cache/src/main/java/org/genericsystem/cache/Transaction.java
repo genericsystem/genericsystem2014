@@ -18,6 +18,7 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 
 	private final Context<V> context;
 
+	@SuppressWarnings("unchecked")
 	protected Transaction(DefaultEngine<T, V> engine) {
 		this.engine = engine;
 		vertices = new TransactionCache<>(engine);
@@ -37,8 +38,7 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
-	public T plug(T generic) {
+	protected T plug(T generic) {
 		V meta = unwrap(generic.getMeta());
 		List<V> supers = generic.getSupers().stream().map(this::unwrap).collect(Collectors.toList());
 		List<V> components = generic.getComponents().stream().map(this::unwrap).collect(Collectors.toList());
@@ -53,8 +53,7 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 	}
 
 	// TODO remove should return a boolean.
-	@Override
-	public boolean unplug(T generic) {
+	protected boolean unplug(T generic) {
 		unwrap(generic).remove();
 		vertices.put(generic, null);
 		return true;

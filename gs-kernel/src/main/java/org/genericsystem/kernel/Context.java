@@ -31,8 +31,7 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 		return vertex != null && vertex.isAlive();
 	}
 
-	@Override
-	public T plug(T generic) {
+	protected T plug(T generic) {
 		T result = generic != generic.getMeta() ? indexInstance(generic.getMeta(), generic) : (T) generic;
 		assert result == generic;
 		generic.getSupers().forEach(superGeneric -> indexInheriting(superGeneric, generic));
@@ -41,8 +40,7 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 		return result;
 	}
 
-	@Override
-	public boolean unplug(T generic) {
+	protected boolean unplug(T generic) {
 		checker.check(false, false, generic);
 		boolean result = generic != generic.getMeta() ? unIndexInstance(generic.getMeta(), generic) : true;
 		if (!result)
