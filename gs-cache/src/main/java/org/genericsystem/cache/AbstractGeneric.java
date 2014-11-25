@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.cache.annotations.InstanceClass;
@@ -22,7 +21,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <subT extends T> subT plug() {
+	public T plug() {
 		return getCurrentCache().plug((T) this);
 	}
 
@@ -138,14 +137,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 		super.remove();
 	}
 
-	// // TODO KK should be protected
-	// @Override
-	// public T bindInstance(Class<?> clazz, boolean throwExistException, List<T> overrides, Serializable value, List<T> components) {
-	//
-	// clazz = specializeInstanceClass(clazz);
-	// super.bindInstance(clazz, throwExistException, overrides, value, components);
-	// }
-
 	@Override
 	public int hashCode() {
 		// TODO introduce : meta and composites length
@@ -165,6 +156,13 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 	@Override
 	protected Dependencies<T> getCompositesDependencies() {
 		throw new UnsupportedOperationException();
+	}
+
+	// TODO remove this and tests of adjustMeta in cache layer ???
+	@SuppressWarnings("unchecked")
+	@Override
+	protected T adjustMeta(Serializable value, T... components) {
+		return super.adjustMeta(value, components);
 	}
 
 }

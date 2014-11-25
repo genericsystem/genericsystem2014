@@ -1,7 +1,6 @@
 package org.genericsystem.kernel;
 
 import org.genericsystem.api.core.IVertex;
-import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,12 +17,6 @@ public interface DefaultAncestors<T extends AbstractVertex<T>> extends IVertex<T
 	@Override
 	default boolean isAlive() {
 		return equals(((T) this).getAlive());
-	}
-
-	@Override
-	default void checkIsAlive() {
-		if (!isAlive())
-			getRoot().discardWithException(new AliveConstraintViolationException(info()));
 	}
 
 	@Override

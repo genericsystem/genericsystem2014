@@ -73,11 +73,6 @@ public class Generic implements IVertex<Generic> {
 	}
 
 	@Override
-	public void checkIsAlive() {
-		unwrap(this).checkIsAlive();
-	}
-
-	@Override
 	public List<Generic> getComponents() {
 		return wrap(unwrap(this).getComponents());
 	}

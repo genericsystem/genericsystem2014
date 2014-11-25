@@ -15,17 +15,13 @@ public interface DefaultRoot<T extends AbstractVertex<T>> extends IRoot<T> {
 		throw new RollbackException(exception);
 	}
 
-	default void check(boolean isOnAdd, boolean isFlushTime, T t) throws RollbackException {
-		t.checkSystemConstraints(isOnAdd, isFlushTime);
-		t.checkConsistency();
-		t.checkConstraints(isOnAdd, isFlushTime);
-	}
-
+	@SuppressWarnings("unchecked")
 	@Override
 	default T getMetaAttribute() {
 		return ((T) this).getMeta(Statics.ATTRIBUTE_SIZE);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default T getMetaRelation() {
 		return ((T) this).getMeta(Statics.RELATION_SIZE);

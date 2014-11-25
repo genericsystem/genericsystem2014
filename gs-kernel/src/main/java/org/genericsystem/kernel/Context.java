@@ -11,8 +11,15 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 
 	private transient final DefaultRoot<T> root;
 
+	private final Checker<T> checker;
+
 	public Context(DefaultRoot<T> root) {
 		this.root = root;
+		checker = new Checker<T>(root);
+	}
+
+	protected Checker<T> getChecker() {
+		return checker;
 	}
 
 	@Override
@@ -25,19 +32,17 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 		return vertex != null && vertex.isAlive();
 	}
 
-	@Override
-	public <subT extends T> subT plug(T generic) {
+	protected T plug(T generic) {
 		T result = generic != generic.getMeta() ? indexInstance(generic.getMeta(), generic) : (T) generic;
 		assert result == generic;
 		generic.getSupers().forEach(superGeneric -> indexInheriting(superGeneric, generic));
 		generic.getComponents().stream().filter(component -> component != null).forEach(component -> indexComposite(component, generic));
-		getRoot().check(true, false, generic);
-		return (subT) result;
+		checker.check(true, false, generic);
+		return result;
 	}
 
-	@Override
-	public boolean unplug(T generic) {
-		getRoot().check(false, false, generic);
+	protected boolean unplug(T generic) {
+		checker.check(false, false, generic);
 		boolean result = generic != generic.getMeta() ? unIndexInstance(generic.getMeta(), generic) : true;
 		if (!result)
 			getRoot().discardWithException(new NotFoundException(generic.info()));
@@ -96,6 +101,7 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 	class ConvertMap extends HashMap<T, T> {
 		private static final long serialVersionUID = 5003546962293036021L;
 
+		@SuppressWarnings("unchecked")
 		T convert(T dependency) {
 			if (dependency.isAlive())
 				return dependency;

@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.CacheNoStartedException;
@@ -85,10 +84,9 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 		clear();
 	}
 
-	protected void checkConstraints() throws RollbackException {
-		DefaultEngine<T, V> engine = getRoot();
-		adds.forEach(x -> engine.check(true, true, x));
-		removes.forEach(x -> engine.check(false, true, x));
+	public void checkConstraints() throws RollbackException {
+		adds.forEach(x -> getChecker().check(true, true, x));
+		removes.forEach(x -> getChecker().check(false, true, x));
 	}
 
 	protected void rollbackWithException(Throwable exception) throws RollbackException {
@@ -136,13 +134,15 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 		return subContext;
 	}
 
+	// TODO Not public
 	@Override
-	public <subT extends T> subT plug(T generic) {
+	public T plug(T generic) {
 		T result = super.plug(generic);
 		simpleAdd(generic);
-		return (subT) result;
+		return result;
 	}
 
+	// TODO Not public
 	@Override
 	public boolean unplug(T generic) {
 		boolean result = super.unplug(generic);

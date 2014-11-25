@@ -5,12 +5,9 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 //TODO revisit this
 public class SupersComputer<T extends AbstractVertex<T>> extends LinkedHashSet<T> {
-	private static Logger log = LoggerFactory.getLogger(SupersComputer.class);
 
 	private static final long serialVersionUID = -1078004898524170057L;
 
@@ -22,8 +19,9 @@ public class SupersComputer<T extends AbstractVertex<T>> extends LinkedHashSet<T
 	private final Map<T, boolean[]> alreadyComputed = new HashMap<>();
 
 	public SupersComputer(T root, T meta, List<T> overrides, Serializable value, List<T> components) {
-		overrides.forEach(T::checkIsAlive);
-		components.stream().filter(component -> component != null).forEach(T::checkIsAlive);
+		Context<T> currentCache = root.getCurrentCache();
+		overrides.forEach(x -> currentCache.getChecker().checkIsAlive(x));
+		components.stream().filter(component -> component != null).forEach(x -> currentCache.getChecker().checkIsAlive(x));
 		this.meta = meta;
 		this.overrides = overrides;
 		this.components = components;
