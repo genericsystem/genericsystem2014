@@ -8,7 +8,7 @@ import org.testng.annotations.Test;
 public class MultiInheritanceTest extends AbstractTest {
 
 	public void multiInheritance() {
-		Generic engine = new Engine();
+		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic vehicleSizable = engine.addInstance("Sizable", vehicle);
 		Generic robot = engine.addInstance("Robot");
@@ -20,10 +20,13 @@ public class MultiInheritanceTest extends AbstractTest {
 		Generic transformerSizable = engine.addInstance("Sizable", transformer);
 		// assert transformer.getAttributes(engine).size() == 1 : transformer.getAttributes(engine);
 		assert transformer.getAttributes(engine).contains(transformerSizable);
+		assert !transformer.getAttributes(engine).contains(robotSizable);
+		assert !transformer.getAttributes(engine).contains(vehicleSizable);
+
 	}
 
 	public void multiInheritanceWithDiamond() {
-		Generic engine = new Engine();
+		Engine engine = new Engine();
 		Generic object = engine.addInstance("Object");
 		Generic objectSizable = engine.addInstance("Sizable", object);
 		Generic vehicle = engine.addInstance(Arrays.asList(object), "Vehicle");
@@ -43,14 +46,8 @@ public class MultiInheritanceTest extends AbstractTest {
 		Generic transformerSizable = engine.addInstance("Sizable", transformer);
 		// assert transformer.getAttributes(engine).size() == 1;
 		assert transformer.getAttributes(engine).contains(transformerSizable);
-	}
+		assert !transformer.getAttributes(engine).contains(robotSizable);
+		assert !transformer.getAttributes(engine).contains(vehicleSizable);
 
-	public void meta() {
-		Generic engine = new Engine();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic vehiclePower = engine.addInstance("Power", vehicle);
-		Generic percent = engine.addInstance("Percent");
-		Generic vehiclePercent = engine.addInstance(Arrays.asList(vehiclePower), "Power", vehicle, percent);
-		// assert vehicle.getAttributes(engine).size() == 0 : vehicle.getAttributes(engine);
 	}
 }

@@ -18,11 +18,9 @@ import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationEx
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 
 public abstract class AbstractVertex<T extends AbstractVertex<T>> implements DefaultVertex<T> {
-
 	private T meta;
 	private List<T> components;
 	private Serializable value;
-
 	protected List<T> supers;
 
 	@SuppressWarnings("unchecked")
@@ -113,7 +111,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		T adjustedMeta = adjustOrBuildMeta(value, componentList);
 		if (adjustedMeta.equalsRegardlessSupers(adjustedMeta, value, componentList) && Statics.areOverridesReached(overrides, adjustedMeta.getSupers()))
 			getRoot().discardWithException(new ExistsException("An equivalent instance already exists : " + adjustedMeta.info()));
-
 		T equivInstance = adjustedMeta.getDirectInstance(value, componentList);
 		if (equivInstance != null)
 			getRoot().discardWithException(new ExistsException("An equivalent instance already exists : " + equivInstance.info()));
@@ -126,7 +123,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		T adjustedMeta = adjustOrBuildMeta(value, componentList);
 		if (adjustedMeta.equalsRegardlessSupers(adjustedMeta, value, componentList) && Statics.areOverridesReached(overrides, adjustedMeta.getSupers()))
 			return adjustedMeta;
-
 		T equivInstance = adjustedMeta.getDirectEquivInstance(value, componentList);
 		if (equivInstance != null)
 			return equivInstance.equalsRegardlessSupers(adjustedMeta, value, componentList) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : equivInstance.update(overrides, value, components);
@@ -186,7 +182,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 				if (add(generic)) {// protect from loop
 					if (!generic.getInheritings().isEmpty() || !generic.getInstances().isEmpty())
 						getRoot().discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + generic + " has an inheritance or instance dependency"));
-
 					for (T composite : generic.getComposites())
 						if (!generic.equals(composite)) {
 							for (int componentPos = 0; componentPos < composite.getComponents().size(); componentPos++)
@@ -286,7 +281,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 					return false;
 		} else if (!getMeta().equals(meta))
 			return false;
-
 		List<T> componentsList = getComponents();
 		if (componentsList.size() != components.size())
 			return false;
@@ -303,15 +297,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 				return false;
 		} else if (!getMeta().genericEquals(service.getMeta()))
 			return false;
-
 		List<T> componentsList = getComponents();
 		if (componentsList.size() != service.getComponents().size())
 			return false;
-
 		for (int i = 0; i < componentsList.size(); i++)
 			if (!componentsGenericEquals(componentsList.get(i), service.getComponents().get(i)))
 				return false;
-
 		List<T> supersList = getSupers();
 		if (supersList.size() != service.getSupers().size())
 			return false;
@@ -339,7 +330,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 				return false;
 		} else if (!getMeta().equiv(service.getMeta()))
 			return false;
-
 		if (getComponents().size() != service.getComponents().size())
 			return false;
 		List<T> componentsList = getComponents();
@@ -361,7 +351,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 				return false;
 		} else if (!getMeta().equiv(meta))
 			return false;
-
 		List<T> componentsList = getComponents();
 		if (componentsList.size() != components.size())
 			return false;
@@ -445,7 +434,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	// }
 	// return true;
 	// }
-
 	@SuppressWarnings("unchecked")
 	private boolean componentsDepends(SingularsLazyCache singulars, List<T> subComponents, List<T> superComponents) {
 		int subIndex = 0;
@@ -486,7 +474,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		if (superMeta.isPropertyConstraintEnabled())
 			return !subComponents.equals(superComponents);
 		return Objects.equals(subValue, superValue);
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -537,5 +524,4 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	private Stream<T> getKeys(Class<?> propertyClass) {
 		return getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Objects.equals(((AxedPropertyClass) x.getValue()).getClazz(), propertyClass));
 	}
-
 }
