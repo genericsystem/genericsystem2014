@@ -77,14 +77,14 @@ public class UpdateWithCacheTest extends AbstractTest {
 		Generic vehicleUpdate = vehicle.update("VehicleUpdate");
 
 		assert vehicleUpdate.isAlive();
-		assert !vehicle.isAlive();
+		assert vehicle.isAlive();
 		assert engine.getInstances().contains(vehicleUpdate);
 		assert engine.getInstances().contains(vehicleUpdate.getInheritings().first());
 		assert engine.getInstances().size() == 2;
 
-		assert !car.isAlive();
-		assert !power.isAlive();
-		assert !myCar.isAlive();
+		assert car.isAlive();
+		assert power.isAlive();
+		assert myCar.isAlive();
 
 		assert vehicleUpdate.getInheritings().get().allMatch(x -> "Car".equals(x.getValue()));
 		assert vehicleUpdate.getInheritings().get().allMatch(x -> x.getInstances().get().allMatch(y -> "myCar".equals(y.getValue())));

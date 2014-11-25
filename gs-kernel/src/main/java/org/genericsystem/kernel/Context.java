@@ -105,7 +105,4 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 		return dependencies.remove(dependency);
 	}
 
-	protected void triggersDependencyUpdate(T oldDependency, T newDependency) {
-	}
-
 }

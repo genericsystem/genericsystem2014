@@ -8,10 +8,10 @@ import java.util.Map.Entry;
 
 import org.genericsystem.api.core.IContext;
 
-public class Cache<T extends org.genericsystem.concurrency.Generic> implements IContext<Generic>, org.genericsystem.concurrency.Cache.Listener<T> {
+public class Cache implements IContext<Generic>, org.genericsystem.concurrency.Cache.Listener<org.genericsystem.concurrency.Generic> {
 
 	private Engine engine;
-	private org.genericsystem.concurrency.Cache<?, ?> concurrencyCache;
+	private org.genericsystem.concurrency.Cache<org.genericsystem.concurrency.Generic, ?> concurrencyCache;
 
 	private HashMap<Generic, org.genericsystem.concurrency.Generic> mutabilityCache = new HashMap<>();
 	private Map<org.genericsystem.concurrency.Generic, IdentityHashMap<Generic, Boolean>> reverseMap = new HashMap<>();
@@ -20,7 +20,7 @@ public class Cache<T extends org.genericsystem.concurrency.Generic> implements I
 		this.engine = engine;
 		put(engine, concurrencyEngine);
 		this.concurrencyCache = concurrencyEngine.newCache();
-		concurrencyCache.setListener(this);
+		concurrencyCache.getBuilder().setListener(this);
 	}
 
 	public Engine getRoot() {
@@ -84,7 +84,7 @@ public class Cache<T extends org.genericsystem.concurrency.Generic> implements I
 	}
 
 	@Override
-	public void triggersDependencyUpdate(T oldDependency, T newDependency) {
+	public void triggersDependencyUpdate(org.genericsystem.concurrency.Generic oldDependency, org.genericsystem.concurrency.Generic newDependency) {
 		put(getByValue(oldDependency), newDependency);
 	}
 

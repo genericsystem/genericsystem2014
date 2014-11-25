@@ -14,6 +14,7 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 
 	protected Cache(DefaultContext<T> subContext) {
 		super(subContext);
+		builder = new Builder<T, V>(getRoot());
 	}
 
 	public long getTs() {
@@ -24,6 +25,11 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 	@Override
 	public DefaultEngine<T, V> getRoot() {
 		return (DefaultEngine<T, V>) super.getRoot();
+	}
+
+	@Override
+	public Builder<T, V> getBuilder() {
+		return (Builder<T, V>) super.getBuilder();
 	}
 
 	public void pickNewTs() throws RollbackException {
@@ -84,19 +90,4 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 		rollbackWithException(cause);
 	}
 
-	@Override
-	protected void triggersDependencyUpdate(T oldDependency, T newDependency) {
-		listener.triggersDependencyUpdate(oldDependency, newDependency);
-	}
-
-	public void setListener(Listener listener) {
-		this.listener = listener;
-	}
-
-	private Listener listener;
-
-	public static interface Listener<T> {
-		void triggersDependencyUpdate(T oldDependency, T newDependency);
-
-	}
 }

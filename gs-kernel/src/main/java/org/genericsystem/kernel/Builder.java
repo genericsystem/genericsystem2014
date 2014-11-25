@@ -124,7 +124,6 @@ public class Builder<T extends AbstractVertex<T>> {
 	}
 
 	protected void triggersDependencyUpdate(T oldDependency, T newDependency) {
-
 	}
 
 }

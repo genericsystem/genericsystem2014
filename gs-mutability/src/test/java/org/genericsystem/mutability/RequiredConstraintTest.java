@@ -3,7 +3,6 @@ package org.genericsystem.mutability;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.genericsystem.api.exception.RequiredConstraintViolationException;
 import org.genericsystem.kernel.Statics;
 import org.testng.annotations.Test;
 
@@ -77,38 +76,6 @@ public class RequiredConstraintTest extends AbstractTest {
 		assert !power.isRequiredConstraintEnabled(Statics.BASE_POSITION) : power.getHolders(engine).get().map(x -> x.info()).collect(Collectors.toList()).toString();
 	}
 
-	public void test002_removeAttribute() {
-		Engine engine = new Engine();
-		Generic car = engine.addInstance("Car");
-		Generic power = car.addAttribute("Power");
-		power.enableRequiredConstraint(Statics.BASE_POSITION);
-		Generic myBmw = car.addInstance("myBmw");
-		Generic v236 = myBmw.addHolder(power, 236);
-		assert power.isRequiredConstraintEnabled(Statics.BASE_POSITION);
-		Cache cache = engine.getCurrentCache();
-		assert myBmw.getHolders(power).contains(v236);
-		cache.flush();
-		v236.remove();
-		catchAndCheckCause(() -> cache.flush(), RequiredConstraintViolationException.class);
-
-	}
-
-	public void test003_removeAttribute_inherintings() {
-		Engine engine = new Engine();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic car = engine.addInstance(vehicle, "Car");
-		Generic power = vehicle.addAttribute("Power");
-
-		power.enableRequiredConstraint(Statics.BASE_POSITION);
-		Generic myBmw = car.addInstance("myBmw");
-		Generic v236 = myBmw.addHolder(power, 236);
-		assert power.isRequiredConstraintEnabled(Statics.BASE_POSITION);
-		Cache cache = engine.getCurrentCache();
-		// power.getComponents().stream().forEach(x -> System.out.println(x.detailedInfo()));
-		cache.flush();
-		v236.remove();
-		catchAndCheckCause(() -> cache.flush(), RequiredConstraintViolationException.class);
-	}
 	//
 	// public void test004_removeAttr() {
 	// Engine engine = new Engine();
