@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.CacheNoStartedException;
@@ -40,8 +41,9 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 	}
 
 	protected Cache(DefaultContext<T> subContext) {
-		super(subContext.getRoot());
+		super(subContext.getRoot(), null);
 		this.subContext = subContext;
+		builder = new Builder<T, V>(getRoot());
 		clear();
 	}
 
@@ -84,7 +86,7 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 		clear();
 	}
 
-	public void checkConstraints() throws RollbackException {
+	protected void checkConstraints() throws RollbackException {
 		adds.forEach(x -> getChecker().check(true, true, x));
 		removes.forEach(x -> getChecker().check(false, true, x));
 	}

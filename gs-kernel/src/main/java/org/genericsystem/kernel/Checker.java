@@ -16,7 +16,7 @@ import org.genericsystem.kernel.systemproperty.constraints.Constraint;
 
 public class Checker<T extends AbstractVertex<T>> {
 
-	private transient final DefaultRoot<T> root;
+	private final DefaultRoot<T> root;
 
 	public Checker(DefaultRoot<T> root) {
 		this.root = root;

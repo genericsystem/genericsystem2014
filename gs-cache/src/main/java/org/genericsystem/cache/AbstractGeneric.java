@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.cache.annotations.InstanceClass;
 import org.genericsystem.cache.annotations.SystemGeneric;
 import org.genericsystem.kernel.Dependencies;
 
@@ -83,36 +83,10 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 	}
 
 	@Override
-	protected T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> composites) {
-		return getRoot().getOrBuildT(clazz, meta, supers, value, composites);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	protected T newT(Class<?> clazz) {
-		InstanceClass metaAnnotation = getClass().getAnnotation(InstanceClass.class);
-		if (metaAnnotation != null)
-			if (clazz == null || clazz.isAssignableFrom(metaAnnotation.value()))
-				clazz = metaAnnotation.value();
-			else if (!metaAnnotation.value().isAssignableFrom(clazz))
-				getRoot().discardWithException(new InstantiationException(clazz + " must extends " + metaAnnotation.value()));
-		T newT = newT();// Instantiates T in all cases...
-
-		if (clazz == null || clazz.isAssignableFrom(newT.getClass()))
-			return newT;
-		if (newT.getClass().isAssignableFrom(clazz))
-			try {
-				return (T) clazz.newInstance();
-			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
-				getRoot().discardWithException(e);
-			}
-		else
-			getRoot().discardWithException(new InstantiationException(clazz + " must extends " + newT.getClass()));
-		return null; // Not reached
-	}
-
-	@Override
 	protected abstract T newT();
+
+	@Override
+	protected abstract T[] newTArray(int dim);
 
 	@Override
 	protected T init(T meta, List<T> supers, Serializable value, List<T> composites) {

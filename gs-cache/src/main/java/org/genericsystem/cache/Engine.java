@@ -28,7 +28,6 @@ public class Engine extends Generic implements DefaultEngine<Generic, Vertex> {
 		metaAttribute.disableReferentialIntegrity(Statics.BASE_POSITION);
 		for (Class<?> clazz : userClasses)
 			systemCache.set(clazz);
-
 		cache.flush();
 	}
 
