@@ -41,7 +41,7 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 	}
 
 	protected Cache(DefaultContext<T> subContext) {
-		super(subContext.getRoot(), null);
+		super(subContext.getRoot());
 		this.subContext = subContext;
 		builder = new Builder<T, V>(getRoot());
 		clear();
