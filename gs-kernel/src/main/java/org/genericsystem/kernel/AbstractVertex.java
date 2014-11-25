@@ -10,7 +10,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
@@ -82,9 +81,9 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	protected T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
 		Context<T> currentCache = getCurrentCache();
 		if (meta != null)
-			currentCache.checker.checkIsAlive(meta);
-		supers.forEach(x -> currentCache.checker.checkIsAlive(x));
-		components.stream().filter(component -> component != null).forEach(x -> currentCache.checker.checkIsAlive(x));
+			currentCache.getChecker().checkIsAlive(meta);
+		supers.forEach(x -> currentCache.getChecker().checkIsAlive(x));
+		components.stream().filter(component -> component != null).forEach(x -> currentCache.getChecker().checkIsAlive(x));
 		return newT(clazz).init(meta, supers, value, components);
 	}
 
@@ -515,7 +514,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 					if (singulars.get(subIndex))
 						return true;
 					subIndex++;
-					getCurrentCache().checker.checkIsAlive((T) this);
+					getCurrentCache().getChecker().checkIsAlive((T) this);
 					continue loop;
 				}
 			}
@@ -580,8 +579,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {
-	}
+	public static class SystemMap {}
 
 	private Stream<T> getKeys() {
 		T map = getMap();

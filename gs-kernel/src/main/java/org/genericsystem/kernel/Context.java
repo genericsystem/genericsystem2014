@@ -3,7 +3,6 @@ package org.genericsystem.kernel;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.NotFoundException;
 
@@ -11,11 +10,15 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 
 	private transient final DefaultRoot<T> root;
 
-	final Checker<T> checker;
+	private final Checker<T> checker;
 
 	public Context(DefaultRoot<T> root) {
 		this.root = root;
 		checker = new Checker<T>(root);
+	}
+
+	protected Checker<T> getChecker() {
+		return checker;
 	}
 
 	@Override
