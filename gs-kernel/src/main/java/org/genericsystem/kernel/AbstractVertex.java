@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
@@ -531,7 +532,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {}
+	public static class SystemMap {
+	}
 
 	private Stream<T> getKeys() {
 		T map = getMap();

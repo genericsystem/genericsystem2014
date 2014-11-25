@@ -60,7 +60,6 @@ public class TransactionCache<T extends AbstractGeneric<T, V>, V extends Abstrac
 		return old;
 	}
 
-	@SuppressWarnings("unchecked")
 	T getByValue(V vertex) {
 		T result = reverseMap.get(vertex);
 		if (result == null) {

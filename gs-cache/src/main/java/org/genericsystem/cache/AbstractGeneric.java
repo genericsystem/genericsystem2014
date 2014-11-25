@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.cache.annotations.SystemGeneric;
@@ -83,6 +84,9 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 
 	@Override
 	protected abstract T newT();
+
+	@Override
+	protected abstract T[] newTArray(int dim);
 
 	@Override
 	protected T init(T meta, List<T> supers, Serializable value, List<T> composites) {

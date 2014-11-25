@@ -27,10 +27,10 @@ public class Builder<T extends AbstractVertex<T>> {
 			checker.checkIsAlive(meta);
 		supers.forEach(x -> checker.checkIsAlive(x));
 		components.stream().filter(component -> component != null).forEach(x -> checker.checkIsAlive(x));
-		return newT(clazz).init(meta, supers, value, components);
+		return newT(clazz, meta).init(meta, supers, value, components);
 	}
 
-	protected T newT(Class<?> clazz) {
+	public T newT(Class<?> clazz, T meta) {
 		return newT();
 	}
 
