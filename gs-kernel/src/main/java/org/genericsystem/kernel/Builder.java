@@ -21,6 +21,16 @@ public class Builder<T extends AbstractVertex<T>> {
 		return root;
 	}
 
+	@SuppressWarnings("unchecked")
+	protected T newT() {
+		return ((AbstractVertex<T>) root).newT();
+	}
+
+	@SuppressWarnings("unchecked")
+	protected T[] newTArray(int dim) {
+		return ((AbstractVertex<T>) root).newTArray(dim);
+	}
+
 	public T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
 		Checker<T> checker = root.getCurrentCache().getChecker();
 		if (meta != null)
@@ -30,16 +40,26 @@ public class Builder<T extends AbstractVertex<T>> {
 		return newT(clazz, meta).init(meta, supers, value, components);
 	}
 
-	public T newT(Class<?> clazz, T meta) {
+	protected T newT(Class<?> clazz, T meta) {
 		return newT();
 	}
 
-	protected T newT() {
-		return ((AbstractVertex<T>) root).newT();
+	@SuppressWarnings("unchecked")
+	public T getOrNewT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
+		if (meta == null) {
+			T adjustedMeta = ((AbstractVertex<T>) root).adjustMeta(components.size());
+			return adjustedMeta.getComponents().size() == components.size() ? adjustedMeta : newT(clazz, meta, supers, value, components);
+		} else {
+			T instance = meta.getDirectInstance(value, components);
+			return instance != null ? instance : newT(clazz, meta, supers, value, components);
+		}
 	}
 
-	protected T[] newTArray(int dim) {
-		return ((AbstractVertex<T>) root).newTArray(dim);
+	@SuppressWarnings("unchecked")
+	T getOrBuild(Class<?> clazz, T adjustMeta, List<T> overrides, Serializable value, List<T> components) {
+		List<T> supers = new ArrayList<>(new SupersComputer<>((T) getRoot(), adjustMeta, overrides, value, components));// TODO Order supers
+		checkOverridesAreReached(overrides, supers);// TODO system constraints
+		return getOrNewT(clazz, adjustMeta, supers, value, components).plug();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -49,20 +69,20 @@ public class Builder<T extends AbstractVertex<T>> {
 		return newT(clazz, adjustMeta, supers, value, components).plug();
 	}
 
-	void checkOverridesAreReached(List<T> overrides, List<T> supers) {
-		if (!Statics.areOverridesReached(overrides, supers))
-			getRoot().discardWithException(new IllegalStateException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
+	@SuppressWarnings("unchecked")
+	T getOrReBuildMeta(int dim) {
+		T adjustedMeta = ((T) getRoot()).adjustMeta(dim);
+		return adjustedMeta.getComponents().size() == dim ? adjustedMeta : reBuildMeta(adjustedMeta, dim);
 	}
 
 	@SuppressWarnings("unchecked")
-	T buildMeta(T adjustedMeta, int dim) {
+	T reBuildMeta(T adjustedMeta, int dim) {
 		T root = (T) getRoot();
 		List<T> components = new ArrayList<>();
 		for (int i = 0; i < dim; i++)
 			components.add(root);
 		List<T> supers = Collections.singletonList(adjustedMeta);
 		return rebuildAll(null, () -> newT(null, null, supers, root.getValue(), components).plug(), adjustedMeta.computePotentialDependencies(supers, root.getValue(), components));
-
 	}
 
 	T rebuildAll(T toRebuild, Supplier<T> rebuilder, LinkedHashSet<T> dependenciesToRebuild) {
@@ -75,22 +95,26 @@ public class Builder<T extends AbstractVertex<T>> {
 		return build;
 	}
 
-	class ConvertMap extends HashMap<T, T> {
+	private void checkOverridesAreReached(List<T> overrides, List<T> supers) {
+		if (!Statics.areOverridesReached(overrides, supers))
+			getRoot().discardWithException(new IllegalStateException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
+	}
+
+	private class ConvertMap extends HashMap<T, T> {
 		private static final long serialVersionUID = 5003546962293036021L;
 
-		T convert(T dependency) {
+		private T convert(T dependency) {
 			if (dependency.isAlive())
 				return dependency;
 			T newDependency = get(dependency);
 			if (newDependency == null) {
 				if (dependency.isMeta())
-					newDependency = ((T) root).setMeta(dependency.getComponents().size());
+					newDependency = getOrReBuildMeta(dependency.getComponents().size());
 				else {
 					List<T> overrides = dependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
 					List<T> components = dependency.getComponents().stream().map(x -> x != null ? convert(x) : null).collect(Collectors.toList());
 					T adjustMeta = convert(dependency.getMeta()).adjustMeta(dependency.getValue(), components);
-					T equivInstance = adjustMeta.getDirectInstance(dependency.getValue(), components);
-					newDependency = equivInstance != null ? equivInstance : build(dependency.getClass(), adjustMeta, overrides, dependency.getValue(), components);
+					newDependency = getOrBuild(dependency.getClass(), adjustMeta, overrides, dependency.getValue(), components).plug();
 				}
 				put(dependency, newDependency);
 				triggersDependencyUpdate(dependency, newDependency);

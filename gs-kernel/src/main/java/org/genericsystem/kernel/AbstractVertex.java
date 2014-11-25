@@ -102,10 +102,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	public T update(List<T> overrides, Serializable newValue, T... newComponents) {
 		List<T> newComponentsList = Arrays.asList(newComponents);
 		T adjustMeta = getMeta().adjustOrBuildMeta(newValue, newComponentsList);
-		return getCurrentCache().getBuilder().rebuildAll((T) this, () -> {
-			T equivInstance = adjustMeta.getDirectInstance(newValue, newComponentsList);
-			return equivInstance != null ? equivInstance : getCurrentCache().getBuilder().build(getClass(), adjustMeta, overrides, newValue, newComponentsList);
-		}, computeDependencies());
+		return getCurrentCache().getBuilder().rebuildAll((T) this, () -> getCurrentCache().getBuilder().getOrBuild(getClass(), adjustMeta, overrides, newValue, newComponentsList), computeDependencies());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -138,10 +135,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
 	}
 
-	@SuppressWarnings("unchecked")
 	public T setMeta(int dim) {
-		T adjustedMeta = ((T) getRoot()).adjustMeta(dim);
-		return adjustedMeta.getComponents().size() == dim ? adjustedMeta : getCurrentCache().getBuilder().buildMeta(adjustedMeta, dim);
+		return getCurrentCache().getBuilder().getOrReBuildMeta(dim);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -214,13 +209,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		}.visit((T) this);
 	}
 
-	@SuppressWarnings("unchecked")
 	T adjustOrBuildMeta(Serializable value, List<T> components) {
-		if (isMeta()) {
-			T adjustedMeta = ((T) getRoot()).adjustMeta(components.size());
-			return adjustedMeta.getComponents().size() == components.size() ? adjustedMeta : getCurrentCache().getBuilder().buildMeta(adjustedMeta, components.size());
-		}
-		return adjustMeta(value, components);
+		return isMeta() ? getCurrentCache().getBuilder().getOrReBuildMeta(components.size()) : adjustMeta(value, components);
 	}
 
 	protected T adjustMeta(Serializable value, @SuppressWarnings("unchecked") T... components) {

@@ -187,13 +187,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 					T meta = loadAncestor(vertexMap);
 					List<T> supers = loadAncestors(vertexMap);
 					List<T> components = loadAncestors(vertexMap);
-					if (meta == null) {
-						T adjustedMeta = ((AbstractVertex<T>) root).adjustMeta(components.size());
-						vertexMap.put(ts, adjustedMeta.getComponents().size() == components.size() ? adjustedMeta : root.getCurrentCache().getBuilder().newT(clazz, meta, supers, value, components).plug());
-					} else {
-						T instance = meta.getDirectInstance(value, components);
-						vertexMap.put(ts, instance != null ? instance : root.getCurrentCache().getBuilder().newT(clazz, meta, supers, value, components).plug());
-					}
+					vertexMap.put(ts, root.getCurrentCache().getBuilder().getOrNewT(clazz, meta, supers, value, components).plug());
 				}
 		}
 
