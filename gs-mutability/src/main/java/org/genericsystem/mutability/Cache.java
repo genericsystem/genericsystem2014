@@ -42,19 +42,16 @@ public class Cache<T extends org.genericsystem.concurrency.Generic> implements I
 			reverseResult = new IdentityHashMap<>();
 		if (oldGeneric != null) {
 			IdentityHashMap<Generic, Boolean> reverseOldResult = reverseMap.get(oldGeneric);
-
 			Iterator<Generic> it = reverseOldResult.keySet().iterator();
 			while (it.hasNext())
 				mutabilityCache.put(it.next(), generic);
 			reverseResult.putAll(reverseOldResult);
 			// reverseMap.put(oldGeneric, null);
-			System.out.println("Remove: " + oldGeneric);
 			reverseMap.remove(oldGeneric);
 		} else
 			mutabilityCache.put(mutable, generic);
 		reverseResult.put(mutable, true);
 		reverseMap.put(generic, reverseResult);
-
 	}
 
 	protected org.genericsystem.concurrency.Generic get(Generic mutable) {
