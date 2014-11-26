@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
-import org.genericsystem.api.exception.CrossEnginesAssignementsException;
 import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
@@ -363,12 +362,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		if (!getMeta().isPropertyConstraintEnabled())
 			return Objects.equals(getValue(), value);
 		return true;
-	}
-
-	// TODO move this check in system constraints!
-	private void checkSameEngine(List<T> generics) {
-		if (generics.stream().anyMatch(generic -> generic != null && !generic.getRoot().equals(getRoot())))
-			getRoot().discardWithException(new CrossEnginesAssignementsException());
 	}
 
 	@SuppressWarnings("unchecked")

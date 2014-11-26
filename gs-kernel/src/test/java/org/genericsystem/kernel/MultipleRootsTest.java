@@ -2,7 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.Arrays;
 
-import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
+import org.genericsystem.api.exception.CrossEnginesAssignementsException;
 import org.testng.annotations.Test;
 
 @Test
@@ -29,7 +29,7 @@ public class MultipleRootsTest extends AbstractTest {
 		Root engine2 = new Root("SecondEngine");
 		Vertex car = engine1.addInstance("Car");
 		Vertex car2 = engine2.addInstance("Car");
-		catchAndCheckCause(() -> engine1.addInstance("Power", car, car2), MetaRuleConstraintViolationException.class);
+		catchAndCheckCause(() -> engine1.addInstance("Power", car, car2), CrossEnginesAssignementsException.class);
 	}
 
 	public void test003_addInstance_attribute() {
@@ -37,15 +37,15 @@ public class MultipleRootsTest extends AbstractTest {
 		Root engine2 = new Root("SecondEngine");
 		Vertex car = engine1.addInstance("Car");
 		engine2.addInstance("Car");
-		catchAndCheckCause(() -> engine2.addInstance("Power", car), MetaRuleConstraintViolationException.class);
+		catchAndCheckCause(() -> engine2.addInstance("Power", car), CrossEnginesAssignementsException.class);
 	}
 
 	public void test004_addInstance_attribute() {
 		Root engine1 = new Root("FirstEngine");
 		Root engine2 = new Root("SecondEngine");
-		Vertex car = engine1.addInstance("Car");
-		engine2.addInstance("Car");
-		catchAndCheckCause(() -> engine2.addInstance("Power", car), MetaRuleConstraintViolationException.class);
+		Vertex car = engine1.addInstance("Car1");
+		engine2.addInstance("Car2");
+		catchAndCheckCause(() -> engine2.addInstance("Power", car), CrossEnginesAssignementsException.class);
 	}
 
 	public void test005_addInstance_overrides() {

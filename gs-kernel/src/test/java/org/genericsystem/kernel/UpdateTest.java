@@ -93,7 +93,6 @@ public class UpdateTest extends AbstractTest {
 		Vertex myCar = car.addInstance("MyCar");
 		Vertex v233 = myCar.addHolder(power, 233);
 		Vertex powerType = root.addInstance("PowerType");
-
 		catchAndCheckCause(() -> power.update("carPower", powerType), MetaRuleConstraintViolationException.class);
 	}
 
