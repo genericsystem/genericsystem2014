@@ -26,7 +26,20 @@ public class SupersComputer<T extends AbstractVertex<T>> extends LinkedHashSet<T
 		this.overrides = overrides;
 		this.components = components;
 		this.value = value;
-		visit(root);
+		if (meta == null)
+			selectSuper(root.adjustMeta(components.size()));
+		else
+			selectSuper(meta);
+
+		// visit(root);
+	}
+
+	private void selectSuper(T candidate) {
+		if (candidate.getSupers().size() == 0)
+			visit(candidate);
+		else
+			for (T superOfCandidate : candidate.getSupers())
+				selectSuper(superOfCandidate);
 	}
 
 	private boolean[] visit(T candidate) {
