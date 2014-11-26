@@ -2,7 +2,7 @@ package org.genericsystem.concurrency;
 
 import java.util.Arrays;
 
-import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
+import org.genericsystem.api.exception.CrossEnginesAssignementsException;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;
@@ -32,7 +32,7 @@ public class MultipleRootsTest extends AbstractTest {
 		Engine engine2 = new Engine("SecondEngine");
 		engine1.addInstance("Car");
 		Generic car2 = engine2.addInstance("Car");
-		catchAndCheckCause(() -> engine1.addInstance("Power", car2), MetaRuleConstraintViolationException.class);
+		catchAndCheckCause(() -> engine1.addInstance("Power", car2), CrossEnginesAssignementsException.class);
 	}
 
 	public void test003_addInstance_attribute() {
@@ -40,7 +40,7 @@ public class MultipleRootsTest extends AbstractTest {
 		Engine engine2 = new Engine("SecondEngine");
 		Generic car = engine1.addInstance("Car");
 		engine2.addInstance("Car");
-		catchAndCheckCause(() -> engine2.addInstance("Power", car), MetaRuleConstraintViolationException.class);
+		catchAndCheckCause(() -> engine2.addInstance("Power", car), CrossEnginesAssignementsException.class);
 	}
 
 	public void test004_addInstance_attribute() {
@@ -48,7 +48,7 @@ public class MultipleRootsTest extends AbstractTest {
 		Engine engine2 = new Engine("SecondEngine");
 		Generic car = engine1.addInstance("Car");
 		engine2.addInstance("Car");
-		catchAndCheckCause(() -> engine2.addInstance("Power", car), MetaRuleConstraintViolationException.class);
+		catchAndCheckCause(() -> engine2.addInstance("Power", car), CrossEnginesAssignementsException.class);
 	}
 
 	public void test005_addInstance_overrides() {
