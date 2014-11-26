@@ -14,6 +14,7 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 
 	protected Cache(DefaultContext<T> subContext) {
 		super(subContext);
+		builder = new Builder<>(getRoot());
 	}
 
 	public long getTs() {
@@ -26,10 +27,15 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 		return (DefaultEngine<T, V>) super.getRoot();
 	}
 
+	@Override
+	public Builder<T, V> getBuilder() {
+		return (Builder<T, V>) super.getBuilder();
+	}
+
 	public void pickNewTs() throws RollbackException {
-		if (getSubContext() instanceof Cache) {
+		if (getSubContext() instanceof Cache)
 			((Cache<T, V>) getSubContext()).pickNewTs();
-		} else {
+		else {
 			long ts = getTs();
 			subContext = new Transaction<>(getRoot());
 			assert getTs() > ts;

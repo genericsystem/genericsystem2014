@@ -41,7 +41,7 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 	}
 
 	protected Cache(DefaultContext<T> subContext) {
-		super(subContext.getRoot(), null);
+		super(subContext.getRoot());
 		this.subContext = subContext;
 		builder = new Builder<T, V>(getRoot());
 		clear();
@@ -201,5 +201,9 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 	@Override
 	protected boolean unIndexComposite(T generic, T composite) {
 		return unIndex(((Dependencies<T>) getDependencies(compositesDependencies, () -> subContext.getComposites(generic).get(), generic)), composite);
+	}
+
+	public static interface Listener<X> {
+		void triggersDependencyUpdate(X oldDependency, X newDependency);
 	}
 }

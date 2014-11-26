@@ -30,5 +30,4 @@ public abstract class AbstractVertex<V extends AbstractVertex<V>> extends org.ge
 	protected V plug() {
 		return super.plug();
 	}
-
 }
