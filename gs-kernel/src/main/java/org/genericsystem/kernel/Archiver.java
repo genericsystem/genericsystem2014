@@ -183,11 +183,10 @@ public class Archiver<T extends AbstractVertex<T>> {
 				if (inputStream.readBoolean()) {
 					long ts = inputStream.readLong();
 					Serializable value = (Serializable) inputStream.readObject();
-					Class<?> clazz = (Class<?>) inputStream.readObject();
 					T meta = loadAncestor(vertexMap);
 					List<T> supers = loadAncestors(vertexMap);
 					List<T> components = loadAncestors(vertexMap);
-					vertexMap.put(ts, root.getCurrentCache().getBuilder().getOrNewT(clazz, meta, supers, value, components).plug());
+					vertexMap.put(ts, root.getCurrentCache().getBuilder().getOrNewT(null, meta, supers, value, components).plug());
 				}
 		}
 
@@ -276,7 +275,6 @@ public class Archiver<T extends AbstractVertex<T>> {
 		private void writeDependency(T dependency) throws IOException {
 			outputStream.writeLong(getTs(dependency));
 			outputStream.writeObject(dependency.getValue());
-			outputStream.writeObject(dependency.getClass());
 			writeAncestor(dependency.getMeta());
 			writeAncestors(dependency.getSupers());
 			writeAncestors(dependency.getComponents());
