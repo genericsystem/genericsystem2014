@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import org.genericsystem.cache.annotations.SystemGeneric;
 import org.genericsystem.kernel.Archiver.WriterLoaderManager.DependenciesOrder;
 import org.genericsystem.kernel.Statics;
 import org.testng.annotations.Test;
@@ -19,6 +20,37 @@ public class PersistenceTest extends AbstractTest {
 		Engine root = new Engine(Statics.ENGINE_VALUE, snapshot);
 		root.close();
 		compareGraph(root.unwrap(), new Engine(Statics.ENGINE_VALUE, snapshot).unwrap());
+	}
+
+	public void testAnnotType() {
+		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
+		Engine root = new Engine(Statics.ENGINE_VALUE, snapshot, Vehicle.class);
+		root.getCurrentCache().flush();
+		root.close();
+		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot, Vehicle.class);
+		compareGraph(root.unwrap(), engine.unwrap());
+		assert engine.find(Vehicle.class) instanceof Vehicle : engine.find(Vehicle.class).info();
+	}
+
+	public void testAnnotType2() {
+		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
+		Engine root = new Engine(Statics.ENGINE_VALUE, snapshot, Vehicle.class);
+		root.getCurrentCache().flush();
+		root.close();
+
+		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
+		compareGraph(root.unwrap(), engine.unwrap());
+		engine.getCurrentCache().flush();
+		engine.close();
+
+		Engine engine2 = new Engine(Statics.ENGINE_VALUE, snapshot, Vehicle.class);
+		compareGraph(engine.unwrap(), engine2.unwrap());
+
+		assert engine2.find(Vehicle.class) instanceof Vehicle : engine2.find(Vehicle.class).info();
+	}
+
+	@SystemGeneric
+	public static class Vehicle extends Generic {
 	}
 
 	public void testType() {
