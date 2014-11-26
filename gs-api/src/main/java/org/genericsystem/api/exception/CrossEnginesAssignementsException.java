@@ -4,8 +4,8 @@ public class CrossEnginesAssignementsException extends ConstraintViolationExcept
 
 	private static final long serialVersionUID = 1L;
 
-	public CrossEnginesAssignementsException() {
-		super("");
+	public CrossEnginesAssignementsException(String msg) {
+		super(msg);
 	}
 
 }

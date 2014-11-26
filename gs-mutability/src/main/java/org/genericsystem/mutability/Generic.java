@@ -31,7 +31,6 @@ public class Generic implements IVertex<Generic> {
 			engine.getConcurrencyEngine().discardWithException(new AliveConstraintViolationException("Your mutable is not still available. No generic matched"));
 			return null;
 		}
-
 	}
 
 	protected List<Generic> wrap(List<org.genericsystem.concurrency.Generic> listT) {

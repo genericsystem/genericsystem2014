@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.ConstraintViolationException;
+import org.genericsystem.api.exception.CrossEnginesAssignementsException;
 import org.genericsystem.api.exception.GetInstanceConstraintViolationException;
 import org.genericsystem.api.exception.MetaLevelConstraintViolationException;
 import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
@@ -47,12 +48,23 @@ public class Checker<T extends AbstractVertex<T>> {
 			getRoot().discardWithException(new AliveConstraintViolationException(vertex.info()));
 		if (!isOnAdd)
 			checkDependenciesAreEmpty(vertex);
+		checkSameEngine(vertex);
 		checkDependsMetaComponents(vertex);
 		checkSupers(vertex);
 		checkDependsSuperComponents(vertex);
 		checkLevel(vertex);
 		checkLevelComponents(vertex);
 		checkGetInstance(vertex);
+	}
+
+	private void checkSameEngine(T vertex) {
+		for (int pos = 0; pos < vertex.getComponents().size(); pos++) {
+			T component = vertex.getComponent(pos);
+			if (component == null)
+				component = vertex;
+			if (!component.getRoot().equals(getRoot()))
+				getRoot().discardWithException(new CrossEnginesAssignementsException("Unable to associate " + vertex + " with " + component + " because they are from differents engines"));
+		}
 	}
 
 	private void checkMeta(T vertex) {

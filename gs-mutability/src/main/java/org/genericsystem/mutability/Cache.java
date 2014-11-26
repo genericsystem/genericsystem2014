@@ -46,7 +46,6 @@ public class Cache implements IContext<Generic>, org.genericsystem.concurrency.C
 			while (it.hasNext())
 				mutabilityCache.put(it.next(), generic);
 			reverseResult.putAll(reverseOldResult);
-			// reverseMap.put(oldGeneric, null);
 			reverseMap.remove(oldGeneric);
 		} else
 			mutabilityCache.put(mutable, generic);
