@@ -13,7 +13,6 @@ import org.genericsystem.kernel.DefaultContext;
 public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> implements DefaultContext<T> {
 
 	private transient final DefaultEngine<T, V> engine;
-	private final V root;
 
 	protected final TransactionCache<T, V> vertices;
 
@@ -23,14 +22,12 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 	protected Transaction(DefaultEngine<T, V> engine) {
 		this.engine = engine;
 		vertices = new TransactionCache<>(engine);
-		root = unwrap((T) engine);
 		context = unwrap((T) engine).getCurrentCache();
 	}
 
 	@Override
 	public boolean isAlive(T generic) {
-		AbstractVertex<?> vertex = unwrap(generic);
-		return vertex != null && vertex.isAlive();
+		return context.isAlive(unwrap(generic));
 	}
 
 	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
@@ -38,7 +35,6 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 		adds.forEach(this::plug);
 	}
 
-	@SuppressWarnings("unchecked")
 	protected T plug(T generic) {
 		V meta = unwrap(generic.getMeta());
 		List<V> supers = generic.getSupers().stream().map(this::unwrap).collect(Collectors.toList());
