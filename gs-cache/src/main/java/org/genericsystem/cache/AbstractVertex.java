@@ -3,18 +3,7 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.List;
 
-import org.genericsystem.kernel.Dependencies;
-
 public abstract class AbstractVertex<V extends AbstractVertex<V>> extends org.genericsystem.kernel.AbstractVertex<V> implements DefaultVertex<V> {
-
-	@Override
-	protected abstract Dependencies<V> getInstancesDependencies();
-
-	@Override
-	protected abstract Dependencies<V> getInheritingsDependencies();
-
-	@Override
-	protected abstract Dependencies<V> getCompositesDependencies();
 
 	@Override
 	protected V getDirectInstance(Serializable value, List<V> components) {
