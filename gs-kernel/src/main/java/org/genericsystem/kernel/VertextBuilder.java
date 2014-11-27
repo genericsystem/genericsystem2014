@@ -2,8 +2,8 @@ package org.genericsystem.kernel;
 
 public class VertextBuilder extends AbstractBuilder<Vertex> {
 
-	public VertextBuilder(DefaultRoot<Vertex> root) {
-		super(root);
+	public VertextBuilder(Context<Vertex> context) {
+		super(context);
 	}
 
 	@Override

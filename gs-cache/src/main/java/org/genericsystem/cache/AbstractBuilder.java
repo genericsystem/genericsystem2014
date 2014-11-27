@@ -4,18 +4,13 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.genericsystem.cache.annotations.InstanceClass;
+import org.genericsystem.kernel.Context;
 
 public abstract class AbstractBuilder<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.kernel.AbstractBuilder<T> {
 
-	public AbstractBuilder(DefaultEngine<T, V> engine) {
-		super(engine);
+	public AbstractBuilder(Context<T> context) {
+		super(context);
 	}
-
-	// @SuppressWarnings("unchecked")
-	// @Override
-	// public DefaultEngine<T, V> getRoot() {
-	// return (DefaultEngine<T, V>) super.getRoot();
-	// }
 
 	@Override
 	protected abstract T newT();
@@ -23,21 +18,9 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T, V>, V extends
 	@Override
 	protected abstract T[] newTArray(int dim);
 
-	// @Override
-	// @SuppressWarnings("unchecked")
-	// protected T newT() {
-	// return (T) new Generic();
-	// }
-	//
-	// @Override
-	// @SuppressWarnings("unchecked")
-	// protected T[] newTArray(int dim) {
-	// return (T[]) new Generic[dim];
-	// }
-
 	@Override
 	public T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> composites) {
-		return ((DefaultEngine<T, ?>) getRoot()).getOrBuildT(clazz, meta, supers, value, composites);
+		return ((DefaultEngine<T, ?>) context.getRoot()).getOrBuildT(clazz, meta, supers, value, composites);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -48,7 +31,7 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T, V>, V extends
 			if (clazz == null || clazz.isAssignableFrom(metaAnnotation.value()))
 				clazz = metaAnnotation.value();
 			else if (!metaAnnotation.value().isAssignableFrom(clazz))
-				getRoot().getCurrentCache().discardWithException(new InstantiationException(clazz + " must extends " + metaAnnotation.value()));
+				context.discardWithException(new InstantiationException(clazz + " must extends " + metaAnnotation.value()));
 		T newT = newT();// Instantiates T in all cases...
 
 		if (clazz == null || clazz.isAssignableFrom(newT.getClass()))
@@ -57,10 +40,10 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T, V>, V extends
 			try {
 				return (T) clazz.newInstance();
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
-				getRoot().getCurrentCache().discardWithException(e);
+				context.discardWithException(e);
 			}
 		else
-			getRoot().getCurrentCache().discardWithException(new InstantiationException(clazz + " must extends " + newT.getClass()));
+			context.discardWithException(new InstantiationException(clazz + " must extends " + newT.getClass()));
 		return null; // Not reached
 	}
 
