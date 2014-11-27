@@ -58,13 +58,17 @@ public class Checker<T extends AbstractVertex<T>> {
 	}
 
 	private void checkSameEngine(T vertex) {
-		for (int pos = 0; pos < vertex.getComponents().size(); pos++) {
-			T component = vertex.getComponent(pos);
-			if (component == null)
-				component = vertex;
-			if (!component.getRoot().equals(getRoot()))
-				getRoot().discardWithException(new CrossEnginesAssignementsException("Unable to associate " + vertex + " with " + component + " because they are from differents engines"));
-		}
+		DefaultRoot<T> root = vertex.getRoot();
+		for (T component : vertex.getComponents())
+			if (component != null)
+				if (!root.equals(component.getRoot()))
+					root.discardWithException(new CrossEnginesAssignementsException("Unable to associate " + vertex + " with his component " + component + " because they are from differents engines"));
+
+		for (T superOf : vertex.getSupers())
+			if (superOf != null)
+				if (!root.equals(superOf.getRoot()))
+					root.discardWithException(new CrossEnginesAssignementsException("Unable to associate " + vertex + " with his super " + superOf + " because they are from differents engines"));
+
 	}
 
 	private void checkMeta(T vertex) {
