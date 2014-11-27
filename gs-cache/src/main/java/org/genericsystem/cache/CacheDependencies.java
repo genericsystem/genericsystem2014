@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.DependenciesImpl;
 
@@ -43,10 +44,4 @@ public class CacheDependencies<T> implements Dependencies<T> {
 	public String toString() {
 		return get().collect(Collectors.toList()).toString();
 	}
-
-	// @Override
-	// public Stream<T> get() {
-	// return Stream.concat(streamSupplier.get().filter(x -> !deletes.contains(x)), inserts.get());
-	//
-	// }
 }

@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.genericsystem.kernel.AbstractVertex;
+
 public class TransactionCache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends HashMap<T, V> {
 
 	private static final long serialVersionUID = -2571113223711253002L;
