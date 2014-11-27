@@ -6,7 +6,7 @@ import java.util.List;
 import org.genericsystem.cache.annotations.InstanceClass;
 import org.genericsystem.kernel.Context;
 
-public abstract class AbstractBuilder<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.kernel.AbstractBuilder<T> {
+public abstract class AbstractBuilder<T extends AbstractGeneric<T, ?>> extends org.genericsystem.kernel.AbstractBuilder<T> {
 
 	public AbstractBuilder(Context<T> context) {
 		super(context);

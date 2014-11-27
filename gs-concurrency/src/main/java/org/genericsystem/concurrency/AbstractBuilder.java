@@ -3,7 +3,7 @@ package org.genericsystem.concurrency;
 import org.genericsystem.cache.Cache.Listener;
 import org.genericsystem.kernel.Context;
 
-public abstract class AbstractBuilder<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.cache.AbstractBuilder<T, V> {
+public abstract class AbstractBuilder<T extends AbstractGeneric<T, ?>> extends org.genericsystem.cache.AbstractBuilder<T> {
 
 	private Listener<T> listener;
 
