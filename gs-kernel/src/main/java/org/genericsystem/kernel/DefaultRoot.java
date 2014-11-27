@@ -2,18 +2,13 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.List;
+
 import org.genericsystem.api.core.IRoot;
-import org.genericsystem.api.exception.RollbackException;
 
 public interface DefaultRoot<T extends AbstractVertex<T>> extends IRoot<T> {
 
 	@Override
 	Context<T> getCurrentCache();
-
-	@Override
-	default void discardWithException(Throwable exception) throws RollbackException {
-		throw new RollbackException(exception);
-	}
 
 	@SuppressWarnings("unchecked")
 	@Override

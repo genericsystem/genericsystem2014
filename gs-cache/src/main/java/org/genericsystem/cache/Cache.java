@@ -44,7 +44,7 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 	protected Cache(DefaultContext<T> subContext) {
 		super(subContext.getRoot());
 		this.subContext = subContext;
-		init(new Checker<>(getRoot()), new AbstractBuilder<T, V>(getRoot()) {
+		init(new Checker<>(this), new AbstractBuilder<T, V>(this) {
 
 			@Override
 			protected T newT() {
@@ -57,6 +57,11 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 			}
 		});
 		clear();
+	}
+
+	@Override
+	public void discardWithException(Throwable exception) throws RollbackException {
+		rollbackWithException(exception);
 	}
 
 	@Override
@@ -88,12 +93,12 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 
 	public void flush() throws RollbackException {
 		if (!equals(getRoot().getCurrentCache()))
-			getRoot().discardWithException(new CacheNoStartedException("The Cache isn't started"));
+			discardWithException(new CacheNoStartedException("The Cache isn't started"));
 		checkConstraints();
 		try {
 			applyChangesToSubContext();
 		} catch (ConstraintViolationException e) {
-			getRoot().discardWithException(e);
+			discardWithException(e);
 		}
 		clear();
 	}
@@ -132,7 +137,7 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 
 	private boolean simpleRemove(T generic) {
 		if (!isAlive(generic))
-			getRoot().discardWithException(new AliveConstraintViolationException(generic + " is not alive"));
+			discardWithException(new AliveConstraintViolationException(generic + " is not alive"));
 		if (!adds.remove(generic))
 			return removes.add(generic);
 		return true;

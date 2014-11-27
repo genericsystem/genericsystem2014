@@ -12,7 +12,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 
 	private Archiver<Vertex> archiver;
 
-	private final Context<Vertex> context;
+	private Context<Vertex> context;
 
 	public Root(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
@@ -26,18 +26,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 		init(null, Collections.emptyList(), value, Collections.emptyList());
 
 		context = new Context<Vertex>(this);
-		context.init(new Checker<>(this), new AbstractBuilder<Vertex>(this) {
-
-			@Override
-			protected Vertex newT() {
-				return new Vertex();
-			}
-
-			@Override
-			protected Vertex[] newTArray(int dim) {
-				return new Vertex[dim];
-			}
-		});
+		context = context.init(new Checker<>(context), new VertextBuilder(context));
 
 		Vertex metaAttribute = setMeta(Statics.ATTRIBUTE_SIZE);
 		setMeta(Statics.RELATION_SIZE);

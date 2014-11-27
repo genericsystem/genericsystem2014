@@ -18,14 +18,10 @@ import org.genericsystem.kernel.systemproperty.constraints.Constraint;
 
 public class Checker<T extends AbstractVertex<T>> {
 
-	private final DefaultRoot<T> root;
+	private final Context<T> context;
 
-	public Checker(DefaultRoot<T> root) {
-		this.root = root;
-	}
-
-	public DefaultRoot<T> getRoot() {
-		return root;
+	public Checker(Context<T> context) {
+		this.context = context;
 	}
 
 	public void check(boolean isOnAdd, boolean isFlushTime, T vertex) throws RollbackException {
@@ -36,16 +32,15 @@ public class Checker<T extends AbstractVertex<T>> {
 
 	void checkIsAlive(T vertex) {
 		if (!vertex.isAlive())
-			getRoot().discardWithException(new AliveConstraintViolationException(vertex.info()));
+			context.discardWithException(new AliveConstraintViolationException(vertex.info()));
 	}
 
 	private void checkSystemConstraints(boolean isOnAdd, boolean isFlushTime, T vertex) {
-		if (vertex.isMeta())
-			checkMeta(vertex);
+		checkWellFormedMeta(vertex);
 		if (!isFlushTime)
 			checkIsAlive(vertex);
 		else if (!isOnAdd && vertex.isAlive())
-			getRoot().discardWithException(new AliveConstraintViolationException(vertex.info()));
+			context.discardWithException(new AliveConstraintViolationException(vertex.info()));
 		if (!isOnAdd)
 			checkDependenciesAreEmpty(vertex);
 		checkSameEngine(vertex);
@@ -58,33 +53,35 @@ public class Checker<T extends AbstractVertex<T>> {
 	}
 
 	private void checkSameEngine(T vertex) {
+
 		DefaultRoot<T> root = vertex.getRoot();
 		for (T component : vertex.getComponents())
 			if (component != null)
 				if (!root.equals(component.getRoot()))
-					root.discardWithException(new CrossEnginesAssignementsException("Unable to associate " + vertex + " with his component " + component + " because they are from differents engines"));
+					context.discardWithException(new CrossEnginesAssignementsException("Unable to associate " + vertex + " with his component " + component + " because they are from differents engines"));
 
 		for (T superOf : vertex.getSupers())
 			if (superOf != null)
 				if (!root.equals(superOf.getRoot()))
-					root.discardWithException(new CrossEnginesAssignementsException("Unable to associate " + vertex + " with his super " + superOf + " because they are from differents engines"));
+					context.discardWithException(new CrossEnginesAssignementsException("Unable to associate " + vertex + " with his super " + superOf + " because they are from differents engines"));
 
 	}
 
-	private void checkMeta(T vertex) {
-		if (!vertex.getComponents().stream().allMatch(c -> c.isRoot()) || !Objects.equals(vertex.getValue(), getRoot().getValue()) || vertex.getSupers().size() != 1 || !vertex.getSupers().get(0).isMeta())
-			getRoot().discardWithException(new IllegalStateException("Malformed meta : " + vertex.info()));
+	private void checkWellFormedMeta(T vertex) {
+		if (vertex.isMeta())
+			if (!vertex.getComponents().stream().allMatch(c -> c.isRoot()) || !Objects.equals(vertex.getValue(), context.getRoot().getValue()) || vertex.getSupers().size() != 1 || !vertex.getSupers().get(0).isMeta())
+				context.discardWithException(new IllegalStateException("Malformed meta : " + vertex.info()));
 	}
 
 	private void checkDependenciesAreEmpty(T vertex) {
 		if (!vertex.getInstances().isEmpty() || !vertex.getInheritings().isEmpty() || !vertex.getComposites().isEmpty())
-			getRoot().discardWithException(new ReferentialIntegrityConstraintViolationException("Unable to remove : " + vertex.info() + " cause it has dependencies"));
+			context.discardWithException(new ReferentialIntegrityConstraintViolationException("Unable to remove : " + vertex.info() + " cause it has dependencies"));
 	}
 
 	private void checkDependsMetaComponents(T vertex) {
 		if (vertex.getMeta().getComponents().size() != vertex.getComponents().size())
-			getRoot().discardWithException(
-					new MetaRuleConstraintViolationException("Added generic and its meta do not have the same components size. Added node components : " + vertex.getComponents() + " and meta components : " + vertex.getMeta().getComponents()));
+			context.discardWithException(new MetaRuleConstraintViolationException("Added generic and its meta do not have the same components size. Added node components : " + vertex.getComponents() + " and meta components : "
+					+ vertex.getMeta().getComponents()));
 		for (int pos = 0; pos < vertex.getComponents().size(); pos++) {
 			T component = vertex.getComponent(pos);
 			T metaComponent = vertex.getMeta().getComponent(pos);
@@ -96,43 +93,43 @@ public class Checker<T extends AbstractVertex<T>> {
 			else if (metaComponent == null)
 				metaComponent = vertex.getMeta();
 			if (!component.isInstanceOf(metaComponent) && !component.inheritsFrom(metaComponent))
-				getRoot().discardWithException(new MetaRuleConstraintViolationException("Component of added generic : " + component + " must be instance of or must inherits from the component of its meta : " + metaComponent));
+				context.discardWithException(new MetaRuleConstraintViolationException("Component of added generic : " + component + " must be instance of or must inherits from the component of its meta : " + metaComponent));
 		}
 	}
 
 	private void checkLevelComponents(T vertex) {
 		for (T component : vertex.getComponents())
 			if ((component == null ? vertex.getLevel() : component.getLevel()) > vertex.getLevel())
-				getRoot().discardWithException(new MetaLevelConstraintViolationException("Inappropriate component meta level : " + component.getLevel() + " for component : " + component + ". Component meta level for added node is : " + vertex.getLevel()));
+				context.discardWithException(new MetaLevelConstraintViolationException("Inappropriate component meta level : " + component.getLevel() + " for component : " + component + ". Component meta level for added node is : " + vertex.getLevel()));
 	}
 
 	private void checkLevel(T vertex) {
 		if (vertex.getLevel() > Statics.CONCRETE)
-			getRoot().discardWithException(new MetaLevelConstraintViolationException("Unable to instanciate a concrete generic : " + vertex.getMeta()));
+			context.discardWithException(new MetaLevelConstraintViolationException("Unable to instanciate a concrete generic : " + vertex.getMeta()));
 	}
 
 	private void checkSupers(T vertex) {
 		vertex.supers.forEach(x -> checkIsAlive(x));
 		if (!vertex.supers.stream().allMatch(superVertex -> superVertex.getLevel() == vertex.getLevel()))
-			getRoot().discardWithException(new IllegalStateException("Inconsistant supers (bad level) : " + vertex.supers));
+			context.discardWithException(new IllegalStateException("Inconsistant supers (bad level) : " + vertex.supers));
 		if (!vertex.supers.stream().allMatch(superVertex -> vertex.getMeta().inheritsFrom(superVertex.getMeta())))
-			getRoot().discardWithException(new IllegalStateException("Inconsistant supers : " + vertex.supers));
+			context.discardWithException(new IllegalStateException("Inconsistant supers : " + vertex.supers));
 		if (!vertex.supers.stream().noneMatch(this::equals))
-			getRoot().discardWithException(new IllegalStateException("Supers loop detected : " + vertex.info()));
+			context.discardWithException(new IllegalStateException("Supers loop detected : " + vertex.info()));
 		if (vertex.supers.stream().anyMatch(superVertex -> Objects.equals(superVertex.getValue(), vertex.getValue()) && superVertex.getComponents().equals(vertex.getComponents()) && vertex.getMeta().inheritsFrom(superVertex.getMeta())))
-			getRoot().discardWithException(new IllegalStateException("Collision detected : " + vertex.info()));
+			context.discardWithException(new IllegalStateException("Collision detected : " + vertex.info()));
 	}
 
 	private void checkDependsSuperComponents(T vertex) {
 		vertex.getSupers().forEach(superVertex -> {
 			if (!superVertex.isSuperOf(vertex.getMeta(), vertex.supers, vertex.getValue(), vertex.getComponents()))
-				getRoot().discardWithException(new IllegalStateException("Inconsistant components : " + vertex.getComponents()));
+				context.discardWithException(new IllegalStateException("Inconsistant components : " + vertex.getComponents()));
 		});
 	}
 
 	private void checkGetInstance(T vertex) {
 		if (vertex.getMeta().getInstances().get().filter(x -> ((AbstractVertex<?>) x).equalsRegardlessSupers(vertex.getMeta(), vertex.getValue(), vertex.getComponents())).count() > 1)
-			getRoot().discardWithException(new GetInstanceConstraintViolationException("get too many result for search : " + vertex.info()));
+			context.discardWithException(new GetInstanceConstraintViolationException("get too many result for search : " + vertex.info()));
 	}
 
 	private void checkConstraints(boolean isOnAdd, boolean isFlushTime, T vertex) {
@@ -155,7 +152,7 @@ public class Checker<T extends AbstractVertex<T>> {
 		try {
 			statelessConstraint(constraintHolder.getMeta()).check(vertex, baseComponent, constraintHolder.getValue(), ((AxedPropertyClass) constraintHolder.getMeta().getValue()).getAxe(), isOnAdd, isFlushTime, isRevert);
 		} catch (ConstraintViolationException e) {
-			getRoot().discardWithException(e);
+			context.discardWithException(e);
 		}
 	}
 
@@ -164,7 +161,7 @@ public class Checker<T extends AbstractVertex<T>> {
 		try {
 			return (Constraint<T>) ((AxedPropertyClass) vertex.getValue()).getClazz().newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
-			getRoot().discardWithException(e);
+			context.discardWithException(e);
 		}
 		return null;
 	}

@@ -11,32 +11,18 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 
-	private final DefaultRoot<T> root;
+	protected final Context<T> context;
 
-	public AbstractBuilder(DefaultRoot<T> root) {
-		this.root = root;
-	}
-
-	public DefaultRoot<T> getRoot() {
-		return root;
+	public AbstractBuilder(Context<T> context) {
+		this.context = context;
 	}
 
 	protected abstract T newT();
 
 	protected abstract T[] newTArray(int dim);
 
-	// @SuppressWarnings("unchecked")
-	// protected T newT() {
-	// return (T) new Vertex();
-	// }
-	//
-	// @SuppressWarnings("unchecked")
-	// protected T[] newTArray(int dim) {
-	// return (T[]) new Vertex[dim];
-	// }
-
 	public T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
-		Checker<T> checker = root.getCurrentCache().getChecker();
+		Checker<T> checker = context.getChecker();
 		if (meta != null)
 			checker.checkIsAlive(meta);
 		supers.forEach(x -> checker.checkIsAlive(x));
@@ -51,7 +37,7 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 	@SuppressWarnings("unchecked")
 	public T getOrNewT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
 		if (meta == null) {
-			T adjustedMeta = ((T) root).adjustMeta(components.size());
+			T adjustedMeta = ((T) context.getRoot()).adjustMeta(components.size());
 			return adjustedMeta.getComponents().size() == components.size() ? adjustedMeta : newT(clazz, meta, supers, value, components);
 		}
 		T instance = meta.getDirectInstance(value, components);
@@ -73,20 +59,20 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 	}
 
 	private void checkIsAlive(List<T> overrides, List<T> components) {
-		Checker<T> checker = root.getCurrentCache().getChecker();
+		Checker<T> checker = context.getChecker();
 		overrides.forEach(x -> checker.checkIsAlive(x));
 		components.stream().filter(component -> component != null).forEach(x -> checker.checkIsAlive(x));
 	}
 
 	@SuppressWarnings("unchecked")
 	T getOrReBuildMeta(int dim) {
-		T adjustedMeta = ((T) getRoot()).adjustMeta(dim);
+		T adjustedMeta = ((T) context.getRoot()).adjustMeta(dim);
 		return adjustedMeta.getComponents().size() == dim ? adjustedMeta : reBuildMeta(adjustedMeta, dim);
 	}
 
 	@SuppressWarnings("unchecked")
 	T reBuildMeta(T adjustedMeta, int dim) {
-		T root = (T) getRoot();
+		T root = (T) context.getRoot();
 		List<T> components = new ArrayList<>();
 		for (int i = 0; i < dim; i++)
 			components.add(root);
@@ -106,7 +92,7 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 
 	private void checkOverridesAreReached(List<T> overrides, List<T> supers) {
 		if (!Statics.areOverridesReached(overrides, supers))
-			getRoot().discardWithException(new IllegalStateException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
+			context.discardWithException(new IllegalStateException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
 	}
 
 	private class ConvertMap extends HashMap<T, T> {

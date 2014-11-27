@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.NotFoundException;
+import org.genericsystem.api.exception.RollbackException;
 
 public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 
@@ -15,14 +16,15 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 		this.root = root;
 	}
 
-	public void init(Checker<T> checker, AbstractBuilder<T> builder) {
+	public Context<T> init(Checker<T> checker, AbstractBuilder<T> builder) {
 		this.checker = checker;
 		this.builder = builder;
+		return this;
 	}
 
-	// public Context(DefaultRoot<T> root) {
-	// this(root, new Checker<T>(root), new Builder<>(root));
-	// }
+	public void discardWithException(Throwable exception) throws RollbackException {
+		throw new RollbackException(exception);
+	}
 
 	public Checker<T> getChecker() {
 		return checker;
@@ -55,7 +57,7 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 		checker.check(false, false, generic);
 		boolean result = generic != generic.getMeta() ? unIndexInstance(generic.getMeta(), generic) : true;
 		if (!result)
-			getRoot().discardWithException(new NotFoundException(generic.info()));
+			discardWithException(new NotFoundException(generic.info()));
 		generic.getSupers().forEach(superGeneric -> unIndexInheriting(superGeneric, generic));
 		generic.getComponents().stream().filter(component -> component != null).forEach(component -> unIndexComposite(component, generic));
 		return result;

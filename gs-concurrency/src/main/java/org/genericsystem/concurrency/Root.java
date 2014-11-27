@@ -28,11 +28,11 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 		garbageCollector = new GarbageCollector<>(this);
 
 		context = new Context<Vertex>(this);
-		context.init(new Checker<>(this), new AbstractBuilder<Vertex>(this) {
+		context.init(new Checker<>(context), new AbstractBuilder<Vertex>(context) {
 
 			@Override
 			protected Vertex newT() {
-				return new Vertex().restore(((Root) getRoot()).pickNewTs(), ((Root) getRoot()).getEngine().getCurrentCache().getTs(), 0L, Long.MAX_VALUE);
+				return new Vertex().restore(getRoot().pickNewTs(), getRoot().getEngine().getCurrentCache().getTs(), 0L, Long.MAX_VALUE);
 			}
 
 			@Override
