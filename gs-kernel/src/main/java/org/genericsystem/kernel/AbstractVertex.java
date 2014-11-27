@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
@@ -407,26 +406,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return componentsDepends(new SingularsLazyCacheImpl(), subComponents, superComponents);
 	}
 
-	// boolean componentsDepends(SingularsLazyCache singulars, List<T> subComponents, List<T> superComponents) {
-	// int subIndex = 0;
-	// loop: for (T superComponent : superComponents) {
-	// for (; subIndex < subComponents.size(); subIndex++) {
-	// T subComponent = subComponents.get(subIndex);
-	// if (subComponent == null && superComponent == null)
-	// continue loop;
-	// else if (subComponent == null || superComponent == null)
-	// return false;
-	// else if (subComponent.isSpecializationOf(superComponent)) {
-	// if (singulars.get(subIndex))
-	// return true;
-	// subIndex++;
-	// continue loop;
-	// }
-	// }
-	// return false;
-	// }
-	// return true;
-	// }
 	@SuppressWarnings("unchecked")
 	private boolean componentsDepends(SingularsLazyCache singulars, List<T> subComponents, List<T> superComponents) {
 		int subIndex = 0;
@@ -502,8 +481,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {
-	}
+	public static class SystemMap {}
 
 	private Stream<T> getKeys() {
 		T map = getMap();

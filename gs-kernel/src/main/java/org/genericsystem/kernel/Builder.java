@@ -23,12 +23,12 @@ public class Builder<T extends AbstractVertex<T>> {
 
 	@SuppressWarnings("unchecked")
 	protected T newT() {
-		return ((AbstractVertex<T>) root).newT();
+		return ((T) root).newT();
 	}
 
 	@SuppressWarnings("unchecked")
 	protected T[] newTArray(int dim) {
-		return ((AbstractVertex<T>) root).newTArray(dim);
+		return ((T) root).newTArray(dim);
 	}
 
 	public T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
@@ -47,12 +47,11 @@ public class Builder<T extends AbstractVertex<T>> {
 	@SuppressWarnings("unchecked")
 	public T getOrNewT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
 		if (meta == null) {
-			T adjustedMeta = ((AbstractVertex<T>) root).adjustMeta(components.size());
+			T adjustedMeta = ((T) root).adjustMeta(components.size());
 			return adjustedMeta.getComponents().size() == components.size() ? adjustedMeta : newT(clazz, meta, supers, value, components);
-		} else {
-			T instance = meta.getDirectInstance(value, components);
-			return instance != null ? instance : newT(clazz, meta, supers, value, components);
 		}
+		T instance = meta.getDirectInstance(value, components);
+		return instance != null ? instance : newT(clazz, meta, supers, value, components);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -123,7 +122,6 @@ public class Builder<T extends AbstractVertex<T>> {
 		}
 	}
 
-	protected void triggersDependencyUpdate(T oldDependency, T newDependency) {
-	}
+	protected void triggersDependencyUpdate(T oldDependency, T newDependency) {}
 
 }
