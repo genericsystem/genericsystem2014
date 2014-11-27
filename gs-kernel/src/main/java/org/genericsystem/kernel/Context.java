@@ -22,10 +22,6 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 		return this;
 	}
 
-	// public Context(DefaultRoot<T> root) {
-	// this(root, new Checker<T>(root), new Builder<>(root));
-	// }
-
 	public void discardWithException(Throwable exception) throws RollbackException {
 		throw new RollbackException(exception);
 	}

@@ -26,7 +26,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 		init(null, Collections.emptyList(), value, Collections.emptyList());
 
 		context = new Context<Vertex>(this);
-		context = context.init(new Checker<>(context), new VertextBuilder(this));
+		context = context.init(new Checker<>(context), new VertextBuilder(context));
 
 		Vertex metaAttribute = setMeta(Statics.ATTRIBUTE_SIZE);
 		setMeta(Statics.RELATION_SIZE);

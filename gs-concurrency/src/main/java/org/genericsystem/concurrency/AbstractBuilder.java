@@ -1,13 +1,14 @@
 package org.genericsystem.concurrency;
 
 import org.genericsystem.cache.Cache.Listener;
+import org.genericsystem.kernel.Context;
 
 public abstract class AbstractBuilder<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.cache.AbstractBuilder<T, V> {
 
 	private Listener<T> listener;
 
-	public AbstractBuilder(DefaultEngine<T, V> engine) {
-		super(engine);
+	public AbstractBuilder(Context<T> context) {
+		super(context);
 	}
 
 	@Override

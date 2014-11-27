@@ -18,7 +18,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 		this.engine = engine;
 
 		context = new Context<Vertex>(this);
-		context.init(new Checker<>(context), new AbstractBuilder<Vertex>(this) {
+		context.init(new Checker<>(context), new AbstractBuilder<Vertex>(context) {
 
 			@Override
 			protected Vertex newT() {
