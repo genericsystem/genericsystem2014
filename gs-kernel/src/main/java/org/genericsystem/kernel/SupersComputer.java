@@ -23,22 +23,23 @@ public class SupersComputer<T extends AbstractVertex<T>> extends LinkedHashSet<T
 		this.overrides = overrides;
 		this.components = components;
 		this.value = value;
-		selectSuper(meta);
+		visitSupers(meta);
 	}
 
-	private void selectSuper(T candidate) {
-		if (candidate.getSupers().size() == 0)
+	private void visitSupers(T candidate) {
+		if (candidate.getSupers().isEmpty())
 			visit(candidate);
 		else
 			for (T superOfCandidate : candidate.getSupers())
-				selectSuper(superOfCandidate);
+				visitSupers(superOfCandidate);
 	}
 
 	private boolean[] visit(T candidate) {
 		boolean[] result = alreadyComputed.get(candidate);
 		if (result != null)
 			return result;
-		boolean isMeta = meta == null ? false : meta.isSpecializationOf(candidate);
+		// boolean isMeta = meta == null ? false : meta.isSpecializationOf(candidate);
+		boolean isMeta = meta.isSpecializationOf(candidate);
 		boolean isSuper = !isMeta && candidate.isSuperOf(meta, overrides, value, components);
 		if (!isMeta && !isSuper) {
 			boolean[] selectableSelected = new boolean[] { true, false };
@@ -61,7 +62,7 @@ public class SupersComputer<T extends AbstractVertex<T>> extends LinkedHashSet<T
 		boolean[] selectableSelected = new boolean[] { selectable, true };
 		result = alreadyComputed.put(candidate, selectableSelected);
 		assert result == null : candidate.info();
-		if (selectableSelected[0] && selectableSelected[1] && (candidate.getLevel() == (meta == null ? 0 : meta.getLevel() + 1)) && !candidate.equals(meta, overrides, value, components)) {
+		if (selectableSelected[0] && (candidate.getLevel() == (meta == null ? 0 : meta.getLevel() + 1)) && !candidate.equals(meta, overrides, value, components)) {
 			add(candidate);
 			assert !candidate.isRoot();
 		}
