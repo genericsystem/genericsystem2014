@@ -9,7 +9,7 @@ public class Engine extends Generic implements IRoot<Generic> {
 
 	private final ThreadLocal<Cache> cacheLocal = new ThreadLocal<>();
 
-	private org.genericsystem.concurrency.Engine concurrencyEngine;
+	private final org.genericsystem.concurrency.Engine concurrencyEngine;
 
 	public Engine() {
 		super(null);
@@ -104,10 +104,10 @@ public class Engine extends Generic implements IRoot<Generic> {
 		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).getMetaRelation());
 	}
 
-	@Override
-	public void discardWithException(Throwable exception) {
-		((org.genericsystem.concurrency.Engine) unwrap(this)).discardWithException(exception);
-	}
+	// @Override
+	// public void discardWithException(Throwable exception) {
+	// ((org.genericsystem.concurrency.Engine) unwrap(this)).discardWithException(exception);
+	// }
 
 	public org.genericsystem.concurrency.Engine getConcurrencyEngine() {
 		return concurrencyEngine;

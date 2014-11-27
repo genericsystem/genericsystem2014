@@ -3,7 +3,6 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.List;
 
-import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.DefaultContext;
 
 public interface DefaultEngine<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.kernel.DefaultRoot<T>, DefaultGeneric<T, V> {
@@ -27,11 +26,6 @@ public interface DefaultEngine<T extends AbstractGeneric<T, V>, V extends Abstra
 	@Override
 	default Cache<T, V> getCurrentCache() {
 		return getRoot().getCurrentCache();
-	}
-
-	@Override
-	default void discardWithException(Throwable exception) throws RollbackException {
-		getCurrentCache().rollbackWithException(exception);
 	}
 
 	T getOrBuildT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> composites);

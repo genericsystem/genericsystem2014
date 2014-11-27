@@ -105,8 +105,9 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 	}
 
 	private void checkOverridesAreReached(List<T> overrides, List<T> supers) {
-		if (!Statics.areOverridesReached(overrides, supers))
-			getRoot().discardWithException(new IllegalStateException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
+		// TODO builder doit avoir une ref sur le cache
+		// if (!Statics.areOverridesReached(overrides, supers))
+		// getRoot().discardWithException(new IllegalStateException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
 	}
 
 	private class ConvertMap extends HashMap<T, T> {

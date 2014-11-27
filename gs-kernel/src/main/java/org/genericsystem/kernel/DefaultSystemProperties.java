@@ -44,7 +44,7 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 	@SuppressWarnings("unchecked")
 	default T enableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos, T... targets) {
 		if (pos != Statics.NO_POSITION && getComponent(pos) == null)
-			getRoot().discardWithException(new NotFoundException("System property is not apply because no component exists for position : " + pos));
+			((Context<T>) getCurrentCache()).discardWithException(new NotFoundException("System property is not apply because no component exists for position : " + pos));
 		setSystemPropertyValue(propertyClass, pos, Boolean.TRUE, targets);
 		return (T) this;
 	}

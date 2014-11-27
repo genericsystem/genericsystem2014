@@ -109,10 +109,10 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		List<T> componentList = Arrays.asList(components);
 		T adjustedMeta = adjustOrBuildMeta(value, componentList);
 		if (adjustedMeta.equalsRegardlessSupers(adjustedMeta, value, componentList) && Statics.areOverridesReached(overrides, adjustedMeta.getSupers()))
-			getRoot().discardWithException(new ExistsException("An equivalent instance already exists : " + adjustedMeta.info()));
+			getCurrentCache().discardWithException(new ExistsException("An equivalent instance already exists : " + adjustedMeta.info()));
 		T equivInstance = adjustedMeta.getDirectInstance(value, componentList);
 		if (equivInstance != null)
-			getRoot().discardWithException(new ExistsException("An equivalent instance already exists : " + equivInstance.info()));
+			getCurrentCache().discardWithException(new ExistsException("An equivalent instance already exists : " + equivInstance.info()));
 		return getCurrentCache().getBuilder().rebuildAll(null, () -> getCurrentCache().getBuilder().build(clazz, adjustedMeta, overrides, value, componentList), adjustedMeta.computePotentialDependencies(overrides, value, componentList));
 	}
 
@@ -180,12 +180,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 			public void visit(T generic) {
 				if (add(generic)) {// protect from loop
 					if (!generic.getInheritings().isEmpty() || !generic.getInstances().isEmpty())
-						getRoot().discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + generic + " has an inheritance or instance dependency"));
+						getCurrentCache().discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + generic + " has an inheritance or instance dependency"));
 					for (T composite : generic.getComposites())
 						if (!generic.equals(composite)) {
 							for (int componentPos = 0; componentPos < composite.getComponents().size(); componentPos++)
 								if (/* !componentDependency.isAutomatic() && */composite.getComponents().get(componentPos).equals(generic) && !contains(composite) && composite.isReferentialIntegrityEnabled(componentPos))
-									getRoot().discardWithException(new ReferentialIntegrityConstraintViolationException(composite + " is Referential Integrity for ancestor " + generic + " by composite position : " + componentPos));
+									getCurrentCache().discardWithException(new ReferentialIntegrityConstraintViolationException(composite + " is Referential Integrity for ancestor " + generic + " by composite position : " + componentPos));
 							visit(composite);
 						}
 					for (int axe = 0; axe < generic.getComponents().size(); axe++)
@@ -225,7 +225,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 					if (result == null)
 						result = directInheriting;
 					else
-						getRoot().discardWithException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
+						getCurrentCache().discardWithException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
 				}
 			}
 		return result == null ? (T) this : result.adjustMeta(value, components);

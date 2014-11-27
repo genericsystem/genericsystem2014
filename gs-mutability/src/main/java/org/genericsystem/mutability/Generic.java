@@ -28,7 +28,7 @@ public class Generic implements IVertex<Generic> {
 		if (generic != null)
 			return generic;
 		else {
-			engine.getConcurrencyEngine().discardWithException(new AliveConstraintViolationException("Your mutable is not still available. No generic matched"));
+			engine.getConcurrencyEngine().getCurrentCache().discardWithException(new AliveConstraintViolationException("Your mutable is not still available. No generic matched"));
 			return null;
 		}
 	}

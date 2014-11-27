@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
+import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.Context;
 import org.genericsystem.kernel.DefaultContext;
 
@@ -23,6 +24,10 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 		this.engine = engine;
 		vertices = new TransactionCache<>(engine);
 		context = unwrap((T) engine).getCurrentCache();
+	}
+
+	public void discardWithException(Throwable exception) throws RollbackException {
+		context.discardWithException(exception);
 	}
 
 	@Override

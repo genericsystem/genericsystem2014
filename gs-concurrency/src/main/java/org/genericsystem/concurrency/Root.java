@@ -28,7 +28,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 		garbageCollector = new GarbageCollector<>(this);
 
 		context = new Context<Vertex>(this);
-		context.init(new Checker<>(this), new AbstractBuilder<Vertex>(this) {
+		context.init(new Checker<>(context), new AbstractBuilder<Vertex>(this) {
 
 			@Override
 			protected Vertex newT() {

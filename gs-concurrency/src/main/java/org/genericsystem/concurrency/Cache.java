@@ -15,7 +15,7 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 
 	protected Cache(DefaultContext<T> subContext) {
 		super(subContext);
-		init(new Checker<>(getRoot()), new AbstractBuilder<T, V>(getRoot()) {
+		init(new Checker<>(this), new AbstractBuilder<T, V>(getRoot()) {
 
 			@Override
 			protected T newT() {
@@ -78,7 +78,7 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 	@Override
 	public void flush() throws RollbackException {
 		if (!equals(getRoot().getCurrentCache()))
-			getRoot().discardWithException(new CacheNoStartedException("The Cache isn't started"));
+			discardWithException(new CacheNoStartedException("The Cache isn't started"));
 		Throwable cause = null;
 		for (int attempt = 0; attempt < Statics.ATTEMPTS; attempt++)
 			try {

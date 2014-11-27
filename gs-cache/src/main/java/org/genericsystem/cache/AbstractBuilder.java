@@ -11,11 +11,11 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T, V>, V extends
 		super(engine);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public DefaultEngine<T, V> getRoot() {
-		return (DefaultEngine<T, V>) super.getRoot();
-	}
+	// @SuppressWarnings("unchecked")
+	// @Override
+	// public DefaultEngine<T, V> getRoot() {
+	// return (DefaultEngine<T, V>) super.getRoot();
+	// }
 
 	@Override
 	protected abstract T newT();
@@ -37,7 +37,7 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T, V>, V extends
 
 	@Override
 	public T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> composites) {
-		return getRoot().getOrBuildT(clazz, meta, supers, value, composites);
+		return ((DefaultEngine<T, ?>) getRoot()).getOrBuildT(clazz, meta, supers, value, composites);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -48,7 +48,7 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T, V>, V extends
 			if (clazz == null || clazz.isAssignableFrom(metaAnnotation.value()))
 				clazz = metaAnnotation.value();
 			else if (!metaAnnotation.value().isAssignableFrom(clazz))
-				getRoot().discardWithException(new InstantiationException(clazz + " must extends " + metaAnnotation.value()));
+				getRoot().getCurrentCache().discardWithException(new InstantiationException(clazz + " must extends " + metaAnnotation.value()));
 		T newT = newT();// Instantiates T in all cases...
 
 		if (clazz == null || clazz.isAssignableFrom(newT.getClass()))
@@ -57,10 +57,10 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T, V>, V extends
 			try {
 				return (T) clazz.newInstance();
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
-				getRoot().discardWithException(e);
+				getRoot().getCurrentCache().discardWithException(e);
 			}
 		else
-			getRoot().discardWithException(new InstantiationException(clazz + " must extends " + newT.getClass()));
+			getRoot().getCurrentCache().discardWithException(new InstantiationException(clazz + " must extends " + newT.getClass()));
 		return null; // Not reached
 	}
 
