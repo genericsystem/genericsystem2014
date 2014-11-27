@@ -93,7 +93,8 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 	}
 
 	protected T index(Dependencies<T> dependencies, T dependency) {
-		return dependencies.set(dependency);
+		dependencies.add(dependency);
+		return dependency;
 	}
 
 	protected boolean unIndexInstance(T generic, T instance) {
