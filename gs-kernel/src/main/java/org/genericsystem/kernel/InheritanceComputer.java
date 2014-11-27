@@ -1,13 +1,11 @@
 package org.genericsystem.kernel;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,15 +63,8 @@ class InheritanceComputer<T extends AbstractVertex<T>> extends HashSet<T> {
 		}
 
 		private Stream<T> getStream(final T holder) {
-			// TODO clean
-			// log.info("ZZZZZZZZZ" + localBase.info() + "   " + holder.info());
-			// if (!localBase.getCompositesBySuper(holder).isEmpty()) {
-			if (compositesBySuper(localBase, holder).count() != 0) {
+			if (compositesBySuper(localBase, holder).count() != 0)
 				add(holder);
-				// log.info("      " + localBase.getCompositesBySuper(holder).first().info());
-			}
-			// Stream<T> indexStream = Stream.concat(holder.getLevel() < level ? localBase.getCompositesByMeta(holder).get() : Stream.empty(), localBase.getCompositesBySuper(holder).get());
-			// return Stream.concat(Stream.of(holder), indexStream.filter(y -> !y.equals(holder)).flatMap(x -> getStream(x)).distinct());
 			Stream<T> indexStream = Stream.concat(holder.getLevel() < level ? compositesByMeta(localBase, holder) : Stream.empty(), compositesBySuper(localBase, holder));
 			return Stream.concat(Stream.of(holder), indexStream.filter(y -> !y.equals(holder)).flatMap(x -> getStream(x)).distinct());
 		}
@@ -85,6 +76,6 @@ class InheritanceComputer<T extends AbstractVertex<T>> extends HashSet<T> {
 	}
 
 	private static <T extends AbstractVertex<T>> Stream<T> compositesBySuper(T localBase, T holder) {
-		return localBase.getComposites().get().filter(x -> x.getSupers().containsAll(Collections.singleton(holder)));
+		return localBase.getComposites().get().filter(x -> x.getSupers().contains(holder));
 	}
 }
