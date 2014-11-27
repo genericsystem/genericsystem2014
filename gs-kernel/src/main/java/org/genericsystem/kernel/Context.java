@@ -80,21 +80,20 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 		return vertex.getCompositesDependencies();
 	}
 
-	protected T indexInstance(T generic, T instance) {
-		return index(generic.getInstancesDependencies(), instance);
+	protected void indexInstance(T generic, T instance) {
+		index(generic.getInstancesDependencies(), instance);
 	}
 
-	protected T indexInheriting(T generic, T inheriting) {
-		return index(generic.getInheritingsDependencies(), inheriting);
+	protected void indexInheriting(T generic, T inheriting) {
+		index(generic.getInheritingsDependencies(), inheriting);
 	}
 
-	protected T indexComposite(T generic, T composite) {
-		return index(generic.getCompositesDependencies(), composite);
+	protected void indexComposite(T generic, T composite) {
+		index(generic.getCompositesDependencies(), composite);
 	}
 
-	protected T index(Dependencies<T> dependencies, T dependency) {
+	protected void index(Dependencies<T> dependencies, T dependency) {
 		dependencies.add(dependency);
-		return dependency;
 	}
 
 	protected boolean unIndexInstance(T generic, T instance) {

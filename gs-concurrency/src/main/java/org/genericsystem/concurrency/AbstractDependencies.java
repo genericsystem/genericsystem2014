@@ -3,6 +3,7 @@ package org.genericsystem.concurrency;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map.Entry;
+
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 

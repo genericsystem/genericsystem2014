@@ -181,18 +181,18 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 	}
 
 	@Override
-	protected T indexInstance(T generic, T instance) {
-		return index((Dependencies<T>) getDependencies(instancesDependencies, () -> subContext.getInstances(generic).get(), generic), instance);
+	protected void indexInstance(T generic, T instance) {
+		index((Dependencies<T>) getDependencies(instancesDependencies, () -> subContext.getInstances(generic).get(), generic), instance);
 	}
 
 	@Override
-	protected T indexInheriting(T generic, T inheriting) {
-		return index(((Dependencies<T>) getDependencies(inheritingsDependencies, () -> subContext.getInheritings(generic).get(), generic)), inheriting);
+	protected void indexInheriting(T generic, T inheriting) {
+		index(((Dependencies<T>) getDependencies(inheritingsDependencies, () -> subContext.getInheritings(generic).get(), generic)), inheriting);
 	}
 
 	@Override
-	protected T indexComposite(T generic, T composite) {
-		return index(((Dependencies<T>) getDependencies(compositesDependencies, () -> subContext.getComposites(generic).get(), generic)), composite);
+	protected void indexComposite(T generic, T composite) {
+		index(((Dependencies<T>) getDependencies(compositesDependencies, () -> subContext.getComposites(generic).get(), generic)), composite);
 	}
 
 	@Override
