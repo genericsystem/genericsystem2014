@@ -54,10 +54,12 @@ public class Checker<T extends AbstractVertex<T>> {
 
 	private void checkSameEngine(T vertex) {
 		DefaultRoot<T> root = vertex.getRoot();
-		if (vertex.getComponents().stream().filter(x -> x != null).anyMatch(x -> !root.equals(x.getRoot())))
-			context.discardWithException(new CrossEnginesAssignementsException("Unable to associate " + vertex + " with his component because they are from differents engines"));
-		if (vertex.getSupers().stream().filter(x -> x != null).anyMatch(x -> !root.equals(x.getRoot())))
-			context.discardWithException(new CrossEnginesAssignementsException("Unable to associate " + vertex + " with his super  because they are from differents engines"));
+		for (T component : vertex.getComponents())
+			if (component != null && !root.equals(component.getRoot()))
+				context.discardWithException(new CrossEnginesAssignementsException("Unable to associate " + vertex + " with his component " + component + " because they are from differents engines"));
+		for (T directSuper : vertex.getSupers())
+			if (directSuper != null && !root.equals(directSuper.getRoot()))
+				context.discardWithException(new CrossEnginesAssignementsException("Unable to associate " + vertex + " with his super " + directSuper + " because they are from differents engines"));
 	}
 
 	private void checkWellFormedMeta(T vertex) {

@@ -3,7 +3,6 @@ package org.genericsystem.concurrency;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.genericsystem.kernel.AbstractBuilder;
 import org.genericsystem.kernel.Checker;
 import org.genericsystem.kernel.Context;
 import org.genericsystem.kernel.Statics;
@@ -28,18 +27,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 		garbageCollector = new GarbageCollector<>(this);
 
 		context = new Context<Vertex>(this);
-		context.init(new Checker<>(context), new AbstractBuilder<Vertex>(context) {
-
-			@Override
-			protected Vertex newT() {
-				return new Vertex().restore(getRoot().pickNewTs(), getRoot().getEngine().getCurrentCache().getTs(), 0L, Long.MAX_VALUE);
-			}
-
-			@Override
-			protected Vertex[] newTArray(int dim) {
-				return new Vertex[dim];
-			}
-		});
+		context.init(new Checker<>(context), new VertexBuilder(context));
 	}
 
 	public void buildAndStartArchiver(String persistentDirectoryPath) {

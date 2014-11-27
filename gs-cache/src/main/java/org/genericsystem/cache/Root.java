@@ -3,7 +3,6 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.Collections;
 
-import org.genericsystem.kernel.AbstractBuilder;
 import org.genericsystem.kernel.Checker;
 import org.genericsystem.kernel.Context;
 
@@ -18,18 +17,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 		this.engine = engine;
 
 		context = new Context<Vertex>(this);
-		context.init(new Checker<>(context), new AbstractBuilder<Vertex>(context) {
-
-			@Override
-			protected Vertex newT() {
-				return new Vertex();
-			}
-
-			@Override
-			protected Vertex[] newTArray(int dim) {
-				return new Vertex[dim];
-			}
-		});
+		context.init(new Checker<>(context), new VertexBuilder(context));
 	}
 
 	@Override
