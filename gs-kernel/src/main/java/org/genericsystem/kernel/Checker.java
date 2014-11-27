@@ -36,8 +36,7 @@ public class Checker<T extends AbstractVertex<T>> {
 	}
 
 	private void checkSystemConstraints(boolean isOnAdd, boolean isFlushTime, T vertex) {
-		if (vertex.isMeta())
-			checkMeta(vertex);
+		checkWellFormedMeta(vertex);
 		if (!isFlushTime)
 			checkIsAlive(vertex);
 		else if (!isOnAdd && vertex.isAlive())
@@ -64,10 +63,10 @@ public class Checker<T extends AbstractVertex<T>> {
 		}
 	}
 
-	private void checkMeta(T vertex) {
-		// TODO impl
-		// if (!vertex.getComponents().stream().allMatch(c -> c.isRoot()) || !Objects.equals(vertex.getValue(), getRoot().getValue()) || vertex.getSupers().size() != 1 || !vertex.getSupers().get(0).isMeta())
-		// discardWithException(new IllegalStateException("Malformed meta : " + vertex.info()));
+	private void checkWellFormedMeta(T vertex) {
+		if (vertex.isMeta())
+			if (!vertex.getComponents().stream().allMatch(c -> c.isRoot()) || !Objects.equals(vertex.getValue(), context.getRoot().getValue()) || vertex.getSupers().size() != 1 || !vertex.getSupers().get(0).isMeta())
+				context.discardWithException(new IllegalStateException("Malformed meta : " + vertex.info()));
 	}
 
 	private void checkDependenciesAreEmpty(T vertex) {
