@@ -1,7 +1,9 @@
 package org.genericsystem.kernel;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.testng.annotations.Test;
@@ -15,6 +17,33 @@ public class VertexTest extends AbstractTest {
 		Vertex car = engine.addInstance(vehicle, "Car");
 
 		assert vehicle.getInheritings().get().anyMatch(car::equals);
+	}
+
+	public void test001_doubleSupers() {
+		Root engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		List<Vertex> list = new ArrayList<>();
+
+		list.add(vehicle);
+		list.add(car);
+		Vertex sportCar = engine.addInstance(list, "SportCar");
+
+		assert sportCar.getSupers().contains(car);
+		assert sportCar.getSupers().size() == 1;
+	}
+
+	public void test002_doubleSupers() {
+		Root engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		List<Vertex> list = new ArrayList<>();
+		list.add(car);
+		list.add(vehicle);
+
+		Vertex sportCar = engine.addInstance(list, "SportCar");
+		assert sportCar.getSupers().contains(car);
+		assert sportCar.getSupers().size() == 1;
 	}
 
 	public void test001_getInstances() {
