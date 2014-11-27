@@ -2,7 +2,7 @@ package org.genericsystem.concurrency;
 
 import org.genericsystem.kernel.Dependencies;
 
-public abstract class AbstractVertex<V extends AbstractVertex<V>> extends org.genericsystem.cache.AbstractVertex<V> implements DefaultVertex<V>, Comparable<V> {
+public abstract class AbstractVertex<V extends AbstractVertex<V>> extends org.genericsystem.kernel.AbstractVertex<V> implements DefaultVertex<V>, Comparable<V> {
 
 	protected LifeManager lifeManager;
 
