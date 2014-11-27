@@ -44,7 +44,7 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 		V meta = unwrap(generic.getMeta());
 		List<V> supers = generic.getSupers().stream().map(this::unwrap).collect(Collectors.toList());
 		List<V> components = generic.getComponents().stream().map(this::unwrap).collect(Collectors.toList());
-		context.getBuilder().getOrNewT(null, meta, supers, generic.getValue(), components).plug();
+		context.getBuilder().getOrNewTPlugged(null, meta, supers, generic.getValue(), components);
 		return generic;
 	}
 

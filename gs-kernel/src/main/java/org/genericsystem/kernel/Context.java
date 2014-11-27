@@ -45,12 +45,14 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 	}
 
 	protected T plug(T generic) {
-		T result = generic != generic.getMeta() ? indexInstance(generic.getMeta(), generic) : (T) generic;
-		assert result == generic;
+		// T result = generic != generic.getMeta() ? indexInstance(generic.getMeta(), generic) : (T) generic;
+		// assert result == generic;
+		if (!generic.isMeta())
+			indexInstance(generic.getMeta(), generic);
 		generic.getSupers().forEach(superGeneric -> indexInheriting(superGeneric, generic));
-		generic.getComponents().stream().filter(component -> component != null).forEach(component -> indexComposite(component, generic));
+		generic.getComponents().stream().filter(component -> component != null).distinct().forEach(component -> indexComposite(component, generic));
 		checker.check(true, false, generic);
-		return result;
+		return generic;
 	}
 
 	protected boolean unplug(T generic) {

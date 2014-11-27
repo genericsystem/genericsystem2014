@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.AbstractMap;
 import java.util.Iterator;
+
 import org.genericsystem.api.core.IteratorSnapshot;
 
 public interface Dependencies<T> extends IteratorSnapshot<T> {
@@ -27,6 +28,7 @@ public interface Dependencies<T> extends IteratorSnapshot<T> {
 			add(vertex);
 			return vertex;
 		}
+		assert false;
 		return result;
 	}
 

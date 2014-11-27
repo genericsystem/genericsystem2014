@@ -35,20 +35,25 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public T getOrNewT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
+	public T getOrNewTPlugged(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
 		if (meta == null) {
 			T adjustedMeta = ((T) context.getRoot()).adjustMeta(components.size());
-			return adjustedMeta.getComponents().size() == components.size() ? adjustedMeta : newT(clazz, meta, supers, value, components);
+			return adjustedMeta.getComponents().size() == components.size() ? adjustedMeta : newT(clazz, meta, supers, value, components).plug();
 		}
-		T instance = meta.getDirectInstance(value, components);
-		return instance != null ? instance : newT(clazz, meta, supers, value, components);
+		T instance = get(clazz, meta, supers, value, components);
+		return instance != null ? instance : newT(clazz, meta, supers, value, components).plug();
+	}
+
+	private T get(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
+		return meta.getDirectInstance(value, components);
 	}
 
 	T getOrBuild(Class<?> clazz, T adjustMeta, List<T> overrides, Serializable value, List<T> components) {
 		checkIsAlive(overrides, components);
 		List<T> supers = new ArrayList<>(new SupersComputer<>(adjustMeta, overrides, value, components));
 		checkOverridesAreReached(overrides, supers);// TODO system constraints
-		return getOrNewT(clazz, adjustMeta, supers, value, components).plug();
+		T instance = get(clazz, adjustMeta, supers, value, components);
+		return instance != null ? instance : newT(clazz, adjustMeta, supers, value, components).plug();
 	}
 
 	T build(Class<?> clazz, T adjustMeta, List<T> overrides, Serializable value, List<T> components) {
@@ -109,7 +114,7 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 					List<T> overrides = dependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
 					List<T> components = dependency.getComponents().stream().map(x -> x != null ? convert(x) : null).collect(Collectors.toList());
 					T adjustMeta = convert(dependency.getMeta()).adjustMeta(dependency.getValue(), components);
-					newDependency = getOrBuild(dependency.getClass(), adjustMeta, overrides, dependency.getValue(), components).plug();
+					newDependency = getOrBuild(dependency.getClass(), adjustMeta, overrides, dependency.getValue(), components);
 				}
 				put(dependency, newDependency);
 				triggersDependencyUpdate(dependency, newDependency);
