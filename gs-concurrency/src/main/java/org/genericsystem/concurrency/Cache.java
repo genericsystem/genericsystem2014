@@ -15,18 +15,7 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 
 	protected Cache(DefaultContext<T> subContext) {
 		super(subContext);
-		init(new Checker<>(this), new AbstractBuilder<T, V>(this) {
-
-			@Override
-			protected T newT() {
-				return (T) new Generic();
-			}
-
-			@Override
-			protected T[] newTArray(int dim) {
-				return (T[]) new Generic[dim];
-			}
-		});
+		init(new Checker<>(this), (AbstractBuilder<T>) new GenericBuilder((Cache<Generic, ?>) this));
 	}
 
 	public long getTs() {
@@ -40,8 +29,8 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 	}
 
 	@Override
-	public AbstractBuilder<T, V> getBuilder() {
-		return (AbstractBuilder<T, V>) super.getBuilder();
+	public AbstractBuilder<T> getBuilder() {
+		return (AbstractBuilder<T>) super.getBuilder();
 	}
 
 	public void pickNewTs() throws RollbackException {
