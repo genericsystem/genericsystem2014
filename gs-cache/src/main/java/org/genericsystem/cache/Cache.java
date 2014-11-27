@@ -13,6 +13,7 @@ import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
+import org.genericsystem.kernel.Checker;
 import org.genericsystem.kernel.Context;
 import org.genericsystem.kernel.DefaultContext;
 import org.genericsystem.kernel.Dependencies;
@@ -43,7 +44,18 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 	protected Cache(DefaultContext<T> subContext) {
 		super(subContext.getRoot());
 		this.subContext = subContext;
-		builder = new Builder<T, V>(getRoot());
+		init(new Checker<>(getRoot()), new AbstractBuilder<T, V>(getRoot()) {
+
+			@Override
+			protected T newT() {
+				return (T) new Generic();
+			}
+
+			@Override
+			protected T[] newTArray(int dim) {
+				return (T[]) new Generic[dim];
+			}
+		});
 		clear();
 	}
 

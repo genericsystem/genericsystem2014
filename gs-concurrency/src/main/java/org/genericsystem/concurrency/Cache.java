@@ -3,6 +3,7 @@ package org.genericsystem.concurrency;
 import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.RollbackException;
+import org.genericsystem.kernel.Checker;
 import org.genericsystem.kernel.DefaultContext;
 import org.genericsystem.kernel.Statics;
 
@@ -14,7 +15,18 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 
 	protected Cache(DefaultContext<T> subContext) {
 		super(subContext);
-		builder = new Builder<>(getRoot());
+		init(new Checker<>(getRoot()), new AbstractBuilder<T, V>(getRoot()) {
+
+			@Override
+			protected T newT() {
+				return (T) new Generic();
+			}
+
+			@Override
+			protected T[] newTArray(int dim) {
+				return (T[]) new Generic[dim];
+			}
+		});
 	}
 
 	public long getTs() {
@@ -28,8 +40,8 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 	}
 
 	@Override
-	public Builder<T, V> getBuilder() {
-		return (Builder<T, V>) super.getBuilder();
+	public AbstractBuilder<T, V> getBuilder() {
+		return (AbstractBuilder<T, V>) super.getBuilder();
 	}
 
 	public void pickNewTs() throws RollbackException {

@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.genericsystem.cache.annotations.InstanceClass;
 
-public class Builder<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.kernel.Builder<T> {
+public abstract class AbstractBuilder<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.kernel.AbstractBuilder<T> {
 
-	public Builder(DefaultEngine<T, V> engine) {
+	public AbstractBuilder(DefaultEngine<T, V> engine) {
 		super(engine);
 	}
 
@@ -16,6 +16,24 @@ public class Builder<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V
 	public DefaultEngine<T, V> getRoot() {
 		return (DefaultEngine<T, V>) super.getRoot();
 	}
+
+	@Override
+	protected abstract T newT();
+
+	@Override
+	protected abstract T[] newTArray(int dim);
+
+	// @Override
+	// @SuppressWarnings("unchecked")
+	// protected T newT() {
+	// return (T) new Generic();
+	// }
+	//
+	// @Override
+	// @SuppressWarnings("unchecked")
+	// protected T[] newTArray(int dim) {
+	// return (T[]) new Generic[dim];
+	// }
 
 	@Override
 	public T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> composites) {

@@ -21,7 +21,7 @@ public class GenericsCache<T extends AbstractGeneric<T, ?>> {
 
 	@SuppressWarnings("unchecked")
 	public <subT extends T> subT getOrBuildT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> composites) {
-		T disposable = (T) ((org.genericsystem.cache.Builder) engine.getCurrentCache().getBuilder()).newT(clazz, meta).init(meta, supers, value, composites);
+		T disposable = (T) ((org.genericsystem.cache.AbstractBuilder) engine.getCurrentCache().getBuilder()).newT(clazz, meta).init(meta, supers, value, composites);
 		T result = map.get(disposable);
 		if (result != null)
 			return (subT) result;

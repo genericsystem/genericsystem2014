@@ -7,25 +7,28 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 
 	private final DefaultRoot<T> root;
 
-	private final Checker<T> checker;
+	private Checker<T> checker;
 
-	protected Builder<T> builder;
+	protected AbstractBuilder<T> builder;
 
-	public Context(DefaultRoot<T> root, Checker<T> checker, Builder<T> builder) {
+	public Context(DefaultRoot<T> root) {
 		this.root = root;
+	}
+
+	public void init(Checker<T> checker, AbstractBuilder<T> builder) {
 		this.checker = checker;
 		this.builder = builder;
 	}
 
-	public Context(DefaultRoot<T> root) {
-		this(root, new Checker<T>(root), new Builder<>(root));
-	}
+	// public Context(DefaultRoot<T> root) {
+	// this(root, new Checker<T>(root), new Builder<>(root));
+	// }
 
 	public Checker<T> getChecker() {
 		return checker;
 	}
 
-	public Builder<T> getBuilder() {
+	public AbstractBuilder<T> getBuilder() {
 		return builder;
 	}
 

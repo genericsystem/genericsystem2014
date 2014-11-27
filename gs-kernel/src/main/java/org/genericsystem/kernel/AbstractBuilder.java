@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class Builder<T extends AbstractVertex<T>> {
+public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 
 	private final DefaultRoot<T> root;
 
-	public Builder(DefaultRoot<T> root) {
+	public AbstractBuilder(DefaultRoot<T> root) {
 		this.root = root;
 	}
 
@@ -21,15 +21,19 @@ public class Builder<T extends AbstractVertex<T>> {
 		return root;
 	}
 
-	@SuppressWarnings("unchecked")
-	protected T newT() {
-		return ((T) root).newT();
-	}
+	protected abstract T newT();
 
-	@SuppressWarnings("unchecked")
-	protected T[] newTArray(int dim) {
-		return ((T) root).newTArray(dim);
-	}
+	protected abstract T[] newTArray(int dim);
+
+	// @SuppressWarnings("unchecked")
+	// protected T newT() {
+	// return (T) new Vertex();
+	// }
+	//
+	// @SuppressWarnings("unchecked")
+	// protected T[] newTArray(int dim) {
+	// return (T[]) new Vertex[dim];
+	// }
 
 	public T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
 		Checker<T> checker = root.getCurrentCache().getChecker();
