@@ -54,18 +54,24 @@ public class Builder<T extends AbstractVertex<T>> {
 		return instance != null ? instance : newT(clazz, meta, supers, value, components);
 	}
 
-	@SuppressWarnings("unchecked")
 	T getOrBuild(Class<?> clazz, T adjustMeta, List<T> overrides, Serializable value, List<T> components) {
-		List<T> supers = new ArrayList<>(new SupersComputer<>((T) getRoot(), adjustMeta, overrides, value, components));// TODO Order supers
+		checkIsAlive(overrides, components);
+		List<T> supers = new ArrayList<>(new SupersComputer<>(adjustMeta, overrides, value, components));
 		checkOverridesAreReached(overrides, supers);// TODO system constraints
 		return getOrNewT(clazz, adjustMeta, supers, value, components).plug();
 	}
 
-	@SuppressWarnings("unchecked")
 	T build(Class<?> clazz, T adjustMeta, List<T> overrides, Serializable value, List<T> components) {
-		List<T> supers = new ArrayList<>(new SupersComputer<>((T) getRoot(), adjustMeta, overrides, value, components));// TODO Order supers
+		checkIsAlive(overrides, components);
+		List<T> supers = new ArrayList<>(new SupersComputer<>(adjustMeta, overrides, value, components));
 		checkOverridesAreReached(overrides, supers);// TODO system constraints
 		return newT(clazz, adjustMeta, supers, value, components).plug();
+	}
+
+	private void checkIsAlive(List<T> overrides, List<T> components) {
+		Checker<T> checker = root.getCurrentCache().getChecker();
+		overrides.forEach(x -> checker.checkIsAlive(x));
+		components.stream().filter(component -> component != null).forEach(x -> checker.checkIsAlive(x));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -122,6 +128,7 @@ public class Builder<T extends AbstractVertex<T>> {
 		}
 	}
 
-	protected void triggersDependencyUpdate(T oldDependency, T newDependency) {}
+	protected void triggersDependencyUpdate(T oldDependency, T newDependency) {
+	}
 
 }
