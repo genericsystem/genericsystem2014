@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.util.Iterator;
+
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
 public class DependenciesImpl<T> implements Dependencies<T> {
