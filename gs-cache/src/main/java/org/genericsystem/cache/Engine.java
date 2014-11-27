@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.Statics;
 
 public class Engine extends Generic implements DefaultEngine<Generic, Vertex> {
@@ -73,11 +72,6 @@ public class Engine extends Generic implements DefaultEngine<Generic, Vertex> {
 	@Override
 	public <subT extends Generic> subT find(Class<subT> clazz) {
 		return (subT) systemCache.get(clazz);
-	}
-
-	@Override
-	public void discardWithException(Throwable exception) throws RollbackException {
-		DefaultEngine.super.discardWithException(exception);
 	}
 
 }

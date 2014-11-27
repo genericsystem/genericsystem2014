@@ -101,7 +101,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 	public void remove() {
 		// TODO KK this verification must go in simpleRemove....
 		if (getClass().getAnnotation(SystemGeneric.class) != null)
-			getRoot().discardWithException(new IllegalAccessException("@SystemGeneric annoted generic can't be removed"));
+			getCurrentCache().discardWithException(new IllegalAccessException("@SystemGeneric annoted generic can't be removed"));
 		super.remove();
 	}
 
