@@ -2,11 +2,11 @@ package org.genericsystem.concurrency;
 
 import org.genericsystem.cache.Cache.Listener;
 
-public class Builder<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.cache.Builder<T, V> {
+public abstract class AbstractBuilder<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.cache.AbstractBuilder<T, V> {
 
 	private Listener<T> listener;
 
-	public Builder(DefaultEngine<T, V> engine) {
+	public AbstractBuilder(DefaultEngine<T, V> engine) {
 		super(engine);
 	}
 

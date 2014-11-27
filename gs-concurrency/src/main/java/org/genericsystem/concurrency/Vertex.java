@@ -1,6 +1,7 @@
 package org.genericsystem.concurrency;
 
 import java.util.Iterator;
+
 import org.genericsystem.kernel.Dependencies;
 
 public class Vertex extends AbstractVertex<Vertex> implements DefaultVertex<Vertex> {
@@ -24,15 +25,15 @@ public class Vertex extends AbstractVertex<Vertex> implements DefaultVertex<Vert
 		return compositesDependencies;
 	}
 
-	@Override
-	public Vertex newT() {
-		return new Vertex().restore(getRoot().pickNewTs(), getRoot().getEngine().getCurrentCache().getTs(), 0L, Long.MAX_VALUE);
-	}
-
-	@Override
-	public Vertex[] newTArray(int dim) {
-		return new Vertex[dim];
-	}
+	// @Override
+	// public Vertex newT() {
+	// return new Vertex().restore(getRoot().pickNewTs(), getRoot().getEngine().getCurrentCache().getTs(), 0L, Long.MAX_VALUE);
+	// }
+	//
+	// @Override
+	// public Vertex[] newTArray(int dim) {
+	// return new Vertex[dim];
+	// }
 
 	@Override
 	protected Dependencies<Vertex> buildDependencies() {

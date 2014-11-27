@@ -83,12 +83,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 	}
 
 	@Override
-	protected abstract T newT();
-
-	@Override
-	protected abstract T[] newTArray(int dim);
-
-	@Override
 	protected T init(T meta, List<T> supers, Serializable value, List<T> composites) {
 		return super.init(meta, supers, value, composites);
 	}

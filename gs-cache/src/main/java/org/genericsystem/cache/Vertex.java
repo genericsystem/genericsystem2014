@@ -23,14 +23,4 @@ public class Vertex extends AbstractVertex<Vertex> implements DefaultVertex<Vert
 		return composites;
 	}
 
-	@Override
-	public Vertex newT() {
-		return new Vertex();
-	}
-
-	@Override
-	public Vertex[] newTArray(int dim) {
-		return new Vertex[dim];
-	}
-
 }
