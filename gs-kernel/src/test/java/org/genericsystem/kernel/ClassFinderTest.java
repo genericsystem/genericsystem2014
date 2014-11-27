@@ -180,7 +180,7 @@ public class ClassFinderTest extends AbstractTest {
 		assert vehiclePower.isAncestorOf(v233);
 		assert vehicle.isAncestorOf(v233);
 
-		Vertex car233 = vehiclePower.getCurrentCache().getBuilder().getOrBuild(null, vehiclePower, Collections.emptyList(), 233, Arrays.asList(car));
+		Vertex car233 = vehiclePower.getCurrentCache().getBuilder().getOrBuildPlugged(null, vehiclePower, Collections.emptyList(), 233, Arrays.asList(car));
 		car233.unplug();
 		assert v233.dependsFrom(vehiclePower, Collections.emptyList(), 233, Arrays.asList(car));
 		assert !car233.isAlive();

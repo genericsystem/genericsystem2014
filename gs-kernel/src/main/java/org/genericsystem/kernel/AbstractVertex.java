@@ -101,7 +101,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	public T update(List<T> overrides, Serializable newValue, T... newComponents) {
 		List<T> newComponentsList = Arrays.asList(newComponents);
 		T adjustMeta = getMeta().adjustOrBuildMeta(newValue, newComponentsList);
-		return getCurrentCache().getBuilder().rebuildAll((T) this, () -> getCurrentCache().getBuilder().getOrBuild(getClass(), adjustMeta, overrides, newValue, newComponentsList), computeDependencies());
+		return getCurrentCache().getBuilder().rebuildAll((T) this, () -> getCurrentCache().getBuilder().getOrBuildPlugged(getClass(), adjustMeta, overrides, newValue, newComponentsList), computeDependencies());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -113,7 +113,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		T equivInstance = adjustedMeta.getDirectInstance(value, componentList);
 		if (equivInstance != null)
 			getCurrentCache().discardWithException(new ExistsException("An equivalent instance already exists : " + equivInstance.info()));
-		return getCurrentCache().getBuilder().rebuildAll(null, () -> getCurrentCache().getBuilder().build(clazz, adjustedMeta, overrides, value, componentList), adjustedMeta.computePotentialDependencies(overrides, value, componentList));
+		return getCurrentCache().getBuilder().rebuildAll(null, () -> getCurrentCache().getBuilder().buildPlugged(clazz, adjustedMeta, overrides, value, componentList), adjustedMeta.computePotentialDependencies(overrides, value, componentList));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -125,7 +125,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		T equivInstance = adjustedMeta.getDirectEquivInstance(value, componentList);
 		if (equivInstance != null)
 			return equivInstance.equalsRegardlessSupers(adjustedMeta, value, componentList) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : equivInstance.update(overrides, value, components);
-		return getCurrentCache().getBuilder().rebuildAll(null, () -> getCurrentCache().getBuilder().build(clazz, adjustedMeta, overrides, value, componentList), adjustedMeta.computePotentialDependencies(overrides, value, componentList));
+		return getCurrentCache().getBuilder().rebuildAll(null, () -> getCurrentCache().getBuilder().buildPlugged(clazz, adjustedMeta, overrides, value, componentList), adjustedMeta.computePotentialDependencies(overrides, value, componentList));
 	}
 
 	@SuppressWarnings("unchecked")
