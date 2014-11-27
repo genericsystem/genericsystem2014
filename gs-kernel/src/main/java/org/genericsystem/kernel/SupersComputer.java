@@ -6,7 +6,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
-//TODO revisit this
 public class SupersComputer<T extends AbstractVertex<T>> extends LinkedHashSet<T> {
 
 	private static final long serialVersionUID = -1078004898524170057L;
@@ -18,15 +17,21 @@ public class SupersComputer<T extends AbstractVertex<T>> extends LinkedHashSet<T
 
 	private final Map<T, boolean[]> alreadyComputed = new HashMap<>();
 
-	public SupersComputer(T root, T meta, List<T> overrides, Serializable value, List<T> components) {
-		Context<T> currentCache = root.getCurrentCache();
-		overrides.forEach(x -> currentCache.getChecker().checkIsAlive(x));
-		components.stream().filter(component -> component != null).forEach(x -> currentCache.getChecker().checkIsAlive(x));
+	SupersComputer(T meta, List<T> overrides, Serializable value, List<T> components) {
+		assert meta != null;
 		this.meta = meta;
 		this.overrides = overrides;
 		this.components = components;
 		this.value = value;
-		visit(root);
+		selectSuper(meta);
+	}
+
+	private void selectSuper(T candidate) {
+		if (candidate.getSupers().size() == 0)
+			visit(candidate);
+		else
+			for (T superOfCandidate : candidate.getSupers())
+				selectSuper(superOfCandidate);
 	}
 
 	private boolean[] visit(T candidate) {

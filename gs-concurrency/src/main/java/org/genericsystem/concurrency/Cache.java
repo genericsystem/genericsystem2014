@@ -3,7 +3,6 @@ package org.genericsystem.concurrency;
 import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.RollbackException;
-import org.genericsystem.cache.AbstractBuilder;
 import org.genericsystem.kernel.Checker;
 import org.genericsystem.kernel.DefaultContext;
 import org.genericsystem.kernel.Statics;
