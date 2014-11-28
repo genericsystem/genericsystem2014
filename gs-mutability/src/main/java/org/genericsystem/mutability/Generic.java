@@ -4,9 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import javax.json.JsonObject;
-
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
@@ -25,12 +23,9 @@ public class Generic implements IVertex<Generic> {
 
 	protected org.genericsystem.concurrency.Generic unwrap(Generic genericM) {
 		org.genericsystem.concurrency.Generic generic = getCurrentCache().get(genericM);
-		if (generic != null)
-			return generic;
-		else {
+		if (generic == null)
 			engine.getConcurrencyEngine().getCurrentCache().discardWithException(new AliveConstraintViolationException("Your mutable is not still available. No generic matched"));
-			return null;
-		}
+		return generic;
 	}
 
 	protected List<Generic> wrap(List<org.genericsystem.concurrency.Generic> listT) {
