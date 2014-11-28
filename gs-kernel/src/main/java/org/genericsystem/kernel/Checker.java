@@ -10,6 +10,7 @@ import org.genericsystem.api.exception.CrossEnginesAssignementsException;
 import org.genericsystem.api.exception.GetInstanceConstraintViolationException;
 import org.genericsystem.api.exception.MetaLevelConstraintViolationException;
 import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
+import org.genericsystem.api.exception.NotAllowedSerializableTypeException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.annotations.Priority;
@@ -43,6 +44,7 @@ public class Checker<T extends AbstractVertex<T>> {
 			context.discardWithException(new AliveConstraintViolationException(vertex.info()));
 		if (!isOnAdd)
 			checkDependenciesAreEmpty(vertex);
+		checkSerializableType(vertex);
 		checkSameEngine(vertex);
 		checkDependsMetaComponents(vertex);
 		checkSupers(vertex);
@@ -50,6 +52,33 @@ public class Checker<T extends AbstractVertex<T>> {
 		checkLevel(vertex);
 		checkLevelComponents(vertex);
 		checkGetInstance(vertex);
+	}
+
+	private void checkSerializableType(T vertex) {
+		if (vertex.getValue() != null) {
+			if (vertex.getValue() instanceof org.genericsystem.kernel.systemproperty.AxedPropertyClass)
+				return;
+			if (vertex.getValue() instanceof Class)
+				return;
+			if (vertex.getValue() instanceof String)
+				return;
+			if (vertex.getValue() instanceof Integer)
+				return;
+			if (vertex.getValue() instanceof Boolean)
+				return;
+			if (vertex.getValue() instanceof byte[])
+				return;
+			if (vertex.getValue() instanceof Double)
+				return;
+			if (vertex.getValue() instanceof Float)
+				return;
+			if (vertex.getValue() instanceof Short)
+				return;
+			if (vertex.getValue() instanceof Long)
+				return;
+			context.discardWithException(new NotAllowedSerializableTypeException("Not allowed type for your serializable. Only primitive and Byte[] allowed."));
+		}
+
 	}
 
 	private void checkSameEngine(T vertex) {
