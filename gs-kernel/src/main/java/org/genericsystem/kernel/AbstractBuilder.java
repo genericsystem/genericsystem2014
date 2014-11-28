@@ -25,11 +25,7 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 	protected abstract T[] newTArray(int dim);
 
 	protected T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
-		Checker<T> checker = context.getChecker();
-		if (meta != null)
-			checker.checkIsAlive(meta);
-		supers.forEach(x -> checker.checkIsAlive(x));
-		components.stream().filter(component -> component != null).forEach(x -> checker.checkIsAlive(x));
+		checkIsAlive(meta, supers, components);
 		return newT(clazz, meta).init(meta, supers, value, components);
 	}
 
@@ -101,20 +97,19 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 	}
 
 	private T adjustAndBuild(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
-		checkIsAlive(overrides, components);
+		checkIsAlive(meta, overrides, components);
 		T adjustMeta = meta.adjustMeta(value, components);
 		List<T> supers = new ArrayList<>(new SupersComputer<>(adjustMeta, overrides, value, components));
-		checkOverridesAreReached(overrides, supers);// TODO system constraints
+		// TODO system constraints
+		if (!Statics.areOverridesReached(overrides, supers))
+			context.discardWithException(new IllegalStateException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
 		return newT(clazz, adjustMeta, supers, value, components).plug();
 	}
 
-	private void checkOverridesAreReached(List<T> overrides, List<T> supers) {
-		if (!Statics.areOverridesReached(overrides, supers))
-			context.discardWithException(new IllegalStateException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
-	}
-
-	private void checkIsAlive(List<T> overrides, List<T> components) {
+	private void checkIsAlive(T meta, List<T> overrides, List<T> components) {
 		Checker<T> checker = context.getChecker();
+		if (meta != null)
+			checker.checkIsAlive(meta);
 		overrides.forEach(x -> checker.checkIsAlive(x));
 		components.stream().filter(component -> component != null).forEach(x -> checker.checkIsAlive(x));
 	}
