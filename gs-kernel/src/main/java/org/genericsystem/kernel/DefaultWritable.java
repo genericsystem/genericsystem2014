@@ -4,19 +4,21 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
 import org.genericsystem.api.core.IVertex;
 
 public interface DefaultWritable<T extends AbstractVertex<T>> extends IVertex<T> {
+
 	@SuppressWarnings("unchecked")
 	@Override
 	default T addInstance(List<T> overrides, Serializable value, T... components) {
-		return ((T) this).addInstance(null, overrides, value, components);
+		return ((Context<T>) getCurrentCache()).getBuilder().addInstance(null, (T) this, overrides, value, components);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default T setInstance(List<T> overrides, Serializable value, T... components) {
-		return ((T) this).setInstance(null, overrides, value, components);
+		return ((Context<T>) getCurrentCache()).getBuilder().setInstance(null, (T) this, overrides, value, components);
 	}
 
 	@Override

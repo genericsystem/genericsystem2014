@@ -19,7 +19,7 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T, ?>> extends o
 	protected abstract T[] newTArray(int dim);
 
 	@Override
-	public T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> composites) {
+	protected T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> composites) {
 		return ((DefaultEngine<T, ?>) context.getRoot()).getOrBuildT(clazz, meta, supers, value, composites);
 	}
 
@@ -45,6 +45,21 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T, ?>> extends o
 		else
 			context.discardWithException(new InstantiationException(clazz + " must extends " + newT.getClass()));
 		return null; // Not reached
+	}
+
+	@Override
+	protected T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, T... components) {
+		return super.addInstance(clazz, meta, overrides, value, components);
+	}
+
+	@Override
+	protected T setInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, T... components) {
+		return super.setInstance(clazz, meta, overrides, value, components);
+	}
+
+	@Override
+	protected T setMeta(int dim) {
+		return super.setMeta(dim);
 	}
 
 }

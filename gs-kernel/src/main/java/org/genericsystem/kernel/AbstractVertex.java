@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
-import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 
@@ -99,43 +98,13 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	@SuppressWarnings("unchecked")
 	@Override
 	public T update(List<T> overrides, Serializable newValue, T... newComponents) {
-		List<T> newComponentsList = Arrays.asList(newComponents);
-		T adjustMeta = getMeta().adjustOrBuildMeta(newValue, newComponentsList);
-		return getCurrentCache().getBuilder().rebuildAll((T) this, () -> getCurrentCache().getBuilder().getOrBuildPlugged(getClass(), adjustMeta, overrides, newValue, newComponentsList), computeDependencies());
-	}
-
-	@SuppressWarnings("unchecked")
-	protected T addInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
-		List<T> componentList = Arrays.asList(components);
-		T adjustedMeta = adjustOrBuildMeta(value, componentList);
-		if (adjustedMeta.equalsRegardlessSupers(adjustedMeta, value, componentList) && Statics.areOverridesReached(overrides, adjustedMeta.getSupers()))
-			getCurrentCache().discardWithException(new ExistsException("An equivalent instance already exists : " + adjustedMeta.info()));
-		T equivInstance = adjustedMeta.getDirectInstance(value, componentList);
-		if (equivInstance != null)
-			getCurrentCache().discardWithException(new ExistsException("An equivalent instance already exists : " + equivInstance.info()));
-		return getCurrentCache().getBuilder().rebuildAll(null, () -> getCurrentCache().getBuilder().buildPlugged(clazz, adjustedMeta, overrides, value, componentList), adjustedMeta.computePotentialDependencies(overrides, value, componentList));
-	}
-
-	@SuppressWarnings("unchecked")
-	protected T setInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
-		List<T> componentList = Arrays.asList(components);
-		T adjustedMeta = adjustOrBuildMeta(value, componentList);
-		if (adjustedMeta.equalsRegardlessSupers(adjustedMeta, value, componentList) && Statics.areOverridesReached(overrides, adjustedMeta.getSupers()))
-			return adjustedMeta;
-		T equivInstance = adjustedMeta.getDirectEquivInstance(value, componentList);
-		if (equivInstance != null)
-			return equivInstance.equalsRegardlessSupers(adjustedMeta, value, componentList) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : equivInstance.update(overrides, value, components);
-		return getCurrentCache().getBuilder().rebuildAll(null, () -> getCurrentCache().getBuilder().buildPlugged(clazz, adjustedMeta, overrides, value, componentList), adjustedMeta.computePotentialDependencies(overrides, value, componentList));
+		return getCurrentCache().getBuilder().rebuildAll((T) this, () -> getCurrentCache().getBuilder().getOrAdjustAndBuild(getClass(), getMeta(), overrides, newValue, Arrays.asList(newComponents)), computeDependencies());
 	}
 
 	@SuppressWarnings("unchecked")
 	T getMeta(int dim) {
 		T adjustedMeta = ((T) getRoot()).adjustMeta(dim);
 		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
-	}
-
-	public T setMeta(int dim) {
-		return getCurrentCache().getBuilder().getOrReBuildMeta(dim);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -206,10 +175,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 				return node.dependsFrom((T) AbstractVertex.this, overrides, value, components);
 			}
 		}.visit((T) this);
-	}
-
-	T adjustOrBuildMeta(Serializable value, List<T> components) {
-		return isMeta() ? getCurrentCache().getBuilder().getOrReBuildMeta(components.size()) : adjustMeta(value, components);
 	}
 
 	protected T adjustMeta(Serializable value, @SuppressWarnings("unchecked") T... components) {

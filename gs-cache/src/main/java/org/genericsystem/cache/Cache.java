@@ -13,7 +13,6 @@ import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
-import org.genericsystem.kernel.AbstractBuilder;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Checker;
 import org.genericsystem.kernel.Context;
@@ -48,6 +47,11 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 		this.subContext = subContext;
 		init(new Checker<>(this), (AbstractBuilder<T>) new GenericBuilder((Cache<Generic, ?>) this));
 		clear();
+	}
+
+	@Override
+	public AbstractBuilder<T> getBuilder() {
+		return (AbstractBuilder<T>) super.getBuilder();
 	}
 
 	@Override

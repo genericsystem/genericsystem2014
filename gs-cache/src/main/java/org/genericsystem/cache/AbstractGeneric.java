@@ -32,17 +32,15 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 		return getCurrentCache().unplug((T) this);
 	}
 
-	@Override
 	@SuppressWarnings("unchecked")
 	protected T addInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
-		return super.addInstance(clazz, overrides, value, components);
+		return getCurrentCache().getBuilder().addInstance(clazz, (T) this, overrides, value, components);
 
 	}
 
-	@Override
 	@SuppressWarnings("unchecked")
 	protected T setInstance(Class<?> clazz, List<T> overrides, Serializable value, T... components) {
-		return super.setInstance(clazz, overrides, value, components);
+		return getCurrentCache().getBuilder().setInstance(clazz, (T) this, overrides, value, components);
 	}
 
 	@Override

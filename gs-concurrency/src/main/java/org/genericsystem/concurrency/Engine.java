@@ -40,8 +40,8 @@ public class Engine extends Generic implements DefaultEngine<Generic, Vertex> {
 	}
 
 	private void mountSystemProperties(Cache<Generic, Vertex> cache) {
-		Generic metaAttribute = setMeta(Statics.ATTRIBUTE_SIZE);
-		setMeta(Statics.RELATION_SIZE);
+		Generic metaAttribute = getCurrentCache().getBuilder().setMeta(Statics.ATTRIBUTE_SIZE);
+		getCurrentCache().getBuilder().setMeta(Statics.RELATION_SIZE);
 		setInstance(SystemMap.class, coerceToTArray(this)).enablePropertyConstraint();
 		metaAttribute.disableReferentialIntegrity(Statics.BASE_POSITION);
 	}

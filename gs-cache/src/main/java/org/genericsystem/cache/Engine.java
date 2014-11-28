@@ -21,8 +21,8 @@ public class Engine extends Generic implements DefaultEngine<Generic, Vertex> {
 		root = buildRoot(engineValue);
 
 		Cache<Generic, Vertex> cache = newCache().start();
-		Generic metaAttribute = setMeta(Statics.ATTRIBUTE_SIZE);
-		setMeta(Statics.RELATION_SIZE);
+		Generic metaAttribute = getCurrentCache().getBuilder().setMeta(Statics.ATTRIBUTE_SIZE);
+		getCurrentCache().getBuilder().setMeta(Statics.RELATION_SIZE);
 		setInstance(SystemMap.class, coerceToTArray(this)).enablePropertyConstraint();
 		metaAttribute.disableReferentialIntegrity(Statics.BASE_POSITION);
 		for (Class<?> clazz : userClasses)

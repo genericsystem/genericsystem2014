@@ -28,8 +28,8 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 		context = new Context<Vertex>(this);
 		context = context.init(new Checker<>(context), new VertextBuilder(context));
 
-		Vertex metaAttribute = setMeta(Statics.ATTRIBUTE_SIZE);
-		setMeta(Statics.RELATION_SIZE);
+		Vertex metaAttribute = context.getBuilder().setMeta(Statics.ATTRIBUTE_SIZE);
+		context.getBuilder().setMeta(Statics.RELATION_SIZE);
 		setInstance(SystemMap.class, coerceToTArray(this)).enablePropertyConstraint();
 		metaAttribute.disableReferentialIntegrity(Statics.BASE_POSITION);
 		if (persistentDirectoryPath != null) {

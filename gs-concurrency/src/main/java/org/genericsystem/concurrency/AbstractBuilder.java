@@ -21,4 +21,9 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T, ?>> extends o
 		this.listener = listener;
 	}
 
+	@Override
+	protected T setMeta(int dim) {
+		return super.setMeta(dim);
+	}
+
 }

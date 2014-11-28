@@ -186,7 +186,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 					T meta = loadAncestor(vertexMap);
 					List<T> supers = loadAncestors(vertexMap);
 					List<T> components = loadAncestors(vertexMap);
-					vertexMap.put(ts, root.getCurrentCache().getBuilder().getOrNewTPlugged(null, meta, supers, value, components));
+					vertexMap.put(ts, root.getCurrentCache().getBuilder().getOrBuild(null, meta, supers, value, components));
 				}
 		}
 
