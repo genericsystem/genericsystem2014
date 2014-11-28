@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.cache.annotations.SystemGeneric;
+import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.kernel.AbstractVertex<T> implements DefaultGeneric<T, V> {

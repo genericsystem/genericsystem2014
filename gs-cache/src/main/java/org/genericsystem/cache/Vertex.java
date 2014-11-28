@@ -1,5 +1,7 @@
 package org.genericsystem.cache;
 
+import org.genericsystem.kernel.AbstractVertex;
+import org.genericsystem.kernel.DefaultVertex;
 import org.genericsystem.kernel.Dependencies;
 
 public class Vertex extends AbstractVertex<Vertex> implements DefaultVertex<Vertex> {

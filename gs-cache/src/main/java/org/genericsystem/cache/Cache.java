@@ -14,6 +14,7 @@ import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.AbstractBuilder;
+import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Checker;
 import org.genericsystem.kernel.Context;
 import org.genericsystem.kernel.DefaultContext;
