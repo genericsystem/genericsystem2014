@@ -62,7 +62,7 @@ public class Engine extends Generic implements DefaultEngine<Generic, Vertex> {
 
 	@Override
 	public Generic getOrBuildT(Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> composites) {
-		return genericsCache.getOrBuildT(clazz, meta, supers, value, composites);
+		return genericsCache.getOrNewT(clazz, meta, supers, value, composites);
 	}
 
 	@Override

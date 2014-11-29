@@ -3,6 +3,7 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.Collections;
 
+import org.genericsystem.cache.AbstractBuilder.VertexBuilder;
 import org.genericsystem.kernel.Checker;
 import org.genericsystem.kernel.Context;
 

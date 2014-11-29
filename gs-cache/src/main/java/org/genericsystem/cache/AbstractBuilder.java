@@ -63,5 +63,41 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T, ?>> extends o
 	protected T setMeta(int dim) {
 		return super.setMeta(dim);
 	}
+	
+	public static class VertexBuilder extends org.genericsystem.kernel.AbstractBuilder<Vertex> {
+
+		public VertexBuilder(Context<Vertex> context) {
+			super(context);
+		}
+
+		@Override
+		protected Vertex newT() {
+			return new Vertex();
+		}
+
+		@Override
+		protected Vertex[] newTArray(int dim) {
+			return new Vertex[dim];
+		}
+
+	}
+	
+	public static class GenericBuilder extends AbstractBuilder<Generic> {
+
+		public GenericBuilder(Cache<Generic, ?> context) {
+			super(context);
+		}
+
+		@Override
+		protected Generic newT() {
+			return new Generic();
+		}
+
+		@Override
+		protected Generic[] newTArray(int dim) {
+			return new Generic[dim];
+		}
+
+	}
 
 }

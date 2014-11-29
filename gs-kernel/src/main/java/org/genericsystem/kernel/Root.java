@@ -3,6 +3,7 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.Collections;
 
+import org.genericsystem.kernel.AbstractBuilder.VertextBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
