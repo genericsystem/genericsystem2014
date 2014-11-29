@@ -62,11 +62,13 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 		return value != null && !Boolean.FALSE.equals(value);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default T enableReferentialIntegrity(int pos) {
 		return disableSystemProperty(NoReferentialIntegrityProperty.class, pos);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default T disableReferentialIntegrity(int pos) {
 		return enableSystemProperty(NoReferentialIntegrityProperty.class, pos);
@@ -77,11 +79,13 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 		return !isSystemPropertyEnabled(NoReferentialIntegrityProperty.class, pos);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default T enableSingularConstraint(int pos) {
 		return enableSystemProperty(SingularConstraint.class, pos);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default T disableSingularConstraint(int pos) {
 		return disableSystemProperty(SingularConstraint.class, pos);
@@ -92,11 +96,13 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 		return isSystemPropertyEnabled(SingularConstraint.class, pos);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default T enablePropertyConstraint() {
 		return enableSystemProperty(PropertyConstraint.class, Statics.NO_POSITION);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default T disablePropertyConstraint() {
 		return disableSystemProperty(PropertyConstraint.class, Statics.NO_POSITION);
@@ -107,11 +113,13 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 		return isSystemPropertyEnabled(PropertyConstraint.class, Statics.NO_POSITION);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default T enableUniqueValueConstraint() {
 		return enableSystemProperty(UniqueValueConstraint.class, Statics.NO_POSITION);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default T disableUniqueValueConstraint() {
 		return disableSystemProperty(UniqueValueConstraint.class, Statics.NO_POSITION);
@@ -159,11 +167,13 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 		return isSystemPropertyEnabled(RequiredConstraint.class, pos);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default T enableCascadeRemove(int pos) {
 		return enableSystemProperty(CascadeRemoveProperty.class, pos);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default T disableCascadeRemove(int pos) {
 		return disableSystemProperty(CascadeRemoveProperty.class, pos);
