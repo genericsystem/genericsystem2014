@@ -4,20 +4,15 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.genericsystem.kernel.AbstractVertex;
-import org.genericsystem.kernel.DefaultContext;
 
 public interface DefaultEngine<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.kernel.DefaultRoot<T>, DefaultGeneric<T, V> {
 
 	<subT extends T> subT find(Class<subT> clazz);
 
 	default Cache<T, V> newCache() {
-		return buildCache(new Transaction<>(getRoot()));
+		return new Cache<>(new Transaction<>(getRoot()));
 	}
-
-	default Cache<T, V> buildCache(DefaultContext<T> subContext) {
-		return new Cache<>(subContext);
-	}
-
+	
 	Cache<T, V> start(Cache<T, V> cache);
 
 	void stop(Cache<T, V> cache);

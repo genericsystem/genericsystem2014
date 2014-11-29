@@ -8,8 +8,13 @@ import org.genericsystem.kernel.Context;
 
 public abstract class AbstractBuilder<T extends AbstractGeneric<T, ?>> extends org.genericsystem.kernel.AbstractBuilder<T> {
 
-	public AbstractBuilder(Context<T> context) {
+	public AbstractBuilder(Cache<T,?> context) {
 		super(context);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Cache<T,?> getContext(){
+		return (Cache<T, ?>) super.getContext();
 	}
 
 	@Override
@@ -20,7 +25,7 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T, ?>> extends o
 
 	@Override
 	protected T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> composites) {
-		return ((DefaultEngine<T, ?>) context.getRoot()).getOrBuildT(clazz, meta, supers, value, composites);
+		return getContext().getRoot().getOrBuildT(clazz, meta, supers, value, composites);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -31,7 +36,7 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T, ?>> extends o
 			if (clazz == null || clazz.isAssignableFrom(metaAnnotation.value()))
 				clazz = metaAnnotation.value();
 			else if (!metaAnnotation.value().isAssignableFrom(clazz))
-				context.discardWithException(new InstantiationException(clazz + " must extends " + metaAnnotation.value()));
+				getContext().discardWithException(new InstantiationException(clazz + " must extends " + metaAnnotation.value()));
 		T newT = newT();// Instantiates T in all cases...
 
 		if (clazz == null || clazz.isAssignableFrom(newT.getClass()))
@@ -40,10 +45,10 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T, ?>> extends o
 			try {
 				return (T) clazz.newInstance();
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
-				context.discardWithException(e);
+				getContext().discardWithException(e);
 			}
 		else
-			context.discardWithException(new InstantiationException(clazz + " must extends " + newT.getClass()));
+			getContext().discardWithException(new InstantiationException(clazz + " must extends " + newT.getClass()));
 		return null; // Not reached
 	}
 

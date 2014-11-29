@@ -14,10 +14,14 @@ import org.genericsystem.api.exception.ExistsException;
 
 public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 
-	protected final Context<T> context;
+	private final Context<T> context;
 
 	public AbstractBuilder(Context<T> context) {
 		this.context = context;
+	}
+	
+	public Context<T> getContext(){
+		return  context;
 	}
 
 	protected abstract T newT();

@@ -3,7 +3,7 @@ package org.genericsystem.concurrency;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.genericsystem.kernel.Checker;
+import org.genericsystem.concurrency.AbstractBuilder.VertexBuilder;
 import org.genericsystem.kernel.Context;
 import org.genericsystem.kernel.Statics;
 
@@ -27,7 +27,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 		garbageCollector = new GarbageCollector<>(this);
 
 		context = new Context<Vertex>(this);
-		context.init(new Checker<>(context), new VertexBuilder(context));
+		context.init(new VertexBuilder(context));
 	}
 
 	public void buildAndStartArchiver(String persistentDirectoryPath) {

@@ -10,9 +10,9 @@ import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Context;
-import org.genericsystem.kernel.DefaultContext;
 
-public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> implements DefaultContext<T> {
+
+public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> implements org.genericsystem.kernel.DefaultContext<T> {
 
 	private transient final DefaultEngine<T, V> engine;
 
@@ -31,7 +31,6 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 		context.discardWithException(exception);
 	}
 
-	@Override
 	public boolean isAlive(T generic) {
 		return context.isAlive(unwrap(generic));
 	}
@@ -61,7 +60,6 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 		return engine;
 	}
 
-	@Override
 	public Snapshot<T> getInheritings(T generic) {
 		return () -> {
 			V vertex = unwrap(generic);
@@ -69,7 +67,6 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 		};
 	}
 
-	@Override
 	public Snapshot<T> getInstances(T generic) {
 		return () -> {
 			V vertex = unwrap(generic);
@@ -77,7 +74,6 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 		};
 	}
 
-	@Override
 	public Snapshot<T> getComposites(T generic) {
 		return () -> {
 			V vertex = unwrap(generic);

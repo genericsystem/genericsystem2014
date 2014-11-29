@@ -3,7 +3,7 @@ package org.genericsystem.concurrency;
 import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.RollbackException;
-import org.genericsystem.kernel.Checker;
+import org.genericsystem.concurrency.AbstractBuilder.GenericBuilder;
 import org.genericsystem.kernel.DefaultContext;
 import org.genericsystem.kernel.Statics;
 
@@ -15,12 +15,12 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 
 	protected Cache(DefaultContext<T> subContext) {
 		super(subContext);
-		init(new Checker<>(this), (AbstractBuilder<T>) new GenericBuilder((Cache<Generic, ?>) this));
+		init((AbstractBuilder<T>) new GenericBuilder((Cache<Generic, ?>) this));
 	}
 
 	public long getTs() {
 		DefaultContext<T> context = getSubContext();
-		return context instanceof Cache ? ((Cache<T, V>) context).getTs() : ((Transaction<T, V>) context).getTs();
+		return context instanceof Cache ? ((Cache<?, ?>) context).getTs() : ((Transaction<?,?>) context).getTs();
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 
 	public void pickNewTs() throws RollbackException {
 		if (getSubContext() instanceof Cache)
-			((Cache<T, V>) getSubContext()).pickNewTs();
+			((Cache<?,?>) getSubContext()).pickNewTs();
 		else {
 			long ts = getTs();
 			subContext = new Transaction<>(getRoot());
@@ -71,8 +71,9 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 		Throwable cause = null;
 		for (int attempt = 0; attempt < Statics.ATTEMPTS; attempt++)
 			try {
+				//TODO reactivate this
 				// if (getEngine().pickNewTs() - getTs() >= timeOut)
-				// throw new ConcurrencyControlException("The timestamp cache (" + getTs() + ") is begger than the life time out : " + Statics.LIFE_TIMEOUT);
+				// throw new ConcurrencyControlException("The timestamp cache (" + getTs() + ") is bigger than the life time out : " + Statics.LIFE_TIMEOUT);
 				checkConstraints();
 				applyChangesToSubContext();
 				clear();

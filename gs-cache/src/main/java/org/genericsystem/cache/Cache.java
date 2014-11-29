@@ -15,12 +15,11 @@ import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.cache.AbstractBuilder.GenericBuilder;
 import org.genericsystem.kernel.AbstractVertex;
-import org.genericsystem.kernel.Checker;
 import org.genericsystem.kernel.Context;
 import org.genericsystem.kernel.DefaultContext;
 import org.genericsystem.kernel.Dependencies;
 
-public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends Context<T> implements DefaultContext<T> {
+public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends Context<T> implements DefaultGenericContext<T> {
 
 	protected DefaultContext<T> subContext;
 
@@ -46,7 +45,7 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 	protected Cache(DefaultContext<T> subContext) {
 		super(subContext.getRoot());
 		this.subContext = subContext;
-		init(new Checker<>(this), (AbstractBuilder<T>) new GenericBuilder((Cache<Generic, ?>) this));
+		init((AbstractBuilder<T>) new GenericBuilder((Cache<Generic, ?>) this));
 		clear();
 	}
 
@@ -66,7 +65,7 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 	}
 
 	public Cache<T, V> mountAndStartNewCache() {
-		return getRoot().buildCache(this).start();
+		return new Cache<>(this).start();
 	}
 
 	public Cache<T, V> flushAndUnmount() {
@@ -112,12 +111,12 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 	protected void applyChangesToSubContext() throws ConcurrencyControlException, ConstraintViolationException {
 		DefaultContext<T> subContext = getSubContext();
 		if (subContext instanceof Cache) {
-			Cache<T, V> subCache = (Cache<T, V>) subContext;
+			Cache<T, ?> subCache = (Cache<T, ?>) subContext;
 			subCache.start();
 			subCache.apply(adds, removes);
 			subCache.stop();
 		} else
-			((Transaction<T, V>) subContext).apply(adds, removes);
+			((Transaction<T, ?>) subContext).apply(adds, removes);
 		start();
 	}
 
@@ -141,25 +140,21 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public DefaultEngine<T, V> getRoot() {
+	public DefaultEngine<T,V> getRoot() {
 		return (DefaultEngine<T, V>) subContext.getRoot();
 	}
 
-	protected DefaultContext<T> getSubContext() {
+	protected org.genericsystem.kernel.DefaultContext<T> getSubContext() {
 		return subContext;
 	}
 
-	// TODO Not public
-	@Override
-	public T plug(T generic) {
+	protected T plug(T generic) {
 		T result = super.plug(generic);
 		simpleAdd(generic);
 		return result;
 	}
 
-	// TODO Not public
-	@Override
-	public boolean unplug(T generic) {
+	protected boolean unplug(T generic) {
 		boolean result = super.unplug(generic);
 		return result && simpleRemove(generic);
 	}

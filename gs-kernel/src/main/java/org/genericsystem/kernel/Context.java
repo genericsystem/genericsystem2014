@@ -8,18 +8,17 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 
 	private final DefaultRoot<T> root;
 
-	private Checker<T> checker;
+	private final Checker<T> checker;
 
 	protected AbstractBuilder<T> builder;
 
 	public Context(DefaultRoot<T> root) {
 		this.root = root;
+		this.checker=new Checker<>(this);
 	}
 
-	public Context<T> init(Checker<T> checker, AbstractBuilder<T> builder) {
-		this.checker = checker;
+	public void init(AbstractBuilder<T> builder) {
 		this.builder = builder;
-		return this;
 	}
 
 	public void discardWithException(Throwable exception) throws RollbackException {
@@ -45,8 +44,6 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 	}
 
 	protected T plug(T generic) {
-		// T result = generic != generic.getMeta() ? indexInstance(generic.getMeta(), generic) : (T) generic;
-		// assert result == generic;
 		if (!generic.isMeta())
 			indexInstance(generic.getMeta(), generic);
 		generic.getSupers().forEach(superGeneric -> indexInheriting(superGeneric, generic));

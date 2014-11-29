@@ -2,12 +2,11 @@ package org.genericsystem.concurrency;
 
 import java.io.Serializable;
 import java.util.Iterator;
-import java.util.Map.Entry;
 
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
-public abstract class AbstractDependencies<T> implements Dependencies<T> {
+public abstract class AbstractDependencies<T extends AbstractVertex<T>> implements Dependencies<T> {
 
 	private Node<T> head = null;
 	private Node<T> tail = null;
@@ -93,7 +92,7 @@ public abstract class AbstractDependencies<T> implements Dependencies<T> {
 				}
 				next = nextNode;
 				T content = next.content;
-				if (content != null && (((content instanceof AbstractVertex) && ((AbstractVertex) content).isAlive(ts)) || ((content instanceof Entry) && ((AbstractVertex) ((Entry) content).getKey()).isAlive(ts))))
+				if (content != null && content.isAlive(ts))
 					break;
 			}
 		}

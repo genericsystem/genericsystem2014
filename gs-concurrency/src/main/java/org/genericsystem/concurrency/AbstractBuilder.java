@@ -7,7 +7,7 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T, ?>> extends o
 
 	private Listener<T> listener;
 
-	public AbstractBuilder(Context<T> context) {
+	public AbstractBuilder(Cache<T,?> context) {
 		super(context);
 	}
 
@@ -25,5 +25,41 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T, ?>> extends o
 	protected T setMeta(int dim) {
 		return super.setMeta(dim);
 	}
+	
+	public static class VertexBuilder extends org.genericsystem.kernel.AbstractBuilder<Vertex> {
+
+		public VertexBuilder(Context<Vertex> context) {
+			super(context);
+		}
+
+		@Override
+		protected Vertex newT() {
+			return new Vertex().restore(((Root) getContext().getRoot()).pickNewTs(), ((Root)  getContext().getRoot()).getEngine().getCurrentCache().getTs(), 0L, Long.MAX_VALUE);
+		}
+
+		@Override
+		protected Vertex[] newTArray(int dim) {
+			return new Vertex[dim];
+		}
+	}
+	
+	public static class GenericBuilder extends AbstractBuilder<Generic> {
+
+		public GenericBuilder(Cache<Generic, ?> context) {
+			super(context);
+		}
+
+		@Override
+		protected Generic newT() {
+			return new Generic();
+		}
+
+		@Override
+		protected Generic[] newTArray(int dim) {
+			return new Generic[dim];
+		}
+
+	}
+
 
 }
