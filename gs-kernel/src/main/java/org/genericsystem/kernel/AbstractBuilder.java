@@ -37,10 +37,10 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 	public T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
 		if (meta == null) {
 			T adjustedMeta = ((T) context.getRoot()).adjustMeta(components.size());
-			return adjustedMeta.getComponents().size() == components.size() ? adjustedMeta : newT(clazz, meta, supers, value, components).plug();
+			return adjustedMeta.getComponents().size() == components.size() ? adjustedMeta : context.plug(newT(clazz, meta, supers, value, components));
 		}
 		T instance = meta.getDirectInstance(value, components);
-		return instance != null ? instance : newT(clazz, meta, supers, value, components).plug();
+		return instance != null ? instance : context.plug(newT(clazz, meta, supers, value, components));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -77,7 +77,7 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 		List<T> components = new ArrayList<>(dim);
 		for (int i = 0; i < dim; i++)
 			components.add(root);
-		return rebuildAll(null, () -> newT(null, null, Collections.singletonList(adjustedMeta), root.getValue(), components).plug(), adjustedMeta.computePotentialDependencies(Collections.singletonList(adjustedMeta), root.getValue(), components));
+		return rebuildAll(null, () -> context.plug(newT(null, null, Collections.singletonList(adjustedMeta), root.getValue(), components)), adjustedMeta.computePotentialDependencies(Collections.singletonList(adjustedMeta), root.getValue(), components));
 	}
 
 	T getOrAdjustAndBuild(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
@@ -87,7 +87,7 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 	}
 
 	T rebuildAll(T toRebuild, Supplier<T> rebuilder, LinkedHashSet<T> dependenciesToRebuild) {
-		dependenciesToRebuild.forEach(T::unplug);
+		dependenciesToRebuild.forEach(context::unplug);
 		T build = rebuilder.get();
 		dependenciesToRebuild.remove(toRebuild);
 		ConvertMap convertMap = new ConvertMap();
@@ -103,7 +103,7 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 		// TODO system constraints
 		if (!Statics.areOverridesReached(overrides, supers))
 			context.discardWithException(new IllegalStateException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
-		return newT(clazz, adjustMeta, supers, value, components).plug();
+		return context.plug(newT(clazz, adjustMeta, supers, value, components));
 	}
 
 	private void checkIsAlive(T meta, List<T> overrides, List<T> components) {

@@ -83,16 +83,14 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	protected void forceRemove() {
-		computeDependencies().forEach(T::unplug);
-	}
-
-	private Iterable<T> getOrderedDependenciesToRemove() {
-		return Statics.reverseCollections(buildOrderedDependenciesToRemove());
+		Context<T> context = getCurrentCache();
+		computeDependencies().forEach(context::unplug);
 	}
 
 	@Override
 	public void remove() {
-		getOrderedDependenciesToRemove().forEach(T::unplug);
+		Context<T> context = getCurrentCache();
+		Statics.reverseCollections(buildOrderedDependenciesToRemove()).forEach(context::unplug);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -132,7 +130,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 			private static final long serialVersionUID = 4116681784718071815L;
 
 			@Override
-			boolean checkDependency(T node) {
+			boolean isSelected(T node) {
 				return isAncestorOf(node);
 			}
 		}.visit(getMeta());
@@ -171,7 +169,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 			private static final long serialVersionUID = -3611136800445783634L;
 
 			@Override
-			boolean checkDependency(T node) {
+			boolean isSelected(T node) {
 				return node.dependsFrom((T) AbstractVertex.this, overrides, value, components);
 			}
 		}.visit((T) this);
@@ -351,35 +349,18 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		System.arraycopy(targets, 0, composites, 1, targets.length);
 		return composites;
 	}
-
-	static interface SingularsLazyCache {
-		boolean get(int i);
-	}
-
-	boolean componentsDepends(List<T> subComponents, List<T> superComponents) {
-		class SingularsLazyCacheImpl implements SingularsLazyCache {
-			private final Boolean[] singulars = new Boolean[subComponents.size()];
-
-			@Override
-			public boolean get(int i) {
-				return singulars[i] != null ? singulars[i] : (singulars[i] = isSingularConstraintEnabled(i));
-			}
-		}
-		return componentsDepends(new SingularsLazyCacheImpl(), subComponents, superComponents);
-	}
-
+	
 	@SuppressWarnings("unchecked")
-	private boolean componentsDepends(SingularsLazyCache singulars, List<T> subComponents, List<T> superComponents) {
+	boolean componentsDepends(List<T> subComponents, List<T> superComponents) {
 		int subIndex = 0;
 		loop: for (T superComponent : superComponents) {
 			for (; subIndex < subComponents.size(); subIndex++) {
 				T subComponent = subComponents.get(subIndex);
 				if ((subComponent == null && superComponent == null) || (subComponent != null && superComponent != null && subComponent.isSpecializationOf(superComponent))
 						|| (subComponent == null && superComponent != null && this.isSpecializationOf(superComponent)) || (subComponent != null && superComponent == null && subComponent.isSpecializationOf((T) this))) {
-					if (singulars.get(subIndex))
+					if (isSingularConstraintEnabled(subIndex))
 						return true;
 					subIndex++;
-					getCurrentCache().getChecker().checkIsAlive((T) this);
 					continue loop;
 				}
 			}
@@ -410,21 +391,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return Objects.equals(subValue, superValue);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public Snapshot<T> getComposites() {
-		return getCurrentCache().getComposites((T) this);
-	}
-
-	@SuppressWarnings("unchecked")
-	protected T plug() {
-		return getCurrentCache().plug((T) this);
-	}
-
-	@SuppressWarnings("unchecked")
-	protected boolean unplug() {
-		return getCurrentCache().unplug((T) this);
-	}
+	
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -436,6 +403,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	@Override
 	public Snapshot<T> getInheritings() {
 		return getCurrentCache().getInheritings((T) this);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public Snapshot<T> getComposites() {
+		return getCurrentCache().getComposites((T) this);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -453,9 +426,5 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	Optional<T> getKey(AxedPropertyClass property) {
 		return getKeys().filter(x -> Objects.equals(x.getValue(), property)).findFirst();
-	}
-
-	private Stream<T> getKeys(Class<?> propertyClass) {
-		return getKeys().filter(x -> x.getValue() instanceof AxedPropertyClass && Objects.equals(((AxedPropertyClass) x.getValue()).getClazz(), propertyClass));
 	}
 }

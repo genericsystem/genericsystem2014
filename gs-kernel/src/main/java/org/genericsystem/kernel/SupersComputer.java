@@ -62,7 +62,7 @@ public class SupersComputer<T extends AbstractVertex<T>> extends LinkedHashSet<T
 		boolean[] selectableSelected = new boolean[] { selectable, true };
 		result = alreadyComputed.put(candidate, selectableSelected);
 		assert result == null : candidate.info();
-		if (selectableSelected[0] && (candidate.getLevel() == (meta == null ? 0 : meta.getLevel() + 1)) && !candidate.equals(meta, overrides, value, components)) {
+		if (selectableSelected[0] && (candidate.getLevel() ==  meta.getLevel() + 1) && !candidate.equals(meta, overrides, value, components)) {
 			add(candidate);
 			assert !candidate.isRoot();
 		}
