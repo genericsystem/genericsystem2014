@@ -3,11 +3,9 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
@@ -61,21 +59,21 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 		return super.init(meta, supers, value, composites);
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!(obj instanceof ISignature<?>))
-			return false;
-		ISignature<?> service = (ISignature<?>) obj;
-		return genericEquals(service);
-	}
-
-	@Override
-	public int hashCode() {
-		// TODO introduce : meta and composites length
-		return Objects.hashCode(getValue());
-	}
+	// @Override
+	// public boolean equals(Object obj) {
+	// if (this == obj)
+	// return true;
+	// if (!(obj instanceof ISignature<?>))
+	// return false;
+	// ISignature<?> service = (ISignature<?>) obj;
+	// return genericEquals(service);
+	// }
+	//
+	// @Override
+	// public int hashCode() {
+	// // TODO introduce : meta and composites length
+	// return Objects.hashCode(getValue());
+	// }
 
 	@Override
 	public void remove() {

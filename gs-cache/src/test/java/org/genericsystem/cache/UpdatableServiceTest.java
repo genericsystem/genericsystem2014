@@ -236,7 +236,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		Generic car = engine.addInstance(vehicle, "Car");
 
 		// when
-		car.updateSupers(vehicle);
+		car = car.updateSupers(vehicle);
 
 		// then
 		assert engine.isAlive();

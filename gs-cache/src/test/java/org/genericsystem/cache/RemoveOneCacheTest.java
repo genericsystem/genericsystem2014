@@ -100,7 +100,7 @@ public class RemoveOneCacheTest extends AbstractTest {
 		cache.clear();
 		Generic myBmwRed2 = myBmw.addHolder(color, "red");
 		cache.clear();
-		assert myBmwRed2.equals(myBmwRed);
+		assert !myBmwRed2.equals(myBmwRed);
 		assert !myBmwRed2.isAlive();
 
 		assert myBmw.getHolders(color).contains(myBmwBlue);
@@ -117,9 +117,11 @@ public class RemoveOneCacheTest extends AbstractTest {
 		Generic myBmwBlue = myBmw.addHolder(color, "blue");
 		cache.flush();
 		myBmwRed.remove();
-		myBmwRed = myBmw.addHolder(color, "red");
+		Generic myBmwRed2 = myBmw.addHolder(color, "red");
 		cache.clear();
+		assert myBmwRed.isAlive();
 		myBmwRed.remove();
+		assert !myBmwRed2.isAlive();
 
 		assert myBmw.getHolders(color).contains(myBmwBlue);
 		assert myBmw.getHolders(color).size() == 1;
@@ -137,8 +139,10 @@ public class RemoveOneCacheTest extends AbstractTest {
 		Generic myBmwBlue = myBmw.addHolder(color, "blue");
 		cache.clear();
 		myBmwRed.remove();
-		myBmwRed = myBmw.addHolder(color, "red");
+		Generic myBmwRed2 = myBmw.addHolder(color, "red");
 		cache.clear();
+		assert myBmwRed.isAlive();
+		assert !myBmwRed2.isAlive();
 		myBmwRed.remove();
 		assert myBmw.getHolders(color).size() == 0;
 	}
