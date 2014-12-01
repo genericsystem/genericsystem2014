@@ -19,9 +19,9 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 	public AbstractBuilder(Context<T> context) {
 		this.context = context;
 	}
-	
-	public Context<T> getContext(){
-		return  context;
+
+	public Context<T> getContext() {
+		return context;
 	}
 
 	protected abstract T newT();
@@ -142,7 +142,7 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 
 	protected void triggersDependencyUpdate(T oldDependency, T newDependency) {
 	}
-	
+
 	public static class VertextBuilder extends AbstractBuilder<Vertex> {
 
 		public VertextBuilder(Context<Vertex> context) {
@@ -160,6 +160,5 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 		}
 
 	}
-
 
 }

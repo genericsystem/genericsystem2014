@@ -36,7 +36,12 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T>> extends org.
 
 		@Override
 		protected Generic newT() {
-			return new Generic().restore(((Engine) getContext().getRoot()).pickNewTs(), Long.MAX_VALUE, 0L, Long.MAX_VALUE);
+			return new Generic();
+		}
+
+		@Override
+		protected Generic newT(Class<?> clazz, Generic meta) {
+			return super.newT(clazz, meta).restore(((Engine) getContext().getRoot()).pickNewTs(), Long.MAX_VALUE, 0L, Long.MAX_VALUE);
 		}
 
 		@Override
