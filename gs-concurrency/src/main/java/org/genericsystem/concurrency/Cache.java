@@ -84,7 +84,6 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 					stop();
 					((Transaction<T>) subContext).apply(adds, removes);
 				}
-
 			} catch (ConcurrencyControlException e) {
 				cause = e;
 				try {

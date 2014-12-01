@@ -22,16 +22,6 @@ public interface Dependencies<T> extends IteratorSnapshot<T> {
 		return null;
 	}
 
-	// default T set(T vertex) {
-	// T result = get(vertex);
-	// if (result == null) {
-	// add(vertex);
-	// return vertex;
-	// }
-	// assert false;
-	// return result;
-	// }
-
 	public static class DependenciesEntry<T> extends AbstractMap.SimpleImmutableEntry<T, Dependencies<T>> {
 
 		private static final long serialVersionUID = -1887797796331264050L;

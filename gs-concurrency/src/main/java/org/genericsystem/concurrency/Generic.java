@@ -1,43 +1,41 @@
 package org.genericsystem.concurrency;
 
-import java.util.Iterator;
 import org.genericsystem.kernel.Dependencies;
 
 public class Generic extends AbstractGeneric<Generic> implements DefaultGeneric<Generic> {
 
-	private final Dependencies<Generic> instances = buildDependencies();
-	private final Dependencies<Generic> inheritings = buildDependencies();
-	private final Dependencies<Generic> compositesDependencies = buildDependencies();
+	private final AbstractTimestampedDependencies<Generic> instancesDependencies = builTimestampeddDependencies();
+	private final AbstractTimestampedDependencies<Generic> inheritingsDependencies = builTimestampeddDependencies();
+	private final AbstractTimestampedDependencies<Generic> compositesDependencies = builTimestampeddDependencies();
 
 	@Override
-	protected Dependencies<Generic> getInstancesDependencies() {
-		return instances;
+	protected AbstractTimestampedDependencies<Generic> getInstancesTimestampedDependencies() {
+		return instancesDependencies;
 	}
 
 	@Override
-	protected Dependencies<Generic> getInheritingsDependencies() {
-		return inheritings;
+	protected AbstractTimestampedDependencies<Generic> getInheritingsTimestampedDependencies() {
+		return inheritingsDependencies;
 	}
 
 	@Override
-	protected Dependencies<Generic> getCompositesDependencies() {
+	protected AbstractTimestampedDependencies<Generic> getCompositesTimestampedDependencies() {
 		return compositesDependencies;
 	}
 
-	@Override
-	protected Dependencies<Generic> buildDependencies() {
-		return new AbstractDependencies<Generic>() {
+	private AbstractTimestampedDependencies<Generic> builTimestampeddDependencies() {
+		return new AbstractTimestampedDependencies<Generic>() {
 
 			@Override
 			public LifeManager getLifeManager() {
 				return Generic.this.getLifeManager();
 			}
-
-			@Override
-			public Iterator<Generic> iterator() {
-				return iterator(getRoot().getCurrentCache().getTs());
-			}
 		};
+	}
+
+	@Override
+	protected Dependencies<Generic> buildDependencies() {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

@@ -3,19 +3,17 @@ package org.genericsystem.concurrency;
 import java.io.Serializable;
 import java.util.Iterator;
 
-import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
-public abstract class AbstractDependencies<T extends AbstractGeneric<T>> implements Dependencies<T> {
+public abstract class AbstractTimestampedDependencies<T extends AbstractGeneric<T>> {
 
 	private Node<T> head = null;
 	private Node<T> tail = null;
 
 	public abstract LifeManager getLifeManager();
 
-	@Override
 	public void add(T element) {
-		assert !this.contains(element);
+		// assert !this.contains(element);
 		assert element != null;
 		Node<T> newNode = new Node<>(element);
 		if (head == null)
@@ -25,7 +23,6 @@ public abstract class AbstractDependencies<T extends AbstractGeneric<T>> impleme
 		tail = newNode;
 	}
 
-	@Override
 	public boolean remove(T generic) {
 		assert generic != null : "generic is null";
 		assert head != null : "head is null";
@@ -99,7 +96,6 @@ public abstract class AbstractDependencies<T extends AbstractGeneric<T>> impleme
 		}
 	}
 
-	@Override
 	public boolean isEmpty() {
 		return head == null;
 	}
@@ -115,4 +111,5 @@ public abstract class AbstractDependencies<T extends AbstractGeneric<T>> impleme
 			this.content = content;
 		}
 	}
+
 }
