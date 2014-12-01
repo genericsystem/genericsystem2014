@@ -15,7 +15,7 @@ public class Context<T extends AbstractGeneric<T>> extends org.genericsystem.ker
 		return (DefaultEngine<T>) super.getRoot();
 	}
 
-	void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
+	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
 		removes.forEach(this::unplug);
 		adds.forEach(this::plug);
 	}
