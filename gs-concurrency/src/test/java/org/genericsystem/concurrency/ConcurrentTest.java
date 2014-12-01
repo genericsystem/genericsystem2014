@@ -7,8 +7,8 @@ public class ConcurrentTest extends AbstractTest {
 
 	public void test() {
 		Engine engine = new Engine();
-		Cache<Generic, Vertex> cache = engine.getCurrentCache();
-		Cache<Generic, Vertex> cache2 = engine.newCache().start();
+		Cache<Generic> cache = engine.getCurrentCache();
+		Cache<Generic> cache2 = engine.newCache().start();
 		Generic car = engine.addInstance("Car");
 
 		assert cache2.isAlive(car);
@@ -26,7 +26,7 @@ public class ConcurrentTest extends AbstractTest {
 	public void testNonFlushedModificationsStillAliveInCache() {
 		Engine engine = new Engine();
 		Generic car = engine.addInstance("Car");
-		Cache<Generic, Vertex> cache = engine.getCurrentCache();
+		Cache<Generic> cache = engine.getCurrentCache();
 
 		assert cache.isAlive(car);
 		assert engine.getInstances().contains(car);
@@ -34,14 +34,14 @@ public class ConcurrentTest extends AbstractTest {
 
 	public void testFlushedModificationsAvailableInNewCacheOk() {
 		Engine engine = new Engine();
-		Cache<Generic, Vertex> cache = engine.getCurrentCache();
+		Cache<Generic> cache = engine.getCurrentCache();
 		Generic car = engine.addInstance("Car");
 		cache.flush();
 
 		assert cache.isAlive(car);
 		assert engine.getInstances().contains(car);
 
-		Cache<Generic, Vertex> cache2 = engine.newCache().start();
+		Cache<Generic> cache2 = engine.newCache().start();
 
 		assert cache2.isAlive(car);
 		assert engine.getInstances().contains(car);
@@ -49,13 +49,13 @@ public class ConcurrentTest extends AbstractTest {
 
 	public void testNonFlushedModificationsAreNotAvailableInNewCacheOk() {
 		Engine engine = new Engine();
-		Cache<Generic, Vertex> cache = engine.getCurrentCache();
+		Cache<Generic> cache = engine.getCurrentCache();
 		Generic car = engine.addInstance("Car");
 
 		assert cache.isAlive(car);
 		assert engine.getInstances().contains(car);
 
-		Cache<Generic, Vertex> cache2 = engine.newCache().start();
+		Cache<Generic> cache2 = engine.newCache().start();
 		assert !cache2.isAlive(car);
 		assert !engine.getInstances().contains(car);
 	}

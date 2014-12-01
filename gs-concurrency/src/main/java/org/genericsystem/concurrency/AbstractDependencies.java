@@ -2,11 +2,10 @@ package org.genericsystem.concurrency;
 
 import java.io.Serializable;
 import java.util.Iterator;
-
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
-public abstract class AbstractDependencies<T extends AbstractVertex<T>> implements Dependencies<T> {
+public abstract class AbstractDependencies<T extends AbstractGeneric<T>> implements Dependencies<T> {
 
 	private Node<T> head = null;
 	private Node<T> tail = null;

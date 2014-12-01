@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.cache.annotations.SystemGeneric;
@@ -62,37 +61,29 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 		return super.init(meta, supers, value, composites);
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!(obj instanceof ISignature<?>))
-			return false;
-		ISignature<?> service = (ISignature<?>) obj;
-		return genericEquals(service);
-	}
+	// @Override
+	// public boolean equals(Object obj) {
+	// if (this == obj)
+	// return true;
+	// if (!(obj instanceof ISignature<?>))
+	// return false;
+	// ISignature<?> service = (ISignature<?>) obj;
+	// return genericEquals(service);
+	// }
+	//
+	// @Override
+	// public int hashCode() {
+	// // TODO introduce : meta and composites length
+	// return Objects.hashCode(getValue());
+	// }
 
-	@Override
-	public int hashCode() {
-		// TODO introduce : meta and composites length
-		return Objects.hashCode(getValue());
-	}
 	
-	@Override
-	public void remove() {
-		// TODO KK this verification must go in simpleRemove....
-		if (getClass().getAnnotation(SystemGeneric.class) != null)
-			getCurrentCache().discardWithException(new IllegalAccessException("@SystemGeneric annoted generic can't be removed"));
-		super.remove();
-	}
-
-
 	@Override
 	protected abstract Dependencies<T> getInheritingsDependencies();
 
 	@Override
 	protected abstract Dependencies<T> getInstancesDependencies();
-	
+
 	@Override
 	protected abstract Dependencies<T> getCompositesDependencies();
 

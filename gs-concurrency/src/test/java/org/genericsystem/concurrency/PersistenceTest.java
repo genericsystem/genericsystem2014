@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-
 import org.genericsystem.cache.annotations.SystemGeneric;
 import org.genericsystem.kernel.Archiver.WriterLoaderManager.DependenciesOrder;
 import org.genericsystem.kernel.Statics;
@@ -19,7 +18,7 @@ public class PersistenceTest extends AbstractTest {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
 		Engine root = new Engine(Statics.ENGINE_VALUE, snapshot);
 		root.close();
-		compareGraph(root.unwrap(), new Engine(Statics.ENGINE_VALUE, snapshot).unwrap());
+		compareGraph(root, new Engine(Statics.ENGINE_VALUE, snapshot));
 	}
 
 	public void testAnnotType() {
@@ -28,7 +27,7 @@ public class PersistenceTest extends AbstractTest {
 		root.getCurrentCache().flush();
 		root.close();
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot, Vehicle.class);
-		compareGraph(root.unwrap(), engine.unwrap());
+		compareGraph(root, engine);
 		assert engine.find(Vehicle.class) instanceof Vehicle : engine.find(Vehicle.class).info();
 	}
 
@@ -39,19 +38,18 @@ public class PersistenceTest extends AbstractTest {
 		root.close();
 
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
-		compareGraph(root.unwrap(), engine.unwrap());
+		compareGraph(root, engine);
 		engine.getCurrentCache().flush();
 		engine.close();
 
 		Engine engine2 = new Engine(Statics.ENGINE_VALUE, snapshot, Vehicle.class);
-		compareGraph(engine.unwrap(), engine2.unwrap());
+		compareGraph(engine, engine2);
 
 		assert engine2.find(Vehicle.class) instanceof Vehicle : engine2.find(Vehicle.class).info();
 	}
 
 	@SystemGeneric
-	public static class Vehicle extends Generic {
-	}
+	public static class Vehicle extends Generic {}
 
 	public void testType() {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
@@ -59,7 +57,7 @@ public class PersistenceTest extends AbstractTest {
 		root.addInstance("Vehicle");
 		root.getCurrentCache().flush();
 		root.close();
-		compareGraph(root.unwrap(), new Engine(Statics.ENGINE_VALUE, snapshot).unwrap());
+		compareGraph(root, new Engine(Statics.ENGINE_VALUE, snapshot));
 	}
 
 	public void testHolder() {
@@ -71,7 +69,7 @@ public class PersistenceTest extends AbstractTest {
 		myVehicle.setHolder(vehiclePower, "123");
 		root.getCurrentCache().flush();
 		root.close();
-		compareGraph(root.unwrap(), new Engine(Statics.ENGINE_VALUE, snapshot).unwrap());
+		compareGraph(root, new Engine(Statics.ENGINE_VALUE, snapshot));
 	}
 
 	public void testAddAndRemove() {
@@ -83,7 +81,7 @@ public class PersistenceTest extends AbstractTest {
 		car.remove();
 		root.getCurrentCache().flush();
 		root.close();
-		compareGraph(root.unwrap(), new Engine(Statics.ENGINE_VALUE, snapshot).unwrap());
+		compareGraph(root, new Engine(Statics.ENGINE_VALUE, snapshot));
 	}
 
 	public void testLink() {
@@ -97,7 +95,7 @@ public class PersistenceTest extends AbstractTest {
 		myVehicle.setHolder(vehicleColor, "myVehicleRed", red);
 		root.getCurrentCache().flush();
 		root.close();
-		compareGraph(root.unwrap(), new Engine(Statics.ENGINE_VALUE, snapshot).unwrap());
+		compareGraph(root, new Engine(Statics.ENGINE_VALUE, snapshot));
 	}
 
 	public void testHeritageMultiple() {
@@ -108,7 +106,7 @@ public class PersistenceTest extends AbstractTest {
 		root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
 		root.getCurrentCache().flush();
 		root.close();
-		compareGraph(root.unwrap(), new Engine(Statics.ENGINE_VALUE, snapshot).unwrap());
+		compareGraph(root, new Engine(Statics.ENGINE_VALUE, snapshot));
 	}
 
 	public void testHeritageMultipleDiamond() {
@@ -120,7 +118,7 @@ public class PersistenceTest extends AbstractTest {
 		root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
 		root.getCurrentCache().flush();
 		root.close();
-		compareGraph(root.unwrap(), new Engine(Statics.ENGINE_VALUE, snapshot).unwrap());
+		compareGraph(root, new Engine(Statics.ENGINE_VALUE, snapshot));
 	}
 
 	public void testTree() {
@@ -133,7 +131,7 @@ public class PersistenceTest extends AbstractTest {
 		child.setNode("Child3");
 		root.getCurrentCache().flush();
 		root.close();
-		compareGraph(root.unwrap(), new Engine(Statics.ENGINE_VALUE, snapshot).unwrap());
+		compareGraph(root, new Engine(Statics.ENGINE_VALUE, snapshot));
 	}
 
 	public void testInheritanceTree() {
@@ -146,7 +144,7 @@ public class PersistenceTest extends AbstractTest {
 		child.setInheritingNode("Child3");
 		root.getCurrentCache().flush();
 		root.close();
-		compareGraph(root.unwrap(), new Engine(Statics.ENGINE_VALUE, snapshot).unwrap());
+		compareGraph(root, new Engine(Statics.ENGINE_VALUE, snapshot));
 	}
 
 	private static String cleanDirectory(String directoryPath) {
@@ -157,9 +155,9 @@ public class PersistenceTest extends AbstractTest {
 		return directoryPath;
 	}
 
-	private void compareGraph(Vertex persistedNode, Vertex readNode) {
-		List<Vertex> persistVisit = Statics.reverseCollections(new DependenciesOrder<Vertex>().visit(persistedNode));
-		List<Vertex> readVisit = Statics.reverseCollections(new DependenciesOrder<Vertex>().visit(readNode));
+	private void compareGraph(Generic persistedNode, Generic readNode) {
+		List<Generic> persistVisit = Statics.reverseCollections(new DependenciesOrder<Generic>().visit(persistedNode));
+		List<Generic> readVisit = Statics.reverseCollections(new DependenciesOrder<Generic>().visit(readNode));
 		assert persistVisit.size() == readVisit.size() : persistVisit + " \n " + readVisit;
 		for (int i = 0; i < persistVisit.size(); i++) {
 			assert persistVisit.get(i).genericEquals(readVisit.get(i)) : persistVisit + " \n " + readVisit;

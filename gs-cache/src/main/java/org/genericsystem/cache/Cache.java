@@ -6,18 +6,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.cache.AbstractBuilder.GenericBuilder;
+import org.genericsystem.cache.annotations.SystemGeneric;
 import org.genericsystem.kernel.Dependencies;
 
-public class Cache<T extends AbstractGeneric<T>> extends Context<T>  {
+public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 
-	private final Context<T> subContext;
+	protected Context<T> subContext;
 
 	private transient Map<T, Dependencies<T>> inheritingsDependencies;
 	private transient Map<T, Dependencies<T>> instancesDependencies;
@@ -43,6 +42,11 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T>  {
 		this.subContext = subContext;
 		init((AbstractBuilder<T>) new GenericBuilder((Cache<Generic>) this));
 		clear();
+	}
+
+	@Override
+	protected CacheChecker<T> buildChecker() {
+		return new CacheChecker<T>(this);
 	}
 
 	@Override
@@ -83,20 +87,19 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T>  {
 		return subContext instanceof Cache ? ((Cache<T>) subContext).start() : null;
 	}
 
-
 	public void flush() throws RollbackException {
 		if (!equals(getRoot().getCurrentCache()))
 			discardWithException(new CacheNoStartedException("The Cache isn't started"));
 		checkConstraints();
 		try {
-			if(subContext instanceof Cache)
+			if (subContext instanceof Cache)
 				((Cache<T>) subContext).start();
 			else
 				stop();
 			subContext.apply(adds, removes);
 		} catch (ConstraintViolationException e) {
 			discardWithException(e);
-		}finally {
+		} finally {
 			start();
 		}
 		clear();
@@ -113,8 +116,6 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T>  {
 	}
 
 	private boolean simpleRemove(T generic) {
-		if (!isAlive(generic))
-			discardWithException(new AliveConstraintViolationException(generic + " is not alive"));
 		if (!adds.remove(generic))
 			return removes.add(generic);
 		return true;
@@ -122,19 +123,21 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T>  {
 
 	@Override
 	public DefaultEngine<T> getRoot() {
-		return (DefaultEngine<T>) subContext.getRoot();
+		return subContext.getRoot();
 	}
 
 	protected org.genericsystem.kernel.DefaultContext<T> getSubContext() {
 		return subContext;
 	}
 
+	@Override
 	protected T plug(T generic) {
-		simpleAdd(generic);//do this first!!
+		simpleAdd(generic);// do this first!!
 		T result = super.plug(generic);
 		return result;
 	}
 
+	@Override
 	protected boolean unplug(T generic) {
 		boolean result = super.unplug(generic);
 		return result && simpleRemove(generic);
@@ -192,7 +195,23 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T>  {
 		return unIndex(((Dependencies<T>) getDependencies(compositesDependencies, () -> subContext.getComposites(generic).get(), generic)), composite);
 	}
 
-	public static interface Listener<X> {
-		void triggersDependencyUpdate(X oldDependency, X newDependency);
+
+	private static class CacheChecker<T extends AbstractGeneric<T>> extends org.genericsystem.kernel.Checker<T> {
+
+		private CacheChecker(Cache<T> context) {
+			super(context);
+		}
+
+		@Override
+		protected void checkSystemConstraints(boolean isOnAdd, boolean isFlushTime, T vertex) {
+			super.checkSystemConstraints(isOnAdd, isFlushTime, vertex);
+			checkRemoveGenericAnnoted(isOnAdd, vertex);
+		}
+
+		private void checkRemoveGenericAnnoted(boolean isOnAdd, T vertex) {
+			if (!isOnAdd && vertex.getClass().getAnnotation(SystemGeneric.class) != null)
+				getContext().discardWithException(new IllegalAccessException("@SystemGeneric annoted generic can't be removed"));
+		}
+
 	}
 }

@@ -29,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +65,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 	}
 
 	public Archiver(T root, FileManager fileManager, String directoryPath) {
-		this(new WriterLoaderManager<T>(root, fileManager), directoryPath);
+		this(new WriterLoaderManager<>(root, fileManager), directoryPath);
 	}
 
 	public Archiver(WriterLoaderManager<T> writerLoader, String directoryPath) {
@@ -171,8 +170,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 				Map<Long, T> vertexMap = new HashMap<>();
 				for (;;)
 					loadDependency(vertexMap);
-			} catch (EOFException ignore) {
-			} catch (ClassNotFoundException | IOException e) {
+			} catch (EOFException ignore) {} catch (ClassNotFoundException | IOException e) {
 				log.error(e.getMessage(), e);
 			}
 		}
