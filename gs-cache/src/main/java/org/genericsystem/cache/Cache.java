@@ -8,14 +8,13 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.cache.AbstractBuilder.GenericBuilder;
 import org.genericsystem.kernel.Dependencies;
 
-public class Cache<T extends AbstractGeneric<T>> extends Context<T>  {
+public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 
 	private final Context<T> subContext;
 
@@ -83,20 +82,19 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T>  {
 		return subContext instanceof Cache ? ((Cache<T>) subContext).start() : null;
 	}
 
-
 	public void flush() throws RollbackException {
 		if (!equals(getRoot().getCurrentCache()))
 			discardWithException(new CacheNoStartedException("The Cache isn't started"));
 		checkConstraints();
 		try {
-			if(subContext instanceof Cache)
+			if (subContext instanceof Cache)
 				((Cache<T>) subContext).start();
 			else
 				stop();
 			subContext.apply(adds, removes);
 		} catch (ConstraintViolationException e) {
 			discardWithException(e);
-		}finally {
+		} finally {
 			start();
 		}
 		clear();
@@ -113,8 +111,6 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T>  {
 	}
 
 	private boolean simpleRemove(T generic) {
-		if (!isAlive(generic))
-			discardWithException(new AliveConstraintViolationException(generic + " is not alive"));
 		if (!adds.remove(generic))
 			return removes.add(generic);
 		return true;
@@ -122,19 +118,21 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T>  {
 
 	@Override
 	public DefaultEngine<T> getRoot() {
-		return (DefaultEngine<T>) subContext.getRoot();
+		return subContext.getRoot();
 	}
 
 	protected org.genericsystem.kernel.DefaultContext<T> getSubContext() {
 		return subContext;
 	}
 
+	@Override
 	protected T plug(T generic) {
-		simpleAdd(generic);//do this first!!
+		simpleAdd(generic);// do this first!!
 		T result = super.plug(generic);
 		return result;
 	}
 
+	@Override
 	protected boolean unplug(T generic) {
 		boolean result = super.unplug(generic);
 		return result && simpleRemove(generic);
