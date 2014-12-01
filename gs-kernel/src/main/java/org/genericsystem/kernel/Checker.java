@@ -1,9 +1,9 @@
 package org.genericsystem.kernel;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.CrossEnginesAssignementsException;
@@ -44,15 +44,10 @@ public class Checker<T extends AbstractVertex<T>> {
 
 	protected void checkSystemConstraints(boolean isOnAdd, boolean isFlushTime, T vertex) {
 		checkWellFormedMeta(vertex);
-		if(isOnAdd || !isFlushTime)
+		if (isOnAdd || !isFlushTime)
 			checkIsAlive(vertex);
 		else
 			checkIsNotAlive(vertex);
-
-		//	if (!isFlushTime)
-		//		checkIsAlive(vertex);
-		//	else if (!isOnAdd && checkIsAlive(vertex))
-		//		context.discardWithException(new AliveConstraintViolationException(vertex.info()));
 		if (!isOnAdd)
 			checkDependenciesAreEmpty(vertex);
 		checkSerializableType(vertex);
@@ -66,26 +61,27 @@ public class Checker<T extends AbstractVertex<T>> {
 	}
 
 	private void checkSerializableType(T vertex) {
-		if (vertex.getValue() != null) {
-			if (vertex.getValue() instanceof org.genericsystem.kernel.systemproperty.AxedPropertyClass)
+		Serializable value = vertex.getValue();
+		if (value != null) {
+			if (value instanceof org.genericsystem.kernel.systemproperty.AxedPropertyClass)
 				return;
-			if (vertex.getValue() instanceof Class)
+			if (value instanceof Class)
 				return;
-			if (vertex.getValue() instanceof String)
+			if (value instanceof String)
 				return;
-			if (vertex.getValue() instanceof Integer)
+			if (value instanceof Integer)
 				return;
-			if (vertex.getValue() instanceof Boolean)
+			if (value instanceof Boolean)
 				return;
-			if (vertex.getValue() instanceof byte[])
+			if (value instanceof byte[])
 				return;
-			if (vertex.getValue() instanceof Double)
+			if (value instanceof Double)
 				return;
-			if (vertex.getValue() instanceof Float)
+			if (value instanceof Float)
 				return;
-			if (vertex.getValue() instanceof Short)
+			if (value instanceof Short)
 				return;
-			if (vertex.getValue() instanceof Long)
+			if (value instanceof Long)
 				return;
 			context.discardWithException(new NotAllowedSerializableTypeException("Not allowed type for your serializable. Only primitive and Byte[] allowed."));
 		}
@@ -144,20 +140,20 @@ public class Checker<T extends AbstractVertex<T>> {
 	}
 
 	private void checkSupers(T vertex) {
-		vertex.supers.forEach(x -> checkIsAlive(x));
-		if (!vertex.supers.stream().allMatch(superVertex -> superVertex.getLevel() == vertex.getLevel()))
-			context.discardWithException(new IllegalStateException("Inconsistant supers (bad level) : " + vertex.supers));
-		if (!vertex.supers.stream().allMatch(superVertex -> vertex.getMeta().inheritsFrom(superVertex.getMeta())))
-			context.discardWithException(new IllegalStateException("Inconsistant supers : " + vertex.supers));
-		if (!vertex.supers.stream().noneMatch(this::equals))
+		vertex.getSupers().forEach(x -> checkIsAlive(x));
+		if (!vertex.getSupers().stream().allMatch(superVertex -> superVertex.getLevel() == vertex.getLevel()))
+			context.discardWithException(new IllegalStateException("Inconsistant supers (bad level) : " + vertex.getSupers()));
+		if (!vertex.getSupers().stream().allMatch(superVertex -> vertex.getMeta().inheritsFrom(superVertex.getMeta())))
+			context.discardWithException(new IllegalStateException("Inconsistant supers : " + vertex.getSupers()));
+		if (!vertex.getSupers().stream().noneMatch(this::equals))
 			context.discardWithException(new IllegalStateException("Supers loop detected : " + vertex.info()));
-		if (vertex.supers.stream().anyMatch(superVertex -> Objects.equals(superVertex.getValue(), vertex.getValue()) && superVertex.getComponents().equals(vertex.getComponents()) && vertex.getMeta().inheritsFrom(superVertex.getMeta())))
+		if (vertex.getSupers().stream().anyMatch(superVertex -> Objects.equals(superVertex.getValue(), vertex.getValue()) && superVertex.getComponents().equals(vertex.getComponents()) && vertex.getMeta().inheritsFrom(superVertex.getMeta())))
 			context.discardWithException(new IllegalStateException("Collision detected : " + vertex.info()));
 	}
 
 	private void checkDependsSuperComponents(T vertex) {
 		vertex.getSupers().forEach(superVertex -> {
-			if (!superVertex.isSuperOf(vertex.getMeta(), vertex.supers, vertex.getValue(), vertex.getComponents()))
+			if (!superVertex.isSuperOf(vertex.getMeta(), vertex.getSupers(), vertex.getValue(), vertex.getComponents()))
 				context.discardWithException(new IllegalStateException("Inconsistant components : " + vertex.getComponents()));
 		});
 	}

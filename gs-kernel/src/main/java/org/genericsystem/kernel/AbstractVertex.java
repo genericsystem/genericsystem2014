@@ -19,7 +19,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	private T meta;
 	private List<T> components;
 	private Serializable value;
-	protected List<T> supers;
+	private List<T> supers;
 
 	@SuppressWarnings("unchecked")
 	protected T init(T meta, List<T> supers, Serializable value, List<T> components) {
