@@ -13,10 +13,10 @@ import org.genericsystem.cache.annotations.SystemGeneric;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 
-public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> extends org.genericsystem.kernel.AbstractVertex<T> implements DefaultGeneric<T, V> {
+public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends AbstractVertex<T> implements DefaultGeneric<T> {
 
 	@Override
-	public Cache<T, V> getCurrentCache() {
+	public Cache<T> getCurrentCache() {
 		return getRoot().getCurrentCache();
 	}
 
@@ -52,10 +52,9 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 		return super.computeDependencies();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public DefaultEngine<T, V> getRoot() {
-		return (DefaultEngine<T, V>) super.getRoot();
+	public DefaultEngine<T> getRoot() {
+		return (DefaultEngine<T>) super.getRoot();
 	}
 
 	@Override
@@ -74,6 +73,12 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 	}
 
 	@Override
+	public int hashCode() {
+		// TODO introduce : meta and composites length
+		return Objects.hashCode(getValue());
+	}
+	
+	@Override
 	public void remove() {
 		// TODO KK this verification must go in simpleRemove....
 		if (getClass().getAnnotation(SystemGeneric.class) != null)
@@ -81,26 +86,15 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T, V>, V extends
 		super.remove();
 	}
 
-	@Override
-	public int hashCode() {
-		// TODO introduce : meta and composites length
-		return Objects.hashCode(getValue());
-	}
 
 	@Override
-	protected Dependencies<T> getInheritingsDependencies() {
-		throw new UnsupportedOperationException();
-	}
+	protected abstract Dependencies<T> getInheritingsDependencies();
 
 	@Override
-	protected Dependencies<T> getInstancesDependencies() {
-		throw new UnsupportedOperationException();
-	}
-
+	protected abstract Dependencies<T> getInstancesDependencies();
+	
 	@Override
-	protected Dependencies<T> getCompositesDependencies() {
-		throw new UnsupportedOperationException();
-	}
+	protected abstract Dependencies<T> getCompositesDependencies();
 
 	// TODO remove this and tests of adjustMeta in cache layer ???
 	@SuppressWarnings("unchecked")

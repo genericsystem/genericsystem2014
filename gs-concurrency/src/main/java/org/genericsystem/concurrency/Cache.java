@@ -75,7 +75,7 @@ public class Cache<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>>
 				// if (getEngine().pickNewTs() - getTs() >= timeOut)
 				// throw new ConcurrencyControlException("The timestamp cache (" + getTs() + ") is bigger than the life time out : " + Statics.LIFE_TIMEOUT);
 				checkConstraints();
-				applyChangesToSubContext();
+				applyOnSubContext();
 				clear();
 				return;
 			} catch (ConcurrencyControlException e) {

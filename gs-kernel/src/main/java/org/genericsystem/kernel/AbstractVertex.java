@@ -105,26 +105,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
 	}
 
-	@SuppressWarnings("unchecked")
-	T getAlive() {
-		if (isRoot())
-			return (T) this;
-		if (isMeta()) {
-			T aliveMeta = getSupers().get(0).getAlive();
-			if (aliveMeta != null)
-				for (T inheritings : aliveMeta.getInheritings())
-					if (equals(inheritings))
-						return inheritings;
-		} else {
-			T aliveMeta = getMeta().getAlive();
-			if (aliveMeta != null)
-				for (T instance : aliveMeta.getInstances())
-					if (equals(instance))
-						return instance;
-		}
-		return null;
-	}
-
+	
 	protected LinkedHashSet<T> computeDependencies() {
 		return new DependenciesComputer<T>() {
 			private static final long serialVersionUID = 4116681784718071815L;

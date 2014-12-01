@@ -36,7 +36,7 @@ public class AnnotationTest extends AbstractTest {
 	public void test001_instanceof() {
 		Engine engine = new Engine(Vehicle.class);
 		assert engine.find(Vehicle.class) instanceof Vehicle;
-		assert engine.getInstance(Vehicle.class) instanceof Vehicle;
+		assert engine.getInstance(Vehicle.class) instanceof Vehicle : engine.find(Vehicle.class).info()+"   "+ engine.getInstance(Vehicle.class).info();
 		assert engine.getInstances().get().anyMatch(x -> x instanceof Vehicle);
 	}
 

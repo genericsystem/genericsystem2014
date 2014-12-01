@@ -4,17 +4,15 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.genericsystem.cache.annotations.InstanceClass;
-import org.genericsystem.kernel.Context;
 
-public abstract class AbstractBuilder<T extends AbstractGeneric<T, ?>> extends org.genericsystem.kernel.AbstractBuilder<T> {
+public abstract class AbstractBuilder<T extends AbstractGeneric<T>> extends org.genericsystem.kernel.AbstractBuilder<T> {
 
-	public AbstractBuilder(Cache<T,?> context) {
+	AbstractBuilder(Cache<T> context) {
 		super(context);
 	}
 	
-	@SuppressWarnings("unchecked")
-	public Cache<T,?> getContext(){
-		return (Cache<T, ?>) super.getContext();
+	public Cache<T> getContext(){
+		return (Cache<T>) super.getContext();
 	}
 
 	@Override
@@ -22,10 +20,10 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T, ?>> extends o
 
 	@Override
 	protected abstract T[] newTArray(int dim);
-
+	
 	@Override
-	protected T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> composites) {
-		return getContext().getRoot().getOrBuildT(clazz, meta, supers, value, composites);
+	protected T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
+		return super.newT(clazz, meta, supers, value, components);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -69,27 +67,10 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T, ?>> extends o
 		return super.setMeta(dim);
 	}
 	
-	public static class VertexBuilder extends org.genericsystem.kernel.AbstractBuilder<Vertex> {
-
-		public VertexBuilder(Context<Vertex> context) {
-			super(context);
-		}
-
-		@Override
-		protected Vertex newT() {
-			return new Vertex();
-		}
-
-		@Override
-		protected Vertex[] newTArray(int dim) {
-			return new Vertex[dim];
-		}
-
-	}
 	
 	public static class GenericBuilder extends AbstractBuilder<Generic> {
 
-		public GenericBuilder(Cache<Generic, ?> context) {
+		public GenericBuilder(Cache<Generic> context) {
 			super(context);
 		}
 

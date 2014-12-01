@@ -10,6 +10,7 @@ import org.genericsystem.api.exception.CrossEnginesAssignementsException;
 import org.genericsystem.api.exception.GetInstanceConstraintViolationException;
 import org.genericsystem.api.exception.MetaLevelConstraintViolationException;
 import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
+import org.genericsystem.api.exception.NotAliveConstraintViolationException;
 import org.genericsystem.api.exception.NotAllowedSerializableTypeException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
@@ -32,16 +33,26 @@ public class Checker<T extends AbstractVertex<T>> {
 	}
 
 	void checkIsAlive(T vertex) {
-		if (!vertex.isAlive())
+		if (!context.isAlive(vertex))
 			context.discardWithException(new AliveConstraintViolationException(vertex.info()));
 	}
 
-	private void checkSystemConstraints(boolean isOnAdd, boolean isFlushTime, T vertex) {
+	void checkIsNotAlive(T vertex) {
+		if (context.isAlive(vertex))
+			context.discardWithException(new NotAliveConstraintViolationException(vertex.info()));
+	}
+
+	protected void checkSystemConstraints(boolean isOnAdd, boolean isFlushTime, T vertex) {
 		checkWellFormedMeta(vertex);
-		if (!isFlushTime)
+		if(isOnAdd || !isFlushTime)
 			checkIsAlive(vertex);
-		else if (!isOnAdd && vertex.isAlive())
-			context.discardWithException(new AliveConstraintViolationException(vertex.info()));
+		else
+			checkIsNotAlive(vertex);
+
+		//	if (!isFlushTime)
+		//		checkIsAlive(vertex);
+		//	else if (!isOnAdd && checkIsAlive(vertex))
+		//		context.discardWithException(new AliveConstraintViolationException(vertex.info()));
 		if (!isOnAdd)
 			checkDependenciesAreEmpty(vertex);
 		checkSerializableType(vertex);
@@ -98,7 +109,7 @@ public class Checker<T extends AbstractVertex<T>> {
 	}
 
 	private void checkDependenciesAreEmpty(T vertex) {
-		if (!vertex.getInstances().isEmpty() || !vertex.getInheritings().isEmpty() || !vertex.getComposites().isEmpty())
+		if (!context.getInstances(vertex).isEmpty() || !context.getInheritings(vertex).isEmpty() || !context.getComposites(vertex).isEmpty())
 			context.discardWithException(new ReferentialIntegrityConstraintViolationException("Unable to remove : " + vertex.info() + " cause it has dependencies"));
 	}
 
@@ -152,7 +163,7 @@ public class Checker<T extends AbstractVertex<T>> {
 	}
 
 	private void checkGetInstance(T vertex) {
-		if (vertex.getMeta().getInstances().get().filter(x -> ((AbstractVertex<?>) x).equalsRegardlessSupers(vertex.getMeta(), vertex.getValue(), vertex.getComponents())).count() > 1)
+		if (context.getInstances(vertex.getMeta()).get().filter(x -> ((AbstractVertex<?>) x).equalsRegardlessSupers(vertex.getMeta(), vertex.getValue(), vertex.getComponents())).count() > 1)
 			context.discardWithException(new GetInstanceConstraintViolationException("get too many result for search : " + vertex.info()));
 	}
 

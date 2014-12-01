@@ -20,22 +20,22 @@ import org.genericsystem.kernel.AbstractVertex.SystemMap;
 import org.genericsystem.kernel.Root.MetaAttribute;
 import org.genericsystem.kernel.Statics;
 
-public class SystemCache<T extends AbstractGeneric<T, ?>> extends HashMap<Class<?>, T> {
+public class SystemCache<T extends AbstractGeneric<T>> extends HashMap<Class<?>, T> {
 
 	private static final long serialVersionUID = 1150085123612887245L;
 
 	protected boolean initialized = false;
 
-	private final T root;
+	private final T engine;
 
-	public SystemCache(T root) {
-		this.root = root;
-		put(Root.class, root);
+	public SystemCache(T engine) {
+		this.engine = engine;
+		put(Engine.class, engine);
 	}
 
 	public void init(Class<?>... userClasses) {
-		put(MetaAttribute.class, root.setInstance(root, root.getValue(), root.coerceToTArray(root)));
-		put(SystemMap.class, root.setInstance(SystemMap.class, root.coerceToTArray(root)).enablePropertyConstraint());
+		put(MetaAttribute.class, engine.setInstance(engine, engine.getValue(), engine.coerceToTArray(engine)));
+		put(SystemMap.class, engine.setInstance(SystemMap.class, engine.coerceToTArray(engine)).enablePropertyConstraint());
 		for (Class<?> clazz : userClasses)
 			set(clazz);
 		initialized = true;
@@ -50,7 +50,7 @@ public class SystemCache<T extends AbstractGeneric<T, ?>> extends HashMap<Class<
 			return systemProperty;
 		}
 		T meta = setMeta(clazz);
-		T result = root.getCurrentCache().getBuilder().setInstance(clazz,meta, setOverrides(clazz), findValue(clazz), meta.coerceToTArray(setComponents(clazz).toArray()));
+		T result = engine.getCurrentCache().getBuilder().setInstance(clazz,meta, setOverrides(clazz), findValue(clazz), meta.coerceToTArray(setComponents(clazz).toArray()));
 		put(clazz, result);
 		mountConstraints(result, clazz);
 		triggersDependencies(clazz);
@@ -87,7 +87,7 @@ public class SystemCache<T extends AbstractGeneric<T, ?>> extends HashMap<Class<
 
 	private T setMeta(Class<?> clazz) {
 		Meta meta = clazz.getAnnotation(Meta.class);
-		return meta == null ? (T) root : set(meta.value());
+		return meta == null ? (T) engine : set(meta.value());
 	}
 
 	private List<T> setOverrides(Class<?> clazz) {

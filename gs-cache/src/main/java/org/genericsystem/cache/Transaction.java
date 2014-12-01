@@ -1,38 +1,31 @@
 package org.genericsystem.cache;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
-import org.genericsystem.kernel.AbstractVertex;
-import org.genericsystem.kernel.Context;
+import org.genericsystem.kernel.Checker;
 
 
-public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVertex<V>> implements org.genericsystem.kernel.DefaultContext<T> {
 
-	private transient final DefaultEngine<T, V> engine;
+public class Transaction<T extends AbstractGeneric<T>> extends Context<T>   {
 
-	protected final TransactionCache<T, V> vertices;
-
-	private final Context<V> context;
-
-	@SuppressWarnings("unchecked")
-	protected Transaction(DefaultEngine<T, V> engine) {
-		this.engine = engine;
-		vertices = new TransactionCache<>(engine);
-		context = unwrap((T) engine).getCurrentCache();
+	protected Transaction(DefaultEngine<T> engine) {
+		super(engine);
 	}
-
-	public void discardWithException(Throwable exception) throws RollbackException {
-		context.discardWithException(exception);
+	
+	private static class TransactionChecker<T extends AbstractGeneric<T> >extends Checker<T> {
+		private TransactionChecker(Transaction<T> transaction) {
+			super(transaction);
+		}
+		@Override
+		public void check(boolean isOnAdd, boolean isFlushTime, T vertex)throws RollbackException {
+			checkSystemConstraints(isOnAdd, isFlushTime, vertex);// Check only system constraints on transactions
+		}
 	}
-
-	public boolean isAlive(T generic) {
-		return context.isAlive(unwrap(generic));
+	
+	@Override
+	protected Checker<T> buildChecker(){
+		return new TransactionChecker<T>(this);
 	}
 
 	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
@@ -41,51 +34,16 @@ public class Transaction<T extends AbstractGeneric<T, V>, V extends AbstractVert
 	}
 
 	protected T plug(T generic) {
-		V meta = unwrap(generic.getMeta());
-		List<V> supers = generic.getSupers().stream().map(this::unwrap).collect(Collectors.toList());
-		List<V> components = generic.getComponents().stream().map(this::unwrap).collect(Collectors.toList());
-		context.getBuilder().getOrBuild(null, meta, supers, generic.getValue(), components);
-		return generic;
+		return super.plug(generic);
 	}
 
-	// TODO remove should return a boolean.
 	protected boolean unplug(T generic) {
-		unwrap(generic).remove();
-		vertices.put(generic, null);
-		return true;
+		return super.unplug(generic);
 	}
 
 	@Override
-	public DefaultEngine<T, V> getRoot() {
-		return engine;
+	public DefaultEngine<T> getRoot() {
+		return (DefaultEngine<T>) super.getRoot();
 	}
 
-	public Snapshot<T> getInheritings(T generic) {
-		return () -> {
-			V vertex = unwrap(generic);
-			return vertex != null ? context.getInheritings(vertex).get().map(this::wrap) : Stream.empty();
-		};
-	}
-
-	public Snapshot<T> getInstances(T generic) {
-		return () -> {
-			V vertex = unwrap(generic);
-			return vertex != null ? context.getInstances(vertex).get().map(this::wrap) : Stream.empty();
-		};
-	}
-
-	public Snapshot<T> getComposites(T generic) {
-		return () -> {
-			V vertex = unwrap(generic);
-			return vertex != null ? context.getComposites(vertex).get().map(this::wrap) : Stream.empty();
-		};
-	}
-
-	protected V unwrap(T generic) {
-		return generic == null ? null : vertices.get(generic);
-	}
-
-	protected T wrap(V vertex) {
-		return vertices.getByValue(vertex);
-	}
 }

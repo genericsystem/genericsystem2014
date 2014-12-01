@@ -14,7 +14,11 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 
 	public Context(DefaultRoot<T> root) {
 		this.root = root;
-		this.checker=new Checker<>(this);
+		this.checker=buildChecker();
+	}
+	
+	protected Checker<T> buildChecker(){
+		return new Checker<>(this);
 	}
 
 	public void init(AbstractBuilder<T> builder) {
@@ -40,7 +44,7 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 
 	@Override
 	public boolean isAlive(T vertex) {
-		return vertex != null && vertex.isAlive();
+		return vertex != null && vertex.equals(getAlive(vertex));
 	}
 
 	protected T plug(T generic) {
@@ -60,6 +64,25 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 		generic.getSupers().forEach(superGeneric -> unIndexInheriting(superGeneric, generic));
 		generic.getComponents().stream().filter(component -> component != null).forEach(component -> unIndexComposite(component, generic));
 		return result;
+	}
+	
+	private T getAlive(T vertex) {
+		if (vertex.isRoot())
+			return vertex;
+		if (vertex.isMeta()) {
+			T aliveSuper = getAlive(vertex.getSupers().get(0));
+			if (aliveSuper != null)
+				for (T inheriting : getInheritings(aliveSuper))
+					if (vertex.equals(inheriting))
+						return inheriting;
+		} else {
+			T aliveMeta = getAlive(vertex.getMeta());
+			if (aliveMeta != null)
+				for (T instance : getInstances(aliveMeta))
+					if (vertex.equals(instance))
+						return instance;
+		}
+		return null;
 	}
 
 	@Override

@@ -12,11 +12,14 @@ public interface DefaultAncestors<T extends AbstractVertex<T>> extends IVertex<T
 	default boolean isRoot() {
 		return this.equals(getRoot());
 	}
+	
+	@Override
+	abstract Context<T> getCurrentCache();
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default boolean isAlive() {
-		return equals(((T) this).getAlive());
+		return getCurrentCache().isAlive((T)this);
 	}
 
 	@Override

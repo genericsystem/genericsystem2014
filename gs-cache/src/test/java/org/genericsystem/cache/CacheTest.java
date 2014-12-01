@@ -77,8 +77,8 @@ public class CacheTest extends AbstractTest {
 
 	public void test001_mountNewCache_nostarted() {
 		Engine engine = new Engine();
-		Cache<Generic, Vertex> currentCache = engine.getCurrentCache();
-		Cache<Generic, Vertex> mountNewCache = currentCache.mountAndStartNewCache();
+		Cache<Generic> currentCache = engine.getCurrentCache();
+		Cache<Generic> mountNewCache = currentCache.mountAndStartNewCache();
 		currentCache.start();
 
 		catchAndCheckCause(() -> mountNewCache.flush(), CacheNoStartedException.class);
@@ -86,10 +86,11 @@ public class CacheTest extends AbstractTest {
 
 	public void test002_mountNewCache() {
 		Engine engine = new Engine();
-		Cache<Generic, Vertex> cache = engine.newCache().start();
-		Cache<Generic, Vertex> currentCache = engine.getCurrentCache();
+		Cache<Generic> cache = engine.newCache().start();
+		Cache<Generic> currentCache = engine.getCurrentCache();
 		assert cache == currentCache;
-		Cache<Generic, Vertex> mountNewCache = currentCache.mountAndStartNewCache();
+		Cache<Generic> mountNewCache = currentCache.mountAndStartNewCache();
+		engine.getCurrentCache();
 		assert mountNewCache.getSubContext() == currentCache;
 		assert mountNewCache != currentCache;
 		engine.addInstance("Vehicle");
@@ -99,10 +100,10 @@ public class CacheTest extends AbstractTest {
 
 	public void test005_TwoComponentsWithSameMetaInDifferentCaches_remove() {
 		Engine engine = new Engine();
-		Cache<Generic, Vertex> currentCache = engine.getCurrentCache();
+		Cache<Generic> currentCache = engine.getCurrentCache();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic vehiclePower = engine.addInstance("vehiclePower", vehicle);
-		Cache<Generic, Vertex> mountNewCache = currentCache.mountAndStartNewCache();
+		Cache<Generic> mountNewCache = currentCache.mountAndStartNewCache();
 		assert engine.getCurrentCache() == mountNewCache;
 		assert vehiclePower.isAlive();
 		assert !vehicle.getComposites().isEmpty() : vehicle.getComposites().get().collect(Collectors.toList());
