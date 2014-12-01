@@ -14,10 +14,10 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 
 	public Context(DefaultRoot<T> root) {
 		this.root = root;
-		this.checker=buildChecker();
+		this.checker = buildChecker();
 	}
-	
-	protected Checker<T> buildChecker(){
+
+	protected Checker<T> buildChecker() {
 		return new Checker<>(this);
 	}
 
@@ -65,7 +65,7 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 		generic.getComponents().stream().filter(component -> component != null).forEach(component -> unIndexComposite(component, generic));
 		return result;
 	}
-	
+
 	private T getAlive(T vertex) {
 		if (vertex.isRoot())
 			return vertex;

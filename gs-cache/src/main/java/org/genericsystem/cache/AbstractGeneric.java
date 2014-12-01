@@ -3,12 +3,9 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.cache.annotations.SystemGeneric;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 
@@ -77,7 +74,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 	// return Objects.hashCode(getValue());
 	// }
 
-	
 	@Override
 	protected abstract Dependencies<T> getInheritingsDependencies();
 

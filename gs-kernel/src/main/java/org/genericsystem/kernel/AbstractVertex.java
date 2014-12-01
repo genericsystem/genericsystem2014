@@ -105,7 +105,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
 	}
 
-	
 	protected LinkedHashSet<T> computeDependencies() {
 		return new DependenciesComputer<T>() {
 			private static final long serialVersionUID = 4116681784718071815L;
@@ -230,6 +229,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return componentsList.equals(components);
 	}
 
+	// TODO à supprimer ?
 	public boolean genericEquals(ISignature<?> service) {
 		if (this == service)
 			return true;
@@ -255,6 +255,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return true;
 	}
 
+	// TODO à supprimer ?
 	static <T extends AbstractVertex<T>> boolean componentsGenericEquals(AbstractVertex<T> component, ISignature<?> compare) {
 		return (component == compare) || (component != null && component.genericEquals(compare));
 	}
@@ -330,7 +331,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		System.arraycopy(targets, 0, composites, 1, targets.length);
 		return composites;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	boolean componentsDepends(List<T> subComponents, List<T> superComponents) {
 		int subIndex = 0;
@@ -372,8 +373,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return Objects.equals(subValue, superValue);
 	}
 
-	
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public Snapshot<T> getInstances() {
@@ -385,7 +384,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	public Snapshot<T> getInheritings() {
 		return getCurrentCache().getInheritings((T) this);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public Snapshot<T> getComposites() {

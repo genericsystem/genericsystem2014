@@ -176,10 +176,11 @@ public class RemoveManyCachesTest extends AbstractTest {
 		assert myBmw.getHolders(color).contains(myBmwBlue);
 		assert myBmw.getHolders(color).size() == 3;
 		cache2.start();
+		assert myBmwRed.isAlive();
 		myBmwRed.remove();
-		myBmwRed = myBmw.addHolder(color, "red");
+		Generic newMyBmwRed = myBmw.addHolder(color, "red");
 
-		assert myBmw.getHolders(color).contains(myBmwRed);
+		assert myBmw.getHolders(color).contains(newMyBmwRed);
 		assert myBmw.getHolders(color).contains(myBmwBlue);
 		assert myBmw.getHolders(color).contains(myBmwRed2);
 		assert myBmw.getHolders(color).size() == 3;
@@ -196,12 +197,13 @@ public class RemoveManyCachesTest extends AbstractTest {
 		cache2.start();
 		cache2.flush();
 		cache.start();
-		assert myBmwRed.isAlive();
+		assert !myBmwRed.isAlive();
 		assert myBmwBlue.isAlive();
 		assert myBmwRed2.isAlive();
 
 		assert myBmw.getHolders(color).contains(myBmwRed2);
-		assert myBmw.getHolders(color).contains(myBmwRed);
+		assert !myBmw.getHolders(color).contains(myBmwRed);
+		assert myBmw.getHolders(color).contains(newMyBmwRed);
 		assert myBmw.getHolders(color).contains(myBmwBlue);
 		assert myBmw.getHolders(color).size() == 3;
 

@@ -195,7 +195,6 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 		return unIndex(((Dependencies<T>) getDependencies(compositesDependencies, () -> subContext.getComposites(generic).get(), generic)), composite);
 	}
 
-
 	private static class CacheChecker<T extends AbstractGeneric<T>> extends org.genericsystem.kernel.Checker<T> {
 
 		private CacheChecker(Cache<T> context) {

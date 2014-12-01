@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.CrossEnginesAssignementsException;
@@ -24,6 +25,10 @@ public class Checker<T extends AbstractVertex<T>> {
 
 	public Checker(Context<T> context) {
 		this.context = context;
+	}
+
+	public Context<T> getContext() {
+		return context;
 	}
 
 	public void check(boolean isOnAdd, boolean isFlushTime, T vertex) throws RollbackException {
