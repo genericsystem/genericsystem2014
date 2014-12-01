@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.cache.annotations.SystemGeneric;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 
@@ -77,22 +76,18 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 		// TODO introduce : meta and composites length
 		return Objects.hashCode(getValue());
 	}
-	
+
 	@Override
 	public void remove() {
-		// TODO KK this verification must go in simpleRemove....
-		if (getClass().getAnnotation(SystemGeneric.class) != null)
-			getCurrentCache().discardWithException(new IllegalAccessException("@SystemGeneric annoted generic can't be removed"));
 		super.remove();
 	}
-
 
 	@Override
 	protected abstract Dependencies<T> getInheritingsDependencies();
 
 	@Override
 	protected abstract Dependencies<T> getInstancesDependencies();
-	
+
 	@Override
 	protected abstract Dependencies<T> getCompositesDependencies();
 

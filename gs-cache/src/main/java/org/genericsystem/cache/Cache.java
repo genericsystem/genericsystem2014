@@ -12,6 +12,7 @@ import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.cache.AbstractBuilder.GenericBuilder;
+import org.genericsystem.cache.annotations.SystemGeneric;
 import org.genericsystem.kernel.Dependencies;
 
 public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
@@ -42,6 +43,11 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 		this.subContext = subContext;
 		init((AbstractBuilder<T>) new GenericBuilder((Cache<Generic>) this));
 		clear();
+	}
+
+	@Override
+	protected CacheChecker<T> buildChecker() {
+		return new CacheChecker<T>(this);
 	}
 
 	@Override
@@ -192,5 +198,24 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 
 	public static interface Listener<X> {
 		void triggersDependencyUpdate(X oldDependency, X newDependency);
+	}
+
+	private static class CacheChecker<T extends AbstractGeneric<T>> extends org.genericsystem.kernel.Checker<T> {
+
+		private CacheChecker(Cache<T> context) {
+			super(context);
+		}
+
+		@Override
+		protected void checkSystemConstraints(boolean isOnAdd, boolean isFlushTime, T vertex) {
+			super.checkSystemConstraints(isOnAdd, isFlushTime, vertex);
+			checkRemoveGenericAnnoted(isOnAdd, vertex);
+		}
+
+		private void checkRemoveGenericAnnoted(boolean isOnAdd, T vertex) {
+			if (!isOnAdd && vertex.getClass().getAnnotation(SystemGeneric.class) != null)
+				getContext().discardWithException(new IllegalAccessException("@SystemGeneric annoted generic can't be removed"));
+		}
+
 	}
 }

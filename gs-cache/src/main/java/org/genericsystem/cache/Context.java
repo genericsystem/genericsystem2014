@@ -4,17 +4,17 @@ import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.kernel.DefaultRoot;
 
-public class Context<T extends AbstractGeneric<T>> extends org.genericsystem.kernel.Context<T>{
+public class Context<T extends AbstractGeneric<T>> extends org.genericsystem.kernel.Context<T> {
 
 	Context(DefaultRoot<T> root) {
 		super(root);
 	}
 
 	@Override
-	public DefaultEngine<T> getRoot(){
+	public DefaultEngine<T> getRoot() {
 		return (DefaultEngine<T>) super.getRoot();
 	}
-	
+
 	void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
 		removes.forEach(this::unplug);
 		adds.forEach(this::plug);
