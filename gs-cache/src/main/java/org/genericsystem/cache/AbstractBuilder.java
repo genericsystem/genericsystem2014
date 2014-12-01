@@ -10,8 +10,9 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T>> extends org.
 	AbstractBuilder(Cache<T> context) {
 		super(context);
 	}
-	
-	public Cache<T> getContext(){
+
+	@Override
+	public Cache<T> getContext() {
 		return (Cache<T>) super.getContext();
 	}
 
@@ -20,7 +21,7 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T>> extends org.
 
 	@Override
 	protected abstract T[] newTArray(int dim);
-	
+
 	@Override
 	protected T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
 		return super.newT(clazz, meta, supers, value, components);
@@ -66,8 +67,7 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T>> extends org.
 	protected T setMeta(int dim) {
 		return super.setMeta(dim);
 	}
-	
-	
+
 	public static class GenericBuilder extends AbstractBuilder<Generic> {
 
 		public GenericBuilder(Cache<Generic> context) {

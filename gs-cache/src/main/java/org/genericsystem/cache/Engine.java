@@ -9,14 +9,14 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 
 	private final ThreadLocal<Cache<Generic>> cacheLocal = new ThreadLocal<>();
 	private final SystemCache<Generic> systemCache = new SystemCache<>(this);
-	
+
 	public Engine(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
 	}
 
 	public Engine(Serializable engineValue, Class<?>... userClasses) {
 		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
-		
+
 		Cache<Generic> cache = newCache().start();
 		Generic metaAttribute = getCurrentCache().getBuilder().setMeta(Statics.ATTRIBUTE_SIZE);
 		getCurrentCache().getBuilder().setMeta(Statics.RELATION_SIZE);
