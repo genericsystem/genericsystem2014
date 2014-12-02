@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.genericsystem.api.core.IContext;
+import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.concurrency.AbstractBuilder.MutationsListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,31 +22,28 @@ public class Cache implements IContext<Generic>, MutationsListener<org.genericsy
 
 	public Cache(Engine engine, org.genericsystem.concurrency.Engine concurrencyEngine) {
 		this.engine = engine;
-		
-		mutabilityMap.put(engine, concurrencyEngine);
-		
-		Set<Generic> set = Collections.newSetFromMap(new IdentityHashMap<Generic, Boolean>());
-		set.add(engine);
-		reverseMultiMap.put(concurrencyEngine, set);
-		
+		put(engine, concurrencyEngine);
 		this.concurrencyCache = concurrencyEngine.newCache(this);
 	}
-	
 
 	public Engine getRoot() {
 		return engine;
 	}
 
 	public Cache start() {
+		concurrencyCache.start();
 		return engine.start(this);
 	}
 
 	public void stop() {
+		concurrencyCache.stop();
 		engine.stop(this);
 	}
 
 	protected org.genericsystem.concurrency.Generic getByMutable(Generic mutable) {
 		org.genericsystem.concurrency.Generic  result =  mutabilityMap.get(mutable);
+		if (result == null)
+			concurrencyCache.discardWithException(new AliveConstraintViolationException("Your mutable is not still available. No generic matched"));
 		return result;
 	}
 
@@ -55,20 +53,20 @@ public class Cache implements IContext<Generic>, MutationsListener<org.genericsy
 		Set<Generic> resultSet = reverseMultiMap.get(generic);
 		if(resultSet!=null)
 			return resultSet.iterator().next();
-		resultSet = Collections.newSetFromMap(new IdentityHashMap<Generic, Boolean>());
 		Generic result = new Generic(engine);
-		resultSet.add(result);
-		reverseMultiMap.put(generic, resultSet);
-		mutabilityMap.put(result, generic);
+		put(result,generic);
 		return result; 
+	}
+	
+	private void put(Generic mutable,org.genericsystem.concurrency.Generic generic){
+		mutabilityMap.put(mutable, generic);
+		Set<Generic> set = Collections.newSetFromMap(new IdentityHashMap<Generic, Boolean>());
+		set.add(mutable);
+		reverseMultiMap.put(generic, set);
 	}
 
 	@Override
 	public void triggersMutation(org.genericsystem.concurrency.Generic oldDependency, org.genericsystem.concurrency.Generic newDependency) {
-		log.info("Triggers mutation : "+oldDependency.info()+" "+newDependency.info());
-		assert oldDependency!=newDependency;
-		assert oldDependency != null;
-		assert newDependency != null;
 		Set<Generic> resultSet = reverseMultiMap.get(oldDependency);
 		if(resultSet!=null) {
 			for(Generic mutable : resultSet)
@@ -77,13 +75,9 @@ public class Cache implements IContext<Generic>, MutationsListener<org.genericsy
 			reverseMultiMap.put(newDependency, resultSet);
 		}
 	}	
-	
-	@Override
-	public void triggersClear(){
-		refresh();
-	}
 
-	void refresh(){
+	@Override
+	public void triggersRefresh(){
 		Iterator<Entry<org.genericsystem.concurrency.Generic, Set<Generic>>> iterator = reverseMultiMap.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Entry<org.genericsystem.concurrency.Generic, Set<Generic>> entry = iterator.next();
@@ -95,21 +89,21 @@ public class Cache implements IContext<Generic>, MutationsListener<org.genericsy
 		}
 	}
 
+	public boolean isAlive(Generic mutable) {
+		org.genericsystem.concurrency.Generic generic = mutabilityMap.get(mutable);
+		return mutabilityMap.get(mutable)!=null && concurrencyCache.isAlive(generic);
+	}
+
 	public void pickNewTs() {
-		getConcurrencyCache().pickNewTs();
-		refresh();
+		concurrencyCache.pickNewTs();//triggers refresh automatically
 	}
 
 	public void flush() {
-		getConcurrencyCache().flush();
+		concurrencyCache.flush();
 	}
 
 	public void clear() {
-		getConcurrencyCache().clear();
-	}
-
-	public org.genericsystem.concurrency.Cache<?> getConcurrencyCache() {
-		return concurrencyCache;
+		concurrencyCache.clear();//triggers refresh automatically
 	}
 }
 

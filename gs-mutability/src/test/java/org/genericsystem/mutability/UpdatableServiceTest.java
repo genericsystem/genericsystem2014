@@ -81,7 +81,6 @@ public class UpdatableServiceTest extends AbstractTest {
 		Generic car = engine.addInstance(vehicle, "car");
 		Generic newVehicle = vehicle.updateValue("Vehicle2");
 		// log.info("" + newVehicle.getAttributes(engine));
-		newVehicle.getSupers().forEach(attribute -> log.info(attribute.info()));
 		assert newVehicle.isAlive();
 		assert vehicle.isAlive();
 		assert car.isAlive();

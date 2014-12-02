@@ -22,10 +22,7 @@ public class Generic implements IVertex<Generic> {
 	}
 
 	protected org.genericsystem.concurrency.Generic unwrap(Generic genericM) {
-		org.genericsystem.concurrency.Generic generic = getCurrentCache().getByMutable(genericM);
-		if (generic == null)
-			engine.getConcurrencyEngine().getCurrentCache().discardWithException(new AliveConstraintViolationException("Your mutable is not still available. No generic matched"));
-		return generic;
+		return getCurrentCache().getByMutable(genericM);
 	}
 
 
@@ -67,8 +64,7 @@ public class Generic implements IVertex<Generic> {
 
 	@Override
 	public boolean isAlive() {
-		org.genericsystem.concurrency.Generic generic = getCurrentCache().getByMutable(this);
-		return generic!=null ? generic.isAlive() : false;
+		return getCurrentCache().isAlive(this);
 	}
 
 	@Override

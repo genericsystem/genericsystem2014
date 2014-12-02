@@ -57,23 +57,8 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 			subContext = new Transaction<>(getRoot());
 			assert getTs() > ts;
 		}
-		// clean();
+		listener.triggersRefresh();
 	}
-
-	// private void clean() {
-	// Iterator<Generic> iterator = adds.iterator();
-	// while (iterator.hasNext()) {
-	// Generic next = iterator.next();
-	// if (subContext.isAlive(next))
-	// iterator.remove();
-	// }
-	// iterator = removes.iterator();
-	// while (iterator.hasNext()) {
-	// Generic next = iterator.next();
-	// if (!subContext.isAlive(next))
-	// rollbackWithException(new AliveConstraintViolationException(next.info()));
-	// }
-	// }
 
 	@Override
 	public Cache<T> start() {
@@ -126,6 +111,6 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 	public void clear() {
 		super.clear();
 		if (listener != null)
-			listener.triggersClear();
+			listener.triggersRefresh();
 	}
 }
