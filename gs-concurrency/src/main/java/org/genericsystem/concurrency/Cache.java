@@ -12,7 +12,7 @@ import org.genericsystem.kernel.Statics;
 
 public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache.Cache<T> {
 
-	private MutationsListener<T> listener;
+	private final MutationsListener<T> listener;
 
 	protected Cache(DefaultEngine<T> engine) {
 		this(new Transaction<>(engine));
@@ -68,23 +68,8 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 			subContext = new Transaction<>(getRoot());
 			assert getTs() > ts;
 		}
-		// clean();
+		listener.triggersRefresh();
 	}
-
-	// private void clean() {
-	// Iterator<Generic> iterator = adds.iterator();
-	// while (iterator.hasNext()) {
-	// Generic next = iterator.next();
-	// if (subContext.isAlive(next))
-	// iterator.remove();
-	// }
-	// iterator = removes.iterator();
-	// while (iterator.hasNext()) {
-	// Generic next = iterator.next();
-	// if (!subContext.isAlive(next))
-	// rollbackWithException(new AliveConstraintViolationException(next.info()));
-	// }
-	// }
 
 	@Override
 	public void flush() throws RollbackException {
@@ -131,7 +116,7 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 	@Override
 	public void clear() {
 		super.clear();
-		if (listener != null)
-			listener.triggersClear();
+		if(listener!=null)
+			listener.triggersRefresh();
 	}
 }

@@ -20,12 +20,6 @@ public interface DefaultEngine<T extends AbstractGeneric<T>> extends org.generic
 	}
 
 	@Override
-	Cache<T> start(org.genericsystem.cache.Cache<T> cache);
-
-	@Override
-	void stop(org.genericsystem.cache.Cache<T> cache);
-
-	@Override
 	public Cache<T> getCurrentCache();
 
 	long pickNewTs();
