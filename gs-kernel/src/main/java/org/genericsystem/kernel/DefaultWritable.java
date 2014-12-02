@@ -44,11 +44,6 @@ public interface DefaultWritable<T extends AbstractVertex<T>> extends IVertex<T>
 		return update(Collections.emptyList(), newValue, newComposites);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	default T update(List<T> overrides, Serializable newValue, T... newComposites) {
-		return update(overrides, newValue, newComposites);
-	}
 
 	@SuppressWarnings("unchecked")
 	@Override

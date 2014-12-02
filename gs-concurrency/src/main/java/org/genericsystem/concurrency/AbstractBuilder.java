@@ -2,8 +2,6 @@ package org.genericsystem.concurrency;
 
 public abstract class AbstractBuilder<T extends AbstractGeneric<T>> extends org.genericsystem.cache.AbstractBuilder<T> {
 
-	private Listener<T> listener;
-
 	public AbstractBuilder(Cache<T> context) {
 		super(context);
 	}
@@ -13,15 +11,7 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T>> extends org.
 		return (Cache<T>) super.getContext();
 	}
 
-	@Override
-	protected void triggersDependencyUpdate(T oldDependency, T newDependency) {
-		if (listener != null)
-			listener.triggersDependencyUpdate(oldDependency, newDependency);
-	}
 
-	public void setListener(Listener<T> listener) {
-		this.listener = listener;
-	}
 
 	@Override
 	protected T setMeta(int dim) {
@@ -36,7 +26,12 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T>> extends org.
 
 		@Override
 		protected Generic newT() {
-			return new Generic().restore(((Engine) getContext().getRoot()).pickNewTs(), Long.MAX_VALUE, 0L, Long.MAX_VALUE);
+			return new Generic();
+		}
+
+		@Override
+		protected Generic newT(Class<?> clazz, Generic meta) {
+			return super.newT(clazz, meta).restore(((Engine) getContext().getRoot()).pickNewTs(), Long.MAX_VALUE, 0L, Long.MAX_VALUE);
 		}
 
 		@Override
@@ -45,8 +40,9 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T>> extends org.
 		}
 	}
 
-	public static interface Listener<X> {
-		void triggersDependencyUpdate(X oldDependency, X newDependency);
+	public static interface MutationsListener<X> {
+		 default void triggersMutation(X oldDependency, X newDependency){};
+		 default void triggersRefresh(){};
 	}
 
 }

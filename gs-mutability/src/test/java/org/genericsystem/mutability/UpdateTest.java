@@ -99,7 +99,7 @@ public class UpdateTest extends AbstractTest {
 		cache1.start();
 		assert car.isAlive();
 		cache1.pickNewTs();
-		catchAndCheckCause(() -> !car.isAlive(), AliveConstraintViolationException.class);
+		assert !car.isAlive();
 	}
 
 	public void test002_clear() {
@@ -109,6 +109,5 @@ public class UpdateTest extends AbstractTest {
 		cache1.clear();
 		assert !car.isAlive();
 		catchAndCheckCause(() -> car.addInstance("myCar"), AliveConstraintViolationException.class);
-		;
 	}
 }

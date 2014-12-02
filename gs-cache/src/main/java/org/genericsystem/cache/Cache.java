@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConstraintViolationException;
@@ -74,7 +75,7 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 	}
 
 	public Cache<T> mountAndStartNewCache() {
-		return new Cache<>(this).start();
+		return getRoot().newCache(this).start();
 	}
 
 	public Cache<T> flushAndUnmount() {

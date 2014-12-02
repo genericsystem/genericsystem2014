@@ -4,10 +4,11 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import javax.json.JsonObject;
+
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.api.exception.AliveConstraintViolationException;
 
 public class Generic implements IVertex<Generic> {
 
@@ -22,11 +23,9 @@ public class Generic implements IVertex<Generic> {
 	}
 
 	protected org.genericsystem.concurrency.Generic unwrap(Generic genericM) {
-		org.genericsystem.concurrency.Generic generic = getCurrentCache().get(genericM);
-		if (generic == null)
-			engine.getConcurrencyEngine().getCurrentCache().discardWithException(new AliveConstraintViolationException("Your mutable is not still available. No generic matched"));
-		return generic;
+		return getCurrentCache().getByMutable(genericM);
 	}
+
 
 	protected List<Generic> wrap(List<org.genericsystem.concurrency.Generic> listT) {
 		return listT.stream().map(this::wrap).collect(Collectors.toList());
@@ -41,7 +40,6 @@ public class Generic implements IVertex<Generic> {
 	}
 
 	protected org.genericsystem.concurrency.Generic[] unwrap(Generic... listM) {
-		assert unwrap(engine) != null;
 		return unwrap(engine).coerceToTArray(Arrays.asList(listM).stream().map(this::unwrap).collect(Collectors.toList()).toArray());
 	}
 
@@ -67,7 +65,7 @@ public class Generic implements IVertex<Generic> {
 
 	@Override
 	public boolean isAlive() {
-		return unwrap(this).isAlive();
+		return getCurrentCache().isAlive(this);
 	}
 
 	@Override
@@ -497,38 +495,32 @@ public class Generic implements IVertex<Generic> {
 
 	@Override
 	public Generic updateValue(Serializable newValue) {
-		getCurrentCache().put(this, unwrap(this).updateValue(newValue));
-		return this;
+		return wrap(unwrap(this).updateValue(newValue));
 	}
 
 	@Override
 	public Generic updateSupers(Generic... overrides) {
-		getCurrentCache().put(this, unwrap(this).updateSupers(unwrap(overrides)));
-		return this;
+		return wrap(unwrap(this).updateSupers(unwrap(overrides)));
 	}
 
 	@Override
 	public Generic updateComposites(Generic... newComposites) {
-		getCurrentCache().put(this, unwrap(this).updateComposites(unwrap(newComposites)));
-		return this;
+		return wrap(unwrap(this).updateComposites(unwrap(newComposites)));
 	}
 
 	@Override
 	public Generic update(List<Generic> overrides, Serializable newValue, Generic... newComposites) {
-		getCurrentCache().put(this, unwrap(this).update(unwrap(overrides), newValue, unwrap(newComposites)));
-		return this;
+		return wrap(unwrap(this).update(unwrap(overrides), newValue, unwrap(newComposites)));
 	}
 
 	@Override
 	public Generic update(Serializable newValue, Generic... newComposites) {
-		getCurrentCache().put(this, unwrap(this).update(newValue, unwrap(newComposites)));
-		return this;
+		return wrap(unwrap(this).update(newValue, unwrap(newComposites)));
 	}
 
 	@Override
 	public Generic update(Generic override, Serializable newValue, Generic... newComposites) {
-		getCurrentCache().put(this, unwrap(this).update(unwrap(override), newValue, unwrap(newComposites)));
-		return this;
+		return wrap(unwrap(this).update(unwrap(override), newValue, unwrap(newComposites)));
 	}
 
 	@Override

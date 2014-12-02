@@ -5,7 +5,11 @@ public interface DefaultEngine<T extends AbstractGeneric<T>> extends org.generic
 	<subT extends T> subT find(Class<subT> clazz);
 
 	default Cache<T> newCache() {
-		return new Cache<>(new Transaction<>(getRoot()));
+		return newCache(new Transaction<>(getRoot()));
+	}
+
+	default Cache<T> newCache(Context<T> subContext) {
+		return new Cache<>(subContext);
 	}
 
 	Cache<T> start(Cache<T> cache);

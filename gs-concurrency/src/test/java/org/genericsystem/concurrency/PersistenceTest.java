@@ -4,8 +4,9 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+
 import org.genericsystem.cache.annotations.SystemGeneric;
-import org.genericsystem.kernel.Archiver.WriterLoaderManager.DependenciesOrder;
+import org.genericsystem.concurrency.Archiver.WriterLoaderManager.DependenciesOrder;
 import org.genericsystem.kernel.Statics;
 import org.testng.annotations.Test;
 
@@ -49,7 +50,8 @@ public class PersistenceTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	public static class Vehicle extends Generic {}
+	public static class Vehicle extends Generic {
+	}
 
 	public void testType() {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
@@ -164,6 +166,7 @@ public class PersistenceTest extends AbstractTest {
 			assert !(persistVisit.get(i) == readVisit.get(i));
 		}
 	}
+
 	// private void compareGraph(Generic persistedNode, Generic readNode) {
 	// DependenciesOrder<Generic> persistVisit = new DependenciesOrder<Generic>().visit(persistedNode);
 	// DependenciesOrder<Generic> readVisit = new DependenciesOrder<Generic>().visit(readNode);

@@ -1,6 +1,7 @@
 package org.genericsystem.concurrency;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -30,9 +31,17 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 
 			public DependenciesOrder<T> visit(T node) {
 				if (!contains(node)) {
-					node.getCompositesDependencies().forEach(this::visit);
-					node.getInheritingsDependencies().forEach(this::visit);
-					node.getInstancesDependencies().forEach(this::visit);
+					// TODO call WriterLoaderManager::getTs(T dependency)
+					long ts = node.getLifeManager().getDesignTs();
+					Iterator<T> iterator = node.getCompositesTimestampedDependencies().iterator(ts);
+					while (iterator.hasNext())
+						visit(iterator.next());
+					iterator = node.getInheritingsTimestampedDependencies().iterator(ts);
+					while (iterator.hasNext())
+						visit(iterator.next());
+					iterator = node.getInstancesTimestampedDependencies().iterator(ts);
+					while (iterator.hasNext())
+						visit(iterator.next());
 					if (!node.isRoot())
 						add(node);
 				}

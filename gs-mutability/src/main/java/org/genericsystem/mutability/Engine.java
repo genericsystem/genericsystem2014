@@ -22,17 +22,15 @@ public class Engine extends Generic implements IRoot<Generic> {
 		return new Cache(this, concurrencyEngine);
 	}
 
-	public Cache start(Cache cache) {
+	Cache start(Cache cache) {
 		if (!equals(cache.getRoot()))
 			throw new IllegalStateException();
 		cacheLocal.set(cache);
-		cache.getConcurrencyCache().start();
 		return cache;
 	}
 
-	public void stop(Cache cache) {
+	void stop(Cache cache) {
 		assert cacheLocal.get() == cache;
-		cache.getConcurrencyCache().stop();
 		cacheLocal.set(null);
 	}
 
@@ -40,7 +38,7 @@ public class Engine extends Generic implements IRoot<Generic> {
 	public Cache getCurrentCache() {
 		Cache currentCache = cacheLocal.get();
 		if (currentCache == null)
-			throw new IllegalStateException();
+			throw new IllegalStateException("Unable to find the current cache. Did you miss to call start() method on it ?");
 		return currentCache;
 	}
 
@@ -103,11 +101,6 @@ public class Engine extends Generic implements IRoot<Generic> {
 	public Generic getMetaRelation() {
 		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).getMetaRelation());
 	}
-
-	// @Override
-	// public void discardWithException(Throwable exception) {
-	// ((org.genericsystem.concurrency.Engine) unwrap(this)).discardWithException(exception);
-	// }
 
 	public org.genericsystem.concurrency.Engine getConcurrencyEngine() {
 		return concurrencyEngine;

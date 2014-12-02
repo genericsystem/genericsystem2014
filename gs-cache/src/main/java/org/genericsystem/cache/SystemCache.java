@@ -50,7 +50,7 @@ public class SystemCache<T extends AbstractGeneric<T>> extends HashMap<Class<?>,
 			return systemProperty;
 		}
 		T meta = setMeta(clazz);
-		T result = engine.getCurrentCache().getBuilder().setInstance(clazz,meta, setOverrides(clazz), findValue(clazz), meta.coerceToTArray(setComponents(clazz).toArray()));
+		T result = engine.getCurrentCache().getBuilder().setInstance(clazz, meta, setOverrides(clazz), findValue(clazz), meta.coerceToTArray(setComponents(clazz).toArray()));
 		put(clazz, result);
 		mountConstraints(result, clazz);
 		triggersDependencies(clazz);
