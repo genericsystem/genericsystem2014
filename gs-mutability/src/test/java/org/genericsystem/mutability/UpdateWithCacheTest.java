@@ -95,4 +95,19 @@ public class UpdateWithCacheTest extends AbstractTest {
 		assert v233.getValue().equals(233);
 
 	}
+	
+	public void test007_simulateRollback() {
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		engine.getCurrentCache().flush();
+		Generic metaAttribute = engine.getMetaAttribute();
+		Generic car =engine.addInstance("Car");
+		vehicle.updateValue("VehicleNew");
+		engine.getCurrentCache().clear();
+		assert metaAttribute.isAlive();
+		assert !car.isAlive();
+		assert vehicle.isAlive();
+		assert vehicle.getValue().equals("Vehicle");
+	}
+		
 }

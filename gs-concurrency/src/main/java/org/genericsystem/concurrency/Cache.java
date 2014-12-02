@@ -89,7 +89,7 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 					stop();
 					((Transaction<T>) subContext).apply(adds, removes);
 				}
-				clear();
+				initialize();
 				return;
 			} catch (ConcurrencyControlException e) {
 				cause = e;
@@ -116,7 +116,7 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 	@Override
 	public void clear() {
 		super.clear();
-		if(listener!=null)
-			listener.triggersRefresh();
+		listener.triggersClear();
+		listener.triggersRefresh();
 	}
 }
