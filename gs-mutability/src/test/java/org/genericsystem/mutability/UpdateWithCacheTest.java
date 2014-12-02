@@ -103,7 +103,8 @@ public class UpdateWithCacheTest extends AbstractTest {
 		Generic metaAttribute = engine.getMetaAttribute();
 		Generic car =engine.addInstance("Car");
 		vehicle.updateValue("VehicleNew");
-		engine.getCurrentCache().clear();
+		vehicle.updateValue("VehicleNew2");
+		engine.getCurrentCache().clear();//same as rollback
 		assert metaAttribute.isAlive();
 		assert !car.isAlive();
 		assert vehicle.isAlive();
