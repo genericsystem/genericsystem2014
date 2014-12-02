@@ -4,10 +4,11 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import javax.json.JsonObject;
+
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.api.exception.AliveConstraintViolationException;
 
 public class Generic implements IVertex<Generic> {
 
