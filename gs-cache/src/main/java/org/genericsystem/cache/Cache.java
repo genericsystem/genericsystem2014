@@ -107,8 +107,8 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 	}
 
 	protected void checkConstraints() throws RollbackException {
-		adds.forEach(x -> getChecker().check(true, true, x));
-		removes.forEach(x -> getChecker().check(false, true, x));
+		adds.forEach(x -> getChecker().checkAfterBuild(true, true, x));
+		removes.forEach(x -> getChecker().checkAfterBuild(false, true, x));
 	}
 
 	private void simpleAdd(T generic) {
@@ -203,8 +203,8 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 		}
 
 		@Override
-		protected void checkSystemConstraints(boolean isOnAdd, boolean isFlushTime, T vertex) {
-			super.checkSystemConstraints(isOnAdd, isFlushTime, vertex);
+		protected void checkSystemConstraintsAfterBuild(boolean isOnAdd, boolean isFlushTime, T vertex) {
+			super.checkSystemConstraintsAfterBuild(isOnAdd, isFlushTime, vertex);
 			checkRemoveGenericAnnoted(isOnAdd, vertex);
 		}
 

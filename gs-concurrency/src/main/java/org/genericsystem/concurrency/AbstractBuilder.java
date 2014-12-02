@@ -11,8 +11,6 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T>> extends org.
 		return (Cache<T>) super.getContext();
 	}
 
-
-
 	@Override
 	protected T setMeta(int dim) {
 		return super.setMeta(dim);
@@ -41,8 +39,11 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T>> extends org.
 	}
 
 	public static interface MutationsListener<X> {
-		 default void triggersMutation(X oldDependency, X newDependency){};
-		 default void triggersRefresh(){};
+		default void triggersMutation(X oldDependency, X newDependency) {
+		}
+
+		default void triggersRefresh() {
+		}
 	}
 
 }

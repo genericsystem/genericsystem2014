@@ -96,7 +96,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	@SuppressWarnings("unchecked")
 	@Override
 	public T update(List<T> overrides, Serializable newValue, T... newComponents) {
-		return getCurrentCache().getBuilder().rebuildAll((T) this, () -> getCurrentCache().getBuilder().getOrAdjustAndBuild(getClass(), getMeta(), overrides, newValue, Arrays.asList(newComponents)), computeDependencies());
+		return getCurrentCache().getBuilder().update((T) this, overrides, newValue, newComponents);
 	}
 
 	@SuppressWarnings("unchecked")

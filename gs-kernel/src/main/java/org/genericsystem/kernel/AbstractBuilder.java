@@ -29,7 +29,6 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 	protected abstract T[] newTArray(int dim);
 
 	protected T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
-		checkIsAlive(meta, supers, components);
 		return newT(clazz, meta).init(meta, supers, value, components);
 	}
 
@@ -50,6 +49,7 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 	@SuppressWarnings("unchecked")
 	protected T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, T... components) {
 		List<T> componentList = Arrays.asList(components);
+		context.getChecker().checkBeforeBuild(clazz, meta, overrides, value, componentList);
 		T getOrNewMeta = meta.isMeta() ? setMeta(componentList.size()) : meta;
 		if (getOrNewMeta.equalsRegardlessSupers(getOrNewMeta, value, componentList) && Statics.areOverridesReached(overrides, getOrNewMeta.getSupers()))
 			context.discardWithException(new ExistsException("An equivalent instance already exists : " + getOrNewMeta.info()));
@@ -62,13 +62,22 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 	@SuppressWarnings("unchecked")
 	protected T setInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, T... components) {
 		List<T> componentList = Arrays.asList(components);
+		context.getChecker().checkBeforeBuild(clazz, meta, overrides, value, componentList);
 		T getOrNewMeta = meta.isMeta() ? setMeta(componentList.size()) : meta;
 		if (getOrNewMeta.equalsRegardlessSupers(getOrNewMeta, value, componentList) && Statics.areOverridesReached(overrides, getOrNewMeta.getSupers()))
 			return getOrNewMeta;
 		T equivInstance = getOrNewMeta.getDirectEquivInstance(value, componentList);
 		if (equivInstance != null)
-			return equivInstance.equalsRegardlessSupers(getOrNewMeta, value, componentList) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : equivInstance.update(overrides, value, components);
+			return equivInstance.equalsRegardlessSupers(getOrNewMeta, value, componentList) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : rebuildAll(equivInstance,
+					() -> getOrAdjustAndBuild(clazz, meta, overrides, value, componentList), equivInstance.computeDependencies());
 		return rebuildAll(null, () -> adjustAndBuild(clazz, getOrNewMeta, overrides, value, componentList), getOrNewMeta.computePotentialDependencies(overrides, value, componentList));
+	}
+
+	@SuppressWarnings("unchecked")
+	protected T update(T update, List<T> overrides, Serializable newValue, T... newComponents) {
+		List<T> componentList = Arrays.asList(newComponents);
+		context.getChecker().checkBeforeBuild(update.getClass(), update.getMeta(), overrides, newValue, componentList);
+		return rebuildAll(update, () -> getOrAdjustAndBuild(update.getClass(), update.getMeta(), overrides, newValue, componentList), update.computeDependencies());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -95,7 +104,7 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 		T build = rebuilder.get();
 		dependenciesToRebuild.remove(toRebuild);
 		ConvertMap convertMap = new ConvertMap();
-		if(toRebuild!=null){
+		if (toRebuild != null) {
 			convertMap.put(toRebuild, build);
 			context.triggersMutation(toRebuild, build);
 		}
@@ -104,21 +113,12 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 	}
 
 	private T adjustAndBuild(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
-		checkIsAlive(meta, overrides, components);
 		T adjustMeta = meta.adjustMeta(value, components);
 		List<T> supers = new ArrayList<>(new SupersComputer<>(adjustMeta, overrides, value, components));
 		// TODO system constraints
 		if (!Statics.areOverridesReached(overrides, supers))
 			context.discardWithException(new IllegalStateException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
 		return context.plug(newT(clazz, adjustMeta, supers, value, components));
-	}
-
-	private void checkIsAlive(T meta, List<T> overrides, List<T> components) {
-		Checker<T> checker = context.getChecker();
-		if (meta != null)
-			checker.checkIsAlive(meta);
-		overrides.forEach(x -> checker.checkIsAlive(x));
-		components.stream().filter(component -> component != null).forEach(x -> checker.checkIsAlive(x));
 	}
 
 	private class ConvertMap extends HashMap<T, T> {
@@ -142,8 +142,6 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 			return newDependency;
 		}
 	}
-
-
 
 	public static class VertextBuilder extends AbstractBuilder<Vertex> {
 

@@ -17,8 +17,8 @@ public class Transaction<T extends AbstractGeneric<T>> extends Context<T> {
 		}
 
 		@Override
-		public void check(boolean isOnAdd, boolean isFlushTime, T vertex) throws RollbackException {
-			checkSystemConstraints(isOnAdd, isFlushTime, vertex);// Check only system constraints on transactions
+		public void checkAfterBuild(boolean isOnAdd, boolean isFlushTime, T vertex) throws RollbackException {
+			checkSystemConstraintsAfterBuild(isOnAdd, isFlushTime, vertex);// Check only system constraints on transactions
 		}
 	}
 

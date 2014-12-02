@@ -53,6 +53,6 @@ public class MultipleRootsTest extends AbstractTest {
 		Root engine2 = new Root("SecondEngine");
 		Vertex car = engine2.addInstance("Car");
 		Vertex robot = engine2.addInstance("Robot");
-		catchAndCheckCause(() -> engine1.addInstance(Arrays.asList(car, robot), "Transformer"), IllegalStateException.class);
+		catchAndCheckCause(() -> engine1.addInstance(Arrays.asList(car, robot), "Transformer"), CrossEnginesAssignementsException.class);
 	}
 }

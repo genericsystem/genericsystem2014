@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -31,23 +32,72 @@ public class Checker<T extends AbstractVertex<T>> {
 		return context;
 	}
 
-	public void check(boolean isOnAdd, boolean isFlushTime, T vertex) throws RollbackException {
-		checkSystemConstraints(isOnAdd, isFlushTime, vertex);
+	public void checkBeforeBuild(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) throws RollbackException {
+		checkSystemConstraintsBeforeBuild(clazz, meta, overrides, value, components);
+	}
+
+	public void checkAfterBuild(boolean isOnAdd, boolean isFlushTime, T vertex) throws RollbackException {
+		checkSystemConstraintsAfterBuild(isOnAdd, isFlushTime, vertex);
 		checkConsistency(vertex);
 		checkConstraints(isOnAdd, isFlushTime, vertex);
 	}
 
-	void checkIsAlive(T vertex) {
-		if (!context.isAlive(vertex))
-			context.discardWithException(new AliveConstraintViolationException(vertex.info()));
+	// checkBeforeBuild
+
+	private void checkSystemConstraintsBeforeBuild(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
+		checkSameEngine(meta, overrides, components);
+		checkIsAlive(meta, overrides, components);
+		checkSerializableType(value);
 	}
 
-	void checkIsNotAlive(T vertex) {
-		if (context.isAlive(vertex))
-			context.discardWithException(new NotAliveConstraintViolationException(vertex.info()));
+	private void checkSameEngine(T meta, List<T> overrides, List<T> components) {
+		if (meta == null)
+			return;
+		DefaultRoot<T> root = meta.getRoot();
+		for (T component : components)
+			if (component != null && !root.equals(component.getRoot()))
+				context.discardWithException(new CrossEnginesAssignementsException("Unable to associate meta " + meta + " with his component " + component + " because they are from differents engines"));
+		for (T directSuper : overrides)
+			if (directSuper != null && !root.equals(directSuper.getRoot()))
+				context.discardWithException(new CrossEnginesAssignementsException("Unable to associate meta " + meta + " with his super " + directSuper + " because they are from differents engines"));
 	}
 
-	protected void checkSystemConstraints(boolean isOnAdd, boolean isFlushTime, T vertex) {
+	private void checkIsAlive(T meta, List<T> overrides, List<T> components) {
+		if (meta != null)
+			checkIsAlive(meta);
+		overrides.forEach(x -> checkIsAlive(x));
+		components.stream().filter(component -> component != null).forEach(x -> checkIsAlive(x));
+	}
+
+	private void checkSerializableType(Serializable value) {
+		if (value == null)
+			return;
+		if (value instanceof org.genericsystem.kernel.systemproperty.AxedPropertyClass)
+			return;
+		if (value instanceof Class)
+			return;
+		if (value instanceof String)
+			return;
+		if (value instanceof Integer)
+			return;
+		if (value instanceof Boolean)
+			return;
+		if (value instanceof byte[])
+			return;
+		if (value instanceof Double)
+			return;
+		if (value instanceof Float)
+			return;
+		if (value instanceof Short)
+			return;
+		if (value instanceof Long)
+			return;
+		context.discardWithException(new NotAllowedSerializableTypeException("Not allowed type for your serializable. Only primitive and Byte[] allowed."));
+	}
+
+	// checkAfterBuild
+
+	protected void checkSystemConstraintsAfterBuild(boolean isOnAdd, boolean isFlushTime, T vertex) {
 		checkWellFormedMeta(vertex);
 		if (isOnAdd || !isFlushTime)
 			checkIsAlive(vertex);
@@ -55,7 +105,6 @@ public class Checker<T extends AbstractVertex<T>> {
 			checkIsNotAlive(vertex);
 		if (!isOnAdd)
 			checkDependenciesAreEmpty(vertex);
-		checkSerializableType(vertex);
 		checkSameEngine(vertex);
 		checkDependsMetaComponents(vertex);
 		checkSupers(vertex);
@@ -65,53 +114,35 @@ public class Checker<T extends AbstractVertex<T>> {
 		checkGetInstance(vertex);
 	}
 
-	private void checkSerializableType(T vertex) {
-		Serializable value = vertex.getValue();
-		if (value != null) {
-			if (value instanceof org.genericsystem.kernel.systemproperty.AxedPropertyClass)
-				return;
-			if (value instanceof Class)
-				return;
-			if (value instanceof String)
-				return;
-			if (value instanceof Integer)
-				return;
-			if (value instanceof Boolean)
-				return;
-			if (value instanceof byte[])
-				return;
-			if (value instanceof Double)
-				return;
-			if (value instanceof Float)
-				return;
-			if (value instanceof Short)
-				return;
-			if (value instanceof Long)
-				return;
-			context.discardWithException(new NotAllowedSerializableTypeException("Not allowed type for your serializable. Only primitive and Byte[] allowed."));
-		}
-
-	}
-
-	private void checkSameEngine(T vertex) {
-		DefaultRoot<T> root = vertex.getRoot();
-		for (T component : vertex.getComponents())
-			if (component != null && !root.equals(component.getRoot()))
-				context.discardWithException(new CrossEnginesAssignementsException("Unable to associate " + vertex + " with his component " + component + " because they are from differents engines"));
-		for (T directSuper : vertex.getSupers())
-			if (directSuper != null && !root.equals(directSuper.getRoot()))
-				context.discardWithException(new CrossEnginesAssignementsException("Unable to associate " + vertex + " with his super " + directSuper + " because they are from differents engines"));
-	}
-
 	private void checkWellFormedMeta(T vertex) {
 		if (vertex.isMeta())
 			if (!vertex.getComponents().stream().allMatch(c -> c.isRoot()) || !Objects.equals(vertex.getValue(), context.getRoot().getValue()) || vertex.getSupers().size() != 1 || !vertex.getSupers().get(0).isMeta())
 				context.discardWithException(new IllegalStateException("Malformed meta : " + vertex.info()));
 	}
 
+	private void checkIsAlive(T vertex) {
+		if (!context.isAlive(vertex))
+			context.discardWithException(new AliveConstraintViolationException(vertex.info()));
+	}
+
+	private void checkIsNotAlive(T vertex) {
+		if (context.isAlive(vertex))
+			context.discardWithException(new NotAliveConstraintViolationException(vertex.info()));
+	}
+
 	private void checkDependenciesAreEmpty(T vertex) {
 		if (!context.getInstances(vertex).isEmpty() || !context.getInheritings(vertex).isEmpty() || !context.getComposites(vertex).isEmpty())
 			context.discardWithException(new ReferentialIntegrityConstraintViolationException("Unable to remove : " + vertex.info() + " cause it has dependencies"));
+	}
+
+	private void checkSameEngine(T vertex) {
+		DefaultRoot<T> root = vertex.getRoot();
+		for (T component : vertex.getComponents())
+			if (component != null && !root.equals(component.getRoot()))
+				context.discardWithException(new CrossEnginesAssignementsException("Unable to associate his " + vertex + " with his component " + component + " because they are from differents engines"));
+		for (T directSuper : vertex.getSupers())
+			if (directSuper != null && !root.equals(directSuper.getRoot()))
+				context.discardWithException(new CrossEnginesAssignementsException("Unable to associate his " + vertex + " with his super " + directSuper + " because they are from differents engines"));
 	}
 
 	private void checkDependsMetaComponents(T vertex) {
@@ -133,19 +164,7 @@ public class Checker<T extends AbstractVertex<T>> {
 		}
 	}
 
-	private void checkLevelComponents(T vertex) {
-		for (T component : vertex.getComponents())
-			if ((component == null ? vertex.getLevel() : component.getLevel()) > vertex.getLevel())
-				context.discardWithException(new MetaLevelConstraintViolationException("Inappropriate component meta level : " + component.getLevel() + " for component : " + component + ". Component meta level for added node is : " + vertex.getLevel()));
-	}
-
-	private void checkLevel(T vertex) {
-		if (vertex.getLevel() > Statics.CONCRETE)
-			context.discardWithException(new MetaLevelConstraintViolationException("Unable to instanciate a concrete generic : " + vertex.getMeta()));
-	}
-
 	private void checkSupers(T vertex) {
-		vertex.getSupers().forEach(x -> checkIsAlive(x));
 		if (!vertex.getSupers().stream().allMatch(superVertex -> superVertex.getLevel() == vertex.getLevel()))
 			context.discardWithException(new IllegalStateException("Inconsistant supers (bad level) : " + vertex.getSupers()));
 		if (!vertex.getSupers().stream().allMatch(superVertex -> vertex.getMeta().inheritsFrom(superVertex.getMeta())))
@@ -161,6 +180,17 @@ public class Checker<T extends AbstractVertex<T>> {
 			if (!superVertex.isSuperOf(vertex.getMeta(), vertex.getSupers(), vertex.getValue(), vertex.getComponents()))
 				context.discardWithException(new IllegalStateException("Inconsistant components : " + vertex.getComponents()));
 		});
+	}
+
+	private void checkLevel(T vertex) {
+		if (vertex.getLevel() > Statics.CONCRETE)
+			context.discardWithException(new MetaLevelConstraintViolationException("Unable to instanciate a concrete generic : " + vertex.getMeta()));
+	}
+
+	private void checkLevelComponents(T vertex) {
+		for (T component : vertex.getComponents())
+			if ((component == null ? vertex.getLevel() : component.getLevel()) > vertex.getLevel())
+				context.discardWithException(new MetaLevelConstraintViolationException("Inappropriate component meta level : " + component.getLevel() + " for component : " + component + ". Component meta level for added node is : " + vertex.getLevel()));
 	}
 
 	private void checkGetInstance(T vertex) {
