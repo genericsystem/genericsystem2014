@@ -2,7 +2,7 @@ package org.genericsystem.concurrency;
 
 public abstract class AbstractBuilder<T extends AbstractGeneric<T>> extends org.genericsystem.cache.AbstractBuilder<T> {
 
-	private Listener<T> listener;
+	private MutationListener<T> listener;
 
 	public AbstractBuilder(Cache<T> context) {
 		super(context);
@@ -14,12 +14,12 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T>> extends org.
 	}
 
 	@Override
-	protected void triggersDependencyUpdate(T oldDependency, T newDependency) {
+	protected void triggersMutation(T oldDependency, T newDependency) {
 		if (listener != null)
-			listener.triggersDependencyUpdate(oldDependency, newDependency);
+			listener.triggersMutation(oldDependency, newDependency);
 	}
 
-	public void setListener(Listener<T> listener) {
+	public void setMutationListener(MutationListener<T> listener) {
 		this.listener = listener;
 	}
 
@@ -50,8 +50,8 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T>> extends org.
 		}
 	}
 
-	public static interface Listener<X> {
-		void triggersDependencyUpdate(X oldDependency, X newDependency);
+	public static interface MutationListener<X> {
+		void triggersMutation(X oldDependency, X newDependency);
 	}
 
 }
