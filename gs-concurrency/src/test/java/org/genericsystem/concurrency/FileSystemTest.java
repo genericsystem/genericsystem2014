@@ -1,9 +1,9 @@
 package org.genericsystem.concurrency;
 
 import java.util.Arrays;
+
 import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.InstanceValueClassViolationConstraint;
-import org.genericsystem.cache.Cache;
 import org.genericsystem.concurrency.FileSystem.Directory;
 import org.genericsystem.concurrency.FileSystem.FileType;
 import org.genericsystem.concurrency.FileSystem.FileType.File;
@@ -73,7 +73,7 @@ public class FileSystemTest extends AbstractTest {
 		Directory directory1 = rootDirectory.addDirectory("directory1");
 		final Directory directory2 = rootDirectory.addDirectory("directory2");
 		assert !directory2.addDirectory("directory1").equals(directory1); // No Exception
-		Cache cache = engine.getCurrentCache();
+		Cache<Generic> cache = engine.getCurrentCache();
 		Cache<Generic> mountAndStartNewCache = engine.getCurrentCache().mountAndStartNewCache();
 
 		catchAndCheckCause(() -> directory2.addDirectory("directory1"), ExistsException.class); // Exception

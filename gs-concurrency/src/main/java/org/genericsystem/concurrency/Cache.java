@@ -13,21 +13,32 @@ import org.genericsystem.kernel.Statics;
 public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache.Cache<T> {
 
 	private MutationsListener<T> listener;
-	
+
 	protected Cache(DefaultEngine<T> engine) {
 		this(new Transaction<>(engine));
 	}
-	
+
 	protected Cache(Context<T> subContext) {
-		this(subContext, new MutationsListener<T>() {});
+		this(subContext, new MutationsListener<T>() {
+		});
 	}
 
-	protected Cache(Context<T> subContext,MutationsListener<T> listener) {
+	protected Cache(Context<T> subContext, MutationsListener<T> listener) {
 		super(subContext);
 		this.listener = listener;
 		init((AbstractBuilder<T>) new GenericBuilder((Cache<Generic>) this));
 	}
-	
+
+	@Override
+	public Cache<T> mountAndStartNewCache() {
+		return (Cache<T>) getRoot().newCache(this).start();
+	}
+
+	@Override
+	public Cache<T> start() {
+		return (Cache<T>) getRoot().start(this);
+	}
+
 	@Override
 	protected void triggersMutation(T oldDependency, T newDependency) {
 		if (listener != null)
@@ -76,11 +87,6 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 	// }
 
 	@Override
-	public Cache<T> start() {
-		return (Cache<T>) super.start();
-	}
-
-	@Override
 	public void flush() throws RollbackException {
 		if (!equals(getRoot().getCurrentCache()))
 			discardWithException(new CacheNoStartedException("The Cache isn't started"));
@@ -121,7 +127,7 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
 		super.apply(adds, removes);
 	}
-	
+
 	@Override
 	public void clear() {
 		super.clear();

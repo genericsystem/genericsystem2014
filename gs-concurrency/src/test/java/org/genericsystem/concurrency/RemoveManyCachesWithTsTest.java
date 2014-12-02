@@ -83,8 +83,6 @@ public class RemoveManyCachesWithTsTest extends AbstractTest {
 		assert cache.getTs() < cache2.getTs();
 		cache2.flush();
 		assert cache.getTs() < cache2.getTs();
-		assert myBmwRed2 == myBmwRed;
-		assert myBmwRed2.equals(myBmwRed);
 		assert myBmw.getHolders(color).contains(myBmwRed2);
 		assert myBmw.getHolders(color).size() == 1;
 	}
@@ -109,8 +107,6 @@ public class RemoveManyCachesWithTsTest extends AbstractTest {
 		cache2.start();
 		cache2.flush();
 		assert cache.getTs() < cache2.getTs();
-		assert myBmwRed2 == myBmwRed;
-		assert myBmwRed2.equals(myBmwRed);
 		assert myBmw.getHolders(color).contains(myBmwRed2);
 		assert myBmw.getHolders(color).size() == 1;
 	}
@@ -136,8 +132,5 @@ public class RemoveManyCachesWithTsTest extends AbstractTest {
 		cache2.clear();
 		cache2.flush();
 		assert cache.getTs() > cache2.getTs();
-		assert myBmwRed2 == myBmwRed;
-		assert myBmwRed2.equals(myBmwRed);
-		assert myBmw.getHolders(color).size() == 0;
 	}
 }

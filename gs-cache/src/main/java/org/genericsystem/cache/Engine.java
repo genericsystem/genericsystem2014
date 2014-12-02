@@ -2,6 +2,7 @@ package org.genericsystem.cache;
 
 import java.io.Serializable;
 import java.util.Collections;
+
 import org.genericsystem.kernel.Statics;
 
 public class Engine extends Generic implements DefaultEngine<Generic> {

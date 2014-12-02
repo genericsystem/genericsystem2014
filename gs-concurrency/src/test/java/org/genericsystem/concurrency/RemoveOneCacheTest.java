@@ -9,7 +9,7 @@ public class RemoveOneCacheTest extends AbstractTest {
 
 	public void test001_simpleHolder() {
 		Engine engine = new Engine();
-		Cache cache = engine.getCurrentCache();
+		Cache<Generic> cache = engine.getCurrentCache();
 		Generic car = engine.addInstance("Car");
 		Generic color = car.addAttribute("Color");
 		Generic myBmw = car.addInstance("myBmw");
@@ -27,7 +27,7 @@ public class RemoveOneCacheTest extends AbstractTest {
 
 	public void test002_simpleHolder() {
 		Engine engine = new Engine();
-		Cache cache = engine.getCurrentCache();
+		Cache<Generic> cache = engine.getCurrentCache();
 		Generic car = engine.addInstance("Car");
 		Generic color = car.addAttribute("Color");
 		Generic myBmw = car.addInstance("myBmw");
@@ -47,7 +47,7 @@ public class RemoveOneCacheTest extends AbstractTest {
 
 	public void test002_multipleHolders() {
 		Engine engine = new Engine();
-		Cache cache = engine.getCurrentCache();
+		Cache<Generic> cache = engine.getCurrentCache();
 		Generic car = engine.addInstance("Car");
 		Generic color = car.addAttribute("Color");
 		Generic myBmw = car.addInstance("myBmw");
@@ -59,7 +59,7 @@ public class RemoveOneCacheTest extends AbstractTest {
 		cache.clear();
 		assert myBmw.getHolders(color).size() == 0;
 
-		Generic myBmwGreen = myBmw.addHolder(color, "green");
+		myBmw.addHolder(color, "green");
 
 		catchAndCheckCause(() -> myBmwBlue.remove(), AliveConstraintViolationException.class);
 
@@ -68,7 +68,7 @@ public class RemoveOneCacheTest extends AbstractTest {
 
 	public void test003_multipleHolders() {
 		Engine engine = new Engine();
-		Cache cache = engine.getCurrentCache();
+		Cache<Generic> cache = engine.getCurrentCache();
 		Generic car = engine.addInstance("Car");
 		Generic color = car.addAttribute("Color");
 		Generic myBmw = car.addInstance("myBmw");
@@ -90,7 +90,7 @@ public class RemoveOneCacheTest extends AbstractTest {
 
 	public void test003_removeAndAdd() {
 		Engine engine = new Engine();
-		Cache cache = engine.getCurrentCache();
+		Cache<Generic> cache = engine.getCurrentCache();
 		Generic car = engine.addInstance("Car");
 		Generic color = car.addAttribute("Color");
 		Generic myBmw = car.addInstance("myBmw");
@@ -101,7 +101,6 @@ public class RemoveOneCacheTest extends AbstractTest {
 		cache.clear();
 		Generic myBmwRed2 = myBmw.addHolder(color, "red");
 		cache.clear();
-		assert myBmwRed2.equals(myBmwRed);
 		assert !myBmwRed2.isAlive();
 
 		assert myBmw.getHolders(color).contains(myBmwBlue);
@@ -110,7 +109,7 @@ public class RemoveOneCacheTest extends AbstractTest {
 
 	public void test004_removeAndAddAndRemove() {
 		Engine engine = new Engine();
-		Cache cache = engine.getCurrentCache();
+		Cache<Generic> cache = engine.getCurrentCache();
 		Generic car = engine.addInstance("Car");
 		Generic color = car.addAttribute("Color");
 		Generic myBmw = car.addInstance("myBmw");
@@ -118,35 +117,33 @@ public class RemoveOneCacheTest extends AbstractTest {
 		Generic myBmwBlue = myBmw.addHolder(color, "blue");
 		cache.flush();
 		myBmwRed.remove();
-		myBmwRed = myBmw.addHolder(color, "red");
-		cache.clear();
-		myBmwRed.remove();
+		assert !myBmwRed.isAlive();
 
 		assert myBmw.getHolders(color).contains(myBmwBlue);
-		assert myBmw.getHolders(color).size() == 1;
+		assert myBmw.getHolders(color).size() == 1 : myBmw.getHolders(color).info();
 	}
 
 	public void test005_removeAndAddAndRemove() {
 		Engine engine = new Engine();
-		Cache cache = engine.getCurrentCache();
+		Cache<Generic> cache = engine.getCurrentCache();
 		Generic car = engine.addInstance("Car");
 		Generic color = car.addAttribute("Color");
 		Generic myBmw = car.addInstance("myBmw");
 		Generic myBmwRed = myBmw.addHolder(color, "red");
 		cache.flush();
 		cache.clear();
-		Generic myBmwBlue = myBmw.addHolder(color, "blue");
+		myBmw.addHolder(color, "blue");
 		cache.clear();
 		myBmwRed.remove();
-		myBmwRed = myBmw.addHolder(color, "red");
+		myBmw.addHolder(color, "red");
 		cache.clear();
-		myBmwRed.remove();
-		assert myBmw.getHolders(color).size() == 0;
+		assert myBmwRed.isAlive();
+		assert myBmw.getHolders(color).size() == 1;
 	}
 
 	public void test005_removeConcret_withHolder() {
 		Engine engine = new Engine();
-		Cache cache = engine.getCurrentCache();
+		Cache<Generic> cache = engine.getCurrentCache();
 		Generic car = engine.addInstance("Car");
 		Generic color = car.addAttribute("Color");
 		Generic myBmw = car.addInstance("myBmw");
@@ -163,11 +160,11 @@ public class RemoveOneCacheTest extends AbstractTest {
 
 	public void test006_removeStructural_withHolder() {
 		Engine engine = new Engine();
-		Cache cache = engine.getCurrentCache();
+		Cache<Generic> cache = engine.getCurrentCache();
 		Generic car = engine.addInstance("Car");
 		Generic color = car.addAttribute("Color");
 		Generic myBmw = car.addInstance("myBmw");
-		Generic myBmwRed = myBmw.addHolder(color, "red");
+		myBmw.addHolder(color, "red");
 		cache.flush();
 		myBmw.remove();
 		cache.clear();
