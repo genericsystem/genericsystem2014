@@ -6,18 +6,32 @@ import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.cache.Context;
 import org.genericsystem.concurrency.AbstractBuilder.GenericBuilder;
+import org.genericsystem.concurrency.AbstractBuilder.MutationsListener;
 import org.genericsystem.kernel.DefaultContext;
 import org.genericsystem.kernel.Statics;
 
 public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache.Cache<T> {
 
+	private MutationsListener<T> listener;
+	
 	protected Cache(DefaultEngine<T> engine) {
 		this(new Transaction<>(engine));
 	}
-
+	
 	protected Cache(Context<T> subContext) {
+		this(subContext, new MutationsListener<T>() {});
+	}
+
+	protected Cache(Context<T> subContext,MutationsListener<T> listener) {
 		super(subContext);
+		this.listener = listener;
 		init((AbstractBuilder<T>) new GenericBuilder((Cache<Generic>) this));
+	}
+	
+	@Override
+	protected void triggersMutation(T oldDependency, T newDependency) {
+		if (listener != null)
+			listener.triggersMutation(oldDependency, newDependency);
 	}
 
 	public long getTs() {
@@ -84,6 +98,8 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 					stop();
 					((Transaction<T>) subContext).apply(adds, removes);
 				}
+				clear();
+				return;
 			} catch (ConcurrencyControlException e) {
 				cause = e;
 				try {
@@ -97,8 +113,6 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 			} finally {
 				start();
 			}
-			clear();
-			return;
 		}
 		discardWithException(cause);
 	}
@@ -106,5 +120,12 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 	@Override
 	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
 		super.apply(adds, removes);
+	}
+	
+	@Override
+	public void clear() {
+		super.clear();
+		if (listener != null)
+			listener.triggersClear();
 	}
 }

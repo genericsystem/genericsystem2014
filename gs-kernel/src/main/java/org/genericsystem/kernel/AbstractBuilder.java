@@ -97,7 +97,7 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 		ConvertMap convertMap = new ConvertMap();
 		if(toRebuild!=null){
 			convertMap.put(toRebuild, build);
-			triggersMutation(toRebuild, build);
+			context.triggersMutation(toRebuild, build);
 		}
 		Statics.reverseCollections(dependenciesToRebuild).forEach(x -> convertMap.convert(x));
 		return build;
@@ -137,14 +137,13 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 					newDependency = getOrAdjustAndBuild(dependency.getClass(), convert(dependency.getMeta()), overrides, dependency.getValue(), components);
 				}
 				put(dependency, newDependency);
-				triggersMutation(dependency, newDependency);
+				context.triggersMutation(dependency, newDependency);
 			}
 			return newDependency;
 		}
 	}
 
-	protected void triggersMutation(T oldDependency, T newDependency) {
-	}
+
 
 	public static class VertextBuilder extends AbstractBuilder<Vertex> {
 

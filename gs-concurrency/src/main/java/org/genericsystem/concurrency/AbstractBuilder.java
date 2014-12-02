@@ -2,8 +2,6 @@ package org.genericsystem.concurrency;
 
 public abstract class AbstractBuilder<T extends AbstractGeneric<T>> extends org.genericsystem.cache.AbstractBuilder<T> {
 
-	private MutationListener<T> listener;
-
 	public AbstractBuilder(Cache<T> context) {
 		super(context);
 	}
@@ -13,15 +11,7 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T>> extends org.
 		return (Cache<T>) super.getContext();
 	}
 
-	@Override
-	protected void triggersMutation(T oldDependency, T newDependency) {
-		if (listener != null)
-			listener.triggersMutation(oldDependency, newDependency);
-	}
 
-	public void setMutationListener(MutationListener<T> listener) {
-		this.listener = listener;
-	}
 
 	@Override
 	protected T setMeta(int dim) {
@@ -50,8 +40,9 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T>> extends org.
 		}
 	}
 
-	public static interface MutationListener<X> {
-		void triggersMutation(X oldDependency, X newDependency);
+	public static interface MutationsListener<X> {
+		 default void triggersMutation(X oldDependency, X newDependency){};
+		 default void triggersClear(){};
 	}
 
 }

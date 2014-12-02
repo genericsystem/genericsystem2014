@@ -8,12 +8,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.genericsystem.api.core.IContext;
-import org.genericsystem.api.exception.AliveConstraintViolationException;
-import org.genericsystem.concurrency.AbstractBuilder.MutationListener;
+import org.genericsystem.concurrency.AbstractBuilder.MutationsListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Cache implements IContext<Generic>, MutationListener<org.genericsystem.concurrency.Generic> {
+public class Cache implements IContext<Generic>, MutationsListener<org.genericsystem.concurrency.Generic> {
 	private static Logger log = LoggerFactory.getLogger(Cache.class);
 	private Engine engine;
 	private org.genericsystem.concurrency.Cache<org.genericsystem.concurrency.Generic> concurrencyCache;
@@ -29,8 +28,7 @@ public class Cache implements IContext<Generic>, MutationListener<org.genericsys
 		set.add(engine);
 		reverseMultiMap.put(concurrencyEngine, set);
 		
-		this.concurrencyCache = concurrencyEngine.newCache();
-		concurrencyCache.getBuilder().setMutationListener(this);
+		this.concurrencyCache = concurrencyEngine.newCache(this);
 	}
 	
 
@@ -79,6 +77,11 @@ public class Cache implements IContext<Generic>, MutationListener<org.genericsys
 			reverseMultiMap.put(newDependency, resultSet);
 		}
 	}	
+	
+	@Override
+	public void triggersClear(){
+		refresh();
+	}
 
 	void refresh(){
 		Iterator<Entry<org.genericsystem.concurrency.Generic, Set<Generic>>> iterator = reverseMultiMap.entrySet().iterator();
@@ -103,7 +106,6 @@ public class Cache implements IContext<Generic>, MutationListener<org.genericsys
 
 	public void clear() {
 		getConcurrencyCache().clear();
-		refresh();
 	}
 
 	public org.genericsystem.concurrency.Cache<?> getConcurrencyCache() {

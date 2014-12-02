@@ -131,5 +131,8 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 	protected boolean unIndex(Dependencies<T> dependencies, T dependency) {
 		return dependencies.remove(dependency);
 	}
+	
+	protected void triggersMutation(T oldDependency, T newDependency) {
+	}
 
 }

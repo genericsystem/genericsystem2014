@@ -40,7 +40,7 @@ public class Engine extends Generic implements IRoot<Generic> {
 	public Cache getCurrentCache() {
 		Cache currentCache = cacheLocal.get();
 		if (currentCache == null)
-			throw new IllegalStateException();
+			throw new IllegalStateException("Unable to find the current cache. Did you miss to call start() method on it ?");
 		return currentCache;
 	}
 
