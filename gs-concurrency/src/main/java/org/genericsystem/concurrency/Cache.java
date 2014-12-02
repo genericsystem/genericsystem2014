@@ -110,6 +110,7 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 	@Override
 	public void clear() {
 		super.clear();
-		listener.triggersRefresh();
+		if(listener!=null)
+			listener.triggersRefresh();
 	}
 }
