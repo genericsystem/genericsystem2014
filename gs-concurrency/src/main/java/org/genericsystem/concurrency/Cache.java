@@ -12,12 +12,12 @@ import org.genericsystem.kernel.Statics;
 
 public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache.Cache<T> {
 
-	private MutationsListener<T> listener;
-	
+	private final MutationsListener<T> listener;
+
 	protected Cache(DefaultEngine<T> engine) {
 		this(new Transaction<>(engine));
 	}
-	
+
 	protected Cache(Context<T> subContext) {
 		this(subContext, new MutationsListener<T>() {});
 	}
@@ -27,7 +27,7 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 		this.listener = listener;
 		init((AbstractBuilder<T>) new GenericBuilder((Cache<Generic>) this));
 	}
-	
+
 	@Override
 	protected void triggersMutation(T oldDependency, T newDependency) {
 		if (listener != null)
@@ -106,11 +106,10 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
 		super.apply(adds, removes);
 	}
-	
+
 	@Override
 	public void clear() {
 		super.clear();
-		if (listener != null)
-			listener.triggersRefresh();
+		listener.triggersRefresh();
 	}
 }
