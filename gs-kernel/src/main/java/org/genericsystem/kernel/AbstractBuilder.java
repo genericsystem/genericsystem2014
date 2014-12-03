@@ -37,16 +37,6 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
-		if (meta == null) {
-			T adjustedMeta = ((T) context.getRoot()).adjustMeta(components.size());
-			return adjustedMeta.getComponents().size() == components.size() ? adjustedMeta : context.plug(newT(clazz, meta, supers, value, components));
-		}
-		T instance = meta.getDirectInstance(value, components);
-		return instance != null ? instance : context.plug(newT(clazz, meta, supers, value, components));
-	}
-
-	@SuppressWarnings("unchecked")
 	protected T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, T... components) {
 		List<T> componentList = Arrays.asList(components);
 		context.getChecker().checkBeforeBuild(clazz, meta, overrides, value, componentList);
@@ -69,7 +59,7 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 		T equivInstance = getOrNewMeta.getDirectEquivInstance(value, componentList);
 		if (equivInstance != null)
 			return equivInstance.equalsRegardlessSupers(getOrNewMeta, value, componentList) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : rebuildAll(equivInstance,
-					() -> getOrAdjustAndBuild(clazz, meta, overrides, value, componentList), equivInstance.computeDependencies());
+					() -> adjustAndBuild(clazz, getOrNewMeta, overrides, value, componentList), equivInstance.computeDependencies());
 		return rebuildAll(null, () -> adjustAndBuild(clazz, getOrNewMeta, overrides, value, componentList), getOrNewMeta.computePotentialDependencies(overrides, value, componentList));
 	}
 
@@ -77,7 +67,13 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 	protected T update(T update, List<T> overrides, Serializable newValue, T... newComponents) {
 		List<T> componentList = Arrays.asList(newComponents);
 		context.getChecker().checkBeforeBuild(update.getClass(), update.getMeta(), overrides, newValue, componentList);
-		return rebuildAll(update, () -> getOrAdjustAndBuild(update.getClass(), update.getMeta(), overrides, newValue, componentList), update.computeDependencies());
+		return rebuildAll(update, () -> {
+			T getOrNewMeta = update.getMeta().isMeta() ? setMeta(componentList.size()) : update.getMeta();
+			T instance = getOrNewMeta.getDirectInstance(newValue, componentList);
+			if (instance != null)
+				return instance;
+			return adjustAndBuild(update.getClass(), update.getMeta(), overrides, newValue, componentList);
+		}, update.computeDependencies());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -93,13 +89,7 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 		return rebuildAll(null, () -> context.plug(newT(null, null, Collections.singletonList(adjustedMeta), root.getValue(), components)), adjustedMeta.computePotentialDependencies(Collections.singletonList(adjustedMeta), root.getValue(), components));
 	}
 
-	T getOrAdjustAndBuild(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
-		T getOrNewMeta = meta.isMeta() ? setMeta(components.size()) : meta;
-		T instance = getOrNewMeta.getDirectInstance(value, components);
-		return instance != null ? instance : adjustAndBuild(clazz, getOrNewMeta, overrides, value, components);
-	}
-
-	T rebuildAll(T toRebuild, Supplier<T> rebuilder, LinkedHashSet<T> dependenciesToRebuild) {
+	private T rebuildAll(T toRebuild, Supplier<T> rebuilder, LinkedHashSet<T> dependenciesToRebuild) {
 		dependenciesToRebuild.forEach(context::unplug);
 		T build = rebuilder.get();
 		dependenciesToRebuild.remove(toRebuild);
@@ -134,7 +124,9 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 				else {
 					List<T> overrides = dependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
 					List<T> components = dependency.getComponents().stream().map(x -> x != null ? convert(x) : null).collect(Collectors.toList());
-					newDependency = getOrAdjustAndBuild(dependency.getClass(), convert(dependency.getMeta()), overrides, dependency.getValue(), components);
+					T meta = convert(dependency.getMeta());
+					T instance = meta.getDirectInstance(dependency.getValue(), components);
+					newDependency = instance != null ? instance : adjustAndBuild(dependency.getClass(), meta, overrides, dependency.getValue(), components);
 				}
 				put(dependency, newDependency);
 				context.triggersMutation(dependency, newDependency);
