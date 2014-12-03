@@ -9,6 +9,7 @@ import org.genericsystem.kernel.systemproperty.constraints.Constraint.CheckedCon
 
 public class InstanceValueClassConstraint<T extends AbstractVertex<T>> implements CheckedConstraint<T> {
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void check(T modified, T attribute, Serializable value) throws ConstraintViolationException {
 		if (!((Class<? extends Serializable>) value).isAssignableFrom(modified.getValue().getClass()))

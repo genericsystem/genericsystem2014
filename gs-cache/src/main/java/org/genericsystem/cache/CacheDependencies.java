@@ -5,13 +5,14 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.genericsystem.kernel.Dependencies;
-import org.genericsystem.kernel.DependenciesImpl;
+import org.genericsystem.kernel.AbstractTimestampDependenciesImpl;
 
 public class CacheDependencies<T> implements Dependencies<T> {
 
 	private final Dependencies<T> inserts = new DependenciesImpl<>();
+
 	private final Dependencies<T> deletes = new DependenciesImpl<>();
+
 	private final Supplier<Stream<T>> streamSupplier;
 
 	public CacheDependencies(Supplier<Stream<T>> streamSupplier) {
@@ -43,5 +44,13 @@ public class CacheDependencies<T> implements Dependencies<T> {
 	@Override
 	public String toString() {
 		return get().collect(Collectors.toList()).toString();
+	}
+
+	private static class DependenciesImpl<T> extends AbstractTimestampDependenciesImpl<T> implements Dependencies<T> {
+
+		@Override
+		public Iterator<T> iterator() {
+			return new InternalIterator();
+		}
 	}
 }

@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -258,9 +259,15 @@ public class Archiver<T extends AbstractVertex<T>> {
 
 			public DependenciesOrder<T> visit(T node) {
 				if (!contains(node)) {
-					node.getCompositesDependencies().forEach(this::visit);
-					node.getInheritingsDependencies().forEach(this::visit);
-					node.getInstancesDependencies().forEach(this::visit);
+					Iterator<T> iterator = node.getCompositesDependencies().iterator(0);
+					while (iterator.hasNext())
+						visit(iterator.next());
+					iterator = node.getInheritingsDependencies().iterator(0);
+					while (iterator.hasNext())
+						visit(iterator.next());
+					iterator = node.getInstancesDependencies().iterator(0);
+					while (iterator.hasNext())
+						visit(iterator.next());
 					if (!node.isRoot())
 						add(node);
 				}

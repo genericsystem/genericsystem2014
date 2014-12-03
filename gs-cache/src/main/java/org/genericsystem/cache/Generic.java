@@ -1,25 +1,25 @@
 package org.genericsystem.cache;
 
-import org.genericsystem.kernel.Dependencies;
+import org.genericsystem.kernel.TimestampDependencies;
 
 public class Generic extends AbstractGeneric<Generic> implements DefaultGeneric<Generic> {
-	
-	private final Dependencies<Generic> instances = buildDependencies();
-	private final Dependencies<Generic> inheritings = buildDependencies();
-	private final Dependencies<Generic> composites = buildDependencies();
+
+	private final TimestampDependencies<Generic> instances = buildDependencies();
+	private final TimestampDependencies<Generic> inheritings = buildDependencies();
+	private final TimestampDependencies<Generic> composites = buildDependencies();
 
 	@Override
-	protected Dependencies<Generic> getInstancesDependencies() {
+	protected TimestampDependencies<Generic> getInstancesDependencies() {
 		return instances;
 	}
 
 	@Override
-	protected Dependencies<Generic> getInheritingsDependencies() {
+	protected TimestampDependencies<Generic> getInheritingsDependencies() {
 		return inheritings;
 	}
 
 	@Override
-	protected Dependencies<Generic> getCompositesDependencies() {
+	protected TimestampDependencies<Generic> getCompositesDependencies() {
 		return composites;
 	}
 }

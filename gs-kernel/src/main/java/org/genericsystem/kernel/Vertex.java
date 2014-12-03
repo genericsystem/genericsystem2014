@@ -2,22 +2,22 @@ package org.genericsystem.kernel;
 
 public class Vertex extends AbstractVertex<Vertex> implements DefaultVertex<Vertex> {
 
-	private final Dependencies<Vertex> instances = buildDependencies();
-	private final Dependencies<Vertex> inheritings = buildDependencies();
-	private final Dependencies<Vertex> composites = buildDependencies();
+	private final TimestampDependencies<Vertex> instances = buildDependencies();
+	private final TimestampDependencies<Vertex> inheritings = buildDependencies();
+	private final TimestampDependencies<Vertex> composites = buildDependencies();
 
 	@Override
-	protected Dependencies<Vertex> getInstancesDependencies() {
+	protected TimestampDependencies<Vertex> getInstancesDependencies() {
 		return instances;
 	}
 
 	@Override
-	protected Dependencies<Vertex> getInheritingsDependencies() {
+	protected TimestampDependencies<Vertex> getInheritingsDependencies() {
 		return inheritings;
 	}
 
 	@Override
-	protected Dependencies<Vertex> getCompositesDependencies() {
+	protected TimestampDependencies<Vertex> getCompositesDependencies() {
 		return composites;
 	}
 

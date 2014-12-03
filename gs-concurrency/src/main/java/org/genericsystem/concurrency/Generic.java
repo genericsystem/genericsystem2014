@@ -1,29 +1,30 @@
 package org.genericsystem.concurrency;
 
-import org.genericsystem.kernel.Dependencies;
+import org.genericsystem.kernel.TimestampDependencies;
 
 public class Generic extends AbstractGeneric<Generic> implements DefaultGeneric<Generic> {
 
-	private final AbstractTimestampedDependencies<Generic> instancesDependencies = builTimestampeddDependencies();
-	private final AbstractTimestampedDependencies<Generic> inheritingsDependencies = builTimestampeddDependencies();
-	private final AbstractTimestampedDependencies<Generic> compositesDependencies = builTimestampeddDependencies();
+	private final TimestampDependencies<Generic> instancesDependencies = buildDependencies();
+	private final TimestampDependencies<Generic> inheritingsDependencies = buildDependencies();
+	private final TimestampDependencies<Generic> compositesDependencies = buildDependencies();
 
 	@Override
-	protected AbstractTimestampedDependencies<Generic> getInstancesTimestampedDependencies() {
+	protected TimestampDependencies<Generic> getInstancesDependencies() {
 		return instancesDependencies;
 	}
 
 	@Override
-	protected AbstractTimestampedDependencies<Generic> getInheritingsTimestampedDependencies() {
+	protected TimestampDependencies<Generic> getInheritingsDependencies() {
 		return inheritingsDependencies;
 	}
 
 	@Override
-	protected AbstractTimestampedDependencies<Generic> getCompositesTimestampedDependencies() {
+	protected TimestampDependencies<Generic> getCompositesDependencies() {
 		return compositesDependencies;
 	}
 
-	private AbstractTimestampedDependencies<Generic> builTimestampeddDependencies() {
+	@Override
+	protected TimestampDependencies<Generic> buildDependencies() {
 		return new AbstractTimestampedDependencies<Generic>() {
 
 			@Override
@@ -31,11 +32,6 @@ public class Generic extends AbstractGeneric<Generic> implements DefaultGeneric<
 				return Generic.this.getLifeManager();
 			}
 		};
-	}
-
-	@Override
-	protected Dependencies<Generic> buildDependencies() {
-		throw new UnsupportedOperationException();
 	}
 
 	@Override

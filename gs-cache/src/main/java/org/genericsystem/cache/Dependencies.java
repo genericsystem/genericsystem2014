@@ -1,15 +1,17 @@
-package org.genericsystem.kernel;
+package org.genericsystem.cache;
 
 import java.util.AbstractMap;
 import java.util.Iterator;
 
 import org.genericsystem.api.core.IteratorSnapshot;
+import org.genericsystem.kernel.TimestampDependencies;
 
-public interface Dependencies<T> extends IteratorSnapshot<T> {
+public interface Dependencies<T> extends IteratorSnapshot<T>, TimestampDependencies<T> {
 
-	boolean remove(T vertex);
-
-	void add(T vertex);
+	@Override
+	default Iterator<T> iterator(long ts) {
+		return iterator();
+	}
 
 	@Override
 	default T get(T vertex) {
@@ -20,6 +22,11 @@ public interface Dependencies<T> extends IteratorSnapshot<T> {
 				return next;
 		}
 		return null;
+	}
+
+	@Override
+	default boolean isEmpty() {
+		return !iterator().hasNext();
 	}
 
 	public static class DependenciesEntry<T> extends AbstractMap.SimpleImmutableEntry<T, Dependencies<T>> {

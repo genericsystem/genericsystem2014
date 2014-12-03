@@ -63,33 +63,33 @@ public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem
 
 	@Override
 	public IteratorSnapshot<T> getInstances(T generic) {
-		return () -> generic.getInstancesTimestampedDependencies().iterator(ts);
+		return () -> generic.getInstancesDependencies().iterator(ts);
 	}
 
 	@Override
 	public IteratorSnapshot<T> getInheritings(T generic) {
-		return () -> generic.getInheritingsTimestampedDependencies().iterator(ts);
+		return () -> generic.getInheritingsDependencies().iterator(ts);
 	}
 
 	@Override
 	public IteratorSnapshot<T> getComposites(T vertex) {
-		return () -> vertex.getCompositesTimestampedDependencies().iterator(ts);
+		return () -> vertex.getCompositesDependencies().iterator(ts);
 	}
 
-	@Override
-	protected void indexInstance(T generic, T instance) {
-		generic.getInstancesTimestampedDependencies().add(instance);
-	}
-
-	@Override
-	protected void indexInheriting(T generic, T inheriting) {
-		generic.getInheritingsTimestampedDependencies().add(inheriting);
-	}
-
-	@Override
-	protected void indexComposite(T generic, T composite) {
-		generic.getCompositesTimestampedDependencies().add(composite);
-	}
+	// @Override
+	// protected void indexInstance(T generic, T instance) {
+	// generic.getInstancesDependencies().add(instance);
+	// }
+	//
+	// @Override
+	// protected void indexInheriting(T generic, T inheriting) {
+	// generic.getInheritingsDependencies().add(inheriting);
+	// }
+	//
+	// @Override
+	// protected void indexComposite(T generic, T composite) {
+	// generic.getCompositesDependencies().add(composite);
+	// }
 
 	private class LockedLifeManager extends HashSet<LifeManager> {
 

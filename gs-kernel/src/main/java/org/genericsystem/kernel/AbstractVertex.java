@@ -3,6 +3,7 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
@@ -29,7 +30,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		this.supers = Collections.unmodifiableList(supers);
 		return (T) this;
 	}
-	
+
 	@Override
 	public T getMeta() {
 		return meta;
@@ -55,14 +56,20 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return Objects.toString(getValue());
 	}
 
-	protected abstract Dependencies<T> getInstancesDependencies();
+	protected abstract TimestampDependencies<T> getInstancesDependencies();
 
-	protected abstract Dependencies<T> getInheritingsDependencies();
+	protected abstract TimestampDependencies<T> getInheritingsDependencies();
 
-	protected abstract Dependencies<T> getCompositesDependencies();
+	protected abstract TimestampDependencies<T> getCompositesDependencies();
 
-	protected Dependencies<T> buildDependencies() {
-		return new DependenciesImpl<>();
+	protected TimestampDependencies<T> buildDependencies() {
+		return new AbstractTimestampDependenciesImpl<T>() {
+
+			@Override
+			public Iterator<T> iterator() {
+				return iterator(0);
+			}
+		};
 	}
 
 	protected void forceRemove() {
@@ -212,7 +219,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return componentsList.equals(components);
 	}
 
-	//Unused for now
+	// Unused for now
 	public boolean genericEquals(ISignature<?> service) {
 		if (this == service)
 			return true;
@@ -237,8 +244,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 				return false;
 		return true;
 	}
-	
-	//Unused for now	
+
+	// Unused for now
 	static <T extends AbstractVertex<T>> boolean componentsGenericEquals(AbstractVertex<T> component, ISignature<?> compare) {
 		return (component == compare) || (component != null && component.genericEquals(compare));
 	}
@@ -252,7 +259,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 			return false;
 		if (this == service)
 			return true;
-		return equiv(service.getMeta(),service.getValue(),service.getComponents());
+		return equiv(service.getMeta(), service.getValue(), service.getComponents());
 	}
 
 	boolean equiv(ISignature<?> meta, Serializable value, List<? extends ISignature<?>> components) {

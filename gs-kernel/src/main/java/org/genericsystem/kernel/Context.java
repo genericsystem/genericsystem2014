@@ -1,6 +1,6 @@
 package org.genericsystem.kernel;
 
-import org.genericsystem.api.core.Snapshot;
+import org.genericsystem.api.core.IteratorSnapshot;
 import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.RollbackException;
 
@@ -86,18 +86,18 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 	}
 
 	@Override
-	public Snapshot<T> getInstances(T vertex) {
-		return vertex.getInstancesDependencies();
+	public IteratorSnapshot<T> getInstances(T vertex) {
+		return () -> vertex.getInstancesDependencies().iterator(0);
 	}
 
 	@Override
-	public Snapshot<T> getInheritings(T vertex) {
-		return vertex.getInheritingsDependencies();
+	public IteratorSnapshot<T> getInheritings(T vertex) {
+		return () -> vertex.getInheritingsDependencies().iterator(0);
 	}
 
 	@Override
-	public Snapshot<T> getComposites(T vertex) {
-		return vertex.getCompositesDependencies();
+	public IteratorSnapshot<T> getComposites(T vertex) {
+		return () -> vertex.getCompositesDependencies().iterator(0);
 	}
 
 	protected void indexInstance(T generic, T instance) {
@@ -112,7 +112,7 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 		index(generic.getCompositesDependencies(), composite);
 	}
 
-	protected void index(Dependencies<T> dependencies, T dependency) {
+	protected void index(TimestampDependencies<T> dependencies, T dependency) {
 		dependencies.add(dependency);
 	}
 
@@ -128,10 +128,10 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 		return unIndex(generic.getCompositesDependencies(), composite);
 	}
 
-	protected boolean unIndex(Dependencies<T> dependencies, T dependency) {
+	protected boolean unIndex(TimestampDependencies<T> dependencies, T dependency) {
 		return dependencies.remove(dependency);
 	}
-	
+
 	protected void triggersMutation(T oldDependency, T newDependency) {
 	}
 

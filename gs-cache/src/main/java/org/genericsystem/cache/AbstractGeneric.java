@@ -3,11 +3,10 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.kernel.AbstractVertex;
-import org.genericsystem.kernel.Dependencies;
+import org.genericsystem.kernel.TimestampDependencies;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends AbstractVertex<T> implements DefaultGeneric<T> {
 
@@ -39,9 +38,16 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 		return getCurrentCache().getComposites((T) this);
 	}
 
-	protected Dependencies<T> buildDependencies(Supplier<Stream<T>> subStreamSupplier) {
-		return new CacheDependencies<>(subStreamSupplier);
-	}
+	// protected TimestampDependencies<T> buildDependencies(Supplier<Stream<T>> subStreamSupplier) {
+	// return new CacheDependencies<T>(subStreamSupplier) {
+	//
+	// @Override
+	// public Iterator<T> iterator(long ts) {
+	// return iterator();
+	// }
+	//
+	// };
+	// }
 
 	@Override
 	protected LinkedHashSet<T> computeDependencies() {
@@ -75,13 +81,13 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 	// }
 
 	@Override
-	protected abstract Dependencies<T> getInheritingsDependencies();
+	protected abstract TimestampDependencies<T> getInheritingsDependencies();
 
 	@Override
-	protected abstract Dependencies<T> getInstancesDependencies();
+	protected abstract TimestampDependencies<T> getInstancesDependencies();
 
 	@Override
-	protected abstract Dependencies<T> getCompositesDependencies();
+	protected abstract TimestampDependencies<T> getCompositesDependencies();
 
 	// TODO remove this and tests of adjustMeta in cache layer ???
 	@SuppressWarnings("unchecked")
