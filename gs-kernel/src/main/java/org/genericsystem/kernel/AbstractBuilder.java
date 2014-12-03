@@ -2,7 +2,6 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -16,11 +15,11 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 
 	private final Context<T> context;
 
-	public AbstractBuilder(Context<T> context) {
+	protected AbstractBuilder(Context<T> context) {
 		this.context = context;
 	}
 
-	public Context<T> getContext() {
+	protected Context<T> getContext() {
 		return context;
 	}
 
@@ -65,6 +64,7 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 	}
 
 	//TODO must be private.
+	//Engines constructors should call find(MetaAttribute.class) and find(MetaRelation.class)
 	@SuppressWarnings("unchecked")
 	protected T setMeta(int dim) {
 		T root = (T) context.getRoot();
@@ -108,10 +108,8 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 		T build = rebuilder.get();
 		dependenciesToRebuild.remove(toRebuild);
 		ConvertMap convertMap = new ConvertMap();
-		if (toRebuild != null) {
-			convertMap.put(toRebuild, build);
-			context.triggersMutation(toRebuild, build);
-		}
+		if (toRebuild != null)
+			convertMap.put(toRebuild, build);// triggers mutation
 		Statics.reverseCollections(dependenciesToRebuild).forEach(x -> convertMap.convert(x));
 		return build;
 	}
@@ -120,22 +118,28 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 	private class ConvertMap extends HashMap<T, T> {
 		private static final long serialVersionUID = 5003546962293036021L;
 
-		private T convert(T dependency) {
-			if (dependency.isAlive())
-				return dependency;
-			T newDependency = get(dependency);
+		private T convert(T oldDependency) {
+			if (oldDependency.isAlive())
+				return oldDependency;
+			T newDependency = get(oldDependency);
 			if (newDependency == null) {
-				if (dependency.isMeta())
-					newDependency = setMeta(dependency.getComponents().size());
+				if (oldDependency.isMeta())
+					newDependency = setMeta(oldDependency.getComponents().size());
 				else {
-					List<T> overrides = dependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
-					List<T> components = dependency.getComponents().stream().map(x -> x != null ? convert(x) : null).collect(Collectors.toList());
-					newDependency = getOrAdjustAndBuild(dependency.getClass(), convert(dependency.getMeta()), overrides, dependency.getValue(), components);
+					List<T> overrides = oldDependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
+					List<T> components = oldDependency.getComponents().stream().map(x -> x != null ? convert(x) : null).collect(Collectors.toList());
+					newDependency = getOrAdjustAndBuild(oldDependency.getClass(), convert(oldDependency.getMeta()), overrides, oldDependency.getValue(), components);
 				}
-				put(dependency, newDependency);
-				context.triggersMutation(dependency, newDependency);
+				put(oldDependency, newDependency);// triggers mutation
 			}
 			return newDependency;
+		}
+		
+		@Override
+		public T put(T oldDependency,T newDependency) {
+			T result = super.put(oldDependency, newDependency);
+			context.triggersMutation(oldDependency, newDependency);
+			return result;
 		}
 	}
 
