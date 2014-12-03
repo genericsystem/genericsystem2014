@@ -23,19 +23,13 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	@SuppressWarnings("unchecked")
 	protected T init(T meta, List<T> supers, Serializable value, List<T> components) {
-		init(meta, value, components);
-		this.supers = Collections.unmodifiableList(supers);
-		return (T) this;
-	}
-
-	@SuppressWarnings("unchecked")
-	protected T init(T meta, Serializable value, List<T> components) {
 		this.meta = meta != null ? meta : (T) this;
 		this.value = value;
 		this.components = Collections.unmodifiableList(components);
+		this.supers = Collections.unmodifiableList(supers);
 		return (T) this;
 	}
-
+	
 	@Override
 	public T getMeta() {
 		return meta;
@@ -54,17 +48,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	@Override
 	public List<T> getSupers() {
 		return supers;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public DefaultRoot<T> getRoot() {
-		return this != meta ? meta.getRoot() : getSupers().isEmpty() ? (DefaultRoot<T>) this : getSupers().get(0).getRoot();
-	}
-
-	@Override
-	public Context<T> getCurrentCache() {
-		return getRoot().getCurrentCache();
 	}
 
 	@Override
@@ -96,7 +79,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	@SuppressWarnings("unchecked")
 	@Override
 	public T update(List<T> overrides, Serializable newValue, T... newComponents) {
-		return getCurrentCache().getBuilder().update((T) this, overrides, newValue, newComponents);
+		return getCurrentCache().getBuilder().update((T) this, overrides, newValue, Arrays.asList(newComponents));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -150,7 +133,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 			@Override
 			boolean isSelected(T node) {
-				return node.dependsFrom((T) AbstractVertex.this, overrides, value, components);
+				return node.isDependencyOf((T) AbstractVertex.this, overrides, value, components);
 			}
 		}.visit((T) this);
 	}
@@ -198,9 +181,9 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return result != null && Statics.areOverridesReached(overrides, result.getSupers()) ? result : null;
 	}
 
-	boolean dependsFrom(T meta, List<T> overrides, Serializable value, List<T> components) {
-		return inheritsFrom(meta, value, components) || getComponents().stream().filter(component -> component != null).anyMatch(component -> component.dependsFrom(meta, overrides, value, components))
-				|| (!isMeta() && getMeta().dependsFrom(meta, overrides, value, components)) || (!components.isEmpty() && componentsDepends(getComponents(), components) && overrides.stream().anyMatch(override -> override.inheritsFrom(getMeta())));
+	boolean isDependencyOf(T meta, List<T> overrides, Serializable value, List<T> components) {
+		return inheritsFrom(meta, value, components) || getComponents().stream().filter(component -> component != null).anyMatch(component -> component.isDependencyOf(meta, overrides, value, components))
+				|| (!isMeta() && getMeta().isDependencyOf(meta, overrides, value, components)) || (!components.isEmpty() && componentsDepends(getComponents(), components) && overrides.stream().anyMatch(override -> override.inheritsFrom(getMeta())));
 	}
 
 	T getDirectEquivInstance(Serializable value, List<T> components) {
@@ -229,7 +212,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return componentsList.equals(components);
 	}
 
-	// TODO à supprimer ?
+	//Unused for now
 	public boolean genericEquals(ISignature<?> service) {
 		if (this == service)
 			return true;
@@ -254,13 +237,13 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 				return false;
 		return true;
 	}
-
-	// TODO à supprimer ?
+	
+	//Unused for now	
 	static <T extends AbstractVertex<T>> boolean componentsGenericEquals(AbstractVertex<T> component, ISignature<?> compare) {
 		return (component == compare) || (component != null && component.genericEquals(compare));
 	}
 
-	static <T extends AbstractVertex<T>> boolean componentEquiv(T component, ISignature<?> compare) {
+	private static <T extends AbstractVertex<T>> boolean componentEquiv(T component, ISignature<?> compare) {
 		return (component == compare) || (component != null && component.equiv(compare));
 	}
 
@@ -269,24 +252,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 			return false;
 		if (this == service)
 			return true;
-		if (this == getMeta()) {
-			if (service.getMeta() != service.getMeta().getMeta())
-				return false;
-		} else if (!getMeta().equiv(service.getMeta()))
-			return false;
-		if (getComponents().size() != service.getComponents().size())
-			return false;
-		List<T> componentsList = getComponents();
-		List<? extends ISignature<?>> serviceComponents = service.getComponents();
-		for (int i = 0; i < componentsList.size(); i++)
-			if (!isReferentialIntegrityEnabled(i) && isSingularConstraintEnabled(i))
-				return componentEquiv(componentsList.get(i), serviceComponents.get(i));
-		for (int i = 0; i < componentsList.size(); i++)
-			if (!componentEquiv(componentsList.get(i), serviceComponents.get(i)))
-				return false;
-		if (!getMeta().isPropertyConstraintEnabled())
-			return Objects.equals(getValue(), service.getValue());
-		return true;
+		return equiv(service.getMeta(),service.getValue(),service.getComponents());
 	}
 
 	boolean equiv(ISignature<?> meta, Serializable value, List<? extends ISignature<?>> components) {
@@ -399,12 +365,9 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	public static class SystemMap {
 	}
 
-	private Stream<T> getKeys() {
-		T map = getMap();
-		return map != null ? getAttributes(map).get() : Stream.empty();
-	}
-
 	Optional<T> getKey(AxedPropertyClass property) {
-		return getKeys().filter(x -> Objects.equals(x.getValue(), property)).findFirst();
+		T map = getMap();
+		Stream<T> keys = map != null ? getAttributes(map).get() : Stream.empty();
+		return keys.filter(x -> Objects.equals(x.getValue(), property)).findFirst();
 	}
 }

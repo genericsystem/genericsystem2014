@@ -38,11 +38,18 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T>> extends org.
 		}
 	}
 
-	public static interface MutationsListener<X> {
-		default void triggersMutation(X oldDependency, X newDependency) {
+	public static interface ContextEventListener<X> {
+		
+		default void triggersMutationEvent(X oldDependency, X newDependency) {
 		}
 
-		default void triggersRefresh() {
+		default void triggersRefreshEvent() {
+		}
+
+		default void triggersClearEvent(){
+		}
+		
+		default void triggersFlushEvent(){
 		}
 	}
 

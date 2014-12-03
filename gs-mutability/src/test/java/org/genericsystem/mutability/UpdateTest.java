@@ -59,7 +59,7 @@ public class UpdateTest extends AbstractTest {
 		car.remove();
 		assert !car.isAlive();
 		engine.addInstance("Car");
-		assert car.isAlive();
+		assert !car.isAlive();
 	}
 
 	public void test001_dependencies() {

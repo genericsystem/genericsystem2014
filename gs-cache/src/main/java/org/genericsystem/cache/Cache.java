@@ -27,6 +27,10 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 	protected Set<T> removes = new LinkedHashSet<>();
 
 	public void clear() {
+		initialize();
+	}
+	
+	protected void initialize(){
 		inheritingsDependencies = new HashMap<>();
 		instancesDependencies = new HashMap<>();
 		compositesDependencies = new HashMap<>();
@@ -42,7 +46,7 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 		super(subContext.getRoot());
 		this.subContext = subContext;
 		init((AbstractBuilder<T>) new GenericBuilder((Cache<Generic>) this));
-		clear();
+		initialize();
 	}
 
 	@Override
@@ -103,7 +107,7 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 		} finally {
 			start();
 		}
-		clear();
+		initialize();
 	}
 
 	protected void checkConstraints() throws RollbackException {
