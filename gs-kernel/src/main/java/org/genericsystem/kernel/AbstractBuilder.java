@@ -28,11 +28,7 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 	protected abstract T[] newTArray(int dim);
 
 	protected T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
-		return newT(clazz, meta).init(meta, supers, value, components);
-	}
-
-	protected T newT(Class<?> clazz, T meta) {
-		return newT();
+		return newT().init(meta, supers, value, components);
 	}
 
 	protected T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
@@ -82,16 +78,6 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 		for (int i = 0; i < dim; i++)
 			components.add(root);
 		return rebuildAll(null, () -> context.plug(newT(null, null, Collections.singletonList(adjustedMeta), root.getValue(), components)), adjustedMeta.computePotentialDependencies(Collections.singletonList(adjustedMeta), root.getValue(), components));
-	}
-
-	@SuppressWarnings("unchecked")
-	T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
-		if (meta == null) {
-			T adjustedMeta = ((T) context.getRoot()).adjustMeta(components.size());
-			return adjustedMeta.getComponents().size() == components.size() ? adjustedMeta : context.plug(newT(clazz, meta, supers, value, components));
-		}
-		T instance = meta.getDirectInstance(value, components);
-		return instance != null ? instance : context.plug(newT(clazz, meta, supers, value, components));
 	}
 
 	private T rebuildAll(T toRebuild, Supplier<T> rebuilder, LinkedHashSet<T> dependenciesToRebuild) {
