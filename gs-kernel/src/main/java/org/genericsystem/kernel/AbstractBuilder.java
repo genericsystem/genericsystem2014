@@ -36,16 +36,6 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 		return newT();
 	}
 
-	@SuppressWarnings("unchecked")
-	T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
-		if (meta == null) {
-			T adjustedMeta = ((T) context.getRoot()).adjustMeta(components.size());
-			return adjustedMeta.getComponents().size() == components.size() ? adjustedMeta : context.plug(newT(clazz, meta, supers, value, components));
-		}
-		T instance = meta.getDirectInstance(value, components);
-		return instance != null ? instance : context.plug(newT(clazz, meta, supers, value, components));
-	}
-
 	protected T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
 		context.getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
 		T getOrNewMeta = meta.isMeta() ? setMeta(components.size()) : meta;
@@ -74,6 +64,7 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 		return rebuildAll(update, () -> getOrAdjustAndBuild(update.getClass(), update.getMeta(), overrides, newValue, newComponents), update.computeDependencies());
 	}
 
+	//TODO must be private.
 	@SuppressWarnings("unchecked")
 	protected T setMeta(int dim) {
 		T root = (T) context.getRoot();
@@ -86,14 +77,33 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 			components.add(root);
 		return rebuildAll(null, () -> context.plug(newT(null, null, Collections.singletonList(adjustedMeta), root.getValue(), components)), adjustedMeta.computePotentialDependencies(Collections.singletonList(adjustedMeta), root.getValue(), components));
 	}
+	
+	@SuppressWarnings("unchecked")
+	T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
+		if (meta == null) {
+			T adjustedMeta = ((T) context.getRoot()).adjustMeta(components.size());
+			return adjustedMeta.getComponents().size() == components.size() ? adjustedMeta : context.plug(newT(clazz, meta, supers, value, components));
+		}
+		T instance = meta.getDirectInstance(value, components);
+		return instance != null ? instance : context.plug(newT(clazz, meta, supers, value, components));
+	}
 
 	T getOrAdjustAndBuild(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
 		T getOrNewMeta = meta.isMeta() ? setMeta(components.size()) : meta;
 		T instance = getOrNewMeta.getDirectInstance(value, components);
 		return instance != null ? instance : adjustAndBuild(clazz, getOrNewMeta, overrides, value, components);
 	}
+	
+	private T adjustAndBuild(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
+		T adjustMeta = meta.adjustMeta(value, components);
+		List<T> supers = new ArrayList<>(new SupersComputer<>(adjustMeta, overrides, value, components));
+		// TODO system constraints
+		if (!Statics.areOverridesReached(overrides, supers))
+			context.discardWithException(new IllegalStateException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
+		return context.plug(newT(clazz, adjustMeta, supers, value, components));
+	}
 
-	T rebuildAll(T toRebuild, Supplier<T> rebuilder, LinkedHashSet<T> dependenciesToRebuild) {
+	private T rebuildAll(T toRebuild, Supplier<T> rebuilder, LinkedHashSet<T> dependenciesToRebuild) {
 		dependenciesToRebuild.forEach(context::unplug);
 		T build = rebuilder.get();
 		dependenciesToRebuild.remove(toRebuild);
@@ -106,14 +116,6 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 		return build;
 	}
 
-	private T adjustAndBuild(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
-		T adjustMeta = meta.adjustMeta(value, components);
-		List<T> supers = new ArrayList<>(new SupersComputer<>(adjustMeta, overrides, value, components));
-		// TODO system constraints
-		if (!Statics.areOverridesReached(overrides, supers))
-			context.discardWithException(new IllegalStateException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
-		return context.plug(newT(clazz, adjustMeta, supers, value, components));
-	}
 
 	private class ConvertMap extends HashMap<T, T> {
 		private static final long serialVersionUID = 5003546962293036021L;
