@@ -12,9 +12,6 @@ public interface DefaultAncestors<T extends AbstractVertex<T>> extends IVertex<T
 	default boolean isRoot() {
 		return this.equals(getRoot());
 	}
-	
-	@Override
-	abstract Context<T> getCurrentCache();
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -25,6 +22,17 @@ public interface DefaultAncestors<T extends AbstractVertex<T>> extends IVertex<T
 	@Override
 	default int getLevel() {
 		return this == getMeta() ? 0 : getMeta().getLevel() + 1;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	default DefaultRoot<T> getRoot() {
+		return !isMeta() ? getMeta().getRoot() : getSupers().isEmpty() ? (DefaultRoot<T>) this : getSupers().get(0).getRoot();
+	}
+
+	@Override
+	default Context<T> getCurrentCache() {
+		return getRoot().getCurrentCache();
 	}
 
 	@Override

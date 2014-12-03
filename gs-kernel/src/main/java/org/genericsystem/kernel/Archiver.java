@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -170,7 +171,8 @@ public class Archiver<T extends AbstractVertex<T>> {
 				Map<Long, T> vertexMap = new HashMap<>();
 				for (;;)
 					loadDependency(vertexMap);
-			} catch (EOFException ignore) {} catch (ClassNotFoundException | IOException e) {
+			} catch (EOFException ignore) {
+			} catch (ClassNotFoundException | IOException e) {
 				log.error(e.getMessage(), e);
 			}
 		}
@@ -184,7 +186,13 @@ public class Archiver<T extends AbstractVertex<T>> {
 					T meta = loadAncestor(vertexMap);
 					List<T> supers = loadAncestors(vertexMap);
 					List<T> components = loadAncestors(vertexMap);
-					vertexMap.put(ts, root.getCurrentCache().getBuilder().getOrBuild(null, meta, supers, value, components));
+					if (meta == null) {
+						T adjustedMeta = root.adjustMeta(components.size());
+						vertexMap.put(ts, adjustedMeta.getComponents().size() == components.size() ? adjustedMeta : root.getCurrentCache().plug(root.getCurrentCache().getBuilder().newT(null, meta, supers, value, components)));
+					} else {
+						T instance = meta.getDirectInstance(value, components);
+						vertexMap.put(ts, instance != null ? instance : root.getCurrentCache().plug(root.getCurrentCache().getBuilder().newT(null, meta, supers, value, components)));
+					}
 				}
 		}
 

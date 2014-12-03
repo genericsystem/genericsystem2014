@@ -1,7 +1,7 @@
 package org.genericsystem.concurrency;
 
 import org.genericsystem.cache.Context;
-import org.genericsystem.concurrency.AbstractBuilder.MutationsListener;
+import org.genericsystem.concurrency.AbstractBuilder.ContextEventListener;
 
 public interface DefaultEngine<T extends AbstractGeneric<T>> extends org.genericsystem.cache.DefaultEngine<T>, DefaultGeneric<T> {
 
@@ -10,7 +10,7 @@ public interface DefaultEngine<T extends AbstractGeneric<T>> extends org.generic
 		return new Cache<>(new Transaction<>(getRoot()));
 	}
 
-	default Cache<T> newCache(MutationsListener<T> listener) {
+	default Cache<T> newCache(ContextEventListener<T> listener) {
 		return new Cache<>(new Transaction<>(getRoot()), listener);
 	}
 

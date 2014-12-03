@@ -1,7 +1,6 @@
 package org.genericsystem.kernel;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.testng.annotations.Test;
@@ -180,9 +179,8 @@ public class ClassFinderTest extends AbstractTest {
 		assert vehiclePower.isAncestorOf(v233);
 		assert vehicle.isAncestorOf(v233);
 
-		Vertex car233 = vehiclePower.getCurrentCache().getBuilder().getOrAdjustAndBuild(null, vehiclePower, Collections.emptyList(), 233, Arrays.asList(car));
-		assert v233.dependsFrom(vehiclePower, Collections.emptyList(), 233, Arrays.asList(car));
-		assert v233.isAlive();
+		Vertex car233 = car.setHolder(vehiclePower, 233);
+		assert car233.isAlive();
 		assert !car233.isAncestorOf(v233);
 		assert !car233.computeDependencies().contains(v233);
 	}

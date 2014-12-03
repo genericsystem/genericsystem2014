@@ -52,12 +52,12 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 			indexInstance(generic.getMeta(), generic);
 		generic.getSupers().forEach(superGeneric -> indexInheriting(superGeneric, generic));
 		generic.getComponents().stream().filter(component -> component != null).distinct().forEach(component -> indexComposite(component, generic));
-		checker.check(true, false, generic);
+		checker.checkAfterBuild(true, false, generic);
 		return generic;
 	}
 
 	protected boolean unplug(T generic) {
-		checker.check(false, false, generic);
+		checker.checkAfterBuild(false, false, generic);
 		boolean result = generic != generic.getMeta() ? unIndexInstance(generic.getMeta(), generic) : true;
 		if (!result)
 			discardWithException(new NotFoundException(generic.info()));

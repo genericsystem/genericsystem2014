@@ -2,7 +2,6 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -16,11 +15,11 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 
 	private final Context<T> context;
 
-	public AbstractBuilder(Context<T> context) {
+	protected AbstractBuilder(Context<T> context) {
 		this.context = context;
 	}
 
-	public Context<T> getContext() {
+	protected Context<T> getContext() {
 		return context;
 	}
 
@@ -29,48 +28,45 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 	protected abstract T[] newTArray(int dim);
 
 	protected T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
-		checkIsAlive(meta, supers, components);
-		return newT(clazz, meta).init(meta, supers, value, components);
+		return newT().init(meta, supers, value, components);
 	}
 
-	protected T newT(Class<?> clazz, T meta) {
-		return newT();
-	}
-
-	@SuppressWarnings("unchecked")
-	public T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
-		if (meta == null) {
-			T adjustedMeta = ((T) context.getRoot()).adjustMeta(components.size());
-			return adjustedMeta.getComponents().size() == components.size() ? adjustedMeta : context.plug(newT(clazz, meta, supers, value, components));
-		}
-		T instance = meta.getDirectInstance(value, components);
-		return instance != null ? instance : context.plug(newT(clazz, meta, supers, value, components));
-	}
-
-	@SuppressWarnings("unchecked")
-	protected T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, T... components) {
-		List<T> componentList = Arrays.asList(components);
-		T getOrNewMeta = meta.isMeta() ? setMeta(componentList.size()) : meta;
-		if (getOrNewMeta.equalsRegardlessSupers(getOrNewMeta, value, componentList) && Statics.areOverridesReached(overrides, getOrNewMeta.getSupers()))
+	protected T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
+		context.getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
+		T getOrNewMeta = meta.isMeta() ? setMeta(components.size()) : meta;
+		if (getOrNewMeta.equalsRegardlessSupers(getOrNewMeta, value, components) && Statics.areOverridesReached(overrides, getOrNewMeta.getSupers()))
 			context.discardWithException(new ExistsException("An equivalent instance already exists : " + getOrNewMeta.info()));
-		T equivInstance = getOrNewMeta.getDirectInstance(value, componentList);
+		T equivInstance = getOrNewMeta.getDirectInstance(value, components);
 		if (equivInstance != null)
 			context.discardWithException(new ExistsException("An equivalent instance already exists : " + equivInstance.info()));
-		return rebuildAll(null, () -> adjustAndBuild(clazz, getOrNewMeta, overrides, value, componentList), getOrNewMeta.computePotentialDependencies(overrides, value, componentList));
+		return rebuildAll(null, () -> adjustAndBuild(clazz, getOrNewMeta, overrides, value, components), getOrNewMeta.computePotentialDependencies(overrides, value, components));
 	}
 
-	@SuppressWarnings("unchecked")
-	protected T setInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, T... components) {
-		List<T> componentList = Arrays.asList(components);
-		T getOrNewMeta = meta.isMeta() ? setMeta(componentList.size()) : meta;
-		if (getOrNewMeta.equalsRegardlessSupers(getOrNewMeta, value, componentList) && Statics.areOverridesReached(overrides, getOrNewMeta.getSupers()))
+	protected T setInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
+		context.getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
+		T getOrNewMeta = meta.isMeta() ? setMeta(components.size()) : meta;
+		if (getOrNewMeta.equalsRegardlessSupers(getOrNewMeta, value, components) && Statics.areOverridesReached(overrides, getOrNewMeta.getSupers()))
 			return getOrNewMeta;
-		T equivInstance = getOrNewMeta.getDirectEquivInstance(value, componentList);
+		T equivInstance = getOrNewMeta.getDirectEquivInstance(value, components);
 		if (equivInstance != null)
-			return equivInstance.equalsRegardlessSupers(getOrNewMeta, value, componentList) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : equivInstance.update(overrides, value, components);
-		return rebuildAll(null, () -> adjustAndBuild(clazz, getOrNewMeta, overrides, value, componentList), getOrNewMeta.computePotentialDependencies(overrides, value, componentList));
+			return equivInstance.equalsRegardlessSupers(getOrNewMeta, value, components) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : rebuildAll(equivInstance,
+					() -> adjustAndBuild(clazz, getOrNewMeta, overrides, value, components), equivInstance.computeDependencies());
+		return rebuildAll(null, () -> adjustAndBuild(clazz, getOrNewMeta, overrides, value, components), getOrNewMeta.computePotentialDependencies(overrides, value, components));
 	}
 
+	protected T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents) {
+		context.getChecker().checkBeforeBuild(update.getClass(), update.getMeta(), overrides, newValue, newComponents);
+		return rebuildAll(update, () -> {
+			T getOrNewMeta = update.getMeta().isMeta() ? setMeta(newComponents.size()) : update.getMeta();
+			T instance = getOrNewMeta.getDirectInstance(newValue, newComponents);
+			if (instance != null)
+				return instance;
+			return adjustAndBuild(update.getClass(), update.getMeta(), overrides, newValue, newComponents);
+		}, update.computeDependencies());
+	}
+
+	// TODO must be private.
+	// Engines constructors should call find(MetaAttribute.class) and find(MetaRelation.class)
 	@SuppressWarnings("unchecked")
 	protected T setMeta(int dim) {
 		T root = (T) context.getRoot();
@@ -84,18 +80,12 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 		return rebuildAll(null, () -> context.plug(newT(null, null, Collections.singletonList(adjustedMeta), root.getValue(), components)), adjustedMeta.computePotentialDependencies(Collections.singletonList(adjustedMeta), root.getValue(), components));
 	}
 
-	T getOrAdjustAndBuild(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
-		T getOrNewMeta = meta.isMeta() ? setMeta(components.size()) : meta;
-		T instance = getOrNewMeta.getDirectInstance(value, components);
-		return instance != null ? instance : adjustAndBuild(clazz, getOrNewMeta, overrides, value, components);
-	}
-
-	T rebuildAll(T toRebuild, Supplier<T> rebuilder, LinkedHashSet<T> dependenciesToRebuild) {
+	private T rebuildAll(T toRebuild, Supplier<T> rebuilder, LinkedHashSet<T> dependenciesToRebuild) {
 		dependenciesToRebuild.forEach(context::unplug);
 		T build = rebuilder.get();
 		dependenciesToRebuild.remove(toRebuild);
 		ConvertMap convertMap = new ConvertMap();
-		if(toRebuild!=null){
+		if (toRebuild != null) {
 			convertMap.put(toRebuild, build);
 			context.triggersMutation(toRebuild, build);
 		}
@@ -104,7 +94,6 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 	}
 
 	private T adjustAndBuild(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
-		checkIsAlive(meta, overrides, components);
 		T adjustMeta = meta.adjustMeta(value, components);
 		List<T> supers = new ArrayList<>(new SupersComputer<>(adjustMeta, overrides, value, components));
 		// TODO system constraints
@@ -113,37 +102,35 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 		return context.plug(newT(clazz, adjustMeta, supers, value, components));
 	}
 
-	private void checkIsAlive(T meta, List<T> overrides, List<T> components) {
-		Checker<T> checker = context.getChecker();
-		if (meta != null)
-			checker.checkIsAlive(meta);
-		overrides.forEach(x -> checker.checkIsAlive(x));
-		components.stream().filter(component -> component != null).forEach(x -> checker.checkIsAlive(x));
-	}
-
 	private class ConvertMap extends HashMap<T, T> {
 		private static final long serialVersionUID = 5003546962293036021L;
 
-		private T convert(T dependency) {
-			if (dependency.isAlive())
-				return dependency;
-			T newDependency = get(dependency);
+		private T convert(T oldDependency) {
+			if (oldDependency.isAlive())
+				return oldDependency;
+			T newDependency = get(oldDependency);
 			if (newDependency == null) {
-				if (dependency.isMeta())
-					newDependency = setMeta(dependency.getComponents().size());
+				if (oldDependency.isMeta())
+					newDependency = setMeta(oldDependency.getComponents().size());
 				else {
-					List<T> overrides = dependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
-					List<T> components = dependency.getComponents().stream().map(x -> x != null ? convert(x) : null).collect(Collectors.toList());
-					newDependency = getOrAdjustAndBuild(dependency.getClass(), convert(dependency.getMeta()), overrides, dependency.getValue(), components);
+					List<T> overrides = oldDependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
+					List<T> components = oldDependency.getComponents().stream().map(x -> x != null ? convert(x) : null).collect(Collectors.toList());
+					T meta = convert(oldDependency.getMeta());
+					T instance = meta.getDirectInstance(oldDependency.getValue(), components);
+					newDependency = instance != null ? instance : adjustAndBuild(oldDependency.getClass(), meta, overrides, oldDependency.getValue(), components);
 				}
-				put(dependency, newDependency);
-				context.triggersMutation(dependency, newDependency);
+				put(oldDependency, newDependency);// triggers mutation
 			}
 			return newDependency;
 		}
+
+		@Override
+		public T put(T oldDependency, T newDependency) {
+			T result = super.put(oldDependency, newDependency);
+			context.triggersMutation(oldDependency, newDependency);
+			return result;
+		}
 	}
-
-
 
 	public static class VertextBuilder extends AbstractBuilder<Vertex> {
 
