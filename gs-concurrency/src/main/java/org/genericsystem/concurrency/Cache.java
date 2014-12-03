@@ -6,24 +6,24 @@ import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.cache.Context;
 import org.genericsystem.concurrency.AbstractBuilder.GenericBuilder;
-import org.genericsystem.concurrency.AbstractBuilder.MutationsListener;
+import org.genericsystem.concurrency.AbstractBuilder.ContextEventListener;
 import org.genericsystem.kernel.DefaultContext;
 import org.genericsystem.kernel.Statics;
 
 public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache.Cache<T> {
 
-	private final MutationsListener<T> listener;
+	private final ContextEventListener<T> listener;
 
 	protected Cache(DefaultEngine<T> engine) {
 		this(new Transaction<>(engine));
 	}
 
 	protected Cache(Context<T> subContext) {
-		this(subContext, new MutationsListener<T>() {
+		this(subContext, new ContextEventListener<T>() {
 		});
 	}
 
-	protected Cache(Context<T> subContext, MutationsListener<T> listener) {
+	protected Cache(Context<T> subContext, ContextEventListener<T> listener) {
 		super(subContext);
 		this.listener = listener;
 		init((AbstractBuilder<T>) new GenericBuilder((Cache<Generic>) this));
@@ -42,7 +42,7 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 	@Override
 	protected void triggersMutation(T oldDependency, T newDependency) {
 		if (listener != null)
-			listener.triggersMutation(oldDependency, newDependency);
+			listener.triggersMutationEvent(oldDependency, newDependency);
 	}
 
 	public long getTs() {
@@ -68,7 +68,7 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 			subContext = new Transaction<>(getRoot());
 			assert getTs() > ts;
 		}
-		listener.triggersRefresh();
+		listener.triggersRefreshEvent();
 	}
 
 	@Override
@@ -86,10 +86,11 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 					((Cache<T>) subContext).start();
 					((Cache<T>) subContext).apply(adds, removes);
 				} else {
-					stop();
+					stop();//No context during transaction apply for more security
 					((Transaction<T>) subContext).apply(adds, removes);
 				}
 				initialize();
+				listener.triggersFlushEvent();
 				return;
 			} catch (ConcurrencyControlException e) {
 				cause = e;
@@ -116,7 +117,7 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 	@Override
 	public void clear() {
 		super.clear();
-		listener.triggersClear();
-		listener.triggersRefresh();
+		listener.triggersClearEvent();
+		listener.triggersRefreshEvent();
 	}
 }

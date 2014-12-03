@@ -9,9 +9,9 @@ import java.util.Set;
 
 import org.genericsystem.api.core.IContext;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
-import org.genericsystem.concurrency.AbstractBuilder.MutationsListener;
+import org.genericsystem.concurrency.AbstractBuilder.ContextEventListener;
 
-public class Cache implements IContext<Generic>, MutationsListener<org.genericsystem.concurrency.Generic> {
+public class Cache implements IContext<Generic>, ContextEventListener<org.genericsystem.concurrency.Generic> {
 	private final Engine engine;
 	private final org.genericsystem.concurrency.Cache<org.genericsystem.concurrency.Generic> concurrencyCache;
 	private final Map<Generic, org.genericsystem.concurrency.Generic> mutabilityMap = new IdentityHashMap<>();
@@ -63,7 +63,7 @@ public class Cache implements IContext<Generic>, MutationsListener<org.genericsy
 	}
 
 	@Override
-	public void triggersMutation(org.genericsystem.concurrency.Generic oldDependency, org.genericsystem.concurrency.Generic newDependency) {
+	public void triggersMutationEvent(org.genericsystem.concurrency.Generic oldDependency, org.genericsystem.concurrency.Generic newDependency) {
 		Set<Generic> resultSet = reverseMultiMap.get(oldDependency);
 		if (resultSet != null) {
 			for (Generic mutable : resultSet) {
@@ -77,7 +77,7 @@ public class Cache implements IContext<Generic>, MutationsListener<org.genericsy
 	}
 
 	@Override
-	public void triggersRefresh() {
+	public void triggersRefreshEvent() {
 		Iterator<Entry<org.genericsystem.concurrency.Generic, Set<Generic>>> iterator = reverseMultiMap.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Entry<org.genericsystem.concurrency.Generic, Set<Generic>> entry = iterator.next();
@@ -91,7 +91,7 @@ public class Cache implements IContext<Generic>, MutationsListener<org.genericsy
 
 
 	@Override
-	public void triggersClear(){
+	public void triggersClearEvent(){
 		for(Entry<Generic,org.genericsystem.concurrency.Generic> entry : revertMutations.entrySet()){
 			org.genericsystem.concurrency.Generic newDependency = mutabilityMap.get(entry.getKey());
 			mutabilityMap.put(entry.getKey(), entry.getValue());
@@ -107,6 +107,11 @@ public class Cache implements IContext<Generic>, MutationsListener<org.genericsy
 			}
 		}
 	}
+	
+	@Override
+	public void triggersFlushEvent(){
+		revertMutations= new IdentityHashMap<>();
+	}
 
 	public boolean isAlive(Generic mutable) {
 		org.genericsystem.concurrency.Generic generic = mutabilityMap.get(mutable);
@@ -118,8 +123,7 @@ public class Cache implements IContext<Generic>, MutationsListener<org.genericsy
 	}
 
 	public void flush() {
-		concurrencyCache.flush(); //triggers nothing
-		revertMutations= new IdentityHashMap<>();
+		concurrencyCache.flush(); //triggers flush  automatically
 	}
 
 	public void clear() {
