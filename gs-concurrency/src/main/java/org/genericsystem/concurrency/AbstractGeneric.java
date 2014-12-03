@@ -40,23 +40,11 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.
 	}
 
 	@Override
-	protected Dependencies<T> getInstancesDependencies() {
-		throw new UnsupportedOperationException();
-	}
+	protected abstract Dependencies<T> getInstancesDependencies();
 
 	@Override
-	protected Dependencies<T> getInheritingsDependencies() {
-		throw new UnsupportedOperationException();
-	}
+	protected abstract Dependencies<T> getInheritingsDependencies();
 
 	@Override
-	protected Dependencies<T> getCompositesDependencies() {
-		throw new UnsupportedOperationException();
-	}
-
-	protected abstract AbstractTimestampedDependencies<T> getInstancesTimestampedDependencies();
-
-	protected abstract AbstractTimestampedDependencies<T> getInheritingsTimestampedDependencies();
-
-	protected abstract AbstractTimestampedDependencies<T> getCompositesTimestampedDependencies();
+	protected abstract Dependencies<T> getCompositesDependencies();
 }

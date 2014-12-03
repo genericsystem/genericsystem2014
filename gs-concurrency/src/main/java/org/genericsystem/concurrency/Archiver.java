@@ -33,13 +33,13 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 				if (!contains(node)) {
 					// TODO call WriterLoaderManager::getTs(T dependency)
 					long ts = node.getLifeManager().getDesignTs();
-					Iterator<T> iterator = node.getCompositesTimestampedDependencies().iterator(ts);
+					Iterator<T> iterator = node.getCompositesDependencies().iterator(ts);
 					while (iterator.hasNext())
 						visit(iterator.next());
-					iterator = node.getInheritingsTimestampedDependencies().iterator(ts);
+					iterator = node.getInheritingsDependencies().iterator(ts);
 					while (iterator.hasNext())
 						visit(iterator.next());
-					iterator = node.getInstancesTimestampedDependencies().iterator(ts);
+					iterator = node.getInstancesDependencies().iterator(ts);
 					while (iterator.hasNext())
 						visit(iterator.next());
 					if (!node.isRoot())

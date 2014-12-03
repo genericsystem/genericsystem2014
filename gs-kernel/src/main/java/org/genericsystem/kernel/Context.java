@@ -1,6 +1,6 @@
 package org.genericsystem.kernel;
 
-import org.genericsystem.api.core.Snapshot;
+import org.genericsystem.api.core.IteratorSnapshot;
 import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.RollbackException;
 
@@ -85,19 +85,23 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 		return null;
 	}
 
-	@Override
-	public Snapshot<T> getInstances(T vertex) {
-		return vertex.getInstancesDependencies();
+	public long getTs() {
+		return 0;
 	}
 
 	@Override
-	public Snapshot<T> getInheritings(T vertex) {
-		return vertex.getInheritingsDependencies();
+	public IteratorSnapshot<T> getInstances(T vertex) {
+		return () -> vertex.getInstancesDependencies().iterator(getTs());
 	}
 
 	@Override
-	public Snapshot<T> getComposites(T vertex) {
-		return vertex.getCompositesDependencies();
+	public IteratorSnapshot<T> getInheritings(T vertex) {
+		return () -> vertex.getInheritingsDependencies().iterator(getTs());
+	}
+
+	@Override
+	public IteratorSnapshot<T> getComposites(T vertex) {
+		return () -> vertex.getCompositesDependencies().iterator(getTs());
 	}
 
 	protected void indexInstance(T generic, T instance) {
@@ -131,7 +135,7 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 	protected boolean unIndex(Dependencies<T> dependencies, T dependency) {
 		return dependencies.remove(dependency);
 	}
-	
+
 	protected void triggersMutation(T oldDependency, T newDependency) {
 	}
 

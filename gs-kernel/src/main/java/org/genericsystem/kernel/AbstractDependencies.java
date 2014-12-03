@@ -4,14 +4,13 @@ import java.util.Iterator;
 
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
-public class DependenciesImpl<T> implements Dependencies<T> {
+public abstract class AbstractDependencies<T> implements Dependencies<T> {
 
 	private Node<T> head = null;
 	private Node<T> tail = null;
 
 	@Override
 	public void add(T element) {
-		assert !this.contains(element);
 		assert element != null;
 		Node<T> newNode = new Node<>(element);
 		if (head == null)
@@ -32,17 +31,14 @@ public class DependenciesImpl<T> implements Dependencies<T> {
 		return false;
 	}
 
-	@Override
-	public boolean isEmpty() {
-		return head == null;
-	}
+	public abstract Iterator<T> iterator();
 
 	@Override
-	public Iterator<T> iterator() {
+	public Iterator<T> iterator(long ts) {
 		return new InternalIterator();
 	}
 
-	private class InternalIterator extends AbstractGeneralAwareIterator<Node<T>, T> implements Iterator<T> {
+	public class InternalIterator extends AbstractGeneralAwareIterator<Node<T>, T> implements Iterator<T> {
 
 		private Node<T> last;
 
@@ -72,8 +68,8 @@ public class DependenciesImpl<T> implements Dependencies<T> {
 	}
 
 	private static class Node<T> {
-		final T content;
-		Node<T> next;
+		private final T content;
+		private Node<T> next;
 
 		private Node(T content) {
 			this.content = content;

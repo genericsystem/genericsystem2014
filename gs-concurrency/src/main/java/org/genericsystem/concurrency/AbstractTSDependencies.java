@@ -1,19 +1,19 @@
 package org.genericsystem.concurrency;
 
-import java.io.Serializable;
 import java.util.Iterator;
 
+import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
-public abstract class AbstractTimestampedDependencies<T extends AbstractGeneric<T>> {
+public abstract class AbstractTSDependencies<T extends AbstractGeneric<T>> implements Dependencies<T> {
 
 	private Node<T> head = null;
 	private Node<T> tail = null;
 
 	public abstract LifeManager getLifeManager();
 
+	@Override
 	public void add(T element) {
-		// assert !this.contains(element);
 		assert element != null;
 		Node<T> newNode = new Node<>(element);
 		if (head == null)
@@ -23,6 +23,7 @@ public abstract class AbstractTimestampedDependencies<T extends AbstractGeneric<
 		tail = newNode;
 	}
 
+	@Override
 	public boolean remove(T generic) {
 		assert generic != null : "generic is null";
 		assert head != null : "head is null";
@@ -53,6 +54,7 @@ public abstract class AbstractTimestampedDependencies<T extends AbstractGeneric<
 		return false;
 	}
 
+	@Override
 	public Iterator<T> iterator(long ts) {
 		return new InternalIterator(ts);
 	}
@@ -96,16 +98,9 @@ public abstract class AbstractTimestampedDependencies<T extends AbstractGeneric<
 		}
 	}
 
-	public boolean isEmpty() {
-		return head == null;
-	}
-
-	private static class Node<T> implements Serializable {
-
-		private static final long serialVersionUID = -8535702315113562916L;
-
-		T content;
-		Node<T> next;
+	private static class Node<T> {
+		public T content;
+		public Node<T> next;
 
 		private Node(T content) {
 			this.content = content;

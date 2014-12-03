@@ -4,38 +4,34 @@ import org.genericsystem.kernel.Dependencies;
 
 public class Generic extends AbstractGeneric<Generic> implements DefaultGeneric<Generic> {
 
-	private final AbstractTimestampedDependencies<Generic> instancesDependencies = builTimestampeddDependencies();
-	private final AbstractTimestampedDependencies<Generic> inheritingsDependencies = builTimestampeddDependencies();
-	private final AbstractTimestampedDependencies<Generic> compositesDependencies = builTimestampeddDependencies();
+	private final Dependencies<Generic> instancesDependencies = buildDependencies();
+	private final Dependencies<Generic> inheritingsDependencies = buildDependencies();
+	private final Dependencies<Generic> compositesDependencies = buildDependencies();
 
 	@Override
-	protected AbstractTimestampedDependencies<Generic> getInstancesTimestampedDependencies() {
+	protected Dependencies<Generic> getInstancesDependencies() {
 		return instancesDependencies;
 	}
 
 	@Override
-	protected AbstractTimestampedDependencies<Generic> getInheritingsTimestampedDependencies() {
+	protected Dependencies<Generic> getInheritingsDependencies() {
 		return inheritingsDependencies;
 	}
 
 	@Override
-	protected AbstractTimestampedDependencies<Generic> getCompositesTimestampedDependencies() {
+	protected Dependencies<Generic> getCompositesDependencies() {
 		return compositesDependencies;
 	}
 
-	private AbstractTimestampedDependencies<Generic> builTimestampeddDependencies() {
-		return new AbstractTimestampedDependencies<Generic>() {
+	@Override
+	protected Dependencies<Generic> buildDependencies() {
+		return new AbstractTSDependencies<Generic>() {
 
 			@Override
 			public LifeManager getLifeManager() {
 				return Generic.this.getLifeManager();
 			}
 		};
-	}
-
-	@Override
-	protected Dependencies<Generic> buildDependencies() {
-		throw new UnsupportedOperationException();
 	}
 
 	@Override

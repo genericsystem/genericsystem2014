@@ -2,6 +2,7 @@ package org.genericsystem.cache;
 
 import java.io.Serializable;
 import java.util.List;
+
 import org.genericsystem.cache.annotations.InstanceClass;
 
 public abstract class AbstractBuilder<T extends AbstractGeneric<T>> extends org.genericsystem.kernel.AbstractBuilder<T> {
@@ -23,11 +24,10 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T>> extends org.
 
 	@Override
 	protected T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
-		return super.newT(clazz, meta, supers, value, components);
+		return newT(clazz, meta).init(meta, supers, value, components);
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
 	protected T newT(Class<?> clazz, T meta) {
 		InstanceClass metaAnnotation = meta == null ? null : meta.getClass().getAnnotation(InstanceClass.class);
 		if (metaAnnotation != null)
@@ -51,12 +51,12 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T>> extends org.
 	}
 
 	@Override
-	protected T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value,List<T> components) {
+	protected T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
 		return super.addInstance(clazz, meta, overrides, value, components);
 	}
 
 	@Override
-	protected T setInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T>components) {
+	protected T setInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
 		return super.setInstance(clazz, meta, overrides, value, components);
 	}
 

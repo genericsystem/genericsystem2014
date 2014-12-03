@@ -3,8 +3,7 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
@@ -37,10 +36,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 	@Override
 	public Snapshot<T> getComposites() {
 		return getCurrentCache().getComposites((T) this);
-	}
-
-	protected Dependencies<T> buildDependencies(Supplier<Stream<T>> subStreamSupplier) {
-		return new CacheDependencies<>(subStreamSupplier);
 	}
 
 	@Override
