@@ -8,8 +8,6 @@ public interface TimestampDependencies<T> {
 
 	boolean remove(T vertex);
 
-	boolean isEmpty();
-
 	Iterator<T> iterator(long ts);
 
 }

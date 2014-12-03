@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
-public abstract class AbstractTimestampedDependencies<T extends AbstractGeneric<T>> extends org.genericsystem.kernel.AbstractTimestampDependenciesImpl<T> {
+public abstract class AbstractTimestampedDependencies<T extends AbstractGeneric<T>> extends org.genericsystem.kernel.AbstractDependencies<T> {
 
 	public abstract LifeManager getLifeManager();
 

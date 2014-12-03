@@ -63,7 +63,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	protected abstract TimestampDependencies<T> getCompositesDependencies();
 
 	protected TimestampDependencies<T> buildDependencies() {
-		return new AbstractTimestampDependenciesImpl<T>() {
+		return new AbstractDependencies<T>() {
 
 			@Override
 			public Iterator<T> iterator() {

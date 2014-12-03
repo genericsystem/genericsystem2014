@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.genericsystem.kernel.AbstractTimestampDependenciesImpl;
+import org.genericsystem.kernel.AbstractDependencies;
 
 public class CacheDependencies<T> implements Dependencies<T> {
 
@@ -46,7 +46,7 @@ public class CacheDependencies<T> implements Dependencies<T> {
 		return get().collect(Collectors.toList()).toString();
 	}
 
-	private static class DependenciesImpl<T> extends AbstractTimestampDependenciesImpl<T> implements Dependencies<T> {
+	private static class DependenciesImpl<T> extends AbstractDependencies<T> implements Dependencies<T> {
 
 		@Override
 		public Iterator<T> iterator() {

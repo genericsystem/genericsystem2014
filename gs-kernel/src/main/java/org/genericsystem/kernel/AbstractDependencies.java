@@ -1,10 +1,9 @@
 package org.genericsystem.kernel;
 
 import java.util.Iterator;
-
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
-public abstract class AbstractTimestampDependenciesImpl<T> implements TimestampDependencies<T> {
+public abstract class AbstractDependencies<T> implements TimestampDependencies<T> {
 
 	protected Node<T> head = null;
 	protected Node<T> tail = null;
@@ -29,11 +28,6 @@ public abstract class AbstractTimestampDependenciesImpl<T> implements TimestampD
 				return true;
 			}
 		return false;
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return head == null;
 	}
 
 	public abstract Iterator<T> iterator();
