@@ -18,9 +18,9 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 
 	protected Context<T> subContext;
 
-	private transient Map<T, Dependencies<T>> inheritingsDependencies;
-	private transient Map<T, Dependencies<T>> instancesDependencies;
-	private transient Map<T, Dependencies<T>> compositesDependencies;
+	private transient Map<T, CacheDependencies<T>> inheritingsDependencies;
+	private transient Map<T, CacheDependencies<T>> instancesDependencies;
+	private transient Map<T, CacheDependencies<T>> compositesDependencies;
 
 	protected Set<T> adds = new LinkedHashSet<>();
 	protected Set<T> removes = new LinkedHashSet<>();
@@ -147,8 +147,8 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 		return result && simpleRemove(generic);
 	}
 
-	private static <T extends AbstractGeneric<T>> Dependencies<T> getDependencies(Map<T, Dependencies<T>> multiMap, Supplier<Stream<T>> subStreamSupplier, T generic) {
-		Dependencies<T> dependencies = multiMap.get(generic);
+	private static <T extends AbstractGeneric<T>> CacheDependencies<T> getDependencies(Map<T, CacheDependencies<T>> multiMap, Supplier<Stream<T>> subStreamSupplier, T generic) {
+		CacheDependencies<T> dependencies = multiMap.get(generic);
 		if (dependencies == null)
 			multiMap.put(generic, dependencies = new CacheDependencies<T>(subStreamSupplier));
 		return dependencies;

@@ -2,11 +2,26 @@ package org.genericsystem.concurrency;
 
 import java.util.Iterator;
 
+import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
-public abstract class AbstractTimestampedDependencies<T extends AbstractGeneric<T>> extends org.genericsystem.kernel.AbstractDependencies<T> {
+public abstract class AbstractTimestampedDependencies<T extends AbstractGeneric<T>> implements Dependencies<T> {
+
+	private Node<T> head = null;
+	private Node<T> tail = null;
 
 	public abstract LifeManager getLifeManager();
+
+	@Override
+	public void add(T element) {
+		assert element != null;
+		Node<T> newNode = new Node<>(element);
+		if (head == null)
+			head = newNode;
+		else
+			tail.next = newNode;
+		tail = newNode;
+	}
 
 	@Override
 	public boolean remove(T generic) {
@@ -37,11 +52,6 @@ public abstract class AbstractTimestampedDependencies<T extends AbstractGeneric<
 			nextNode = nextNextNode;
 		}
 		return false;
-	}
-
-	@Override
-	public Iterator<T> iterator() {
-		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -85,6 +95,15 @@ public abstract class AbstractTimestampedDependencies<T extends AbstractGeneric<
 		@Override
 		protected T project() {
 			return next.content;
+		}
+	}
+
+	private static class Node<T> {
+		public T content;
+		public Node<T> next;
+
+		private Node(T content) {
+			this.content = content;
 		}
 	}
 

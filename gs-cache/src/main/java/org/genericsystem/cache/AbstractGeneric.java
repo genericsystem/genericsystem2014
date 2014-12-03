@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.kernel.AbstractVertex;
-import org.genericsystem.kernel.TimestampDependencies;
+import org.genericsystem.kernel.Dependencies;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends AbstractVertex<T> implements DefaultGeneric<T> {
 
@@ -81,13 +81,13 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 	// }
 
 	@Override
-	protected abstract TimestampDependencies<T> getInheritingsDependencies();
+	protected abstract Dependencies<T> getInheritingsDependencies();
 
 	@Override
-	protected abstract TimestampDependencies<T> getInstancesDependencies();
+	protected abstract Dependencies<T> getInstancesDependencies();
 
 	@Override
-	protected abstract TimestampDependencies<T> getCompositesDependencies();
+	protected abstract Dependencies<T> getCompositesDependencies();
 
 	// TODO remove this and tests of adjustMeta in cache layer ???
 	@SuppressWarnings("unchecked")

@@ -112,7 +112,7 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 		index(generic.getCompositesDependencies(), composite);
 	}
 
-	protected void index(TimestampDependencies<T> dependencies, T dependency) {
+	protected void index(Dependencies<T> dependencies, T dependency) {
 		dependencies.add(dependency);
 	}
 
@@ -128,7 +128,7 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 		return unIndex(generic.getCompositesDependencies(), composite);
 	}
 
-	protected boolean unIndex(TimestampDependencies<T> dependencies, T dependency) {
+	protected boolean unIndex(Dependencies<T> dependencies, T dependency) {
 		return dependencies.remove(dependency);
 	}
 

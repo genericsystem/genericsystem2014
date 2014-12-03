@@ -1,30 +1,30 @@
 package org.genericsystem.concurrency;
 
-import org.genericsystem.kernel.TimestampDependencies;
+import org.genericsystem.kernel.Dependencies;
 
 public class Generic extends AbstractGeneric<Generic> implements DefaultGeneric<Generic> {
 
-	private final TimestampDependencies<Generic> instancesDependencies = buildDependencies();
-	private final TimestampDependencies<Generic> inheritingsDependencies = buildDependencies();
-	private final TimestampDependencies<Generic> compositesDependencies = buildDependencies();
+	private final Dependencies<Generic> instancesDependencies = buildDependencies();
+	private final Dependencies<Generic> inheritingsDependencies = buildDependencies();
+	private final Dependencies<Generic> compositesDependencies = buildDependencies();
 
 	@Override
-	protected TimestampDependencies<Generic> getInstancesDependencies() {
+	protected Dependencies<Generic> getInstancesDependencies() {
 		return instancesDependencies;
 	}
 
 	@Override
-	protected TimestampDependencies<Generic> getInheritingsDependencies() {
+	protected Dependencies<Generic> getInheritingsDependencies() {
 		return inheritingsDependencies;
 	}
 
 	@Override
-	protected TimestampDependencies<Generic> getCompositesDependencies() {
+	protected Dependencies<Generic> getCompositesDependencies() {
 		return compositesDependencies;
 	}
 
 	@Override
-	protected TimestampDependencies<Generic> buildDependencies() {
+	protected Dependencies<Generic> buildDependencies() {
 		return new AbstractTimestampedDependencies<Generic>() {
 
 			@Override
