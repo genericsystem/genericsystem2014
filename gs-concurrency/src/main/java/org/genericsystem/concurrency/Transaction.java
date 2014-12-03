@@ -24,11 +24,6 @@ public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem
 		return ts;
 	}
 
-	// @Override
-	// public boolean isAlive(T generic) {
-	// return generic != null && generic.getLifeManager().isAlive(getTs());
-	// }
-
 	@Override
 	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
 		synchronized (getRoot()) {
@@ -75,21 +70,6 @@ public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem
 	public IteratorSnapshot<T> getComposites(T vertex) {
 		return () -> vertex.getCompositesDependencies().iterator(ts);
 	}
-
-	// @Override
-	// protected void indexInstance(T generic, T instance) {
-	// generic.getInstancesDependencies().add(instance);
-	// }
-	//
-	// @Override
-	// protected void indexInheriting(T generic, T inheriting) {
-	// generic.getInheritingsDependencies().add(inheriting);
-	// }
-	//
-	// @Override
-	// protected void indexComposite(T generic, T composite) {
-	// generic.getCompositesDependencies().add(composite);
-	// }
 
 	private class LockedLifeManager extends HashSet<LifeManager> {
 
