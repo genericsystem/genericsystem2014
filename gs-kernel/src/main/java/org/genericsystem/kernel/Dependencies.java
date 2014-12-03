@@ -2,7 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.Iterator;
 
-public interface TimestampDependencies<T> {
+public interface Dependencies<T> {
 
 	void add(T vertex);
 

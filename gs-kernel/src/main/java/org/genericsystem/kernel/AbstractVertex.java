@@ -56,13 +56,13 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return Objects.toString(getValue());
 	}
 
-	protected abstract TimestampDependencies<T> getInstancesDependencies();
+	protected abstract Dependencies<T> getInstancesDependencies();
 
-	protected abstract TimestampDependencies<T> getInheritingsDependencies();
+	protected abstract Dependencies<T> getInheritingsDependencies();
 
-	protected abstract TimestampDependencies<T> getCompositesDependencies();
+	protected abstract Dependencies<T> getCompositesDependencies();
 
-	protected TimestampDependencies<T> buildDependencies() {
+	protected Dependencies<T> buildDependencies() {
 		return new AbstractDependencies<T>() {
 
 			@Override

@@ -1,6 +1,6 @@
 package org.genericsystem.concurrency;
 
-import org.genericsystem.kernel.TimestampDependencies;
+import org.genericsystem.kernel.Dependencies;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.genericsystem.cache.AbstractGeneric<T> implements DefaultGeneric<T>, Comparable<T> {
 
@@ -40,11 +40,11 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.
 	}
 
 	@Override
-	protected abstract TimestampDependencies<T> getInstancesDependencies();
+	protected abstract Dependencies<T> getInstancesDependencies();
 
 	@Override
-	protected abstract TimestampDependencies<T> getInheritingsDependencies();
+	protected abstract Dependencies<T> getInheritingsDependencies();
 
 	@Override
-	protected abstract TimestampDependencies<T> getCompositesDependencies();
+	protected abstract Dependencies<T> getCompositesDependencies();
 }

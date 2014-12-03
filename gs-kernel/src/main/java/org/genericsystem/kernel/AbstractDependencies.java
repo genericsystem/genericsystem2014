@@ -1,12 +1,13 @@
 package org.genericsystem.kernel;
 
 import java.util.Iterator;
+
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
-public abstract class AbstractDependencies<T> implements TimestampDependencies<T> {
+public abstract class AbstractDependencies<T> implements Dependencies<T> {
 
-	protected Node<T> head = null;
-	protected Node<T> tail = null;
+	private Node<T> head = null;
+	private Node<T> tail = null;
 
 	@Override
 	public void add(T element) {
@@ -66,9 +67,9 @@ public abstract class AbstractDependencies<T> implements TimestampDependencies<T
 		}
 	}
 
-	public static class Node<T> {
-		public T content;
-		public Node<T> next;
+	private static class Node<T> {
+		private final T content;
+		private Node<T> next;
 
 		private Node(T content) {
 			this.content = content;
