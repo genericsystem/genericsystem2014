@@ -79,7 +79,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	@SuppressWarnings("unchecked")
 	@Override
 	public T update(List<T> overrides, Serializable newValue, T... newComponents) {
-		return getCurrentCache().getBuilder().update((T) this, overrides, newValue, newComponents);
+		return getCurrentCache().getBuilder().update((T) this, overrides, newValue, Arrays.asList(newComponents));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -365,12 +365,9 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	public static class SystemMap {
 	}
 
-	private Stream<T> getKeys() {
-		T map = getMap();
-		return map != null ? getAttributes(map).get() : Stream.empty();
-	}
-
 	Optional<T> getKey(AxedPropertyClass property) {
-		return getKeys().filter(x -> Objects.equals(x.getValue(), property)).findFirst();
+		T map = getMap();
+		Stream<T> keys = map != null ? getAttributes(map).get() : Stream.empty();
+		return keys.filter(x -> Objects.equals(x.getValue(), property)).findFirst();
 	}
 }

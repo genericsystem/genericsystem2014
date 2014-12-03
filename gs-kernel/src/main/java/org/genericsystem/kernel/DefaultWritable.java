@@ -12,13 +12,13 @@ public interface DefaultWritable<T extends AbstractVertex<T>> extends IVertex<T>
 	@SuppressWarnings("unchecked")
 	@Override
 	default T addInstance(List<T> overrides, Serializable value, T... components) {
-		return ((Context<T>) getCurrentCache()).getBuilder().addInstance(null, (T) this, overrides, value, components);
+		return ((Context<T>) getCurrentCache()).getBuilder().addInstance(null, (T) this, overrides, value, Arrays.asList(components));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default T setInstance(List<T> overrides, Serializable value, T... components) {
-		return ((Context<T>) getCurrentCache()).getBuilder().setInstance(null, (T) this, overrides, value, components);
+		return ((Context<T>) getCurrentCache()).getBuilder().setInstance(null, (T) this, overrides, value, Arrays.asList(components));
 	}
 
 	@Override

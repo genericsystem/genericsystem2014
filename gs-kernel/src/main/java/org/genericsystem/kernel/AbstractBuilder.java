@@ -37,7 +37,7 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
+	T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
 		if (meta == null) {
 			T adjustedMeta = ((T) context.getRoot()).adjustMeta(components.size());
 			return adjustedMeta.getComponents().size() == components.size() ? adjustedMeta : context.plug(newT(clazz, meta, supers, value, components));
@@ -46,38 +46,32 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 		return instance != null ? instance : context.plug(newT(clazz, meta, supers, value, components));
 	}
 
-	@SuppressWarnings("unchecked")
-	protected T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, T... components) {
-		List<T> componentList = Arrays.asList(components);
-		context.getChecker().checkBeforeBuild(clazz, meta, overrides, value, componentList);
-		T getOrNewMeta = meta.isMeta() ? setMeta(componentList.size()) : meta;
-		if (getOrNewMeta.equalsRegardlessSupers(getOrNewMeta, value, componentList) && Statics.areOverridesReached(overrides, getOrNewMeta.getSupers()))
+	protected T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
+		context.getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
+		T getOrNewMeta = meta.isMeta() ? setMeta(components.size()) : meta;
+		if (getOrNewMeta.equalsRegardlessSupers(getOrNewMeta, value, components) && Statics.areOverridesReached(overrides, getOrNewMeta.getSupers()))
 			context.discardWithException(new ExistsException("An equivalent instance already exists : " + getOrNewMeta.info()));
-		T equivInstance = getOrNewMeta.getDirectInstance(value, componentList);
+		T equivInstance = getOrNewMeta.getDirectInstance(value, components);
 		if (equivInstance != null)
 			context.discardWithException(new ExistsException("An equivalent instance already exists : " + equivInstance.info()));
-		return rebuildAll(null, () -> adjustAndBuild(clazz, getOrNewMeta, overrides, value, componentList), getOrNewMeta.computePotentialDependencies(overrides, value, componentList));
+		return rebuildAll(null, () -> adjustAndBuild(clazz, getOrNewMeta, overrides, value, components), getOrNewMeta.computePotentialDependencies(overrides, value, components));
 	}
 
-	@SuppressWarnings("unchecked")
-	protected T setInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, T... components) {
-		List<T> componentList = Arrays.asList(components);
-		context.getChecker().checkBeforeBuild(clazz, meta, overrides, value, componentList);
-		T getOrNewMeta = meta.isMeta() ? setMeta(componentList.size()) : meta;
-		if (getOrNewMeta.equalsRegardlessSupers(getOrNewMeta, value, componentList) && Statics.areOverridesReached(overrides, getOrNewMeta.getSupers()))
+	protected T setInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
+		context.getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
+		T getOrNewMeta = meta.isMeta() ? setMeta(components.size()) : meta;
+		if (getOrNewMeta.equalsRegardlessSupers(getOrNewMeta, value, components) && Statics.areOverridesReached(overrides, getOrNewMeta.getSupers()))
 			return getOrNewMeta;
-		T equivInstance = getOrNewMeta.getDirectEquivInstance(value, componentList);
+		T equivInstance = getOrNewMeta.getDirectEquivInstance(value, components);
 		if (equivInstance != null)
-			return equivInstance.equalsRegardlessSupers(getOrNewMeta, value, componentList) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : rebuildAll(equivInstance,
-					() -> getOrAdjustAndBuild(clazz, meta, overrides, value, componentList), equivInstance.computeDependencies());
-		return rebuildAll(null, () -> adjustAndBuild(clazz, getOrNewMeta, overrides, value, componentList), getOrNewMeta.computePotentialDependencies(overrides, value, componentList));
+			return equivInstance.equalsRegardlessSupers(getOrNewMeta, value, components) && Statics.areOverridesReached(overrides, equivInstance.getSupers()) ? equivInstance : rebuildAll(equivInstance,
+					() -> getOrAdjustAndBuild(clazz, meta, overrides, value, components), equivInstance.computeDependencies());
+		return rebuildAll(null, () -> adjustAndBuild(clazz, getOrNewMeta, overrides, value, components), getOrNewMeta.computePotentialDependencies(overrides, value, components));
 	}
 
-	@SuppressWarnings("unchecked")
-	protected T update(T update, List<T> overrides, Serializable newValue, T... newComponents) {
-		List<T> componentList = Arrays.asList(newComponents);
-		context.getChecker().checkBeforeBuild(update.getClass(), update.getMeta(), overrides, newValue, componentList);
-		return rebuildAll(update, () -> getOrAdjustAndBuild(update.getClass(), update.getMeta(), overrides, newValue, componentList), update.computeDependencies());
+	protected T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents) {
+		context.getChecker().checkBeforeBuild(update.getClass(), update.getMeta(), overrides, newValue, newComponents);
+		return rebuildAll(update, () -> getOrAdjustAndBuild(update.getClass(), update.getMeta(), overrides, newValue, newComponents), update.computeDependencies());
 	}
 
 	@SuppressWarnings("unchecked")
