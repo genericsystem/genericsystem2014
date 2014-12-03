@@ -333,7 +333,7 @@ public class VertexTest extends AbstractTest {
 		assert car233.isAlive();
 		assert v233.isAlive();
 		assert !car233.isAncestorOf(v233);
-		assert v233.dependsFrom(vehiclePower, Collections.emptyList(), 233, Arrays.asList(car));
+		assert v233.isDependencyOf(vehiclePower, Collections.emptyList(), 233, Arrays.asList(car));
 		assert vehiclePower.computePotentialDependencies(Collections.emptyList(), 233, Arrays.asList(car)).contains(v233);
 	}
 }
