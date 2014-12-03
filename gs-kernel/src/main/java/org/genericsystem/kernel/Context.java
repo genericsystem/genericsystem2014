@@ -85,19 +85,23 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 		return null;
 	}
 
+	public long getTs() {
+		return 0;
+	}
+
 	@Override
 	public IteratorSnapshot<T> getInstances(T vertex) {
-		return () -> vertex.getInstancesDependencies().iterator(0);
+		return () -> vertex.getInstancesDependencies().iterator(getTs());
 	}
 
 	@Override
 	public IteratorSnapshot<T> getInheritings(T vertex) {
-		return () -> vertex.getInheritingsDependencies().iterator(0);
+		return () -> vertex.getInheritingsDependencies().iterator(getTs());
 	}
 
 	@Override
 	public IteratorSnapshot<T> getComposites(T vertex) {
-		return () -> vertex.getCompositesDependencies().iterator(0);
+		return () -> vertex.getCompositesDependencies().iterator(getTs());
 	}
 
 	protected void indexInstance(T generic, T instance) {

@@ -25,7 +25,7 @@ public class Generic extends AbstractGeneric<Generic> implements DefaultGeneric<
 
 	@Override
 	protected Dependencies<Generic> buildDependencies() {
-		return new AbstractTimestampedDependencies<Generic>() {
+		return new AbstractTSDependencies<Generic>() {
 
 			@Override
 			public LifeManager getLifeManager() {

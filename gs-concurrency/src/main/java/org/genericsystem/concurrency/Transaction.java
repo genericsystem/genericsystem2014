@@ -2,7 +2,6 @@ package org.genericsystem.concurrency;
 
 import java.util.HashSet;
 
-import org.genericsystem.api.core.IteratorSnapshot;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
@@ -20,6 +19,7 @@ public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem
 		this.ts = ts;
 	}
 
+	@Override
 	public long getTs() {
 		return ts;
 	}
@@ -54,21 +54,6 @@ public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem
 	@Override
 	public DefaultEngine<T> getRoot() {
 		return (DefaultEngine<T>) super.getRoot();
-	}
-
-	@Override
-	public IteratorSnapshot<T> getInstances(T generic) {
-		return () -> generic.getInstancesDependencies().iterator(ts);
-	}
-
-	@Override
-	public IteratorSnapshot<T> getInheritings(T generic) {
-		return () -> generic.getInheritingsDependencies().iterator(ts);
-	}
-
-	@Override
-	public IteratorSnapshot<T> getComposites(T vertex) {
-		return () -> vertex.getCompositesDependencies().iterator(ts);
 	}
 
 	private class LockedLifeManager extends HashSet<LifeManager> {

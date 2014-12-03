@@ -38,17 +38,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 		return getCurrentCache().getComposites((T) this);
 	}
 
-	// protected TimestampDependencies<T> buildDependencies(Supplier<Stream<T>> subStreamSupplier) {
-	// return new CacheDependencies<T>(subStreamSupplier) {
-	//
-	// @Override
-	// public Iterator<T> iterator(long ts) {
-	// return iterator();
-	// }
-	//
-	// };
-	// }
-
 	@Override
 	protected LinkedHashSet<T> computeDependencies() {
 		return super.computeDependencies();
