@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -8,7 +9,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
@@ -25,11 +25,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	protected T init(T meta, List<T> supers, Serializable value, List<T> components) {
 		this.meta = meta != null ? meta : (T) this;
 		this.value = value;
-		this.components = Collections.unmodifiableList(components);
-		this.supers = Collections.unmodifiableList(supers);
+		this.components = Collections.unmodifiableList(new ArrayList<>(components));
+		this.supers = Collections.unmodifiableList(new ArrayList<>(supers));
 		return (T) this;
 	}
-	
+
 	@Override
 	public T getMeta() {
 		return meta;
@@ -198,13 +198,9 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	boolean equalsRegardlessSupers(ISignature<?> meta, Serializable value, List<? extends ISignature<?>> components) {
-		if (!Objects.equals(getValue(), value))
+		if (!getMeta().equals(meta == null ? this : meta))
 			return false;
-		if (this == getMeta()) {
-			if (meta != null)
-				if (meta != meta.getMeta())
-					return false;
-		} else if (!getMeta().equals(meta))
+		if (!Objects.equals(getValue(), value))
 			return false;
 		List<T> componentsList = getComponents();
 		if (componentsList.size() != components.size())
@@ -212,16 +208,15 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return componentsList.equals(components);
 	}
 
-	//Unused for now
+	// Unused for now
 	public boolean genericEquals(ISignature<?> service) {
+		if (service == null)
+			return false;
 		if (this == service)
 			return true;
-		if (!Objects.equals(getValue(), service.getValue()))
+		if (!getMeta().genericEquals(service == service.getMeta() ? this : service.getMeta()))
 			return false;
-		if (this.genericEquals(getMeta())) {
-			if (service != service.getMeta())
-				return false;
-		} else if (!getMeta().genericEquals(service.getMeta()))
+		if (!Objects.equals(getValue(), service.getValue()))
 			return false;
 		List<T> componentsList = getComponents();
 		if (componentsList.size() != service.getComponents().size())
@@ -237,8 +232,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 				return false;
 		return true;
 	}
-	
-	//Unused for now	
+
+	// Unused for now
 	static <T extends AbstractVertex<T>> boolean componentsGenericEquals(AbstractVertex<T> component, ISignature<?> compare) {
 		return (component == compare) || (component != null && component.genericEquals(compare));
 	}
@@ -252,14 +247,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 			return false;
 		if (this == service)
 			return true;
-		return equiv(service.getMeta(),service.getValue(),service.getComponents());
+		return equiv(service.getMeta(), service.getValue(), service.getComponents());
 	}
 
 	boolean equiv(ISignature<?> meta, Serializable value, List<? extends ISignature<?>> components) {
-		if (this == getMeta()) {
-			if (meta != null && meta != meta.getMeta())
-				return false;
-		} else if (!getMeta().equiv(meta))
+		if (!getMeta().equals(meta == null ? this : meta))
 			return false;
 		List<T> componentsList = getComponents();
 		if (componentsList.size() != components.size())
@@ -362,8 +354,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
-	public static class SystemMap {
-	}
+	public static class SystemMap {}
 
 	Optional<T> getKey(AxedPropertyClass property) {
 		T map = getMap();
