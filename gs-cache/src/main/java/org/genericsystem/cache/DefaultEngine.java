@@ -2,8 +2,6 @@ package org.genericsystem.cache;
 
 public interface DefaultEngine<T extends AbstractGeneric<T>> extends org.genericsystem.kernel.DefaultRoot<T>, DefaultGeneric<T> {
 
-	<subT extends T> subT find(Class<subT> clazz);
-
 	default Cache<T> newCache() {
 		return newCache(new Transaction<>(getRoot()));
 	}

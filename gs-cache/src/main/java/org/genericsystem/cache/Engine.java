@@ -3,6 +3,7 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.Collections;
 
+import org.genericsystem.kernel.AbstractSystemCache;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Meta;
@@ -12,8 +13,9 @@ import org.genericsystem.kernel.annotations.value.MetaValue;
 
 public class Engine extends Generic implements DefaultEngine<Generic> {
 
+	private final AbstractSystemCache<Generic> systemCache;
+
 	private final ThreadLocal<Cache<Generic>> cacheLocal = new ThreadLocal<>();
-	private final SystemCache<Generic> systemCache;
 
 	public Engine(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
@@ -22,16 +24,23 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	public Engine(Serializable engineValue, Class<?>... userClasses) {
 		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
 
-		systemCache = new SystemCache<>(this);
-		systemCache.put(Engine.class, this);
-
 		Cache<Generic> cache = newCache().start();
-		Generic metaAttribute = systemCache.set(MetaAttribute.class);
-		systemCache.set(MetaRelation.class);
-		systemCache.set(SystemMap.class).enablePropertyConstraint();
-		metaAttribute.disableReferentialIntegrity(Statics.BASE_POSITION);
-		for (Class<?> clazz : userClasses)
-			systemCache.set(clazz);
+		systemCache = new AbstractSystemCache<Generic>(this) {
+			private static final long serialVersionUID = 8492538861623209847L;
+
+			{
+				put(Engine.class, Engine.this);
+			}
+
+			@Override
+			public void setSystemProperties() {
+				Generic metaAttribute = set(MetaAttribute.class);
+				set(MetaRelation.class);
+				set(SystemMap.class).enablePropertyConstraint();
+				metaAttribute.disableReferentialIntegrity(Statics.BASE_POSITION);
+			}
+
+		}.mount(userClasses);
 		cache.flush();
 	}
 

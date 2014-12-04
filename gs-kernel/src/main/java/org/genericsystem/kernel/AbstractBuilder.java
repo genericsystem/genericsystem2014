@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.genericsystem.api.exception.ExistsException;
+import org.genericsystem.kernel.annotations.InstanceClass;
 
 public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 
@@ -28,7 +29,30 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 	protected abstract T[] newTArray(int dim);
 
 	protected T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
-		return newT().init(meta, supers, value, components);
+		return newT(clazz, meta).init(meta, supers, value, components);
+	}
+
+	@SuppressWarnings("unchecked")
+	protected T newT(Class<?> clazz, T meta) {
+		InstanceClass metaAnnotation = meta == null ? null : meta.getClass().getAnnotation(InstanceClass.class);
+		if (metaAnnotation != null)
+			if (clazz == null || clazz.isAssignableFrom(metaAnnotation.value()))
+				clazz = metaAnnotation.value();
+			else if (!metaAnnotation.value().isAssignableFrom(clazz))
+				getContext().discardWithException(new InstantiationException(clazz + " must extends " + metaAnnotation.value()));
+		T newT = newT();// Instantiates T in all cases...
+
+		if (clazz == null || clazz.isAssignableFrom(newT.getClass()))
+			return newT;
+		if (newT.getClass().isAssignableFrom(clazz))
+			try {
+				return (T) clazz.newInstance();
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
+				getContext().discardWithException(e);
+			}
+		else
+			getContext().discardWithException(new InstantiationException(clazz + " must extends " + newT.getClass()));
+		return null; // Not reached
 	}
 
 	protected T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {

@@ -1,6 +1,6 @@
 package org.genericsystem.concurrency;
 
-public abstract class AbstractBuilder<T extends AbstractGeneric<T>> extends org.genericsystem.cache.AbstractBuilder<T> {
+public abstract class AbstractBuilder<T extends AbstractGeneric<T>> extends org.genericsystem.kernel.AbstractBuilder<T> {
 
 	public AbstractBuilder(Cache<T> context) {
 		super(context);
@@ -39,17 +39,17 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T>> extends org.
 	}
 
 	public static interface ContextEventListener<X> {
-		
+
 		default void triggersMutationEvent(X oldDependency, X newDependency) {
 		}
 
 		default void triggersRefreshEvent() {
 		}
 
-		default void triggersClearEvent(){
+		default void triggersClearEvent() {
 		}
-		
-		default void triggersFlushEvent(){
+
+		default void triggersFlushEvent() {
 		}
 	}
 

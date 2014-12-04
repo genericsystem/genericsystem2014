@@ -5,13 +5,13 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
+
 import org.genericsystem.api.core.IteratorSnapshot;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
-import org.genericsystem.cache.AbstractBuilder.GenericBuilder;
-import org.genericsystem.kernel.annotations.SystemGeneric;
+import org.genericsystem.kernel.AbstractBuilder;
 
 public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 
@@ -48,13 +48,8 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 	}
 
 	@Override
-	protected CacheChecker<T> buildChecker() {
-		return new CacheChecker<>(this);
-	}
-
-	@Override
 	public AbstractBuilder<T> getBuilder() {
-		return (AbstractBuilder<T>) super.getBuilder();
+		return super.getBuilder();
 	}
 
 	@Override
@@ -196,24 +191,5 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 	@Override
 	protected boolean unIndexComposite(T generic, T composite) {
 		return unIndex(getDependencies(compositesDependencies, () -> subContext.getComposites(generic), generic), composite);
-	}
-
-	private static class CacheChecker<T extends AbstractGeneric<T>> extends org.genericsystem.kernel.Checker<T> {
-
-		private CacheChecker(Cache<T> context) {
-			super(context);
-		}
-
-		@Override
-		protected void checkSystemConstraintsAfterBuild(boolean isOnAdd, boolean isFlushTime, T vertex) {
-			super.checkSystemConstraintsAfterBuild(isOnAdd, isFlushTime, vertex);
-			checkRemoveGenericAnnoted(isOnAdd, vertex);
-		}
-
-		private void checkRemoveGenericAnnoted(boolean isOnAdd, T vertex) {
-			if (!isOnAdd && vertex.getClass().getAnnotation(SystemGeneric.class) != null)
-				getContext().discardWithException(new IllegalAccessException("@SystemGeneric annoted generic can't be removed"));
-		}
-
 	}
 }

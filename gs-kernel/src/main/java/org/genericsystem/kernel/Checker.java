@@ -17,6 +17,7 @@ import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationEx
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.api.exception.SignatureUnicityViolationException;
 import org.genericsystem.kernel.annotations.Priority;
+import org.genericsystem.kernel.annotations.SystemGeneric;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint;
 
@@ -112,6 +113,12 @@ public class Checker<T extends AbstractVertex<T>> {
 		checkLevel(vertex);
 		checkLevelComponents(vertex);
 		checkSignatureUnicity(vertex);
+		checkRemoveGenericAnnoted(isOnAdd, vertex);
+	}
+
+	private void checkRemoveGenericAnnoted(boolean isOnAdd, T vertex) {
+		if (!isOnAdd && vertex.getClass().getAnnotation(SystemGeneric.class) != null)
+			getContext().discardWithException(new IllegalAccessException("@SystemGeneric annoted generic can't be removed"));
 	}
 
 	private void checkWellFormedMeta(T vertex) {

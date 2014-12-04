@@ -1,6 +1,7 @@
 package org.genericsystem.concurrency;
 
 import java.util.Optional;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.concurrency.FileSystem.Directory;
 import org.genericsystem.concurrency.FileSystem.FileType;

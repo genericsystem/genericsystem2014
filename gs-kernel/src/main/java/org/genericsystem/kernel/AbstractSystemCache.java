@@ -18,20 +18,29 @@ import org.genericsystem.kernel.annotations.value.IntValue;
 import org.genericsystem.kernel.annotations.value.MetaValue;
 import org.genericsystem.kernel.annotations.value.StringValue;
 
-public class SystemCache<T extends AbstractVertex<T>> extends HashMap<Class<?>, T> {
+public abstract class AbstractSystemCache<T extends AbstractVertex<T>> extends HashMap<Class<?>, T> {
 
 	private static final long serialVersionUID = 1150085123612887245L;
 
-	protected boolean initialized = false;
+	private boolean initialized = false;
 
 	private final T root;
 
-	public SystemCache(T root) {
+	public AbstractSystemCache(T root) {
 		this.root = root;
-		put(Root.class, root);
 	}
 
-	public T set(Class<?> clazz) {
+	public abstract void setSystemProperties();
+
+	public AbstractSystemCache<T> mount(Class<?>... userClasses) {
+		setSystemProperties();
+		for (Class<?> clazz : userClasses)
+			set(clazz);
+		initialized = true;
+		return this;
+	}
+
+	protected T set(Class<?> clazz) {
 		// TODO implement check initialized
 		if (initialized)
 			throw new IllegalStateException("Class : " + clazz + " has not been built at startup");
