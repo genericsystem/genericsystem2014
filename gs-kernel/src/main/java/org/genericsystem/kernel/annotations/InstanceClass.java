@@ -1,4 +1,4 @@
-package org.genericsystem.cache.annotations.constraints;
+package org.genericsystem.kernel.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,13 +6,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The value can not be used that by a single instance.
- * 
+ * The class of the generic instances.
+ *
  * @author Nicolas Feybesse
- * @author Michael Ory
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
-public @interface UniqueValueConstraint {
+public @interface InstanceClass {
 
+	/**
+	 * Define the class of the instance.
+	 *
+	 * @return the class of the composites.
+	 */
+	Class<?> value();
 }

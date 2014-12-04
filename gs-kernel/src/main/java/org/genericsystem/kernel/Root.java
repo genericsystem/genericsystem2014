@@ -13,7 +13,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 
 	private Archiver<Vertex> archiver;
 
-	private Context<Vertex> context;
+	private final Context<Vertex> context;
 
 	public Root(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
@@ -27,7 +27,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 		init(null, Collections.emptyList(), value, Collections.emptyList());
 
 		context = new Context<Vertex>(this);
-		context.init( new VertextBuilder(context));
+		context.init(new VertextBuilder(context));
 
 		Vertex metaAttribute = context.getBuilder().setMeta(Statics.ATTRIBUTE_SIZE);
 		context.getBuilder().setMeta(Statics.RELATION_SIZE);
@@ -48,9 +48,6 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 	public void close() {
 		if (archiver != null)
 			archiver.close();
-	}
-
-	public static class MetaAttribute {
 	}
 
 }

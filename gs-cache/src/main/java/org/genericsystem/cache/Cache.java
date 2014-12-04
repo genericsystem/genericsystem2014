@@ -12,7 +12,7 @@ import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.cache.AbstractBuilder.GenericBuilder;
-import org.genericsystem.cache.annotations.SystemGeneric;
+import org.genericsystem.kernel.annotations.SystemGeneric;
 
 public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 

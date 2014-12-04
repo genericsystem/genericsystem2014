@@ -1,4 +1,4 @@
-package org.genericsystem.cache.annotations.value;
+package org.genericsystem.kernel.annotations.constraints;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,18 +6,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The value is a string value.
+ * The System Property to allows a single value for the same composites.
  * 
  * @author Nicolas Feybesse
  * @author Michael Ory
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
-public @interface StringValue {
+public @interface PropertyConstraint {
 
-	/**
-	 * 
-	 * @return Return the string.
-	 */
-	String value();
 }

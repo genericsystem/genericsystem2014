@@ -186,6 +186,8 @@ public class AdjustMetaTest extends AbstractTest {
 		Root engine = new Root();
 		assert engine.getMetaAttribute().equals(engine.adjustMeta(engine.getValue(), Arrays.asList(engine)));
 		assert engine.getMetaRelation().equals(engine.adjustMeta(engine.getValue(), Arrays.asList(engine, engine)));
+		System.out.println(engine.getMetaRelation().info());
+		System.out.println(engine.setInstance(engine.getValue(), engine, engine).info());
 		assert engine.getMetaRelation() == engine.setInstance(engine.getValue(), engine, engine);
 		Vertex metaTernaryRelation = engine.setInstance(engine.getValue(), engine, engine, engine);
 		assert engine.getMeta(3).equals(metaTernaryRelation);

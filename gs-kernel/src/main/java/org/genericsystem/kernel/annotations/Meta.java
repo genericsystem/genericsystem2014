@@ -1,4 +1,4 @@
-package org.genericsystem.cache.annotations.constraints;
+package org.genericsystem.kernel.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,19 +6,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The System Property to mandatory attribute.
- * 
+ * Used to declare the Extends of generic. A generic inherits directly of the supers.
+ *
  * @author Nicolas Feybesse
  * @author Michael Ory
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
-public @interface RequiredConstraint {
+public @interface Meta {
 
 	/**
-	 * Returns the positions of the composites.
-	 * 
-	 * @return An array of composite position.
+	 * The meta class
+	 *
+	 * @return meta class
 	 */
-	int[] value() default { 0 };
+	Class<?> value();
 }

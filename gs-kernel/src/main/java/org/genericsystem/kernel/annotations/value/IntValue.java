@@ -1,4 +1,4 @@
-package org.genericsystem.cache.annotations.value;
+package org.genericsystem.kernel.annotations.value;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
