@@ -15,6 +15,7 @@ import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
+import org.genericsystem.kernel.Root.SystemMap;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 
 public abstract class AbstractVertex<T extends AbstractVertex<T>> implements DefaultVertex<T> {
@@ -362,11 +363,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	@SuppressWarnings("unchecked")
-	T getMap() {
+	public T getMap() {
 		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
-	}
-
-	public static class SystemMap {
 	}
 
 	Optional<T> getKey(AxedPropertyClass property) {

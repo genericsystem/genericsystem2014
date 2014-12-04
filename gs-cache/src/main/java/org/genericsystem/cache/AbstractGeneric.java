@@ -1,10 +1,12 @@
 package org.genericsystem.cache;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.genericsystem.api.core.Snapshot;
+import org.genericsystem.cache.Engine.SystemMap;
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 
@@ -46,6 +48,11 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 	@Override
 	public DefaultEngine<T> getRoot() {
 		return (DefaultEngine<T>) super.getRoot();
+	}
+
+	@Override
+	public T getMap() {
+		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
 	@Override

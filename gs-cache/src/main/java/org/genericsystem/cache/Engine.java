@@ -13,7 +13,7 @@ import org.genericsystem.kernel.annotations.value.MetaValue;
 public class Engine extends Generic implements DefaultEngine<Generic> {
 
 	private final ThreadLocal<Cache<Generic>> cacheLocal = new ThreadLocal<>();
-	private final SystemCache<Generic> systemCache = new SystemCache<>(this);
+	private final SystemCache<Generic> systemCache;
 
 	public Engine(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
@@ -22,15 +22,13 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	public Engine(Serializable engineValue, Class<?>... userClasses) {
 		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
 
+		systemCache = new SystemCache<>(this);
+		systemCache.put(Engine.class, this);
+
 		Cache<Generic> cache = newCache().start();
 		Generic metaAttribute = systemCache.set(MetaAttribute.class);
-		Generic setAttribute = getCurrentCache().getBuilder().setMeta(Statics.ATTRIBUTE_SIZE);
-		assert metaAttribute == setAttribute : metaAttribute.info() + " / " + setAttribute.info();
-		Generic metaRelation = systemCache.set(MetaRelation.class);
-		Generic setRelation = getCurrentCache().getBuilder().setMeta(Statics.RELATION_SIZE);
-		assert metaRelation == setRelation : metaRelation.info() + " / " + setRelation.info();
-		Generic setMap = setInstance(SystemMap.class, coerceToTArray(this));
-		setMap.enablePropertyConstraint();
+		systemCache.set(MetaRelation.class);
+		systemCache.set(SystemMap.class).enablePropertyConstraint();
 		metaAttribute.disableReferentialIntegrity(Statics.BASE_POSITION);
 		for (Class<?> clazz : userClasses)
 			systemCache.set(clazz);
@@ -52,6 +50,12 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	@MetaValue
 	public static class MetaRelation extends Generic {
 
+	}
+
+	@SystemGeneric
+	@Meta(MetaAttribute.class)
+	@Components(Engine.class)
+	public static class SystemMap extends Generic {
 	}
 
 	@Override

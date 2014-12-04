@@ -1,5 +1,8 @@
 package org.genericsystem.concurrency;
 
+import java.util.Collections;
+
+import org.genericsystem.concurrency.Engine.SystemMap;
 import org.genericsystem.kernel.Dependencies;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.genericsystem.cache.AbstractGeneric<T> implements DefaultGeneric<T>, Comparable<T> {
@@ -9,6 +12,11 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.
 	@Override
 	public DefaultEngine<T> getRoot() {
 		return (DefaultEngine<T>) super.getRoot();
+	}
+
+	@Override
+	public T getMap() {
+		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
 	}
 
 	@Override

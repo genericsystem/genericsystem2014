@@ -6,6 +6,11 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.genericsystem.cache.SystemCache;
 import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.annotations.Components;
+import org.genericsystem.kernel.annotations.Meta;
+import org.genericsystem.kernel.annotations.Supers;
+import org.genericsystem.kernel.annotations.SystemGeneric;
+import org.genericsystem.kernel.annotations.value.MetaValue;
 
 public class Engine extends Generic implements DefaultEngine<Generic> {
 
@@ -13,7 +18,7 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	private Archiver<Generic> archiver;
 	private final TsGenerator generator = new TsGenerator();
 	private final GarbageCollector<Generic> garbageCollector = new GarbageCollector<>(this);
-	private final SystemCache<Generic> systemCache = new SystemCache<>(this);
+	private final SystemCache<Generic> systemCache;
 
 	public Engine(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
@@ -26,6 +31,9 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 
 	public Engine(Serializable engineValue, String persistentDirectoryPath, Class<?>... userClasses) {
 		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
+
+		systemCache = new SystemCache<>(this);
+		systemCache.put(Engine.class, this);
 
 		long ts = pickNewTs();
 		restore(ts, 0L, 0L, Long.MAX_VALUE);
@@ -42,10 +50,33 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	}
 
 	private void mountSystemProperties(Cache<Generic> cache) {
-		Generic metaAttribute = getCurrentCache().getBuilder().setMeta(Statics.ATTRIBUTE_SIZE);
-		getCurrentCache().getBuilder().setMeta(Statics.RELATION_SIZE);
-		setInstance(SystemMap.class, coerceToTArray(this)).enablePropertyConstraint();
+		Generic metaAttribute = systemCache.set(MetaAttribute.class);
+		systemCache.set(MetaRelation.class);
+		systemCache.set(SystemMap.class).enablePropertyConstraint();
 		metaAttribute.disableReferentialIntegrity(Statics.BASE_POSITION);
+	}
+
+	@SystemGeneric
+	@Supers(Engine.class)
+	@Components(Engine.class)
+	@MetaValue
+	public static class MetaAttribute extends Generic {
+
+	}
+
+	@SystemGeneric
+	@Meta(MetaAttribute.class)
+	@Supers(Engine.class)
+	@Components({ Engine.class, Engine.class })
+	@MetaValue
+	public static class MetaRelation extends Generic {
+
+	}
+
+	@SystemGeneric
+	@Meta(MetaAttribute.class)
+	@Components(Engine.class)
+	public static class SystemMap extends Generic {
 	}
 
 	// TODO mount this in API

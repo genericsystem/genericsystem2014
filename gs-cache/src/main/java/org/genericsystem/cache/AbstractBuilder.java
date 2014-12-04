@@ -60,10 +60,10 @@ public abstract class AbstractBuilder<T extends AbstractGeneric<T>> extends org.
 		return super.setInstance(clazz, meta, overrides, value, components);
 	}
 
-	@Override
-	protected T setMeta(int dim) {
-		return super.setMeta(dim);
-	}
+	// @Override
+	// protected T setMeta(int dim) {
+	// return super.setMeta(dim);
+	// }
 
 	public static class GenericBuilder extends AbstractBuilder<Generic> {
 

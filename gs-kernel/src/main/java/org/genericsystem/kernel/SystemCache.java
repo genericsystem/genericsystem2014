@@ -1,11 +1,10 @@
-package org.genericsystem.cache;
+package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Dependencies;
 import org.genericsystem.kernel.annotations.Meta;
@@ -19,27 +18,21 @@ import org.genericsystem.kernel.annotations.value.IntValue;
 import org.genericsystem.kernel.annotations.value.MetaValue;
 import org.genericsystem.kernel.annotations.value.StringValue;
 
-public class SystemCache<T extends AbstractGeneric<T>> extends HashMap<Class<?>, T> {
+public class SystemCache<T extends AbstractVertex<T>> extends HashMap<Class<?>, T> {
 
 	private static final long serialVersionUID = 1150085123612887245L;
 
 	protected boolean initialized = false;
 
-	private final T engine;
+	private final T root;
 
-	public SystemCache(T engine) {
-		this.engine = engine;
+	public SystemCache(T root) {
+		this.root = root;
+		put(Root.class, root);
 	}
 
-	// public void init(Class<?>... userClasses) {
-	// put(MetaAttribute.class, engine.setInstance(engine, engine.getValue(), engine.coerceToTArray(engine)));
-	// put(SystemMap.class, engine.setInstance(SystemMap.class, engine.coerceToTArray(engine)).enablePropertyConstraint());
-	// for (Class<?> clazz : userClasses)
-	// set(clazz);
-	// initialized = true;
-	// }
-
 	public T set(Class<?> clazz) {
+		// TODO implement check initialized
 		if (initialized)
 			throw new IllegalStateException("Class : " + clazz + " has not been built at startup");
 		T systemProperty = super.get(clazz);
@@ -47,7 +40,7 @@ public class SystemCache<T extends AbstractGeneric<T>> extends HashMap<Class<?>,
 			assert systemProperty.isAlive();
 			return systemProperty;
 		}
-		T result = engine.getCurrentCache().getBuilder().setInstance(clazz, setMeta(clazz), setOverrides(clazz), findValue(clazz), setComponents(clazz));
+		T result = root.getCurrentCache().getBuilder().setInstance(clazz, setMeta(clazz), setOverrides(clazz), findValue(clazz), setComponents(clazz));
 		put(clazz, result);
 		mountConstraints(result, clazz);
 		triggersDependencies(clazz);
@@ -82,11 +75,7 @@ public class SystemCache<T extends AbstractGeneric<T>> extends HashMap<Class<?>,
 
 	private T setMeta(Class<?> clazz) {
 		Meta meta = clazz.getAnnotation(Meta.class);
-		if (meta == null)
-			return engine;
-		// if (meta.value() == clazz)
-		// return null;
-		return set(meta.value());
+		return meta == null ? root : set(meta.value());
 	}
 
 	private List<T> setOverrides(Class<?> clazz) {
