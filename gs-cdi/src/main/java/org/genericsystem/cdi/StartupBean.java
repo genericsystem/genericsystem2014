@@ -12,8 +12,8 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.util.AnnotationLiteral;
 
-import org.genericsystem.cache.annotations.SystemGeneric;
 import org.genericsystem.cdi.event.EventLauncher;
+import org.genericsystem.kernel.annotations.SystemGeneric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

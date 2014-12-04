@@ -1,27 +1,24 @@
-package org.genericsystem.cache.annotations.constraints;
+package org.genericsystem.kernel.annotations;
 
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The System Property to constrain the type of a value.
+ * Used to declare the Extends of generic. A generic inherits directly of the supers.
  * 
  * @author Nicolas Feybesse
  * @author Michael Ory
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
-@Inherited
-public @interface InstanceValueClassConstraint {
+public @interface Supers {
 
 	/**
-	 * Returns the class of type constrained.
+	 * Returns the supers classes.
 	 * 
-	 * @return The class.
+	 * @return An array of supers classes.
 	 */
-	Class<?> value();
-
+	Class<?>[] value();
 }

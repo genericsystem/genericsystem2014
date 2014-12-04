@@ -1,4 +1,4 @@
-package org.genericsystem.cache.annotations;
+package org.genericsystem.kernel.annotations.constraints;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,13 +6,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Identifies a class as managed by Generic System.
+ * The value can not be used that by a single instance.
  * 
  * @author Nicolas Feybesse
  * @author Michael Ory
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
-public @interface SystemGeneric {
+public @interface UniqueValueConstraint {
 
 }

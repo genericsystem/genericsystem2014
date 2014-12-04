@@ -2,17 +2,17 @@ package org.genericsystem.concurrency;
 
 import java.util.Optional;
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.cache.annotations.Components;
-import org.genericsystem.cache.annotations.Dependencies;
-import org.genericsystem.cache.annotations.InstanceClass;
-import org.genericsystem.cache.annotations.SystemGeneric;
-import org.genericsystem.cache.annotations.constraints.InstanceValueClassConstraint;
-import org.genericsystem.cache.annotations.constraints.SingularConstraint;
 import org.genericsystem.concurrency.FileSystem.Directory;
 import org.genericsystem.concurrency.FileSystem.FileType;
 import org.genericsystem.concurrency.FileSystem.FileType.File;
 import org.genericsystem.concurrency.FileSystem.FileType.FileContent;
 import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.annotations.Components;
+import org.genericsystem.kernel.annotations.Dependencies;
+import org.genericsystem.kernel.annotations.InstanceClass;
+import org.genericsystem.kernel.annotations.SystemGeneric;
+import org.genericsystem.kernel.annotations.constraints.InstanceValueClassConstraint;
+import org.genericsystem.kernel.annotations.constraints.SingularConstraint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

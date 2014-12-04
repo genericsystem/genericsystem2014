@@ -1,4 +1,4 @@
-package org.genericsystem.cache.annotations;
+package org.genericsystem.kernel.annotations.constraints;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,19 +6,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Used to declare the Extends of generic. A generic inherits directly of the supers.
+ * This constraint represent the links size for an attribute.
  * 
  * @author Nicolas Feybesse
  * @author Michael Ory
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
-public @interface Supers {
+public @interface SizeConstraint {
 
 	/**
-	 * Returns the supers classes.
+	 * Returns the positions of the composites.
 	 * 
-	 * @return An array of supers classes.
+	 * @return An array of composite position.
 	 */
-	Class<?>[] value();
+	int[] value() default { 0 };
 }

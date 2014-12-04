@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class SupersComputer<T extends AbstractVertex<T>> extends LinkedHashSet<T> {
 
@@ -15,15 +16,22 @@ public class SupersComputer<T extends AbstractVertex<T>> extends LinkedHashSet<T
 	private final List<T> components;
 	private final Serializable value;
 
+	private final int reachLevel;
+
 	private final Map<T, boolean[]> alreadyComputed = new HashMap<>();
 
 	SupersComputer(T meta, List<T> overrides, Serializable value, List<T> components) {
 		assert meta != null;
+		reachLevel = isMeta(meta, value, components) ? Statics.META : meta.getLevel() + 1;
 		this.meta = meta;
 		this.overrides = overrides;
 		this.components = components;
 		this.value = value;
 		visitSupers(meta);
+	}
+
+	private boolean isMeta(T meta, Serializable value, List<T> components) {
+		return meta.isMeta() && components.stream().filter(x -> x != null).allMatch(c -> c.isRoot()) && Objects.equals(value, meta.getRoot().getValue());
 	}
 
 	private void visitSupers(T candidate) {
@@ -62,10 +70,8 @@ public class SupersComputer<T extends AbstractVertex<T>> extends LinkedHashSet<T
 		boolean[] selectableSelected = new boolean[] { selectable, true };
 		result = alreadyComputed.put(candidate, selectableSelected);
 		assert result == null : candidate.info();
-		if (selectableSelected[0] && (candidate.getLevel() ==  meta.getLevel() + 1) && !candidate.equals(meta, overrides, value, components)) {
+		if (selectableSelected[0] && (candidate.getLevel() == reachLevel) && !candidate.equals(meta, overrides, value, components))
 			add(candidate);
-			assert !candidate.isRoot();
-		}
 		return selectableSelected;
 	}
 }

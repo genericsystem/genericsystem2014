@@ -5,9 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import org.genericsystem.cache.annotations.SystemGeneric;
 import org.genericsystem.concurrency.Archiver.WriterLoaderManager.DependenciesOrder;
 import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.annotations.SystemGeneric;
 import org.testng.annotations.Test;
 
 @Test

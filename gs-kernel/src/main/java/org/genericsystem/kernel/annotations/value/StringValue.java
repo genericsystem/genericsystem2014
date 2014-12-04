@@ -1,4 +1,4 @@
-package org.genericsystem.cache.annotations;
+package org.genericsystem.kernel.annotations.value;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,19 +6,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The composites of a generic.
+ * The value is a string value.
  * 
  * @author Nicolas Feybesse
  * @author Michael Ory
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
-public @interface Components {
+public @interface StringValue {
 
 	/**
-	 * Returns the class of the composites.
 	 * 
-	 * @return An array of class of the composites.
+	 * @return Return the string.
 	 */
-	Class<?>[] value();
+	String value();
 }

@@ -5,20 +5,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.genericsystem.cache.annotations.Components;
-import org.genericsystem.cache.annotations.Dependencies;
-import org.genericsystem.cache.annotations.Meta;
-import org.genericsystem.cache.annotations.constraints.InstanceValueClassConstraint;
-import org.genericsystem.cache.annotations.constraints.PropertyConstraint;
-import org.genericsystem.cache.annotations.constraints.RequiredConstraint;
-import org.genericsystem.cache.annotations.constraints.SingularConstraint;
-import org.genericsystem.cache.annotations.constraints.UniqueValueConstraint;
-import org.genericsystem.cache.annotations.value.BooleanValue;
-import org.genericsystem.cache.annotations.value.IntValue;
-import org.genericsystem.cache.annotations.value.StringValue;
+import org.genericsystem.cache.Engine.MetaAttribute;
 import org.genericsystem.kernel.AbstractVertex.SystemMap;
-import org.genericsystem.kernel.Root.MetaAttribute;
 import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.annotations.Components;
+import org.genericsystem.kernel.annotations.Dependencies;
+import org.genericsystem.kernel.annotations.Meta;
+import org.genericsystem.kernel.annotations.constraints.InstanceValueClassConstraint;
+import org.genericsystem.kernel.annotations.constraints.PropertyConstraint;
+import org.genericsystem.kernel.annotations.constraints.RequiredConstraint;
+import org.genericsystem.kernel.annotations.constraints.SingularConstraint;
+import org.genericsystem.kernel.annotations.constraints.UniqueValueConstraint;
+import org.genericsystem.kernel.annotations.value.BooleanValue;
+import org.genericsystem.kernel.annotations.value.IntValue;
+import org.genericsystem.kernel.annotations.value.MetaValue;
+import org.genericsystem.kernel.annotations.value.StringValue;
 
 public class SystemCache<T extends AbstractGeneric<T>> extends HashMap<Class<?>, T> {
 
@@ -49,8 +50,7 @@ public class SystemCache<T extends AbstractGeneric<T>> extends HashMap<Class<?>,
 			assert systemProperty.isAlive();
 			return systemProperty;
 		}
-		T meta = setMeta(clazz);
-		T result = engine.getCurrentCache().getBuilder().setInstance(clazz, meta, setOverrides(clazz), findValue(clazz), setComponents(clazz));
+		T result = engine.getCurrentCache().getBuilder().setInstance(clazz, setMeta(clazz), setOverrides(clazz), findValue(clazz), setComponents(clazz));
 		put(clazz, result);
 		mountConstraints(result, clazz);
 		triggersDependencies(clazz);
@@ -65,7 +65,6 @@ public class SystemCache<T extends AbstractGeneric<T>> extends HashMap<Class<?>,
 	}
 
 	private void mountConstraints(T result, Class<?> clazz) {
-
 		if (clazz.getAnnotation(PropertyConstraint.class) != null)
 			result.enablePropertyConstraint();
 
@@ -82,24 +81,27 @@ public class SystemCache<T extends AbstractGeneric<T>> extends HashMap<Class<?>,
 		if (singularTarget != null)
 			for (int axe : singularTarget.value())
 				result.enableSingularConstraint(axe);
-
 	}
 
 	private T setMeta(Class<?> clazz) {
 		Meta meta = clazz.getAnnotation(Meta.class);
-		return meta == null ? (T) engine : set(meta.value());
+		if (meta == null)
+			return engine;
+		// if (meta.value() == clazz)
+		// return null;
+		return set(meta.value());
 	}
 
 	private List<T> setOverrides(Class<?> clazz) {
 		List<T> overridesVertices = new ArrayList<>();
-		org.genericsystem.cache.annotations.Supers supersAnnotation = clazz.getAnnotation(org.genericsystem.cache.annotations.Supers.class);
+		org.genericsystem.kernel.annotations.Supers supersAnnotation = clazz.getAnnotation(org.genericsystem.kernel.annotations.Supers.class);
 		if (supersAnnotation != null)
 			for (Class<?> overrideClass : supersAnnotation.value())
 				overridesVertices.add(set(overrideClass));
 		return overridesVertices;
 	}
 
-	private static Serializable findValue(Class<?> clazz) {
+	private Serializable findValue(Class<?> clazz) {
 		BooleanValue booleanValue = clazz.getAnnotation(BooleanValue.class);
 		if (booleanValue != null)
 			return booleanValue.value();
@@ -111,6 +113,10 @@ public class SystemCache<T extends AbstractGeneric<T>> extends HashMap<Class<?>,
 		StringValue stringValue = clazz.getAnnotation(StringValue.class);
 		if (stringValue != null)
 			return stringValue.value();
+
+		MetaValue metaValue = clazz.getAnnotation(MetaValue.class);
+		if (metaValue != null)
+			return setMeta(clazz).getValue();
 
 		return clazz;
 	}

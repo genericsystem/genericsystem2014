@@ -1,17 +1,17 @@
 package org.genericsystem.cache;
 
-import org.genericsystem.cache.annotations.Components;
-import org.genericsystem.cache.annotations.Dependencies;
-import org.genericsystem.cache.annotations.InstanceClass;
-import org.genericsystem.cache.annotations.Meta;
-import org.genericsystem.cache.annotations.Supers;
-import org.genericsystem.cache.annotations.SystemGeneric;
-import org.genericsystem.cache.annotations.constraints.InstanceValueClassConstraint;
-import org.genericsystem.cache.annotations.constraints.PropertyConstraint;
-import org.genericsystem.cache.annotations.constraints.SingularConstraint;
-import org.genericsystem.cache.annotations.constraints.UniqueValueConstraint;
-import org.genericsystem.cache.annotations.value.IntValue;
 import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.annotations.Components;
+import org.genericsystem.kernel.annotations.Dependencies;
+import org.genericsystem.kernel.annotations.InstanceClass;
+import org.genericsystem.kernel.annotations.Meta;
+import org.genericsystem.kernel.annotations.Supers;
+import org.genericsystem.kernel.annotations.SystemGeneric;
+import org.genericsystem.kernel.annotations.constraints.InstanceValueClassConstraint;
+import org.genericsystem.kernel.annotations.constraints.PropertyConstraint;
+import org.genericsystem.kernel.annotations.constraints.SingularConstraint;
+import org.genericsystem.kernel.annotations.constraints.UniqueValueConstraint;
+import org.genericsystem.kernel.annotations.value.IntValue;
 import org.testng.annotations.Test;
 
 @Test

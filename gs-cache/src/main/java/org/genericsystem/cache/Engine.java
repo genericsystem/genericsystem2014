@@ -4,6 +4,11 @@ import java.io.Serializable;
 import java.util.Collections;
 
 import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.annotations.Components;
+import org.genericsystem.kernel.annotations.Meta;
+import org.genericsystem.kernel.annotations.Supers;
+import org.genericsystem.kernel.annotations.SystemGeneric;
+import org.genericsystem.kernel.annotations.value.MetaValue;
 
 public class Engine extends Generic implements DefaultEngine<Generic> {
 
@@ -18,13 +23,35 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
 
 		Cache<Generic> cache = newCache().start();
-		Generic metaAttribute = getCurrentCache().getBuilder().setMeta(Statics.ATTRIBUTE_SIZE);
-		getCurrentCache().getBuilder().setMeta(Statics.RELATION_SIZE);
-		setInstance(SystemMap.class, coerceToTArray(this)).enablePropertyConstraint();
+		Generic metaAttribute = systemCache.set(MetaAttribute.class);
+		Generic setAttribute = getCurrentCache().getBuilder().setMeta(Statics.ATTRIBUTE_SIZE);
+		assert metaAttribute == setAttribute : metaAttribute.info() + " / " + setAttribute.info();
+		Generic metaRelation = systemCache.set(MetaRelation.class);
+		Generic setRelation = getCurrentCache().getBuilder().setMeta(Statics.RELATION_SIZE);
+		assert metaRelation == setRelation : metaRelation.info() + " / " + setRelation.info();
+		Generic setMap = setInstance(SystemMap.class, coerceToTArray(this));
+		setMap.enablePropertyConstraint();
 		metaAttribute.disableReferentialIntegrity(Statics.BASE_POSITION);
 		for (Class<?> clazz : userClasses)
 			systemCache.set(clazz);
 		cache.flush();
+	}
+
+	@SystemGeneric
+	@Supers(Engine.class)
+	@Components(Engine.class)
+	@MetaValue
+	public static class MetaAttribute extends Generic {
+
+	}
+
+	@SystemGeneric
+	@Meta(MetaAttribute.class)
+	@Supers(Engine.class)
+	@Components({ Engine.class, Engine.class })
+	@MetaValue
+	public static class MetaRelation extends Generic {
+
 	}
 
 	@Override

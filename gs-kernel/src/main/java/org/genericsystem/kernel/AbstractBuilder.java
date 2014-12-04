@@ -56,12 +56,12 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 
 	protected T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents) {
 		context.getChecker().checkBeforeBuild(update.getClass(), update.getMeta(), overrides, newValue, newComponents);
+		T getOrNewMeta = update.getMeta().isMeta() ? setMeta(newComponents.size()) : update.getMeta();
 		return rebuildAll(update, () -> {
-			T getOrNewMeta = update.getMeta().isMeta() ? setMeta(newComponents.size()) : update.getMeta();
 			T instance = getOrNewMeta.getDirectInstance(newValue, newComponents);
 			if (instance != null)
 				return instance;
-			return adjustAndBuild(update.getClass(), update.getMeta(), overrides, newValue, newComponents);
+			return adjustAndBuild(update.getClass(), getOrNewMeta, overrides, newValue, newComponents);
 		}, update.computeDependencies());
 	}
 
@@ -99,6 +99,7 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 		// TODO system constraints
 		if (!Statics.areOverridesReached(overrides, supers))
 			context.discardWithException(new IllegalStateException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
+		adjustMeta = adjustMeta.isMeta() && adjustMeta.getComponents().size() != components.size() ? null : adjustMeta;
 		return context.plug(newT(clazz, adjustMeta, supers, value, components));
 	}
 
