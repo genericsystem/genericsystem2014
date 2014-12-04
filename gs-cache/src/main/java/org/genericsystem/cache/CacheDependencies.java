@@ -4,8 +4,8 @@ import java.util.Iterator;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.IteratorSnapshot;
+import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.kernel.AbstractDependencies;
 
 public class CacheDependencies<T> implements IteratorSnapshot<T>, org.genericsystem.kernel.Dependencies<T> {
@@ -14,10 +14,10 @@ public class CacheDependencies<T> implements IteratorSnapshot<T>, org.genericsys
 
 	private final InternalDependencies<T> deletes = new InternalDependencies<>();
 
-	private final Supplier<Stream<T>> streamSupplier;
+	private final Supplier<Snapshot<T>> snapshotSupplier;
 
-	public CacheDependencies(Supplier<Stream<T>> streamSupplier) {
-		this.streamSupplier = streamSupplier;
+	public CacheDependencies(Supplier<Snapshot<T>> snapshotSupplier) {
+		this.snapshotSupplier = snapshotSupplier;
 	}
 
 	@Override
@@ -43,8 +43,26 @@ public class CacheDependencies<T> implements IteratorSnapshot<T>, org.genericsys
 	}
 
 	@Override
+	public T get(Object o, long ts) {
+		return get(o);
+	}
+
+	@Override
 	public Iterator<T> iterator() {
-		return Stream.concat(streamSupplier.get().filter(x -> !deletes.contains(x)), inserts.get()).iterator();
+		return Stream.concat(snapshotSupplier.get().get().filter(x -> !deletes.contains(x)), inserts.get()).iterator();
+	}
+
+	@Override
+	public T get(Object o) {
+		T result = inserts.get(o);
+		if (result != null)
+			return result;
+		if (!deletes.contains(o)) {
+			result = snapshotSupplier.get().get(o);
+			if (result != null)
+				return result;
+		}
+		return null;
 	}
 
 	@Override
@@ -57,6 +75,18 @@ public class CacheDependencies<T> implements IteratorSnapshot<T>, org.genericsys
 		@Override
 		public Iterator<T> iterator() {
 			return new InternalIterator();
+		}
+
+		@Override
+		public T get(Object o) {
+			// TODO KK OPTIMIZE THIS GET
+			Iterator<T> it = iterator();
+			while (it.hasNext()) {
+				T next = it.next();
+				if (o.equals(next))
+					return next;
+			}
+			return null;
 		}
 	}
 }

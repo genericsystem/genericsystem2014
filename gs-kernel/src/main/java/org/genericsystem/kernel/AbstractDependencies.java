@@ -1,7 +1,6 @@
 package org.genericsystem.kernel;
 
 import java.util.Iterator;
-
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
 public abstract class AbstractDependencies<T> implements Dependencies<T> {
@@ -29,6 +28,19 @@ public abstract class AbstractDependencies<T> implements Dependencies<T> {
 				return true;
 			}
 		return false;
+	}
+
+	public abstract T get(Object o);
+
+	@Override
+	public T get(Object o, long ts) {
+		Iterator<T> it = iterator();
+		while (it.hasNext()) {
+			T next = it.next();
+			if (o.equals(next))
+				return next;
+		}
+		return null;
 	}
 
 	public abstract Iterator<T> iterator();

@@ -1,7 +1,7 @@
 package org.genericsystem.concurrency;
 
 import java.util.Iterator;
-
+import java.util.concurrent.ConcurrentHashMap;
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
@@ -9,18 +9,41 @@ public abstract class AbstractTsDependencies<T extends AbstractGeneric<T>> imple
 
 	private Node<T> head = null;
 	private Node<T> tail = null;
+	private ConcurrentHashMap<T, T> map = new ConcurrentHashMap<>();
 
 	public abstract LifeManager getLifeManager();
 
 	@Override
+	public T get(Object generic, long ts) {
+		T result = map.get(generic);
+		if (result == null) {
+			LifeManager lifeManager = getLifeManager();
+			lifeManager.readLock();
+			try {
+				result = map.get(generic);
+				lifeManager.atomicAdjustLastReadTs(ts);
+			} finally {
+				lifeManager.readUnlock();
+			}
+		}
+
+		if (result != null && result.isAlive(ts))
+			return result;
+		return null;
+	}
+
+	@Override
 	public void add(T element) {
 		assert element != null;
+		assert getLifeManager().isWriteLockedByCurrentThread();
 		Node<T> newNode = new Node<>(element);
 		if (head == null)
 			head = newNode;
 		else
 			tail.next = newNode;
 		tail = newNode;
+		T result = map.put(element, element);
+		assert result == null;
 	}
 
 	@Override
@@ -46,6 +69,7 @@ public abstract class AbstractTsDependencies<T extends AbstractGeneric<T>> imple
 				if (nextNextNode == null)
 					tail = currentNode;
 				currentNode.next = nextNextNode;
+				map.remove(generic);
 				return true;
 			}
 			currentNode = nextNode;

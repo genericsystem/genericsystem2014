@@ -30,7 +30,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -172,8 +171,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 				Map<Long, T> vertexMap = new HashMap<>();
 				for (;;)
 					loadDependency(vertexMap);
-			} catch (EOFException ignore) {
-			} catch (ClassNotFoundException | IOException e) {
+			} catch (EOFException ignore) {} catch (ClassNotFoundException | IOException e) {
 				log.error(e.getMessage(), e);
 			}
 		}

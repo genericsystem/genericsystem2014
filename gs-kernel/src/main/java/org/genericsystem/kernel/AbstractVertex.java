@@ -64,6 +64,10 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	protected Dependencies<T> buildDependencies() {
 		return new AbstractDependencies<T>() {
+			@Override
+			public T get(Object o) {
+				return get(o, 0);
+			}
 
 			@Override
 			public Iterator<T> iterator() {

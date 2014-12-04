@@ -2,9 +2,7 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import org.genericsystem.api.core.IVertex;
-import org.genericsystem.api.core.IteratorSnapshot;
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.kernel.iterator.AbstractProjectionIterator;
 
 public interface DefaultCompositesInheritance<T extends AbstractVertex<T>> extends IVertex<T> {
 
@@ -40,12 +38,7 @@ public interface DefaultCompositesInheritance<T extends AbstractVertex<T>> exten
 
 	@Override
 	default Snapshot<Serializable> getValues(T attribute) {
-		return (IteratorSnapshot<Serializable>) (() -> new AbstractProjectionIterator<T, Serializable>(getHolders(attribute).get().iterator()) {
-			@Override
-			public Serializable project(T generic) {
-				return generic.getValue();
-			}
-		});
+		return () -> getHolders(attribute).get().map(T::getValue);
 	}
 
 	@Override

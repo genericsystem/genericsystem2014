@@ -5,9 +5,8 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
-
 import org.genericsystem.api.core.IteratorSnapshot;
+import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
@@ -50,7 +49,7 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 
 	@Override
 	protected CacheChecker<T> buildChecker() {
-		return new CacheChecker<T>(this);
+		return new CacheChecker<>(this);
 	}
 
 	@Override
@@ -147,56 +146,56 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 		return result && simpleRemove(generic);
 	}
 
-	private static <T extends AbstractGeneric<T>> CacheDependencies<T> getDependencies(Map<T, CacheDependencies<T>> multiMap, Supplier<Stream<T>> subStreamSupplier, T generic) {
+	private static <T extends AbstractGeneric<T>> CacheDependencies<T> getDependencies(Map<T, CacheDependencies<T>> multiMap, Supplier<Snapshot<T>> snapshotSupplier, T generic) {
 		CacheDependencies<T> dependencies = multiMap.get(generic);
 		if (dependencies == null)
-			multiMap.put(generic, dependencies = new CacheDependencies<T>(subStreamSupplier));
+			multiMap.put(generic, dependencies = new CacheDependencies<>(snapshotSupplier));
 		return dependencies;
 	}
 
 	@Override
 	public IteratorSnapshot<T> getInstances(T generic) {
-		return getDependencies(instancesDependencies, () -> subContext.getInstances(generic).get(), generic);
+		return getDependencies(instancesDependencies, () -> subContext.getInstances(generic), generic);
 	}
 
 	@Override
 	public IteratorSnapshot<T> getInheritings(T generic) {
-		return getDependencies(inheritingsDependencies, () -> subContext.getInheritings(generic).get(), generic);
+		return getDependencies(inheritingsDependencies, () -> subContext.getInheritings(generic), generic);
 	}
 
 	@Override
 	public IteratorSnapshot<T> getComposites(T generic) {
-		return getDependencies(compositesDependencies, () -> subContext.getComposites(generic).get(), generic);
+		return getDependencies(compositesDependencies, () -> subContext.getComposites(generic), generic);
 	}
 
 	@Override
 	protected void indexInstance(T generic, T instance) {
-		index(getDependencies(instancesDependencies, () -> subContext.getInstances(generic).get(), generic), instance);
+		index(getDependencies(instancesDependencies, () -> subContext.getInstances(generic), generic), instance);
 	}
 
 	@Override
 	protected void indexInheriting(T generic, T inheriting) {
-		index(getDependencies(inheritingsDependencies, () -> subContext.getInheritings(generic).get(), generic), inheriting);
+		index(getDependencies(inheritingsDependencies, () -> subContext.getInheritings(generic), generic), inheriting);
 	}
 
 	@Override
 	protected void indexComposite(T generic, T composite) {
-		index(getDependencies(compositesDependencies, () -> subContext.getComposites(generic).get(), generic), composite);
+		index(getDependencies(compositesDependencies, () -> subContext.getComposites(generic), generic), composite);
 	}
 
 	@Override
 	protected boolean unIndexInstance(T generic, T instance) {
-		return unIndex(getDependencies(instancesDependencies, () -> subContext.getInstances(generic).get(), generic), instance);
+		return unIndex(getDependencies(instancesDependencies, () -> subContext.getInstances(generic), generic), instance);
 	}
 
 	@Override
 	protected boolean unIndexInheriting(T generic, T inheriting) {
-		return unIndex(getDependencies(inheritingsDependencies, () -> subContext.getInheritings(generic).get(), generic), inheriting);
+		return unIndex(getDependencies(inheritingsDependencies, () -> subContext.getInheritings(generic), generic), inheriting);
 	}
 
 	@Override
 	protected boolean unIndexComposite(T generic, T composite) {
-		return unIndex(getDependencies(compositesDependencies, () -> subContext.getComposites(generic).get(), generic), composite);
+		return unIndex(getDependencies(compositesDependencies, () -> subContext.getComposites(generic), generic), composite);
 	}
 
 	private static class CacheChecker<T extends AbstractGeneric<T>> extends org.genericsystem.kernel.Checker<T> {

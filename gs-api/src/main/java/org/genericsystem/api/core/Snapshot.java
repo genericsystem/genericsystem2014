@@ -2,7 +2,6 @@ package org.genericsystem.api.core;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -39,11 +38,8 @@ public interface Snapshot<T> extends Iterable<T> {
 		return c.stream().allMatch(x -> get().anyMatch(y -> y.equals(x)));
 	}
 
-	default T get(T o) {
-		for (T next : this)
-			if (o.equals(next))
-				return next;
-		return null;
+	default T get(Object o) {
+		return get().filter(o::equals).findFirst().orElse(null);
 	}
 
 	default String info() {
@@ -51,7 +47,6 @@ public interface Snapshot<T> extends Iterable<T> {
 	}
 
 	default T first() {
-		Optional<T> first = get().findFirst();
-		return first.isPresent() ? first.get() : null;
+		return get().findFirst().orElse(null);
 	}
 }

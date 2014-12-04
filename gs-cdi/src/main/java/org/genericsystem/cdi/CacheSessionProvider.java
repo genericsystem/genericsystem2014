@@ -13,7 +13,7 @@ public class CacheSessionProvider implements Serializable {
 	private static final long serialVersionUID = 5201003234496546928L;
 
 	@Inject
-	private transient Engine engine;
+	private transient org.genericsystem.concurrency.Engine engine;
 
 	private transient Cache currentCache;
 
@@ -23,7 +23,7 @@ public class CacheSessionProvider implements Serializable {
 	}
 
 	public void mountAndStartNewCache() {
-		currentCache = (Cache) currentCache.mountAndStartNewCache();
+		currentCache = currentCache.mountAndStartNewCache();
 	}
 
 	public void flushAndUnmount() {

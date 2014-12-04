@@ -8,6 +8,8 @@ public interface Dependencies<T> {
 
 	boolean remove(T vertex);
 
-	Iterator<T> iterator(long ts);
+	abstract Iterator<T> iterator(long ts);
+
+	abstract T get(Object o, long ts);
 
 }

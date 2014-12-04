@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-@FunctionalInterface
 public interface IteratorSnapshot<T> extends Snapshot<T> {
 
 	@Override
@@ -36,11 +35,7 @@ public interface IteratorSnapshot<T> extends Snapshot<T> {
 
 	@Override
 	default boolean contains(Object o) {
-		Iterator<T> it = iterator();
-		while (it.hasNext())
-			if (o.equals(it.next()))
-				return true;
-		return false;
+		return o.equals(get(o)); // override necessary
 	}
 
 	@Override
@@ -52,15 +47,7 @@ public interface IteratorSnapshot<T> extends Snapshot<T> {
 	}
 
 	@Override
-	default T get(T o) {
-		Iterator<T> it = iterator();
-		while (it.hasNext()) {
-			T next = it.next();
-			if (o.equals(next))
-				return next;
-		}
-		return null;
-	}
+	T get(Object o);
 
 	@Override
 	default String info() {
