@@ -15,7 +15,7 @@ public abstract class AbstractTsDependencies<T extends AbstractGeneric<T>> imple
 
 	@Override
 	public T get(Object generic, long ts) {
-		T result = map.get(generic);
+		T result = map.get(generic);// this no lock read requires a concurrent hash map
 		if (result == null) {
 			LifeManager lifeManager = getLifeManager();
 			lifeManager.readLock();
