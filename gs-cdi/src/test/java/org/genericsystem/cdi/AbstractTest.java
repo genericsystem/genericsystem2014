@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AbstractTest extends Arquillian {
 
+	
 	protected static Logger log = LoggerFactory.getLogger(AbstractTest.class);
 
 	@Inject

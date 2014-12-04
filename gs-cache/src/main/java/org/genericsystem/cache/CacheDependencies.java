@@ -1,6 +1,8 @@
 package org.genericsystem.cache;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -72,6 +74,20 @@ public class CacheDependencies<T> implements IteratorSnapshot<T>, org.genericsys
 
 	private static class InternalDependencies<T> extends AbstractDependencies<T> implements IteratorSnapshot<T> {
 
+		private Map<T, T> map = new HashMap<>();
+
+		@Override
+		public void add(T element) {
+			super.add(element);
+			map.put(element, element);
+		}
+
+		@Override
+		public boolean remove(T element) {
+			map.remove(element);
+			return super.remove(element);
+		}
+
 		@Override
 		public Iterator<T> iterator() {
 			return new InternalIterator();
@@ -79,14 +95,7 @@ public class CacheDependencies<T> implements IteratorSnapshot<T>, org.genericsys
 
 		@Override
 		public T get(Object o) {
-			// TODO KK OPTIMIZE THIS GET
-			Iterator<T> it = iterator();
-			while (it.hasNext()) {
-				T next = it.next();
-				if (o.equals(next))
-					return next;
-			}
-			return null;
+			return map.get(o);
 		}
 	}
 }
