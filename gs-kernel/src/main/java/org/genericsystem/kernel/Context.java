@@ -71,18 +71,11 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 			return vertex;
 		if (vertex.isMeta()) {
 			T aliveSuper = getAlive(vertex.getSupers().get(0));
-			if (aliveSuper != null)
-				for (T inheriting : getInheritings(aliveSuper))
-					if (vertex.equals(inheriting))
-						return inheriting;
+			return aliveSuper != null ? getInheritings(aliveSuper).get(vertex):null;
 		} else {
 			T aliveMeta = getAlive(vertex.getMeta());
-			if (aliveMeta != null)
-				for (T instance : getInstances(aliveMeta))
-					if (vertex.equals(instance))
-						return instance;
+			return  aliveMeta !=null? getInstances(aliveMeta).get(vertex):null;
 		}
-		return null;
 	}
 
 	public long getTs() {
