@@ -27,12 +27,12 @@ public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem
 	@Override
 	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
 		synchronized (getRoot()) {
-			LockedLifeManager lockedLifeManager = new LockedLifeManager();
+			LifeManagersLocker lifeManagerLocker = new LifeManagersLocker();
 			try {
-				lockedLifeManager.writeLockAllAndCheckMvcc(adds, removes);
+				lifeManagerLocker.writeLockAllAndCheckMvcc(adds, removes);
 				super.apply(adds, removes);
 			} finally {
-				lockedLifeManager.writeUnlockAll();
+				lifeManagerLocker.writeUnlockAll();
 			}
 		}
 	}
@@ -56,7 +56,7 @@ public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem
 		return (DefaultEngine<T>) super.getRoot();
 	}
 
-	private class LockedLifeManager extends HashSet<LifeManager> {
+	private class LifeManagersLocker extends HashSet<LifeManager> {
 
 		private static final long serialVersionUID = -8771313495837238881L;
 
