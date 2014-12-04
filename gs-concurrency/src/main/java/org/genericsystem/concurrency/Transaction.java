@@ -2,7 +2,6 @@ package org.genericsystem.concurrency;
 
 import java.util.HashSet;
 
-import org.genericsystem.api.core.IteratorSnapshot;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
@@ -20,24 +19,20 @@ public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem
 		this.ts = ts;
 	}
 
+	@Override
 	public long getTs() {
 		return ts;
 	}
 
-	// @Override
-	// public boolean isAlive(T generic) {
-	// return generic != null && generic.getLifeManager().isAlive(getTs());
-	// }
-
 	@Override
 	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
 		synchronized (getRoot()) {
-			LockedLifeManager lockedLifeManager = new LockedLifeManager();
+			LifeManagersLocker lifeManagerLocker = new LifeManagersLocker();
 			try {
-				lockedLifeManager.writeLockAllAndCheckMvcc(adds, removes);
+				lifeManagerLocker.writeLockAllAndCheckMvcc(adds, removes);
 				super.apply(adds, removes);
 			} finally {
-				lockedLifeManager.writeUnlockAll();
+				lifeManagerLocker.writeUnlockAll();
 			}
 		}
 	}
@@ -61,37 +56,7 @@ public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem
 		return (DefaultEngine<T>) super.getRoot();
 	}
 
-	@Override
-	public IteratorSnapshot<T> getInstances(T generic) {
-		return () -> generic.getInstancesDependencies().iterator(ts);
-	}
-
-	@Override
-	public IteratorSnapshot<T> getInheritings(T generic) {
-		return () -> generic.getInheritingsDependencies().iterator(ts);
-	}
-
-	@Override
-	public IteratorSnapshot<T> getComposites(T vertex) {
-		return () -> vertex.getCompositesDependencies().iterator(ts);
-	}
-
-	// @Override
-	// protected void indexInstance(T generic, T instance) {
-	// generic.getInstancesDependencies().add(instance);
-	// }
-	//
-	// @Override
-	// protected void indexInheriting(T generic, T inheriting) {
-	// generic.getInheritingsDependencies().add(inheriting);
-	// }
-	//
-	// @Override
-	// protected void indexComposite(T generic, T composite) {
-	// generic.getCompositesDependencies().add(composite);
-	// }
-
-	private class LockedLifeManager extends HashSet<LifeManager> {
+	private class LifeManagersLocker extends HashSet<LifeManager> {
 
 		private static final long serialVersionUID = -8771313495837238881L;
 

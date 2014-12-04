@@ -23,7 +23,7 @@ public interface DefaultAncestors<T extends AbstractVertex<T>> extends IVertex<T
 	default int getLevel() {
 		return this == getMeta() ? 0 : getMeta().getLevel() + 1;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	default DefaultRoot<T> getRoot() {
@@ -54,9 +54,12 @@ public interface DefaultAncestors<T extends AbstractVertex<T>> extends IVertex<T
 	default boolean inheritsFrom(T superVertex) {
 		if (equals(superVertex))
 			return true;
-		if (getLevel() != superVertex.getLevel())
+		if (getLevel() != superVertex.getLevel())//Not necessary
 			return false;
-		return getSupers().stream().anyMatch(vertex -> vertex.inheritsFrom(superVertex));
+		for(T superT: getSupers())
+			if(superT.inheritsFrom(superVertex))
+				return true;
+		return false;
 	}
 
 	@Override
@@ -75,6 +78,11 @@ public interface DefaultAncestors<T extends AbstractVertex<T>> extends IVertex<T
 	}
 
 	@Override
+	default T getComponent(int pos) {
+		return pos >= 0 && pos < getComponents().size() ? getComponents().get(pos) : null;
+	}
+	
+	@Override
 	default T getBaseComponent() {
 		return getComponent(Statics.BASE_POSITION);
 	}
@@ -87,10 +95,5 @@ public interface DefaultAncestors<T extends AbstractVertex<T>> extends IVertex<T
 	@Override
 	default T getTernaryComponent() {
 		return getComponent(Statics.TERNARY_POSITION);
-	}
-
-	@Override
-	default T getComponent(int pos) {
-		return pos >= 0 && pos < getComponents().size() ? getComponents().get(pos) : null;
 	}
 }
