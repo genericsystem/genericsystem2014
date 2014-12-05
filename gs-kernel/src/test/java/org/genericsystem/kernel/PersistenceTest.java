@@ -24,7 +24,9 @@ public class PersistenceTest extends AbstractTest {
 		Root root = new Root(Statics.ENGINE_VALUE, snapshot);
 		root.addInstance("Vehicle");
 		root.close();
-		compareGraph(root, new Root(Statics.ENGINE_VALUE, snapshot));
+		Root engine = new Root(Statics.ENGINE_VALUE, snapshot);
+		compareGraph(root, engine);
+		assert null != engine.getInstance("Vehicle");
 	}
 
 	public void testHolder() {

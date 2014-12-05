@@ -28,16 +28,20 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 
 		@Override
 		protected List<T> getOrderedVertex() {
-			return new ArrayList<>(new DependenciesOrder<T>().visit(root));
+			return new ArrayList<>(new DependenciesOrder<T>(ts).visit(root));
 		}
 
 		public static class DependenciesOrder<T extends AbstractGeneric<T>> extends TreeSet<T> {
 			private static final long serialVersionUID = -5970021419012502402L;
 
+			private final long ts;
+
+			public DependenciesOrder(long ts) {
+				this.ts = ts;
+			}
+
 			public DependenciesOrder<T> visit(T node) {
 				if (!contains(node)) {
-					// TODO call WriterLoaderManager::getTs(T dependency)
-					long ts = node.getLifeManager().getDesignTs();
 					Iterator<T> iterator = node.getCompositesDependencies().iterator(ts);
 					while (iterator.hasNext())
 						visit(iterator.next());
@@ -61,8 +65,8 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 		}
 
 		@Override
-		protected long getTs(T dependency) {
-			return dependency.getLifeManager().getDesignTs();
+		protected long[] getTs(T dependency) {
+			return new long[] { dependency.getLifeManager().getBirthTs(), dependency.getLifeManager().getDesignTs(), dependency.getLifeManager().getLastReadTs(), dependency.getLifeManager().getDeathTs() };
 		}
 
 	}
