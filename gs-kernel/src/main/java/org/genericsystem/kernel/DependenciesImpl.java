@@ -3,13 +3,14 @@ package org.genericsystem.kernel;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import org.genericsystem.api.core.IteratorSnapshot;
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
-public abstract class AbstractDependencies<T> implements Dependencies<T> {
+public class DependenciesImpl<T> implements Dependencies<T>, IteratorSnapshot<T> {
 
 	private Node<T> head = null;
 	private Node<T> tail = null;
-	private Map<T, T> map = new HashMap<>();
+	final Map<T, T> map = new HashMap<>();
 
 	@Override
 	public void add(T element) {
@@ -25,7 +26,7 @@ public abstract class AbstractDependencies<T> implements Dependencies<T> {
 
 	@Override
 	public boolean remove(T element) {
-		Iterator<T> iterator = iterator();
+		Iterator<T> iterator = iterator(0);
 		while (iterator.hasNext())
 			if (element.equals(iterator.next())) {
 				iterator.remove();
@@ -35,14 +36,10 @@ public abstract class AbstractDependencies<T> implements Dependencies<T> {
 		return false;
 	}
 
-	public abstract T get(Object o);
-
 	@Override
 	public T get(Object o, long ts) {
 		return map.get(o);
 	}
-
-	public abstract Iterator<T> iterator();
 
 	@Override
 	public Iterator<T> iterator(long ts) {
@@ -85,5 +82,15 @@ public abstract class AbstractDependencies<T> implements Dependencies<T> {
 		private Node(T content) {
 			this.content = content;
 		}
+	}
+
+	@Override
+	public Iterator<T> iterator() {
+		return iterator(0);
+	}
+
+	@Override
+	public T get(Object o) {
+		return get(o, 0);
 	}
 }

@@ -1,29 +1,27 @@
 package org.genericsystem.cache;
 
 import java.util.Iterator;
-import java.util.function.Predicate;
-
+import java.util.stream.Stream;
 import org.genericsystem.api.core.IteratorSnapshot;
-import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
-import org.genericsystem.cache.CacheDependencies.InternalDependencies;
 import org.genericsystem.kernel.AbstractBuilder;
+import org.genericsystem.kernel.DependenciesImpl;
 
 public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 
 	protected Context<T> subContext;
-	protected InternalDependencies<T> adds ;
-	protected InternalDependencies<T> removes ;
+	protected DependenciesImpl<T> adds;
+	protected DependenciesImpl<T> removes;
 
 	public void clear() {
 		initialize();
 	}
 
 	protected void initialize() {
-		adds = new InternalDependencies<>();
-		removes = new InternalDependencies<>();
+		adds = new DependenciesImpl<>();
+		removes = new DependenciesImpl<>();
 	}
 
 	protected Cache(DefaultEngine<T> engine) {
@@ -99,12 +97,12 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 	}
 
 	private void simpleAdd(T generic) {
-		//if (!removes.remove(generic))
-			adds.add(generic);
+		// if (!removes.remove(generic))
+		adds.add(generic);
 	}
 
 	private boolean simpleRemove(T generic) {
-		assert generic!=null;
+		assert generic != null;
 		if (!adds.remove(generic))
 			removes.add(generic);
 		return true;
@@ -133,41 +131,51 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 		return removed;
 	}
 
-	private static class FilteredSnapshot<T> implements IteratorSnapshot <T>{
-		private final Snapshot<T> subSnapshot;
-		private final Predicate<T> predicate;
-
-		private FilteredSnapshot(Snapshot<T> subSnapshot, Predicate<T> predicate) {
-			this.subSnapshot = subSnapshot;
-			this.predicate = predicate;
-		}
-		@Override
-		public Iterator<T> iterator() {
-			return subSnapshot.get().filter(predicate::test).iterator();
-		}
-
-		@Override
-		public T get(Object o) {
-			T result = subSnapshot.get(o);
-			return result!=null && predicate.test(result) ? result : null;
-		}
-
-	}
-
 	@Override
 	public IteratorSnapshot<T> getInstances(T generic) {
-		return new CacheDependencies<T>(new FilteredSnapshot<T>(adds,x->!x.isMeta()&&x.getMeta().equals(generic)),subContext.getInstances(generic),new FilteredSnapshot<T>(removes,x->!x.isMeta()&&x.getMeta().equals(generic)));
+		return new IteratorSnapshot<T>() {
+			@Override
+			public T get(Object o) {
+				T result = adds.get(o);
+				return result != null ? result : !removes.contains(o) ? subContext.getInstances(generic).get(o) : result;
+			}
+
+			@Override
+			public Iterator<T> iterator() {
+				return Stream.concat(subContext.getInstances(generic).get().filter(x -> !removes.contains(x)), adds.get().filter((x -> !x.isMeta() && x.getMeta().equals(generic)))).iterator();
+			}
+		};
 	}
 
 	@Override
 	public IteratorSnapshot<T> getInheritings(T generic) {
-		assert generic!=null;
-		return new CacheDependencies<T>(new FilteredSnapshot<T>(adds,x->x.getSupers().contains(generic)),subContext.getInheritings(generic),new FilteredSnapshot<T>(removes,x->x.getSupers().contains(generic)));
+		return new IteratorSnapshot<T>() {
+			@Override
+			public T get(Object o) {
+				T result = adds.get(o);
+				return result != null ? result : !removes.contains(o) ? subContext.getInheritings(generic).get(o) : result;
+			}
 
+			@Override
+			public Iterator<T> iterator() {
+				return Stream.concat(subContext.getInheritings(generic).get().filter(x -> !removes.contains(x)), adds.get().filter(x -> x.getSupers().contains(generic))).iterator();
+			}
+		};
 	}
 
 	@Override
 	public IteratorSnapshot<T> getComposites(T generic) {
-		return new CacheDependencies<T>(new FilteredSnapshot<T>(adds,x->x.getComponents().contains(generic)),subContext.getComposites(generic),new FilteredSnapshot<T>(removes,x->x.getComponents().contains(generic)));
+		return new IteratorSnapshot<T>() {
+			@Override
+			public T get(Object o) {
+				T result = adds.get(o);
+				return result != null ? result : !removes.contains(o) ? subContext.getComposites(generic).get(o) : result;
+			}
+
+			@Override
+			public Iterator<T> iterator() {
+				return Stream.concat(subContext.getComposites(generic).get().filter(x -> !removes.contains(x)), adds.get().filter(x -> x.getComponents().contains(generic))).iterator();
+			}
+		};
 	}
 }

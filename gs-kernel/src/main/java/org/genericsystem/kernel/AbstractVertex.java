@@ -4,13 +4,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
@@ -65,17 +63,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	protected abstract Dependencies<T> getCompositesDependencies();
 
 	protected Dependencies<T> buildDependencies() {
-		return new AbstractDependencies<T>() {
-			@Override
-			public T get(Object o) {
-				return get(o, 0);
-			}
-
-			@Override
-			public Iterator<T> iterator() {
-				return iterator(0);
-			}
-		};
+		return new DependenciesImpl<>();
 	}
 
 	protected void forceRemove() {
