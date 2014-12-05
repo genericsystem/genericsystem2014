@@ -3,7 +3,6 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
-
 import org.genericsystem.kernel.AbstractBuilder.VertextBuilder;
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Meta;
@@ -30,7 +29,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 	public Root(Serializable value, String persistentDirectoryPath, Class<?>... userClasses) {
 		init(null, Collections.emptyList(), value, Collections.emptyList());
 
-		context = new Context<Vertex>(this);
+		context = new Context<>(this);
 		context.init(new VertextBuilder(context));
 		systemCache = new AbstractSystemCache<Vertex>(Root.class, this) {
 			private static final long serialVersionUID = 8492538861623209847L;
@@ -44,7 +43,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
 
 		if (persistentDirectoryPath != null) {
-			archiver = new Archiver<Vertex>(this, persistentDirectoryPath);
+			archiver = new Archiver<>(this, persistentDirectoryPath);
 			archiver.startScheduler();
 		}
 	}
@@ -88,8 +87,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 	@Meta(MetaAttribute.class)
 	@Components(Root.class)
 	@PropertyConstraint
-	public static class SystemMap extends Vertex {
-	}
+	public static class SystemMap extends Vertex {}
 
 	@Override
 	public Context<Vertex> getCurrentCache() {
