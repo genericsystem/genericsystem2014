@@ -110,8 +110,7 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 
 	// TODO mount this in API
 	public void close() {
-		if (archiver != null)
-			archiver.close();
+		archiver.close();
 	}
 
 	@Override
