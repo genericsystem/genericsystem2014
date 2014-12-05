@@ -16,8 +16,13 @@ import org.genericsystem.kernel.annotations.constraints.SingularConstraint;
 import org.genericsystem.kernel.annotations.constraints.UniqueValueConstraint;
 import org.genericsystem.kernel.annotations.value.AxedPropertyClassValue;
 import org.genericsystem.kernel.annotations.value.BooleanValue;
+import org.genericsystem.kernel.annotations.value.ByteArrayValue;
+import org.genericsystem.kernel.annotations.value.DoubleValue;
 import org.genericsystem.kernel.annotations.value.EngineValue;
+import org.genericsystem.kernel.annotations.value.FloatValue;
 import org.genericsystem.kernel.annotations.value.IntValue;
+import org.genericsystem.kernel.annotations.value.LongValue;
+import org.genericsystem.kernel.annotations.value.ShortValue;
 import org.genericsystem.kernel.annotations.value.StringValue;
 
 public class SystemCache<T extends AbstractVertex<T>> extends HashMap<Class<?>, T> {
@@ -42,7 +47,7 @@ public class SystemCache<T extends AbstractVertex<T>> extends HashMap<Class<?>, 
 		return this;
 	}
 
-	protected T set(Class<?> clazz) {
+	private T set(Class<?> clazz) {
 		if (initialized)
 			throw new IllegalStateException("Class : " + clazz + " has not been built at startup");
 		T systemProperty = super.get(clazz);
@@ -107,25 +112,45 @@ public class SystemCache<T extends AbstractVertex<T>> extends HashMap<Class<?>, 
 	}
 
 	private Serializable findValue(Class<?> clazz) {
+		AxedPropertyClassValue axedPropertyClass = clazz.getAnnotation(AxedPropertyClassValue.class);
+		if (axedPropertyClass != null)
+			return new org.genericsystem.kernel.systemproperty.AxedPropertyClass(axedPropertyClass.propertyClass(), axedPropertyClass.pos());
+
 		BooleanValue booleanValue = clazz.getAnnotation(BooleanValue.class);
 		if (booleanValue != null)
 			return booleanValue.value();
 
-		IntValue intValue = clazz.getAnnotation(IntValue.class);
-		if (intValue != null)
-			return intValue.value();
+		ByteArrayValue byteArrayValue = clazz.getAnnotation(ByteArrayValue.class);
+		if (byteArrayValue != null)
+			return byteArrayValue.value();
 
-		StringValue stringValue = clazz.getAnnotation(StringValue.class);
-		if (stringValue != null)
-			return stringValue.value();
+		DoubleValue doubleValue = clazz.getAnnotation(DoubleValue.class);
+		if (doubleValue != null)
+			return doubleValue.value();
 
 		EngineValue engineValue = clazz.getAnnotation(EngineValue.class);
 		if (engineValue != null)
 			return root.getValue();
 
-		AxedPropertyClassValue axedPropertyClass = clazz.getAnnotation(AxedPropertyClassValue.class);
-		if (axedPropertyClass != null)
-			return new org.genericsystem.kernel.systemproperty.AxedPropertyClass(axedPropertyClass.propertyClass(), axedPropertyClass.pos());
+		FloatValue floatValue = clazz.getAnnotation(FloatValue.class);
+		if (floatValue != null)
+			return floatValue.value();
+
+		IntValue intValue = clazz.getAnnotation(IntValue.class);
+		if (intValue != null)
+			return intValue.value();
+
+		LongValue longValue = clazz.getAnnotation(LongValue.class);
+		if (longValue != null)
+			return longValue.value();
+
+		ShortValue shortValue = clazz.getAnnotation(ShortValue.class);
+		if (shortValue != null)
+			return shortValue.value();
+
+		StringValue stringValue = clazz.getAnnotation(StringValue.class);
+		if (stringValue != null)
+			return stringValue.value();
 
 		return clazz;
 	}

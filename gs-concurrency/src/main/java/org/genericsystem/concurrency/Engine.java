@@ -22,7 +22,7 @@ import org.genericsystem.kernel.systemproperty.NoReferentialIntegrityProperty;
 public class Engine extends Generic implements DefaultEngine<Generic> {
 
 	private final SystemCache<Generic> systemCache;
-	private Archiver<Generic> archiver;
+	private final Archiver<Generic> archiver;
 
 	protected final ThreadLocal<Cache<Generic>> cacheLocal = new ThreadLocal<>();
 
@@ -39,12 +39,10 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 
 	public Engine(Serializable engineValue, String persistentDirectoryPath, Class<?>... userClasses) {
 		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
-
 		restore(pickNewTs(), 0L, 0L, Long.MAX_VALUE);
-		if (persistentDirectoryPath != null) {
-			archiver = new Archiver<>(this, persistentDirectoryPath);
-			archiver.startScheduler();
-		}
+
+		archiver = new Archiver<>(this, persistentDirectoryPath).startScheduler();
+
 		Cache<Generic> cache = newCache().start();
 		systemCache = new SystemCache<Generic>(Engine.class, this);
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);

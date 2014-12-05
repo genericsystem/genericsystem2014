@@ -15,6 +15,11 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 		super(new WriterLoaderManager<>(root, fileManager), directoryPath);
 	}
 
+	@Override
+	public Archiver<T> startScheduler() {
+		return (Archiver<T>) super.startScheduler();
+	}
+
 	public static class WriterLoaderManager<T extends AbstractGeneric<T>> extends org.genericsystem.kernel.Archiver.WriterLoaderManager<T> {
 
 		public WriterLoaderManager(T root, FileManager fileManager) {

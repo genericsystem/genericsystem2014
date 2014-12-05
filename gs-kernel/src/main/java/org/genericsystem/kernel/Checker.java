@@ -75,12 +75,6 @@ public class Checker<T extends AbstractVertex<T>> {
 			return;
 		if (value instanceof org.genericsystem.kernel.systemproperty.AxedPropertyClass)
 			return;
-		if (value instanceof Class)
-			return;
-		if (value instanceof String)
-			return;
-		if (value instanceof Integer)
-			return;
 		if (value instanceof Boolean)
 			return;
 		if (value instanceof byte[])
@@ -89,9 +83,15 @@ public class Checker<T extends AbstractVertex<T>> {
 			return;
 		if (value instanceof Float)
 			return;
-		if (value instanceof Short)
+		if (value instanceof Integer)
 			return;
 		if (value instanceof Long)
+			return;
+		if (value instanceof Short)
+			return;
+		if (value instanceof String)
+			return;
+		if (value instanceof Class)
 			return;
 		context.discardWithException(new NotAllowedSerializableTypeException("Not allowed type for your serializable. Only primitive and Byte[] allowed."));
 	}
