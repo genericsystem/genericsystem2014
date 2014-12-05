@@ -7,8 +7,6 @@ import org.genericsystem.api.core.IRoot;
 
 public interface DefaultRoot<T extends AbstractVertex<T>> extends IRoot<T> {
 
-	<subT extends T> subT find(Class<subT> clazz);
-
 	@Override
 	Context<T> getCurrentCache();
 

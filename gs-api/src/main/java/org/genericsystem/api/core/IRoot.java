@@ -11,6 +11,15 @@ import java.util.List;
  */
 public interface IRoot<T extends IVertex<T>> extends IVertex<T> {
 
+	/**
+	 * Return a vertex built during new Root
+	 *
+	 * @param clazz
+	 *            the expected vertex
+	 * @return a vertex
+	 */
+	<subT extends T> subT find(Class<subT> clazz);
+
 	T addType(Serializable value);
 
 	T addType(T override, Serializable value);
