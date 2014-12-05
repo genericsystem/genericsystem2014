@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
-
 import org.genericsystem.concurrency.Engine.DefaultNoReferentialIntegrityProperty.DefaultValue;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.SystemCache;
@@ -41,7 +40,7 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
 
 		Cache<Generic> cache = newCache().start();
-		systemCache = new SystemCache<Generic>(Engine.class, this);
+		systemCache = new SystemCache<>(Engine.class, this);
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
 		// TODO KK
 		archiver = new Archiver<>(this, persistentDirectoryPath).startScheduler();
@@ -104,8 +103,7 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	@Meta(MetaAttribute.class)
 	@Components(Engine.class)
 	@PropertyConstraint
-	public static class SystemMap extends Generic {
-	}
+	public static class SystemMap extends Generic {}
 
 	// TODO mount this in API
 	public void close() {
@@ -150,7 +148,7 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 		return generator.pickNewTs();
 	}
 
-	static class TsGenerator {
+	private static class TsGenerator {
 		private final long startTime = System.currentTimeMillis() * Statics.MILLI_TO_NANOSECONDS - System.nanoTime();
 		private final AtomicLong lastTime = new AtomicLong(0L);
 
