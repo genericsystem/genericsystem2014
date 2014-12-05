@@ -67,7 +67,7 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected T setMeta(int dim) {
+	T setMeta(int dim) {
 		T root = (T) context.getRoot();
 		T adjustedMeta = root.adjustMeta(dim);
 		if (adjustedMeta.getComponents().size() == dim)
