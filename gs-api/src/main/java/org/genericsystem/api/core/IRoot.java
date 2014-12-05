@@ -72,9 +72,9 @@ public interface IRoot<T extends IVertex<T>> extends IVertex<T> {
 	 */
 	T setTree(Serializable value, int parentsNumber);
 
-	T getMetaAttribute();
+	<subT extends T> subT getMetaAttribute();
 
-	T getMetaRelation();
+	<subT extends T> subT getMetaRelation();
 
 	// void discardWithException(Throwable exception);
 }

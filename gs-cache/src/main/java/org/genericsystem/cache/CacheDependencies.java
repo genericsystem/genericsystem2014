@@ -7,16 +7,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.genericsystem.api.core.IteratorSnapshot;
-import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.kernel.AbstractDependencies;
 
 public class CacheDependencies<T> implements IteratorSnapshot<T> {
 
 	private final IteratorSnapshot<T> addsSnapshot;
 	private final IteratorSnapshot<T> subSnapshot;
-	private final  IteratorSnapshot<T> removesSnapshot;
+	private final IteratorSnapshot<T> removesSnapshot;
 
-	public CacheDependencies(IteratorSnapshot<T> addsSnapshot,IteratorSnapshot<T> subSnapshot,IteratorSnapshot<T> removesSnapshot) {
+	public CacheDependencies(IteratorSnapshot<T> addsSnapshot, IteratorSnapshot<T> subSnapshot, IteratorSnapshot<T> removesSnapshot) {
 		this.addsSnapshot = addsSnapshot;
 		this.subSnapshot = subSnapshot;
 		this.removesSnapshot = removesSnapshot;
@@ -24,7 +23,9 @@ public class CacheDependencies<T> implements IteratorSnapshot<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		return Stream.concat(subSnapshot.get().peek(x->{assert x!=null;}).filter(x -> !removesSnapshot.contains(x)), addsSnapshot.get()).iterator();
+		return Stream.concat(subSnapshot.get().peek(x -> {
+			assert x != null;
+		}).filter(x -> !removesSnapshot.contains(x)), addsSnapshot.get()).iterator();
 	}
 
 	@Override
@@ -47,7 +48,7 @@ public class CacheDependencies<T> implements IteratorSnapshot<T> {
 
 	static class InternalDependencies<T> extends AbstractDependencies<T> implements IteratorSnapshot<T> {
 
-		private Map<T, T> map = new HashMap<>();
+		private final Map<T, T> map = new HashMap<>();
 
 		@Override
 		public void add(T element) {

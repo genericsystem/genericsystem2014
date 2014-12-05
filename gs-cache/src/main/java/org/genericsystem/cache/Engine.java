@@ -35,8 +35,26 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 				get(MetaAttribute.class).disableReferentialIntegrity(Statics.BASE_POSITION);
 			}
 
-		}.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
+		};
+		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
 		cache.flush();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <subT extends Generic> Class<subT> getMetaAttributeClass() {
+		return (Class<subT>) MetaAttribute.class;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <subT extends Generic> Class<subT> getMetaRelationClass() {
+		return (Class<subT>) MetaRelation.class;
+	}
+
+	@Override
+	public Class<?> getSystemMapClass() {
+		return SystemMap.class;
 	}
 
 	@SystemGeneric

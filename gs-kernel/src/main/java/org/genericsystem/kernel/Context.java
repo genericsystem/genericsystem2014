@@ -1,8 +1,8 @@
 package org.genericsystem.kernel;
 
 import java.util.Iterator;
+
 import org.genericsystem.api.core.IteratorSnapshot;
-import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.RollbackException;
 
@@ -161,6 +161,7 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 		return dependencies.remove(dependency);
 	}
 
-	protected void triggersMutation(T oldDependency, T newDependency) {}
+	protected void triggersMutation(T oldDependency, T newDependency) {
+	}
 
 }

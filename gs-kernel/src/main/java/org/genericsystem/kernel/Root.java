@@ -40,12 +40,30 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 				get(MetaAttribute.class).disableReferentialIntegrity(Statics.BASE_POSITION);
 			}
 
-		}.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
+		};
+		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
 
 		if (persistentDirectoryPath != null) {
 			archiver = new Archiver<Vertex>(this, persistentDirectoryPath);
 			archiver.startScheduler();
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <subT extends Vertex> Class<subT> getMetaAttributeClass() {
+		return (Class<subT>) MetaAttribute.class;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <subT extends Vertex> Class<subT> getMetaRelationClass() {
+		return (Class<subT>) MetaRelation.class;
+	}
+
+	@Override
+	public Class<?> getSystemMapClass() {
+		return SystemMap.class;
 	}
 
 	@SystemGeneric
