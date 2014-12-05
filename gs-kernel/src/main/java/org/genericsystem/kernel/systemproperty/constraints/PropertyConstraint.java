@@ -15,7 +15,7 @@ public class PropertyConstraint<T extends AbstractVertex<T>> implements Checkabl
 	@Override
 	public void check(T modified, T attribute, Serializable value) throws ConstraintViolationException {
 		// TODO KK
-		if (attribute.getValue().equals(attribute.getMap().getValue()))
+		if (attribute.getValue().equals(attribute.getRoot().getMap().getValue()))
 			return;
 		T base = modified.getBaseComponent();
 		Stream<T> snapshot = base.getHolders(attribute).get().filter(x -> x.getBaseComponent().equals(base)).filter(next -> {

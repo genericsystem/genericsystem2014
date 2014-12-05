@@ -4,18 +4,23 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.genericsystem.kernel.AbstractSystemCache;
+import org.genericsystem.cache.Engine.DefaultNoReferentialIntegrityProperty.DefaultValue;
 import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.SystemCache;
 import org.genericsystem.kernel.annotations.Components;
+import org.genericsystem.kernel.annotations.Dependencies;
 import org.genericsystem.kernel.annotations.Meta;
 import org.genericsystem.kernel.annotations.Supers;
 import org.genericsystem.kernel.annotations.SystemGeneric;
 import org.genericsystem.kernel.annotations.constraints.PropertyConstraint;
+import org.genericsystem.kernel.annotations.value.AxedPropertyClassValue;
+import org.genericsystem.kernel.annotations.value.BooleanValue;
 import org.genericsystem.kernel.annotations.value.EngineValue;
+import org.genericsystem.kernel.systemproperty.NoReferentialIntegrityProperty;
 
 public class Engine extends Generic implements DefaultEngine<Generic> {
 
-	private final AbstractSystemCache<Generic> systemCache;
+	private final SystemCache<Generic> systemCache;
 
 	private final ThreadLocal<Cache<Generic>> cacheLocal = new ThreadLocal<>();
 
@@ -27,34 +32,24 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
 
 		Cache<Generic> cache = newCache().start();
-		systemCache = new AbstractSystemCache<Generic>(Engine.class, this) {
-			private static final long serialVersionUID = -958683728503782069L;
-
-			@Override
-			public void mountConstraintsSystemClasses() {
-				get(MetaAttribute.class).disableReferentialIntegrity(Statics.BASE_POSITION);
-			}
-
-		};
+		systemCache = new SystemCache<Generic>(Engine.class, this);
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
 		cache.flush();
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <subT extends Generic> Class<subT> getMetaAttributeClass() {
-		return (Class<subT>) MetaAttribute.class;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <subT extends Generic> Class<subT> getMetaRelationClass() {
-		return (Class<subT>) MetaRelation.class;
+	public Generic getMetaAttribute() {
+		return getRoot().find(MetaAttribute.class);
 	}
 
 	@Override
-	public Class<?> getSystemMapClass() {
-		return SystemMap.class;
+	public Generic getMetaRelation() {
+		return getRoot().find(MetaRelation.class);
+	}
+
+	@Override
+	public Generic getMap() {
+		return getRoot().find(SystemMap.class);
 	}
 
 	@SystemGeneric
@@ -62,7 +57,26 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	@Supers(Engine.class)
 	@Components(Engine.class)
 	@EngineValue
+	@Dependencies({ DefaultNoReferentialIntegrityProperty.class })
 	public static class MetaAttribute extends Generic {
+
+	}
+
+	@SystemGeneric
+	@Meta(MetaAttribute.class)
+	@Supers(SystemMap.class)
+	@Components(Engine.class)
+	@AxedPropertyClassValue(propertyClass = NoReferentialIntegrityProperty.class, pos = Statics.BASE_POSITION)
+	@Dependencies({ DefaultValue.class })
+	public static class DefaultNoReferentialIntegrityProperty extends Generic {
+
+		@SystemGeneric
+		@Meta(DefaultNoReferentialIntegrityProperty.class)
+		@Components(MetaAttribute.class)
+		@BooleanValue(true)
+		public static class DefaultValue extends Generic {
+
+		}
 
 	}
 

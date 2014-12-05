@@ -5,16 +5,21 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import org.genericsystem.kernel.AbstractBuilder.VertextBuilder;
+import org.genericsystem.kernel.Root.DefaultNoReferentialIntegrityProperty.DefaultValue;
 import org.genericsystem.kernel.annotations.Components;
+import org.genericsystem.kernel.annotations.Dependencies;
 import org.genericsystem.kernel.annotations.Meta;
 import org.genericsystem.kernel.annotations.Supers;
 import org.genericsystem.kernel.annotations.SystemGeneric;
 import org.genericsystem.kernel.annotations.constraints.PropertyConstraint;
+import org.genericsystem.kernel.annotations.value.AxedPropertyClassValue;
+import org.genericsystem.kernel.annotations.value.BooleanValue;
 import org.genericsystem.kernel.annotations.value.EngineValue;
+import org.genericsystem.kernel.systemproperty.NoReferentialIntegrityProperty;
 
 public class Root extends Vertex implements DefaultRoot<Vertex> {
 
-	private final AbstractSystemCache<Vertex> systemCache;
+	private final SystemCache<Vertex> systemCache;
 	private Archiver<Vertex> archiver;
 
 	private final Context<Vertex> context;
@@ -30,17 +35,9 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 	public Root(Serializable value, String persistentDirectoryPath, Class<?>... userClasses) {
 		init(null, Collections.emptyList(), value, Collections.emptyList());
 
-		context = new Context<Vertex>(this);
+		context = new Context<>(this);
 		context.init(new VertextBuilder(context));
-		systemCache = new AbstractSystemCache<Vertex>(Root.class, this) {
-			private static final long serialVersionUID = 8492538861623209847L;
-
-			@Override
-			public void mountConstraintsSystemClasses() {
-				get(MetaAttribute.class).disableReferentialIntegrity(Statics.BASE_POSITION);
-			}
-
-		};
+		systemCache = new SystemCache<Vertex>(Root.class, this);
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
 
 		if (persistentDirectoryPath != null) {
@@ -49,21 +46,18 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <subT extends Vertex> Class<subT> getMetaAttributeClass() {
-		return (Class<subT>) MetaAttribute.class;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <subT extends Vertex> Class<subT> getMetaRelationClass() {
-		return (Class<subT>) MetaRelation.class;
+	public Vertex getMetaAttribute() {
+		return getRoot().find(MetaAttribute.class);
 	}
 
 	@Override
-	public Class<?> getSystemMapClass() {
-		return SystemMap.class;
+	public Vertex getMetaRelation() {
+		return getRoot().find(MetaRelation.class);
+	}
+
+	public Vertex getMap() {
+		return getRoot().find(SystemMap.class);
 	}
 
 	@SystemGeneric
@@ -71,7 +65,26 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 	@Supers(Root.class)
 	@Components(Root.class)
 	@EngineValue
+	@Dependencies({ DefaultNoReferentialIntegrityProperty.class })
 	public static class MetaAttribute extends Vertex {
+
+	}
+
+	@SystemGeneric
+	@Meta(MetaAttribute.class)
+	@Supers(SystemMap.class)
+	@Components(Root.class)
+	@AxedPropertyClassValue(propertyClass = NoReferentialIntegrityProperty.class, pos = Statics.BASE_POSITION)
+	@Dependencies({ DefaultValue.class })
+	public static class DefaultNoReferentialIntegrityProperty extends Vertex {
+
+		@SystemGeneric
+		@Meta(DefaultNoReferentialIntegrityProperty.class)
+		@Components(MetaAttribute.class)
+		@BooleanValue(true)
+		public static class DefaultValue extends Vertex {
+
+		}
 
 	}
 

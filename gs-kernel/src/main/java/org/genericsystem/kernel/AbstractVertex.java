@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
@@ -349,14 +350,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getCurrentCache().getComposites((T) this);
 	}
 
-	@SuppressWarnings("unchecked")
-	public T getMap() {
-		T metaAttribute = getRoot().getMetaAttribute();
-		return metaAttribute == null ? null : metaAttribute.getDirectInstance(getRoot().getSystemMapClass(), Collections.singletonList((T) getRoot()));
-	}
-
 	Optional<T> getKey(AxedPropertyClass property) {
-		T map = getMap();
+		T map = getRoot().getMap();
 		Stream<T> keys = map != null ? getAttributes(map).get() : Stream.empty();
 		return keys.filter(x -> Objects.equals(x.getValue(), property)).findFirst();
 	}

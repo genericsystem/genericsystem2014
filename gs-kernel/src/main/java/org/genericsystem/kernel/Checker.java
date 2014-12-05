@@ -206,8 +206,8 @@ public class Checker<T extends AbstractVertex<T>> {
 	}
 
 	private void checkConstraints(boolean isOnAdd, boolean isFlushTime, T vertex) {
-		if (vertex.getMap() != null) {
-			Stream<T> contraintsHolders = vertex.getMeta().getHolders(vertex.getMap()).get()
+		if (context.getRoot().getMap() != null) {
+			Stream<T> contraintsHolders = vertex.getMeta().getHolders(context.getRoot().getMap()).get()
 					.filter(holder -> holder.getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) holder.getMeta().getValue()).getClazz()))
 					.filter(holder -> holder.getValue() != null && !Boolean.FALSE.equals(holder.getValue())).sorted(CONSTRAINT_PRIORITY);
 			contraintsHolders.forEach(constraintHolder -> {
@@ -246,7 +246,7 @@ public class Checker<T extends AbstractVertex<T>> {
 	}
 
 	private void checkConsistency(T vertex) {
-		if (vertex.getMap() != null && vertex.getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) vertex.getMeta().getValue()).getClazz()) && vertex.getValue() != null
+		if (context.getRoot().getMap() != null && vertex.getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) vertex.getMeta().getValue()).getClazz()) && vertex.getValue() != null
 				&& !Boolean.FALSE.equals(vertex.getValue())) {
 			T baseConstraint = vertex.getComponent(Statics.BASE_POSITION);
 			int axe = ((AxedPropertyClass) vertex.getMeta().getValue()).getAxe();

@@ -10,21 +10,7 @@ public interface DefaultRoot<T extends AbstractVertex<T>> extends IRoot<T> {
 	@Override
 	Context<T> getCurrentCache();
 
-	<subT extends T> Class<subT> getMetaAttributeClass();
-
-	<subT extends T> Class<subT> getMetaRelationClass();
-
-	Class<?> getSystemMapClass();
-
-	@Override
-	default <subT extends T> subT getMetaAttribute() {
-		return find(getMetaAttributeClass());
-	}
-
-	@Override
-	default <subT extends T> subT getMetaRelation() {
-		return find(getMetaRelationClass());
-	}
+	T getMap();
 
 	@Override
 	default T addType(Serializable value) {

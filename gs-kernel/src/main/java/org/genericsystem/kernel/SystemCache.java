@@ -9,16 +9,18 @@ import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Dependencies;
 import org.genericsystem.kernel.annotations.Meta;
 import org.genericsystem.kernel.annotations.constraints.InstanceValueClassConstraint;
+import org.genericsystem.kernel.annotations.constraints.NoReferentialIntegrityProperty;
 import org.genericsystem.kernel.annotations.constraints.PropertyConstraint;
 import org.genericsystem.kernel.annotations.constraints.RequiredConstraint;
 import org.genericsystem.kernel.annotations.constraints.SingularConstraint;
 import org.genericsystem.kernel.annotations.constraints.UniqueValueConstraint;
+import org.genericsystem.kernel.annotations.value.AxedPropertyClassValue;
 import org.genericsystem.kernel.annotations.value.BooleanValue;
 import org.genericsystem.kernel.annotations.value.EngineValue;
 import org.genericsystem.kernel.annotations.value.IntValue;
 import org.genericsystem.kernel.annotations.value.StringValue;
 
-public abstract class AbstractSystemCache<T extends AbstractVertex<T>> extends HashMap<Class<?>, T> {
+public class SystemCache<T extends AbstractVertex<T>> extends HashMap<Class<?>, T> {
 
 	private static final long serialVersionUID = 1150085123612887245L;
 
@@ -26,17 +28,14 @@ public abstract class AbstractSystemCache<T extends AbstractVertex<T>> extends H
 
 	private final T root;
 
-	public AbstractSystemCache(Class<?> rootClass, T root) {
+	public SystemCache(Class<?> rootClass, T root) {
 		this.root = root;
 		put(rootClass, root);
 	}
 
-	public abstract void mountConstraintsSystemClasses();
-
-	public AbstractSystemCache<T> mount(List<Class<?>> systemClasses, Class<?>... userClasses) {
+	public SystemCache<T> mount(List<Class<?>> systemClasses, Class<?>... userClasses) {
 		for (Class<?> clazz : systemClasses)
 			set(clazz);
-		mountConstraintsSystemClasses();
 		for (Class<?> clazz : userClasses)
 			set(clazz);
 		initialized = true;
@@ -53,7 +52,7 @@ public abstract class AbstractSystemCache<T extends AbstractVertex<T>> extends H
 		}
 		T result = root.getCurrentCache().getBuilder().setInstance(clazz, setMeta(clazz), setOverrides(clazz), findValue(clazz), setComponents(clazz));
 		put(clazz, result);
-		mountConstraints(result, clazz);
+		mountConstraints(clazz, result);
 		triggersDependencies(clazz);
 		return result;
 	}
@@ -65,7 +64,7 @@ public abstract class AbstractSystemCache<T extends AbstractVertex<T>> extends H
 				set(dependencyClass);
 	}
 
-	private void mountConstraints(T result, Class<?> clazz) {
+	private void mountConstraints(Class<?> clazz, T result) {
 		if (clazz.getAnnotation(PropertyConstraint.class) != null)
 			result.enablePropertyConstraint();
 
@@ -77,6 +76,11 @@ public abstract class AbstractSystemCache<T extends AbstractVertex<T>> extends H
 
 		if (clazz.getAnnotation(RequiredConstraint.class) != null)
 			result.enableRequiredConstraint(Statics.NO_POSITION);
+
+		NoReferentialIntegrityProperty referentialIntegrity = clazz.getAnnotation(NoReferentialIntegrityProperty.class);
+		if (referentialIntegrity != null)
+			for (int axe : referentialIntegrity.value())
+				result.disableReferentialIntegrity(axe);
 
 		SingularConstraint singularTarget = clazz.getAnnotation(SingularConstraint.class);
 		if (singularTarget != null)
@@ -118,6 +122,10 @@ public abstract class AbstractSystemCache<T extends AbstractVertex<T>> extends H
 		EngineValue engineValue = clazz.getAnnotation(EngineValue.class);
 		if (engineValue != null)
 			return root.getValue();
+
+		AxedPropertyClassValue axedPropertyClass = clazz.getAnnotation(AxedPropertyClassValue.class);
+		if (axedPropertyClass != null)
+			return new org.genericsystem.kernel.systemproperty.AxedPropertyClass(axedPropertyClass.propertyClass(), axedPropertyClass.pos());
 
 		return clazz;
 	}
