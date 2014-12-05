@@ -352,7 +352,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	@SuppressWarnings("unchecked")
 	public T getMap() {
-		return getRoot().getMetaAttribute().getDirectInstance(SystemMap.class, Collections.singletonList((T) getRoot()));
+		T metaAttribute = getRoot().getMetaAttribute();
+		return metaAttribute == null ? null : metaAttribute.getDirectInstance(getRoot().getSystemMapClass(), Collections.singletonList((T) getRoot()));
 	}
 
 	Optional<T> getKey(AxedPropertyClass property) {
