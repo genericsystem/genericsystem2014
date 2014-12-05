@@ -1,8 +1,6 @@
 package org.genericsystem.cache;
 
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.function.Predicate;
 
 import org.genericsystem.api.core.IteratorSnapshot;
@@ -10,8 +8,8 @@ import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
-import org.genericsystem.cache.AbstractBuilder.GenericBuilder;
 import org.genericsystem.cache.CacheDependencies.InternalDependencies;
+import org.genericsystem.kernel.AbstractBuilder;
 import org.genericsystem.kernel.annotations.SystemGeneric;
 
 public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
@@ -41,13 +39,8 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 	}
 
 	@Override
-	protected CacheChecker<T> buildChecker() {
-		return new CacheChecker<>(this);
-	}
-
-	@Override
 	public AbstractBuilder<T> getBuilder() {
-		return (AbstractBuilder<T>) super.getBuilder();
+		return super.getBuilder();
 	}
 
 	@Override
@@ -140,7 +133,7 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 	private static class FilteredSnapshot<T> implements IteratorSnapshot <T>{
 		private final Snapshot<T> subSnapshot;
 		private final Predicate<T> predicate;
-		
+
 		private FilteredSnapshot(Snapshot<T> subSnapshot, Predicate<T> predicate) {
 			this.subSnapshot = subSnapshot;
 			this.predicate = predicate;
@@ -149,7 +142,7 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 		public Iterator<T> iterator() {
 			return subSnapshot.get().filter(predicate::test).iterator();
 		}
-		
+
 		@Override
 		public T get(Object o) {
 			T result = subSnapshot.get(o);
@@ -157,7 +150,7 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 		}
 
 	}
-	
+
 	@Override
 	public IteratorSnapshot<T> getInstances(T generic) {
 		return new CacheDependencies<T>(new FilteredSnapshot<T>(adds,x->x.getMeta().equals(generic)),subContext.getInstances(generic),new FilteredSnapshot<T>(removes,x->x.getMeta().equals(generic)));
@@ -175,7 +168,8 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 
 	}
 
-	
+
+
 	private static class CacheChecker<T extends AbstractGeneric<T>> extends org.genericsystem.kernel.Checker<T> {
 
 		private CacheChecker(Cache<T> context) {
@@ -192,6 +186,7 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 			if (!isOnAdd && vertex.getClass().getAnnotation(SystemGeneric.class) != null)
 				getContext().discardWithException(new IllegalAccessException("@SystemGeneric annoted generic can't be removed"));
 		}
+
 
 	}
 }

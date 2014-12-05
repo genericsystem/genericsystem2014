@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.genericsystem.cache.SystemCache;
+import org.genericsystem.kernel.AbstractSystemCache;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Meta;
@@ -14,11 +14,13 @@ import org.genericsystem.kernel.annotations.value.MetaValue;
 
 public class Engine extends Generic implements DefaultEngine<Generic> {
 
-	protected final ThreadLocal<Cache<Generic>> cacheLocal = new ThreadLocal<>();
+	private final AbstractSystemCache<Generic> systemCache;
 	private Archiver<Generic> archiver;
+
+	protected final ThreadLocal<Cache<Generic>> cacheLocal = new ThreadLocal<>();
+
 	private final TsGenerator generator = new TsGenerator();
 	private final GarbageCollector<Generic> garbageCollector = new GarbageCollector<>(this);
-	private final SystemCache<Generic> systemCache;
 
 	public Engine(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
@@ -26,34 +28,34 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 
 	public Engine(Serializable engineValue, Class<?>... userClasses) {
 		this(engineValue, null, userClasses);
-
 	}
 
 	public Engine(Serializable engineValue, String persistentDirectoryPath, Class<?>... userClasses) {
 		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
 
-		systemCache = new SystemCache<>(this);
-		systemCache.put(Engine.class, this);
-
-		long ts = pickNewTs();
-		restore(ts, 0L, 0L, Long.MAX_VALUE);
+		restore(pickNewTs(), 0L, 0L, Long.MAX_VALUE);
 		Cache<Generic> cache = newCache().start();
-		mountSystemProperties(cache);
-		for (Class<?> clazz : userClasses)
-			systemCache.set(clazz);
+		systemCache = new AbstractSystemCache<Generic>(this) {
+			private static final long serialVersionUID = 8492538861623209847L;
 
+			{
+				put(Engine.class, Engine.this);
+			}
+
+			@Override
+			public void setSystemProperties() {
+				Generic metaAttribute = set(MetaAttribute.class);
+				set(MetaRelation.class);
+				set(SystemMap.class).enablePropertyConstraint();
+				metaAttribute.disableReferentialIntegrity(Statics.BASE_POSITION);
+			}
+
+		}.mount(userClasses);
 		cache.flush();
 		if (persistentDirectoryPath != null) {
 			archiver = new Archiver<>(this, persistentDirectoryPath);
 			archiver.startScheduler();
 		}
-	}
-
-	private void mountSystemProperties(Cache<Generic> cache) {
-		Generic metaAttribute = systemCache.set(MetaAttribute.class);
-		systemCache.set(MetaRelation.class);
-		systemCache.set(SystemMap.class).enablePropertyConstraint();
-		metaAttribute.disableReferentialIntegrity(Statics.BASE_POSITION);
 	}
 
 	@SystemGeneric
@@ -111,11 +113,6 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	@Override
 	public <subT extends Generic> subT find(Class<subT> clazz) {
 		return (subT) systemCache.get(clazz);
-	}
-
-	@Override
-	public Engine getRoot() {
-		return super.getRoot();
 	}
 
 	@Override

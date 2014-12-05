@@ -9,15 +9,10 @@ import org.genericsystem.kernel.annotations.Meta;
 import org.genericsystem.kernel.annotations.Supers;
 import org.genericsystem.kernel.annotations.SystemGeneric;
 import org.genericsystem.kernel.annotations.value.MetaValue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Root extends Vertex implements DefaultRoot<Vertex> {
 
-	protected final static Logger log = LoggerFactory.getLogger(Root.class);
-
-	private final SystemCache<Vertex> systemCache = new SystemCache<>(this);
-
+	private final AbstractSystemCache<Vertex> systemCache;
 	private Archiver<Vertex> archiver;
 
 	private final Context<Vertex> context;
@@ -35,11 +30,23 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 
 		context = new Context<Vertex>(this);
 		context.init(new VertextBuilder(context));
+		systemCache = new AbstractSystemCache<Vertex>(this) {
+			private static final long serialVersionUID = 8492538861623209847L;
 
-		Vertex metaAttribute = systemCache.set(MetaAttribute.class);
-		systemCache.set(MetaRelation.class);
-		systemCache.set(SystemMap.class).enablePropertyConstraint();
-		metaAttribute.disableReferentialIntegrity(Statics.BASE_POSITION);
+			{
+				put(Root.class, Root.this);
+			}
+
+			@Override
+			public void setSystemProperties() {
+				Vertex metaAttribute = set(MetaAttribute.class);
+				set(MetaRelation.class);
+				set(SystemMap.class).enablePropertyConstraint();
+				metaAttribute.disableReferentialIntegrity(Statics.BASE_POSITION);
+			}
+
+		}.mount(userClasses);
+
 		if (persistentDirectoryPath != null) {
 			archiver = new Archiver<Vertex>(this, persistentDirectoryPath);
 			archiver.startScheduler();
@@ -72,6 +79,12 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 	@Override
 	public Context<Vertex> getCurrentCache() {
 		return context;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <subT extends Vertex> subT find(Class<subT> clazz) {
+		return (subT) systemCache.get(clazz);
 	}
 
 	// TODO mount this in API
