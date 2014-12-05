@@ -194,7 +194,6 @@ public class Archiver<T extends AbstractVertex<T>> {
 					List<T> supers = loadAncestors(vertexMap);
 					List<T> components = loadAncestors(vertexMap);
 					T instance = meta == null ? root.getMeta(components.size()) : meta.getDirectInstance(value, components);
-					assert false;
 					T vertex = root.getCurrentCache().getBuilder().newT(null, meta, supers, value, components).restore(designTs, birthTs, lastReadTs, deathTs);
 					vertexMap.put(birthTs, instance != null ? instance : root.getCurrentCache().plug(vertex));
 				}
@@ -302,7 +301,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 		}
 
 		protected long[] getTs(T dependency) {
-			return new long[] { 0L, 0L, 0L, Long.MAX_VALUE };
+			return new long[] { System.identityHashCode(dependency), 0L, 0L, Long.MAX_VALUE };
 		}
 
 		private void writeAncestors(List<T> ancestors) throws IOException {
