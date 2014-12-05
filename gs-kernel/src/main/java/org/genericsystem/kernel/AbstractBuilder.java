@@ -32,32 +32,9 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 		return newT(clazz, meta).init(meta, supers, value, components);
 	}
 
-	@SuppressWarnings("unchecked")
-	protected T newT(Class<?> clazz, T meta) {
-		InstanceClass metaAnnotation = meta == null ? null : meta.getClass().getAnnotation(InstanceClass.class);
-		if (metaAnnotation != null)
-			if (clazz == null || clazz.isAssignableFrom(metaAnnotation.value()))
-				clazz = metaAnnotation.value();
-			else if (!metaAnnotation.value().isAssignableFrom(clazz))
-				getContext().discardWithException(new InstantiationException(clazz + " must extends " + metaAnnotation.value()));
-		T newT = newT();// Instantiates T in all cases...
-
-		if (clazz == null || clazz.isAssignableFrom(newT.getClass()))
-			return newT;
-		if (newT.getClass().isAssignableFrom(clazz))
-			try {
-				return (T) clazz.newInstance();
-			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
-				getContext().discardWithException(e);
-			}
-		else
-			getContext().discardWithException(new InstantiationException(clazz + " must extends " + newT.getClass()));
-		return null; // Not reached
-	}
-
 	protected T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
 		context.getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
-		T getOrNewMeta = meta.isMeta() ? setMeta(components.size()) : meta;
+		T getOrNewMeta = meta == null || meta.isMeta() ? setMeta(components.size()) : meta;
 		if (getOrNewMeta.equalsRegardlessSupers(getOrNewMeta, value, components) && Statics.areOverridesReached(overrides, getOrNewMeta.getSupers()))
 			context.discardWithException(new ExistsException("An equivalent instance already exists : " + getOrNewMeta.info()));
 		T equivInstance = getOrNewMeta.getDirectInstance(value, components);
@@ -68,7 +45,7 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 
 	protected T setInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
 		context.getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
-		T getOrNewMeta = meta.isMeta() ? setMeta(components.size()) : meta;
+		T getOrNewMeta = meta == null || meta.isMeta() ? setMeta(components.size()) : meta;
 		if (getOrNewMeta.equalsRegardlessSupers(getOrNewMeta, value, components) && Statics.areOverridesReached(overrides, getOrNewMeta.getSupers()))
 			return getOrNewMeta;
 		T equivInstance = getOrNewMeta.getDirectEquivInstance(value, components);
@@ -89,10 +66,8 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 		}, update.computeDependencies());
 	}
 
-	// TODO must be private.
-	// Engines constructors should call find(MetaAttribute.class) and find(MetaRelation.class)
 	@SuppressWarnings("unchecked")
-	protected T setMeta(int dim) {
+	T setMeta(int dim) {
 		T root = (T) context.getRoot();
 		T adjustedMeta = root.adjustMeta(dim);
 		if (adjustedMeta.getComponents().size() == dim)
@@ -102,6 +77,29 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 		for (int i = 0; i < dim; i++)
 			components.add(root);
 		return rebuildAll(null, () -> context.plug(newT(null, null, Collections.singletonList(adjustedMeta), root.getValue(), components)), adjustedMeta.computePotentialDependencies(Collections.singletonList(adjustedMeta), root.getValue(), components));
+	}
+
+	@SuppressWarnings("unchecked")
+	private T newT(Class<?> clazz, T meta) {
+		InstanceClass metaAnnotation = meta == null ? null : meta.getClass().getAnnotation(InstanceClass.class);
+		if (metaAnnotation != null)
+			if (clazz == null || clazz.isAssignableFrom(metaAnnotation.value()))
+				clazz = metaAnnotation.value();
+			else if (!metaAnnotation.value().isAssignableFrom(clazz))
+				getContext().discardWithException(new InstantiationException(clazz + " must extends " + metaAnnotation.value()));
+		T newT = newT();// Instantiates T in all cases...
+
+		if (clazz == null || clazz.isAssignableFrom(newT.getClass()))
+			return newT;
+		if (newT.getClass().isAssignableFrom(clazz))
+			try {
+				return (T) clazz.newInstance();
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
+				getContext().discardWithException(e);
+			}
+		else
+			getContext().discardWithException(new InstantiationException(clazz + " must extends " + newT.getClass()));
+		return null; // Not reached
 	}
 
 	private T rebuildAll(T toRebuild, Supplier<T> rebuilder, LinkedHashSet<T> dependenciesToRebuild) {

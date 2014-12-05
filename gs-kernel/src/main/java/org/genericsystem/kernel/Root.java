@@ -10,7 +10,7 @@ import org.genericsystem.kernel.annotations.Meta;
 import org.genericsystem.kernel.annotations.Supers;
 import org.genericsystem.kernel.annotations.SystemGeneric;
 import org.genericsystem.kernel.annotations.constraints.PropertyConstraint;
-import org.genericsystem.kernel.annotations.value.MetaValue;
+import org.genericsystem.kernel.annotations.value.EngineValue;
 
 public class Root extends Vertex implements DefaultRoot<Vertex> {
 
@@ -40,7 +40,8 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 				get(MetaAttribute.class).disableReferentialIntegrity(Statics.BASE_POSITION);
 			}
 
-		}.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
+		};
+		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
 
 		if (persistentDirectoryPath != null) {
 			archiver = new Archiver<Vertex>(this, persistentDirectoryPath);
@@ -48,19 +49,37 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 		}
 	}
 
-	@SystemGeneric
-	@Supers(Root.class)
-	@Components(Root.class)
-	@MetaValue
-	public static class MetaAttribute extends Vertex {
+	@SuppressWarnings("unchecked")
+	@Override
+	public <subT extends Vertex> Class<subT> getMetaAttributeClass() {
+		return (Class<subT>) MetaAttribute.class;
+	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public <subT extends Vertex> Class<subT> getMetaRelationClass() {
+		return (Class<subT>) MetaRelation.class;
+	}
+
+	@Override
+	public Class<?> getSystemMapClass() {
+		return SystemMap.class;
 	}
 
 	@SystemGeneric
 	@Meta(MetaAttribute.class)
 	@Supers(Root.class)
+	@Components(Root.class)
+	@EngineValue
+	public static class MetaAttribute extends Vertex {
+
+	}
+
+	@SystemGeneric
+	@Meta(MetaRelation.class)
+	@Supers(Root.class)
 	@Components({ Root.class, Root.class })
-	@MetaValue
+	@EngineValue
 	public static class MetaRelation extends Vertex {
 
 	}

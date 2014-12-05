@@ -14,8 +14,8 @@ import org.genericsystem.kernel.annotations.constraints.RequiredConstraint;
 import org.genericsystem.kernel.annotations.constraints.SingularConstraint;
 import org.genericsystem.kernel.annotations.constraints.UniqueValueConstraint;
 import org.genericsystem.kernel.annotations.value.BooleanValue;
+import org.genericsystem.kernel.annotations.value.EngineValue;
 import org.genericsystem.kernel.annotations.value.IntValue;
-import org.genericsystem.kernel.annotations.value.MetaValue;
 import org.genericsystem.kernel.annotations.value.StringValue;
 
 public abstract class AbstractSystemCache<T extends AbstractVertex<T>> extends HashMap<Class<?>, T> {
@@ -86,7 +86,11 @@ public abstract class AbstractSystemCache<T extends AbstractVertex<T>> extends H
 
 	private T setMeta(Class<?> clazz) {
 		Meta meta = clazz.getAnnotation(Meta.class);
-		return meta == null ? root : set(meta.value());
+		if (meta == null)
+			return root;
+		if (meta.value() == clazz)
+			return null;
+		return set(meta.value());
 	}
 
 	private List<T> setOverrides(Class<?> clazz) {
@@ -111,9 +115,9 @@ public abstract class AbstractSystemCache<T extends AbstractVertex<T>> extends H
 		if (stringValue != null)
 			return stringValue.value();
 
-		MetaValue metaValue = clazz.getAnnotation(MetaValue.class);
-		if (metaValue != null)
-			return setMeta(clazz).getValue();
+		EngineValue engineValue = clazz.getAnnotation(EngineValue.class);
+		if (engineValue != null)
+			return root.getValue();
 
 		return clazz;
 	}

@@ -7,21 +7,23 @@ import org.genericsystem.api.core.IRoot;
 
 public interface DefaultRoot<T extends AbstractVertex<T>> extends IRoot<T> {
 
-	<subT extends T> subT find(Class<subT> clazz);
-
 	@Override
 	Context<T> getCurrentCache();
 
-	@SuppressWarnings("unchecked")
+	<subT extends T> Class<subT> getMetaAttributeClass();
+
+	<subT extends T> Class<subT> getMetaRelationClass();
+
+	Class<?> getSystemMapClass();
+
 	@Override
-	default T getMetaAttribute() {
-		return ((T) this).getMeta(Statics.ATTRIBUTE_SIZE);
+	default <subT extends T> subT getMetaAttribute() {
+		return find(getMetaAttributeClass());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	default T getMetaRelation() {
-		return ((T) this).getMeta(Statics.RELATION_SIZE);
+	default <subT extends T> subT getMetaRelation() {
+		return find(getMetaRelationClass());
 	}
 
 	@Override
