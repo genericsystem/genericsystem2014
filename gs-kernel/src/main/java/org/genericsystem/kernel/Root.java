@@ -3,7 +3,6 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
-
 import org.genericsystem.kernel.AbstractBuilder.VertextBuilder;
 import org.genericsystem.kernel.Root.DefaultNoReferentialIntegrityProperty.DefaultValue;
 import org.genericsystem.kernel.annotations.Components;
@@ -41,7 +40,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
 
 		if (persistentDirectoryPath != null) {
-			archiver = new Archiver<Vertex>(this, persistentDirectoryPath);
+			archiver = new Archiver<>(this, persistentDirectoryPath);
 			archiver.startScheduler();
 		}
 	}
@@ -101,8 +100,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 	@Meta(MetaAttribute.class)
 	@Components(Root.class)
 	@PropertyConstraint
-	public static class SystemMap extends Vertex {
-	}
+	public static class SystemMap extends Vertex {}
 
 	@Override
 	public Context<Vertex> getCurrentCache() {

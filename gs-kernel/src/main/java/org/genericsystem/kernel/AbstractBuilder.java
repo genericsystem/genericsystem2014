@@ -2,13 +2,13 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
 import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.kernel.annotations.InstanceClass;
 
@@ -72,11 +72,10 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 		T adjustedMeta = root.adjustMeta(dim);
 		if (adjustedMeta.getComponents().size() == dim)
 			return adjustedMeta;
-
-		List<T> components = new ArrayList<>(dim);
-		for (int i = 0; i < dim; i++)
-			components.add(root);
-		return rebuildAll(null, () -> context.plug(newT(null, null, Collections.singletonList(adjustedMeta), root.getValue(), components)), adjustedMeta.computePotentialDependencies(Collections.singletonList(adjustedMeta), root.getValue(), components));
+		T[] components = newTArray(dim);
+		Arrays.fill(components, root);
+		return rebuildAll(null, () -> context.plug(newT(null, null, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components))),
+				adjustedMeta.computePotentialDependencies(Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)));
 	}
 
 	@SuppressWarnings("unchecked")
