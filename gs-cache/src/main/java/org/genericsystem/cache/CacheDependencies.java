@@ -10,57 +10,30 @@ import org.genericsystem.api.core.IteratorSnapshot;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.kernel.AbstractDependencies;
 
-public class CacheDependencies<T> implements IteratorSnapshot<T>, org.genericsystem.kernel.Dependencies<T> {
+public class CacheDependencies<T> implements IteratorSnapshot<T> {
 
-	private final InternalDependencies<T> inserts = new InternalDependencies<>();
+	private final Snapshot<T> addsSnapshot;
+	private final Snapshot<T> subSnapshot;
+	private final  Snapshot<T> removesSnapshot;
 
-	private final InternalDependencies<T> deletes = new InternalDependencies<>();
-
-	private final Supplier<Snapshot<T>> snapshotSupplier;
-
-	public CacheDependencies(Supplier<Snapshot<T>> snapshotSupplier) {
-		this.snapshotSupplier = snapshotSupplier;
-	}
-
-	@Override
-	public void add(T generic) {
-		inserts.add(generic);
-	}
-
-	@Override
-	public boolean remove(T generic) {
-		if (!inserts.remove(generic)) {
-			if (!deletes.contains(generic)) {
-				deletes.add(generic);
-				return true;
-			}
-			return false;
-		}
-		return true;
-	}
-
-	@Override
-	public Iterator<T> iterator(long ts) {
-		return iterator();
-	}
-
-	@Override
-	public T get(Object o, long ts) {
-		return get(o);
+	public CacheDependencies(IteratorSnapshot<T> addsSnapshot,IteratorSnapshot<T> subSnapshot,IteratorSnapshot<T> removesSnapshot) {
+		this.addsSnapshot = addsSnapshot;
+		this.subSnapshot = subSnapshot;
+		this.removesSnapshot = removesSnapshot;
 	}
 
 	@Override
 	public Iterator<T> iterator() {
-		return Stream.concat(snapshotSupplier.get().get().filter(x -> !deletes.contains(x)), inserts.get()).iterator();
+		return Stream.concat(subSnapshot.get().filter(x -> !removesSnapshot.contains(x)), addsSnapshot.get()).iterator();
 	}
 
 	@Override
 	public T get(Object o) {
-		T result = inserts.get(o);
+		T result = addsSnapshot.get(o);
 		if (result != null)
 			return result;
-		if (!deletes.contains(o)) {
-			result = snapshotSupplier.get().get(o);
+		if (!removesSnapshot.contains(o)) {
+			result = subSnapshot.get(o);
 			if (result != null)
 				return result;
 		}
@@ -72,7 +45,7 @@ public class CacheDependencies<T> implements IteratorSnapshot<T>, org.genericsys
 		return get().collect(Collectors.toList()).toString();
 	}
 
-	private static class InternalDependencies<T> extends AbstractDependencies<T> implements IteratorSnapshot<T> {
+	static class InternalDependencies<T> extends AbstractDependencies<T> implements IteratorSnapshot<T> {
 
 		private Map<T, T> map = new HashMap<>();
 

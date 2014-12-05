@@ -85,7 +85,7 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 	}
 
 	@Override
-	public Snapshot<T> getInstances(T vertex) {
+	public IteratorSnapshot<T> getInstances(T vertex) {
 		return new IteratorSnapshot<T>() {
 			@Override
 			public Iterator<T> iterator() {
@@ -100,7 +100,7 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 	}
 
 	@Override
-	public Snapshot<T> getInheritings(T vertex) {
+	public IteratorSnapshot<T> getInheritings(T vertex) {
 		return new IteratorSnapshot<T>() {
 			@Override
 			public Iterator<T> iterator() {
@@ -115,7 +115,7 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 	}
 
 	@Override
-	public Snapshot<T> getComposites(T vertex) {
+	public IteratorSnapshot<T> getComposites(T vertex) {
 		return new IteratorSnapshot<T>() {
 			@Override
 			public Iterator<T> iterator() {
