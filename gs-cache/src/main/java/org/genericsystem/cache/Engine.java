@@ -11,7 +11,7 @@ import org.genericsystem.kernel.annotations.Meta;
 import org.genericsystem.kernel.annotations.Supers;
 import org.genericsystem.kernel.annotations.SystemGeneric;
 import org.genericsystem.kernel.annotations.constraints.PropertyConstraint;
-import org.genericsystem.kernel.annotations.value.MetaValue;
+import org.genericsystem.kernel.annotations.value.EngineValue;
 
 public class Engine extends Generic implements DefaultEngine<Generic> {
 
@@ -40,18 +40,19 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	}
 
 	@SystemGeneric
+	@Meta(MetaAttribute.class)
 	@Supers(Engine.class)
 	@Components(Engine.class)
-	@MetaValue
+	@EngineValue
 	public static class MetaAttribute extends Generic {
 
 	}
 
 	@SystemGeneric
-	@Meta(MetaAttribute.class)
+	@Meta(MetaRelation.class)
 	@Supers(Engine.class)
 	@Components({ Engine.class, Engine.class })
-	@MetaValue
+	@EngineValue
 	public static class MetaRelation extends Generic {
 
 	}

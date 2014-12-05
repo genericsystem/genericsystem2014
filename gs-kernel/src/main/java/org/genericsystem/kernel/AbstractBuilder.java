@@ -57,7 +57,7 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 
 	protected T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
 		context.getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
-		T getOrNewMeta = meta.isMeta() ? setMeta(components.size()) : meta;
+		T getOrNewMeta = meta == null || meta.isMeta() ? setMeta(components.size()) : meta;
 		if (getOrNewMeta.equalsRegardlessSupers(getOrNewMeta, value, components) && Statics.areOverridesReached(overrides, getOrNewMeta.getSupers()))
 			context.discardWithException(new ExistsException("An equivalent instance already exists : " + getOrNewMeta.info()));
 		T equivInstance = getOrNewMeta.getDirectInstance(value, components);
@@ -68,7 +68,7 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 
 	protected T setInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
 		context.getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
-		T getOrNewMeta = meta.isMeta() ? setMeta(components.size()) : meta;
+		T getOrNewMeta = meta == null || meta.isMeta() ? setMeta(components.size()) : meta;
 		if (getOrNewMeta.equalsRegardlessSupers(getOrNewMeta, value, components) && Statics.areOverridesReached(overrides, getOrNewMeta.getSupers()))
 			return getOrNewMeta;
 		T equivInstance = getOrNewMeta.getDirectEquivInstance(value, components);
