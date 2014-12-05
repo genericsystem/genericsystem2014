@@ -26,14 +26,17 @@ public abstract class AbstractSystemCache<T extends AbstractVertex<T>> extends H
 
 	private final T root;
 
-	public AbstractSystemCache(T root) {
+	public AbstractSystemCache(Class<?> rootClass, T root) {
 		this.root = root;
+		put(rootClass, root);
 	}
 
-	public abstract void setSystemProperties();
+	public abstract void mountConstraintsSystemClasses();
 
-	public AbstractSystemCache<T> mount(Class<?>... userClasses) {
-		setSystemProperties();
+	public AbstractSystemCache<T> mount(List<Class<?>> systemClasses, Class<?>... userClasses) {
+		for (Class<?> clazz : systemClasses)
+			set(clazz);
+		mountConstraintsSystemClasses();
 		for (Class<?> clazz : userClasses)
 			set(clazz);
 		initialized = true;
@@ -41,7 +44,6 @@ public abstract class AbstractSystemCache<T extends AbstractVertex<T>> extends H
 	}
 
 	protected T set(Class<?> clazz) {
-		// TODO implement check initialized
 		if (initialized)
 			throw new IllegalStateException("Class : " + clazz + " has not been built at startup");
 		T systemProperty = super.get(clazz);

@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collections;
 
 import org.genericsystem.kernel.AbstractBuilder.VertextBuilder;
@@ -8,6 +9,7 @@ import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Meta;
 import org.genericsystem.kernel.annotations.Supers;
 import org.genericsystem.kernel.annotations.SystemGeneric;
+import org.genericsystem.kernel.annotations.constraints.PropertyConstraint;
 import org.genericsystem.kernel.annotations.value.MetaValue;
 
 public class Root extends Vertex implements DefaultRoot<Vertex> {
@@ -30,22 +32,15 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 
 		context = new Context<Vertex>(this);
 		context.init(new VertextBuilder(context));
-		systemCache = new AbstractSystemCache<Vertex>(this) {
+		systemCache = new AbstractSystemCache<Vertex>(Root.class, this) {
 			private static final long serialVersionUID = 8492538861623209847L;
 
-			{
-				put(Root.class, Root.this);
-			}
-
 			@Override
-			public void setSystemProperties() {
-				Vertex metaAttribute = set(MetaAttribute.class);
-				set(MetaRelation.class);
-				set(SystemMap.class).enablePropertyConstraint();
-				metaAttribute.disableReferentialIntegrity(Statics.BASE_POSITION);
+			public void mountConstraintsSystemClasses() {
+				get(MetaAttribute.class).disableReferentialIntegrity(Statics.BASE_POSITION);
 			}
 
-		}.mount(userClasses);
+		}.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
 
 		if (persistentDirectoryPath != null) {
 			archiver = new Archiver<Vertex>(this, persistentDirectoryPath);
@@ -73,6 +68,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 	@SystemGeneric
 	@Meta(MetaAttribute.class)
 	@Components(Root.class)
+	@PropertyConstraint
 	public static class SystemMap extends Vertex {
 	}
 

@@ -1,6 +1,7 @@
 package org.genericsystem.cache;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collections;
 
 import org.genericsystem.kernel.AbstractSystemCache;
@@ -9,6 +10,7 @@ import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Meta;
 import org.genericsystem.kernel.annotations.Supers;
 import org.genericsystem.kernel.annotations.SystemGeneric;
+import org.genericsystem.kernel.annotations.constraints.PropertyConstraint;
 import org.genericsystem.kernel.annotations.value.MetaValue;
 
 public class Engine extends Generic implements DefaultEngine<Generic> {
@@ -25,22 +27,15 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
 
 		Cache<Generic> cache = newCache().start();
-		systemCache = new AbstractSystemCache<Generic>(this) {
-			private static final long serialVersionUID = 8492538861623209847L;
-
-			{
-				put(Engine.class, Engine.this);
-			}
+		systemCache = new AbstractSystemCache<Generic>(Engine.class, this) {
+			private static final long serialVersionUID = -958683728503782069L;
 
 			@Override
-			public void setSystemProperties() {
-				Generic metaAttribute = set(MetaAttribute.class);
-				set(MetaRelation.class);
-				set(SystemMap.class).enablePropertyConstraint();
-				metaAttribute.disableReferentialIntegrity(Statics.BASE_POSITION);
+			public void mountConstraintsSystemClasses() {
+				get(MetaAttribute.class).disableReferentialIntegrity(Statics.BASE_POSITION);
 			}
 
-		}.mount(userClasses);
+		}.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
 		cache.flush();
 	}
 
@@ -64,6 +59,7 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	@SystemGeneric
 	@Meta(MetaAttribute.class)
 	@Components(Engine.class)
+	@PropertyConstraint
 	public static class SystemMap extends Generic {
 	}
 
