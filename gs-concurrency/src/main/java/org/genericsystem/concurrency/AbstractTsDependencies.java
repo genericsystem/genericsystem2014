@@ -2,6 +2,7 @@ package org.genericsystem.concurrency;
 
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.genericsystem.kernel.Dependencies;
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
@@ -9,7 +10,7 @@ public abstract class AbstractTsDependencies<T extends AbstractGeneric<T>> imple
 
 	private Node<T> head = null;
 	private Node<T> tail = null;
-	private ConcurrentHashMap<T, T> map = new ConcurrentHashMap<>();
+	private final ConcurrentHashMap<T, T> map = new ConcurrentHashMap<>();
 
 	public abstract LifeManager getLifeManager();
 

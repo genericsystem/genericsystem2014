@@ -19,7 +19,8 @@ public class PersistenceTest extends AbstractTest {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
 		Engine root = new Engine(Statics.ENGINE_VALUE, snapshot);
 		root.close();
-		compareGraph(root, new Engine(Statics.ENGINE_VALUE, snapshot));
+		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
+		compareGraph(root, engine, engine.getCurrentCache().getTs());
 	}
 
 	public void testAnnotType() {
@@ -28,7 +29,7 @@ public class PersistenceTest extends AbstractTest {
 		root.getCurrentCache().flush();
 		root.close();
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot, Vehicle.class);
-		compareGraph(root, engine);
+		compareGraph(root, engine, engine.getCurrentCache().getTs());
 		assert engine.find(Vehicle.class) instanceof Vehicle : engine.find(Vehicle.class).info();
 	}
 
@@ -39,12 +40,12 @@ public class PersistenceTest extends AbstractTest {
 		root.close();
 
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
-		compareGraph(root, engine);
+		compareGraph(root, engine, engine.getCurrentCache().getTs());
 		engine.getCurrentCache().flush();
 		engine.close();
 
 		Engine engine2 = new Engine(Statics.ENGINE_VALUE, snapshot, Vehicle.class);
-		compareGraph(engine, engine2);
+		compareGraph(engine, engine2, engine2.getCurrentCache().getTs());
 
 		assert engine2.find(Vehicle.class) instanceof Vehicle : engine2.find(Vehicle.class).info();
 	}
@@ -59,7 +60,9 @@ public class PersistenceTest extends AbstractTest {
 		root.addInstance("Vehicle");
 		root.getCurrentCache().flush();
 		root.close();
-		compareGraph(root, new Engine(Statics.ENGINE_VALUE, snapshot));
+		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
+		compareGraph(root, engine, engine.getCurrentCache().getTs());
+		assert null != engine.getInstance("Vehicle");
 	}
 
 	public void testHolder() {
@@ -71,7 +74,8 @@ public class PersistenceTest extends AbstractTest {
 		myVehicle.setHolder(vehiclePower, "123");
 		root.getCurrentCache().flush();
 		root.close();
-		compareGraph(root, new Engine(Statics.ENGINE_VALUE, snapshot));
+		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
+		compareGraph(root, engine, engine.getCurrentCache().getTs());
 	}
 
 	public void testAddAndRemove() {
@@ -83,7 +87,8 @@ public class PersistenceTest extends AbstractTest {
 		car.remove();
 		root.getCurrentCache().flush();
 		root.close();
-		compareGraph(root, new Engine(Statics.ENGINE_VALUE, snapshot));
+		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
+		compareGraph(root, engine, engine.getCurrentCache().getTs());
 	}
 
 	public void testLink() {
@@ -97,7 +102,8 @@ public class PersistenceTest extends AbstractTest {
 		myVehicle.setHolder(vehicleColor, "myVehicleRed", red);
 		root.getCurrentCache().flush();
 		root.close();
-		compareGraph(root, new Engine(Statics.ENGINE_VALUE, snapshot));
+		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
+		compareGraph(root, engine, engine.getCurrentCache().getTs());
 	}
 
 	public void testHeritageMultiple() {
@@ -108,7 +114,8 @@ public class PersistenceTest extends AbstractTest {
 		root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
 		root.getCurrentCache().flush();
 		root.close();
-		compareGraph(root, new Engine(Statics.ENGINE_VALUE, snapshot));
+		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
+		compareGraph(root, engine, engine.getCurrentCache().getTs());
 	}
 
 	public void testHeritageMultipleDiamond() {
@@ -120,7 +127,8 @@ public class PersistenceTest extends AbstractTest {
 		root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
 		root.getCurrentCache().flush();
 		root.close();
-		compareGraph(root, new Engine(Statics.ENGINE_VALUE, snapshot));
+		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
+		compareGraph(root, engine, engine.getCurrentCache().getTs());
 	}
 
 	public void testTree() {
@@ -133,7 +141,8 @@ public class PersistenceTest extends AbstractTest {
 		child.setNode("Child3");
 		root.getCurrentCache().flush();
 		root.close();
-		compareGraph(root, new Engine(Statics.ENGINE_VALUE, snapshot));
+		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
+		compareGraph(root, engine, engine.getCurrentCache().getTs());
 	}
 
 	public void testInheritanceTree() {
@@ -146,7 +155,8 @@ public class PersistenceTest extends AbstractTest {
 		child.setInheritingNode("Child3");
 		root.getCurrentCache().flush();
 		root.close();
-		compareGraph(root, new Engine(Statics.ENGINE_VALUE, snapshot));
+		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
+		compareGraph(root, engine, engine.getCurrentCache().getTs());
 	}
 
 	private static String cleanDirectory(String directoryPath) {
@@ -157,13 +167,19 @@ public class PersistenceTest extends AbstractTest {
 		return directoryPath;
 	}
 
-	private void compareGraph(Generic persistedNode, Generic readNode) {
-		List<Generic> persistVisit = Statics.reverseCollections(new DependenciesOrder<Generic>().visit(persistedNode));
-		List<Generic> readVisit = Statics.reverseCollections(new DependenciesOrder<Generic>().visit(readNode));
+	private void compareGraph(Generic persistedNode, Generic readNode, long ts) {
+		List<Generic> persistVisit = Statics.reverseCollections(new DependenciesOrder<Generic>(ts).visit(persistedNode));
+		List<Generic> readVisit = Statics.reverseCollections(new DependenciesOrder<Generic>(ts).visit(readNode));
 		assert persistVisit.size() == readVisit.size() : persistVisit + " \n " + readVisit;
 		for (int i = 0; i < persistVisit.size(); i++) {
 			assert persistVisit.get(i).genericEquals(readVisit.get(i)) : persistVisit + " \n " + readVisit;
 			assert !(persistVisit.get(i) == readVisit.get(i));
+			LifeManager persistLifeManager = persistVisit.get(i).getLifeManager();
+			LifeManager readLifeManager = readVisit.get(i).getLifeManager();
+			assert persistLifeManager.getBirthTs() == readLifeManager.getBirthTs();
+			assert persistLifeManager.getDesignTs() == readLifeManager.getDesignTs();
+			assert persistLifeManager.getLastReadTs() == readLifeManager.getLastReadTs();
+			assert persistLifeManager.getDeathTs() == readLifeManager.getDeathTs();
 		}
 	}
 

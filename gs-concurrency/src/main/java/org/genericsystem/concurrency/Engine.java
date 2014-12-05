@@ -32,12 +32,10 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	public Engine(Serializable engineValue, String persistentDirectoryPath, Class<?>... userClasses) {
 		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
 
-		
 		Cache<Generic> cache = newCache().start();
 		systemCache = new SystemCache<>(Engine.class, this);
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
 		archiver = new Archiver<>(this, persistentDirectoryPath).startScheduler();
-
 		cache.flush();
 	}
 

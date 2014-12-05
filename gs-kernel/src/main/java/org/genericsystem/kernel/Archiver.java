@@ -81,7 +81,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 	}
 
 	public Archiver<T> startScheduler() {
-		if (lockFile != null)
+		if (lockFile != null && directory != null)
 			if (SNAPSHOTS_PERIOD > 0L) {
 				scheduler.scheduleAtFixedRate(new Runnable() {
 					@Override
@@ -162,6 +162,8 @@ public class Archiver<T extends AbstractVertex<T>> {
 
 		protected final T root;
 
+		protected long ts;
+
 		public WriterLoaderManager(T root, FileManager fileManager) {
 			this.root = root;
 			this.fileManager = fileManager;
@@ -183,13 +185,18 @@ public class Archiver<T extends AbstractVertex<T>> {
 			int sizeDependencies = inputStream.readInt();
 			for (int i = 0; i < sizeDependencies; i++)
 				if (inputStream.readBoolean()) {
-					long ts = inputStream.readLong();
+					long birthTs = inputStream.readLong();
+					long designTs = inputStream.readLong();
+					long lastReadTs = inputStream.readLong();
+					long deathTs = inputStream.readLong();
 					Serializable value = (Serializable) inputStream.readObject();
 					T meta = loadAncestor(vertexMap);
 					List<T> supers = loadAncestors(vertexMap);
 					List<T> components = loadAncestors(vertexMap);
 					T instance = meta == null ? root.getMeta(components.size()) : meta.getDirectInstance(value, components);
-					vertexMap.put(ts, instance != null ? instance : root.getCurrentCache().plug(root.getCurrentCache().getBuilder().newT(null, meta, supers, value, components)));
+					assert false;
+					T vertex = root.getCurrentCache().getBuilder().newT(null, meta, supers, value, components).restore(designTs, birthTs, lastReadTs, deathTs);
+					vertexMap.put(birthTs, instance != null ? instance : root.getCurrentCache().plug(vertex));
 				}
 		}
 
@@ -207,7 +214,8 @@ public class Archiver<T extends AbstractVertex<T>> {
 		}
 
 		private void writeSnapshot(File directory) {
-			String fileName = getFilename(pickNewTs());
+			ts = pickNewTs();
+			String fileName = getFilename(ts);
 			try (FileOutputStream fileOutputStream = new FileOutputStream(directory.getAbsolutePath() + File.separator + fileName + fileManager.getExtension() + PART_EXTENSION);) {
 				outputStream = fileManager.newOutputStream(fileOutputStream, fileName);
 				writeDependencies(getOrderedVertex(), new HashSet<>());
@@ -282,15 +290,19 @@ public class Archiver<T extends AbstractVertex<T>> {
 		}
 
 		private void writeDependency(T dependency) throws IOException {
-			outputStream.writeLong(getTs(dependency));
+			long[] ts = getTs(dependency);
+			outputStream.writeLong(ts[0]);
+			outputStream.writeLong(ts[1]);
+			outputStream.writeLong(ts[2]);
+			outputStream.writeLong(ts[3]);
 			outputStream.writeObject(dependency.getValue());
 			writeAncestor(dependency.getMeta());
 			writeAncestors(dependency.getSupers());
 			writeAncestors(dependency.getComponents());
 		}
 
-		protected long getTs(T dependency) {
-			return System.identityHashCode(dependency);
+		protected long[] getTs(T dependency) {
+			return new long[] { 0L, 0L, 0L, Long.MAX_VALUE };
 		}
 
 		private void writeAncestors(List<T> ancestors) throws IOException {
@@ -300,7 +312,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 		}
 
 		private void writeAncestor(T ancestor) throws IOException {
-			outputStream.writeLong(ancestor == null ? 0 : (ancestor.isRoot() ? -1 : getTs(ancestor)));
+			outputStream.writeLong(ancestor == null ? 0 : (ancestor.isRoot() ? -1 : getTs(ancestor)[0]));
 		}
 
 	}
