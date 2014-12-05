@@ -17,13 +17,6 @@ public interface Snapshot<T> extends Iterable<T> {
 
 	default int size() {
 		return (int) get().count();
-		// Iterator<T> iterator = iterator();
-		// int size = 0;
-		// while (iterator.hasNext()) {
-		// iterator.next();
-		// size++;
-		// }
-		// return size;
 	}
 
 	default boolean isEmpty() {
@@ -31,7 +24,7 @@ public interface Snapshot<T> extends Iterable<T> {
 	}
 
 	default boolean contains(Object o) {
-		return get().anyMatch(o::equals);
+		return o.equals(get(o));
 	}
 
 	default boolean containsAll(Collection<?> c) {

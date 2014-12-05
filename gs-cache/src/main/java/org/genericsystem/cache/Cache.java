@@ -10,7 +10,6 @@ import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.cache.CacheDependencies.InternalDependencies;
 import org.genericsystem.kernel.AbstractBuilder;
-import org.genericsystem.kernel.annotations.SystemGeneric;
 
 public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 
@@ -100,11 +99,12 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 	}
 
 	private void simpleAdd(T generic) {
-		if (!removes.remove(generic))
+		//if (!removes.remove(generic))
 			adds.add(generic);
 	}
 
 	private boolean simpleRemove(T generic) {
+		assert generic!=null;
 		if (!adds.remove(generic))
 			removes.add(generic);
 		return true;
@@ -121,13 +121,16 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 
 	@Override
 	protected T plug(T generic) {
-		simpleAdd(generic);// do this first!!
+		simpleAdd(generic);
+		getChecker().checkAfterBuild(true, false, generic);
 		return generic;
 	}
 
 	@Override
 	protected boolean unplug(T generic) {
-		return simpleRemove(generic);
+		getChecker().checkAfterBuild(false, false, generic);
+		boolean removed = simpleRemove(generic);
+		return removed;
 	}
 
 	private static class FilteredSnapshot<T> implements IteratorSnapshot <T>{
@@ -146,18 +149,19 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 		@Override
 		public T get(Object o) {
 			T result = subSnapshot.get(o);
-			return predicate.test(result) ? result : null;
+			return result!=null && predicate.test(result) ? result : null;
 		}
 
 	}
 
 	@Override
 	public IteratorSnapshot<T> getInstances(T generic) {
-		return new CacheDependencies<T>(new FilteredSnapshot<T>(adds,x->x.getMeta().equals(generic)),subContext.getInstances(generic),new FilteredSnapshot<T>(removes,x->x.getMeta().equals(generic)));
+		return new CacheDependencies<T>(new FilteredSnapshot<T>(adds,x->!x.isMeta()&&x.getMeta().equals(generic)),subContext.getInstances(generic),new FilteredSnapshot<T>(removes,x->!x.isMeta()&&x.getMeta().equals(generic)));
 	}
 
 	@Override
 	public IteratorSnapshot<T> getInheritings(T generic) {
+		assert generic!=null;
 		return new CacheDependencies<T>(new FilteredSnapshot<T>(adds,x->x.getSupers().contains(generic)),subContext.getInheritings(generic),new FilteredSnapshot<T>(removes,x->x.getSupers().contains(generic)));
 
 	}
@@ -165,28 +169,5 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 	@Override
 	public IteratorSnapshot<T> getComposites(T generic) {
 		return new CacheDependencies<T>(new FilteredSnapshot<T>(adds,x->x.getComponents().contains(generic)),subContext.getComposites(generic),new FilteredSnapshot<T>(removes,x->x.getComponents().contains(generic)));
-
-	}
-
-
-
-	private static class CacheChecker<T extends AbstractGeneric<T>> extends org.genericsystem.kernel.Checker<T> {
-
-		private CacheChecker(Cache<T> context) {
-			super(context);
-		}
-
-		@Override
-		protected void checkSystemConstraintsAfterBuild(boolean isOnAdd, boolean isFlushTime, T vertex) {
-			super.checkSystemConstraintsAfterBuild(isOnAdd, isFlushTime, vertex);
-			checkRemoveGenericAnnoted(isOnAdd, vertex);
-		}
-
-		private void checkRemoveGenericAnnoted(boolean isOnAdd, T vertex) {
-			if (!isOnAdd && vertex.getClass().getAnnotation(SystemGeneric.class) != null)
-				getContext().discardWithException(new IllegalAccessException("@SystemGeneric annoted generic can't be removed"));
-		}
-
-
 	}
 }

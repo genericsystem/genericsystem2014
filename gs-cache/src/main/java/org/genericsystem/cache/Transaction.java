@@ -29,8 +29,7 @@ public class Transaction<T extends AbstractGeneric<T>> extends Context<T> {
 
 	@Override
 	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
-		removes.forEach(this::unplug);
-		adds.forEach(this::plug);
+		super.apply(adds, removes);
 	}
 
 	@Override

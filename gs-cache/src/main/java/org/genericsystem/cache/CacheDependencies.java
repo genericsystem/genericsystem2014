@@ -3,18 +3,18 @@ package org.genericsystem.cache;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.IteratorSnapshot;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.kernel.AbstractDependencies;
 
 public class CacheDependencies<T> implements IteratorSnapshot<T> {
 
-	private final Snapshot<T> addsSnapshot;
-	private final Snapshot<T> subSnapshot;
-	private final  Snapshot<T> removesSnapshot;
+	private final IteratorSnapshot<T> addsSnapshot;
+	private final IteratorSnapshot<T> subSnapshot;
+	private final  IteratorSnapshot<T> removesSnapshot;
 
 	public CacheDependencies(IteratorSnapshot<T> addsSnapshot,IteratorSnapshot<T> subSnapshot,IteratorSnapshot<T> removesSnapshot) {
 		this.addsSnapshot = addsSnapshot;
@@ -24,7 +24,7 @@ public class CacheDependencies<T> implements IteratorSnapshot<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		return Stream.concat(subSnapshot.get().filter(x -> !removesSnapshot.contains(x)), addsSnapshot.get()).iterator();
+		return Stream.concat(subSnapshot.get().peek(x->{assert x!=null;}).filter(x -> !removesSnapshot.contains(x)), addsSnapshot.get()).iterator();
 	}
 
 	@Override
