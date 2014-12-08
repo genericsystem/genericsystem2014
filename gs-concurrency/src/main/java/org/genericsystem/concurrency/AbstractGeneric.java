@@ -1,5 +1,8 @@
 package org.genericsystem.concurrency;
 
+import java.io.Serializable;
+import java.util.List;
+
 import org.genericsystem.kernel.Dependencies;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.genericsystem.cache.AbstractGeneric<T> implements DefaultGeneric<T>, Comparable<T> {
@@ -16,6 +19,12 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.
 		return getRoot().getCurrentCache();
 	}
 
+	@Override
+	protected T init(T meta, List<T> supers, Serializable value, List<T> components) {
+		return super.init(meta, supers, value, components).restore(getRoot().pickNewTs(), 0L, 0L, Long.MAX_VALUE);
+	}
+
+	@Override
 	@SuppressWarnings("unchecked")
 	protected T restore(Long designTs, long birthTs, long lastReadTs, long deathTs) {
 		lifeManager = new LifeManager(designTs, birthTs, lastReadTs, deathTs);
