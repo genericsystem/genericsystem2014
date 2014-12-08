@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,11 +13,11 @@ import java.util.stream.Collectors;
 import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.kernel.annotations.InstanceClass;
 
-public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
+public class Builder<T extends AbstractVertex<T>> {
 
 	private final Context<T> context;
 
-	protected AbstractBuilder(Context<T> context) {
+	protected Builder(Context<T> context) {
 		this.context = context;
 	}
 
@@ -24,9 +25,15 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 		return context;
 	}
 
-	protected abstract T newT();
+	@SuppressWarnings("unchecked")
+	protected Class<T> getTClass() {
+		return (Class<T>) Vertex.class;
+	}
 
-	protected abstract T[] newTArray(int dim);
+	@SuppressWarnings("unchecked")
+	protected final T[] newTArray(int dim) {
+		return (T[]) Array.newInstance(getTClass(), dim);
+	}
 
 	protected T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
 		return newT(clazz, meta).init(meta, supers, value, components);
@@ -86,18 +93,19 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 				clazz = metaAnnotation.value();
 			else if (!metaAnnotation.value().isAssignableFrom(clazz))
 				getContext().discardWithException(new InstantiationException(clazz + " must extends " + metaAnnotation.value()));
-		T newT = newT();// Instantiates T in all cases...
 
-		if (clazz == null || clazz.isAssignableFrom(newT.getClass()))
-			return newT;
-		if (newT.getClass().isAssignableFrom(clazz))
-			try {
+		Class<T> tClass = getTClass();
+
+		try {
+			if (clazz == null || clazz.isAssignableFrom(tClass))
+				return tClass.newInstance();
+			if (tClass.isAssignableFrom(clazz))
 				return (T) clazz.newInstance();
-			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
-				getContext().discardWithException(e);
-			}
-		else
-			getContext().discardWithException(new InstantiationException(clazz + " must extends " + newT.getClass()));
+			else
+				getContext().discardWithException(new InstantiationException(clazz + " must extends " + tClass));
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
+			getContext().discardWithException(e);
+		}
 		return null; // Not reached
 	}
 
@@ -153,23 +161,4 @@ public abstract class AbstractBuilder<T extends AbstractVertex<T>> {
 			return result;
 		}
 	}
-
-	public static class VertextBuilder extends AbstractBuilder<Vertex> {
-
-		public VertextBuilder(Context<Vertex> context) {
-			super(context);
-		}
-
-		@Override
-		protected Vertex newT() {
-			return new Vertex();
-		}
-
-		@Override
-		protected Vertex[] newTArray(int dim) {
-			return new Vertex[dim];
-		}
-
-	}
-
 }

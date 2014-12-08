@@ -1,30 +1,29 @@
 package org.genericsystem.kernel;
 
-import java.util.Iterator;
-import org.genericsystem.api.core.IteratorSnapshot;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.RollbackException;
 
-public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
+public abstract class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 
 	private final DefaultRoot<T> root;
 
 	private final Checker<T> checker;
 
-	protected AbstractBuilder<T> builder;
+	protected Builder<T> builder;
 
-	public Context(DefaultRoot<T> root) {
+	protected Context(DefaultRoot<T> root) {
 		this.root = root;
 		this.checker = buildChecker();
+		this.builder = buildBuilder();
 	}
 
 	protected Checker<T> buildChecker() {
 		return new Checker<>(this);
 	}
 
-	public void init(AbstractBuilder<T> builder) {
-		this.builder = builder;
+	protected Builder<T> buildBuilder() {
+		return new Builder<>(this);
 	}
 
 	public void discardWithException(Throwable exception) throws RollbackException {
@@ -35,7 +34,7 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 		return checker;
 	}
 
-	public AbstractBuilder<T> getBuilder() {
+	public Builder<T> getBuilder() {
 		return builder;
 	}
 
@@ -74,60 +73,19 @@ public class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 		if (vertex.isMeta()) {
 			T aliveSuper = getAlive(vertex.getSupers().get(0));
 			return aliveSuper != null ? getInheritings(aliveSuper).get(vertex) : null;
-		} else {
-			T aliveMeta = getAlive(vertex.getMeta());
-			return aliveMeta != null ? getInstances(aliveMeta).get(vertex) : null;
 		}
-	}
-
-	public long getTs() {
-		return 0;
-	}
-
-	@Override
-	public Snapshot<T> getInstances(T vertex) {
-		return new IteratorSnapshot<T>() {
-			@Override
-			public Iterator<T> iterator() {
-				return vertex.getInstancesDependencies().iterator(getTs());
-			}
-
-			@Override
-			public T get(Object o) {
-				return vertex.getInstancesDependencies().get(o, getTs());
-			}
-		};
+		T aliveMeta = getAlive(vertex.getMeta());
+		return aliveMeta != null ? getInstances(aliveMeta).get(vertex) : null;
 	}
 
 	@Override
-	public Snapshot<T> getInheritings(T vertex) {
-		return new IteratorSnapshot<T>() {
-			@Override
-			public Iterator<T> iterator() {
-				return vertex.getInheritingsDependencies().iterator(getTs());
-			}
-
-			@Override
-			public T get(Object o) {
-				return vertex.getInheritingsDependencies().get(o, getTs());
-			}
-		};
-	}
+	public abstract Snapshot<T> getInstances(T vertex);
 
 	@Override
-	public Snapshot<T> getComposites(T vertex) {
-		return new IteratorSnapshot<T>() {
-			@Override
-			public Iterator<T> iterator() {
-				return vertex.getCompositesDependencies().iterator(getTs());
-			}
+	public abstract Snapshot<T> getInheritings(T vertex);
 
-			@Override
-			public T get(Object o) {
-				return vertex.getCompositesDependencies().get(o, getTs());
-			}
-		};
-	}
+	@Override
+	public abstract Snapshot<T> getComposites(T vertex);
 
 	protected void indexInstance(T generic, T instance) {
 		index(generic.getInstancesDependencies(), instance);

@@ -3,9 +3,12 @@ package org.genericsystem.cache;
 import java.util.stream.Stream;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.CacheNoStartedException;
+import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
-import org.genericsystem.kernel.AbstractBuilder;
+import org.genericsystem.kernel.Builder;
+import org.genericsystem.kernel.Context;
+import org.genericsystem.kernel.DefaultContext;
 import org.genericsystem.kernel.DependenciesImpl;
 
 public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
@@ -24,18 +27,28 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 	}
 
 	protected Cache(DefaultEngine<T> engine) {
-		this(new Transaction<>(engine));
+		this(new Transaction<>(engine, 0L));
 	}
 
 	protected Cache(Context<T> subContext) {
 		super(subContext.getRoot());
 		this.subContext = subContext;
-		init((AbstractBuilder<T>) new GenericBuilder((Cache<Generic>) this));
 		initialize();
 	}
 
 	@Override
-	public AbstractBuilder<T> getBuilder() {
+	protected Builder<T> buildBuilder() {
+		return new Builder<T>(this) {
+			@Override
+			@SuppressWarnings("unchecked")
+			protected Class<T> getTClass() {
+				return (Class<T>) Generic.class;
+			}
+		};
+	}
+
+	@Override
+	public Builder<T> getBuilder() {
 		return super.getBuilder();
 	}
 
@@ -77,11 +90,13 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 			discardWithException(new CacheNoStartedException("The Cache isn't started"));
 		checkConstraints();
 		try {
-			if (subContext instanceof Cache)
+			if (subContext instanceof Cache) {
 				((Cache<T>) subContext).start();
-			else
+				((Cache<T>) subContext).apply(adds, removes);
+			} else {
 				stop();
-			subContext.apply(adds, removes);
+				((Transaction<T>) subContext).apply(adds, removes);
+			}
 		} catch (ConstraintViolationException e) {
 			discardWithException(e);
 		} finally {
@@ -109,10 +124,10 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 
 	@Override
 	public DefaultEngine<T> getRoot() {
-		return subContext.getRoot();
+		return (DefaultEngine<T>) subContext.getRoot();
 	}
 
-	protected org.genericsystem.kernel.DefaultContext<T> getSubContext() {
+	protected DefaultContext<T> getSubContext() {
 		return subContext;
 	}
 
@@ -176,4 +191,10 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 			}
 		};
 	}
+
+	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
+		removes.forEach(this::unplug);
+		adds.forEach(this::plug);
+	}
+
 }

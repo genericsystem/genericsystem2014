@@ -1,27 +1,15 @@
 package org.genericsystem.concurrency;
 
 import java.util.HashSet;
-
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
+import org.genericsystem.kernel.Builder;
 
 public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem.cache.Transaction<T> {
 
-	private final long ts;
-
 	Transaction(DefaultEngine<T> engine) {
-		this(engine.pickNewTs(), engine);
-	}
-
-	Transaction(long ts, DefaultEngine<T> engine) {
-		super(engine);
-		this.ts = ts;
-	}
-
-	@Override
-	public long getTs() {
-		return ts;
+		super(engine, engine.pickNewTs());
 	}
 
 	@Override
@@ -89,5 +77,16 @@ public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem
 			for (LifeManager lifeManager : this)
 				lifeManager.writeUnlock();
 		}
+	}
+
+	@Override
+	protected Builder<T> buildBuilder() {
+		return new Builder<T>(this) {
+			@Override
+			@SuppressWarnings("unchecked")
+			protected Class<T> getTClass() {
+				return (Class<T>) Generic.class;
+			}
+		};
 	}
 }

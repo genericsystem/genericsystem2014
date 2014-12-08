@@ -1,7 +1,7 @@
 package org.genericsystem.concurrency;
 
-import org.genericsystem.cache.Context;
-import org.genericsystem.concurrency.AbstractBuilder.ContextEventListener;
+import org.genericsystem.concurrency.Cache.ContextEventListener;
+import org.genericsystem.kernel.Context;
 
 public interface DefaultEngine<T extends AbstractGeneric<T>> extends org.genericsystem.cache.DefaultEngine<T>, DefaultGeneric<T> {
 

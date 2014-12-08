@@ -3,7 +3,6 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
-import org.genericsystem.kernel.AbstractBuilder.VertextBuilder;
 import org.genericsystem.kernel.Root.DefaultNoReferentialIntegrityProperty.DefaultValue;
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Dependencies;
@@ -33,12 +32,9 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 
 	public Root(Serializable value, String persistentDirectoryPath, Class<?>... userClasses) {
 		init(null, Collections.emptyList(), value, Collections.emptyList());
-
-		context = new Context<>(this);
-		context.init(new VertextBuilder(context));
+		context = new Transaction<>(this, 0L);
 		systemCache = new SystemCache<>(Root.class, this);
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
-
 		archiver = new Archiver<>(this, persistentDirectoryPath).startScheduler();
 	}
 

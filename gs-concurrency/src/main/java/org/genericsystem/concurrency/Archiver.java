@@ -8,12 +8,12 @@ import java.util.TreeSet;
 
 public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.kernel.Archiver<T> {
 
-	public Archiver(T root, String directoryPath) {
-		this(root, new ZipFileManager(), directoryPath);
+	public Archiver(DefaultEngine<T> engine, String directoryPath) {
+		this(engine, new ZipFileManager(), directoryPath);
 	}
 
-	public Archiver(T root, FileManager fileManager, String directoryPath) {
-		super(new WriterLoaderManager<>(root, fileManager), directoryPath);
+	public Archiver(DefaultEngine<T> engine, FileManager fileManager, String directoryPath) {
+		super(new WriterLoaderManager<>(new Transaction<>(engine), fileManager), directoryPath);
 	}
 
 	@Override
@@ -23,13 +23,13 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 
 	public static class WriterLoaderManager<T extends AbstractGeneric<T>> extends org.genericsystem.kernel.Archiver.WriterLoaderManager<T> {
 
-		public WriterLoaderManager(T root, FileManager fileManager) {
-			super(root, fileManager);
+		public WriterLoaderManager(Transaction<T> transaction, FileManager fileManager) {
+			super(transaction, fileManager);
 		}
 
 		@Override
 		protected List<T> getOrderedVertices() {
-			return new ArrayList<>(new DependenciesOrder<T>(ts).visit(root));
+			return new ArrayList<>(new DependenciesOrder<T>(transaction.getTs()).visit((T) transaction.getRoot()).descendingSet());
 		}
 
 		public static class DependenciesOrder<T extends AbstractGeneric<T>> extends TreeSet<T> {
@@ -52,35 +52,30 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 					iterator = node.getInstancesDependencies().iterator(ts);
 					while (iterator.hasNext())
 						visit(iterator.next());
-					if (!node.isRoot())
-						add(node);
+					add(node);
 				}
 				return this;
 			}
 		}
-		
+
 		@Override
-		protected Long[] loadOtherTs() throws IOException{
-			return new Long[]{inputStream.readLong(),inputStream.readLong(),inputStream.readLong()};
+		protected Long[] loadOtherTs() throws IOException {
+			return new Long[] { inputStream.readLong(), inputStream.readLong(), inputStream.readLong() };
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
-		protected long pickNewTs() {
-			return ((DefaultEngine<T>) root).pickNewTs();
-		}
-		
-		protected T restoreTs(T dependency,Long designTs,Long[] otherTs){
+		protected T restoreTs(T dependency, Long designTs, Long[] otherTs) {
 			return dependency.restore(designTs, otherTs[0], otherTs[1], otherTs[2]);
 		}
 
 		@Override
-		protected void writeOtherTs(T dependency) throws IOException{
+		protected void writeOtherTs(T dependency) throws IOException {
 			outputStream.writeLong(dependency.getLifeManager().getBirthTs());
-			outputStream.writeLong( dependency.getLifeManager().getLastReadTs());
-			outputStream.writeLong( dependency.getLifeManager().getDeathTs());
+			outputStream.writeLong(dependency.getLifeManager().getLastReadTs());
+			outputStream.writeLong(dependency.getLifeManager().getDeathTs());
 		}
-		
+
+		@Override
 		protected void writeAncestorId(T ancestor) throws IOException {
 			outputStream.writeLong(ancestor.getLifeManager().getDesignTs());
 		}

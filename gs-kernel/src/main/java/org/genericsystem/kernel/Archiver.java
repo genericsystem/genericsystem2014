@@ -30,7 +30,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,15 +62,15 @@ public class Archiver<T extends AbstractVertex<T>> {
 
 	private FileLock lockFile;
 
-	public Archiver(T root, String directoryPath) {
+	public Archiver(DefaultRoot<T> root, String directoryPath) {
 		this(root, new ZipFileManager(), directoryPath);
 	}
 
-	public Archiver(T root, FileManager fileManager, String directoryPath) {
-		this(new WriterLoaderManager<>(root, fileManager), directoryPath);
+	private Archiver(DefaultRoot<T> root, FileManager fileManager, String directoryPath) {
+		this(new WriterLoaderManager<>(new Transaction<>(root, 0L), fileManager), directoryPath);
 	}
 
-	public Archiver(WriterLoaderManager<T> writerLoader, String directoryPath) {
+	protected Archiver(WriterLoaderManager<T> writerLoader, String directoryPath) {
 		this.writerLoader = writerLoader;
 		directory = prepareAndLockDirectory(directoryPath);
 		if (directory != null) {
@@ -157,22 +156,14 @@ public class Archiver<T extends AbstractVertex<T>> {
 	public static class WriterLoaderManager<T extends AbstractVertex<T>> {
 
 		private final FileManager fileManager;
-
 		protected ObjectOutputStream outputStream;
 		protected ObjectInputStream inputStream;
 
-		protected final T root;
+		protected final Transaction<T> transaction;
 
-		protected final long ts;
-
-		public WriterLoaderManager(T root, FileManager fileManager) {
-			this.root = root;
+		public WriterLoaderManager(Transaction<T> transaction, FileManager fileManager) {
 			this.fileManager = fileManager;
-			this.ts = pickNewTs();
-		}
-
-		protected long pickNewTs() {
-			return System.currentTimeMillis();
+			this.transaction = transaction;
 		}
 
 		public void loadSnapshot(String path) {
@@ -181,35 +172,33 @@ public class Archiver<T extends AbstractVertex<T>> {
 				Map<Long, T> vertexMap = new HashMap<>();
 				for (;;)
 					loadDependency(vertexMap);
-			} catch (EOFException ignore) {
-			} catch (ClassNotFoundException | IOException e) {
+			} catch (EOFException ignore) {} catch (ClassNotFoundException | IOException e) {
 				log.error(e.getMessage(), e);
 			}
 		}
 
-		protected long loadId() throws IOException{
+		protected long loadId() throws IOException {
 			return inputStream.readLong();
 		}
 
-		protected Long[] loadOtherTs() throws IOException{
+		protected Long[] loadOtherTs() throws IOException {
 			return null;
 		}
 
-		protected T restoreTs(T dependency,Long designTs,Long[] otherTs){
+		protected T restoreTs(T dependency, Long designTs, Long[] otherTs) {
 			return dependency;
 		}
 
 		private void loadDependency(Map<Long, T> vertexMap) throws IOException, ClassNotFoundException {
-			log.info("coucou");
 			Long id = loadId();
 			Long[] otherTs = loadOtherTs();
 			Serializable value = (Serializable) inputStream.readObject();
 			T meta = loadAncestor(vertexMap);
 			List<T> supers = loadAncestors(vertexMap);
 			List<T> components = loadAncestors(vertexMap);
-			T instance = meta == null ? root.getMeta(components.size()) : meta.getDirectInstance(value, components);
-			vertexMap.put(id, instance!=null ? instance : root.getCurrentCache().plug(restoreTs(root.getCurrentCache().getBuilder().newT(null, meta, supers, value, components),id,otherTs)));
-			log.info("load dependency "+vertexMap.get(id).info());
+			T instance = meta == null ? ((T) transaction.getRoot()).getMeta(components.size()) : meta.getDirectInstance(value, components);
+			vertexMap.put(id, instance != null ? instance : transaction.plug(restoreTs(transaction.getBuilder().newT(null, meta, supers, value, components), id, otherTs)));
+			log.info("load dependency " + vertexMap.get(id).info() + " " + id);
 		}
 
 		private List<T> loadAncestors(Map<Long, T> vertexMap) throws IOException {
@@ -222,11 +211,11 @@ public class Archiver<T extends AbstractVertex<T>> {
 
 		private T loadAncestor(Map<Long, T> vertexMap) throws IOException {
 			long designTs = inputStream.readLong();
-			return  vertexMap.get(designTs);
+			return vertexMap.get(designTs);
 		}
 
 		private void writeSnapshot(File directory) {
-			String fileName = getFilename(ts);
+			String fileName = getFilename(transaction.getTs());
 			try (FileOutputStream fileOutputStream = new FileOutputStream(directory.getAbsolutePath() + File.separator + fileName + fileManager.getExtension() + PART_EXTENSION);) {
 				outputStream = fileManager.newOutputStream(fileOutputStream, fileName);
 				writeDependencies(getOrderedVertices(), new HashSet<>());
@@ -262,9 +251,10 @@ public class Archiver<T extends AbstractVertex<T>> {
 		}
 
 		protected List<T> getOrderedVertices() {
-			return Statics.reverseCollections(new OrderedDependencies<T>().visit(root));
+			return Statics.reverseCollections(new OrderedDependencies<T>().visit((T) transaction.getRoot()));
 		}
 
+		// KK remove this
 		public static class OrderedDependencies<T extends AbstractVertex<T>> extends LinkedHashSet<T> {
 			private static final long serialVersionUID = -5970021419012502402L;
 
@@ -298,7 +288,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 			writeAncestorId(dependency.getMeta());
 			writeAncestorsId(dependency.getSupers());
 			writeAncestorsId(dependency.getComponents());
-			log.info("write dependency "+dependency.info());
+			log.info("write dependency " + dependency.info());
 		}
 
 		protected void writeOtherTs(T dependency) throws IOException {
@@ -312,7 +302,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 		}
 
 		protected void writeAncestorId(T ancestor) throws IOException {
-			outputStream.writeLong((long)System.identityHashCode(ancestor));
+			outputStream.writeLong(System.identityHashCode(ancestor));
 		}
 
 	}

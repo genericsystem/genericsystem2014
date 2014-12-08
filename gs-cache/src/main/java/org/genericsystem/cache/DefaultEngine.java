@@ -1,9 +1,11 @@
 package org.genericsystem.cache;
 
+import org.genericsystem.kernel.Context;
+
 public interface DefaultEngine<T extends AbstractGeneric<T>> extends org.genericsystem.kernel.DefaultRoot<T>, DefaultGeneric<T> {
 
 	default Cache<T> newCache() {
-		return newCache(new Transaction<>(getRoot()));
+		return newCache(new Transaction<>(getRoot(), 0L));
 	}
 
 	default Cache<T> newCache(Context<T> subContext) {

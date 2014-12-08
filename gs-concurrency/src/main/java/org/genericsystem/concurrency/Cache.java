@@ -4,9 +4,8 @@ import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
-import org.genericsystem.cache.Context;
-import org.genericsystem.concurrency.AbstractBuilder.GenericBuilder;
-import org.genericsystem.concurrency.AbstractBuilder.ContextEventListener;
+import org.genericsystem.kernel.Builder;
+import org.genericsystem.kernel.Context;
 import org.genericsystem.kernel.DefaultContext;
 import org.genericsystem.kernel.Statics;
 
@@ -19,19 +18,28 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 	}
 
 	protected Cache(Context<T> subContext) {
-		this(subContext, new ContextEventListener<T>() {
-		});
+		this(subContext, new ContextEventListener<T>() {});
 	}
 
 	protected Cache(Context<T> subContext, ContextEventListener<T> listener) {
 		super(subContext);
 		this.listener = listener;
-		init((AbstractBuilder<T>) new GenericBuilder((Cache<Generic>) this));
+	}
+
+	@Override
+	protected Builder<T> buildBuilder() {
+		return new Builder<T>(this) {
+			@Override
+			@SuppressWarnings("unchecked")
+			protected Class<T> getTClass() {
+				return (Class<T>) Generic.class;
+			}
+		};
 	}
 
 	@Override
 	public Cache<T> mountAndStartNewCache() {
-		return (Cache<T>) getRoot().newCache(this).start();
+		return getRoot().newCache(this).start();
 	}
 
 	@Override
@@ -56,8 +64,8 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 	}
 
 	@Override
-	public AbstractBuilder<T> getBuilder() {
-		return (AbstractBuilder<T>) super.getBuilder();
+	public Builder<T> getBuilder() {
+		return super.getBuilder();
 	}
 
 	public void pickNewTs() throws RollbackException {
@@ -86,7 +94,7 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 					((Cache<T>) subContext).start();
 					((Cache<T>) subContext).apply(adds, removes);
 				} else {
-					stop();//No context during transaction apply for more security
+					stop();// No context during transaction apply for more security
 					((Transaction<T>) subContext).apply(adds, removes);
 				}
 				initialize();
@@ -119,5 +127,21 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 		super.clear();
 		listener.triggersClearEvent();
 		listener.triggersRefreshEvent();
+	}
+
+	@Override
+	protected DefaultContext<T> getSubContext() {
+		return super.getSubContext();
+	}
+
+	public static interface ContextEventListener<X> {
+
+		default void triggersMutationEvent(X oldDependency, X newDependency) {}
+
+		default void triggersRefreshEvent() {}
+
+		default void triggersClearEvent() {}
+
+		default void triggersFlushEvent() {}
 	}
 }
