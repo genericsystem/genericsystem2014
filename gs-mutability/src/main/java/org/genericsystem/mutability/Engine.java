@@ -17,12 +17,6 @@ public class Engine extends Generic implements IRoot<Generic> {
 		this.concurrencyEngine = new org.genericsystem.concurrency.Engine();
 		newCache().start();
 	}
-	
-	@SuppressWarnings("unchecked")
-	@Override
-	public <Custom extends Generic> Custom find(Class<?> clazz) {
-		return (Custom) wrap(concurrencyEngine.find(clazz));
-	}
 
 	public Cache newCache() {
 		return new Cache(this, concurrencyEngine);

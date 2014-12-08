@@ -1,5 +1,6 @@
 package org.genericsystem.concurrency;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,7 +28,7 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 		}
 
 		@Override
-		protected List<T> getOrderedVertex() {
+		protected List<T> getOrderedVertices() {
 			return new ArrayList<>(new DependenciesOrder<T>(ts).visit(root));
 		}
 
@@ -57,16 +58,31 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 				return this;
 			}
 		}
+		
+		@Override
+		protected Long[] loadOtherTs() throws IOException{
+			return new Long[]{inputStream.readLong(),inputStream.readLong(),inputStream.readLong()};
+		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		protected long pickNewTs() {
 			return ((DefaultEngine<T>) root).pickNewTs();
 		}
+		
+		protected T restoreTs(T dependency,Long designTs,Long[] otherTs){
+			return dependency.restore(designTs, otherTs[0], otherTs[1], otherTs[2]);
+		}
 
 		@Override
-		protected long[] getTs(T dependency) {
-			return new long[] { dependency.getLifeManager().getBirthTs(), dependency.getLifeManager().getDesignTs(), dependency.getLifeManager().getLastReadTs(), dependency.getLifeManager().getDeathTs() };
+		protected void writeOtherTs(T dependency) throws IOException{
+			outputStream.writeLong(dependency.getLifeManager().getBirthTs());
+			outputStream.writeLong( dependency.getLifeManager().getLastReadTs());
+			outputStream.writeLong( dependency.getLifeManager().getDeathTs());
+		}
+		
+		protected void writeAncestorId(T ancestor) throws IOException {
+			outputStream.writeLong(ancestor.getLifeManager().getDesignTs());
 		}
 
 	}
