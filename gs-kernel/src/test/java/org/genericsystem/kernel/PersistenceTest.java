@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Random;
 
-import org.genericsystem.kernel.Archiver.WriterLoaderManager.DependenciesOrder;
+import org.genericsystem.kernel.Archiver.WriterLoaderManager.OrderedDependencies;
 import org.testng.annotations.Test;
 
 @Test
@@ -135,8 +135,8 @@ public class PersistenceTest extends AbstractTest {
 	// }
 
 	private void compareGraph(Vertex persistedNode, Vertex readNode) {
-		DependenciesOrder<Vertex> persistVisit = new DependenciesOrder<Vertex>().visit(persistedNode);
-		DependenciesOrder<Vertex> readVisit = new DependenciesOrder<Vertex>().visit(readNode);
+		OrderedDependencies<Vertex> persistVisit = new OrderedDependencies<Vertex>().visit(persistedNode);
+		OrderedDependencies<Vertex> readVisit = new OrderedDependencies<Vertex>().visit(readNode);
 		assert persistVisit.size() == readVisit.size() : persistVisit + " \n " + readVisit;
 		for (Vertex persist : persistVisit) {
 			for (Vertex read : readVisit)
