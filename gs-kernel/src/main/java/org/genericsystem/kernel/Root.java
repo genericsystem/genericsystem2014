@@ -35,7 +35,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 		context = new Transaction<>(this, 0L);
 		systemCache = new SystemCache<>(Root.class, this);
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
-		archiver = new Archiver<>(this, persistentDirectoryPath).startScheduler();
+		archiver = new Archiver<>(this, persistentDirectoryPath);
 	}
 
 	@Override
@@ -83,7 +83,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 
 	@SystemGeneric
 	@Meta(MetaRelation.class)
-	@Supers(Root.class)
+	@Supers(MetaAttribute.class)
 	@Components({ Root.class, Root.class })
 	@EngineValue
 	public static class MetaRelation extends Vertex {

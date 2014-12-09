@@ -31,11 +31,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return (T) this;
 	}
 
-	@SuppressWarnings("unchecked")
-	protected T restore(Long designTs, long birthTs, long lastReadTs, long deathTs) {
-		return (T) this;
-	}
-
 	@Override
 	public T getMeta() {
 		return meta;

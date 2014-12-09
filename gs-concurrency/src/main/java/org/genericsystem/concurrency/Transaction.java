@@ -28,10 +28,13 @@ public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem
 	@Override
 	public T plug(T generic) {
 		generic.getLifeManager().beginLife(getTs());
-		T plug = super.plug(generic);
-		return plug;
+		return super.plug(generic);
 	}
 
+	// for Archiver
+	T simplePlug(T generic) {
+		return super.plug(generic);
+	}
 	@Override
 	public boolean unplug(T generic) {
 		generic.getLifeManager().kill(getTs());

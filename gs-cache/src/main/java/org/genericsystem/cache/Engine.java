@@ -82,7 +82,7 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 
 	@SystemGeneric
 	@Meta(MetaRelation.class)
-	@Supers(Engine.class)
+	@Supers(MetaAttribute.class)
 	@Components({ Engine.class, Engine.class })
 	@EngineValue
 	public static class MetaRelation extends Generic {

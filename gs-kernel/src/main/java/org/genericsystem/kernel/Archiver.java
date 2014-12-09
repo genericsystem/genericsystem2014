@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
@@ -30,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,55 +58,106 @@ public class Archiver<T extends AbstractVertex<T>> {
 
 	private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
+	protected final DefaultRoot<T> root;
 	private final File directory;
-
-	private final WriterLoaderManager<T> writerLoader;
-
 	private FileLock lockFile;
 
-	public Archiver(DefaultRoot<T> root, String directoryPath) {
-		this(root, new ZipFileManager(), directoryPath);
+	private ZipFileManager zipFileManager = new ZipFileManager(new FileManager());
+
+	public static String getFileExtension() {
+		return GS_EXTENSION + ZIP_EXTENSION;
 	}
 
-	private Archiver(DefaultRoot<T> root, FileManager fileManager, String directoryPath) {
-		this(new WriterLoaderManager<>(new Transaction<>(root, 0L), fileManager), directoryPath);
-	}
-
-	protected Archiver(WriterLoaderManager<T> writerLoader, String directoryPath) {
-		this.writerLoader = writerLoader;
+	protected Archiver(DefaultRoot<T> root, String directoryPath) {
+		this.root = root;
 		directory = prepareAndLockDirectory(directoryPath);
 		if (directory != null) {
 			String snapshotPath = getSnapshotPath(directory);
-			if (snapshotPath != null)
-				writerLoader.loadSnapshot(snapshotPath);
+			if (snapshotPath != null) {
+				try {
+					getLoader(zipFileManager.getObjectInputStream(snapshotPath + getFileExtension())).loadSnapshot();
+				} catch (IOException | ClassNotFoundException e ) {
+					log.error(e.getMessage(), e);
+				}
+			}
 		}
+		startScheduler();
 	}
 
-	public Archiver<T> startScheduler() {
-		if (lockFile != null && directory != null)
-			if (SNAPSHOTS_PERIOD > 0L) {
-				scheduler.scheduleAtFixedRate(new Runnable() {
-					@Override
-					public void run() {
-						writerLoader.writeSnapshot(directory);
+	protected Loader getLoader(ObjectInputStream objectInputStream){
+		return new Loader(objectInputStream);
+	}
+
+	protected Saver getSaver(ObjectOutputStream objectOutputStream,long ts){
+		return new Saver(objectOutputStream,ts);
+	}
+
+	private Archiver<T> startScheduler() {
+		if (directory != null && lockFile != null && SNAPSHOTS_PERIOD > 0L)
+			scheduler.scheduleAtFixedRate(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						doSnapshot();
+					} catch (IOException e) {
+						log.error(e.getMessage(), e);
 					}
-				}, SNAPSHOTS_INITIAL_DELAY, SNAPSHOTS_PERIOD, TimeUnit.MILLISECONDS);
-			}
+				}
+			}, SNAPSHOTS_INITIAL_DELAY, SNAPSHOTS_PERIOD, TimeUnit.MILLISECONDS);
 		return this;
 	}
 
+
 	public void close() {
-		if (lockFile != null && directory != null) {
+		if (directory != null && lockFile != null) {
 			scheduler.shutdown();
-			writerLoader.writeSnapshot(directory);
 			try {
+				doSnapshot();
 				lockFile.close();
 				lockFile = null;
 			} catch (IOException e) {
-				log.error(e.getMessage(), e);
+				//TODO rollback here
+				throw new IllegalStateException(e);
 			}
 		}
 	}
+
+	protected long pickTs(){
+		return 0L;
+	}
+
+	private void doSnapshot() throws IOException{
+		long ts = pickTs();
+		String fileName = getFilename(ts);
+		String partFileName = directory.getAbsolutePath() + File.separator + fileName + getFileExtension() + PART_EXTENSION;
+		ObjectOutputStream outputStream= zipFileManager.getObjectOutputStream(partFileName);
+		getSaver(outputStream,ts).saveSnapshot(directory);
+		new File(partFileName).renameTo(new File(directory.getAbsolutePath() + File.separator + fileName + getFileExtension()));
+		manageOldSnapshots(directory);
+	}
+
+	private void manageOldSnapshots(File directory) {
+		NavigableMap<Long, File> snapshotsMap = snapshotsMap(directory, getFileExtension());
+		long lastTs = snapshotsMap.lastKey();
+		long firstTs = snapshotsMap.firstKey();
+		long ts = firstTs;
+		for (long snapshotTs : new TreeSet<>(snapshotsMap.keySet()))
+			if (snapshotTs != lastTs && snapshotTs != firstTs)
+				if ((snapshotTs - ts) < minInterval((lastTs - snapshotTs)))
+					removeSnapshot(snapshotsMap, snapshotTs);
+				else
+					ts = snapshotTs;
+	}
+
+	private long minInterval(long periodNumber) {
+		return (long) Math.floor(periodNumber / ARCHIVER_COEFF);
+	}
+
+	private void removeSnapshot(NavigableMap<Long, File> snapshotsMap, long ts) {
+		snapshotsMap.get(ts).delete();
+		snapshotsMap.remove(ts);
+	}
+
 
 	private File prepareAndLockDirectory(String directoryPath) {
 		if (directoryPath == null)
@@ -124,7 +177,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 	}
 
 	private String getSnapshotPath(File directory) {
-		NavigableMap<Long, File> snapshotsMap = snapshotsMap(directory, writerLoader.fileManager.getExtension());
+		NavigableMap<Long, File> snapshotsMap = snapshotsMap(directory, getFileExtension());
 		return snapshotsMap.isEmpty() ? null : directory.getAbsolutePath() + File.separator + getFilename(snapshotsMap.lastKey());
 	}
 
@@ -145,6 +198,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 		return snapshotsMap;
 	}
 
+
 	private static long getTimestamp(final String filename) throws ParseException {
 		return Long.parseLong(filename.substring(filename.lastIndexOf("---") + 3));
 	}
@@ -153,32 +207,107 @@ public class Archiver<T extends AbstractVertex<T>> {
 		return new SimpleDateFormat(PATTERN).format(new Date(ts / Statics.MILLI_TO_NANOSECONDS)) + "---" + ts;
 	}
 
-	public static class WriterLoaderManager<T extends AbstractVertex<T>> {
+	public class Saver {
 
-		private final FileManager fileManager;
-		protected ObjectOutputStream outputStream;
-		protected ObjectInputStream inputStream;
+		protected final ObjectOutputStream objectOutputStream;
+		protected final long ts;
 
-		protected final Transaction<T> transaction;
-
-		public WriterLoaderManager(Transaction<T> transaction, FileManager fileManager) {
-			this.fileManager = fileManager;
-			this.transaction = transaction;
+		protected Saver( ObjectOutputStream objectOutputStream,long ts){
+			this.objectOutputStream = objectOutputStream;
+			this.ts=ts;
 		}
 
-		public void loadSnapshot(String path) {
-			try (FileInputStream fileInputStream = new FileInputStream(new File(path + fileManager.getExtension()))) {
-				inputStream = fileManager.newInputStream(fileInputStream);
+		private void saveSnapshot(File directory) throws IOException {
+			writeDependencies(getOrderedVertices(), new HashSet<>());
+			objectOutputStream.flush();
+			objectOutputStream.close();
+		}
+
+		private void writeDependencies(List<T> dependencies, Set<T> vertexSet) throws IOException {
+			for (T dependency : dependencies)
+				if (vertexSet.add(dependency))
+					writeDependency(dependency);
+		}
+
+		private void writeDependency(T dependency) throws IOException {
+			writeAncestorId(dependency);
+			writeOtherTs(dependency);
+			objectOutputStream.writeObject(dependency.getValue());
+			writeAncestorId(dependency.getMeta());
+			writeAncestorsId(dependency.getSupers());
+			writeAncestorsId(dependency.getComponents());
+			log.info("write dependency " + dependency.info());
+		}
+
+		protected void writeOtherTs(T dependency) throws IOException {
+
+		}
+
+		private void writeAncestorsId(List<T> ancestors) throws IOException {
+			objectOutputStream.writeInt(ancestors.size());
+			for (T ancestor : ancestors)
+				writeAncestorId(ancestor);
+		}
+
+		protected void writeAncestorId(T ancestor) throws IOException {
+			objectOutputStream.writeLong(System.identityHashCode(ancestor));
+		}
+
+		protected List<T> getOrderedVertices() {
+			return Statics.reverseCollections(new OrderedDependencies<T>(ts).visit((T)root));
+		}
+	}
+	
+	public static class OrderedDependencies<T extends AbstractVertex<T>> extends LinkedHashSet<T> {
+		private static final long serialVersionUID = -5970021419012502402L;
+
+		private final long ts;
+
+		OrderedDependencies(long ts) {
+			this.ts=ts;
+		}
+
+		public OrderedDependencies<T> visit(T node) {
+			if (!contains(node)) {
+				Iterator<T> iterator = node.getCompositesDependencies().iterator(ts);
+				while (iterator.hasNext())
+					visit(iterator.next());
+				iterator = node.getInheritingsDependencies().iterator(ts);
+				while (iterator.hasNext())
+					visit(iterator.next());
+				iterator = node.getInstancesDependencies().iterator(ts);
+				while (iterator.hasNext())
+					visit(iterator.next());
+				add(node);
+			}
+			return this;
+		}
+	}
+
+	protected class Loader {
+
+		protected final ObjectInputStream objectInputStream ;
+		private final Transaction<T> transaction;
+
+		protected Loader(ObjectInputStream objectInputStream){
+			this.objectInputStream = objectInputStream;
+			this.transaction=  buildTransaction();
+		}
+		
+		protected Transaction<T> buildTransaction(){
+			return new Transaction<>(root, 0L); 
+		}
+
+		private void loadSnapshot() throws ClassNotFoundException, IOException {
+			try {
 				Map<Long, T> vertexMap = new HashMap<>();
 				for (;;)
 					loadDependency(vertexMap);
-			} catch (EOFException ignore) {} catch (ClassNotFoundException | IOException e) {
-				log.error(e.getMessage(), e);
-			}
+			} catch (EOFException ignore) {}
 		}
 
 		protected long loadId() throws IOException {
-			return inputStream.readLong();
+			return objectInputStream.readLong();
 		}
 
 		protected Long[] loadOtherTs() throws IOException {
@@ -192,151 +321,59 @@ public class Archiver<T extends AbstractVertex<T>> {
 		private void loadDependency(Map<Long, T> vertexMap) throws IOException, ClassNotFoundException {
 			Long id = loadId();
 			Long[] otherTs = loadOtherTs();
-			Serializable value = (Serializable) inputStream.readObject();
+			Serializable value = (Serializable) objectInputStream.readObject();
 			T meta = loadAncestor(vertexMap);
 			List<T> supers = loadAncestors(vertexMap);
 			List<T> components = loadAncestors(vertexMap);
-			T instance = meta == null ? ((T) transaction.getRoot()).getMeta(components.size()) : meta.getDirectInstance(value, components);
+			T instance = meta == null ? ((T)root).getMeta(components.size()) : meta.getDirectInstance(value, components);
 			vertexMap.put(id, instance != null ? instance : transaction.plug(restoreTs(transaction.getBuilder().newT(null, meta, supers, value, components), id, otherTs)));
 			log.info("load dependency " + vertexMap.get(id).info() + " " + id);
 		}
 
 		private List<T> loadAncestors(Map<Long, T> vertexMap) throws IOException {
 			List<T> ancestors = new ArrayList<>();
-			int sizeComponents = inputStream.readInt();
+			int sizeComponents = objectInputStream.readInt();
 			for (int j = 0; j < sizeComponents; j++)
 				ancestors.add(loadAncestor(vertexMap));
 			return ancestors;
 		}
 
 		private T loadAncestor(Map<Long, T> vertexMap) throws IOException {
-			long designTs = inputStream.readLong();
+			long designTs = objectInputStream.readLong();
 			return vertexMap.get(designTs);
 		}
-
-		private void writeSnapshot(File directory) {
-			String fileName = getFilename(transaction.getTs());
-			try (FileOutputStream fileOutputStream = new FileOutputStream(directory.getAbsolutePath() + File.separator + fileName + fileManager.getExtension() + PART_EXTENSION);) {
-				outputStream = fileManager.newOutputStream(fileOutputStream, fileName);
-				writeDependencies(getOrderedVertices(), new HashSet<>());
-				outputStream.flush();
-				outputStream.close();
-				new File(directory.getAbsolutePath() + File.separator + fileName + fileManager.getExtension() + PART_EXTENSION).renameTo(new File(directory.getAbsolutePath() + File.separator + fileName + fileManager.getExtension()));
-				manageOldSnapshots(directory);
-			} catch (IOException e) {
-				log.error(e.getMessage(), e);
-			}
-		}
-
-		private void manageOldSnapshots(File directory) {
-			NavigableMap<Long, File> snapshotsMap = snapshotsMap(directory, fileManager.getExtension());
-			long lastTs = snapshotsMap.lastKey();
-			long firstTs = snapshotsMap.firstKey();
-			long ts = firstTs;
-			for (long snapshotTs : new TreeSet<>(snapshotsMap.keySet()))
-				if (snapshotTs != lastTs && snapshotTs != firstTs)
-					if ((snapshotTs - ts) < minInterval((lastTs - snapshotTs)))
-						removeSnapshot(snapshotsMap, snapshotTs);
-					else
-						ts = snapshotTs;
-		}
-
-		private long minInterval(long periodNumber) {
-			return (long) Math.floor(periodNumber / ARCHIVER_COEFF);
-		}
-
-		private void removeSnapshot(NavigableMap<Long, File> snapshotsMap, long ts) {
-			snapshotsMap.get(ts).delete();
-			snapshotsMap.remove(ts);
-		}
-
-		protected List<T> getOrderedVertices() {
-			return Statics.reverseCollections(new OrderedDependencies<T>().visit((T) transaction.getRoot()));
-		}
-
-		// KK remove this
-		public static class OrderedDependencies<T extends AbstractVertex<T>> extends LinkedHashSet<T> {
-			private static final long serialVersionUID = -5970021419012502402L;
-
-			public OrderedDependencies<T> visit(T node) {
-				if (!contains(node)) {
-					Iterator<T> iterator = node.getCompositesDependencies().iterator(0);
-					while (iterator.hasNext())
-						visit(iterator.next());
-					iterator = node.getInheritingsDependencies().iterator(0);
-					while (iterator.hasNext())
-						visit(iterator.next());
-					iterator = node.getInstancesDependencies().iterator(0);
-					while (iterator.hasNext())
-						visit(iterator.next());
-					add(node);
-				}
-				return this;
-			}
-		}
-
-		private void writeDependencies(List<T> dependencies, Set<T> vertexSet) throws IOException {
-			for (T dependency : dependencies)
-				if (vertexSet.add(dependency))
-					writeDependency(dependency);
-		}
-
-		private void writeDependency(T dependency) throws IOException {
-			writeAncestorId(dependency);
-			writeOtherTs(dependency);
-			outputStream.writeObject(dependency.getValue());
-			writeAncestorId(dependency.getMeta());
-			writeAncestorsId(dependency.getSupers());
-			writeAncestorsId(dependency.getComponents());
-			log.info("write dependency " + dependency.info());
-		}
-
-		protected void writeOtherTs(T dependency) throws IOException {
-
-		}
-
-		private void writeAncestorsId(List<T> ancestors) throws IOException {
-			outputStream.writeInt(ancestors.size());
-			for (T ancestor : ancestors)
-				writeAncestorId(ancestor);
-		}
-
-		protected void writeAncestorId(T ancestor) throws IOException {
-			outputStream.writeLong(System.identityHashCode(ancestor));
-		}
-
 	}
 
-	public interface FileManager {
+	protected static class ZipFileManager  {
 
-		ObjectOutputStream newOutputStream(FileOutputStream fileOutputStream, String fileName) throws IOException;
+		private final FileManager fileManager;
 
-		ObjectInputStream newInputStream(FileInputStream fileInputStream) throws IOException;
-
-		String getExtension();
-	}
-
-	public static class ZipFileManager implements FileManager {
-
-		@Override
-		public String getExtension() {
-			return GS_EXTENSION + ZIP_EXTENSION;
+		protected ZipFileManager (FileManager fileManager){
+			this.fileManager = fileManager;
 		}
 
-		@Override
-		public ObjectOutputStream newOutputStream(FileOutputStream fileOutputStream, String fileName) throws IOException {
-			ZipOutputStream zipOutput = new ZipOutputStream(fileOutputStream);
+		protected ObjectOutputStream getObjectOutputStream( String fileName) throws IOException {
+			ZipOutputStream zipOutput = new ZipOutputStream(fileManager.getFileOutputStream(fileName));
 			zipOutput.putNextEntry(new ZipEntry(fileName));
 			return new ObjectOutputStream(zipOutput);
 		}
 
-		@Override
-		public ObjectInputStream newInputStream(FileInputStream fileInputStream) throws IOException {
-			ZipInputStream inputStream = new ZipInputStream(fileInputStream);
+		protected ObjectInputStream getObjectInputStream(String fileName) throws IOException {
+			ZipInputStream inputStream = new ZipInputStream(fileManager.getFileInputStream(fileName));
 			inputStream.getNextEntry();
 			return new ObjectInputStream(inputStream);
 		}
+	}
 
+	protected static class FileManager {
+
+		protected FileOutputStream getFileOutputStream(String fileName) throws IOException {
+			return new FileOutputStream(fileName);
+		}
+
+		protected FileInputStream getFileInputStream(String fileName) throws IOException {
+			return new FileInputStream(new File(fileName));
+		}
 	}
 
 }

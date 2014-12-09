@@ -23,10 +23,10 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.
 		return super.init(meta, supers, value, components).restore(getRoot().pickNewTs(), Long.MAX_VALUE, 0L, Long.MAX_VALUE);
 	}
 
-	@Override
 	@SuppressWarnings("unchecked")
 	protected T restore(Long designTs, long birthTs, long lastReadTs, long deathTs) {
 		lifeManager = new LifeManager(designTs, birthTs, lastReadTs, deathTs);
+		log.info("ZZZZZZZZZZ"+info()+lifeManager.getDesignTs());
 		return (T) this;
 	}
 

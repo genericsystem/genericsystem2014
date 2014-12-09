@@ -37,13 +37,12 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	}
 
 	public Engine(Serializable engineValue, String persistentDirectoryPath, Class<?>... userClasses) {
-		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
-
+		super.init(null, Collections.emptyList(), engineValue, Collections.emptyList());
+		restore(0L, 0L, 0L, Long.MAX_VALUE);
 		Cache<Generic> cache = newCache().start();
 		systemCache = new SystemCache<>(Engine.class, this);
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
-		// TODO KK
-		archiver = new Archiver<>(this, persistentDirectoryPath).startScheduler();
+		archiver = new Archiver<>(this, persistentDirectoryPath);
 		cache.flush();
 	}
 
@@ -92,7 +91,7 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 
 	@SystemGeneric
 	@Meta(MetaRelation.class)
-	@Supers(Engine.class)
+	@Supers(MetaAttribute.class)
 	@Components({ Engine.class, Engine.class })
 	@EngineValue
 	public static class MetaRelation extends Generic {
