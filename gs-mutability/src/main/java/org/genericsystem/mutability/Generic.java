@@ -2,21 +2,19 @@ package org.genericsystem.mutability;
 
 import java.io.Serializable;
 import java.util.List;
-
 import javax.json.JsonObject;
-
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
 
 public interface Generic extends IVertex<Generic> {
 
-	 abstract Engine getEngine();
+	abstract Engine getEngine();
 
-//	@Override
-//	default String toString() {
-//		return  getCurrentCache().unwrap(this).toString();
-//	}
-	
+	// @Override
+	// default String toString() {
+	// return getCurrentCache().unwrap(this).toString();
+	// }
+
 	@Override
 	default Cache getCurrentCache() {
 		return getEngine().getCurrentCache();
@@ -34,12 +32,12 @@ public interface Generic extends IVertex<Generic> {
 
 	@Override
 	default Engine getRoot() {
-		return (Engine) getCurrentCache().wrap((org.genericsystem.concurrency.Generic) getCurrentCache().unwrap(this).getRoot());
+		return (Engine) getCurrentCache().wrap(getCurrentCache().unwrap(this).getRoot());
 	}
 
 	@Override
 	default List<Generic> getSupers() {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).getSupers());
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).getSupers());
 	}
 
 	@Override
@@ -54,7 +52,7 @@ public interface Generic extends IVertex<Generic> {
 
 	@Override
 	default List<Generic> getComponents() {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).getComponents());
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).getComponents());
 	}
 
 	@Override
@@ -69,7 +67,7 @@ public interface Generic extends IVertex<Generic> {
 
 	@Override
 	default Generic[] addThisToTargets(Generic... targets) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).addThisToTargets(getCurrentCache().unwrap(targets)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).addThisToTargets(getCurrentCache().unwrap(targets)));
 	}
 
 	@Override
@@ -109,17 +107,17 @@ public interface Generic extends IVertex<Generic> {
 
 	@Override
 	default Generic getInstance(Serializable value, Generic... components) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).getInstance(value, getCurrentCache().unwrap(components)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).getInstance(value, getCurrentCache().unwrap(components)));
 	}
 
 	@Override
 	default Generic getInstance(Generic superT, Serializable value, Generic... components) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).getInstance(getCurrentCache().unwrap(superT), value, getCurrentCache().unwrap(components)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).getInstance(getCurrentCache().unwrap(superT), value, getCurrentCache().unwrap(components)));
 	}
 
 	@Override
 	default Generic getInstance(List<Generic> supers, Serializable value, Generic... components) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).getInstance(getCurrentCache().unwrap(supers), value, getCurrentCache().unwrap(components)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).getInstance(getCurrentCache().unwrap(supers), value, getCurrentCache().unwrap(components)));
 	}
 
 	@Override
@@ -219,17 +217,17 @@ public interface Generic extends IVertex<Generic> {
 
 	@Override
 	default Generic setSystemPropertyValue(Class<? extends org.genericsystem.api.core.IVertex.SystemProperty> propertyClass, int pos, Serializable value, Generic... targets) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).setSystemPropertyValue(propertyClass, pos, value, getCurrentCache().unwrap(targets)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).setSystemPropertyValue(propertyClass, pos, value, getCurrentCache().unwrap(targets)));
 	}
 
 	@Override
 	default Generic enableSystemProperty(Class<? extends org.genericsystem.api.core.IVertex.SystemProperty> propertyClass, int pos, Generic... targets) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).enableSystemProperty(propertyClass, pos, getCurrentCache().unwrap(targets)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).enableSystemProperty(propertyClass, pos, getCurrentCache().unwrap(targets)));
 	}
 
 	@Override
 	default Generic disableSystemProperty(Class<? extends org.genericsystem.api.core.IVertex.SystemProperty> propertyClass, int pos, Generic... targets) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).disableSystemProperty(propertyClass, pos, getCurrentCache().unwrap(targets)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).disableSystemProperty(propertyClass, pos, getCurrentCache().unwrap(targets)));
 	}
 
 	@Override
@@ -344,32 +342,32 @@ public interface Generic extends IVertex<Generic> {
 
 	@Override
 	default Generic addInstance(Serializable value, Generic... components) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).addInstance(value, getCurrentCache().unwrap(components)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).addInstance(value, getCurrentCache().unwrap(components)));
 	}
 
 	@Override
 	default Generic addInstance(Generic override, Serializable value, Generic... components) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).addInstance(getCurrentCache().unwrap(override), value, getCurrentCache().unwrap(components)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).addInstance(getCurrentCache().unwrap(override), value, getCurrentCache().unwrap(components)));
 	}
 
 	@Override
 	default Generic addInstance(List<Generic> overrides, Serializable value, Generic... components) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).addInstance(getCurrentCache().unwrap(overrides), value, getCurrentCache().unwrap(components)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).addInstance(getCurrentCache().unwrap(overrides), value, getCurrentCache().unwrap(components)));
 	}
 
 	@Override
 	default Generic setInstance(Serializable value, Generic... components) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).setInstance(value, getCurrentCache().unwrap(components)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).setInstance(value, getCurrentCache().unwrap(components)));
 	}
 
 	@Override
 	default Generic setInstance(Generic override, Serializable value, Generic... components) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).setInstance(getCurrentCache().unwrap(override), value, getCurrentCache().unwrap(components)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).setInstance(getCurrentCache().unwrap(override), value, getCurrentCache().unwrap(components)));
 	}
 
 	@Override
 	default Generic setInstance(List<Generic> overrides, Serializable value, Generic... components) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).setInstance(getCurrentCache().unwrap(overrides), value, getCurrentCache().unwrap(components)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).setInstance(getCurrentCache().unwrap(overrides), value, getCurrentCache().unwrap(components)));
 	}
 
 	@Override
@@ -414,62 +412,62 @@ public interface Generic extends IVertex<Generic> {
 
 	@Override
 	default Generic addAttribute(Serializable value, Generic... targets) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).addAttribute(value, getCurrentCache().unwrap(targets)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).addAttribute(value, getCurrentCache().unwrap(targets)));
 	}
 
 	@Override
 	default Generic addAttribute(Generic override, Serializable value, Generic... targets) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).addAttribute(getCurrentCache().unwrap(override), value, getCurrentCache().unwrap(targets)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).addAttribute(getCurrentCache().unwrap(override), value, getCurrentCache().unwrap(targets)));
 	}
 
 	@Override
 	default Generic addAttribute(List<Generic> overrides, Serializable value, Generic... targets) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).addAttribute(getCurrentCache().unwrap(overrides), value, getCurrentCache().unwrap(targets)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).addAttribute(getCurrentCache().unwrap(overrides), value, getCurrentCache().unwrap(targets)));
 	}
 
 	@Override
 	default Generic setAttribute(Serializable value, Generic... targets) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).setAttribute(value, getCurrentCache().unwrap(targets)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).setAttribute(value, getCurrentCache().unwrap(targets)));
 	}
 
 	@Override
 	default Generic setAttribute(Generic override, Serializable value, Generic... targets) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).setAttribute(getCurrentCache().unwrap(override), value, getCurrentCache().unwrap(targets)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).setAttribute(getCurrentCache().unwrap(override), value, getCurrentCache().unwrap(targets)));
 	}
 
 	@Override
 	default Generic setAttribute(List<Generic> overrides, Serializable value, Generic... targets) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).setAttribute(getCurrentCache().unwrap(overrides), value, getCurrentCache().unwrap(targets)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).setAttribute(getCurrentCache().unwrap(overrides), value, getCurrentCache().unwrap(targets)));
 	}
 
 	@Override
 	default Generic addHolder(Generic attribute, Serializable value, Generic... targets) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).addHolder(getCurrentCache().unwrap(attribute), value, getCurrentCache().unwrap(targets)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).addHolder(getCurrentCache().unwrap(attribute), value, getCurrentCache().unwrap(targets)));
 	}
 
 	@Override
 	default Generic addHolder(Generic attribute, Generic override, Serializable value, Generic... targets) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).addHolder(getCurrentCache().unwrap(attribute), getCurrentCache().unwrap(override), value, getCurrentCache().unwrap(targets)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).addHolder(getCurrentCache().unwrap(attribute), getCurrentCache().unwrap(override), value, getCurrentCache().unwrap(targets)));
 	}
 
 	@Override
 	default Generic addHolder(Generic attribute, List<Generic> overrides, Serializable value, Generic... targets) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).addHolder(getCurrentCache().unwrap(attribute), getCurrentCache().unwrap(overrides), value, getCurrentCache().unwrap(targets)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).addHolder(getCurrentCache().unwrap(attribute), getCurrentCache().unwrap(overrides), value, getCurrentCache().unwrap(targets)));
 	}
 
 	@Override
 	default Generic setHolder(Generic attribute, Serializable value, Generic... targets) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).setHolder(getCurrentCache().unwrap(attribute), value, getCurrentCache().unwrap(targets)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).setHolder(getCurrentCache().unwrap(attribute), value, getCurrentCache().unwrap(targets)));
 	}
 
 	@Override
 	default Generic setHolder(Generic attribute, Generic override, Serializable value, Generic... targets) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).setHolder(getCurrentCache().unwrap(attribute), getCurrentCache().unwrap(override), value, getCurrentCache().unwrap(targets)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).setHolder(getCurrentCache().unwrap(attribute), getCurrentCache().unwrap(override), value, getCurrentCache().unwrap(targets)));
 	}
 
 	@Override
 	default Generic setHolder(Generic attribute, List<Generic> overrides, Serializable value, Generic... targets) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).setHolder(getCurrentCache().unwrap(attribute), getCurrentCache().unwrap(overrides), value, getCurrentCache().unwrap(targets)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).setHolder(getCurrentCache().unwrap(attribute), getCurrentCache().unwrap(overrides), value, getCurrentCache().unwrap(targets)));
 	}
 
 	@Override
@@ -479,27 +477,27 @@ public interface Generic extends IVertex<Generic> {
 
 	@Override
 	default Generic updateSupers(Generic... overrides) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).updateSupers(getCurrentCache().unwrap(overrides)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).updateSupers(getCurrentCache().unwrap(overrides)));
 	}
 
 	@Override
 	default Generic updateComposites(Generic... newComposites) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).updateComposites(getCurrentCache().unwrap(newComposites)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).updateComposites(getCurrentCache().unwrap(newComposites)));
 	}
 
 	@Override
 	default Generic update(List<Generic> overrides, Serializable newValue, Generic... newComposites) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).update(getCurrentCache().unwrap(overrides), newValue, getCurrentCache().unwrap(newComposites)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).update(getCurrentCache().unwrap(overrides), newValue, getCurrentCache().unwrap(newComposites)));
 	}
 
 	@Override
 	default Generic update(Serializable newValue, Generic... newComposites) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).update(newValue, getCurrentCache().unwrap(newComposites)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).update(newValue, getCurrentCache().unwrap(newComposites)));
 	}
 
 	@Override
 	default Generic update(Generic override, Serializable newValue, Generic... newComposites) {
-		return  getCurrentCache().wrap(getCurrentCache().unwrap(this).update(getCurrentCache().unwrap(override), newValue, getCurrentCache().unwrap(newComposites)));
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).update(getCurrentCache().unwrap(override), newValue, getCurrentCache().unwrap(newComposites)));
 	}
 
 	@Override
