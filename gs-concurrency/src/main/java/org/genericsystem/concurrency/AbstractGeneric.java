@@ -26,7 +26,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.
 	@SuppressWarnings("unchecked")
 	protected T restore(Long designTs, long birthTs, long lastReadTs, long deathTs) {
 		lifeManager = new LifeManager(designTs, birthTs, lastReadTs, deathTs);
-		log.info("ZZZZZZZZZZ"+info()+lifeManager.getDesignTs());
 		return (T) this;
 	}
 

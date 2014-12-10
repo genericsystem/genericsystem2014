@@ -5,19 +5,17 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.genericsystem.cache.SystemCache;
 import org.genericsystem.concurrency.Config.MetaAttribute;
 import org.genericsystem.concurrency.Config.MetaRelation;
 import org.genericsystem.concurrency.Config.SystemMap;
 import org.genericsystem.kernel.Statics;
-import org.genericsystem.kernel.SystemCache;
 
 public class Engine extends Generic implements DefaultEngine<Generic> {
 
-	private final SystemCache<Generic> systemCache;
-	private final Archiver<Generic> archiver;
-
 	protected final ThreadLocal<Cache<Generic>> cacheLocal = new ThreadLocal<>();
-
+	private final SystemCache<Generic> systemCache=new SystemCache<Generic>(this,getClass());
+	private final Archiver<Generic> archiver;
 	private final TsGenerator generator = new TsGenerator();
 	private final GarbageCollector<Generic> garbageCollector = new GarbageCollector<>(this);
 
@@ -32,26 +30,23 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	public Engine(Serializable engineValue, String persistentDirectoryPath, Class<?>... userClasses) {
 		super.init(null, Collections.emptyList(), engineValue, Collections.emptyList());
 		restore(0L, 0L, 0L, Long.MAX_VALUE);
-		Cache<Generic> cache = newCache().start();
-		systemCache = new SystemCache<>(Engine.class, this);
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
 		archiver = new Archiver<>(this, persistentDirectoryPath);
-		cache.flush();
 	}
 
 	@Override
 	public Generic getMetaAttribute() {
-		return getRoot().find(MetaAttribute.class);
+		return find(MetaAttribute.class);
 	}
 
 	@Override
 	public Generic getMetaRelation() {
-		return getRoot().find(MetaRelation.class);
+		return find(MetaRelation.class);
 	}
 
 	@Override
 	public Generic getMap() {
-		return getRoot().find(SystemMap.class);
+		return find(SystemMap.class);
 	}
 
 	// TODO mount this in API

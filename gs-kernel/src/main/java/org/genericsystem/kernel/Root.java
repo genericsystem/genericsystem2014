@@ -10,10 +10,9 @@ import org.genericsystem.kernel.Config.SystemMap;
 
 public class Root extends Vertex implements DefaultRoot<Vertex> {
 
-	private final SystemCache<Vertex> systemCache;
-	private final Archiver<Vertex> archiver;
-
 	private final Context<Vertex> context;
+	private final SystemCache<Vertex> systemCache = new SystemCache<>(this, getClass());
+	private final Archiver<Vertex> archiver;
 
 	public Root(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
@@ -26,19 +25,18 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 	public Root(Serializable value, String persistentDirectoryPath, Class<?>... userClasses) {
 		init(null, Collections.emptyList(), value, Collections.emptyList());
 		context = new Transaction<>(this, 0L);
-		systemCache = new SystemCache<>(Root.class, this);
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
 		archiver = new Archiver<>(this, persistentDirectoryPath);
 	}
 
 	@Override
 	public Vertex getMetaAttribute() {
-		return getRoot().find(MetaAttribute.class);
+		return find(MetaAttribute.class);
 	}
 
 	@Override
 	public Vertex getMetaRelation() {
-		return getRoot().find(MetaRelation.class);
+		return find(MetaRelation.class);
 	}
 
 	@Override
@@ -58,9 +56,8 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 		return (Custom) systemCache.get(clazz);
 	}
 
-	// TODO mount this in API
+	@Override
 	public void close() {
 		archiver.close();
 	}
-
 }

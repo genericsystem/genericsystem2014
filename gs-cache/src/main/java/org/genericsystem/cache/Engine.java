@@ -8,13 +8,12 @@ import org.genericsystem.cache.Config.MetaAttribute;
 import org.genericsystem.cache.Config.MetaRelation;
 import org.genericsystem.cache.Config.SystemMap;
 import org.genericsystem.kernel.Statics;
-import org.genericsystem.kernel.SystemCache;
 
 public class Engine extends Generic implements DefaultEngine<Generic> {
 
-	private final SystemCache<Generic> systemCache;
-
 	private final ThreadLocal<Cache<Generic>> cacheLocal = new ThreadLocal<>();
+	private final SystemCache<Generic> systemCache=new SystemCache<Generic>(this,getClass());
+
 
 	public Engine(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
@@ -22,25 +21,22 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 
 	public Engine(Serializable engineValue, Class<?>... userClasses) {
 		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
-		Cache<Generic> cache = newCache().start();
-		systemCache = new SystemCache<Generic>(Engine.class, this);
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
-		cache.flush();
 	}
 
 	@Override
 	public Generic getMetaAttribute() {
-		return getRoot().find(MetaAttribute.class);
+		return find(MetaAttribute.class);
 	}
 
 	@Override
 	public Generic getMetaRelation() {
-		return getRoot().find(MetaRelation.class);
+		return find(MetaRelation.class);
 	}
 
 	@Override
 	public Generic getMap() {
-		return getRoot().find(SystemMap.class);
+		return find(SystemMap.class);
 	}
 
 	
@@ -71,5 +67,9 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	public <Custom extends Generic> Custom find(Class<Custom> clazz) {
 		return (Custom) systemCache.get(clazz);
 	}
-
+	
+	@Override
+	public void close() {
+		//TODO block caches to flush
+	}
 }

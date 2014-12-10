@@ -50,66 +50,71 @@ public class Engine extends Generic implements IRoot<Generic> {
 
 	@Override
 	public Generic addType(Serializable value) {
-		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).addType(value));
+		return wrap(concurrencyEngine.addType(value));
 	}
 
 	@Override
 	public Generic addType(Generic override, Serializable value) {
-		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).addType(unwrap(override), value));
+		return wrap(concurrencyEngine.addType(unwrap(override), value));
 	}
 
 	@Override
 	public Generic addType(List<Generic> overrides, Serializable value) {
-		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).addType(unwrap(overrides), value));
+		return wrap(concurrencyEngine.addType(unwrap(overrides), value));
 	}
 
 	@Override
 	public Generic setType(Serializable value) {
-		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).setType(value));
+		return wrap(concurrencyEngine.setType(value));
 	}
 
 	@Override
 	public Generic setType(Generic override, Serializable value) {
-		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).setType(unwrap(override), value));
+		return wrap(concurrencyEngine.setType(unwrap(override), value));
 	}
 
 	@Override
 	public Generic setType(List<Generic> overrides, Serializable value) {
-		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).setType(unwrap(overrides), value));
+		return wrap(concurrencyEngine.setType(unwrap(overrides), value));
 	}
 
 	@Override
 	public Generic addTree(Serializable value) {
-		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).addTree(value));
+		return wrap(concurrencyEngine.addTree(value));
 	}
 
 	@Override
 	public Generic addTree(Serializable value, int parentsNumber) {
-		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).addTree(value, parentsNumber));
+		return wrap(concurrencyEngine.addTree(value, parentsNumber));
 	}
 
 	@Override
 	public Generic setTree(Serializable value) {
-		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).setTree(value));
+		return wrap(concurrencyEngine.setTree(value));
 	}
 
 	@Override
 	public Generic setTree(Serializable value, int parentsNumber) {
-		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).setTree(value, parentsNumber));
+		return wrap(concurrencyEngine.setTree(value, parentsNumber));
 	}
 
 	@Override
 	public Generic getMetaAttribute() {
-		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).getMetaAttribute());
+		return wrap(concurrencyEngine.getMetaAttribute());
 	}
 
 	@Override
 	public Generic getMetaRelation() {
-		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).getMetaRelation());
+		return wrap( concurrencyEngine.getMetaRelation());
 	}
 
 	public org.genericsystem.concurrency.Engine getConcurrencyEngine() {
 		return concurrencyEngine;
+	}
+
+	@Override
+	public void close() {
+		concurrencyEngine.close();
 	}
 
 }
