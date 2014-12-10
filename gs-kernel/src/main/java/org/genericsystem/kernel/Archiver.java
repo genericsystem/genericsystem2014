@@ -330,7 +330,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 			if(instance==null)
 				instance= transaction.plug( restoreTs(transaction.getBuilder().newT(null, meta, supers, value, components), id, otherTs));
 			else
-				instance = restoreTs(instance, id, otherTs);
+				instance = restoreTs(instance, id, otherTs);//TODO what to do for system generics that are not in archive, that is serious issue...
 			vertexMap.put(id, instance);
 			log.info("load dependency " + vertexMap.get(id).info() + " " + id);
 		}
