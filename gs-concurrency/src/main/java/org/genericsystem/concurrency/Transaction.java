@@ -1,6 +1,7 @@
 package org.genericsystem.concurrency;
 
 import java.util.HashSet;
+
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
@@ -46,6 +47,8 @@ public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem
 	public DefaultEngine<T> getRoot() {
 		return (DefaultEngine<T>) super.getRoot();
 	}
+	
+	
 
 	private class LifeManagersLocker extends HashSet<LifeManager> {
 
@@ -81,15 +84,15 @@ public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem
 				lifeManager.writeUnlock();
 		}
 	}
-
+	
 	@Override
 	protected Builder<T> buildBuilder() {
 		return new Builder<T>(this) {
 			@Override
-			@SuppressWarnings("unchecked")
 			protected Class<T> getTClass() {
-				return (Class<T>) Generic.class;
+				throw new UnsupportedOperationException();
 			}
 		};
 	}
+
 }

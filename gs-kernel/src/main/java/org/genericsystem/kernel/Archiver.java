@@ -326,6 +326,9 @@ public class Archiver<T extends AbstractVertex<T>> {
 			List<T> supers = loadAncestors(vertexMap);
 			List<T> components = loadAncestors(vertexMap);
 			T instance = meta == null ? ((T)root).getMeta(components.size()) : meta.getDirectInstance(value, components);
+			//TODO restoreTs when instance != null
+			// SystemCache must launch after ????
+			
 			vertexMap.put(id, instance != null ? instance : transaction.plug(restoreTs(transaction.getBuilder().newT(null, meta, supers, value, components), id, otherTs)));
 			log.info("load dependency " + vertexMap.get(id).info() + " " + id);
 		}

@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 
+import org.genericsystem.kernel.Builder;
+
 
 public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.kernel.Archiver<T> {
 
@@ -91,6 +93,19 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 				public T plug(T generic) {
 					return simplePlug(generic);
 				}
+				
+				@Override
+				protected Builder<T> buildBuilder() {
+					return new Builder<T>(this) {
+						@Override
+						@SuppressWarnings("unchecked")
+						protected Class<T> getTClass() {
+							return (Class<T>) Generic.class;
+						}
+					};
+				}
+				
+				//TODO checker
 			};
 		}
 		

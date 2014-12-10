@@ -17,6 +17,12 @@ public class Engine extends Generic implements IRoot<Generic> {
 		this.concurrencyEngine = new org.genericsystem.concurrency.Engine();
 		newCache().start();
 	}
+	
+	@Override
+	public <Custom extends Generic> Custom find(Class<Custom> clazz) {
+		// TODO 
+		return null;
+	}
 
 	public Cache newCache() {
 		return new Cache(this, concurrencyEngine);

@@ -30,9 +30,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.
 		return (T) this;
 	}
 
-	// TODO should not be public
-	@Override
-	public LifeManager getLifeManager() {
+	LifeManager getLifeManager() {
 		return lifeManager;
 	}
 

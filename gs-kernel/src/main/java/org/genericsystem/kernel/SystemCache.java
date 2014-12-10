@@ -38,13 +38,12 @@ public class SystemCache<T extends AbstractVertex<T>> extends HashMap<Class<?>, 
 		put(rootClass, root);
 	}
 
-	public SystemCache<T> mount(List<Class<?>> systemClasses, Class<?>... userClasses) {
+	public void mount(List<Class<?>> systemClasses, Class<?>... userClasses) {
 		for (Class<?> clazz : systemClasses)
 			set(clazz);
 		for (Class<?> clazz : userClasses)
 			set(clazz);
 		initialized = true;
-		return this;
 	}
 
 	private T set(Class<?> clazz) {

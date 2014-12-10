@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.genericsystem.api.core.IContext;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
-import org.genericsystem.concurrency.AbstractBuilder.ContextEventListener;
+import org.genericsystem.concurrency.Cache.ContextEventListener;
 
 public class Cache implements IContext<Generic>, ContextEventListener<org.genericsystem.concurrency.Generic> {
 	private final Engine engine;
