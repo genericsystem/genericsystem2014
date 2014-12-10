@@ -95,14 +95,8 @@ public class Builder<T extends AbstractVertex<T>> {
 				getContext().discardWithException(new InstantiationException(clazz + " must extends " + metaAnnotation.value()));
 
 		Class<T> tClass = getTClass();
-
 		try {
-			if (clazz == null || clazz.isAssignableFrom(tClass))
-				return tClass.newInstance();
-			if (tClass.isAssignableFrom(clazz))
-				return (T) clazz.newInstance();
-			else
-				getContext().discardWithException(new InstantiationException(clazz + " must extends " + tClass));
+			return clazz == null || !tClass.isAssignableFrom(clazz) ? tClass.newInstance() :(T) clazz.newInstance();
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
 			getContext().discardWithException(e);
 		}

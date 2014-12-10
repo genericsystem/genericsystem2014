@@ -1,21 +1,50 @@
 package org.genericsystem.mutability;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.genericsystem.api.core.IRoot;
+import org.genericsystem.concurrency.Archiver;
+import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.Config.MetaAttribute;
+import org.genericsystem.kernel.Config.MetaRelation;
+import org.genericsystem.kernel.Config.SystemMap;
 
-public class Engine extends Generic implements IRoot<Generic> {
+public class Engine implements Generic,IRoot<Generic> {
 
 	private final ThreadLocal<Cache> cacheLocal = new ThreadLocal<>();
 
 	private final org.genericsystem.concurrency.Engine concurrencyEngine;
 
 	public Engine() {
-		super(null);
-		this.engine = this;
 		this.concurrencyEngine = new org.genericsystem.concurrency.Engine();
 		newCache().start();
+	}
+
+	public Engine(Class<?>... userClasses) {
+		this(Statics.ENGINE_VALUE, userClasses);
+	}
+
+	public Engine(Serializable engineValue, Class<?>... userClasses) {
+		this(engineValue, null, userClasses);
+	}
+
+	public Engine(Serializable engineValue, String persistentDirectoryPath, Class<?>... userClasses) {
+		this.concurrencyEngine = new org.genericsystem.concurrency.Engine(persistentDirectoryPath,userClasses);
+		newCache().start();
+	}
+
+	@Override
+	public Engine getEngine() {
+		return this;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <Custom extends Generic> Custom find(Class<?> clazz) {
+		return (Custom) getCurrentCache().wrap(concurrencyEngine.find(clazz));
 	}
 
 	public Cache newCache() {
@@ -44,66 +73,71 @@ public class Engine extends Generic implements IRoot<Generic> {
 
 	@Override
 	public Generic addType(Serializable value) {
-		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).addType(value));
+		return  getCurrentCache().wrap(concurrencyEngine.addType(value));
 	}
 
 	@Override
 	public Generic addType(Generic override, Serializable value) {
-		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).addType(unwrap(override), value));
+		return  getCurrentCache().wrap(concurrencyEngine.addType( getCurrentCache().unwrap(override), value));
 	}
 
 	@Override
 	public Generic addType(List<Generic> overrides, Serializable value) {
-		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).addType(unwrap(overrides), value));
+		return  getCurrentCache().wrap(concurrencyEngine.addType( getCurrentCache().unwrap(overrides), value));
 	}
 
 	@Override
 	public Generic setType(Serializable value) {
-		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).setType(value));
+		return  getCurrentCache().wrap(concurrencyEngine.setType(value));
 	}
 
 	@Override
 	public Generic setType(Generic override, Serializable value) {
-		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).setType(unwrap(override), value));
+		return  getCurrentCache().wrap(concurrencyEngine.setType( getCurrentCache().unwrap(override), value));
 	}
 
 	@Override
 	public Generic setType(List<Generic> overrides, Serializable value) {
-		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).setType(unwrap(overrides), value));
+		return  getCurrentCache().wrap(concurrencyEngine.setType( getCurrentCache().unwrap(overrides), value));
 	}
 
 	@Override
 	public Generic addTree(Serializable value) {
-		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).addTree(value));
+		return  getCurrentCache().wrap(concurrencyEngine.addTree(value));
 	}
 
 	@Override
 	public Generic addTree(Serializable value, int parentsNumber) {
-		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).addTree(value, parentsNumber));
+		return  getCurrentCache().wrap(concurrencyEngine.addTree(value, parentsNumber));
 	}
 
 	@Override
 	public Generic setTree(Serializable value) {
-		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).setTree(value));
+		return  getCurrentCache().wrap(concurrencyEngine.setTree(value));
 	}
 
 	@Override
 	public Generic setTree(Serializable value, int parentsNumber) {
-		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).setTree(value, parentsNumber));
+		return  getCurrentCache().wrap(concurrencyEngine.setTree(value, parentsNumber));
 	}
 
 	@Override
 	public Generic getMetaAttribute() {
-		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).getMetaAttribute());
+		return  getCurrentCache().wrap(concurrencyEngine.getMetaAttribute());
 	}
 
 	@Override
 	public Generic getMetaRelation() {
-		return wrap(((org.genericsystem.concurrency.Engine) unwrap(this)).getMetaRelation());
+		return  getCurrentCache().wrap( concurrencyEngine.getMetaRelation());
 	}
 
 	public org.genericsystem.concurrency.Engine getConcurrencyEngine() {
 		return concurrencyEngine;
+	}
+
+	@Override
+	public void close() {
+		concurrencyEngine.close();
 	}
 
 }

@@ -1,15 +1,18 @@
 package org.genericsystem.mutability;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.Set;
 
 import org.genericsystem.api.core.IContext;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
-import org.genericsystem.concurrency.AbstractBuilder.ContextEventListener;
+import org.genericsystem.concurrency.Cache.ContextEventListener;
 
 public class Cache implements IContext<Generic>, ContextEventListener<org.genericsystem.concurrency.Generic> {
 	private final Engine engine;
@@ -37,20 +40,25 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 		engine.stop(this);
 	}
 
-	protected org.genericsystem.concurrency.Generic getByMutable(Generic mutable) {
+	protected org.genericsystem.concurrency.Generic unwrap(Generic mutable) {
 		org.genericsystem.concurrency.Generic result = mutabilityMap.get(mutable);
 		if (result == null)
 			concurrencyCache.discardWithException(new AliveConstraintViolationException("Your mutable is not still available"));
 		return result;
 	}
 
-	protected Generic getByValue(org.genericsystem.concurrency.Generic generic) {
+	protected Generic wrap(org.genericsystem.concurrency.Generic generic) {
 		if (generic == null)
 			return null;
 		Set<Generic> resultSet = reverseMultiMap.get(generic);
 		if (resultSet != null)
 			return resultSet.iterator().next();
-		Generic result = new Generic(engine);
+		Generic result = new Generic(){
+			@Override
+			public Engine getEngine() {
+				return engine;
+			}
+		};
 		put(result, generic);
 		return result;
 	}
@@ -106,6 +114,22 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 				set.add(entry.getKey());
 			}
 		}
+	}
+	
+	protected List<Generic> wrap(List<org.genericsystem.concurrency.Generic> listT) {
+		return listT.stream().map(this::wrap).collect(Collectors.toList());
+	}
+
+	protected List<org.genericsystem.concurrency.Generic> unwrap(List<Generic> listM) {
+		return listM.stream().map(this::unwrap).collect(Collectors.toList());
+	}
+
+	protected Generic[] wrap(org.genericsystem.concurrency.Generic... array) {
+		return Arrays.asList(array).stream().map(this::wrap).collect(Collectors.toList()).toArray(new Generic[array.length]);
+	}
+
+	protected org.genericsystem.concurrency.Generic[] unwrap(Generic... listM) {
+		return engine.getConcurrencyEngine().coerceToTArray(Arrays.asList(listM).stream().map(this::unwrap).collect(Collectors.toList()).toArray());
 	}
 	
 	@Override

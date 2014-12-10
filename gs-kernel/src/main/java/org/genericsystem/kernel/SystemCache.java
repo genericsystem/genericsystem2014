@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Dependencies;
@@ -25,41 +26,45 @@ import org.genericsystem.kernel.annotations.value.LongValue;
 import org.genericsystem.kernel.annotations.value.ShortValue;
 import org.genericsystem.kernel.annotations.value.StringValue;
 
-public class SystemCache<T extends AbstractVertex<T>> extends HashMap<Class<?>, T> {
+public class SystemCache<T extends AbstractVertex<T>> {
 
-	private static final long serialVersionUID = 1150085123612887245L;
+	private Map<Class<?>, T> systemCache = new HashMap<>();
 
 	private boolean initialized = false;
 
-	private final T root;
+	protected final DefaultRoot<T> root;
 
-	public SystemCache(Class<?> rootClass, T root) {
+	@SuppressWarnings("unchecked")
+	public SystemCache(DefaultRoot<T> root, Class<?> rootClass) {
 		this.root = root;
-		put(rootClass, root);
+		systemCache.put(rootClass, (T)root);
 	}
 
-	public SystemCache<T> mount(List<Class<?>> systemClasses, Class<?>... userClasses) {
+	public void mount(List<Class<?>> systemClasses, Class<?>... userClasses) {
 		for (Class<?> clazz : systemClasses)
 			set(clazz);
 		for (Class<?> clazz : userClasses)
 			set(clazz);
 		initialized = true;
-		return this;
 	}
 
 	private T set(Class<?> clazz) {
 		if (initialized)
 			throw new IllegalStateException("Class : " + clazz + " has not been built at startup");
-		T systemProperty = super.get(clazz);
+		T systemProperty = systemCache.get(clazz);
 		if (systemProperty != null) {
 			assert systemProperty.isAlive();
 			return systemProperty;
 		}
 		T result = root.getCurrentCache().getBuilder().setInstance(clazz, setMeta(clazz), setOverrides(clazz), findValue(clazz), setComponents(clazz));
-		put(clazz, result);
+		systemCache.put(clazz, result);
 		mountConstraints(clazz, result);
 		triggersDependencies(clazz);
 		return result;
+	}
+	
+	public T get(Class<?> clazz){
+		return systemCache.get(clazz);
 	}
 
 	private void triggersDependencies(Class<?> clazz) {
@@ -93,10 +98,11 @@ public class SystemCache<T extends AbstractVertex<T>> extends HashMap<Class<?>, 
 				result.enableSingularConstraint(axe);
 	}
 
+	@SuppressWarnings("unchecked")
 	private T setMeta(Class<?> clazz) {
 		Meta meta = clazz.getAnnotation(Meta.class);
 		if (meta == null)
-			return root;
+			return (T)root;
 		if (meta.value() == clazz)
 			return null;
 		return set(meta.value());

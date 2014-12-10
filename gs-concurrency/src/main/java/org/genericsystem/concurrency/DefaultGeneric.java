@@ -9,7 +9,4 @@ public interface DefaultGeneric<T extends AbstractGeneric<T>> extends org.generi
 	default Cache<T> getCurrentCache() {
 		return getRoot().getCurrentCache();
 	}
-
-	LifeManager getLifeManager();
-
 }

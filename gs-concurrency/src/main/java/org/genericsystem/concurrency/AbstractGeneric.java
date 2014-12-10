@@ -2,7 +2,9 @@ package org.genericsystem.concurrency;
 
 import java.io.Serializable;
 import java.util.List;
+
 import org.genericsystem.kernel.Dependencies;
+
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.genericsystem.cache.AbstractGeneric<T> implements DefaultGeneric<T>, Comparable<T> {
 
@@ -23,16 +25,13 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.
 		return super.init(meta, supers, value, components).restore(getRoot().pickNewTs(), Long.MAX_VALUE, 0L, Long.MAX_VALUE);
 	}
 
-	@Override
 	@SuppressWarnings("unchecked")
 	protected T restore(Long designTs, long birthTs, long lastReadTs, long deathTs) {
 		lifeManager = new LifeManager(designTs, birthTs, lastReadTs, deathTs);
 		return (T) this;
 	}
 
-	// TODO should not be public
-	@Override
-	public LifeManager getLifeManager() {
+	LifeManager getLifeManager() {
 		return lifeManager;
 	}
 

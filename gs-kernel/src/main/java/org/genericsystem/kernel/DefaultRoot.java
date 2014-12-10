@@ -10,8 +10,6 @@ public interface DefaultRoot<T extends AbstractVertex<T>> extends IRoot<T> {
 	@Override
 	Context<T> getCurrentCache();
 
-	T getMap();
-
 	@Override
 	default T addType(Serializable value) {
 		return addInstance(value, coerceToTArray());

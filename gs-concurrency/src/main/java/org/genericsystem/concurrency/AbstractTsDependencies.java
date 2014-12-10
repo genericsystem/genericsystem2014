@@ -36,7 +36,7 @@ public abstract class AbstractTsDependencies<T extends AbstractGeneric<T>> imple
 	@Override
 	public void add(T element) {
 		assert element != null;
-		assert getLifeManager().isWriteLockedByCurrentThread();
+		//assert getLifeManager().isWriteLockedByCurrentThread();
 		Node<T> newNode = new Node<>(element);
 		if (head == null)
 			head = newNode;

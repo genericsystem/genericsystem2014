@@ -18,7 +18,7 @@ public interface IRoot<T extends IVertex<T>> extends IVertex<T> {
 	 *            the expected vertex
 	 * @return a vertex
 	 */
-	<subT extends T> subT find(Class<subT> clazz);
+	<Custom extends T> Custom find(Class<?> clazz);
 
 	T addType(Serializable value);
 
@@ -76,5 +76,5 @@ public interface IRoot<T extends IVertex<T>> extends IVertex<T> {
 
 	T getMetaRelation();
 
-	// void discardWithException(Throwable exception);
+	void close();
 }
