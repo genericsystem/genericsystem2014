@@ -60,7 +60,7 @@ public class AnnotationTest extends AbstractTest {
 		catchAndCheckCause(() -> new Engine(MyMercedes.class), InstantiationException.class);
 	}
 
-	public static class VehicleInstance extends Generic {
+	public static class VehicleInstance implements Generic {
 
 	}
 
@@ -71,7 +71,7 @@ public class AnnotationTest extends AbstractTest {
 
 	@SystemGeneric
 	@Meta(VehicleType.class)
-	public static class MyBmw extends Generic {
+	public static class MyBmw implements Generic {
 	}
 
 	@SystemGeneric
@@ -81,7 +81,7 @@ public class AnnotationTest extends AbstractTest {
 
 	@SystemGeneric
 	@InstanceClass(VehicleInstance.class)
-	public static class VehicleType extends Generic {
+	public static class VehicleType implements Generic {
 
 	}
 
@@ -310,66 +310,66 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	public static class Games extends Generic {
+	public static class Games implements Generic {
 	}
 
 	@SystemGeneric
 	@Meta(Games.class)
-	public static class MyGames extends Generic {
+	public static class MyGames implements Generic {
 	}
 
 	@SystemGeneric
 	@Meta(Games.class)
-	public static class MyGames2 extends Generic {
+	public static class MyGames2 implements Generic {
 	}
 
 	@SystemGeneric
-	public static class Children extends Generic {
+	public static class Children implements Generic {
 	}
 
 	@SystemGeneric
 	@Meta(Children.class)
-	public static class MyChildren extends Generic {
+	public static class MyChildren implements Generic {
 	}
 
 	@SystemGeneric
 	@Supers({ Games.class, Children.class })
-	public static class ChildrenGames extends Generic {
+	public static class ChildrenGames implements Generic {
 	}
 
 	@SystemGeneric
 	@Meta(ChildrenGames.class)
-	public static class MyChildrenGames extends Generic {
+	public static class MyChildrenGames implements Generic {
 	}
 
 	@SystemGeneric
 	@Supers({ Human.class, Vehicle.class })
-	public static class Transformer extends Generic {
+	public static class Transformer implements Generic {
 	}
 
 	@SystemGeneric
 	@Meta(Transformer.class)
-	public static class MyTransformer extends Generic {
+	public static class MyTransformer implements Generic {
 	}
 
 	@SystemGeneric
 	@Supers({ Transformer.class, ChildrenGames.class })
-	public static class TransformerChildrenGames extends Generic {
+	public static class TransformerChildrenGames implements Generic {
 	}
 
 	@SystemGeneric
 	@Meta(TransformerChildrenGames.class)
-	public static class MyTransformerChildrenGames extends Generic {
+	public static class MyTransformerChildrenGames implements Generic {
 	}
 
 	@SystemGeneric
-	public static class GraphicComposite extends Generic {
+	public static class GraphicComposite implements Generic {
 
 	}
 
 	@SystemGeneric
 	@Components(GraphicComposite.class)
-	public static class Size extends Generic {
+	public static class Size implements Generic {
 
 	}
 
@@ -381,41 +381,41 @@ public class AnnotationTest extends AbstractTest {
 
 	@SystemGeneric
 	@Supers(GraphicComposite.class)
-	public static class Selectable extends Generic {
+	public static class Selectable implements Generic {
 
 	}
 
 	@SystemGeneric
 	@Components(Selectable.class)
-	public static class Selected extends Generic {
+	public static class Selected implements Generic {
 
 	}
 
 	@SystemGeneric
 	@Supers({ Selectable.class, Window.class })
-	public static class SelectableWindow extends Generic {
+	public static class SelectableWindow implements Generic {
 
 	}
 
 	@SystemGeneric
 	@Meta(SelectableWindow.class)
-	public static class MySelectableWindow extends Generic {
+	public static class MySelectableWindow implements Generic {
 
 	}
 
 	@SystemGeneric
-	public static class Vehicle extends Generic {
+	public static class Vehicle implements Generic {
 
 	}
 
 	@SystemGeneric
 	@Meta(Vehicle.class)
-	public static class MyVehicle extends Generic {
+	public static class MyVehicle implements Generic {
 	}
 
 	@SystemGeneric
 	@Components(Vehicle.class)
-	public static class Power extends Generic {
+	public static class Power implements Generic {
 
 	}
 
@@ -423,36 +423,36 @@ public class AnnotationTest extends AbstractTest {
 	@Meta(Power.class)
 	@Components(MyVehicle.class)
 	@IntValue(123)
-	public static class V123 extends Generic {
+	public static class V123 implements Generic {
 
 	}
 
 	@SystemGeneric
 	@Supers(Vehicle.class)
-	public static class Car extends Generic {
+	public static class Car implements Generic {
 
 	}
 
 	@SystemGeneric
 	@Meta(Car.class)
-	public static class myCar extends Generic {
+	public static class myCar implements Generic {
 	}
 
 	@SystemGeneric
 	@Components(Car.class)
 	@Supers(Power.class)
-	public static class ElectrikPower extends Generic {
+	public static class ElectrikPower implements Generic {
 
 	}
 
 	@SystemGeneric
 	@Components(ElectrikPower.class)
-	public static class Unit extends Generic {
+	public static class Unit implements Generic {
 
 	}
 
 	@SystemGeneric
-	public static class Human extends Generic {
+	public static class Human implements Generic {
 	}
 
 	@SystemGeneric
@@ -461,16 +461,16 @@ public class AnnotationTest extends AbstractTest {
 
 	@SystemGeneric
 	@Meta(Human.class)
-	public static class Myck extends Generic {
+	public static class Myck implements Generic {
 	}
 
 	@SystemGeneric
-	public static class Time extends Generic {
+	public static class Time implements Generic {
 	}
 
 	@SystemGeneric
 	@Components({ Human.class, Vehicle.class })
-	public static class HumanPossessVehicle extends Generic {
+	public static class HumanPossessVehicle implements Generic {
 	}
 
 	@SystemGeneric
@@ -487,7 +487,7 @@ public class AnnotationTest extends AbstractTest {
 
 	@SystemGeneric
 	@Components({ Human.class, Vehicle.class, Time.class })
-	public static class HumanPossessVehicleTime extends Generic {
+	public static class HumanPossessVehicleTime implements Generic {
 	}
 
 }

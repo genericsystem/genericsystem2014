@@ -1,10 +1,13 @@
 package org.genericsystem.mutability;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.Set;
 
 import org.genericsystem.api.core.IContext;
@@ -111,6 +114,22 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 				set.add(entry.getKey());
 			}
 		}
+	}
+	
+	protected List<Generic> wrap(List<org.genericsystem.concurrency.Generic> listT) {
+		return listT.stream().map(this::wrap).collect(Collectors.toList());
+	}
+
+	protected List<org.genericsystem.concurrency.Generic> unwrap(List<Generic> listM) {
+		return listM.stream().map(this::unwrap).collect(Collectors.toList());
+	}
+
+	protected Generic[] wrap(org.genericsystem.concurrency.Generic... array) {
+		return Arrays.asList(array).stream().map(this::wrap).collect(Collectors.toList()).toArray(new Generic[array.length]);
+	}
+
+	protected org.genericsystem.concurrency.Generic[] unwrap(Generic... listM) {
+		return engine.getConcurrencyEngine().coerceToTArray(Arrays.asList(listM).stream().map(this::unwrap).collect(Collectors.toList()).toArray());
 	}
 	
 	@Override

@@ -12,7 +12,7 @@ import org.genericsystem.kernel.Config.MetaAttribute;
 import org.genericsystem.kernel.Config.MetaRelation;
 import org.genericsystem.kernel.Config.SystemMap;
 
-public class Engine extends Generic implements IRoot<Generic> {
+public class Engine implements Generic,IRoot<Generic> {
 
 	private final ThreadLocal<Cache> cacheLocal = new ThreadLocal<>();
 
@@ -22,7 +22,7 @@ public class Engine extends Generic implements IRoot<Generic> {
 		this.concurrencyEngine = new org.genericsystem.concurrency.Engine();
 		newCache().start();
 	}
-	
+
 	public Engine(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
 	}
@@ -40,11 +40,11 @@ public class Engine extends Generic implements IRoot<Generic> {
 	public Engine getEngine() {
 		return this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public <Custom extends Generic> Custom find(Class<?> clazz) {
-		return (Custom)wrap(concurrencyEngine.find(clazz));
+		return (Custom) getCurrentCache().wrap(concurrencyEngine.find(clazz));
 	}
 
 	public Cache newCache() {
@@ -73,62 +73,62 @@ public class Engine extends Generic implements IRoot<Generic> {
 
 	@Override
 	public Generic addType(Serializable value) {
-		return wrap(concurrencyEngine.addType(value));
+		return  getCurrentCache().wrap(concurrencyEngine.addType(value));
 	}
 
 	@Override
 	public Generic addType(Generic override, Serializable value) {
-		return wrap(concurrencyEngine.addType(unwrap(override), value));
+		return  getCurrentCache().wrap(concurrencyEngine.addType( getCurrentCache().unwrap(override), value));
 	}
 
 	@Override
 	public Generic addType(List<Generic> overrides, Serializable value) {
-		return wrap(concurrencyEngine.addType(unwrap(overrides), value));
+		return  getCurrentCache().wrap(concurrencyEngine.addType( getCurrentCache().unwrap(overrides), value));
 	}
 
 	@Override
 	public Generic setType(Serializable value) {
-		return wrap(concurrencyEngine.setType(value));
+		return  getCurrentCache().wrap(concurrencyEngine.setType(value));
 	}
 
 	@Override
 	public Generic setType(Generic override, Serializable value) {
-		return wrap(concurrencyEngine.setType(unwrap(override), value));
+		return  getCurrentCache().wrap(concurrencyEngine.setType( getCurrentCache().unwrap(override), value));
 	}
 
 	@Override
 	public Generic setType(List<Generic> overrides, Serializable value) {
-		return wrap(concurrencyEngine.setType(unwrap(overrides), value));
+		return  getCurrentCache().wrap(concurrencyEngine.setType( getCurrentCache().unwrap(overrides), value));
 	}
 
 	@Override
 	public Generic addTree(Serializable value) {
-		return wrap(concurrencyEngine.addTree(value));
+		return  getCurrentCache().wrap(concurrencyEngine.addTree(value));
 	}
 
 	@Override
 	public Generic addTree(Serializable value, int parentsNumber) {
-		return wrap(concurrencyEngine.addTree(value, parentsNumber));
+		return  getCurrentCache().wrap(concurrencyEngine.addTree(value, parentsNumber));
 	}
 
 	@Override
 	public Generic setTree(Serializable value) {
-		return wrap(concurrencyEngine.setTree(value));
+		return  getCurrentCache().wrap(concurrencyEngine.setTree(value));
 	}
 
 	@Override
 	public Generic setTree(Serializable value, int parentsNumber) {
-		return wrap(concurrencyEngine.setTree(value, parentsNumber));
+		return  getCurrentCache().wrap(concurrencyEngine.setTree(value, parentsNumber));
 	}
 
 	@Override
 	public Generic getMetaAttribute() {
-		return wrap(concurrencyEngine.getMetaAttribute());
+		return  getCurrentCache().wrap(concurrencyEngine.getMetaAttribute());
 	}
 
 	@Override
 	public Generic getMetaRelation() {
-		return wrap( concurrencyEngine.getMetaRelation());
+		return  getCurrentCache().wrap( concurrencyEngine.getMetaRelation());
 	}
 
 	public org.genericsystem.concurrency.Engine getConcurrencyEngine() {
