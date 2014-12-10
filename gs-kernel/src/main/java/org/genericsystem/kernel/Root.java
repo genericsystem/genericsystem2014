@@ -39,11 +39,6 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 		return find(MetaRelation.class);
 	}
 
-	@Override
-	public Vertex getMap() {
-		return getRoot().find(SystemMap.class);
-	}
-
 	
 	@Override
 	public Context<Vertex> getCurrentCache() {

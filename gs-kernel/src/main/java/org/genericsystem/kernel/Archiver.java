@@ -7,7 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.io.Serializable;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
@@ -253,6 +252,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 			objectOutputStream.writeLong(System.identityHashCode(ancestor));
 		}
 
+		@SuppressWarnings("unchecked")
 		protected List<T> getOrderedVertices() {
 			return Statics.reverseCollections(new OrderedDependencies<T>(ts).visit((T)root));
 		}
@@ -318,6 +318,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 			return dependency;
 		}
 
+		@SuppressWarnings("unchecked")
 		private void loadDependency(Map<Long, T> vertexMap) throws IOException, ClassNotFoundException {
 			Long id = loadId();
 			Long[] otherTs = loadOtherTs();

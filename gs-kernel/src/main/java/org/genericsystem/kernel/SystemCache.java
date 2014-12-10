@@ -98,6 +98,7 @@ public class SystemCache<T extends AbstractVertex<T>> {
 				result.enableSingularConstraint(axe);
 	}
 
+	@SuppressWarnings("unchecked")
 	private T setMeta(Class<?> clazz) {
 		Meta meta = clazz.getAnnotation(Meta.class);
 		if (meta == null)

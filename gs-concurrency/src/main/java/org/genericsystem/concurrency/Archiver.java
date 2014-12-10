@@ -35,6 +35,7 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 		protected Saver(ObjectOutputStream outputStream,long ts) {
 			super(outputStream, ts);
 		}
+		@SuppressWarnings("unchecked")
 		@Override
 		protected List<T> getOrderedVertices() {
 			return new ArrayList<>(new DependenciesOrder<T>(ts).visit((T)root));

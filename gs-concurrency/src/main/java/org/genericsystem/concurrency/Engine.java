@@ -44,11 +44,6 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 		return find(MetaRelation.class);
 	}
 
-	@Override
-	public Generic getMap() {
-		return find(SystemMap.class);
-	}
-
 	// TODO mount this in API
 	public void close() {
 		archiver.close();

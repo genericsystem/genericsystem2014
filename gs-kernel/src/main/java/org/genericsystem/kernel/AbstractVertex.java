@@ -14,6 +14,7 @@ import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
+import org.genericsystem.kernel.Config.SystemMap;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 
 public abstract class AbstractVertex<T extends AbstractVertex<T>> implements DefaultVertex<T> {
@@ -349,9 +350,14 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	public Snapshot<T> getComposites() {
 		return getCurrentCache().getComposites((T) this);
 	}
+	
+	@SuppressWarnings("unchecked")
+	T getMap(){
+		return getRoot().find((Class<T>)SystemMap.class);
+	}
 
 	Optional<T> getKey(AxedPropertyClass property) {
-		T map = getRoot().getMap();
+		T map = getMap();
 		Stream<T> keys = map != null ? getAttributes(map).get() : Stream.empty();
 		return keys.filter(x -> Objects.equals(x.getValue(), property)).findFirst();
 	}

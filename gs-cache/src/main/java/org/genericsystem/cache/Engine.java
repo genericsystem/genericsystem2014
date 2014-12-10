@@ -33,12 +33,6 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	public Generic getMetaRelation() {
 		return find(MetaRelation.class);
 	}
-
-	@Override
-	public Generic getMap() {
-		return find(SystemMap.class);
-	}
-
 	
 	@Override
 	public Cache<Generic> start(Cache<Generic> cache) {
