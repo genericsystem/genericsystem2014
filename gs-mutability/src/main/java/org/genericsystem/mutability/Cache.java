@@ -1,5 +1,6 @@
 package org.genericsystem.mutability;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -7,9 +8,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import java.util.Set;
-
+import java.util.stream.Collectors;
+import javassist.util.proxy.MethodFilter;
+import javassist.util.proxy.MethodHandler;
+import javassist.util.proxy.ProxyFactory;
+import javassist.util.proxy.ProxyObject;
 import org.genericsystem.api.core.IContext;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.concurrency.Cache.ContextEventListener;
@@ -19,7 +23,8 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 	private final org.genericsystem.concurrency.Cache<org.genericsystem.concurrency.Generic> concurrencyCache;
 	private final Map<Generic, org.genericsystem.concurrency.Generic> mutabilityMap = new IdentityHashMap<>();
 	private final Map<org.genericsystem.concurrency.Generic, Set<Generic>> reverseMultiMap = new IdentityHashMap<>();
-	private Map<Generic, org.genericsystem.concurrency.Generic> revertMutations= new IdentityHashMap<>();
+	private Map<Generic, org.genericsystem.concurrency.Generic> revertMutations = new IdentityHashMap<>();
+
 	public Cache(Engine engine, org.genericsystem.concurrency.Engine concurrencyEngine) {
 		this.engine = engine;
 		put(engine, concurrencyEngine);
@@ -48,17 +53,30 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 	}
 
 	protected Generic wrap(org.genericsystem.concurrency.Generic generic) {
+		return wrap(null, generic);
+	}
+
+	protected Generic wrap(Class<?> clazz, org.genericsystem.concurrency.Generic generic) {
 		if (generic == null)
 			return null;
 		Set<Generic> resultSet = reverseMultiMap.get(generic);
 		if (resultSet != null)
 			return resultSet.iterator().next();
-		Generic result = new Generic(){
-			@Override
-			public Engine getEngine() {
-				return engine;
+
+		Generic result;
+		if (clazz != null)
+			try {
+				result = (Generic) newInstance(clazz);
+			} catch (InstantiationException | IllegalAccessException e) {
+				throw new IllegalStateException(e);
 			}
-		};
+		else
+			result = new Generic() {
+				@Override
+				public Engine getEngine() {
+					return engine;
+				}
+			};
 		put(result, generic);
 		return result;
 	}
@@ -75,7 +93,7 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 		Set<Generic> resultSet = reverseMultiMap.get(oldDependency);
 		if (resultSet != null) {
 			for (Generic mutable : resultSet) {
-				if(!revertMutations.containsKey(mutable))
+				if (!revertMutations.containsKey(mutable))
 					revertMutations.put(mutable, oldDependency);
 				mutabilityMap.put(mutable, newDependency);
 			}
@@ -97,25 +115,24 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 		}
 	}
 
-
 	@Override
-	public void triggersClearEvent(){
-		for(Entry<Generic,org.genericsystem.concurrency.Generic> entry : revertMutations.entrySet()){
+	public void triggersClearEvent() {
+		for (Entry<Generic, org.genericsystem.concurrency.Generic> entry : revertMutations.entrySet()) {
 			org.genericsystem.concurrency.Generic newDependency = mutabilityMap.get(entry.getKey());
 			mutabilityMap.put(entry.getKey(), entry.getValue());
-			if(newDependency!=null){
+			if (newDependency != null) {
 				Set<Generic> set = reverseMultiMap.get(newDependency);
 				set.remove(entry.getKey());
-				if(set.isEmpty())
+				if (set.isEmpty())
 					reverseMultiMap.remove(newDependency);
 				set = reverseMultiMap.get(entry.getValue());
-				if(set==null)
-					set=Collections.newSetFromMap(new IdentityHashMap<Generic, Boolean>());
+				if (set == null)
+					set = Collections.newSetFromMap(new IdentityHashMap<Generic, Boolean>());
 				set.add(entry.getKey());
 			}
 		}
 	}
-	
+
 	protected List<Generic> wrap(List<org.genericsystem.concurrency.Generic> listT) {
 		return listT.stream().map(this::wrap).collect(Collectors.toList());
 	}
@@ -131,10 +148,10 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 	protected org.genericsystem.concurrency.Generic[] unwrap(Generic... listM) {
 		return engine.getConcurrencyEngine().coerceToTArray(Arrays.asList(listM).stream().map(this::unwrap).collect(Collectors.toList()).toArray());
 	}
-	
+
 	@Override
-	public void triggersFlushEvent(){
-		revertMutations= new IdentityHashMap<>();
+	public void triggersFlushEvent() {
+		revertMutations = new IdentityHashMap<>();
 	}
 
 	public boolean isAlive(Generic mutable) {
@@ -147,10 +164,35 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 	}
 
 	public void flush() {
-		concurrencyCache.flush(); //triggers flush  automatically
+		concurrencyCache.flush(); // triggers flush automatically
 	}
 
 	public void clear() {
 		concurrencyCache.clear();// triggers clear and refresh automatically
+	}
+
+	private ProxyFactory proxyFactory = new ProxyFactory();
+
+	<T> T newInstance(Class<T> clazz) throws InstantiationException, IllegalAccessException {
+		ProxyFactory proxyFactory = new ProxyFactory();
+		proxyFactory.setSuperclass(clazz);
+		proxyFactory.setInterfaces(new Class[] { Generic.class });
+		proxyFactory.setFilter(new MethodFilter() {
+			@Override
+			public boolean isHandled(Method m) {
+				return m.getName().equals("getEngine");
+			}
+		});
+		Class<T> proxyClass = proxyFactory.createClass();
+		MethodHandler handler = new MethodHandler() {
+			@Override
+			public Object invoke(Object self, Method m, Method proceed, Object[] args) throws Throwable {
+				// Object o = proceed.invoke(self, args);
+				return engine;
+			}
+		};
+		T instance = proxyClass.newInstance();
+		((ProxyObject) instance).setHandler(handler);
+		return instance;
 	}
 }
