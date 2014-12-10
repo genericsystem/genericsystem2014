@@ -47,7 +47,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <Custom extends Vertex> Custom find(Class<Custom> clazz) {
+	public <Custom extends Vertex> Custom find(Class<?> clazz) {
 		return (Custom) systemCache.get(clazz);
 	}
 

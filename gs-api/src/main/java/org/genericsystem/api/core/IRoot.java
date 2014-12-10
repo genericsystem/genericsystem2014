@@ -18,7 +18,7 @@ public interface IRoot<T extends IVertex<T>> extends IVertex<T> {
 	 *            the expected vertex
 	 * @return a vertex
 	 */
-	<Custom extends T> Custom find(Class<Custom> clazz);
+	<Custom extends T> Custom find(Class<?> clazz);
 
 	T addType(Serializable value);
 

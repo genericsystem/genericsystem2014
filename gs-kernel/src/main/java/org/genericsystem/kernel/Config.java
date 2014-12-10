@@ -19,9 +19,7 @@ public class Config {
 	@Components(Root.class)
 	@EngineValue
 	@Dependencies({ DefaultNoReferentialIntegrityProperty.class })
-	public static class MetaAttribute extends Vertex {
-
-	}
+	public static class MetaAttribute {}
 
 	@SystemGeneric
 	@Meta(MetaAttribute.class)
@@ -29,15 +27,13 @@ public class Config {
 	@Components(Root.class)
 	@AxedPropertyClassValue(propertyClass = NoReferentialIntegrityProperty.class, pos = Statics.BASE_POSITION)
 	@Dependencies({ DefaultValue.class })
-	public static class DefaultNoReferentialIntegrityProperty extends Vertex {
+	public static class DefaultNoReferentialIntegrityProperty {
 
 		@SystemGeneric
 		@Meta(DefaultNoReferentialIntegrityProperty.class)
 		@Components(MetaAttribute.class)
 		@BooleanValue(true)
-		public static class DefaultValue extends Vertex {
-
-		}
+		public static class DefaultValue {}
 
 	}
 
@@ -46,14 +42,12 @@ public class Config {
 	@Supers(MetaAttribute.class)
 	@Components({ Root.class, Root.class })
 	@EngineValue
-	public static class MetaRelation extends Vertex {
-
-	}
+	public static class MetaRelation {}
 
 	@SystemGeneric
 	@Meta(MetaAttribute.class)
 	@Components(Root.class)
-	@PropertyConstraint
-	public static class SystemMap extends Vertex {}
+	@PropertyConstraint // TODO do this with annotated classes
+	public static class SystemMap {}
 
 }

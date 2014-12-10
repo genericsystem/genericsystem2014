@@ -1,9 +1,16 @@
 package org.genericsystem.mutability;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.genericsystem.api.core.IRoot;
+import org.genericsystem.concurrency.Archiver;
+import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.Config.MetaAttribute;
+import org.genericsystem.kernel.Config.MetaRelation;
+import org.genericsystem.kernel.Config.SystemMap;
 
 public class Engine extends Generic implements IRoot<Generic> {
 
@@ -12,16 +19,32 @@ public class Engine extends Generic implements IRoot<Generic> {
 	private final org.genericsystem.concurrency.Engine concurrencyEngine;
 
 	public Engine() {
-		super(null);
-		this.engine = this;
 		this.concurrencyEngine = new org.genericsystem.concurrency.Engine();
 		newCache().start();
 	}
 	
+	public Engine(Class<?>... userClasses) {
+		this(Statics.ENGINE_VALUE, userClasses);
+	}
+
+	public Engine(Serializable engineValue, Class<?>... userClasses) {
+		this(engineValue, null, userClasses);
+	}
+
+	public Engine(Serializable engineValue, String persistentDirectoryPath, Class<?>... userClasses) {
+		this.concurrencyEngine = new org.genericsystem.concurrency.Engine(persistentDirectoryPath,userClasses);
+		newCache().start();
+	}
+
 	@Override
-	public <Custom extends Generic> Custom find(Class<Custom> clazz) {
-		// TODO 
-		return null;
+	public Engine getEngine() {
+		return this;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <Custom extends Generic> Custom find(Class<?> clazz) {
+		return (Custom)wrap(concurrencyEngine.find(clazz));
 	}
 
 	public Cache newCache() {

@@ -330,7 +330,10 @@ public class Archiver<T extends AbstractVertex<T>> {
 			if(instance==null)
 				instance= transaction.plug( restoreTs(transaction.getBuilder().newT(null, meta, supers, value, components), id, otherTs));
 			else
-				instance = restoreTs(instance, id, otherTs);//TODO what to do for system generics that are not in archive, that is serious issue...
+				instance = restoreTs(instance, id, otherTs);
+			// What about system generics that are not in archive, that shall be a serious issue... 
+			// Perhaps not if we are sure startup begins after the archive has been done
+			// TODO Detect if startup begins before archive has been done and throw exception !
 			vertexMap.put(id, instance);
 			log.info("load dependency " + vertexMap.get(id).info() + " " + id);
 		}

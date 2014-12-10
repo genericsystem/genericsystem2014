@@ -10,20 +10,21 @@ import javax.json.JsonObject;
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
 
-public class Generic implements IVertex<Generic> {
+public abstract class Generic implements IVertex<Generic> {
+	
+	public abstract Engine getEngine();
 
-	protected Engine engine;
-
-	Generic(Engine engine) {
-		this.engine = engine;
+	@Override
+	public Cache getCurrentCache() {
+		return getEngine().getCurrentCache();
 	}
-
+	
 	protected Generic wrap(org.genericsystem.concurrency.Generic genericT) {
-		return getCurrentCache().getByValue(genericT);
+		return getCurrentCache().wrap(genericT);
 	}
 
 	protected org.genericsystem.concurrency.Generic unwrap(Generic genericM) {
-		return getCurrentCache().getByMutable(genericM);
+		return getCurrentCache().unwrap(genericM);
 	}
 
 
@@ -36,11 +37,11 @@ public class Generic implements IVertex<Generic> {
 	}
 
 	protected Generic[] wrap(org.genericsystem.concurrency.Generic... listT) {
-		return engine.coerceToTArray(Arrays.asList(listT).stream().map(this::wrap).collect(Collectors.toList()).toArray());
+		return coerceToTArray(Arrays.asList(listT).stream().map(this::wrap).collect(Collectors.toList()).toArray());
 	}
 
 	protected org.genericsystem.concurrency.Generic[] unwrap(Generic... listM) {
-		return unwrap(engine).coerceToTArray(Arrays.asList(listM).stream().map(this::unwrap).collect(Collectors.toList()).toArray());
+		return getEngine().getConcurrencyEngine().coerceToTArray(Arrays.asList(listM).stream().map(this::unwrap).collect(Collectors.toList()).toArray());
 	}
 
 	@Override
@@ -551,11 +552,6 @@ public class Generic implements IVertex<Generic> {
 	@Override
 	public Generic disableClassConstraint() {
 		return wrap(unwrap(this).disableClassConstraint());
-	}
-
-	@Override
-	public Cache getCurrentCache() {
-		return engine.getCurrentCache();
 	}
 
 	@Override

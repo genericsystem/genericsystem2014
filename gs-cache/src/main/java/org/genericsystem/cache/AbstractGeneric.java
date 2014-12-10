@@ -5,8 +5,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.cache.Config.SystemMap;
 import org.genericsystem.kernel.AbstractVertex;
+import org.genericsystem.kernel.Config.SystemMap;
 import org.genericsystem.kernel.Dependencies;
 
 
@@ -86,10 +86,4 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 	protected T adjustMeta(Serializable value, T... components) {
 		return super.adjustMeta(value, components);
 	}
-	
-	@SuppressWarnings("unchecked")
-	protected T getMap(){
-		return getRoot().find((Class<T>)SystemMap.class);
-	}
-
 }

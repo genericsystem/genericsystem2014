@@ -3,7 +3,6 @@ package org.genericsystem.concurrency;
 import java.io.Serializable;
 import java.util.List;
 
-import org.genericsystem.concurrency.Config.SystemMap;
 import org.genericsystem.kernel.Dependencies;
 
 
@@ -55,10 +54,4 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.
 
 	@Override
 	protected abstract Dependencies<T> getCompositesDependencies();
-	
-	@Override
-	@SuppressWarnings("unchecked")
-	protected T getMap(){
-		return getRoot().find((Class<T>)SystemMap.class);
-	}
 }

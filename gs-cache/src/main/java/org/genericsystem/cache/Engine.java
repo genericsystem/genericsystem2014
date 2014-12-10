@@ -4,15 +4,16 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.genericsystem.cache.Config.MetaAttribute;
-import org.genericsystem.cache.Config.MetaRelation;
-import org.genericsystem.cache.Config.SystemMap;
+import org.genericsystem.kernel.Config.MetaAttribute;
+import org.genericsystem.kernel.Config.MetaRelation;
+import org.genericsystem.kernel.Config.SystemMap;
+import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 
 public class Engine extends Generic implements DefaultEngine<Generic> {
 
 	private final ThreadLocal<Cache<Generic>> cacheLocal = new ThreadLocal<>();
-	private final SystemCache<Generic> systemCache=new SystemCache<Generic>(this,getClass());
+	private final SystemCache<Generic> systemCache=new SystemCache<Generic>(this,Root.class);
 
 
 	public Engine(Class<?>... userClasses) {
@@ -58,7 +59,7 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <Custom extends Generic> Custom find(Class<Custom> clazz) {
+	public <Custom extends Generic> Custom find(Class<?> clazz) {
 		return (Custom) systemCache.get(clazz);
 	}
 	

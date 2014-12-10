@@ -351,9 +351,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getCurrentCache().getComposites((T) this);
 	}
 	
-	@SuppressWarnings("unchecked")
-	protected T getMap(){
-		return getRoot().find((Class<T>)SystemMap.class);
+	T getMap(){
+		return getRoot().find(SystemMap.class);
 	}
 
 	Optional<T> getKey(AxedPropertyClass property) {

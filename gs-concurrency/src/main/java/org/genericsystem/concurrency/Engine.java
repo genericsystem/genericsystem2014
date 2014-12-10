@@ -6,15 +6,16 @@ import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.genericsystem.cache.SystemCache;
-import org.genericsystem.concurrency.Config.MetaAttribute;
-import org.genericsystem.concurrency.Config.MetaRelation;
-import org.genericsystem.concurrency.Config.SystemMap;
+import org.genericsystem.kernel.Config.MetaAttribute;
+import org.genericsystem.kernel.Config.MetaRelation;
+import org.genericsystem.kernel.Config.SystemMap;
+import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 
 public class Engine extends Generic implements DefaultEngine<Generic> {
 
 	protected final ThreadLocal<Cache<Generic>> cacheLocal = new ThreadLocal<>();
-	private final SystemCache<Generic> systemCache=new SystemCache<Generic>(this,getClass());
+	private final SystemCache<Generic> systemCache=new SystemCache<Generic>(this,Root.class);
 	private final Archiver<Generic> archiver;
 	private final TsGenerator generator = new TsGenerator();
 	private final GarbageCollector<Generic> garbageCollector = new GarbageCollector<>(this);
@@ -73,7 +74,7 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <Custom extends Generic> Custom find(Class<Custom> clazz) {
+	public <Custom extends Generic> Custom find(Class<?> clazz) {
 		return (Custom) systemCache.get(clazz);
 	}
 
