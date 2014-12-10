@@ -352,7 +352,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 	
 	@SuppressWarnings("unchecked")
-	T getMap(){
+	protected T getMap(){
 		return getRoot().find((Class<T>)SystemMap.class);
 	}
 

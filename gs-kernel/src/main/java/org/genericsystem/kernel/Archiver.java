@@ -257,7 +257,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 			return Statics.reverseCollections(new OrderedDependencies<T>(ts).visit((T)root));
 		}
 	}
-	
+
 	public static class OrderedDependencies<T extends AbstractVertex<T>> extends LinkedHashSet<T> {
 		private static final long serialVersionUID = -5970021419012502402L;
 
@@ -293,7 +293,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 			this.objectInputStream = objectInputStream;
 			this.transaction=  buildTransaction();
 		}
-		
+
 		protected Transaction<T> buildTransaction(){
 			return new Transaction<>(root, 0L); 
 		}
@@ -327,10 +327,11 @@ public class Archiver<T extends AbstractVertex<T>> {
 			List<T> supers = loadAncestors(vertexMap);
 			List<T> components = loadAncestors(vertexMap);
 			T instance = meta == null ? ((T)root).getMeta(components.size()) : meta.getDirectInstance(value, components);
-			//TODO restoreTs when instance != null
-			// SystemCache must launch after ????
-			
-			vertexMap.put(id, instance != null ? instance : transaction.plug(restoreTs(transaction.getBuilder().newT(null, meta, supers, value, components), id, otherTs)));
+			if(instance==null)
+				instance= transaction.plug( restoreTs(transaction.getBuilder().newT(null, meta, supers, value, components), id, otherTs));
+			else
+				instance = restoreTs(instance, id, otherTs);
+			vertexMap.put(id, instance);
 			log.info("load dependency " + vertexMap.get(id).info() + " " + id);
 		}
 

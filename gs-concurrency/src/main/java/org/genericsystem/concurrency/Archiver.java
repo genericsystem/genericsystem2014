@@ -52,7 +52,7 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 
 		@Override
 		protected void writeAncestorId(T ancestor) throws IOException {
-			objectOutputStream.writeLong(ancestor.getLifeManager().getDesignTs());
+			objectOutputStream.writeLong(ancestor!=null ? ancestor.getLifeManager().getDesignTs() : -1L);
 		}
 	}
 	

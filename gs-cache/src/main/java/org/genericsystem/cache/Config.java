@@ -54,7 +54,7 @@ public class Config {
 	@SystemGeneric
 	@Meta(MetaAttribute.class)
 	@Components(Engine.class)
-	@PropertyConstraint
+	@PropertyConstraint // TODO Mount this by annotation
 	public static class SystemMap extends Generic {
 	}
 
