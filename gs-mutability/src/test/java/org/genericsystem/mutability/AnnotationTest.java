@@ -12,14 +12,17 @@ import org.testng.annotations.Test;
 public class AnnotationTest extends AbstractTest {
 
 	@SystemGeneric
-	static class Phone {
-
+	static class Phone implements Generic {
+		public Generic test(){
+			return ((Generic)this).addInstance("HTC One");
+		}
 	}
 
 	public void test000_Generic() {
 		Engine engine = new Engine(Phone.class);
 		Phone phone = engine.find(Phone.class);
-		((Generic) phone).addInstance("coucou");
+		phone.test();
+		((Generic) phone).addInstance("Nokia 3210");
 		assert phone != null;
 	}
 

@@ -64,19 +64,20 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 			return resultSet.iterator().next();
 
 		Generic result;
-		if (clazz != null)
+		if (clazz != null) {
 			try {
 				result = (Generic) newInstance(clazz);
 			} catch (InstantiationException | IllegalAccessException e) {
 				throw new IllegalStateException(e);
 			}
+		}
 		else
 			result = new Generic() {
-				@Override
-				public Engine getEngine() {
-					return engine;
-				}
-			};
+			@Override
+			public Engine getEngine() {
+				return engine;
+			}
+		};
 		put(result, generic);
 		return result;
 	}
@@ -171,12 +172,12 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 		concurrencyCache.clear();// triggers clear and refresh automatically
 	}
 
-	private ProxyFactory proxyFactory = new ProxyFactory();
-
+	
 	<T> T newInstance(Class<T> clazz) throws InstantiationException, IllegalAccessException {
 		ProxyFactory proxyFactory = new ProxyFactory();
 		proxyFactory.setSuperclass(clazz);
-		proxyFactory.setInterfaces(new Class[] { Generic.class });
+		if(!Generic.class.isAssignableFrom(clazz))
+			proxyFactory.setInterfaces(new Class[] { Generic.class });
 		proxyFactory.setFilter(new MethodFilter() {
 			@Override
 			public boolean isHandled(Method m) {

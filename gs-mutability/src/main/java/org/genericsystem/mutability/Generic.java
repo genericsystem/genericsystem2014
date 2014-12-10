@@ -2,13 +2,17 @@ package org.genericsystem.mutability;
 
 import java.io.Serializable;
 import java.util.List;
+
 import javax.json.JsonObject;
+
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
 
 public interface Generic extends IVertex<Generic> {
 
-	abstract Engine getEngine();
+	default Engine getEngine(){
+		throw new IllegalStateException();
+	}
 
 	// @Override
 	// default String toString() {
