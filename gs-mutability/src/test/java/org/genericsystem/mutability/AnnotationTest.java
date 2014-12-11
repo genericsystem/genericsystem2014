@@ -1,5 +1,12 @@
 package org.genericsystem.mutability;
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.InstanceClass;
 import org.genericsystem.kernel.annotations.Meta;
@@ -11,19 +18,55 @@ import org.testng.annotations.Test;
 @Test
 public class AnnotationTest extends AbstractTest {
 
+	
+	static interface simpleCRUD<T extends Serializable> extends Snapshot<T>{
+			
+			@SuppressWarnings("unchecked")
+			default Stream<T> get(){
+				return ((Generic)this).getInstances().get().map(x->(T)x.getValue());
+			}
+		
+			default void add(T value){
+				((Generic)this).setInstance(value);
+			}
+			
+			default List<T> getValues(){
+				return get().collect(Collectors.toList());
+			}
+			
+			default boolean remove(T value){
+				for(Generic instance :((Generic)this).getInstances() )
+					if(Objects.equals(value, instance.getValue())) {
+						instance.remove();
+						return true;
+					}
+				return false;
+			}		
+	}
+	
+	
+	
 	@SystemGeneric
-	static class Phone implements Generic {
-		public Generic test(){
-			return ((Generic)this).addInstance("HTC One");
-		}
+	static class Phones implements simpleCRUD<String> {
+		
 	}
 
 	public void test000_Generic() {
-		Engine engine = new Engine(Phone.class);
-		Phone phone = engine.find(Phone.class);
-		phone.test();
-		((Generic) phone).addInstance("Nokia 3210");
-		assert phone != null;
+		Engine engine = new Engine(Phones.class);
+		Phones phones = engine.find(Phones.class);
+		phones.add("HTC Hero");
+		phones.add("Nokia 3210");
+		phones.add("Samsung S4");
+		phones.add("HTC One");
+		phones.add("HTC One");
+		phones.remove("HTC One");
+		phones.remove("HTC One");
+		engine.getCurrentCache().flush();
+		assert phones.size()==3;
+		assert !phones.contains("HTC One");
+		engine.getCurrentCache().clear();
+		assert phones.size()==3;
+		assert !phones.contains("HTC One");
 	}
 
 	public void test001_Generic() {
