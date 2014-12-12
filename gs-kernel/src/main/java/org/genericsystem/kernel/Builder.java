@@ -61,6 +61,17 @@ public class Builder<T extends AbstractVertex<T>> {
 			return equivInstance;
 		Supplier<T> rebuilder = () -> adjustAndBuild(clazz, getOrNewMeta, overrides, value, components);
 		return rebuildAll(equivInstance, rebuilder, equivInstance == null ? getOrNewMeta.computePotentialDependencies(overrides, value, components) : equivInstance.computeDependencies());
+
+		// context.getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
+		// // T getOrNewMeta = meta == null || meta.isMeta() ? setMeta(components.size()) : meta;
+		// T getOrNewMeta = meta == null ? overrides.get(0) : meta;
+		// if (getOrNewMeta.equalsAndOverrides(getOrNewMeta, overrides, value, components))
+		// return getOrNewMeta;
+		// T equivInstance = getOrNewMeta.getDirectEquivInstance(value, components);
+		// if (equivInstance != null && equivInstance.equalsAndOverrides(getOrNewMeta, overrides, value, components))
+		// return equivInstance;
+		// Supplier<T> rebuilder = () -> adjustAndBuild(clazz, getOrNewMeta, overrides, value, components);
+		// return rebuildAll(equivInstance, rebuilder, equivInstance == null ? getOrNewMeta.computePotentialDependencies(overrides, value, components) : equivInstance.computeDependencies());
 	}
 
 	protected T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents) {
@@ -116,7 +127,7 @@ public class Builder<T extends AbstractVertex<T>> {
 		// return adjustedMeta;
 		// T[] components = newTArray(dim);
 		// Arrays.fill(components, root);
-		// return rebuildAll(null, () -> context.plug(newT(null, null, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components))),
+		// return rebuildAll(null, () -> context.plug(newT(null, null, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components), 0L, new Long[0])),
 		// adjustedMeta.computePotentialDependencies(Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)));
 
 		T root = (T) context.getRoot();
@@ -129,15 +140,28 @@ public class Builder<T extends AbstractVertex<T>> {
 				adjustedMeta.computePotentialDependencies(Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)));
 	}
 
+	@SuppressWarnings("unchecked")
+	protected T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, Long designTs, Long[] otherTs) {
+		T instance = meta == null ? ((T) context.getRoot()).getMeta(components.size()) : meta.getDirectInstance(value, components);
+		return instance == null ? context.plug(newT(clazz, meta, supers, value, components)) : instance;
+	}
+
 	// get or build
 	// meta == null
 	// adjusts = true
 	private T adjustAndBuild(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
-		T adjustMeta = meta == null ? overrides.get(0).adjustMeta(components.size()) : meta.adjustMeta(value, components);
-		List<T> supers = new ArrayList<>(new SupersComputer<>(adjustMeta, overrides, value, components));
-		// TODO system constraints
-		if (!Statics.areOverridesReached(supers, overrides))
-			context.discardWithException(new IllegalStateException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
+		T adjustMeta;
+		List<T> supers;
+		if (meta == null) {
+			adjustMeta = overrides.get(0).adjustMeta(components.size());
+			supers = overrides;
+		} else {
+			adjustMeta = meta.adjustMeta(value, components);
+			supers = new ArrayList<>(new SupersComputer<>(adjustMeta, overrides, value, components));
+			// TODO system constraints
+			if (!Statics.areOverridesReached(supers, overrides))
+				context.discardWithException(new IllegalStateException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
+		}
 		adjustMeta = adjustMeta.isMeta() && adjustMeta.getComponents().size() != components.size() ? null : adjustMeta;
 		return context.plug(newT(clazz, adjustMeta, supers, value, components));
 	}

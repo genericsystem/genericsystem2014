@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.genericsystem.kernel.Dependencies;
 
-
 public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.genericsystem.cache.AbstractGeneric<T> implements DefaultGeneric<T>, Comparable<T> {
 
 	private LifeManager lifeManager;
@@ -37,6 +36,16 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.
 
 	boolean isAlive(long ts) {
 		return lifeManager.isAlive(ts);
+	}
+
+	@Override
+	protected T getDirectInstance(Serializable value, List<T> components) {
+		return super.getDirectInstance(value, components);
+	}
+
+	@Override
+	protected T getMeta(int dim) {
+		return super.getMeta(dim);
 	}
 
 	@Override
