@@ -142,7 +142,7 @@ public class Statics {
 		}
 	}
 
-	public static <T extends IVertex<T>> boolean areOverridesReached(List<T> overrides, List<T> supers) {
+	public static <T extends IVertex<T>> boolean areOverridesReached(List<T> supers, List<T> overrides) {
 		return overrides.stream().allMatch(override -> supers.stream().anyMatch(superVertex -> superVertex.inheritsFrom(override)));
 	}
 

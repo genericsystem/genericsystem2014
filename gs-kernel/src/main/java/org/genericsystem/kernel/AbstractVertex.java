@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
@@ -180,7 +179,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	T getDirectInstance(List<T> overrides, Serializable value, List<T> components) {
 		T result = getDirectInstance(value, components);
-		return result != null && Statics.areOverridesReached(overrides, result.getSupers()) ? result : null;
+		return result != null && Statics.areOverridesReached(result.getSupers(), overrides) ? result : null;
 	}
 
 	boolean isDependencyOf(T meta, List<T> overrides, Serializable value, List<T> components) {
@@ -193,6 +192,10 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 			if (instance.equiv(this, value, components))
 				return instance;
 		return null;
+	}
+
+	boolean equalsAndOverrides(T meta, List<T> overrides, Serializable value, List<T> components) {
+		return equalsRegardlessSupers(meta, value, components) && Statics.areOverridesReached(getSupers(), overrides);
 	}
 
 	boolean equals(ISignature<?> meta, List<? extends ISignature<?>> supers, Serializable value, List<? extends ISignature<?>> components) {
@@ -350,8 +353,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	public Snapshot<T> getComposites() {
 		return getCurrentCache().getComposites((T) this);
 	}
-	
-	T getMap(){
+
+	T getMap() {
 		return getRoot().find(SystemMap.class);
 	}
 

@@ -3,7 +3,6 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
-
 import org.genericsystem.kernel.Config.MetaAttribute;
 import org.genericsystem.kernel.Config.MetaRelation;
 import org.genericsystem.kernel.Config.SystemMap;
@@ -30,16 +29,15 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 	}
 
 	@Override
-	public Vertex getMetaAttribute() {
+	public final Vertex getMetaAttribute() {
 		return find(MetaAttribute.class);
 	}
 
 	@Override
-	public Vertex getMetaRelation() {
+	public final Vertex getMetaRelation() {
 		return find(MetaRelation.class);
 	}
 
-	
 	@Override
 	public Context<Vertex> getCurrentCache() {
 		return context;
