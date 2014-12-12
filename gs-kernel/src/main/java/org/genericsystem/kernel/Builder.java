@@ -10,6 +10,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
 import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.kernel.annotations.InstanceClass;
 
@@ -109,13 +110,22 @@ public class Builder<T extends AbstractVertex<T>> {
 	// adjusts = true
 	@SuppressWarnings("unchecked")
 	T setMeta(int dim) {
+		// T root = (T) context.getRoot();
+		// T adjustedMeta = root.adjustMeta(dim);
+		// if (adjustedMeta.getComponents().size() == dim)
+		// return adjustedMeta;
+		// T[] components = newTArray(dim);
+		// Arrays.fill(components, root);
+		// return rebuildAll(null, () -> context.plug(newT(null, null, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components))),
+		// adjustedMeta.computePotentialDependencies(Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)));
+
 		T root = (T) context.getRoot();
 		T adjustedMeta = root.adjustMeta(dim);
 		if (adjustedMeta.getComponents().size() == dim)
 			return adjustedMeta;
 		T[] components = newTArray(dim);
 		Arrays.fill(components, root);
-		return rebuildAll(null, () -> context.plug(newT(null, null, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components))),
+		return rebuildAll(null, () -> adjustAndBuild(null, null, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)),
 				adjustedMeta.computePotentialDependencies(Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)));
 	}
 
@@ -123,7 +133,7 @@ public class Builder<T extends AbstractVertex<T>> {
 	// meta == null
 	// adjusts = true
 	private T adjustAndBuild(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
-		T adjustMeta = meta.adjustMeta(value, components);
+		T adjustMeta = meta == null ? overrides.get(0).adjustMeta(components.size()) : meta.adjustMeta(value, components);
 		List<T> supers = new ArrayList<>(new SupersComputer<>(adjustMeta, overrides, value, components));
 		// TODO system constraints
 		if (!Statics.areOverridesReached(supers, overrides))
