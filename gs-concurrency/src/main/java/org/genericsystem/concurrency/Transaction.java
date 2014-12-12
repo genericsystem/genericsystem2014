@@ -36,6 +36,7 @@ public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem
 	T simplePlug(T generic) {
 		return super.plug(generic);
 	}
+
 	@Override
 	public boolean unplug(T generic) {
 		generic.getLifeManager().kill(getTs());
@@ -47,8 +48,6 @@ public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem
 	public DefaultEngine<T> getRoot() {
 		return (DefaultEngine<T>) super.getRoot();
 	}
-	
-	
 
 	private class LifeManagersLocker extends HashSet<LifeManager> {
 
@@ -84,7 +83,7 @@ public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem
 				lifeManager.writeUnlock();
 		}
 	}
-	
+
 	@Override
 	protected Builder<T> buildBuilder() {
 		return new Builder<T>(this) {

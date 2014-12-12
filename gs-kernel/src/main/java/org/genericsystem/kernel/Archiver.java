@@ -61,7 +61,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 	private final File directory;
 	private FileLock lockFile;
 
-	private ZipFileManager zipFileManager = new ZipFileManager(new FileManager());
+	private final ZipFileManager zipFileManager = new ZipFileManager(new FileManager());
 
 	public static String getFileExtension() {
 		return GS_EXTENSION + ZIP_EXTENSION;
@@ -75,7 +75,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 			if (snapshotPath != null) {
 				try {
 					getLoader(zipFileManager.getObjectInputStream(snapshotPath + getFileExtension())).loadSnapshot();
-				} catch (IOException | ClassNotFoundException e ) {
+				} catch (IOException | ClassNotFoundException e) {
 					log.error(e.getMessage(), e);
 				}
 			}
@@ -83,12 +83,12 @@ public class Archiver<T extends AbstractVertex<T>> {
 		startScheduler();
 	}
 
-	protected Loader getLoader(ObjectInputStream objectInputStream){
+	protected Loader getLoader(ObjectInputStream objectInputStream) {
 		return new Loader(objectInputStream);
 	}
 
-	protected Saver getSaver(ObjectOutputStream objectOutputStream,long ts){
-		return new Saver(objectOutputStream,ts);
+	protected Saver getSaver(ObjectOutputStream objectOutputStream, long ts) {
+		return new Saver(objectOutputStream, ts);
 	}
 
 	private Archiver<T> startScheduler() {
@@ -106,7 +106,6 @@ public class Archiver<T extends AbstractVertex<T>> {
 		return this;
 	}
 
-
 	public void close() {
 		if (directory != null && lockFile != null) {
 			scheduler.shutdown();
@@ -115,22 +114,22 @@ public class Archiver<T extends AbstractVertex<T>> {
 				lockFile.close();
 				lockFile = null;
 			} catch (IOException e) {
-				//TODO rollback here
+				// TODO rollback here
 				throw new IllegalStateException(e);
 			}
 		}
 	}
 
-	protected long pickTs(){
+	protected long pickTs() {
 		return 0L;
 	}
 
-	private void doSnapshot() throws IOException{
+	private void doSnapshot() throws IOException {
 		long ts = pickTs();
 		String fileName = getFilename(ts);
 		String partFileName = directory.getAbsolutePath() + File.separator + fileName + getFileExtension() + PART_EXTENSION;
-		ObjectOutputStream outputStream= zipFileManager.getObjectOutputStream(partFileName);
-		getSaver(outputStream,ts).saveSnapshot(directory);
+		ObjectOutputStream outputStream = zipFileManager.getObjectOutputStream(partFileName);
+		getSaver(outputStream, ts).saveSnapshot(directory);
 		new File(partFileName).renameTo(new File(directory.getAbsolutePath() + File.separator + fileName + getFileExtension()));
 		manageOldSnapshots(directory);
 	}
@@ -156,7 +155,6 @@ public class Archiver<T extends AbstractVertex<T>> {
 		snapshotsMap.get(ts).delete();
 		snapshotsMap.remove(ts);
 	}
-
 
 	private File prepareAndLockDirectory(String directoryPath) {
 		if (directoryPath == null)
@@ -197,7 +195,6 @@ public class Archiver<T extends AbstractVertex<T>> {
 		return snapshotsMap;
 	}
 
-
 	private static long getTimestamp(final String filename) throws ParseException {
 		return Long.parseLong(filename.substring(filename.lastIndexOf("---") + 3));
 	}
@@ -211,9 +208,9 @@ public class Archiver<T extends AbstractVertex<T>> {
 		protected final ObjectOutputStream objectOutputStream;
 		protected final long ts;
 
-		protected Saver( ObjectOutputStream objectOutputStream,long ts){
+		protected Saver(ObjectOutputStream objectOutputStream, long ts) {
 			this.objectOutputStream = objectOutputStream;
-			this.ts=ts;
+			this.ts = ts;
 		}
 
 		private void saveSnapshot(File directory) throws IOException {
@@ -254,7 +251,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 
 		@SuppressWarnings("unchecked")
 		protected List<T> getOrderedVertices() {
-			return Statics.reverseCollections(new OrderedDependencies<T>(ts).visit((T)root));
+			return Statics.reverseCollections(new OrderedDependencies<T>(ts).visit((T) root));
 		}
 	}
 
@@ -264,7 +261,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 		private final long ts;
 
 		OrderedDependencies(long ts) {
-			this.ts=ts;
+			this.ts = ts;
 		}
 
 		public OrderedDependencies<T> visit(T node) {
@@ -286,16 +283,16 @@ public class Archiver<T extends AbstractVertex<T>> {
 
 	protected class Loader {
 
-		protected final ObjectInputStream objectInputStream ;
+		protected final ObjectInputStream objectInputStream;
 		private final Transaction<T> transaction;
 
-		protected Loader(ObjectInputStream objectInputStream){
+		protected Loader(ObjectInputStream objectInputStream) {
 			this.objectInputStream = objectInputStream;
-			this.transaction=  buildTransaction();
+			this.transaction = buildTransaction();
 		}
 
-		protected Transaction<T> buildTransaction(){
-			return new Transaction<>(root, 0L); 
+		protected Transaction<T> buildTransaction() {
+			return new Transaction<>(root, 0L);
 		}
 
 		private void loadSnapshot() throws ClassNotFoundException, IOException {
@@ -303,7 +300,8 @@ public class Archiver<T extends AbstractVertex<T>> {
 				Map<Long, T> vertexMap = new HashMap<>();
 				for (;;)
 					loadDependency(vertexMap);
-			} catch (EOFException ignore) {}
+			} catch (EOFException ignore) {
+			}
 		}
 
 		protected long loadId() throws IOException {
@@ -314,11 +312,6 @@ public class Archiver<T extends AbstractVertex<T>> {
 			return null;
 		}
 
-		protected T restoreTs(T dependency, Long designTs, Long[] otherTs) {
-			return dependency;
-		}
-
-		@SuppressWarnings("unchecked")
 		private void loadDependency(Map<Long, T> vertexMap) throws IOException, ClassNotFoundException {
 			Long id = loadId();
 			Long[] otherTs = loadOtherTs();
@@ -326,15 +319,11 @@ public class Archiver<T extends AbstractVertex<T>> {
 			T meta = loadAncestor(vertexMap);
 			List<T> supers = loadAncestors(vertexMap);
 			List<T> components = loadAncestors(vertexMap);
-			T instance = meta == null ? ((T)root).getMeta(components.size()) : meta.getDirectInstance(value, components);
-			if(instance==null)
-				instance= transaction.plug( restoreTs(transaction.getBuilder().newT(null, meta, supers, value, components), id, otherTs));
-			else
-				instance = restoreTs(instance, id, otherTs);
-			// What about system generics that are not in archive, that shall be a serious issue... 
+
+			// What about system generics that are not in archive, that shall be a serious issue...
 			// Perhaps not if we are sure startup begins after the archive has been done
 			// TODO Detect if startup begins before archive has been done and throw exception !
-			vertexMap.put(id, instance);
+			vertexMap.put(id, transaction.getBuilder().getOrBuild(null, meta, supers, value, components, id, otherTs));
 			log.info("load dependency " + vertexMap.get(id).info() + " " + id);
 		}
 
@@ -352,15 +341,15 @@ public class Archiver<T extends AbstractVertex<T>> {
 		}
 	}
 
-	protected static class ZipFileManager  {
+	protected static class ZipFileManager {
 
 		private final FileManager fileManager;
 
-		protected ZipFileManager (FileManager fileManager){
+		protected ZipFileManager(FileManager fileManager) {
 			this.fileManager = fileManager;
 		}
 
-		protected ObjectOutputStream getObjectOutputStream( String fileName) throws IOException {
+		protected ObjectOutputStream getObjectOutputStream(String fileName) throws IOException {
 			ZipOutputStream zipOutput = new ZipOutputStream(fileManager.getFileOutputStream(fileName));
 			zipOutput.putNextEntry(new ZipEntry(fileName));
 			return new ObjectOutputStream(zipOutput);
