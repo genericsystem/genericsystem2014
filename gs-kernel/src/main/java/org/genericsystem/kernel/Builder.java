@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.kernel.annotations.InstanceClass;
 
@@ -40,6 +41,17 @@ public class Builder<T extends AbstractVertex<T>> {
 		return newT(clazz, meta).init(meta, supers, value, components);
 	}
 
+//	T getDirectInstance(T meta,Serializable value, List<T> components) {
+//		if(meta==null){
+//			((T) context.getRoot()).getMeta(components.size());
+//		}
+//		else
+//			for (T instance : meta.getInstances())
+//				if (instance.equalsRegardlessSupers(meta, value, components))
+//					return instance;
+//		return null;
+//	}
+
 	protected T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
 		context.getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
 		T getOrNewMeta = meta == null || meta.isMeta() ? setMeta(components.size()) : meta;
@@ -48,7 +60,8 @@ public class Builder<T extends AbstractVertex<T>> {
 		T equivInstance = getOrNewMeta.getDirectInstance(value, components);
 		if (equivInstance != null)
 			context.discardWithException(new ExistsException("An equivalent instance already exists : " + equivInstance.info()));
-		return rebuildAll(null, () -> adjustAndBuild(clazz, getOrNewMeta, overrides, value, components), getOrNewMeta.computePotentialDependencies(overrides, value, components));
+		Supplier<T> rebuilder = () -> adjustAndBuild(clazz, getOrNewMeta, overrides, value, components);
+		return rebuildAll(null, rebuilder, getOrNewMeta.computePotentialDependencies(overrides, value, components));
 	}
 
 	protected T setInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
@@ -66,12 +79,13 @@ public class Builder<T extends AbstractVertex<T>> {
 	protected T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents) {
 		context.getChecker().checkBeforeBuild(update.getClass(), update.getMeta(), overrides, newValue, newComponents);
 		T getOrNewMeta = update.getMeta().isMeta() ? setMeta(newComponents.size()) : update.getMeta();
-		return rebuildAll(update, () -> {
+		Supplier<T> rebuilder =() -> {
 			T instance = getOrNewMeta.getDirectInstance(newValue, newComponents);
 			if (instance != null)
 				return instance;
 			return adjustAndBuild(update.getClass(), getOrNewMeta, overrides, newValue, newComponents);
-		}, update.computeDependencies());
+		};
+		return rebuildAll(update, rebuilder, update.computeDependencies());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -110,14 +124,14 @@ public class Builder<T extends AbstractVertex<T>> {
 	// adjusts = true
 	@SuppressWarnings("unchecked")
 	T setMeta(int dim) {
-		 T root = (T) context.getRoot();
-		 T adjustedMeta = root.adjustMeta(dim);
-		 if (adjustedMeta.getComponents().size() == dim)
-		 return adjustedMeta;
-		 T[] components = newTArray(dim);
-		 Arrays.fill(components, root);
-		 return rebuildAll(null, () -> build(null, null, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)),
-		 adjustedMeta.computePotentialDependencies(Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)));
+		T root = (T) context.getRoot();
+		T adjustedMeta = root.adjustMeta(dim);
+		if (adjustedMeta.getComponents().size() == dim)
+			return adjustedMeta;
+		T[] components = newTArray(dim);
+		Arrays.fill(components, root);
+		return rebuildAll(null, () -> build(null, null, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)),
+				adjustedMeta.computePotentialDependencies(Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)));
 
 	}
 
@@ -126,7 +140,7 @@ public class Builder<T extends AbstractVertex<T>> {
 		T instance = meta == null ? ((T) context.getRoot()).getMeta(components.size()) : meta.getDirectInstance(value, components);
 		return instance == null ? build(clazz, meta, supers, value, components) : instance;
 	}
-	
+
 	protected T build(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components){
 		return context.plug(newT(clazz, meta, supers, value, components));
 	}
@@ -149,7 +163,7 @@ public class Builder<T extends AbstractVertex<T>> {
 				context.discardWithException(new IllegalStateException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
 		}
 		adjustMeta = adjustMeta.isMeta() && adjustMeta.getComponents().size() != components.size() ? null : adjustMeta;
-		return context.plug(newT(clazz, adjustMeta, supers, value, components));
+		return build(clazz, adjustMeta, supers, value, components);
 	}
 
 	private class ConvertMap extends HashMap<T, T> {
