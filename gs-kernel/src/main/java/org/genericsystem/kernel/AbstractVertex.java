@@ -140,23 +140,25 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		}.visit((T) this);
 	}
 
+	//TODO remove this
 	protected T adjustMeta(Serializable value, @SuppressWarnings("unchecked") T... components) {
 		return adjustMeta(value, Arrays.asList(components));
 	}
 
 	@SuppressWarnings("unchecked")
 	T adjustMeta(Serializable value, List<T> components) {
-		T result = null;
-		if (!components.equals(getComponents()))
-			for (T directInheriting : getInheritings()) {
-				if (componentsDepends(components, directInheriting.getComponents())) {
-					if (result == null)
-						result = directInheriting;
-					else
-						getCurrentCache().discardWithException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
-				}
-			}
-		return result == null ? (T) this : result.adjustMeta(value, components);
+		return getCurrentCache().adjustMeta((T)this, value, components);
+//		T result = null;
+//		if (!components.equals(getComponents()))
+//			for (T directInheriting : getInheritings()) {
+//				if (componentsDepends(components, directInheriting.getComponents())) {
+//					if (result == null)
+//						result = directInheriting;
+//					else
+//						getCurrentCache().discardWithException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
+//				}
+//			}
+//		return result == null ? (T) this : result.adjustMeta(value, components);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -171,6 +173,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return directInheriting != null && directInheriting.getComponents().size() <= dim ? directInheriting.adjustMeta(dim) : (T) this;
 	}
 
+	//TODO move this => in context ?
 	protected T getDirectInstance(Serializable value, List<T> components) {
 		for (T instance : getInstances())
 			if (((AbstractVertex<?>) instance).equalsRegardlessSupers(this, value, components))
@@ -184,8 +187,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	boolean isDependencyOf(T meta, List<T> overrides, Serializable value, List<T> components) {
-		return inheritsFrom(meta, value, components) || getComponents().stream().filter(component -> component != null).anyMatch(component -> component.isDependencyOf(meta, overrides, value, components))
-				|| (!isMeta() && getMeta().isDependencyOf(meta, overrides, value, components)) || (!components.isEmpty() && componentsDepends(getComponents(), components) && overrides.stream().anyMatch(override -> override.inheritsFrom(getMeta())));
+		return inheritsFrom(meta, value, components)
+				|| getComponents().stream().filter(component -> component != null).anyMatch(component -> component.isDependencyOf(meta, overrides, value, components))
+				|| (!isMeta() && getMeta().isDependencyOf(meta, overrides, value, components))
+				|| (!components.isEmpty() && componentsDepends(getComponents(), components)
+						&& overrides.stream().anyMatch(override -> override.inheritsFrom(getMeta())));
 	}
 
 	T getDirectEquivInstance(Serializable value, List<T> components) {
@@ -337,23 +343,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return Objects.equals(subValue, superValue);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public Snapshot<T> getInstances() {
-		return getCurrentCache().getInstances((T) this);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public Snapshot<T> getInheritings() {
-		return getCurrentCache().getInheritings((T) this);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public Snapshot<T> getComposites() {
-		return getCurrentCache().getComposites((T) this);
-	}
 
 	T getMap() {
 		return getRoot().find(SystemMap.class);

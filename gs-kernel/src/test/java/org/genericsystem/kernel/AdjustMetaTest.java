@@ -76,16 +76,8 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex myBmw = car.addInstance("myBmw");
 		Vertex holder = myBmw.addHolder(power, 235);
 		assert holder.getMeta().equals(power);
-		Vertex power2 = car.addAttribute(power, "Power2");
-		// assert !holder.isAlive();
-		assert power2.equals(myBmw.getHolders(power).get().findFirst().get().getMeta());
-		// new RollbackCatcher() {
-		// @Override
-		// public void intercept() {
-		// type3.addInstance("instance");
-		// }
-		// }.assertIsCausedBy(IllegalStateException.class);
-
+		Vertex carPower = car.addAttribute(power, "CarPower");
+		assert carPower.equals(myBmw.getHolders(power).first().getMeta());
 	}
 
 	public void test001_AdjustMeta_SystemMap() {

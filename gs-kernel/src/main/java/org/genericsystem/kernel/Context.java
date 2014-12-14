@@ -1,6 +1,10 @@
 package org.genericsystem.kernel;
 
+import java.io.Serializable;
+import java.util.List;
+
 import org.genericsystem.api.core.Snapshot;
+import org.genericsystem.api.exception.AmbiguousSelectionException;
 import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.RollbackException;
 
@@ -76,6 +80,20 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		}
 		T aliveMeta = getAlive(vertex.getMeta());
 		return aliveMeta != null ? getInstances(aliveMeta).get(vertex) : null;
+	}
+	
+	T adjustMeta(T meta,Serializable value, List<T> components) {
+		T result = null;
+		if (!components.equals(meta.getComponents()))
+			for (T directInheriting : meta.getInheritings()) {
+				if (meta.componentsDepends(components, directInheriting.getComponents())) {
+					if (result == null)
+						result = directInheriting;
+					else
+						discardWithException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
+				}
+			}
+		return result == null ? meta : result.adjustMeta(value, components);
 	}
 
 	@Override

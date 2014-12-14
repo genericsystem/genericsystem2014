@@ -22,24 +22,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 		super.forceRemove();
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public Snapshot<T> getInstances() {
-		return getCurrentCache().getInstances((T) this);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public Snapshot<T> getInheritings() {
-		return getCurrentCache().getInheritings((T) this);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public Snapshot<T> getComposites() {
-		return getCurrentCache().getComposites((T) this);
-	}
-
 	@Override
 	protected LinkedHashSet<T> computeDependencies() {
 		return super.computeDependencies();
