@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import org.genericsystem.api.exception.AmbiguousSelectionException;
+import org.genericsystem.api.exception.CollisionException;
 import org.genericsystem.api.exception.UnreachableOverridesException;
 import org.testng.annotations.Test;
 
@@ -35,21 +36,7 @@ public class CornerCaseTest extends AbstractTest {
 		Root engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex power=vehicle.addAttribute("Power");
-		catchAndCheckCause(()->vehicle.setAttribute(power,"Power"),UnreachableOverridesException.class);//TODO create collisionException
-		
-	}
-	
-	public void test003() {
-		Root engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = engine.addInstance(vehicle, "Car");
-		Vertex power = vehicle.addAttribute("Power");
-
-		Vertex myBmw = car.addInstance("myBmw");
-		Vertex holder = myBmw.addHolder(power, 235);
-		assert holder.getMeta().equals(power);
-		Vertex carPower = car.addAttribute(power, "CarPower");
-		assert carPower.equals(myBmw.getHolders(power).first().getMeta());
+		catchAndCheckCause(()->vehicle.setAttribute(power,"Power"),CollisionException.class);
 	}
 
 }

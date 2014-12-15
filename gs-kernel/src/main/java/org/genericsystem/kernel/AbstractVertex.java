@@ -85,12 +85,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getCurrentCache().getBuilder().update((T) this, overrides, newValue, Arrays.asList(newComponents));
 	}
 
-//	@SuppressWarnings("unchecked")
-//	protected T getMeta(int dim) {
-//		T adjustedMeta = ((T) getRoot()).adjustMeta(dim);
-//		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
-//	}
-
 	@SuppressWarnings("unchecked")
 	private LinkedHashSet<T> buildOrderedDependenciesToRemove() {
 		return new LinkedHashSet<T>() {
@@ -103,10 +97,9 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 				if (add(generic)) {// protect from loop
 					if (!generic.getInheritings().isEmpty() || !generic.getInstances().isEmpty())
 						getCurrentCache().discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + generic + " has an inheritance or instance dependency"));
-					for (T composite : generic.getComposites())
-						if (!generic.equals(composite)) {
+					for (T composite : generic.getComposites()) {
 							for (int componentPos = 0; componentPos < composite.getComponents().size(); componentPos++)
-								if (/* !componentDependency.isAutomatic() && */composite.getComponents().get(componentPos).equals(generic) && !contains(composite) && composite.isReferentialIntegrityEnabled(componentPos))
+								if (/* !componentDependency.isAutomatic() && */composite.getComponents().get(componentPos).equals(generic) && !contains(composite) && composite.getMeta().isReferentialIntegrityEnabled(componentPos))
 									getCurrentCache().discardWithException(new ReferentialIntegrityConstraintViolationException(composite + " is Referential Integrity for ancestor " + generic + " by composite position : " + componentPos));
 							visit(composite);
 						}
@@ -136,8 +129,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 			@Override
 			boolean isSelected(T node) {
-//				if(node.equalsRegardlessSupers((T) AbstractVertex.this, value, components))
-//					getCurrentCache().discardWithException(new ExistsException(""));
 				return node.isDependencyOf((T) AbstractVertex.this, supers, value, components);
 			}
 		}.visit((T) this);
@@ -199,7 +190,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return componentsList.equals(components);
 	}
 
-	// Unused for now
 	public boolean genericEquals(ISignature<?> service) {
 		if (service == null)
 			return false;
@@ -224,7 +214,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return true;
 	}
 
-	// Unused for now
 	static <T extends AbstractVertex<T>> boolean componentsGenericEquals(AbstractVertex<T> component, ISignature<?> compare) {
 		return (component == compare) || (component != null && component.genericEquals(compare));
 	}

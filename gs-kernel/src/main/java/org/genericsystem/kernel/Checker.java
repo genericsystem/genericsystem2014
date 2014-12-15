@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.genericsystem.api.exception.AliveConstraintViolationException;
+import org.genericsystem.api.exception.CollisionException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.CrossEnginesAssignementsException;
 import org.genericsystem.api.exception.ExistsException;
@@ -179,7 +180,7 @@ public class Checker<T extends AbstractVertex<T>> {
 		if (!vertex.getSupers().stream().noneMatch(this::equals))
 			context.discardWithException(new IllegalStateException("Supers loop detected : " + vertex.info()));
 		if (vertex.getSupers().stream().anyMatch(superVertex -> Objects.equals(superVertex.getValue(), vertex.getValue()) && superVertex.getComponents().equals(vertex.getComponents()) && vertex.getMeta().inheritsFrom(superVertex.getMeta())))
-			context.discardWithException(new IllegalStateException("Collision detected : " + vertex.info()));
+			context.discardWithException(new CollisionException("Collision detected : " + vertex.info()+" A collision occurs when two generics have same value and components and have same meta or metas that inherit one to another"));
 	}
 
 	private void checkDependsSuperComponents(T vertex) {

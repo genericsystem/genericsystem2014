@@ -63,7 +63,6 @@ public class Builder<T extends AbstractVertex<T>> {
 
 	protected T setInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
 		context.getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
-
 		if(meta==null || meta.isMeta()) {
 			meta = setMeta(components.size());
 			if (meta.equalsAndOverrides(meta, overrides, value, components))
