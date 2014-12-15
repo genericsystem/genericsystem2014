@@ -118,7 +118,6 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 					return (Class<T>) Generic.class;
 				}
 
-				@SuppressWarnings("unchecked")
 				protected T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, Long designTs, Long[] otherTs) {
 					T instance = meta == null ?  getContext().getMeta(components.size()) : meta.getDirectInstance(value, components);
 					return instance == null ? build(clazz, meta, supers, value, components,designTs, otherTs) : instance.restore(designTs, otherTs[0], otherTs[1], otherTs[2]);

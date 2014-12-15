@@ -153,19 +153,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getCurrentCache().adjustMeta((T)this, value, components);
 	}
 
-//	@SuppressWarnings("unchecked")
-//	protected T adjustMeta(int dim) {
-//		assert isMeta();
-//		int size = getComponents().size();
-//		if (size > dim)
-//			return null;
-//		if (size == dim)
-//			return (T) this;
-//		T directInheriting = getInheritings().first();
-//		return directInheriting != null && directInheriting.getComponents().size() <= dim ? directInheriting.adjustMeta(dim) : (T) this;
-//	}
-
-	//TODO move this => in context ?
 	protected T getDirectInstance(Serializable value, List<T> components) {
 		for (T instance : getInstances())
 			if (((AbstractVertex<?>) instance).equalsRegardlessSupers(this, value, components))
