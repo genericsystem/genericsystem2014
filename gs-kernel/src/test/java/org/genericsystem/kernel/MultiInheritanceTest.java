@@ -61,12 +61,8 @@ public class MultiInheritanceTest extends AbstractTest {
 		Root engine = new Root();
 		Vertex car = engine.addInstance("Car");
 		Vertex robot = engine.addInstance("Robot");
-		List<Vertex> list = new ArrayList<>();
-		list.add(car);
-		list.add(robot);
-		engine.addInstance(list, "Transformer");
-
-		catchAndCheckCause(() -> engine.addInstance(Statics.reverseCollections(list), "Transformer"), ExistsException.class);
+		engine.addInstance(Arrays.asList(car,robot), "Transformer");
+		catchAndCheckCause(() -> engine.addInstance(Arrays.asList(robot,car), "Transformer"), ExistsException.class);
 	}
 
 	public void test002_orderSupers() {

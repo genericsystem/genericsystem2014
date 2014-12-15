@@ -54,13 +54,11 @@ public class Builder<T extends AbstractVertex<T>> {
 		if (equalsInstance != null)
 			context.discardWithException(new ExistsException("An equivalent instance already exists : " + equalsInstance.info()));
 		
-		List<T> supers = new ArrayList<>(new SupersComputer<>(meta, overrides, value, components));
-		if (!Statics.areOverridesReached(supers, overrides))
-			context.discardWithException(new UnreachableOverridesException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
+		List<T> supers = computeAndCheckOverridesAreReached(meta, overrides, value, components);
 		
-		T notNullAdjustedMeta = meta ;
-		Supplier<T> rebuilder = () -> build(clazz, notNullAdjustedMeta, supers, value, components);
-		return rebuildAll(null, rebuilder, notNullAdjustedMeta.computePotentialDependencies(supers, value, components));
+		T adjustedMeta = meta ;
+		Supplier<T> rebuilder = () -> build(clazz, adjustedMeta, supers, value, components);
+		return rebuildAll(null, rebuilder, adjustedMeta.computePotentialDependencies(supers, value, components));
 	}
 
 	protected T setInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
@@ -75,13 +73,10 @@ public class Builder<T extends AbstractVertex<T>> {
 		if (equivInstance != null && equivInstance.equalsAndOverrides(meta, overrides, value, components))
 			return equivInstance;
 		
-		List<T> supers = new ArrayList<>(new SupersComputer<>(meta, overrides, value, components));
-		if (!Statics.areOverridesReached(supers, overrides))
-			context.discardWithException(new UnreachableOverridesException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
-		
-		T notNullMeta = meta;
-		Supplier<T> rebuilder = () -> build(clazz, notNullMeta, supers, value, components);
-		return rebuildAll(equivInstance, rebuilder, equivInstance == null ? notNullMeta.computePotentialDependencies(supers, value, components) : equivInstance.computeDependencies());
+		List<T> supers = computeAndCheckOverridesAreReached(meta, overrides, value, components);
+		T ajustedMeta = meta;
+		Supplier<T> rebuilder = () -> build(clazz, ajustedMeta, supers, value, components);
+		return rebuildAll(equivInstance, rebuilder, equivInstance == null ? ajustedMeta.computePotentialDependencies(supers, value, components) : equivInstance.computeDependencies());
 	}
 
 	protected T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents) {
@@ -90,14 +85,21 @@ public class Builder<T extends AbstractVertex<T>> {
 			T notNullMeta = update.getMeta().isMeta() ? setMeta(newComponents.size()) : update.getMeta();
 			notNullMeta = getContext().adjustMeta(notNullMeta, newValue, newComponents);
 			T instance = notNullMeta.getDirectInstance(newValue, newComponents);
-			if (instance != null)
+			if (instance != null) {
+				if (!Statics.areOverridesReached(instance.getSupers(), overrides))
+					context.discardWithException(new UnreachableOverridesException("Unable to reach overrides : " + overrides + " with computed supers : " + instance.getSupers()));		
 				return instance;
-			List<T> supers = new ArrayList<>(new SupersComputer<>(notNullMeta, overrides, newValue, newComponents));
-			if (!Statics.areOverridesReached(supers, overrides))
-				context.discardWithException(new UnreachableOverridesException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
-			return build(update.getClass(), notNullMeta, overrides, newValue, newComponents);
+			}
+			List<T> supers = computeAndCheckOverridesAreReached(notNullMeta, overrides, newValue, newComponents);
+			return build(update.getClass(), notNullMeta, supers, newValue, newComponents);
 		};
 		return rebuildAll(update, rebuilder, update.computeDependencies());
+	}
+	
+	private T adjustAndBuild(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
+		T adjustedMeta = getContext().adjustMeta(meta,value, components);
+		List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, value, components);
+		return build(clazz, adjustedMeta, supers, value, components);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -137,7 +139,7 @@ public class Builder<T extends AbstractVertex<T>> {
 	@SuppressWarnings("unchecked")
 	T setMeta(int dim) {
 		T root = (T) context.getRoot();
-		T adjustedMeta = root.adjustMeta(dim);
+		T adjustedMeta = getContext().adjustMeta(dim);
 		if (adjustedMeta.getComponents().size() == dim)
 			return adjustedMeta;
 		T[] components = newTArray(dim);
@@ -147,31 +149,20 @@ public class Builder<T extends AbstractVertex<T>> {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	protected T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
-		T instance = meta == null ? ((T) context.getRoot()).getMeta(components.size()) : meta.getDirectInstance(value, components);
+		T instance = meta == null ? context.getMeta(components.size()) : meta.getDirectInstance(value, components);
 		return instance == null ? build(clazz, meta, supers, value, components) : instance;
 	}
 
 	protected T build(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components){
 		return context.plug(newT(clazz, meta, supers, value, components));
 	}
-
-
-	private T adjustSupersAndBuild(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
-		List<T> supers = new ArrayList<>(new SupersComputer<>(meta, overrides, value, components));
-		if (!Statics.areOverridesReached(supers, overrides))//TODO create Unreachable Override Exception
+	
+	private  List<T> computeAndCheckOverridesAreReached(T adjustedMeta,List<T> overrides,Serializable value, List<T> components){
+		List<T> supers = new ArrayList<>(new SupersComputer<>(adjustedMeta, overrides, value, components));
+		if (!Statics.areOverridesReached(supers, overrides))
 			context.discardWithException(new UnreachableOverridesException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
-		return build(clazz, meta, supers, value, components);
-	}
-
-
-	private T adjustAndBuild(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
-		T adjustMeta = getContext().adjustMeta(meta,value, components);
-		List<T> supers = new ArrayList<>(new SupersComputer<>(adjustMeta, overrides, value, components));
-		if (!Statics.areOverridesReached(supers, overrides))//TODO create Unreachable Override Exception
-			context.discardWithException(new UnreachableOverridesException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
-		return build(clazz, adjustMeta, supers, value, components);
+		return supers;
 	}
 
 	private class ConvertMap extends HashMap<T, T> {

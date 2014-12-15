@@ -45,11 +45,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.
 	}
 
 	@Override
-	protected T getMeta(int dim) {
-		return super.getMeta(dim);
-	}
-
-	@Override
 	public int compareTo(T vertex) {
 		long birthTs = lifeManager.getBirthTs();
 		long compareBirthTs = vertex.getLifeManager().getBirthTs();

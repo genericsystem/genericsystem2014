@@ -120,8 +120,8 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 
 				@SuppressWarnings("unchecked")
 				protected T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, Long designTs, Long[] otherTs) {
-					T instance = meta == null ? ((T) getContext().getRoot()).getMeta(components.size()) : meta.getDirectInstance(value, components);
-					return instance == null ? getContext().plug(build(clazz, meta, supers, value, components,designTs, otherTs)) : instance.restore(designTs, otherTs[0], otherTs[1], otherTs[2]);
+					T instance = meta == null ?  getContext().getMeta(components.size()) : meta.getDirectInstance(value, components);
+					return instance == null ? build(clazz, meta, supers, value, components,designTs, otherTs) : instance.restore(designTs, otherTs[0], otherTs[1], otherTs[2]);
 				}
 				
 				private T build(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, Long designTs, Long[] otherTs){
@@ -145,7 +145,7 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 			List<T> supers = loadAncestors(vertexMap);
 			List<T> components = loadAncestors(vertexMap);
 			vertexMap.put(id, ((TsTransaction.TsBuilder)((TsTransaction)transaction).getBuilder()).getOrBuild(null, meta, supers, value, components,id,otherTs));
-			//log.info("load dependency " + vertexMap.get(id).info() + " " + id);
+			log.info("load dependency " + vertexMap.get(id).info() + " " + id);
 		}
 
 		@Override

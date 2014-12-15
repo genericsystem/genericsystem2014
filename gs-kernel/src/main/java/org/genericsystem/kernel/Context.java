@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
@@ -81,7 +82,20 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		T aliveMeta = getAlive(vertex.getMeta());
 		return aliveMeta != null ? getInstances(aliveMeta).get(vertex) : null;
 	}
-	
+
+//	private T getDirectInstance(T meta,Serializable value, List<T> components) {
+//		if(meta==null){
+//			if(!Objects.equals(getRoot().getValue(),value) || components.stream().anyMatch(x->!x.equals(getRoot())))
+//				return meta = getMeta(components.size());
+//			else
+//				meta = getMeta(components.size());
+//		}		
+//		for (T instance : meta.getInstances())
+//			if (((AbstractVertex<?>) instance).equalsRegardlessSupers(meta, value, components))
+//				return instance;
+//		return null;
+//	}
+
 	T adjustMeta(T meta,Serializable value, List<T> components) {
 		T result = null;
 		if (!components.equals(meta.getComponents()))
@@ -95,6 +109,29 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 			}
 		return result == null ? meta : result.adjustMeta(value, components);
 	}
+
+	private T adjustMeta(T meta,int dim) {
+		assert meta.isMeta();
+		int size = meta.getComponents().size();
+		if (size > dim)
+			return null;
+		if (size == dim)
+			return (T) meta;
+		T directInheriting = meta.getInheritings().first();
+		return directInheriting != null && directInheriting.getComponents().size() <= dim ? adjustMeta(directInheriting,dim) : meta;
+	}
+
+	@SuppressWarnings("unchecked")
+	T adjustMeta(int dim){
+		return adjustMeta((T)getRoot(),dim);
+	}
+
+	protected T getMeta(int dim) {
+		T adjustedMeta = adjustMeta(dim);
+		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
+	}
+
+
 
 	@Override
 	public abstract Snapshot<T> getInstances(T vertex);

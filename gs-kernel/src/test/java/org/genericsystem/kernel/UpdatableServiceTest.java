@@ -204,7 +204,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		// assert engine.getAllInstances().count() == 2;
 
 		Vertex newVehicle = engine.getInstance("Vehicle");
-		assert newVehicle.getInheritings().size() == 1;
+		assert newVehicle.getInheritings().size() == 1 : newVehicle.getInheritings().info() ;
 		assert engine.getInstance("Car").getSupers().size() == 1;
 	}
 

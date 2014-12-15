@@ -44,7 +44,7 @@ public abstract class AbstractTsDependencies<T extends AbstractGeneric<T>> imple
 			tail.next = newNode;
 		tail = newNode;
 		T result = map.put(element, element);
-		assert result == null;
+		assert result == null : result.info();
 	}
 
 	@Override

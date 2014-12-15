@@ -35,7 +35,7 @@ public class CornerCaseTest extends AbstractTest {
 		Root engine = new Root();
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex power=vehicle.addAttribute("Power");
-		catchAndCheckCause(()->vehicle.setAttribute(power,"Power"),UnreachableOverridesException.class);
+		catchAndCheckCause(()->vehicle.setAttribute(power,"Power"),UnreachableOverridesException.class);//TODO create collisionException
 		
 	}
 	

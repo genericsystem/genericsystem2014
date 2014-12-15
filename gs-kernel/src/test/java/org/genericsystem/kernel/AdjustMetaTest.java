@@ -182,7 +182,7 @@ public class AdjustMetaTest extends AbstractTest {
 		System.out.println(engine.setInstance(engine.getValue(), engine, engine).info());
 		assert engine.getMetaRelation() == engine.setInstance(engine.getValue(), engine, engine);
 		Vertex metaTernaryRelation = engine.setInstance(engine.getValue(), engine, engine, engine);
-		assert engine.getMeta(3).equals(metaTernaryRelation);
+		assert engine.getCurrentCache().getMeta(3).equals(metaTernaryRelation);
 	}
 
 	public void test010_AdjustMeta_TypeLevel_Relation_TwoComposites_TwoCompositeSpecializedByInstanciation() {

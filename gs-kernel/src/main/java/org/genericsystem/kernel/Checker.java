@@ -5,16 +5,17 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.CrossEnginesAssignementsException;
+import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.MetaLevelConstraintViolationException;
 import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
 import org.genericsystem.api.exception.NotAliveConstraintViolationException;
 import org.genericsystem.api.exception.NotAllowedSerializableTypeException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
-import org.genericsystem.api.exception.SignatureUnicityViolationException;
 import org.genericsystem.kernel.annotations.Priority;
 import org.genericsystem.kernel.annotations.SystemGeneric;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
@@ -201,7 +202,7 @@ public class Checker<T extends AbstractVertex<T>> {
 
 	private void checkSignatureUnicity(T vertex) {
 		if (context.getInstances(vertex.getMeta()).get().filter(x -> ((AbstractVertex<?>) x).equalsRegardlessSupers(vertex.getMeta(), vertex.getValue(), vertex.getComponents())).count() > 1)
-			context.discardWithException(new SignatureUnicityViolationException(vertex.info()));
+			context.discardWithException(new ExistsException(vertex.info()));
 	}
 
 	private void checkConstraints(boolean isOnAdd, boolean isFlushTime, T vertex) {

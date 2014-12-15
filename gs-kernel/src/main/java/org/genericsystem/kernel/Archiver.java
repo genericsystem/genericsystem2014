@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Archiver<T extends AbstractVertex<T>> {
 
-	private static final Logger log = LoggerFactory.getLogger(Archiver.class);
+	public static final Logger log = LoggerFactory.getLogger(Archiver.class);
 
 	private static final long ARCHIVER_COEFF = 5L;
 

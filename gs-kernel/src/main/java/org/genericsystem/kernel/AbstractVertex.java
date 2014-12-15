@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
+import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.kernel.Config.SystemMap;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
@@ -84,22 +85,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getCurrentCache().getBuilder().update((T) this, overrides, newValue, Arrays.asList(newComponents));
 	}
 
-	@SuppressWarnings("unchecked")
-	protected T getMeta(int dim) {
-		T adjustedMeta = ((T) getRoot()).adjustMeta(dim);
-		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
-	}
-
-	protected LinkedHashSet<T> computeDependencies() {
-		return new DependenciesComputer<T>() {
-			private static final long serialVersionUID = 4116681784718071815L;
-
-			@Override
-			boolean isSelected(T node) {
-				return isAncestorOf(node);
-			}
-		}.visit(getMeta());
-	}
+//	@SuppressWarnings("unchecked")
+//	protected T getMeta(int dim) {
+//		T adjustedMeta = ((T) getRoot()).adjustMeta(dim);
+//		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
+//	}
 
 	@SuppressWarnings("unchecked")
 	private LinkedHashSet<T> buildOrderedDependenciesToRemove() {
@@ -128,14 +118,27 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		};
 	}
 
+	protected LinkedHashSet<T> computeDependencies() {
+		return new DependenciesComputer<T>() {
+			private static final long serialVersionUID = 4116681784718071815L;
+
+			@Override
+			boolean isSelected(T node) {
+				return isAncestorOf(node);
+			}
+		}.visit(getMeta());
+	}
+	
 	@SuppressWarnings("unchecked")
-	protected LinkedHashSet<T> computePotentialDependencies(List<T> overrides, Serializable value, List<T> components) {
+	protected LinkedHashSet<T> computePotentialDependencies(List<T> supers, Serializable value, List<T> components) {
 		return new DependenciesComputer<T>() {
 			private static final long serialVersionUID = -3611136800445783634L;
 
 			@Override
 			boolean isSelected(T node) {
-				return node.isDependencyOf((T) AbstractVertex.this, overrides, value, components);
+//				if(node.equalsRegardlessSupers((T) AbstractVertex.this, value, components))
+//					getCurrentCache().discardWithException(new ExistsException(""));
+				return node.isDependencyOf((T) AbstractVertex.this, supers, value, components);
 			}
 		}.visit((T) this);
 	}
@@ -148,30 +151,19 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	@SuppressWarnings("unchecked")
 	T adjustMeta(Serializable value, List<T> components) {
 		return getCurrentCache().adjustMeta((T)this, value, components);
-//		T result = null;
-//		if (!components.equals(getComponents()))
-//			for (T directInheriting : getInheritings()) {
-//				if (componentsDepends(components, directInheriting.getComponents())) {
-//					if (result == null)
-//						result = directInheriting;
-//					else
-//						getCurrentCache().discardWithException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
-//				}
-//			}
-//		return result == null ? (T) this : result.adjustMeta(value, components);
 	}
 
-	@SuppressWarnings("unchecked")
-	protected T adjustMeta(int dim) {
-		assert isMeta();
-		int size = getComponents().size();
-		if (size > dim)
-			return null;
-		if (size == dim)
-			return (T) this;
-		T directInheriting = getInheritings().first();
-		return directInheriting != null && directInheriting.getComponents().size() <= dim ? directInheriting.adjustMeta(dim) : (T) this;
-	}
+//	@SuppressWarnings("unchecked")
+//	protected T adjustMeta(int dim) {
+//		assert isMeta();
+//		int size = getComponents().size();
+//		if (size > dim)
+//			return null;
+//		if (size == dim)
+//			return (T) this;
+//		T directInheriting = getInheritings().first();
+//		return directInheriting != null && directInheriting.getComponents().size() <= dim ? directInheriting.adjustMeta(dim) : (T) this;
+//	}
 
 	//TODO move this => in context ?
 	protected T getDirectInstance(Serializable value, List<T> components) {
@@ -186,12 +178,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return result != null && Statics.areOverridesReached(result.getSupers(), overrides) ? result : null;
 	}
 
-	boolean isDependencyOf(T meta, List<T> overrides, Serializable value, List<T> components) {
+	boolean isDependencyOf(T meta, List<T> supers, Serializable value, List<T> components) {
 		return inheritsFrom(meta, value, components)
-				|| getComponents().stream().filter(component -> component != null).anyMatch(component -> component.isDependencyOf(meta, overrides, value, components))
-				|| (!isMeta() && getMeta().isDependencyOf(meta, overrides, value, components))
+				|| getComponents().stream().filter(component -> component != null).anyMatch(component -> component.isDependencyOf(meta, supers, value, components))
+				|| (!isMeta() && getMeta().isDependencyOf(meta, supers, value, components))
 				|| (!components.isEmpty() && componentsDepends(getComponents(), components)
-						&& overrides.stream().anyMatch(override -> override.inheritsFrom(getMeta())));
+						&& supers.stream().anyMatch(override -> override.inheritsFrom(getMeta())));
 	}
 
 	T getDirectEquivInstance(Serializable value, List<T> components) {
