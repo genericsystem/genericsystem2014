@@ -50,6 +50,7 @@ public class Checker<T extends AbstractVertex<T>> {
 		checkSameEngine(meta, overrides, components);
 		checkIsAlive(meta, overrides, components);
 		checkSerializableType(value);
+		checkWellFormedMeta(meta, value, components);
 	}
 
 	private void checkSameEngine(T meta, List<T> overrides, List<T> components) {
@@ -95,6 +96,11 @@ public class Checker<T extends AbstractVertex<T>> {
 		if (value instanceof Class)
 			return;
 		context.discardWithException(new NotAllowedSerializableTypeException("Not allowed type for your serializable. Only primitive and Byte[] allowed."));
+	}
+
+	private void checkWellFormedMeta(T meta, Serializable value, List<T> components) {
+		if (meta == null && !Objects.equals(value, context.getRoot().getValue()) && components.stream().noneMatch(x -> x.isRoot()))
+			context.discardWithException(new IllegalStateException("Malformed meta : (" + meta + ") " + value + " " + components));
 	}
 
 	// checkAfterBuild
@@ -180,7 +186,7 @@ public class Checker<T extends AbstractVertex<T>> {
 		if (!vertex.getSupers().stream().noneMatch(this::equals))
 			context.discardWithException(new IllegalStateException("Supers loop detected : " + vertex.info()));
 		if (vertex.getSupers().stream().anyMatch(superVertex -> Objects.equals(superVertex.getValue(), vertex.getValue()) && superVertex.getComponents().equals(vertex.getComponents()) && vertex.getMeta().inheritsFrom(superVertex.getMeta())))
-			context.discardWithException(new CollisionException("Collision detected : " + vertex.info()+" A collision occurs when two generics have same value and components and have same meta or metas that inherit one to another"));
+			context.discardWithException(new CollisionException("Collision detected : " + vertex.info() + " A collision occurs when two generics have same value and components and have same meta or metas that inherit one to another"));
 	}
 
 	private void checkDependsSuperComponents(T vertex) {
@@ -209,8 +215,7 @@ public class Checker<T extends AbstractVertex<T>> {
 	private void checkConstraints(boolean isOnAdd, boolean isFlushTime, T vertex) {
 		T map = vertex.getMap();
 		if (map != null) {
-			Stream<T> contraintsHolders = vertex.getMeta().getHolders(map).get()
-					.filter(holder -> holder.getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) holder.getMeta().getValue()).getClazz()))
+			Stream<T> contraintsHolders = vertex.getMeta().getHolders(map).get().filter(holder -> holder.getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) holder.getMeta().getValue()).getClazz()))
 					.filter(holder -> holder.getValue() != null && !Boolean.FALSE.equals(holder.getValue())).sorted(CONSTRAINT_PRIORITY);
 			contraintsHolders.forEach(constraintHolder -> {
 				T baseComponent = constraintHolder.getBaseComponent();
@@ -249,7 +254,7 @@ public class Checker<T extends AbstractVertex<T>> {
 
 	private void checkConsistency(T vertex) {
 		T map = vertex.getMap();
-		if (map != null && vertex.isInstanceOf(map)&& vertex.getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) vertex.getMeta().getValue()).getClazz()) && vertex.getValue() != null
+		if (map != null && vertex.isInstanceOf(map) && vertex.getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) vertex.getMeta().getValue()).getClazz()) && vertex.getValue() != null
 				&& !Boolean.FALSE.equals(vertex.getValue())) {
 			T baseConstraint = vertex.getComponent(Statics.BASE_POSITION);
 			int axe = ((AxedPropertyClass) vertex.getMeta().getValue()).getAxe();
