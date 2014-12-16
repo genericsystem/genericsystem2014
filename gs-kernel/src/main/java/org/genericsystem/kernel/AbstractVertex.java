@@ -12,8 +12,6 @@ import java.util.stream.Stream;
 
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.api.exception.AmbiguousSelectionException;
-import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.kernel.Config.SystemMap;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
@@ -98,11 +96,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 					if (!generic.getInheritings().isEmpty() || !generic.getInstances().isEmpty())
 						getCurrentCache().discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + generic + " has an inheritance or instance dependency"));
 					for (T composite : generic.getComposites()) {
-							for (int componentPos = 0; componentPos < composite.getComponents().size(); componentPos++)
-								if (/* !componentDependency.isAutomatic() && */composite.getComponents().get(componentPos).equals(generic) && !contains(composite) && composite.getMeta().isReferentialIntegrityEnabled(componentPos))
-									getCurrentCache().discardWithException(new ReferentialIntegrityConstraintViolationException(composite + " is Referential Integrity for ancestor " + generic + " by composite position : " + componentPos));
-							visit(composite);
-						}
+						for (int componentPos = 0; componentPos < composite.getComponents().size(); componentPos++)
+							if (/* !componentDependency.isAutomatic() && */composite.getComponents().get(componentPos).equals(generic) && !contains(composite) && composite.getMeta().isReferentialIntegrityEnabled(componentPos))
+								getCurrentCache().discardWithException(new ReferentialIntegrityConstraintViolationException(composite + " is Referential Integrity for ancestor " + generic + " by composite position : " + componentPos));
+						visit(composite);
+					}
 					for (int axe = 0; axe < generic.getComponents().size(); axe++)
 						if (generic.isCascadeRemove(axe))
 							visit(generic.getComponents().get(axe));
@@ -121,7 +119,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 			}
 		}.visit(getMeta());
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	protected LinkedHashSet<T> computePotentialDependencies(List<T> supers, Serializable value, List<T> components) {
 		return new DependenciesComputer<T>() {
@@ -134,14 +132,14 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		}.visit((T) this);
 	}
 
-	//TODO remove this
+	// TODO remove this
 	protected T adjustMeta(Serializable value, @SuppressWarnings("unchecked") T... components) {
 		return adjustMeta(value, Arrays.asList(components));
 	}
 
 	@SuppressWarnings("unchecked")
 	T adjustMeta(Serializable value, List<T> components) {
-		return getCurrentCache().adjustMeta((T)this, value, components);
+		return getCurrentCache().adjustMeta((T) this, value, components);
 	}
 
 	protected T getDirectInstance(Serializable value, List<T> components) {
@@ -157,11 +155,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	boolean isDependencyOf(T meta, List<T> supers, Serializable value, List<T> components) {
-		return inheritsFrom(meta, value, components)
-				|| getComponents().stream().filter(component -> component != null).anyMatch(component -> component.isDependencyOf(meta, supers, value, components))
-				|| (!isMeta() && getMeta().isDependencyOf(meta, supers, value, components))
-				|| (!components.isEmpty() && componentsDepends(getComponents(), components)
-						&& supers.stream().anyMatch(override -> override.inheritsFrom(getMeta())));
+		return inheritsFrom(meta, value, components) || getComponents().stream().filter(component -> component != null).anyMatch(component -> component.isDependencyOf(meta, supers, value, components))
+				|| (!isMeta() && getMeta().isDependencyOf(meta, supers, value, components)) || (!components.isEmpty() && componentsDepends(getComponents(), components) && supers.stream().anyMatch(override -> override.inheritsFrom(getMeta())));
 	}
 
 	T getDirectEquivInstance(Serializable value, List<T> components) {
@@ -310,7 +305,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 			return !subComponents.equals(superComponents);
 		return Objects.equals(subValue, superValue);
 	}
-
 
 	T getMap() {
 		return getRoot().find(SystemMap.class);

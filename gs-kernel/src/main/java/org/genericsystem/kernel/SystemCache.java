@@ -28,7 +28,7 @@ import org.genericsystem.kernel.annotations.value.StringValue;
 
 public class SystemCache<T extends AbstractVertex<T>> {
 
-	private Map<Class<?>, T> systemCache = new HashMap<>();
+	private final Map<Class<?>, T> systemCache = new HashMap<>();
 
 	private boolean initialized = false;
 
@@ -37,7 +37,7 @@ public class SystemCache<T extends AbstractVertex<T>> {
 	@SuppressWarnings("unchecked")
 	public SystemCache(DefaultRoot<T> root, Class<?> rootClass) {
 		this.root = root;
-		systemCache.put(rootClass, (T)root);
+		systemCache.put(rootClass, (T) root);
 	}
 
 	public void mount(List<Class<?>> systemClasses, Class<?>... userClasses) {
@@ -62,8 +62,8 @@ public class SystemCache<T extends AbstractVertex<T>> {
 		triggersDependencies(clazz);
 		return result;
 	}
-	
-	public T get(Class<?> clazz){
+
+	public T get(Class<?> clazz) {
 		return systemCache.get(clazz);
 	}
 
@@ -102,7 +102,7 @@ public class SystemCache<T extends AbstractVertex<T>> {
 	private T setMeta(Class<?> clazz) {
 		Meta meta = clazz.getAnnotation(Meta.class);
 		if (meta == null)
-			return (T)root;
+			return (T) root;
 		if (meta.value() == clazz)
 			return null;
 		return set(meta.value());
