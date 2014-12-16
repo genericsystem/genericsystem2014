@@ -3,6 +3,7 @@ package org.genericsystem.kernel;
 import java.util.Arrays;
 import java.util.Collections;
 
+import org.genericsystem.api.exception.CollisionException;
 import org.genericsystem.api.exception.ExistsException;
 import org.testng.annotations.Test;
 
@@ -44,7 +45,7 @@ public class AdjustMetaTest extends AbstractTest {
 
 		Vertex instance = type1.addInstance("instance");
 		Vertex instance2 = type2.addInstance("instance2");
-		catchAndCheckCause(() -> type3.addInstance("instance"), IllegalStateException.class);
+		catchAndCheckCause(() -> type3.addInstance("instance"), CollisionException.class);
 	}
 
 	public void test003_AdjustMeta() {
@@ -76,16 +77,8 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex myBmw = car.addInstance("myBmw");
 		Vertex holder = myBmw.addHolder(power, 235);
 		assert holder.getMeta().equals(power);
-		Vertex power2 = car.addAttribute(power, "Power2");
-		// assert !holder.isAlive();
-		assert power2.equals(myBmw.getHolders(power).get().findFirst().get().getMeta());
-		// new RollbackCatcher() {
-		// @Override
-		// public void intercept() {
-		// type3.addInstance("instance");
-		// }
-		// }.assertIsCausedBy(IllegalStateException.class);
-
+		Vertex carPower = car.addAttribute(power, "CarPower");
+		assert carPower.equals(myBmw.getHolders(power).first().getMeta());
 	}
 
 	public void test001_AdjustMeta_SystemMap() {
@@ -190,7 +183,7 @@ public class AdjustMetaTest extends AbstractTest {
 		System.out.println(engine.setInstance(engine.getValue(), engine, engine).info());
 		assert engine.getMetaRelation() == engine.setInstance(engine.getValue(), engine, engine);
 		Vertex metaTernaryRelation = engine.setInstance(engine.getValue(), engine, engine, engine);
-		assert engine.getMeta(3).equals(metaTernaryRelation);
+		assert engine.getCurrentCache().getMeta(3).equals(metaTernaryRelation);
 	}
 
 	public void test010_AdjustMeta_TypeLevel_Relation_TwoComposites_TwoCompositeSpecializedByInstanciation() {

@@ -48,6 +48,11 @@ public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem
 	public DefaultEngine<T> getRoot() {
 		return (DefaultEngine<T>) super.getRoot();
 	}
+	
+	@Override
+	protected T getMeta(int dim) {
+		return super.getMeta(dim);
+	}
 
 	private class LifeManagersLocker extends HashSet<LifeManager> {
 

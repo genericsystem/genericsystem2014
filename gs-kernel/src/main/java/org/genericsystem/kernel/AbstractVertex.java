@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
+import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.kernel.Config.SystemMap;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
@@ -85,9 +86,29 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	@SuppressWarnings("unchecked")
-	protected T getMeta(int dim) {
-		T adjustedMeta = ((T) getRoot()).adjustMeta(dim);
-		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
+	private LinkedHashSet<T> buildOrderedDependenciesToRemove() {
+		return new LinkedHashSet<T>() {
+			private static final long serialVersionUID = -3610035019789480505L;
+			{
+				visit((T) AbstractVertex.this);
+			}
+
+			public void visit(T generic) {
+				if (add(generic)) {// protect from loop
+					if (!generic.getInheritings().isEmpty() || !generic.getInstances().isEmpty())
+						getCurrentCache().discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + generic + " has an inheritance or instance dependency"));
+					for (T composite : generic.getComposites()) {
+							for (int componentPos = 0; componentPos < composite.getComponents().size(); componentPos++)
+								if (/* !componentDependency.isAutomatic() && */composite.getComponents().get(componentPos).equals(generic) && !contains(composite) && composite.getMeta().isReferentialIntegrityEnabled(componentPos))
+									getCurrentCache().discardWithException(new ReferentialIntegrityConstraintViolationException(composite + " is Referential Integrity for ancestor " + generic + " by composite position : " + componentPos));
+							visit(composite);
+						}
+					for (int axe = 0; axe < generic.getComponents().size(); axe++)
+						if (generic.isCascadeRemove(axe))
+							visit(generic.getComponents().get(axe));
+				}
+			}
+		};
 	}
 
 	protected LinkedHashSet<T> computeDependencies() {
@@ -100,75 +121,27 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 			}
 		}.visit(getMeta());
 	}
-
+	
 	@SuppressWarnings("unchecked")
-	private LinkedHashSet<T> buildOrderedDependenciesToRemove() {
-		return new LinkedHashSet<T>() {
-			private static final long serialVersionUID = -3610035019789480505L;
-			{
-				visit((T) AbstractVertex.this);
-			}
-
-			public void visit(T generic) {
-				if (add(generic)) {// protect from loop
-					if (!generic.getInheritings().isEmpty() || !generic.getInstances().isEmpty())
-						getCurrentCache().discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + generic + " has an inheritance or instance dependency"));
-					for (T composite : generic.getComposites())
-						if (!generic.equals(composite)) {
-							for (int componentPos = 0; componentPos < composite.getComponents().size(); componentPos++)
-								if (/* !componentDependency.isAutomatic() && */composite.getComponents().get(componentPos).equals(generic) && !contains(composite) && composite.isReferentialIntegrityEnabled(componentPos))
-									getCurrentCache().discardWithException(new ReferentialIntegrityConstraintViolationException(composite + " is Referential Integrity for ancestor " + generic + " by composite position : " + componentPos));
-							visit(composite);
-						}
-					for (int axe = 0; axe < generic.getComponents().size(); axe++)
-						if (generic.isCascadeRemove(axe))
-							visit(generic.getComponents().get(axe));
-				}
-			}
-		};
-	}
-
-	@SuppressWarnings("unchecked")
-	protected LinkedHashSet<T> computePotentialDependencies(List<T> overrides, Serializable value, List<T> components) {
+	protected LinkedHashSet<T> computePotentialDependencies(List<T> supers, Serializable value, List<T> components) {
 		return new DependenciesComputer<T>() {
 			private static final long serialVersionUID = -3611136800445783634L;
 
 			@Override
 			boolean isSelected(T node) {
-				return node.isDependencyOf((T) AbstractVertex.this, overrides, value, components);
+				return node.isDependencyOf((T) AbstractVertex.this, supers, value, components);
 			}
 		}.visit((T) this);
 	}
 
+	//TODO remove this
 	protected T adjustMeta(Serializable value, @SuppressWarnings("unchecked") T... components) {
 		return adjustMeta(value, Arrays.asList(components));
 	}
 
 	@SuppressWarnings("unchecked")
 	T adjustMeta(Serializable value, List<T> components) {
-		T result = null;
-		if (!components.equals(getComponents()))
-			for (T directInheriting : getInheritings()) {
-				if (componentsDepends(components, directInheriting.getComponents())) {
-					if (result == null)
-						result = directInheriting;
-					else
-						getCurrentCache().discardWithException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
-				}
-			}
-		return result == null ? (T) this : result.adjustMeta(value, components);
-	}
-
-	@SuppressWarnings("unchecked")
-	protected T adjustMeta(int dim) {
-		assert isMeta();
-		int size = getComponents().size();
-		if (size > dim)
-			return null;
-		if (size == dim)
-			return (T) this;
-		T directInheriting = getInheritings().first();
-		return directInheriting != null && directInheriting.getComponents().size() <= dim ? directInheriting.adjustMeta(dim) : (T) this;
+		return getCurrentCache().adjustMeta((T)this, value, components);
 	}
 
 	protected T getDirectInstance(Serializable value, List<T> components) {
@@ -183,9 +156,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return result != null && Statics.areOverridesReached(result.getSupers(), overrides) ? result : null;
 	}
 
-	boolean isDependencyOf(T meta, List<T> overrides, Serializable value, List<T> components) {
-		return inheritsFrom(meta, value, components) || getComponents().stream().filter(component -> component != null).anyMatch(component -> component.isDependencyOf(meta, overrides, value, components))
-				|| (!isMeta() && getMeta().isDependencyOf(meta, overrides, value, components)) || (!components.isEmpty() && componentsDepends(getComponents(), components) && overrides.stream().anyMatch(override -> override.inheritsFrom(getMeta())));
+	boolean isDependencyOf(T meta, List<T> supers, Serializable value, List<T> components) {
+		return inheritsFrom(meta, value, components)
+				|| getComponents().stream().filter(component -> component != null).anyMatch(component -> component.isDependencyOf(meta, supers, value, components))
+				|| (!isMeta() && getMeta().isDependencyOf(meta, supers, value, components))
+				|| (!components.isEmpty() && componentsDepends(getComponents(), components)
+						&& supers.stream().anyMatch(override -> override.inheritsFrom(getMeta())));
 	}
 
 	T getDirectEquivInstance(Serializable value, List<T> components) {
@@ -214,7 +190,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return componentsList.equals(components);
 	}
 
-	// Unused for now
 	public boolean genericEquals(ISignature<?> service) {
 		if (service == null)
 			return false;
@@ -239,7 +214,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return true;
 	}
 
-	// Unused for now
 	static <T extends AbstractVertex<T>> boolean componentsGenericEquals(AbstractVertex<T> component, ISignature<?> compare) {
 		return (component == compare) || (component != null && component.genericEquals(compare));
 	}
@@ -337,23 +311,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return Objects.equals(subValue, superValue);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public Snapshot<T> getInstances() {
-		return getCurrentCache().getInstances((T) this);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public Snapshot<T> getInheritings() {
-		return getCurrentCache().getInheritings((T) this);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public Snapshot<T> getComposites() {
-		return getCurrentCache().getComposites((T) this);
-	}
 
 	T getMap() {
 		return getRoot().find(SystemMap.class);

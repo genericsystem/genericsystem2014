@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Archiver<T extends AbstractVertex<T>> {
 
-	private static final Logger log = LoggerFactory.getLogger(Archiver.class);
+	public static final Logger log = LoggerFactory.getLogger(Archiver.class);
 
 	private static final long ARCHIVER_COEFF = 5L;
 
@@ -280,11 +280,11 @@ public class Archiver<T extends AbstractVertex<T>> {
 			return this;
 		}
 	}
-
+	
 	protected class Loader {
 
 		protected final ObjectInputStream objectInputStream;
-		private final Transaction<T> transaction;
+		protected final Transaction<T> transaction;
 
 		protected Loader(ObjectInputStream objectInputStream) {
 			this.objectInputStream = objectInputStream;
@@ -308,26 +308,17 @@ public class Archiver<T extends AbstractVertex<T>> {
 			return objectInputStream.readLong();
 		}
 
-		protected Long[] loadOtherTs() throws IOException {
-			return null;
-		}
-
-		private void loadDependency(Map<Long, T> vertexMap) throws IOException, ClassNotFoundException {
+		protected void loadDependency(Map<Long, T> vertexMap) throws IOException, ClassNotFoundException {
 			Long id = loadId();
-			Long[] otherTs = loadOtherTs();
 			Serializable value = (Serializable) objectInputStream.readObject();
 			T meta = loadAncestor(vertexMap);
 			List<T> supers = loadAncestors(vertexMap);
 			List<T> components = loadAncestors(vertexMap);
-
-			// What about system generics that are not in archive, that shall be a serious issue...
-			// Perhaps not if we are sure startup begins after the archive has been done
-			// TODO Detect if startup begins before archive has been done and throw exception !
-			vertexMap.put(id, transaction.getBuilder().getOrBuild(null, meta, supers, value, components, id, otherTs));
+			vertexMap.put(id, transaction.getBuilder().getOrBuild(null, meta, supers, value, components));
 			log.info("load dependency " + vertexMap.get(id).info() + " " + id);
 		}
 
-		private List<T> loadAncestors(Map<Long, T> vertexMap) throws IOException {
+		protected List<T> loadAncestors(Map<Long, T> vertexMap) throws IOException {
 			List<T> ancestors = new ArrayList<>();
 			int sizeComponents = objectInputStream.readInt();
 			for (int j = 0; j < sizeComponents; j++)
@@ -335,7 +326,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 			return ancestors;
 		}
 
-		private T loadAncestor(Map<Long, T> vertexMap) throws IOException {
+		protected T loadAncestor(Map<Long, T> vertexMap) throws IOException {
 			long designTs = objectInputStream.readLong();
 			return vertexMap.get(designTs);
 		}

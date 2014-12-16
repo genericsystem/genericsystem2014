@@ -11,9 +11,38 @@ import org.genericsystem.api.core.Snapshot;
 
 public interface DefaultDependencies<T extends AbstractVertex<T>> extends IVertex<T> {
 
+	@SuppressWarnings("unchecked")
+	@Override
+	default boolean isAlive() {
+		return getCurrentCache().isAlive((T)this);
+	}
+
 	@Override
 	default boolean isAncestorOf(T dependency) {
 		return equals(dependency) || (!dependency.isMeta() && isAncestorOf(dependency.getMeta())) || dependency.getSupers().stream().anyMatch(this::isAncestorOf) || dependency.getComponents().stream().filter(x -> x != null).anyMatch(this::isAncestorOf);
+	}
+	
+	@Override
+	default Context<T> getCurrentCache() {
+		return (Context<T>) getRoot().getCurrentCache();
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	default Snapshot<T> getInstances() {
+		return getCurrentCache().getInstances((T) this);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Snapshot<T> getInheritings() {
+		return getCurrentCache().getInheritings((T) this);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Snapshot<T> getComposites() {
+		return getCurrentCache().getComposites((T) this);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -71,6 +71,8 @@ public class InstanciationTest extends AbstractTest {
 	public void test004_addInstance_sameValueParameter() {
 		Root root = new Root();
 		Vertex car = root.addInstance("Car");
+//		Vertex car2 = root.addInstance("Car");
+//		assert false : root.getInstances().info();
 		catchAndCheckCause(() -> root.addInstance("Car"), ExistsException.class);
 	}
 
