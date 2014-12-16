@@ -1,7 +1,6 @@
 package org.genericsystem.concurrency;
 
 import java.util.HashSet;
-
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
@@ -38,17 +37,16 @@ public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem
 	}
 
 	@Override
-	public boolean unplug(T generic) {
+	public void unplug(T generic) {
 		generic.getLifeManager().kill(getTs());
 		getRoot().getGarbageCollector().add(generic);
-		return true;
 	}
 
 	@Override
 	public DefaultEngine<T> getRoot() {
 		return (DefaultEngine<T>) super.getRoot();
 	}
-	
+
 	@Override
 	protected T getMeta(int dim) {
 		return super.getMeta(dim);

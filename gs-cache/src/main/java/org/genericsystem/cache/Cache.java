@@ -118,18 +118,6 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 		removes.forEach(x -> getChecker().checkAfterBuild(false, true, x));
 	}
 
-	private void simpleAdd(T generic) {
-		// if (!removes.remove(generic))
-		adds.add(generic);
-	}
-
-	private boolean simpleRemove(T generic) {
-		assert generic != null;
-		if (!adds.remove(generic))
-			removes.add(generic);
-		return true;
-	}
-
 	@Override
 	public DefaultEngine<T> getRoot() {
 		return (DefaultEngine<T>) subContext.getRoot();
@@ -141,15 +129,16 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 
 	@Override
 	protected T plug(T generic) {
-		simpleAdd(generic);
+		adds.add(generic);
 		getChecker().checkAfterBuild(true, false, generic);
 		return generic;
 	}
 
 	@Override
-	protected boolean unplug(T generic) {
+	protected void unplug(T generic) {
 		getChecker().checkAfterBuild(false, false, generic);
-		return simpleRemove(generic);
+		if (!adds.remove(generic))
+			removes.add(generic);
 	}
 
 	@Override

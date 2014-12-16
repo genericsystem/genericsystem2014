@@ -100,6 +100,36 @@ public class Builder<T extends AbstractVertex<T>> {
 		return rebuildAll(update, rebuilder, update.computeDependencies());
 	}
 
+	private class ConvertMap extends HashMap<T, T> {
+		private static final long serialVersionUID = 5003546962293036021L;
+
+		private T convert(T oldDependency) {
+			if (oldDependency.isAlive())
+				return oldDependency;
+			T newDependency = get(oldDependency);
+			if (newDependency == null) {
+				if (oldDependency.isMeta())
+					newDependency = setMeta(oldDependency.getComponents().size());
+				else {
+					List<T> overrides = oldDependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
+					List<T> components = oldDependency.getComponents().stream().map(x -> x != null ? convert(x) : null).collect(Collectors.toList());
+					T adjustedMeta = getContext().adjustMeta(convert(oldDependency.getMeta()), oldDependency.getValue(), components);
+					List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, oldDependency.getValue(), components);
+					newDependency = getOrBuild(oldDependency.getClass(), adjustedMeta, supers, oldDependency.getValue(), components);
+				}
+				put(oldDependency, newDependency);// triggers mutation
+			}
+			return newDependency;
+		}
+
+		@Override
+		public T put(T oldDependency, T newDependency) {
+			T result = super.put(oldDependency, newDependency);
+			context.triggersMutation(oldDependency, newDependency);
+			return result;
+		}
+	}
+
 	Class<?> getClass(T vertex) {
 		Class<?> vertexClass = vertex.getClass();
 		Class<?> findByValue = null;
@@ -168,35 +198,5 @@ public class Builder<T extends AbstractVertex<T>> {
 		if (!Statics.areOverridesReached(supers, overrides))
 			context.discardWithException(new UnreachableOverridesException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
 		return supers;
-	}
-
-	private class ConvertMap extends HashMap<T, T> {
-		private static final long serialVersionUID = 5003546962293036021L;
-
-		private T convert(T oldDependency) {
-			if (oldDependency.isAlive())
-				return oldDependency;
-			T newDependency = get(oldDependency);
-			if (newDependency == null) {
-				if (oldDependency.isMeta())
-					newDependency = setMeta(oldDependency.getComponents().size());
-				else {
-					List<T> overrides = oldDependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
-					List<T> components = oldDependency.getComponents().stream().map(x -> x != null ? convert(x) : null).collect(Collectors.toList());
-					T adjustedMeta = getContext().adjustMeta(convert(oldDependency.getMeta()), oldDependency.getValue(), components);
-					List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, oldDependency.getValue(), components);
-					newDependency = getOrBuild(oldDependency.getClass(), adjustedMeta, supers, oldDependency.getValue(), components);
-				}
-				put(oldDependency, newDependency);// triggers mutation
-			}
-			return newDependency;
-		}
-
-		@Override
-		public T put(T oldDependency, T newDependency) {
-			T result = super.put(oldDependency, newDependency);
-			context.triggersMutation(oldDependency, newDependency);
-			return result;
-		}
 	}
 }

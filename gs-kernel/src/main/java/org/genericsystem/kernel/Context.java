@@ -2,7 +2,6 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.List;
-
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
 import org.genericsystem.api.exception.NotFoundException;
@@ -61,14 +60,13 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		return generic;
 	}
 
-	protected boolean unplug(T generic) {
+	protected void unplug(T generic) {
 		checker.checkAfterBuild(false, false, generic);
 		boolean result = generic != generic.getMeta() ? unIndexInstance(generic.getMeta(), generic) : true;
 		if (!result)
 			discardWithException(new NotFoundException(generic.info()));
 		generic.getSupers().forEach(superGeneric -> unIndexInheriting(superGeneric, generic));
 		generic.getComponents().stream().filter(component -> component != null).forEach(component -> unIndexComposite(component, generic));
-		return result;
 	}
 
 	private T getAlive(T vertex) {
@@ -82,7 +80,7 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		return aliveMeta != null ? getInstances(aliveMeta).get(vertex) : null;
 	}
 
-	T adjustMeta(T meta,Serializable value, List<T> components) {
+	T adjustMeta(T meta, Serializable value, List<T> components) {
 		T result = null;
 		if (!components.equals(meta.getComponents()))
 			for (T directInheriting : meta.getInheritings()) {
@@ -93,23 +91,23 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 						discardWithException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
 				}
 			}
-		return result == null ? meta : adjustMeta(result,value, components);
+		return result == null ? meta : adjustMeta(result, value, components);
 	}
 
-	private T adjustMeta(T meta,int dim) {
+	private T adjustMeta(T meta, int dim) {
 		assert meta.isMeta();
 		int size = meta.getComponents().size();
 		if (size > dim)
 			return null;
 		if (size == dim)
-			return (T) meta;
+			return meta;
 		T directInheriting = meta.getInheritings().first();
-		return directInheriting != null && directInheriting.getComponents().size() <= dim ? adjustMeta(directInheriting,dim) : meta;
+		return directInheriting != null && directInheriting.getComponents().size() <= dim ? adjustMeta(directInheriting, dim) : meta;
 	}
 
 	@SuppressWarnings("unchecked")
-	T adjustMeta(int dim){
-		return adjustMeta((T)getRoot(),dim);
+	T adjustMeta(int dim) {
+		return adjustMeta((T) getRoot(), dim);
 	}
 
 	protected T getMeta(int dim) {
