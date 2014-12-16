@@ -171,9 +171,8 @@ public class Builder<T extends AbstractVertex<T>> {
 					List<T> overrides = oldDependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
 					List<T> components = oldDependency.getComponents().stream().map(x -> x != null ? convert(x) : null).collect(Collectors.toList());
 					T adjustedMeta = getContext().adjustMeta(convert(oldDependency.getMeta()), oldDependency.getValue(), components);
-					T instance = adjustedMeta.getDirectInstance(oldDependency.getValue(), components);
 					List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, oldDependency.getValue(), components);
-					newDependency = instance != null ? instance : build(oldDependency.getClass(), adjustedMeta, supers, oldDependency.getValue(), components);
+					newDependency = getOrBuild(oldDependency.getClass(), adjustedMeta, supers, oldDependency.getValue(), components);
 				}
 				put(oldDependency, newDependency);// triggers mutation
 			}
