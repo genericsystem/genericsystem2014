@@ -4,6 +4,7 @@ import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
+import org.genericsystem.concurrency.Generic.SystemClass;
 import org.genericsystem.kernel.Builder;
 import org.genericsystem.kernel.Context;
 import org.genericsystem.kernel.DefaultContext;
@@ -34,6 +35,12 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 			@SuppressWarnings("unchecked")
 			protected Class<T> getTClass() {
 				return (Class<T>) Generic.class;
+			}
+
+			@Override
+			@SuppressWarnings("unchecked")
+			protected Class<T> getSystemTClass() {
+				return (Class<T>) SystemClass.class;
 			}
 		};
 	}

@@ -27,6 +27,12 @@ public class AnnotationTest extends AbstractTest {
 		catchAndCheckCause(() -> vehicle.remove(), IllegalAccessException.class);
 	}
 
+	public void test002_remove() {
+		Engine engine = new Engine(OtherVehicle.class);
+		Generic vehicle = engine.find(OtherVehicle.class);
+		catchAndCheckCause(() -> vehicle.remove(), IllegalAccessException.class);
+	}
+
 	public void test001_instanceof() {
 		Engine engine = new Engine(Vehicle.class);
 		assert engine.find(Vehicle.class) instanceof Vehicle;
@@ -39,6 +45,14 @@ public class AnnotationTest extends AbstractTest {
 		VehicleInstance vi = (VehicleInstance) vehicle.addInstance("myBmw");
 		assert vehicle.setInstance("myBmw") instanceof VehicleInstance;
 		assert vehicle.setInstance("myBmw") instanceof VehicleInstance;
+	}
+
+	public void test0022_instanceof() {
+		Engine engine = new Engine(OtherVehicleType.class);
+		Generic vehicle = engine.find(OtherVehicleType.class);
+		assert vehicle.addInstance("myBmw") instanceof VehicleInstance;
+		assert vehicle.setInstance("myBmw") instanceof VehicleInstance;
+		VehicleInstance vi = (VehicleInstance) vehicle.setInstance("myBmw");
 	}
 
 	public void test002_instanceof_getInstances() {
@@ -81,6 +95,12 @@ public class AnnotationTest extends AbstractTest {
 	@SystemGeneric
 	@InstanceClass(VehicleInstance.class)
 	public static class VehicleType extends Generic {
+
+	}
+
+	@SystemGeneric
+	@InstanceClass(VehicleInstance.class)
+	public static class OtherVehicleType {
 
 	}
 
@@ -404,6 +424,11 @@ public class AnnotationTest extends AbstractTest {
 
 	@SystemGeneric
 	public static class Vehicle extends Generic {
+
+	}
+
+	@SystemGeneric
+	public static class OtherVehicle {
 
 	}
 

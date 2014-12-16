@@ -13,8 +13,7 @@ import org.genericsystem.kernel.Statics;
 public class Engine extends Generic implements DefaultEngine<Generic> {
 
 	private final ThreadLocal<Cache<Generic>> cacheLocal = new ThreadLocal<>();
-	private final SystemCache<Generic> systemCache=new SystemCache<Generic>(this,Root.class);
-
+	private final SystemCache<Generic> systemCache = new SystemCache<Generic>(this, Root.class);
 
 	public Engine(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
@@ -34,7 +33,7 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	public Generic getMetaRelation() {
 		return find(MetaRelation.class);
 	}
-	
+
 	@Override
 	public Cache<Generic> start(Cache<Generic> cache) {
 		if (!equals(cache.getRoot()))
@@ -62,9 +61,14 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	public <Custom extends Generic> Custom find(Class<?> clazz) {
 		return (Custom) systemCache.get(clazz);
 	}
-	
+
+	@Override
+	public Class<?> findByValue(Generic generic) {
+		return systemCache.getByValue(generic);
+	}
+
 	@Override
 	public void close() {
-		//TODO block caches to flush
+		// TODO block caches to flush
 	}
 }

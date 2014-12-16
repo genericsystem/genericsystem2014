@@ -22,4 +22,8 @@ public class Generic extends AbstractGeneric<Generic> implements DefaultGeneric<
 	protected Dependencies<Generic> getCompositesDependencies() {
 		return composites;
 	}
+
+	public static final class SystemClass extends Generic {
+
+	}
 }

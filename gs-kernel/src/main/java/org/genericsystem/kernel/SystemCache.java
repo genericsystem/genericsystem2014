@@ -3,6 +3,7 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +30,8 @@ import org.genericsystem.kernel.annotations.value.StringValue;
 public class SystemCache<T extends AbstractVertex<T>> {
 
 	private final Map<Class<?>, T> systemCache = new HashMap<>();
+
+	private final Map<T, Class<?>> reverseSystemCache = new IdentityHashMap<>();
 
 	private boolean initialized = false;
 
@@ -58,6 +61,8 @@ public class SystemCache<T extends AbstractVertex<T>> {
 		}
 		T result = root.getCurrentCache().getBuilder().setInstance(clazz, setMeta(clazz), setOverrides(clazz), findValue(clazz), setComponents(clazz));
 		systemCache.put(clazz, result);
+		if (clazz != null)
+			reverseSystemCache.put(result, clazz);
 		mountConstraints(clazz, result);
 		triggersDependencies(clazz);
 		return result;
@@ -65,6 +70,10 @@ public class SystemCache<T extends AbstractVertex<T>> {
 
 	public T get(Class<?> clazz) {
 		return systemCache.get(clazz);
+	}
+
+	public Class<?> getByValue(T vertex) {
+		return reverseSystemCache.get(vertex);
 	}
 
 	private void triggersDependencies(Class<?> clazz) {

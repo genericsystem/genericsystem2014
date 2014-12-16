@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import org.genericsystem.concurrency.Generic.SystemClass;
 import org.genericsystem.kernel.Builder;
-import org.genericsystem.kernel.Context;
 
 public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.kernel.Archiver<T> {
 
@@ -91,7 +91,7 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 			super(objectInputStream);
 		}
 
-		private class TsTransaction extends Transaction<T>{
+		private class TsTransaction extends Transaction<T> {
 			TsTransaction() {
 				super((DefaultEngine<T>) root);
 			}
@@ -100,7 +100,6 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 			public T plug(T generic) {
 				return simplePlug(generic);
 			}
-			
 
 			private class TsBuilder extends Builder<T> {
 				protected TsBuilder() {
@@ -118,12 +117,18 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 					return (Class<T>) Generic.class;
 				}
 
-				protected T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, Long designTs, Long[] otherTs) {
-					T instance = meta == null ?  getContext().getMeta(components.size()) : meta.getDirectInstance(value, components);
-					return instance == null ? build(clazz, meta, supers, value, components,designTs, otherTs) : instance.restore(designTs, otherTs[0], otherTs[1], otherTs[2]);
+				@Override
+				@SuppressWarnings("unchecked")
+				protected Class<T> getSystemTClass() {
+					return (Class<T>) SystemClass.class;
 				}
-				
-				private T build(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, Long designTs, Long[] otherTs){
+
+				protected T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, Long designTs, Long[] otherTs) {
+					T instance = meta == null ? getContext().getMeta(components.size()) : meta.getDirectInstance(value, components);
+					return instance == null ? build(clazz, meta, supers, value, components, designTs, otherTs) : instance.restore(designTs, otherTs[0], otherTs[1], otherTs[2]);
+				}
+
+				private T build(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, Long designTs, Long[] otherTs) {
 					return getContext().plug(newT(clazz, meta, supers, value, components).restore(designTs, otherTs[0], otherTs[1], otherTs[2]));
 				}
 			}
@@ -135,6 +140,7 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 
 			// TODO checker
 		}
+
 		@Override
 		protected void loadDependency(Map<Long, T> vertexMap) throws IOException, ClassNotFoundException {
 			Long id = loadId();
@@ -143,7 +149,7 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 			T meta = loadAncestor(vertexMap);
 			List<T> supers = loadAncestors(vertexMap);
 			List<T> components = loadAncestors(vertexMap);
-			vertexMap.put(id, ((TsTransaction.TsBuilder)((TsTransaction)transaction).getBuilder()).getOrBuild(null, meta, supers, value, components,id,otherTs));
+			vertexMap.put(id, ((TsTransaction.TsBuilder) ((TsTransaction) transaction).getBuilder()).getOrBuild(null, meta, supers, value, components, id, otherTs));
 			log.info("load dependency " + vertexMap.get(id).info() + " " + id);
 		}
 

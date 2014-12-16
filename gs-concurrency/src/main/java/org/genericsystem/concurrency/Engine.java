@@ -15,7 +15,7 @@ import org.genericsystem.kernel.Statics;
 public class Engine extends Generic implements DefaultEngine<Generic> {
 
 	protected final ThreadLocal<Cache<Generic>> cacheLocal = new ThreadLocal<>();
-	private final SystemCache<Generic> systemCache=new SystemCache<Generic>(this,Root.class);
+	private final SystemCache<Generic> systemCache = new SystemCache<Generic>(this, Root.class);
 	private final Archiver<Generic> archiver;
 	private final TsGenerator generator = new TsGenerator();
 	private final GarbageCollector<Generic> garbageCollector = new GarbageCollector<>(this);
@@ -46,6 +46,7 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	}
 
 	// TODO mount this in API
+	@Override
 	public void close() {
 		archiver.close();
 	}
@@ -76,6 +77,11 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	@Override
 	public <Custom extends Generic> Custom find(Class<?> clazz) {
 		return (Custom) systemCache.get(clazz);
+	}
+
+	@Override
+	public Class<?> findByValue(Generic generic) {
+		return systemCache.getByValue(generic);
 	}
 
 	@Override

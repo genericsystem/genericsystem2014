@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.UnreachableOverridesException;
+import org.genericsystem.kernel.Vertex.SystemClass;
 import org.genericsystem.kernel.annotations.InstanceClass;
 
 public class Builder<T extends AbstractVertex<T>> {
@@ -30,6 +31,11 @@ public class Builder<T extends AbstractVertex<T>> {
 	@SuppressWarnings("unchecked")
 	protected Class<T> getTClass() {
 		return (Class<T>) Vertex.class;
+	}
+
+	@SuppressWarnings("unchecked")
+	protected Class<T> getSystemTClass() {
+		return (Class<T>) SystemClass.class;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -94,18 +100,25 @@ public class Builder<T extends AbstractVertex<T>> {
 		return rebuildAll(update, rebuilder, update.computeDependencies());
 	}
 
+	Class<?> getClass(T vertex) {
+		Class<?> vertexClass = vertex.getClass();
+		Class<?> findByValue = null;
+		if (vertexClass.isAssignableFrom(getSystemTClass()))
+			findByValue = context.getRoot().findByValue(vertex);
+		return findByValue == null ? vertexClass : findByValue;
+	}
+
 	@SuppressWarnings("unchecked")
 	private T newT(Class<?> clazz, T meta) {
-		InstanceClass metaAnnotation = meta == null ? null : meta.getClass().getAnnotation(InstanceClass.class);
+		InstanceClass metaAnnotation = meta == null ? null : getClass(meta).getAnnotation(InstanceClass.class);
 		if (metaAnnotation != null)
 			if (clazz == null || clazz.isAssignableFrom(metaAnnotation.value()))
 				clazz = metaAnnotation.value();
 			else if (!metaAnnotation.value().isAssignableFrom(clazz))
 				getContext().discardWithException(new InstantiationException(clazz + " must extends " + metaAnnotation.value()));
 
-		Class<T> tClass = getTClass();
 		try {
-			return clazz == null || !tClass.isAssignableFrom(clazz) ? tClass.newInstance() : (T) clazz.newInstance();
+			return clazz == null || !getTClass().isAssignableFrom(clazz) ? getSystemTClass().newInstance() : (T) clazz.newInstance();
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
 			getContext().discardWithException(e);
 		}

@@ -18,37 +18,35 @@ import org.testng.annotations.Test;
 @Test
 public class AnnotationTest extends AbstractTest {
 
-	
-	static interface simpleCRUD<T extends Serializable> extends Snapshot<T>{
-			
-			@SuppressWarnings("unchecked")
-			default Stream<T> get(){
-				return ((Generic)this).getInstances().get().map(x->(T)x.getValue());
-			}
-		
-			default void add(T value){
-				((Generic)this).setInstance(value);
-			}
-			
-			default List<T> getValues(){
-				return get().collect(Collectors.toList());
-			}
-			
-			default boolean remove(T value){
-				for(Generic instance :((Generic)this).getInstances() )
-					if(Objects.equals(value, instance.getValue())) {
-						instance.remove();
-						return true;
-					}
-				return false;
-			}		
+	static interface simpleCRUD<T extends Serializable> extends Snapshot<T> {
+
+		@Override
+		@SuppressWarnings("unchecked")
+		default Stream<T> get() {
+			return ((Generic) this).getInstances().get().map(x -> (T) x.getValue());
+		}
+
+		default void add(T value) {
+			((Generic) this).setInstance(value);
+		}
+
+		default List<T> getValues() {
+			return get().collect(Collectors.toList());
+		}
+
+		default boolean remove(T value) {
+			for (Generic instance : ((Generic) this).getInstances())
+				if (Objects.equals(value, instance.getValue())) {
+					instance.remove();
+					return true;
+				}
+			return false;
+		}
 	}
-	
-	
-	
+
 	@SystemGeneric
 	static class Phones implements simpleCRUD<String> {
-		
+
 	}
 
 	public void test000_Generic() {
@@ -62,10 +60,10 @@ public class AnnotationTest extends AbstractTest {
 		phones.remove("HTC One");
 		phones.remove("HTC One");
 		engine.getCurrentCache().flush();
-		assert phones.size()==3;
+		assert phones.size() == 3;
 		assert !phones.contains("HTC One");
 		engine.getCurrentCache().clear();
-		assert phones.size()==3;
+		assert phones.size() == 3;
 		assert !phones.contains("HTC One");
 	}
 
@@ -95,7 +93,7 @@ public class AnnotationTest extends AbstractTest {
 		assert engine.find(VehicleType.class) instanceof VehicleType;
 		VehicleType vehicle = engine.find(VehicleType.class);
 		// VehicleInstance vi = (VehicleInstance) ((Generic) vehicle).addInstance("myBmw");
-		assert ((Generic) vehicle).setInstance("myBmw") instanceof VehicleInstance;
+		assert ((Generic) vehicle).setInstance("myBmw") instanceof VehicleInstance : ((Generic) vehicle).setInstance("myBmw").getClass().getName();
 
 	}
 
@@ -117,21 +115,24 @@ public class AnnotationTest extends AbstractTest {
 		catchAndCheckCause(() -> new Engine(MyMercedes.class), InstantiationException.class);
 	}
 
-	public static class VehicleInstance {
+	public static class VehicleInstance implements Generic {
 
 	}
 
 	@SystemGeneric
 	@Meta(VehicleType.class)
-	public static class MyAudi extends VehicleInstance {}
+	public static class MyAudi extends VehicleInstance {
+	}
 
 	@SystemGeneric
 	@Meta(VehicleType.class)
-	public static class MyBmw {}
+	public static class MyBmw {
+	}
 
 	@SystemGeneric
 	@Meta(VehicleType.class)
-	public static class MyMercedes {}
+	public static class MyMercedes {
+	}
 
 	@SystemGeneric
 	@InstanceClass(VehicleInstance.class)
@@ -364,46 +365,57 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	public static class Games {}
+	public static class Games {
+	}
 
 	@SystemGeneric
 	@Meta(Games.class)
-	public static class MyGames {}
+	public static class MyGames {
+	}
 
 	@SystemGeneric
 	@Meta(Games.class)
-	public static class MyGames2 {}
+	public static class MyGames2 {
+	}
 
 	@SystemGeneric
-	public static class Children {}
+	public static class Children {
+	}
 
 	@SystemGeneric
 	@Meta(Children.class)
-	public static class MyChildren {}
+	public static class MyChildren {
+	}
 
 	@SystemGeneric
 	@Supers({ Games.class, Children.class })
-	public static class ChildrenGames {}
+	public static class ChildrenGames {
+	}
 
 	@SystemGeneric
 	@Meta(ChildrenGames.class)
-	public static class MyChildrenGames {}
+	public static class MyChildrenGames {
+	}
 
 	@SystemGeneric
 	@Supers({ Human.class, Vehicle.class })
-	public static class Transformer {}
+	public static class Transformer {
+	}
 
 	@SystemGeneric
 	@Meta(Transformer.class)
-	public static class MyTransformer {}
+	public static class MyTransformer {
+	}
 
 	@SystemGeneric
 	@Supers({ Transformer.class, ChildrenGames.class })
-	public static class TransformerChildrenGames {}
+	public static class TransformerChildrenGames {
+	}
 
 	@SystemGeneric
 	@Meta(TransformerChildrenGames.class)
-	public static class MyTransformerChildrenGames {}
+	public static class MyTransformerChildrenGames {
+	}
 
 	@SystemGeneric
 	public static class GraphicComposite {
@@ -453,7 +465,8 @@ public class AnnotationTest extends AbstractTest {
 
 	@SystemGeneric
 	@Meta(Vehicle.class)
-	public static class MyVehicle {}
+	public static class MyVehicle {
+	}
 
 	@SystemGeneric
 	@Components(Vehicle.class)
@@ -477,7 +490,8 @@ public class AnnotationTest extends AbstractTest {
 
 	@SystemGeneric
 	@Meta(Car.class)
-	public static class myCar {}
+	public static class myCar {
+	}
 
 	@SystemGeneric
 	@Components(Car.class)
@@ -493,34 +507,42 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	public static class Human {}
+	public static class Human {
+	}
 
 	@SystemGeneric
-	public static class Man extends Human {}
+	public static class Man extends Human {
+	}
 
 	@SystemGeneric
 	@Meta(Human.class)
-	public static class Myck {}
+	public static class Myck {
+	}
 
 	@SystemGeneric
-	public static class Time {}
+	public static class Time {
+	}
 
 	@SystemGeneric
 	@Components({ Human.class, Vehicle.class })
-	public static class HumanPossessVehicle {}
+	public static class HumanPossessVehicle {
+	}
 
 	@SystemGeneric
 	@Components({ Human.class, Car.class })
 	@Supers(HumanPossessVehicle.class)
-	public static class HumanPossessCar extends HumanPossessVehicle {}
+	public static class HumanPossessCar extends HumanPossessVehicle {
+	}
 
 	@SystemGeneric
 	@Components({ Man.class, Car.class })
 	@Supers(HumanPossessVehicle.class)
-	public static class ManPossessCar extends HumanPossessVehicle {}
+	public static class ManPossessCar extends HumanPossessVehicle {
+	}
 
 	@SystemGeneric
 	@Components({ Human.class, Vehicle.class, Time.class })
-	public static class HumanPossessVehicleTime {}
+	public static class HumanPossessVehicleTime {
+	}
 
 }

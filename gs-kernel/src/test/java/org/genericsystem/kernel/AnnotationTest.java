@@ -32,6 +32,12 @@ public class AnnotationTest extends AbstractTest {
 		catchAndCheckCause(() -> vehicle.remove(), IllegalAccessException.class);
 	}
 
+	public void test002_remove() {
+		Root engine = new Root(OtherVehicle.class);
+		Vertex vehicle = engine.find(OtherVehicle.class);
+		catchAndCheckCause(() -> vehicle.remove(), IllegalAccessException.class);
+	}
+
 	public void test001_instanceof() {
 		Root engine = new Root(Vehicle.class);
 		assert engine.find(Vehicle.class) instanceof Vehicle;
@@ -43,6 +49,14 @@ public class AnnotationTest extends AbstractTest {
 		Root engine = new Root(VehicleType.class);
 		assert engine.find(VehicleType.class) instanceof VehicleType;
 		VehicleType vehicle = engine.find(VehicleType.class);
+		assert vehicle.addInstance("myBmw") instanceof VehicleInstance;
+		assert vehicle.setInstance("myBmw") instanceof VehicleInstance;
+		VehicleInstance vi = (VehicleInstance) vehicle.setInstance("myBmw");
+	}
+
+	public void test0022_instanceof() {
+		Root engine = new Root(OtherVehicleType.class);
+		Vertex vehicle = engine.find(OtherVehicleType.class);
 		assert vehicle.addInstance("myBmw") instanceof VehicleInstance;
 		assert vehicle.setInstance("myBmw") instanceof VehicleInstance;
 		VehicleInstance vi = (VehicleInstance) vehicle.setInstance("myBmw");
@@ -62,7 +76,6 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	public void test004_instanceof() {
-
 		catchAndCheckCause(() -> new Root(MyBmw.class), InstantiationException.class);
 		catchAndCheckCause(() -> new Root(MyMercedes.class), InstantiationException.class);
 	}
@@ -89,6 +102,12 @@ public class AnnotationTest extends AbstractTest {
 	@SystemGeneric
 	@InstanceClass(VehicleInstance.class)
 	public static class VehicleType extends Vertex {
+
+	}
+
+	@SystemGeneric
+	@InstanceClass(VehicleInstance.class)
+	public static class OtherVehicleType {
 
 	}
 
@@ -460,6 +479,11 @@ public class AnnotationTest extends AbstractTest {
 
 	@SystemGeneric
 	public static class Vehicle extends Vertex {
+
+	}
+
+	@SystemGeneric
+	public static class OtherVehicle {
 
 	}
 

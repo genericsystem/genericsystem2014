@@ -38,4 +38,8 @@ public class Generic extends AbstractGeneric<Generic> implements DefaultGeneric<
 	public Engine getRoot() {
 		return (Engine) super.getRoot();
 	}
+
+	public static final class SystemClass extends Generic {
+
+	}
 }

@@ -1,11 +1,13 @@
 package org.genericsystem.cache;
 
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
+import org.genericsystem.cache.Generic.SystemClass;
 import org.genericsystem.kernel.Builder;
 import org.genericsystem.kernel.Context;
 import org.genericsystem.kernel.DefaultContext;
@@ -43,6 +45,12 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 			@SuppressWarnings("unchecked")
 			protected Class<T> getTClass() {
 				return (Class<T>) Generic.class;
+			}
+
+			@Override
+			@SuppressWarnings("unchecked")
+			protected Class<T> getSystemTClass() {
+				return (Class<T>) SystemClass.class;
 			}
 		};
 	}
