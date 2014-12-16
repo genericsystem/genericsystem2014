@@ -99,11 +99,17 @@ public class Checker<T extends AbstractVertex<T>> {
 	}
 
 	private void checkWellFormedMeta(T meta, Serializable value, List<T> components) {
-		if (meta == null && !Objects.equals(value, context.getRoot().getValue()) && components.stream().noneMatch(x -> x.isRoot()))
+		if (meta == null && (components.stream().anyMatch(x -> !x.isRoot()) || !Objects.equals(value, context.getRoot().getValue())))
 			context.discardWithException(new IllegalStateException("Malformed meta : (" + meta + ") " + value + " " + components));
 	}
 
 	// checkAfterBuild
+
+	private void checkWellFormedMeta(T vertex) {
+		if (vertex.isMeta())
+			if (vertex.getComponents().stream().anyMatch(c -> !c.isRoot()) || !Objects.equals(vertex.getValue(), context.getRoot().getValue()) || vertex.getSupers().size() != 1 || !vertex.getSupers().get(0).isMeta())
+				context.discardWithException(new IllegalStateException("Malformed meta : " + vertex.info()));
+	}
 
 	protected void checkSystemConstraintsAfterBuild(boolean isOnAdd, boolean isFlushTime, T vertex) {
 		checkWellFormedMeta(vertex);
@@ -126,12 +132,6 @@ public class Checker<T extends AbstractVertex<T>> {
 	private void checkRemoveGenericAnnoted(boolean isOnAdd, T vertex) {
 		if (!isOnAdd && vertex.getClass().getAnnotation(SystemGeneric.class) != null)
 			getContext().discardWithException(new IllegalAccessException("@SystemGeneric annoted generic can't be removed"));
-	}
-
-	private void checkWellFormedMeta(T vertex) {
-		if (vertex.isMeta())
-			if (!vertex.getComponents().stream().allMatch(c -> c.isRoot()) || !Objects.equals(vertex.getValue(), context.getRoot().getValue()) || vertex.getSupers().size() != 1 || !vertex.getSupers().get(0).isMeta())
-				context.discardWithException(new IllegalStateException("Malformed meta : " + vertex.info()));
 	}
 
 	private void checkIsAlive(T vertex) {
