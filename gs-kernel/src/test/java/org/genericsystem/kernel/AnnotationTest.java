@@ -1,5 +1,9 @@
 package org.genericsystem.kernel;
 
+import org.genericsystem.kernel.Config.DefaultNoReferentialIntegrityProperty;
+import org.genericsystem.kernel.Config.MetaAttribute;
+import org.genericsystem.kernel.Config.MetaRelation;
+import org.genericsystem.kernel.Config.SystemMap;
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Dependencies;
 import org.genericsystem.kernel.annotations.InstanceClass;
@@ -15,6 +19,17 @@ import org.testng.annotations.Test;
 
 @Test
 public class AnnotationTest extends AbstractTest {
+
+	public void test001() {
+		Root engine = new Root();
+		Vertex metaAttribut = engine.find(MetaAttribute.class);
+		Class<Vertex> systemTClass = engine.getCurrentCache().getBuilder().getSystemTClass();
+		assert systemTClass.isAssignableFrom(metaAttribut.getClass()) : metaAttribut.getClass();
+		assert systemTClass.isAssignableFrom(engine.find(DefaultNoReferentialIntegrityProperty.class).getClass());
+		assert systemTClass.isAssignableFrom(engine.find(MetaRelation.class).getClass());
+		assert systemTClass.isAssignableFrom(engine.find(SystemMap.class).getClass());
+		metaAttribut.remove();
+	}
 
 	public void test001_Vertex() {
 		Root engine = new Root(Vehicle.class, Human.class, Myck.class);

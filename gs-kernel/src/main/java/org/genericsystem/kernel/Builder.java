@@ -10,6 +10,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
 import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.UnreachableOverridesException;
 import org.genericsystem.kernel.Vertex.SystemClass;
@@ -49,7 +50,7 @@ public class Builder<T extends AbstractVertex<T>> {
 	protected T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
 		context.getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
 		if (meta == null || meta.isMeta()) {
-			meta = setMeta(components.size());
+			meta = setMeta(clazz, components.size());
 			if (meta.equalsAndOverrides(meta, overrides, value, components))
 				context.discardWithException(new ExistsException("An equivalent instance already exists : " + meta.info()));
 		}
@@ -67,7 +68,7 @@ public class Builder<T extends AbstractVertex<T>> {
 	protected T setInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
 		context.getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
 		if (meta == null || meta.isMeta()) {
-			meta = setMeta(components.size());
+			meta = setMeta(clazz, components.size());
 			if (meta.equalsAndOverrides(meta, overrides, value, components))
 				return meta;
 		}
@@ -84,7 +85,7 @@ public class Builder<T extends AbstractVertex<T>> {
 
 	protected T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents) {
 		context.getChecker().checkBeforeBuild(update.getClass(), update.getMeta(), overrides, newValue, newComponents);
-		T meta = update.getMeta().isMeta() ? setMeta(newComponents.size()) : update.getMeta();
+		T meta = update.getMeta().isMeta() ? setMeta(update.getClass(), newComponents.size()) : update.getMeta();
 		T adjustedMeta = getContext().adjustMeta(meta, newValue, newComponents);
 		Supplier<T> rebuilder = () -> {
 			T instance = adjustedMeta.getDirectInstance(newValue, newComponents);
@@ -108,7 +109,7 @@ public class Builder<T extends AbstractVertex<T>> {
 			T newDependency = get(oldDependency);
 			if (newDependency == null) {
 				if (oldDependency.isMeta())
-					newDependency = setMeta(oldDependency.getComponents().size());
+					newDependency = setMeta(oldDependency.getClass(), oldDependency.getComponents().size());
 				else {
 					List<T> overrides = oldDependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
 					List<T> components = oldDependency.getComponents().stream().map(x -> x != null ? convert(x) : null).collect(Collectors.toList());
@@ -147,7 +148,11 @@ public class Builder<T extends AbstractVertex<T>> {
 				getContext().discardWithException(new InstantiationException(clazz + " must extends " + metaAnnotation.value()));
 
 		try {
-			return clazz == null || !getTClass().isAssignableFrom(clazz) ? getTClass().newInstance() : (T) clazz.newInstance();
+			if (clazz == null)
+				return getTClass().newInstance();
+			if (!getTClass().isAssignableFrom(clazz))
+				return getSystemTClass().newInstance();
+			return (T) clazz.newInstance();
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
 			getContext().discardWithException(e);
 		}
@@ -170,17 +175,20 @@ public class Builder<T extends AbstractVertex<T>> {
 	// get or build
 	// meta == null
 	// adjusts = true
-	@SuppressWarnings("unchecked")
 	T setMeta(int dim) {
+		return setMeta(null, dim);
+	}
+
+	@SuppressWarnings("unchecked")
+	private T setMeta(Class<?> clazz, int dim) {
 		T root = (T) context.getRoot();
 		T adjustedMeta = getContext().adjustMeta(dim);
 		if (adjustedMeta.getComponents().size() == dim)
 			return adjustedMeta;
 		T[] components = newTArray(dim);
 		Arrays.fill(components, root);
-		return rebuildAll(null, () -> build(null, null, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)),
+		return rebuildAll(null, () -> build(clazz, null, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)),
 				adjustedMeta.computePotentialDependencies(Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)));
-
 	}
 
 	protected T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {

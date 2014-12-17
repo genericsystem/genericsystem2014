@@ -10,7 +10,7 @@ import org.genericsystem.api.core.Snapshot;
 
 public interface Generic extends IVertex<Generic> {
 
-	default Engine getEngine(){
+	default Engine getEngine() {
 		throw new IllegalStateException();
 	}
 
