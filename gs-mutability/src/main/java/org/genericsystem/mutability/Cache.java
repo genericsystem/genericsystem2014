@@ -182,12 +182,13 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 		PROXY_FACTORY.setSuperclass(clazz);
 		if (!Generic.class.isAssignableFrom(clazz))
 			PROXY_FACTORY.setInterfaces(new Class[] { Generic.class });
+		T instance = null;
 		try {
-			T instance = (T) PROXY_FACTORY.createClass(METHOD_FILTER).newInstance();
-			((ProxyObject) instance).setHandler(engine);
-			return instance;
+			instance = (T) PROXY_FACTORY.createClass(METHOD_FILTER).newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
-			throw new IllegalStateException(e);
+			concurrencyCache.discardWithException(e);
 		}
+		((ProxyObject) instance).setHandler(engine);
+		return instance;
 	}
 }
