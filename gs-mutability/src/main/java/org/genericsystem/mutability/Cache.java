@@ -1,6 +1,5 @@
 package org.genericsystem.mutability;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -11,7 +10,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javassist.util.proxy.MethodFilter;
-import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
 import org.genericsystem.api.core.IContext;
@@ -70,14 +68,13 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 			} catch (InstantiationException | IllegalAccessException e) {
 				throw new IllegalStateException(e);
 			}
-		}
-		else
+		} else
 			result = new Generic() {
-			@Override
-			public Engine getEngine() {
-				return engine;
-			}
-		};
+				@Override
+				public Engine getEngine() {
+					return engine;
+				}
+			};
 		put(result, generic);
 		return result;
 	}
@@ -172,15 +169,14 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 		concurrencyCache.clear();// triggers clear and refresh automatically
 	}
 
-	
+	private final static ProxyFactory PROXY_FACTORY = new ProxyFactory();
+	private final static MethodFilter METHOD_FILTER = method -> method.getName().equals("getEngine");
+
 	<T> T newInstance(Class<T> clazz) throws InstantiationException, IllegalAccessException {
-		ProxyFactory proxyFactory = new ProxyFactory();
-		proxyFactory.setSuperclass(clazz);
-		if(!Generic.class.isAssignableFrom(clazz))
-			proxyFactory.setInterfaces(new Class[] { Generic.class });
-		proxyFactory.setFilter(method->method.getName().equals("getEngine"));
-		Class<T> proxyClass = proxyFactory.createClass();
-		T instance = proxyClass.newInstance();
+		PROXY_FACTORY.setSuperclass(clazz);
+		if (!Generic.class.isAssignableFrom(clazz))
+			PROXY_FACTORY.setInterfaces(new Class[] { Generic.class });
+		T instance = (T) PROXY_FACTORY.createClass(METHOD_FILTER).newInstance();
 		((ProxyObject) instance).setHandler(engine);
 		return instance;
 	}
