@@ -9,11 +9,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
-
 import org.genericsystem.api.core.IContext;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.concurrency.Cache.ContextEventListener;
@@ -53,33 +51,6 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 		return result;
 	}
 
-	protected Generic wrap(org.genericsystem.concurrency.Generic generic) {
-		if (generic == null)
-			return null;
-		Generic result = get(generic);
-		if (result != null)
-			return result;
-		InstanceClass annotation = null;
-		Class<?> findByValue = generic.getRoot().findAnnotedClass(generic.getMeta());
-		if (findByValue != null)
-			annotation = findByValue.getAnnotation(InstanceClass.class);
-		if (annotation != null)
-			try {
-				result = (Generic) newInstance(annotation.value());
-			} catch (InstantiationException | IllegalAccessException e) {
-				throw new IllegalStateException(e);
-			}
-		else
-			result = new Generic() {
-				@Override
-				public Engine getEngine() {
-					return engine;
-				}
-			};
-		put(result, generic);
-		return result;
-	}
-
 	private Generic get(org.genericsystem.concurrency.Generic generic) {
 		Set<Generic> resultSet = reverseMultiMap.get(generic);
 		if (resultSet != null)
@@ -93,13 +64,24 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 		Generic result = get(generic);
 		if (result != null)
 			return result;
-		try {
+		InstanceClass metaAnotation = null;
+		Class<?> findByValue = generic.getRoot().findAnnotedClass(generic.getMeta());
+		if (findByValue != null)
+			metaAnotation = findByValue.getAnnotation(InstanceClass.class);
+		if (clazz != null) {
+			if (metaAnotation != null && !metaAnotation.value().isAssignableFrom(clazz))
+				concurrencyCache.discardWithException(new InstantiationException(clazz + " must extends " + metaAnotation.value()));
 			result = (Generic) newInstance(clazz);
-		} catch (InstantiationException | IllegalAccessException e) {
-			throw new IllegalStateException(e);
-		}
+		} else if (metaAnotation != null)
+			result = (Generic) newInstance(metaAnotation.value());
+		else
+			result = (Generic) newInstance(Object.class);
 		put(result, generic);
 		return result;
+	}
+
+	protected Generic wrap(org.genericsystem.concurrency.Generic generic) {
+		return wrap(null, generic);
 	}
 
 	private void put(Generic mutable, org.genericsystem.concurrency.Generic generic) {
@@ -195,12 +177,17 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 	private final static ProxyFactory PROXY_FACTORY = new ProxyFactory();
 	private final static MethodFilter METHOD_FILTER = method -> method.getName().equals("getEngine");
 
-	<T> T newInstance(Class<T> clazz) throws InstantiationException, IllegalAccessException {
+	@SuppressWarnings("unchecked")
+	<T> T newInstance(Class<?> clazz) {
 		PROXY_FACTORY.setSuperclass(clazz);
 		if (!Generic.class.isAssignableFrom(clazz))
 			PROXY_FACTORY.setInterfaces(new Class[] { Generic.class });
-		T instance = (T) PROXY_FACTORY.createClass(METHOD_FILTER).newInstance();
-		((ProxyObject) instance).setHandler(engine);
-		return instance;
+		try {
+			T instance = (T) PROXY_FACTORY.createClass(METHOD_FILTER).newInstance();
+			((ProxyObject) instance).setHandler(engine);
+			return instance;
+		} catch (InstantiationException | IllegalAccessException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 }
