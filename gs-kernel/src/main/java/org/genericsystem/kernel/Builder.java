@@ -50,7 +50,7 @@ public class Builder<T extends AbstractVertex<T>> {
 	protected T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
 		context.getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
 		if (meta == null || meta.isMeta()) {
-			meta = setMeta(clazz, components.size());
+			meta = setMeta(meta == null ? clazz : null, components.size());
 			if (meta.equalsAndOverrides(meta, overrides, value, components))
 				context.discardWithException(new ExistsException("An equivalent instance already exists : " + meta.info()));
 		}
@@ -68,7 +68,7 @@ public class Builder<T extends AbstractVertex<T>> {
 	protected T setInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
 		context.getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
 		if (meta == null || meta.isMeta()) {
-			meta = setMeta(clazz, components.size());
+			meta = setMeta(meta == null ? clazz : null, components.size());
 			if (meta.equalsAndOverrides(meta, overrides, value, components))
 				return meta;
 		}
@@ -132,11 +132,6 @@ public class Builder<T extends AbstractVertex<T>> {
 
 	@SuppressWarnings("unchecked")
 	private T newT(Class<?> clazz, T meta) {
-		// System.out.println("clazz " + clazz + " / " + meta);
-		// if (meta == null) {
-		// System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAa");
-		// } else
-		// System.out.println(meta.info());
 		InstanceClass metaAnnotation = meta == null ? null : getAnnotedClass(meta).getAnnotation(InstanceClass.class);
 		if (metaAnnotation != null)
 			if (clazz == null || clazz.isAssignableFrom(metaAnnotation.value()))
