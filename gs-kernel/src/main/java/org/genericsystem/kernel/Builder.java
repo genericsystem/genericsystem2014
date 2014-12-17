@@ -10,7 +10,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
 import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.UnreachableOverridesException;
 import org.genericsystem.kernel.Vertex.SystemClass;
@@ -148,7 +147,7 @@ public class Builder<T extends AbstractVertex<T>> {
 				getContext().discardWithException(new InstantiationException(clazz + " must extends " + metaAnnotation.value()));
 
 		try {
-			return clazz == null || !getTClass().isAssignableFrom(clazz) ? getSystemTClass().newInstance() : (T) clazz.newInstance();
+			return clazz == null || !getTClass().isAssignableFrom(clazz) ? getTClass().newInstance() : (T) clazz.newInstance();
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
 			getContext().discardWithException(e);
 		}
