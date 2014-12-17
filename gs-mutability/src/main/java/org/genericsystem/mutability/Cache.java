@@ -64,16 +64,16 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 		Generic result = get(generic);
 		if (result != null)
 			return result;
-		InstanceClass metaAnotation = null;
+		InstanceClass instanceClassAnnotation = null;
 		Class<?> findByValue = generic.getRoot().findAnnotedClass(generic.getMeta());
 		if (findByValue != null)
-			metaAnotation = findByValue.getAnnotation(InstanceClass.class);
+			instanceClassAnnotation = findByValue.getAnnotation(InstanceClass.class);
 		if (clazz != null) {
-			if (metaAnotation != null && !metaAnotation.value().isAssignableFrom(clazz))
-				concurrencyCache.discardWithException(new InstantiationException(clazz + " must extends " + metaAnotation.value()));
+			if (instanceClassAnnotation != null && !instanceClassAnnotation.value().isAssignableFrom(clazz))
+				concurrencyCache.discardWithException(new InstantiationException(clazz + " must extends " + instanceClassAnnotation.value()));
 			result = (Generic) newInstance(clazz);
-		} else if (metaAnotation != null)
-			result = (Generic) newInstance(metaAnotation.value());
+		} else if (instanceClassAnnotation != null)
+			result = (Generic) newInstance(instanceClassAnnotation.value());
 		else
 			result = (Generic) newInstance(Object.class);
 		put(result, generic);
