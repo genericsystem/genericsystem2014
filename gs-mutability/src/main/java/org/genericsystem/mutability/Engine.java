@@ -1,11 +1,15 @@
 package org.genericsystem.mutability;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.List;
+
+import javassist.util.proxy.MethodHandler;
+
 import org.genericsystem.api.core.IRoot;
 import org.genericsystem.kernel.Statics;
 
-public class Engine implements Generic, IRoot<Generic> {
+public class Engine implements Generic, IRoot<Generic>,MethodHandler {
 
 	private final ThreadLocal<Cache> cacheLocal = new ThreadLocal<>();
 
@@ -27,6 +31,11 @@ public class Engine implements Generic, IRoot<Generic> {
 	public Engine(Serializable engineValue, String persistentDirectoryPath, Class<?>... userClasses) {
 		this.concurrencyEngine = new org.genericsystem.concurrency.Engine(persistentDirectoryPath, userClasses);
 		newCache().start();
+	}
+	
+	@Override
+	public Object invoke(Object self, Method m, Method proceed, Object[] args) throws Throwable {
+		return this;
 	}
 
 	@Override

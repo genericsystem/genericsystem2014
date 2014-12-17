@@ -178,22 +178,10 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 		proxyFactory.setSuperclass(clazz);
 		if(!Generic.class.isAssignableFrom(clazz))
 			proxyFactory.setInterfaces(new Class[] { Generic.class });
-		proxyFactory.setFilter(new MethodFilter() {
-			@Override
-			public boolean isHandled(Method m) {
-				return m.getName().equals("getEngine");
-			}
-		});
+		proxyFactory.setFilter(method->method.getName().equals("getEngine"));
 		Class<T> proxyClass = proxyFactory.createClass();
-		MethodHandler handler = new MethodHandler() {
-			@Override
-			public Object invoke(Object self, Method m, Method proceed, Object[] args) throws Throwable {
-				// Object o = proceed.invoke(self, args);
-				return engine;
-			}
-		};
 		T instance = proxyClass.newInstance();
-		((ProxyObject) instance).setHandler(handler);
+		((ProxyObject) instance).setHandler(engine);
 		return instance;
 	}
 }
