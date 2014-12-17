@@ -1,7 +1,5 @@
 package org.genericsystem.kernel;
 
-import java.util.Arrays;
-
 import org.testng.annotations.Test;
 
 @Test
@@ -11,13 +9,13 @@ public class MetasTests extends AbstractTest {
 		Root engine = new Root();
 
 		Vertex metaAttribute = engine.getMetaAttribute();
-		assert metaAttribute == engine.adjustMeta(engine.getValue(), Arrays.asList(engine));
+		assert metaAttribute == engine.getCurrentCache().getBuilder().adjustMeta(engine, engine.getValue(), engine);
 		assert metaAttribute.getMeta() == metaAttribute;
 		assert metaAttribute.isMeta();
 		assert metaAttribute.getBaseComponent().equals(engine);
 		assert metaAttribute.inheritsFrom(engine);
 		Vertex metaRelation = engine.getMetaAttribute().getInheritings().first();
-		assert metaRelation == engine.adjustMeta(engine.getValue(), Arrays.asList(engine, engine));
+		assert metaRelation == engine.getCurrentCache().getBuilder().adjustMeta(engine, engine.getValue(), engine, engine);
 		assert metaRelation.isMeta();
 		assert metaRelation.getBaseComponent().equals(engine);
 		assert metaRelation.getTargetComponent().equals(engine);
@@ -43,6 +41,5 @@ public class MetasTests extends AbstractTest {
 		assert engine.setInstance(engine.getValue(), engine).equals(engine.getMetaAttribute());
 		assert engine.setInstance(engine.getValue(), engine, engine).equals(engine.getMetaRelation());
 		assert engine.setInstance(engine.getValue(), engine, engine, engine).equals(engine.getCurrentCache().getMeta(3));
-
-	};
+	}
 }

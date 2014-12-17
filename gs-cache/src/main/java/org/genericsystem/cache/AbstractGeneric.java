@@ -59,10 +59,4 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 	@Override
 	protected abstract Dependencies<T> getCompositesDependencies();
 
-	// TODO remove this and tests of adjustMeta in cache layer ???
-	@SuppressWarnings("unchecked")
-	@Override
-	protected T adjustMeta(Serializable value, T... components) {
-		return super.adjustMeta(value, components);
-	}
 }

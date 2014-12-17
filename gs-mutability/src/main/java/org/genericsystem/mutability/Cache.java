@@ -9,9 +9,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
+
 import org.genericsystem.api.core.IContext;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.concurrency.Cache.ContextEventListener;
@@ -51,31 +53,23 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 		return result;
 	}
 
-	private Generic get(org.genericsystem.concurrency.Generic generic) {
-		Set<Generic> resultSet = reverseMultiMap.get(generic);
-		if (resultSet != null)
-			return resultSet.iterator().next();
-		return null;
-	}
-
 	protected Generic wrap(Class<?> clazz, org.genericsystem.concurrency.Generic generic) {
 		if (generic == null)
 			return null;
-		Generic result = get(generic);
-		if (result != null)
-			return result;
+		Set<Generic> resultSet = reverseMultiMap.get(generic);
+		if (resultSet != null)
+			return resultSet.iterator().next();
+		Generic result;
 		InstanceClass instanceClassAnnotation = null;
-		Class<?> findByValue = generic.getRoot().findAnnotedClass(generic.getMeta());
-		if (findByValue != null)
-			instanceClassAnnotation = findByValue.getAnnotation(InstanceClass.class);
+		Class<?> findAnnotedClass = generic.getRoot().findAnnotedClass(generic.getMeta());
+		if (findAnnotedClass != null)
+			instanceClassAnnotation = findAnnotedClass.getAnnotation(InstanceClass.class);
 		if (clazz != null) {
 			if (instanceClassAnnotation != null && !instanceClassAnnotation.value().isAssignableFrom(clazz))
 				concurrencyCache.discardWithException(new InstantiationException(clazz + " must extends " + instanceClassAnnotation.value()));
 			result = (Generic) newInstance(clazz);
-		} else if (instanceClassAnnotation != null)
-			result = (Generic) newInstance(instanceClassAnnotation.value());
-		else
-			result = (Generic) newInstance(Object.class);
+		} else
+			result = (Generic) newInstance(instanceClassAnnotation != null ? instanceClassAnnotation.value() : Object.class);
 		put(result, generic);
 		return result;
 	}

@@ -14,19 +14,19 @@ public interface DefaultDependencies<T extends AbstractVertex<T>> extends IVerte
 	@SuppressWarnings("unchecked")
 	@Override
 	default boolean isAlive() {
-		return getCurrentCache().isAlive((T)this);
+		return getCurrentCache().isAlive((T) this);
 	}
 
 	@Override
 	default boolean isAncestorOf(T dependency) {
 		return equals(dependency) || (!dependency.isMeta() && isAncestorOf(dependency.getMeta())) || dependency.getSupers().stream().anyMatch(this::isAncestorOf) || dependency.getComponents().stream().filter(x -> x != null).anyMatch(this::isAncestorOf);
 	}
-	
+
 	@Override
 	default Context<T> getCurrentCache() {
 		return (Context<T>) getRoot().getCurrentCache();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getInstances() {
@@ -71,6 +71,6 @@ public interface DefaultDependencies<T extends AbstractVertex<T>> extends IVerte
 	@SuppressWarnings("unchecked")
 	@Override
 	default T getInstance(List<T> overrides, Serializable value, T... components) {
-		return ((T) this).adjustMeta(value, Arrays.asList(components)).getDirectInstance(overrides, value, Arrays.asList(components));
+		return getCurrentCache().getBuilder().adjustMeta((T) this, value, components).getDirectInstance(overrides, value, Arrays.asList(components));
 	}
 }
