@@ -130,7 +130,7 @@ public class Checker<T extends AbstractVertex<T>> {
 	}
 
 	private void checkRemoveGenericAnnoted(boolean isOnAdd, T vertex) {
-		if (!isOnAdd && context.getBuilder().getClass(vertex).getAnnotation(SystemGeneric.class) != null)
+		if (!isOnAdd && context.getBuilder().getAnnotedClass(vertex).getAnnotation(SystemGeneric.class) != null)
 			getContext().discardWithException(new IllegalAccessException("@SystemGeneric annoted generic can't be removed"));
 	}
 

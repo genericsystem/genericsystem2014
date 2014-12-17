@@ -130,17 +130,14 @@ public class Builder<T extends AbstractVertex<T>> {
 		}
 	}
 
-	Class<?> getClass(T vertex) {
-		Class<?> vertexClass = vertex.getClass();
-		Class<?> findByValue = null;
-		if (vertexClass.isAssignableFrom(getSystemTClass()))
-			findByValue = context.getRoot().findByValue(vertex);
-		return findByValue == null ? vertexClass : findByValue;
-	}
-
 	@SuppressWarnings("unchecked")
 	private T newT(Class<?> clazz, T meta) {
-		InstanceClass metaAnnotation = meta == null ? null : getClass(meta).getAnnotation(InstanceClass.class);
+		// System.out.println("clazz " + clazz + " / " + meta);
+		// if (meta == null) {
+		// System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAa");
+		// } else
+		// System.out.println(meta.info());
+		InstanceClass metaAnnotation = meta == null ? null : getAnnotedClass(meta).getAnnotation(InstanceClass.class);
 		if (metaAnnotation != null)
 			if (clazz == null || clazz.isAssignableFrom(metaAnnotation.value()))
 				clazz = metaAnnotation.value();
@@ -157,6 +154,13 @@ public class Builder<T extends AbstractVertex<T>> {
 			getContext().discardWithException(e);
 		}
 		return null; // Not reached
+	}
+
+	Class<?> getAnnotedClass(T vertex) {
+		Class<?> vertexClass = vertex.getClass();
+		if (vertexClass.equals(context.getBuilder().getSystemTClass()))
+			return context.getRoot().findAnnotedClass(vertex);
+		return vertexClass;
 	}
 
 	private T rebuildAll(T toRebuild, Supplier<T> rebuilder, LinkedHashSet<T> dependenciesToRebuild) {

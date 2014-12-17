@@ -40,7 +40,7 @@ public class SystemCache<T extends AbstractVertex<T>> {
 	@SuppressWarnings("unchecked")
 	public SystemCache(DefaultRoot<T> root, Class<?> rootClass) {
 		this.root = root;
-		systemCache.put(rootClass, (T) root);
+		put(rootClass, (T) root);
 	}
 
 	public void mount(List<Class<?>> systemClasses, Class<?>... userClasses) {
@@ -60,19 +60,22 @@ public class SystemCache<T extends AbstractVertex<T>> {
 			return systemProperty;
 		}
 		T result = root.getCurrentCache().getBuilder().setInstance(clazz, setMeta(clazz), setOverrides(clazz), findValue(clazz), setComponents(clazz));
-		systemCache.put(clazz, result);
-		if (clazz != null)
-			reverseSystemCache.put(result, clazz);
+		put(clazz, result);
 		mountConstraints(clazz, result);
 		triggersDependencies(clazz);
 		return result;
+	}
+
+	private void put(Class<?> clazz, T vertex) {
+		systemCache.put(clazz, vertex);
+		reverseSystemCache.put(vertex, clazz);
 	}
 
 	public T get(Class<?> clazz) {
 		return systemCache.get(clazz);
 	}
 
-	public Class<?> getByValue(T vertex) {
+	public Class<?> getByVertex(T vertex) {
 		return reverseSystemCache.get(vertex);
 	}
 

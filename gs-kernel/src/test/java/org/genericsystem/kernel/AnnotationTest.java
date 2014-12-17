@@ -22,13 +22,13 @@ public class AnnotationTest extends AbstractTest {
 
 	public void test001() {
 		Root engine = new Root();
-		Vertex metaAttribut = engine.find(MetaAttribute.class);
+		Vertex metaAttribute = engine.find(MetaAttribute.class);
 		Class<Vertex> systemTClass = engine.getCurrentCache().getBuilder().getSystemTClass();
-		assert systemTClass.isAssignableFrom(metaAttribut.getClass()) : metaAttribut.getClass();
+		assert systemTClass.isAssignableFrom(metaAttribute.getClass()) : metaAttribute.getClass();
 		assert systemTClass.isAssignableFrom(engine.find(DefaultNoReferentialIntegrityProperty.class).getClass());
 		assert systemTClass.isAssignableFrom(engine.find(MetaRelation.class).getClass());
 		assert systemTClass.isAssignableFrom(engine.find(SystemMap.class).getClass());
-		metaAttribut.remove();
+		catchAndCheckCause(() -> engine.find(MetaRelation.class).remove(), IllegalAccessException.class);
 	}
 
 	public void test001_Vertex() {

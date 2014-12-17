@@ -51,8 +51,8 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 	}
 
 	@Override
-	public Class<?> findByValue(Vertex vertex) {
-		return systemCache.getByValue(vertex);
+	public Class<?> findAnnotedClass(Vertex vertex) {
+		return systemCache.getByVertex(vertex);
 	}
 
 	@Override

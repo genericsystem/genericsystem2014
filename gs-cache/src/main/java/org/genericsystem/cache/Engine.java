@@ -63,8 +63,8 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	}
 
 	@Override
-	public Class<?> findByValue(Generic generic) {
-		return systemCache.getByValue(generic);
+	public Class<?> findAnnotedClass(Generic generic) {
+		return systemCache.getByVertex(generic);
 	}
 
 	@Override

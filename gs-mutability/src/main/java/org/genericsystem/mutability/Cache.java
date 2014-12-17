@@ -60,7 +60,7 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 		if (result != null)
 			return result;
 		InstanceClass annotation = null;
-		Class<?> findByValue = generic.getRoot().findByValue(generic.getMeta());
+		Class<?> findByValue = generic.getRoot().findAnnotedClass(generic.getMeta());
 		if (findByValue != null)
 			annotation = findByValue.getAnnotation(InstanceClass.class);
 		if (annotation != null)

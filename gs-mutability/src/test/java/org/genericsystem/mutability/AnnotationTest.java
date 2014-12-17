@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.InstanceClass;
@@ -115,21 +116,24 @@ public class AnnotationTest extends AbstractTest {
 		catchAndCheckCause(() -> new Engine(MyMercedes.class), InstantiationException.class);
 	}
 
-	public static class VehicleInstance implements Generic {
+	public static class VehicleInstance {
 
 	}
 
 	@SystemGeneric
 	@Meta(VehicleType.class)
-	public static class MyAudi extends VehicleInstance {}
+	public static class MyAudi extends VehicleInstance {
+	}
 
 	@SystemGeneric
 	@Meta(VehicleType.class)
-	public static class MyBmw {}
+	public static class MyBmw {
+	}
 
 	@SystemGeneric
 	@Meta(VehicleType.class)
-	public static class MyMercedes {}
+	public static class MyMercedes {
+	}
 
 	@SystemGeneric
 	@InstanceClass(VehicleInstance.class)
@@ -362,46 +366,57 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	public static class Games {}
+	public static class Games {
+	}
 
 	@SystemGeneric
 	@Meta(Games.class)
-	public static class MyGames {}
+	public static class MyGames {
+	}
 
 	@SystemGeneric
 	@Meta(Games.class)
-	public static class MyGames2 {}
+	public static class MyGames2 {
+	}
 
 	@SystemGeneric
-	public static class Children {}
+	public static class Children {
+	}
 
 	@SystemGeneric
 	@Meta(Children.class)
-	public static class MyChildren {}
+	public static class MyChildren {
+	}
 
 	@SystemGeneric
 	@Supers({ Games.class, Children.class })
-	public static class ChildrenGames {}
+	public static class ChildrenGames {
+	}
 
 	@SystemGeneric
 	@Meta(ChildrenGames.class)
-	public static class MyChildrenGames {}
+	public static class MyChildrenGames {
+	}
 
 	@SystemGeneric
 	@Supers({ Human.class, Vehicle.class })
-	public static class Transformer {}
+	public static class Transformer {
+	}
 
 	@SystemGeneric
 	@Meta(Transformer.class)
-	public static class MyTransformer {}
+	public static class MyTransformer {
+	}
 
 	@SystemGeneric
 	@Supers({ Transformer.class, ChildrenGames.class })
-	public static class TransformerChildrenGames {}
+	public static class TransformerChildrenGames {
+	}
 
 	@SystemGeneric
 	@Meta(TransformerChildrenGames.class)
-	public static class MyTransformerChildrenGames {}
+	public static class MyTransformerChildrenGames {
+	}
 
 	@SystemGeneric
 	public static class GraphicComposite {
@@ -451,7 +466,8 @@ public class AnnotationTest extends AbstractTest {
 
 	@SystemGeneric
 	@Meta(Vehicle.class)
-	public static class MyVehicle {}
+	public static class MyVehicle {
+	}
 
 	@SystemGeneric
 	@Components(Vehicle.class)
@@ -475,7 +491,8 @@ public class AnnotationTest extends AbstractTest {
 
 	@SystemGeneric
 	@Meta(Car.class)
-	public static class myCar {}
+	public static class myCar {
+	}
 
 	@SystemGeneric
 	@Components(Car.class)
@@ -491,34 +508,42 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	public static class Human {}
+	public static class Human {
+	}
 
 	@SystemGeneric
-	public static class Man extends Human {}
+	public static class Man extends Human {
+	}
 
 	@SystemGeneric
 	@Meta(Human.class)
-	public static class Myck {}
+	public static class Myck {
+	}
 
 	@SystemGeneric
-	public static class Time {}
+	public static class Time {
+	}
 
 	@SystemGeneric
 	@Components({ Human.class, Vehicle.class })
-	public static class HumanPossessVehicle {}
+	public static class HumanPossessVehicle {
+	}
 
 	@SystemGeneric
 	@Components({ Human.class, Car.class })
 	@Supers(HumanPossessVehicle.class)
-	public static class HumanPossessCar extends HumanPossessVehicle {}
+	public static class HumanPossessCar extends HumanPossessVehicle {
+	}
 
 	@SystemGeneric
 	@Components({ Man.class, Car.class })
 	@Supers(HumanPossessVehicle.class)
-	public static class ManPossessCar extends HumanPossessVehicle {}
+	public static class ManPossessCar extends HumanPossessVehicle {
+	}
 
 	@SystemGeneric
 	@Components({ Human.class, Vehicle.class, Time.class })
-	public static class HumanPossessVehicleTime {}
+	public static class HumanPossessVehicleTime {
+	}
 
 }
