@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.genericsystem.api.exception.AmbiguousSelectionException;
 import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.UnreachableOverridesException;
 import org.genericsystem.kernel.Vertex.SystemClass;
@@ -49,12 +50,10 @@ public class Builder<T extends AbstractVertex<T>> {
 
 	protected T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
 		context.getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
-		if (meta == null || meta.isMeta()) {
-			meta = setMeta(meta == null ? clazz : null, components.size());
-			if (meta.equalsAndOverrides(meta, overrides, value, components))
-				context.discardWithException(new ExistsException("An equivalent instance already exists : " + meta.info()));
-		}
-		meta = getContext().adjustMeta(meta, value, components);
+		assert meta != null;
+		if (meta.isMeta())
+			meta = setMeta(components.size());
+		meta = adjustMeta(meta, value, components);
 		T equalsInstance = meta.getDirectInstance(value, components);
 		if (equalsInstance != null)
 			context.discardWithException(new ExistsException("An equivalent instance already exists : " + equalsInstance.info()));
@@ -67,12 +66,10 @@ public class Builder<T extends AbstractVertex<T>> {
 
 	protected T setInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
 		context.getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
-		if (meta == null || meta.isMeta()) {
-			meta = setMeta(meta == null ? clazz : null, components.size());
-			if (meta.equalsAndOverrides(meta, overrides, value, components))
-				return meta;
-		}
-		meta = getContext().adjustMeta(meta, value, components);
+		assert meta != null;
+		if (meta.isMeta())
+			meta = setMeta(components.size());
+		meta = adjustMeta(meta, value, components);
 		T equivInstance = meta.getDirectEquivInstance(value, components);
 		if (equivInstance != null && equivInstance.equalsAndOverrides(meta, overrides, value, components))
 			return equivInstance;
@@ -86,7 +83,7 @@ public class Builder<T extends AbstractVertex<T>> {
 	protected T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents) {
 		context.getChecker().checkBeforeBuild(update.getClass(), update.getMeta(), overrides, newValue, newComponents);
 		T meta = update.getMeta().isMeta() ? setMeta(update.getClass(), newComponents.size()) : update.getMeta();
-		T adjustedMeta = getContext().adjustMeta(meta, newValue, newComponents);
+		T adjustedMeta = adjustMeta(meta, newValue, newComponents);
 		Supplier<T> rebuilder = () -> {
 			T instance = adjustedMeta.getDirectInstance(newValue, newComponents);
 			if (instance != null) {
@@ -113,7 +110,7 @@ public class Builder<T extends AbstractVertex<T>> {
 				else {
 					List<T> overrides = oldDependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
 					List<T> components = oldDependency.getComponents().stream().map(x -> x != null ? convert(x) : null).collect(Collectors.toList());
-					T adjustedMeta = getContext().adjustMeta(convert(oldDependency.getMeta()), oldDependency.getValue(), components);
+					T adjustedMeta = adjustMeta(convert(oldDependency.getMeta()), oldDependency.getValue(), components);
 					List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, oldDependency.getValue(), components);
 					newDependency = getOrBuild(oldDependency.getClass(), adjustedMeta, supers, oldDependency.getValue(), components);
 				}
@@ -179,15 +176,49 @@ public class Builder<T extends AbstractVertex<T>> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private T setMeta(Class<?> clazz, int dim) {
+	T setMeta(Class<?> clazz, int dim) {
 		T root = (T) context.getRoot();
-		T adjustedMeta = getContext().adjustMeta(dim);
+		T adjustedMeta = adjustMeta(dim);
 		if (adjustedMeta.getComponents().size() == dim)
 			return adjustedMeta;
 		T[] components = newTArray(dim);
 		Arrays.fill(components, root);
 		return rebuildAll(null, () -> build(clazz, null, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)),
 				adjustedMeta.computePotentialDependencies(Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)));
+	}
+
+	@SuppressWarnings("unchecked")
+	T adjustMeta(int dim) {
+		return adjustMeta((T) context.getRoot(), dim);
+	}
+
+	private T adjustMeta(T meta, int dim) {
+		assert meta.isMeta();
+		int size = meta.getComponents().size();
+		if (size > dim)
+			return null;
+		if (size == dim)
+			return meta;
+		T directInheriting = meta.getInheritings().first();
+		return directInheriting != null && directInheriting.getComponents().size() <= dim ? adjustMeta(directInheriting, dim) : meta;
+	}
+
+	public T adjustMeta(T meta, Serializable value, @SuppressWarnings("unchecked") T... components) {
+		return adjustMeta(meta, value, Arrays.asList(components));
+	}
+
+	private T adjustMeta(T meta, Serializable value, List<T> components) {
+		T result = null;
+		if (!components.equals(meta.getComponents()))
+			for (T directInheriting : meta.getInheritings()) {
+				if (meta.componentsDepends(components, directInheriting.getComponents())) {
+					if (result == null)
+						result = directInheriting;
+					else
+						getContext().discardWithException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
+				}
+			}
+		return result == null ? meta : adjustMeta(result, value, components);
 	}
 
 	protected T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
