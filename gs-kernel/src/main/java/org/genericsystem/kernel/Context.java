@@ -1,9 +1,6 @@
 package org.genericsystem.kernel;
 
-import java.io.Serializable;
-import java.util.List;
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.api.exception.AmbiguousSelectionException;
 import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.RollbackException;
 
@@ -80,38 +77,8 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		return aliveMeta != null ? getInstances(aliveMeta).get(vertex) : null;
 	}
 
-	T adjustMeta(T meta, Serializable value, List<T> components) {
-		T result = null;
-		if (!components.equals(meta.getComponents()))
-			for (T directInheriting : meta.getInheritings()) {
-				if (meta.componentsDepends(components, directInheriting.getComponents())) {
-					if (result == null)
-						result = directInheriting;
-					else
-						discardWithException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
-				}
-			}
-		return result == null ? meta : adjustMeta(result, value, components);
-	}
-
-	private T adjustMeta(T meta, int dim) {
-		assert meta.isMeta();
-		int size = meta.getComponents().size();
-		if (size > dim)
-			return null;
-		if (size == dim)
-			return meta;
-		T directInheriting = meta.getInheritings().first();
-		return directInheriting != null && directInheriting.getComponents().size() <= dim ? adjustMeta(directInheriting, dim) : meta;
-	}
-
-	@SuppressWarnings("unchecked")
-	T adjustMeta(int dim) {
-		return adjustMeta((T) getRoot(), dim);
-	}
-
 	protected T getMeta(int dim) {
-		T adjustedMeta = adjustMeta(dim);
+		T adjustedMeta = getBuilder().adjustMeta(dim);
 		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
 	}
 
@@ -156,6 +123,7 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		return dependencies.remove(dependency);
 	}
 
-	protected void triggersMutation(T oldDependency, T newDependency) {}
+	protected void triggersMutation(T oldDependency, T newDependency) {
+	}
 
 }

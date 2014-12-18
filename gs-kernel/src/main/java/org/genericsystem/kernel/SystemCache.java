@@ -59,7 +59,11 @@ public class SystemCache<T extends AbstractVertex<T>> {
 			assert systemProperty.isAlive();
 			return systemProperty;
 		}
-		T result = root.getCurrentCache().getBuilder().setInstance(clazz, setMeta(clazz), setOverrides(clazz), findValue(clazz), setComponents(clazz));
+		T result;
+		if (setMeta(clazz) == null)
+			result = root.getCurrentCache().getBuilder().setMeta(clazz, setComponents(clazz).size());
+		else
+			result = root.getCurrentCache().getBuilder().setInstance(clazz, setMeta(clazz), setOverrides(clazz), findValue(clazz), setComponents(clazz));
 		put(clazz, result);
 		mountConstraints(clazz, result);
 		triggersDependencies(clazz);

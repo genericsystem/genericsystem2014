@@ -1,6 +1,5 @@
 package org.genericsystem.kernel;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import org.genericsystem.api.exception.CollisionException;
@@ -90,7 +89,7 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test001_AdjustMeta_MetaLevel_metaAttribut_NoComposite() {
 		Root engine = new Root();
-		assert engine == engine.adjustMeta("Power", Collections.emptyList());
+		assert engine == engine.getCurrentCache().getBuilder().adjustMeta(engine, "Power");
 	}
 
 	public void test002_AdjustMeta_MetaLevel_metaAttribut_OneComposite() {
@@ -98,7 +97,7 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex metaAttribute = engine.getMetaAttribute();
 		assert metaAttribute != null;
 		Vertex car = engine.addInstance("Car");
-		assert metaAttribute == engine.adjustMeta("Power", Collections.singletonList(car));
+		assert metaAttribute == engine.getCurrentCache().getBuilder().adjustMeta(engine, "Power", car);
 	}
 
 	public void test003_AdjustMeta_MetaLevel_metaAttribut_TwoComposites() {
@@ -106,7 +105,7 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex metaRelation = engine.getMetaRelation();
 		Vertex car = engine.addInstance("Car");
 		Vertex color = engine.addInstance("Color");
-		assert metaRelation == engine.adjustMeta("CarColor", Arrays.asList(car, color));
+		assert metaRelation == engine.getCurrentCache().getBuilder().adjustMeta(engine, "CarColor", car, color);
 	}
 
 	public void test004_AdjustMeta_MetaLevel_metaAttribut() {
@@ -114,21 +113,21 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex robot = engine.addInstance("Robot");
 		Vertex car = engine.addInstance("Car");
 		Vertex color = engine.addInstance("Color");
-		assert engine.getMetaRelation() == engine.adjustMeta("CarColor", Arrays.asList(car, color));
+		assert engine.getMetaRelation() == engine.getCurrentCache().getBuilder().adjustMeta(engine, "CarColor", car, color);
 		Vertex carColor = engine.addInstance("CarColor", car, color);
-		assert engine.getMetaAttribute() == engine.adjustMeta("Radio", Arrays.asList(car));
+		assert engine.getMetaAttribute() == engine.getCurrentCache().getBuilder().adjustMeta(engine, "Radio", car);
 	}
 
 	public void test005_AdjustMeta_MetaLevel_metaRelation_ThreeComposites() {
 		Root engine = new Root();
 		Vertex metaAttribute = engine.getMetaAttribute();
-		assert metaAttribute == engine.adjustMeta(engine.getValue(), Arrays.asList(engine));
+		assert metaAttribute == engine.getCurrentCache().getBuilder().adjustMeta(engine, engine.getValue(), engine);
 		Vertex metaRelation = engine.getMetaRelation();
 		Vertex car = engine.addInstance("Car");
 		Vertex color = engine.addInstance("Color");
 		Vertex carColor = engine.addInstance("CarColor", car, color);
 		Vertex finition = engine.addInstance("Finition");
-		assert metaRelation == engine.adjustMeta("CarColorFinition", Arrays.asList(car, color, finition));
+		assert metaRelation == engine.getCurrentCache().getBuilder().adjustMeta(engine, "CarColorFinition", car, color, finition);
 	}
 
 	public void test006_AdjustMeta_TypeLevel_Relation_TwoComposites() {
@@ -138,7 +137,7 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Vertex car = vehicle.addInstance("Car");
 		Vertex red = color.addInstance("Red");
-		assert vehicleColor == vehicleColor.adjustMeta("CarRed", Arrays.asList(car, red)) : engine.adjustMeta("CarRed", Arrays.asList(car, red));
+		assert vehicleColor == engine.getCurrentCache().getBuilder().adjustMeta(vehicleColor, "CarRed", car, red) : engine.getCurrentCache().getBuilder().adjustMeta(engine, "CarRed", car, red);
 	}
 
 	public void test007_AdjustMeta_TypeLevel_Relation_TwoComposites_oneCompositeSpecializedByInheritance() {
@@ -151,7 +150,7 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Vertex red = engine.addInstance(color, "red");
 		Vertex car = vehicle.addInstance("Car");
-		assert vehicleColor == vehicleColor.adjustMeta("CarRed", Arrays.asList(car, red)) : engine.adjustMeta("CarRed", Arrays.asList(car, red));
+		assert vehicleColor == engine.getCurrentCache().getBuilder().adjustMeta(vehicleColor, "CarRed", car, red) : engine.getCurrentCache().getBuilder().adjustMeta(engine, "CarRed", car, red);
 	}
 
 	public void test008_AdjustMeta_TypeLevel_Relation_TwoComposites_oneCompositeSpecializedByInstanciation() {
@@ -161,7 +160,7 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Vertex red = color.addInstance("red");
 		Vertex car = vehicle.addInstance("Car");
-		assert vehicleColor == vehicleColor.adjustMeta("CarRed", Arrays.asList(car, red)) : engine.adjustMeta("CarRed", Arrays.asList(car, red));
+		assert vehicleColor == engine.getCurrentCache().getBuilder().adjustMeta(vehicleColor, "CarRed", car, red) : engine.getCurrentCache().getBuilder().adjustMeta(engine, "CarRed", car, red);
 	}
 
 	public void test009_AdjustMeta_TypeLevel_Relation_TwoComposites_TwoCompositeSpecializedByInheritance() {
@@ -172,13 +171,13 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex vehicle2 = engine.addInstance(vehicle, "Vehicle2");
 		Vertex red = engine.addInstance(color, "red");
 		Vertex car = vehicle2.addInstance("Car");
-		assert vehicleColor == vehicleColor.adjustMeta("CarRed", Arrays.asList(car, red)) : engine.adjustMeta("CarRed", Arrays.asList(car, red));
+		assert vehicleColor == engine.getCurrentCache().getBuilder().adjustMeta(vehicleColor, "CarRed", car, red) : engine.getCurrentCache().getBuilder().adjustMeta(engine, "CarRed", car, red);
 	}
 
 	public void testMeta() {
 		Root engine = new Root();
-		assert engine.getMetaAttribute().equals(engine.adjustMeta(engine.getValue(), Arrays.asList(engine)));
-		assert engine.getMetaRelation().equals(engine.adjustMeta(engine.getValue(), Arrays.asList(engine, engine)));
+		assert engine.getMetaAttribute().equals(engine.getCurrentCache().getBuilder().adjustMeta(engine, engine.getValue(), engine));
+		assert engine.getMetaRelation().equals(engine.getCurrentCache().getBuilder().adjustMeta(engine, engine.getValue(), engine, engine));
 		System.out.println(engine.getMetaRelation().info());
 		System.out.println(engine.setInstance(engine.getValue(), engine, engine).info());
 		assert engine.getMetaRelation() == engine.setInstance(engine.getValue(), engine, engine);
@@ -194,7 +193,7 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex vehicle2 = engine.addInstance("Vehicle2");
 		Vertex red = color.addInstance("red");
 		Vertex car = vehicle2.addInstance("Car");
-		assert vehicleColor == vehicleColor.adjustMeta("CarRed", Arrays.asList(car, red)) : engine.adjustMeta("CarRed", Arrays.asList(car, red));
+		assert vehicleColor == engine.getCurrentCache().getBuilder().adjustMeta(vehicleColor, "CarRed", car, red) : engine.getCurrentCache().getBuilder().adjustMeta(engine, "CarRed", car, red);
 	}
 
 	public void test011_AdjustMeta_TypeLevel_Relation_TwoComposites_TwoCompositeSpecialized() {
@@ -205,7 +204,7 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex vehicle2 = engine.addInstance(vehicle, "Vehicle2");
 		Vertex red = color.addInstance("red");
 		Vertex car = vehicle2.addInstance("Car");
-		assert vehicleColor == vehicleColor.adjustMeta("CarRed", Arrays.asList(car, red)) : engine.adjustMeta("CarRed", Arrays.asList(car, red));
+		assert vehicleColor == engine.getCurrentCache().getBuilder().adjustMeta(vehicleColor, "CarRed", car, red) : engine.getCurrentCache().getBuilder().adjustMeta(engine, "CarRed", car, red);
 	}
 
 	public void test012_AdjustMeta_TypeLevel_Relation_ThreeComposites() {
@@ -218,7 +217,7 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex finition = engine.addInstance("Finition");
 		Vertex car = vehicle2.addInstance("Car");
 
-		assert vehicleColor == vehicleColor.adjustMeta("CarRed", Arrays.asList(car, red, finition)) : engine.adjustMeta("CarRed", Arrays.asList(car, red, finition));
+		assert vehicleColor == engine.getCurrentCache().getBuilder().adjustMeta(vehicleColor, "CarRed", car, red, finition) : engine.getCurrentCache().getBuilder().adjustMeta(engine, "CarRed", car, red, finition);
 	}
 
 	public void test013_AdjustMeta_TypeLevel_Relation_ThreeComposites() {
@@ -233,7 +232,7 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex finition = engine.addInstance("Finition");
 		Vertex myBmw = car.addInstance("myBmw");
 
-		assert carColor == vehicleColor.adjustMeta("CarRed", Arrays.asList(car, red, finition)) : engine.adjustMeta("CarRed", Arrays.asList(car, red, finition));
+		assert carColor == engine.getCurrentCache().getBuilder().adjustMeta(vehicleColor, "CarRed", car, red, finition) : engine.getCurrentCache().getBuilder().adjustMeta(engine, "CarRed", car, red, finition);
 	}
 
 	public void test020_AdjustMeta_TypeLevel_Attribute() {
@@ -241,7 +240,7 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex power = engine.addInstance("Power", engine);
 		Vertex car = engine.addInstance("Car", engine);
 		Vertex carPower = engine.addInstance(power, "carPower", engine);
-		assert carPower.equals(power.adjustMeta(235, Collections.singletonList(car)));
+		assert carPower.equals(engine.getCurrentCache().getBuilder().adjustMeta(power, 235, car));
 	}
 
 	public void testAdjustMetaValue() {

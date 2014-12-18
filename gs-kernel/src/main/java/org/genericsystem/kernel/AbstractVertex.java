@@ -132,15 +132,15 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		}.visit((T) this);
 	}
 
-	// TODO remove this
-	protected T adjustMeta(Serializable value, @SuppressWarnings("unchecked") T... components) {
-		return adjustMeta(value, Arrays.asList(components));
-	}
+	// // TODO remove this
+	// protected T adjustMeta(Serializable value, @SuppressWarnings("unchecked") T... components) {
+	// return adjustMeta(value, Arrays.asList(components));
+	// }
 
-	@SuppressWarnings("unchecked")
-	T adjustMeta(Serializable value, List<T> components) {
-		return getCurrentCache().adjustMeta((T) this, value, components);
-	}
+	// @SuppressWarnings("unchecked")
+	// T adjustMeta(Serializable value, List<T> components) {
+	// return getCurrentCache().adjustMeta((T) this, value, components);
+	// }
 
 	protected T getDirectInstance(Serializable value, List<T> components) {
 		for (T instance : getInstances())
@@ -159,7 +159,10 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 				|| (!isMeta() && getMeta().isDependencyOf(meta, supers, value, components)) || (!components.isEmpty() && componentsDepends(getComponents(), components) && supers.stream().anyMatch(override -> override.inheritsFrom(getMeta())));
 	}
 
+	@SuppressWarnings("unchecked")
 	T getDirectEquivInstance(Serializable value, List<T> components) {
+		if (equiv(this, value, components))
+			return (T) this;
 		for (T instance : getInstances())
 			if (instance.equiv(this, value, components))
 				return instance;
