@@ -2,9 +2,9 @@ package org.genericsystem.kernel;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.Random;
 
-import org.genericsystem.kernel.Archiver.OrderedDependencies;
 import org.testng.annotations.Test;
 
 @Test
@@ -135,8 +135,8 @@ public class PersistenceTest extends AbstractTest {
 	// }
 
 	private void compareGraph(Vertex persistedNode, Vertex readNode) {
-		OrderedDependencies<Vertex> persistVisit = new OrderedDependencies<Vertex>(0L).visit(persistedNode);
-		OrderedDependencies<Vertex> readVisit = new OrderedDependencies<Vertex>(0L).visit(readNode);
+		LinkedHashSet<Vertex> persistVisit = ((Transaction<Vertex>) persistedNode.getCurrentCache()).computeDependencies(persistedNode);
+		LinkedHashSet<Vertex> readVisit = ((Transaction<Vertex>) readNode.getCurrentCache()).computeDependencies(readNode);
 		assert persistVisit.size() == readVisit.size() : persistVisit + " \n " + readVisit;
 		for (Vertex persist : persistVisit) {
 			for (Vertex read : readVisit)

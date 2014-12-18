@@ -1,6 +1,8 @@
 package org.genericsystem.kernel;
 
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+
 import org.genericsystem.api.core.IteratorSnapshot;
 import org.genericsystem.api.core.Snapshot;
 
@@ -60,6 +62,24 @@ public class Transaction<T extends AbstractVertex<T>> extends Context<T> {
 				return vertex.getCompositesDependencies().get(o, getTs());
 			}
 		};
+	}
+
+	LinkedHashSet<T> computeDependencies(T node) {
+		return new OrderedDependencies().visit(node);
+	}
+
+	class OrderedDependencies extends LinkedHashSet<T> {
+		private static final long serialVersionUID = -5970021419012502402L;
+
+		OrderedDependencies visit(T node) {
+			if (!contains(node)) {
+				getComposites(node).forEach(this::visit);
+				getInheritings(node).forEach(this::visit);
+				getInstances(node).forEach(this::visit);
+				add(node);
+			}
+			return this;
+		}
 	}
 
 }

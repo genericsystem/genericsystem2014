@@ -109,15 +109,16 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		};
 	}
 
+	@SuppressWarnings("unchecked")
 	protected LinkedHashSet<T> computeDependencies() {
 		return new DependenciesComputer<T>() {
 			private static final long serialVersionUID = 4116681784718071815L;
 
 			@Override
 			boolean isSelected(T node) {
-				return isAncestorOf(node);
+				return AbstractVertex.this.isAncestorOf(node);
 			}
-		}.visit(getMeta());
+		}.visit((T) this);
 	}
 
 	@SuppressWarnings("unchecked")

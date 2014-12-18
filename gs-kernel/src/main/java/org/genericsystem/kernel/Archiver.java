@@ -16,8 +16,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -30,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -205,7 +204,6 @@ public class Archiver<T extends AbstractVertex<T>> {
 	public class Saver {
 
 		protected final ObjectOutputStream objectOutputStream;
-		// protected final long ts;
 		protected final Transaction<T> transaction;
 
 		protected Saver(ObjectOutputStream objectOutputStream, long ts) {
@@ -251,33 +249,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 
 		@SuppressWarnings("unchecked")
 		protected List<T> getOrderedVertices() {
-			return Statics.reverseCollections(new OrderedDependencies<T>(transaction.getTs()).visit((T) root));
-		}
-	}
-
-	public static class OrderedDependencies<T extends AbstractVertex<T>> extends LinkedHashSet<T> {
-		private static final long serialVersionUID = -5970021419012502402L;
-
-		private final long ts;
-
-		OrderedDependencies(long ts) {
-			this.ts = ts;
-		}
-
-		public OrderedDependencies<T> visit(T node) {
-			if (!contains(node)) {
-				Iterator<T> iterator = node.getCompositesDependencies().iterator(ts);
-				while (iterator.hasNext())
-					visit(iterator.next());
-				iterator = node.getInheritingsDependencies().iterator(ts);
-				while (iterator.hasNext())
-					visit(iterator.next());
-				iterator = node.getInstancesDependencies().iterator(ts);
-				while (iterator.hasNext())
-					visit(iterator.next());
-				add(node);
-			}
-			return this;
+			return Statics.reverseCollections(transaction.computeDependencies((T) root));
 		}
 	}
 
@@ -300,7 +272,8 @@ public class Archiver<T extends AbstractVertex<T>> {
 				Map<Long, T> vertexMap = new HashMap<>();
 				for (;;)
 					loadDependency(vertexMap);
-			} catch (EOFException ignore) {}
+			} catch (EOFException ignore) {
+			}
 		}
 
 		protected long loadId() throws IOException {
