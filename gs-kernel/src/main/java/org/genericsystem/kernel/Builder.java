@@ -40,7 +40,7 @@ public class Builder<T extends AbstractVertex<T>> {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected final T[] newTArray(int dim) {
+	final T[] newTArray(int dim) {
 		return (T[]) Array.newInstance(getTClass(), dim);
 	}
 
@@ -48,7 +48,7 @@ public class Builder<T extends AbstractVertex<T>> {
 		return newT(clazz, meta).init(meta, supers, value, components);
 	}
 
-	protected T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
+	T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
 		context.getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
 		T adjustedMeta = writeAdjustMeta(meta, value, components);
 		T equalsInstance = adjustedMeta.getDirectInstance(value, components);
@@ -57,7 +57,7 @@ public class Builder<T extends AbstractVertex<T>> {
 		return internalSetInstance(null, clazz, adjustedMeta, overrides, value, components);
 	}
 
-	protected T setInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
+	T setInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
 		context.getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
 		T adjustedMeta = writeAdjustMeta(meta, value, components);
 		T equivInstance = adjustedMeta.getDirectEquivInstance(value, components);
@@ -72,7 +72,7 @@ public class Builder<T extends AbstractVertex<T>> {
 		return rebuildAll(equivInstance, rebuilder, equivInstance == null ? ajustedMeta.computePotentialDependencies(supers, value, components) : equivInstance.computeDependencies());
 	}
 
-	protected T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents) {
+	T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents) {
 		context.getChecker().checkBeforeBuild(update.getClass(), update.getMeta(), overrides, newValue, newComponents);
 		T adjustedMeta = writeAdjustMeta(update.getMeta(), newValue, newComponents);
 		Supplier<T> rebuilder = () -> {
@@ -186,7 +186,7 @@ public class Builder<T extends AbstractVertex<T>> {
 		return writeAdjustMeta(meta, value, Arrays.asList(components));
 	}
 
-	T writeAdjustMeta(T meta, Serializable value, List<T> components) {
+	private T writeAdjustMeta(T meta, Serializable value, List<T> components) {
 		if (meta.isMeta())
 			meta = setMeta(null, components.size());
 		return readAdjustMeta(meta, value, components);
