@@ -67,8 +67,9 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return new DependenciesImpl<>();
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void forceRemove() {
-		computeDependencies().forEach(getCurrentCache()::unplug);
+		getCurrentCache().forceRemove((T) this);
 	}
 
 	@Override
@@ -106,11 +107,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 				}
 			}
 		});
-	}
-
-	@SuppressWarnings("unchecked")
-	protected Set<T> computeDependencies() {
-		return getCurrentCache().computeDependencies((T) this);
 	}
 
 	@SuppressWarnings("unchecked")

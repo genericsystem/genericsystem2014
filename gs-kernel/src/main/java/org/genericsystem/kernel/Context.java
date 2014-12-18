@@ -71,6 +71,10 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		generic.getComponents().stream().filter(component -> component != null).forEach(component -> unIndexComposite(component, generic));
 	}
 
+	protected void forceRemove(T generic) {
+		computeDependencies(generic).forEach(this::unplug);
+	}
+
 	private T getAlive(T vertex) {
 		if (vertex.isRoot())
 			return vertex;

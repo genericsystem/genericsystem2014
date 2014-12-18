@@ -69,7 +69,7 @@ public class Builder<T extends AbstractVertex<T>> {
 	private T internalSetInstance(T equivInstance, Class<?> clazz, T ajustedMeta, List<T> overrides, Serializable value, List<T> components) {
 		List<T> supers = computeAndCheckOverridesAreReached(ajustedMeta, overrides, value, components);
 		Supplier<T> rebuilder = () -> build(clazz, ajustedMeta, supers, value, components);
-		return rebuildAll(equivInstance, rebuilder, equivInstance == null ? ajustedMeta.computePotentialDependencies(supers, value, components) : equivInstance.computeDependencies());
+		return rebuildAll(equivInstance, rebuilder, equivInstance == null ? ajustedMeta.computePotentialDependencies(supers, value, components) : context.computeDependencies(equivInstance));
 	}
 
 	T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents) {
@@ -85,7 +85,7 @@ public class Builder<T extends AbstractVertex<T>> {
 			List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, newValue, newComponents);
 			return build(update.getClass(), adjustedMeta, supers, newValue, newComponents);
 		};
-		return rebuildAll(update, rebuilder, update.computeDependencies());
+		return rebuildAll(update, rebuilder, context.computeDependencies(update));
 	}
 
 	private class ConvertMap extends HashMap<T, T> {

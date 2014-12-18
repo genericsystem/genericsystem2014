@@ -21,10 +21,10 @@ public class RemovableServiceTest extends AbstractTest {
 		assert vehicle.isAlive();
 		assert !myVehicule.isAlive();
 		// assert engine.computeAllDependencies().stream().count() == 2;
-		assert engine.computeDependencies().contains(engine);
-		assert engine.computeDependencies().contains(vehicle);
-		assert vehicle.computeDependencies().stream().count() == 1;
-		assert vehicle.computeDependencies().contains(vehicle);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(engine);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(vehicle);
+		assert vehicle.getCurrentCache().computeDependencies(vehicle).stream().count() == 1;
+		assert vehicle.getCurrentCache().computeDependencies(vehicle).contains(vehicle);
 	}
 
 	public void test101_remove_instance_NormalStrategy() {
@@ -45,13 +45,13 @@ public class RemovableServiceTest extends AbstractTest {
 		assert !myVehicule2.isAlive();
 		assert myVehicule3.isAlive();
 		// assert engine.computeAllDependencies().stream().count() == 3;
-		assert engine.computeDependencies().contains(engine);
-		assert engine.computeDependencies().contains(vehicle);
-		assert vehicle.computeDependencies().stream().count() == 2;
-		assert vehicle.computeDependencies().contains(vehicle);
-		assert vehicle.computeDependencies().contains(myVehicule3);
-		assert myVehicule3.computeDependencies().stream().count() == 1;
-		assert myVehicule3.computeDependencies().contains(myVehicule3);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(engine);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(vehicle);
+		assert vehicle.getCurrentCache().computeDependencies(vehicle).stream().count() == 2;
+		assert vehicle.getCurrentCache().computeDependencies(vehicle).contains(vehicle);
+		assert vehicle.getCurrentCache().computeDependencies(vehicle).contains(myVehicule3);
+		assert myVehicule3.getCurrentCache().computeDependencies(myVehicule3).stream().count() == 1;
+		assert myVehicule3.getCurrentCache().computeDependencies(myVehicule3).contains(myVehicule3);
 	}
 
 	public void test102_remove_typeWithInstance() {
@@ -76,10 +76,10 @@ public class RemovableServiceTest extends AbstractTest {
 		assert vehicle.isAlive();
 		assert !car.isAlive();
 		// assert engine.computeAllDependencies().stream().count() == 2;
-		assert engine.computeDependencies().contains(engine);
-		assert engine.computeDependencies().contains(vehicle);
-		assert vehicle.computeDependencies().stream().count() == 1;
-		assert vehicle.computeDependencies().contains(vehicle);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(engine);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(vehicle);
+		assert vehicle.getCurrentCache().computeDependencies(vehicle).stream().count() == 1;
+		assert vehicle.getCurrentCache().computeDependencies(vehicle).contains(vehicle);
 	}
 
 	public void test104_remove_attribute() {
@@ -202,7 +202,7 @@ public class RemovableServiceTest extends AbstractTest {
 		// then
 		assert !vehicle.isAlive();
 		// assert engine.computeAllDependencies().stream().count() == 1;
-		assert engine.computeDependencies().contains(engine);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(engine);
 	}
 
 	public void test121_remove_typeWithInstance_ForceStrategy() {
@@ -217,7 +217,7 @@ public class RemovableServiceTest extends AbstractTest {
 		assert !vehicle.isAlive();
 		assert !myVehicle.isAlive();
 		// assert engine.computeAllDependencies().stream().count() == 1;
-		assert engine.computeDependencies().contains(engine);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(engine);
 	}
 
 	public void test122_remove_TypeWithSubType_ForceStrategy() {
@@ -233,7 +233,7 @@ public class RemovableServiceTest extends AbstractTest {
 		assert !vehicle.isAlive();
 		assert !car.isAlive();
 		// assert engine.computeAllDependencies().stream().count() == 1;
-		assert engine.computeDependencies().contains(engine);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(engine);
 	}
 
 	public void test123_remove_attribute_ForceStrategy() {
@@ -250,9 +250,9 @@ public class RemovableServiceTest extends AbstractTest {
 		assert !vehicle.isAlive();
 		assert !power.isAlive();
 		// assert engine.computeAllDependencies().stream().count() == 1;
-		assert engine.computeDependencies().contains(engine);
-		assert !engine.computeDependencies().contains(vehicle);
-		assert !engine.computeDependencies().contains(power);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(engine);
+		assert !engine.getCurrentCache().computeDependencies(engine).contains(vehicle);
+		assert !engine.getCurrentCache().computeDependencies(engine).contains(power);
 	}
 
 	public void test124_remove_relation_ForceStrategy() {
