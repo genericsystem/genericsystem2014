@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
-
 import org.genericsystem.concurrency.Generic.SystemClass;
 import org.genericsystem.kernel.Builder;
 
@@ -42,7 +41,7 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 		@SuppressWarnings("unchecked")
 		@Override
 		protected List<T> getOrderedVertices() {
-			return new ArrayList<>(new DependenciesOrder<T>(ts).visit((T) root));
+			return new ArrayList<>(new DependenciesOrder<T>(transaction.getTs()).visit((T) root));
 		}
 
 		// TODO remove this

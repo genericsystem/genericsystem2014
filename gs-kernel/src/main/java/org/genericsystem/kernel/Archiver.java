@@ -30,7 +30,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -206,11 +205,12 @@ public class Archiver<T extends AbstractVertex<T>> {
 	public class Saver {
 
 		protected final ObjectOutputStream objectOutputStream;
-		protected final long ts;
+		// protected final long ts;
+		protected final Transaction<T> transaction;
 
 		protected Saver(ObjectOutputStream objectOutputStream, long ts) {
 			this.objectOutputStream = objectOutputStream;
-			this.ts = ts;
+			this.transaction = new Transaction<>(root, ts);
 		}
 
 		private void saveSnapshot(File directory) throws IOException {
@@ -251,7 +251,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 
 		@SuppressWarnings("unchecked")
 		protected List<T> getOrderedVertices() {
-			return Statics.reverseCollections(new OrderedDependencies<T>(ts).visit((T) root));
+			return Statics.reverseCollections(new OrderedDependencies<T>(transaction.getTs()).visit((T) root));
 		}
 	}
 
@@ -280,7 +280,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 			return this;
 		}
 	}
-	
+
 	protected class Loader {
 
 		protected final ObjectInputStream objectInputStream;
@@ -300,8 +300,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 				Map<Long, T> vertexMap = new HashMap<>();
 				for (;;)
 					loadDependency(vertexMap);
-			} catch (EOFException ignore) {
-			}
+			} catch (EOFException ignore) {}
 		}
 
 		protected long loadId() throws IOException {
