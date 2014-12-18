@@ -6,13 +6,9 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.genericsystem.concurrency.Generic.SystemClass;
 import org.genericsystem.kernel.Builder;
-import org.genericsystem.kernel.DefaultRoot;
 
 public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.kernel.Archiver<T> {
 
@@ -42,39 +38,7 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 
 		@Override
 		protected org.genericsystem.kernel.Transaction<T> buildTransaction(long ts) {
-			return new TsTransaction(root, ts);
-		}
-
-		private class TsTransaction extends org.genericsystem.kernel.Transaction<T> {
-
-			protected TsTransaction(DefaultRoot<T> root, long ts) {
-				super(root, ts);
-			}
-
-			@Override
-			public Set<T> computeDependencies(T node) {
-				return new OrderedDependencies().visit(node);
-			}
-
-			private class OrderedDependencies extends TreeSet<T> {
-				private static final long serialVersionUID = -5970021419012502402L;
-
-				OrderedDependencies visit(T node) {
-					if (!contains(node)) {
-						getComposites(node).forEach(this::visit);
-						getInheritings(node).forEach(this::visit);
-						getInstances(node).forEach(this::visit);
-						add(node);
-					}
-					return this;
-				}
-			}
-
-		}
-
-		@Override
-		public TsTransaction getTransaction() {
-			return (Archiver<T>.Saver.TsTransaction) super.getTransaction();
+			return new Transaction<>((DefaultEngine<T>) root, ts);
 		}
 
 		@SuppressWarnings("unchecked")
@@ -103,6 +67,16 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 			super(objectInputStream);
 		}
 
+		@Override
+		protected Long[] loadOtherTs() throws IOException {
+			return new Long[] { objectInputStream.readLong(), objectInputStream.readLong(), objectInputStream.readLong() };
+		}
+
+		@Override
+		protected Transaction<T> buildTransaction() {
+			return new TsTransaction();
+		}
+
 		private class TsTransaction extends Transaction<T> {
 			TsTransaction() {
 				super((DefaultEngine<T>) root);
@@ -112,6 +86,13 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 			public T plug(T generic) {
 				return simplePlug(generic);
 			}
+
+			@Override
+			protected Builder<T> buildBuilder() {
+				return new TsBuilder();
+			}
+
+			// TODO checker
 
 			private class TsBuilder extends Builder<T> {
 				protected TsBuilder() {
@@ -135,7 +116,8 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 					return (Class<T>) SystemClass.class;
 				}
 
-				protected T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, Long designTs, Long[] otherTs) {
+				@Override
+				protected T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, Long designTs, Long... otherTs) {
 					T instance = meta == null ? getContext().getMeta(components.size()) : meta.getDirectInstance(value, components);
 					return instance == null ? build(clazz, meta, supers, value, components, designTs, otherTs) : instance.restore(designTs, otherTs[0], otherTs[1], otherTs[2]);
 				}
@@ -144,34 +126,6 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 					return getContext().plug(newT(clazz, meta, supers, value, components).restore(designTs, otherTs[0], otherTs[1], otherTs[2]));
 				}
 			}
-
-			@Override
-			protected Builder<T> buildBuilder() {
-				return new TsBuilder();
-			}
-
-			// TODO checker
-		}
-
-		@Override
-		protected void loadDependency(Map<Long, T> vertexMap) throws IOException, ClassNotFoundException {
-			Long id = loadId();
-			Long[] otherTs = loadOtherTs();
-			Serializable value = (Serializable) objectInputStream.readObject();
-			T meta = loadAncestor(vertexMap);
-			List<T> supers = loadAncestors(vertexMap);
-			List<T> components = loadAncestors(vertexMap);
-			vertexMap.put(id, ((TsTransaction.TsBuilder) ((TsTransaction) transaction).getBuilder()).getOrBuild(null, meta, supers, value, components, id, otherTs));
-			log.info("load dependency " + vertexMap.get(id).info() + " " + id);
-		}
-
-		@Override
-		protected Transaction<T> buildTransaction() {
-			return new TsTransaction();
-		}
-
-		protected Long[] loadOtherTs() throws IOException {
-			return new Long[] { objectInputStream.readLong(), objectInputStream.readLong(), objectInputStream.readLong() };
 		}
 	}
 }

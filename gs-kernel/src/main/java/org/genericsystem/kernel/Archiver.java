@@ -275,6 +275,10 @@ public class Archiver<T extends AbstractVertex<T>> {
 			return new Transaction<>(root, 0L);
 		}
 
+		public Transaction<T> getTransaction() {
+			return transaction;
+		}
+
 		private void loadSnapshot() throws ClassNotFoundException, IOException {
 			try {
 				Map<Long, T> vertexMap = new HashMap<>();
@@ -288,13 +292,18 @@ public class Archiver<T extends AbstractVertex<T>> {
 			return objectInputStream.readLong();
 		}
 
+		protected Long[] loadOtherTs() throws IOException {
+			return new Long[0];
+		}
+
 		protected void loadDependency(Map<Long, T> vertexMap) throws IOException, ClassNotFoundException {
 			Long id = loadId();
+			Long[] otherTs = loadOtherTs();
 			Serializable value = (Serializable) objectInputStream.readObject();
 			T meta = loadAncestor(vertexMap);
 			List<T> supers = loadAncestors(vertexMap);
 			List<T> components = loadAncestors(vertexMap);
-			vertexMap.put(id, transaction.getBuilder().getOrBuild(null, meta, supers, value, components));
+			vertexMap.put(id, transaction.getBuilder().getOrBuild(null, meta, supers, value, components, id, otherTs));
 			log.info("load dependency " + vertexMap.get(id).info() + " " + id);
 		}
 

@@ -1,6 +1,9 @@
 package org.genericsystem.concurrency;
 
 import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
@@ -9,7 +12,11 @@ import org.genericsystem.kernel.Builder;
 public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem.cache.Transaction<T> {
 
 	Transaction(DefaultEngine<T> engine) {
-		super(engine, engine.pickNewTs());
+		this(engine, engine.pickNewTs());
+	}
+
+	Transaction(DefaultEngine<T> engine, long ts) {
+		super(engine, ts);
 	}
 
 	@Override
@@ -50,6 +57,25 @@ public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem
 	@Override
 	protected T getMeta(int dim) {
 		return super.getMeta(dim);
+	}
+
+	@Override
+	public Set<T> computeDependencies(T node) {
+		return new OrderedDependencies().visit(node);
+	}
+
+	private class OrderedDependencies extends TreeSet<T> {
+		private static final long serialVersionUID = -5970021419012502402L;
+
+		OrderedDependencies visit(T node) {
+			if (!contains(node)) {
+				getComposites(node).forEach(this::visit);
+				getInheritings(node).forEach(this::visit);
+				getInstances(node).forEach(this::visit);
+				add(node);
+			}
+			return this;
+		}
 	}
 
 	private class LifeManagersLocker extends HashSet<LifeManager> {

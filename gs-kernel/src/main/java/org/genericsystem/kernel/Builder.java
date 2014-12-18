@@ -103,7 +103,8 @@ public class Builder<T extends AbstractVertex<T>> {
 					List<T> components = oldDependency.getComponents().stream().map(x -> x != null ? convert(x) : null).collect(Collectors.toList());
 					T adjustedMeta = readAdjustMeta(convert(oldDependency.getMeta()), oldDependency.getValue(), components);
 					List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, oldDependency.getValue(), components);
-					newDependency = getOrBuild(oldDependency.getClass(), adjustedMeta, supers, oldDependency.getValue(), components);
+					// TODO KK designTs
+					newDependency = getOrBuild(oldDependency.getClass(), adjustedMeta, supers, oldDependency.getValue(), components, 0L);
 				}
 				put(oldDependency, newDependency);// triggers mutation
 			}
@@ -206,7 +207,7 @@ public class Builder<T extends AbstractVertex<T>> {
 		return result == null ? meta : readAdjustMeta(result, value, components);
 	}
 
-	protected T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
+	protected T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, Long designTs, Long... otherTs) {
 		T instance = meta == null ? context.getMeta(components.size()) : meta.getDirectInstance(value, components);
 		return instance == null ? build(clazz, meta, supers, value, components) : instance;
 	}
