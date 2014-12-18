@@ -19,6 +19,10 @@ public interface DefaultEngine<T extends AbstractGeneric<T>> extends org.generic
 		return new Cache<>(subContext);
 	}
 
+	default Cache<T> newCache(Context<T> subContext, ContextEventListener<T> listener) {
+		return new Cache<>(subContext, listener);
+	}
+
 	@Override
 	public Cache<T> getCurrentCache();
 

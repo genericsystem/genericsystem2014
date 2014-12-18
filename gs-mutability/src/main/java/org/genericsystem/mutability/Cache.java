@@ -1,7 +1,9 @@
 package org.genericsystem.mutability;
 
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -9,11 +11,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
-
 import org.genericsystem.api.core.IContext;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.concurrency.Cache.ContextEventListener;
@@ -21,15 +21,19 @@ import org.genericsystem.kernel.annotations.InstanceClass;
 
 public class Cache implements IContext<Generic>, ContextEventListener<org.genericsystem.concurrency.Generic> {
 	private final Engine engine;
-	private final org.genericsystem.concurrency.Cache<org.genericsystem.concurrency.Generic> concurrencyCache;
+	private org.genericsystem.concurrency.Cache<org.genericsystem.concurrency.Generic> concurrencyCache;
 	private final Map<Generic, org.genericsystem.concurrency.Generic> mutabilityMap = new IdentityHashMap<>();
 	private final Map<org.genericsystem.concurrency.Generic, Set<Generic>> reverseMultiMap = new IdentityHashMap<>();
-	private Map<Generic, org.genericsystem.concurrency.Generic> revertMutations = new IdentityHashMap<>();
+
+	private Deque<Map<Generic, org.genericsystem.concurrency.Generic>> revertMutations = new ArrayDeque<>();
+
+	// private Map<Generic, org.genericsystem.concurrency.Generic> revertMutations = new IdentityHashMap<>();
 
 	public Cache(Engine engine, org.genericsystem.concurrency.Engine concurrencyEngine) {
 		this.engine = engine;
 		put(engine, concurrencyEngine);
 		this.concurrencyCache = concurrencyEngine.newCache(this);
+		revertMutations.push(new IdentityHashMap<>());
 	}
 
 	public Engine getRoot() {
@@ -90,8 +94,8 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 		Set<Generic> resultSet = reverseMultiMap.get(oldDependency);
 		if (resultSet != null) {
 			for (Generic mutable : resultSet) {
-				if (!revertMutations.containsKey(mutable))
-					revertMutations.put(mutable, oldDependency);
+				if (!revertMutations.peek().containsKey(mutable))
+					revertMutations.peek().put(mutable, oldDependency);
 				mutabilityMap.put(mutable, newDependency);
 			}
 			reverseMultiMap.remove(oldDependency);
@@ -114,7 +118,7 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 
 	@Override
 	public void triggersClearEvent() {
-		for (Entry<Generic, org.genericsystem.concurrency.Generic> entry : revertMutations.entrySet()) {
+		for (Entry<Generic, org.genericsystem.concurrency.Generic> entry : revertMutations.peek().entrySet()) {
 			org.genericsystem.concurrency.Generic newDependency = mutabilityMap.get(entry.getKey());
 			mutabilityMap.put(entry.getKey(), entry.getValue());
 			if (newDependency != null) {
@@ -128,6 +132,9 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 				set.add(entry.getKey());
 			}
 		}
+		revertMutations.pop();
+		revertMutations.push(new IdentityHashMap<>());
+
 	}
 
 	protected List<Generic> wrap(List<org.genericsystem.concurrency.Generic> listT) {
@@ -148,12 +155,12 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 
 	@Override
 	public void triggersFlushEvent() {
-		revertMutations = new IdentityHashMap<>();
+		revertMutations.push(new IdentityHashMap<>());
 	}
 
 	public boolean isAlive(Generic mutable) {
 		org.genericsystem.concurrency.Generic generic = mutabilityMap.get(mutable);
-		return mutabilityMap.get(mutable) != null && concurrencyCache.isAlive(generic);
+		return generic != null && concurrencyCache.isAlive(generic);
 	}
 
 	public void pickNewTs() {
@@ -184,5 +191,23 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 		}
 		((ProxyObject) instance).setHandler(engine);
 		return instance;
+	}
+
+	public Cache mountAndStartNewCache() {
+		concurrencyCache = concurrencyCache.mountAndStartNewCache();
+		revertMutations.push(new IdentityHashMap<>());
+		return this;
+	}
+
+	public Cache flushAndUnmount() {
+		concurrencyCache = concurrencyCache.flushAndUnmount();
+		revertMutations.pop();
+		return this;
+	}
+
+	public Cache clearAndUnmount() {
+		concurrencyCache = concurrencyCache.clearAndUnmount();
+		revertMutations.pop();
+		return this;
 	}
 }

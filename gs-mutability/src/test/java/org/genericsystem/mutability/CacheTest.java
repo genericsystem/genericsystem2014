@@ -1,9 +1,85 @@
 package org.genericsystem.mutability;
 
+import java.util.stream.Collectors;
+import org.genericsystem.api.exception.CacheNoStartedException;
 import org.testng.annotations.Test;
 
 @Test
 public class CacheTest extends AbstractTest {
+
+	public void test000() {
+		Engine engine = new Engine();
+		Cache cache = engine.getCurrentCache();
+		Generic vehicle = engine.addInstance("Vehicle");
+		assert vehicle.isAlive();
+		cache.flush();
+		assert vehicle.isAlive();
+		cache.flush();
+		assert vehicle.isAlive();
+		cache.clear();
+		assert vehicle.isAlive();
+		cache.clear();
+		assert vehicle.isAlive();
+	}
+
+	public void test001() {
+		Engine engine = new Engine();
+		Cache cache = engine.getCurrentCache();
+		Generic vehicle = engine.addInstance("Vehicle");
+		assert vehicle.isAlive();
+		cache.clear();
+		assert !vehicle.isAlive();
+		cache.flush();
+		assert !vehicle.isAlive();
+		cache.clear();
+		assert !vehicle.isAlive();
+	}
+
+	public void test002() {
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		assert vehicle.isAlive();
+		engine.getCurrentCache().mountAndStartNewCache();
+		assert vehicle.isAlive();
+		engine.getCurrentCache().clearAndUnmount();
+		assert vehicle.isAlive();
+	}
+
+	public void test003() {
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		assert vehicle.isAlive();
+		engine.getCurrentCache().mountAndStartNewCache();
+		vehicle.remove();
+		assert !vehicle.isAlive();
+		engine.getCurrentCache().clearAndUnmount();
+		assert vehicle.isAlive();
+	}
+
+	public void test004() {
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		assert vehicle.isAlive();
+		engine.getCurrentCache().mountAndStartNewCache();
+		assert vehicle.isAlive();
+		Generic generic = vehicle.update("Vehicle2");
+		assert generic == vehicle;
+		assert "Vehicle2".equals(vehicle.getValue());
+		assert vehicle.isAlive();
+		engine.getCurrentCache().clearAndUnmount();
+		assert vehicle.isAlive();
+		assert "Vehicle".equals(vehicle.getValue());
+	}
+
+	public void test005() {
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		assert vehicle.isAlive();
+		Generic generic = vehicle.update("Vehicle2");
+		assert generic == vehicle;
+		assert "Vehicle2".equals(vehicle.getValue());
+		assert vehicle.isAlive();
+	}
 
 	public void test001_getInheritings() {
 		Engine engine = new Engine();
@@ -72,43 +148,43 @@ public class CacheTest extends AbstractTest {
 		assert !engine.getInstances().get().anyMatch(g -> g.equals(vehicle));
 	}
 
-	// public void test001_mountNewCache_nostarted() {
-	// Engine engine = new Engine();
-	// Cache currentCache = engine.getCurrentCache();
-	// Cache mountNewCache = currentCache.mountAndStartNewCache();
-	// currentCache.start();
-	//
-	// catchAndCheckCause(() -> mountNewCache.flush(), CacheNoStartedException.class);
-	// }
-	//
-	// public void test002_mountNewCache() {
-	// Engine engine = new Engine();
-	// Cache cache = engine.newCache().start();
-	// Cache currentCache = engine.getCurrentCache();
-	// assert cache == currentCache;
-	// Cache mountNewCache = currentCache.mountAndStartNewCache();
-	// assert mountNewCache.getSubContext() == currentCache;
-	// assert mountNewCache != currentCache;
-	// engine.addInstance("Vehicle");
-	// assert currentCache == mountNewCache.flushAndUnmount();
-	// currentCache.flush();
-	// }
-	//
-	// public void test005_TwoComponentsWithSameMetaInDifferentCaches_remove() {
-	// Engine engine = new Engine();
-	// Cache currentCache = engine.getCurrentCache();
-	// Generic vehicle = engine.addInstance("Vehicle");
-	// Generic vehiclePower = engine.addInstance("vehiclePower", vehicle);
-	// Cache mountNewCache = currentCache.mountAndStartNewCache();
-	// assert engine.getCurrentCache() == mountNewCache;
-	// assert vehiclePower.isAlive();
-	// assert !vehicle.getComposites().isEmpty() : vehicle.getComposites().get().collect(Collectors.toList());
-	// vehiclePower.remove();
-	// assert !vehiclePower.isAlive();
-	// assert vehicle.getComposites().isEmpty() : vehicle.getComposites().get().collect(Collectors.toList());
-	// mountNewCache.flush();
-	// assert vehicle.isAlive();
-	// assert !vehiclePower.isAlive();
-	// assert vehicle.getComposites().isEmpty() : vehicle.getComposites().get().collect(Collectors.toList());
-	// }
+	public void test001_mountNewCache_nostarted() {
+		Engine engine = new Engine();
+		Cache currentCache = engine.getCurrentCache();
+		Cache mountNewCache = currentCache.mountAndStartNewCache();
+		currentCache.start();
+
+		catchAndCheckCause(() -> mountNewCache.flush(), CacheNoStartedException.class);
+	}
+
+	public void test002_mountNewCache() {
+		Engine engine = new Engine();
+		Cache cache = engine.newCache().start();
+		Cache currentCache = engine.getCurrentCache();
+		assert cache == currentCache;
+		Cache mountNewCache = currentCache.mountAndStartNewCache();
+		// assert mountNewCache.getSubContext() == currentCache;
+		// assert mountNewCache != currentCache;
+		engine.addInstance("Vehicle");
+		assert currentCache == mountNewCache.flushAndUnmount();
+		currentCache.flush();
+	}
+
+	public void test005_TwoComponentsWithSameMetaInDifferentCaches_remove() {
+		Engine engine = new Engine();
+		Cache currentCache = engine.getCurrentCache();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic vehiclePower = engine.addInstance("vehiclePower", vehicle);
+		Cache mountNewCache = currentCache.mountAndStartNewCache();
+		assert engine.getCurrentCache() == mountNewCache;
+		assert vehiclePower.isAlive();
+		assert !vehicle.getComposites().isEmpty() : vehicle.getComposites().get().collect(Collectors.toList());
+		vehiclePower.remove();
+		assert !vehiclePower.isAlive();
+		assert vehicle.getComposites().isEmpty() : vehicle.getComposites().get().collect(Collectors.toList());
+		mountNewCache.flush();
+		assert vehicle.isAlive();
+		assert !vehiclePower.isAlive();
+		assert vehicle.getComposites().isEmpty() : vehicle.getComposites().get().collect(Collectors.toList());
+	}
 }

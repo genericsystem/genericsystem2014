@@ -1,12 +1,59 @@
 package org.genericsystem.cache;
 
 import java.util.stream.Collectors;
-
 import org.genericsystem.api.exception.CacheNoStartedException;
 import org.testng.annotations.Test;
 
 @Test
 public class CacheTest extends AbstractTest {
+	public void test000() {
+		Engine engine = new Engine();
+		Cache cache = engine.getCurrentCache();
+		Generic vehicle = engine.addInstance("Vehicle");
+		assert vehicle.isAlive();
+		cache.flush();
+		assert vehicle.isAlive();
+		cache.flush();
+		assert vehicle.isAlive();
+		cache.clear();
+		assert vehicle.isAlive();
+		cache.clear();
+		assert vehicle.isAlive();
+	}
+
+	public void test001() {
+		Engine engine = new Engine();
+		Cache cache = engine.getCurrentCache();
+		Generic vehicle = engine.addInstance("Vehicle");
+		assert vehicle.isAlive();
+		cache.clear();
+		assert !vehicle.isAlive();
+		cache.flush();
+		assert !vehicle.isAlive();
+		cache.clear();
+		assert !vehicle.isAlive();
+	}
+
+	public void test002() {
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		assert vehicle.isAlive();
+		engine.getCurrentCache().mountAndStartNewCache();
+		assert vehicle.isAlive();
+		engine.getCurrentCache().clearAndUnmount();
+		assert vehicle.isAlive();
+	}
+
+	public void test003() {
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		assert vehicle.isAlive();
+		engine.getCurrentCache().mountAndStartNewCache();
+		vehicle.remove();
+		assert !vehicle.isAlive();
+		engine.getCurrentCache().clearAndUnmount();
+		assert vehicle.isAlive();
+	}
 
 	public void test001_getInheritings() {
 		Engine engine = new Engine();
