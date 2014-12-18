@@ -208,7 +208,15 @@ public class Archiver<T extends AbstractVertex<T>> {
 
 		protected Saver(ObjectOutputStream objectOutputStream, long ts) {
 			this.objectOutputStream = objectOutputStream;
-			this.transaction = new Transaction<>(root, ts);
+			this.transaction = buildTransaction(ts);
+		}
+
+		protected Transaction<T> buildTransaction(long ts) {
+			return new Transaction<>(root, ts);
+		}
+
+		public Transaction<T> getTransaction() {
+			return transaction;
 		}
 
 		private void saveSnapshot(File directory) throws IOException {

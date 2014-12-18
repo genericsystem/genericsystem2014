@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import org.genericsystem.concurrency.Archiver.DependenciesOrder;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.annotations.SystemGeneric;
 import org.testng.annotations.Test;
@@ -172,8 +171,8 @@ public class PersistenceTest extends AbstractTest {
 	}
 
 	private void compareGraph(Generic persistedNode, Generic readNode, long ts) {
-		List<Generic> persistVisit = new ArrayList<>(new DependenciesOrder<Generic>(ts).visit(persistedNode));
-		List<Generic> readVisit = new ArrayList<>(new DependenciesOrder<Generic>(ts).visit(readNode));
+		List<Generic> persistVisit = new ArrayList<>(persistedNode.getCurrentCache().computeDependencies(persistedNode));
+		List<Generic> readVisit = new ArrayList<>(readNode.getCurrentCache().computeDependencies(readNode));
 		assert persistVisit.size() == readVisit.size() : persistVisit + " \n " + readVisit;
 		for (int i = 0; i < persistVisit.size(); i++) {
 			LifeManager persistLifeManager = persistVisit.get(i).getLifeManager();

@@ -5,12 +5,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
+
 import org.genericsystem.concurrency.Generic.SystemClass;
 import org.genericsystem.kernel.Builder;
+import org.genericsystem.kernel.DefaultRoot;
 
 public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.kernel.Archiver<T> {
 
@@ -38,10 +39,42 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 			super(outputStream, ts);
 		}
 
+		@Override
+		protected org.genericsystem.kernel.Transaction<T> buildTransaction(long ts) {
+			return new TsTransaction(root, ts);
+		}
+
+		private class TsTransaction extends org.genericsystem.kernel.Transaction<T> {
+
+			protected TsTransaction(DefaultRoot<T> root, long ts) {
+				super(root, ts);
+			}
+
+			public class OrderedDependencies extends TreeSet<T> {
+				private static final long serialVersionUID = -5970021419012502402L;
+
+				OrderedDependencies visit(T node) {
+					if (!contains(node)) {
+						getComposites(node).forEach(this::visit);
+						getInheritings(node).forEach(this::visit);
+						getInstances(node).forEach(this::visit);
+						add(node);
+					}
+					return this;
+				}
+			}
+
+		}
+
+		@Override
+		public TsTransaction getTransaction() {
+			return (Archiver<T>.Saver.TsTransaction) super.getTransaction();
+		}
+
 		@SuppressWarnings("unchecked")
 		@Override
 		protected List<T> getOrderedVertices() {
-			return new ArrayList<>(new DependenciesOrder<T>(transaction.getTs()).visit((T) root));
+			return new ArrayList<>(getTransaction().new OrderedDependencies().visit((T) root));
 		}
 
 		// TODO remove this
@@ -56,32 +89,6 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 		@Override
 		protected void writeAncestorId(T ancestor) throws IOException {
 			objectOutputStream.writeLong(ancestor != null ? ancestor.getLifeManager().getDesignTs() : -1L);
-		}
-	}
-
-	protected static class DependenciesOrder<T extends AbstractGeneric<T>> extends TreeSet<T> {
-		private static final long serialVersionUID = -5970021419012502402L;
-
-		private final long ts;
-
-		DependenciesOrder(long ts) {
-			this.ts = ts;
-		}
-
-		DependenciesOrder<T> visit(T node) {
-			if (!contains(node)) {
-				Iterator<T> iterator = node.getCompositesDependencies().iterator(ts);
-				while (iterator.hasNext())
-					visit(iterator.next());
-				iterator = node.getInheritingsDependencies().iterator(ts);
-				while (iterator.hasNext())
-					visit(iterator.next());
-				iterator = node.getInstancesDependencies().iterator(ts);
-				while (iterator.hasNext())
-					visit(iterator.next());
-				add(node);
-			}
-			return this;
 		}
 	}
 

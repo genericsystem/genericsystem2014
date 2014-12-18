@@ -3,6 +3,7 @@ package org.genericsystem.kernel;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
 import org.testng.annotations.Test;
 
@@ -204,7 +205,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		// assert engine.getAllInstances().count() == 2;
 
 		Vertex newVehicle = engine.getInstance("Vehicle");
-		assert newVehicle.getInheritings().size() == 1 : newVehicle.getInheritings().info() ;
+		assert newVehicle.getInheritings().size() == 1 : newVehicle.getInheritings().info();
 		assert engine.getInstance("Car").getSupers().size() == 1;
 	}
 

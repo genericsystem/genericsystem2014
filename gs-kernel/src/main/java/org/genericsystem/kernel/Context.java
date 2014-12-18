@@ -131,7 +131,7 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 	protected void triggersMutation(T oldDependency, T newDependency) {
 	}
 
-	LinkedHashSet<T> computeDependencies(T node) {
+	public LinkedHashSet<T> computeDependencies(T node) {
 		return new OrderedDependencies().visit(node);
 	}
 
