@@ -8,6 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.genericsystem.api.core.ISignature;
@@ -108,12 +109,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	@SuppressWarnings("unchecked")
-	protected LinkedHashSet<T> computeDependencies() {
+	protected Set<T> computeDependencies() {
 		return getCurrentCache().computeDependencies((T) this);
 	}
 
 	@SuppressWarnings("unchecked")
-	protected LinkedHashSet<T> computePotentialDependencies(List<T> supers, Serializable value, List<T> components) {
+	protected Set<T> computePotentialDependencies(List<T> supers, Serializable value, List<T> components) {
 		return new PotentialDependenciesComputer<T>() {
 			private static final long serialVersionUID = -3611136800445783634L;
 

@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.genericsystem.concurrency.Generic.SystemClass;
@@ -50,7 +51,12 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 				super(root, ts);
 			}
 
-			public class OrderedDependencies extends TreeSet<T> {
+			@Override
+			public Set<T> computeDependencies(T node) {
+				return new OrderedDependencies().visit(node);
+			}
+
+			private class OrderedDependencies extends TreeSet<T> {
 				private static final long serialVersionUID = -5970021419012502402L;
 
 				OrderedDependencies visit(T node) {
@@ -74,7 +80,7 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 		@SuppressWarnings("unchecked")
 		@Override
 		protected List<T> getOrderedVertices() {
-			return new ArrayList<>(getTransaction().new OrderedDependencies().visit((T) root));
+			return new ArrayList<>(getTransaction().computeDependencies((T) root));
 		}
 
 		// TODO remove this

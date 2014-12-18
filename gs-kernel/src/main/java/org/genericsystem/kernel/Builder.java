@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -146,7 +146,7 @@ public class Builder<T extends AbstractVertex<T>> {
 		return vertexClass;
 	}
 
-	private T rebuildAll(T toRebuild, Supplier<T> rebuilder, LinkedHashSet<T> dependenciesToRebuild) {
+	private T rebuildAll(T toRebuild, Supplier<T> rebuilder, Set<T> dependenciesToRebuild) {
 		dependenciesToRebuild.forEach(context::unplug);
 		T build = rebuilder.get();
 		dependenciesToRebuild.remove(toRebuild);

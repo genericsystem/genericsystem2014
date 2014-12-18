@@ -2,8 +2,8 @@ package org.genericsystem.kernel;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.Random;
+import java.util.Set;
 
 import org.testng.annotations.Test;
 
@@ -135,8 +135,8 @@ public class PersistenceTest extends AbstractTest {
 	// }
 
 	private void compareGraph(Vertex persistedNode, Vertex readNode) {
-		LinkedHashSet<Vertex> persistVisit = persistedNode.getCurrentCache().computeDependencies(persistedNode);
-		LinkedHashSet<Vertex> readVisit = readNode.getCurrentCache().computeDependencies(readNode);
+		Set<Vertex> persistVisit = persistedNode.getCurrentCache().computeDependencies(persistedNode);
+		Set<Vertex> readVisit = readNode.getCurrentCache().computeDependencies(readNode);
 		assert persistVisit.size() == readVisit.size() : persistVisit + " \n " + readVisit;
 		for (Vertex persist : persistVisit) {
 			for (Vertex read : readVisit)

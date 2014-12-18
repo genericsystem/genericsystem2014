@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.NotFoundException;
@@ -131,7 +132,7 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 	protected void triggersMutation(T oldDependency, T newDependency) {
 	}
 
-	public LinkedHashSet<T> computeDependencies(T node) {
+	public Set<T> computeDependencies(T node) {
 		return new OrderedDependencies().visit(node);
 	}
 

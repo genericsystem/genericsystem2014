@@ -1,8 +1,8 @@
 package org.genericsystem.cache;
 
 import java.io.Serializable;
-import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
@@ -20,7 +20,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 	}
 
 	@Override
-	protected LinkedHashSet<T> computeDependencies() {
+	protected Set<T> computeDependencies() {
 		return super.computeDependencies();
 	}
 
