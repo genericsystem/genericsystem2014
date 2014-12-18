@@ -1,5 +1,9 @@
 package org.genericsystem.kernel;
 
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+
+import org.genericsystem.api.core.IteratorSnapshot;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.RollbackException;
@@ -17,6 +21,8 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		this.checker = buildChecker();
 		this.builder = buildBuilder();
 	}
+
+	public abstract long getTs();
 
 	protected Checker<T> buildChecker() {
 		return new Checker<>(this);
@@ -84,13 +90,49 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 	}
 
 	@Override
-	public abstract Snapshot<T> getInstances(T vertex);
+	public Snapshot<T> getInstances(T vertex) {
+		return new IteratorSnapshot<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return vertex.getInstancesDependencies().iterator(getTs());
+			}
+
+			@Override
+			public T get(Object o) {
+				return vertex.getInstancesDependencies().get(o, getTs());
+			}
+		};
+	}
 
 	@Override
-	public abstract Snapshot<T> getInheritings(T vertex);
+	public Snapshot<T> getInheritings(T vertex) {
+		return new IteratorSnapshot<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return vertex.getInheritingsDependencies().iterator(getTs());
+			}
+
+			@Override
+			public T get(Object o) {
+				return vertex.getInheritingsDependencies().get(o, getTs());
+			}
+		};
+	}
 
 	@Override
-	public abstract Snapshot<T> getComposites(T vertex);
+	public Snapshot<T> getComposites(T vertex) {
+		return new IteratorSnapshot<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				return vertex.getCompositesDependencies().iterator(getTs());
+			}
+
+			@Override
+			public T get(Object o) {
+				return vertex.getCompositesDependencies().get(o, getTs());
+			}
+		};
+	}
 
 	protected void indexInstance(T generic, T instance) {
 		index(generic.getInstancesDependencies(), instance);
@@ -125,6 +167,24 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 	}
 
 	protected void triggersMutation(T oldDependency, T newDependency) {
+	}
+
+	LinkedHashSet<T> computeDependencies(T node) {
+		return new OrderedDependencies().visit(node);
+	}
+
+	class OrderedDependencies extends LinkedHashSet<T> {
+		private static final long serialVersionUID = -5970021419012502402L;
+
+		OrderedDependencies visit(T node) {
+			if (!contains(node)) {
+				getComposites(node).forEach(this::visit);
+				getInheritings(node).forEach(this::visit);
+				getInstances(node).forEach(this::visit);
+				add(node);
+			}
+			return this;
+		}
 	}
 
 }

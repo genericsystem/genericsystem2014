@@ -19,7 +19,8 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 	}
 
 	protected Cache(Context<T> subContext) {
-		this(subContext, new ContextEventListener<T>() {});
+		this(subContext, new ContextEventListener<T>() {
+		});
 	}
 
 	protected Cache(Context<T> subContext, ContextEventListener<T> listener) {
@@ -68,11 +69,6 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 	protected void triggersMutation(T oldDependency, T newDependency) {
 		if (listener != null)
 			listener.triggersMutationEvent(oldDependency, newDependency);
-	}
-
-	public long getTs() {
-		DefaultContext<T> context = getSubContext();
-		return context instanceof Cache ? ((Cache<?>) context).getTs() : ((Transaction<?>) context).getTs();
 	}
 
 	@Override
@@ -153,12 +149,16 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 
 	public static interface ContextEventListener<X> {
 
-		default void triggersMutationEvent(X oldDependency, X newDependency) {}
+		default void triggersMutationEvent(X oldDependency, X newDependency) {
+		}
 
-		default void triggersRefreshEvent() {}
+		default void triggersRefreshEvent() {
+		}
 
-		default void triggersClearEvent() {}
+		default void triggersClearEvent() {
+		}
 
-		default void triggersFlushEvent() {}
+		default void triggersFlushEvent() {
+		}
 	}
 }

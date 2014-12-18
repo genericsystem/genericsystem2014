@@ -4,13 +4,13 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-abstract class DependenciesComputer<T extends AbstractVertex<T>> extends LinkedHashSet<T> {
+abstract class PotentialDependenciesComputer<T extends AbstractVertex<T>> extends LinkedHashSet<T> {
 	private static final long serialVersionUID = -5970021419012502402L;
 	private final Set<T> alreadyVisited = new HashSet<>();
 
 	abstract boolean isSelected(T node);
 
-	DependenciesComputer<T> visit(T node) {
+	PotentialDependenciesComputer<T> visit(T node) {
 		if (!alreadyVisited.contains(node))
 			if (isSelected(node))
 				addDependency(node);

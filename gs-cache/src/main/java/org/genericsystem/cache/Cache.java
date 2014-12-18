@@ -39,6 +39,11 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 	}
 
 	@Override
+	public final long getTs() {
+		return subContext.getTs();
+	}
+
+	@Override
 	protected Builder<T> buildBuilder() {
 		return new Builder<T>(this) {
 			@Override

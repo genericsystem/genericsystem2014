@@ -67,14 +67,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	protected void forceRemove() {
-		Context<T> context = getCurrentCache();
-		computeDependencies().forEach(context::unplug);
+		computeDependencies().forEach(getCurrentCache()::unplug);
 	}
 
 	@Override
 	public void remove() {
-		Context<T> context = getCurrentCache();
-		Statics.reverseCollections(buildOrderedDependenciesToRemove()).forEach(context::unplug);
+		buildOrderedDependenciesToRemove().forEach(getCurrentCache()::unplug);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -84,8 +82,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	@SuppressWarnings("unchecked")
-	private LinkedHashSet<T> buildOrderedDependenciesToRemove() {
-		return new LinkedHashSet<T>() {
+	private List<T> buildOrderedDependenciesToRemove() {
+		return Statics.reverseCollections(new LinkedHashSet<T>() {
 			private static final long serialVersionUID = -3610035019789480505L;
 			{
 				visit((T) AbstractVertex.this);
@@ -106,24 +104,17 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 							visit(generic.getComponents().get(axe));
 				}
 			}
-		};
+		});
 	}
 
 	@SuppressWarnings("unchecked")
 	protected LinkedHashSet<T> computeDependencies() {
-		return new DependenciesComputer<T>() {
-			private static final long serialVersionUID = 4116681784718071815L;
-
-			@Override
-			boolean isSelected(T node) {
-				return AbstractVertex.this.isAncestorOf(node);
-			}
-		}.visit((T) this);
+		return getCurrentCache().computeDependencies((T) this);
 	}
 
 	@SuppressWarnings("unchecked")
 	protected LinkedHashSet<T> computePotentialDependencies(List<T> supers, Serializable value, List<T> components) {
-		return new DependenciesComputer<T>() {
+		return new PotentialDependenciesComputer<T>() {
 			private static final long serialVersionUID = -3611136800445783634L;
 
 			@Override
@@ -132,16 +123,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 			}
 		}.visit((T) this);
 	}
-
-	// // TODO remove this
-	// protected T adjustMeta(Serializable value, @SuppressWarnings("unchecked") T... components) {
-	// return adjustMeta(value, Arrays.asList(components));
-	// }
-
-	// @SuppressWarnings("unchecked")
-	// T adjustMeta(Serializable value, List<T> components) {
-	// return getCurrentCache().adjustMeta((T) this, value, components);
-	// }
 
 	protected T getDirectInstance(Serializable value, List<T> components) {
 		for (T instance : getInstances())
