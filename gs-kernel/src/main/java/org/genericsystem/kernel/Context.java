@@ -77,8 +77,9 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		return aliveMeta != null ? getInstances(aliveMeta).get(vertex) : null;
 	}
 
+	@SuppressWarnings("unchecked")
 	protected T getMeta(int dim) {
-		T adjustedMeta = getBuilder().adjustMeta(dim);
+		T adjustedMeta = getBuilder().adjustMeta((T) getRoot(), dim);
 		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
 	}
 
