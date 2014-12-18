@@ -79,7 +79,7 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 
 	@SuppressWarnings("unchecked")
 	protected T getMeta(int dim) {
-		T adjustedMeta = getBuilder().adjustMeta((T) getRoot(), dim);
+		T adjustedMeta = getBuilder().readAdjustMeta((T) getRoot(), dim);
 		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
 	}
 

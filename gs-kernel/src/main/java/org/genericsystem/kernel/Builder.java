@@ -162,24 +162,13 @@ public class Builder<T extends AbstractVertex<T>> {
 	@SuppressWarnings("unchecked")
 	T setMeta(Class<?> clazz, int dim) {
 		T root = (T) context.getRoot();
-		T adjustedMeta = adjustMeta(root, dim);
+		T adjustedMeta = readAdjustMeta(root, dim);
 		if (adjustedMeta.getComponents().size() == dim)
 			return adjustedMeta;
 		T[] components = newTArray(dim);
 		Arrays.fill(components, root);
 		return rebuildAll(null, () -> build(clazz, null, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)),
 				adjustedMeta.computePotentialDependencies(Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)));
-	}
-
-	T adjustMeta(T meta, int dim) {
-		assert meta.isMeta();
-		int size = meta.getComponents().size();
-		if (size > dim)
-			return null;
-		if (size == dim)
-			return meta;
-		T directInheriting = meta.getInheritings().first();
-		return directInheriting != null && directInheriting.getComponents().size() <= dim ? adjustMeta(directInheriting, dim) : meta;
 	}
 
 	public T writeAdjustMeta(T meta, Serializable value, @SuppressWarnings("unchecked") T... components) {
@@ -190,6 +179,17 @@ public class Builder<T extends AbstractVertex<T>> {
 		if (meta.isMeta())
 			meta = setMeta(null, components.size());
 		return readAdjustMeta(meta, value, components);
+	}
+
+	T readAdjustMeta(T meta, int dim) {
+		assert meta.isMeta();
+		int size = meta.getComponents().size();
+		if (size > dim)
+			return null;
+		if (size == dim)
+			return meta;
+		T directInheriting = meta.getInheritings().first();
+		return directInheriting != null && directInheriting.getComponents().size() <= dim ? readAdjustMeta(directInheriting, dim) : meta;
 	}
 
 	T readAdjustMeta(T meta, Serializable value, List<T> components) {
