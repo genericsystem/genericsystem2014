@@ -62,10 +62,13 @@ public class SystemCache<T extends AbstractVertex<T>> {
 		}
 		T result;
 		T meta = setMeta(clazz);
-		if (meta == null)
-			result = ((T) root).setMeta(clazz, setComponents(clazz).size());
-		else
-			result = meta.setInstance(clazz, setOverrides(clazz), findValue(clazz), setComponents(clazz));
+		List<T> overrides = setOverrides(clazz);
+		List<T> components = setComponents(clazz);
+		if (meta == null) {
+			assert overrides.size() == 1;
+			result = overrides.get(0).setMeta(clazz, components.size());
+		} else
+			result = meta.setInstance(clazz, overrides, findValue(clazz), components);
 		put(clazz, result);
 		mountConstraints(clazz, result);
 		triggersDependencies(clazz);

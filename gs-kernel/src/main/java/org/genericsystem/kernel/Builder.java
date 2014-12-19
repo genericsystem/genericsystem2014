@@ -53,7 +53,7 @@ public class Builder<T extends AbstractVertex<T>> {
 
 	T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents) {
 		context.getChecker().checkBeforeBuild(update.getClass(), update.getMeta(), overrides, newValue, newComponents);
-		T adjustedMeta = update.getMeta().writeAdjustMeta(update.getClass(), newValue, newComponents);
+		T adjustedMeta = update.getMeta().writeAdjustMeta(newValue, newComponents);
 		Supplier<T> rebuilder = () -> {
 			T equalsInstance = adjustedMeta.getDirectInstance(newValue, newComponents);
 			if (equalsInstance != null) {
@@ -70,15 +70,15 @@ public class Builder<T extends AbstractVertex<T>> {
 	private class ConvertMap extends HashMap<T, T> {
 		private static final long serialVersionUID = 5003546962293036021L;
 
-		@SuppressWarnings("unchecked")
 		private T convert(T oldDependency) {
 			if (oldDependency.isAlive())
 				return oldDependency;
 			T newDependency = get(oldDependency);
 			if (newDependency == null) {
-				if (oldDependency.isMeta())
-					newDependency = ((T) context.getRoot()).setMeta(oldDependency.getComponents().size());
-				else {
+				if (oldDependency.isMeta()) {
+					assert oldDependency.getSupers().size() == 1;
+					newDependency = oldDependency.getSupers().get(0).setMeta(oldDependency.getComponents().size());
+				} else {
 					List<T> overrides = oldDependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
 					List<T> components = oldDependency.getComponents().stream().map(x -> x != null ? convert(x) : null).collect(Collectors.toList());
 					T adjustedMeta = convert(oldDependency.getMeta()).readAdjustMeta(oldDependency.getValue(), components);
@@ -153,7 +153,7 @@ public class Builder<T extends AbstractVertex<T>> {
 	// }
 
 	public T writeAdjustMeta(T meta, Serializable value, @SuppressWarnings("unchecked") T... components) {
-		return meta.writeAdjustMeta(null, value, Arrays.asList(components));
+		return meta.writeAdjustMeta(value, Arrays.asList(components));
 	}
 
 	T readAdjustMeta(T meta, int dim) {
@@ -176,7 +176,7 @@ public class Builder<T extends AbstractVertex<T>> {
 		return context.plug(newT(clazz, meta, supers, value, components));
 	}
 
-	private List<T> computeAndCheckOverridesAreReached(T adjustedMeta, List<T> overrides, Serializable value, List<T> components) {
+	List<T> computeAndCheckOverridesAreReached(T adjustedMeta, List<T> overrides, Serializable value, List<T> components) {
 		List<T> supers = new ArrayList<>(new SupersComputer<>(adjustedMeta, overrides, value, components));
 		if (!Statics.areOverridesReached(supers, overrides))
 			context.discardWithException(new UnreachableOverridesException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));

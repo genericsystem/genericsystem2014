@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.genericsystem.api.core.ISignature;
@@ -92,7 +93,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	@SuppressWarnings("unchecked")
 	T addInstance(Class<?> clazz, List<T> overrides, Serializable value, List<T> components) {
 		getCurrentCache().getChecker().checkBeforeBuild(clazz, (T) this, overrides, value, components);
-		T adjustedMeta = writeAdjustMeta(clazz, value, components);
+		T adjustedMeta = writeAdjustMeta(value, components);
 		T equalsInstance = adjustedMeta.getDirectInstance(value, components);
 		if (equalsInstance != null)
 			getCurrentCache().discardWithException(new ExistsException("An equivalent instance already exists : " + equalsInstance.info()));
@@ -108,7 +109,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	@SuppressWarnings("unchecked")
 	T setInstance(Class<?> clazz, List<T> overrides, Serializable value, List<T> components) {
 		getCurrentCache().getChecker().checkBeforeBuild(clazz, (T) this, overrides, value, components);
-		T adjustedMeta = writeAdjustMeta(clazz, value, components);
+		T adjustedMeta = writeAdjustMeta(value, components);
 		T equivInstance = adjustedMeta.getDirectEquivInstance(value, components);
 		if (equivInstance != null && equivInstance.equalsAndOverrides(adjustedMeta, overrides, value, components))
 			return equivInstance;
@@ -126,17 +127,25 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		List<T> overrides = Collections.singletonList((T) this);
 		getCurrentCache().getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
 		T adjustedMeta = getCurrentCache().getBuilder().readAdjustMeta(meta, components.size());
+		T equivInheriting = getDirectEquivInheriting(adjustedMeta, value, components);
+		if (equivInheriting != null && equivInheriting.equalsAndOverrides(adjustedMeta, overrides, value, components))
+			return equivInheriting;
+		// TODO KK
 		if (adjustedMeta.getComponents().size() == components.size())
 			return adjustedMeta;
-		return getCurrentCache().getBuilder().rebuildAll(null, () -> getCurrentCache().getBuilder().build(clazz, null, Collections.singletonList(adjustedMeta), value, components),
-				getCurrentCache().computePotentialDependencies(adjustedMeta, Collections.singletonList(adjustedMeta), value, components));
+		List<T> supers = getCurrentCache().getBuilder().computeAndCheckOverridesAreReached(adjustedMeta, overrides, value, components);
+		Supplier<T> rebuilder = () -> getCurrentCache().getBuilder().build(clazz, null, supers, value, components);
+		return getCurrentCache().getBuilder()
+				.rebuildAll(equivInheriting, rebuilder, equivInheriting == null ? getCurrentCache().computePotentialDependencies(adjustedMeta, supers, value, components) : getCurrentCache().computeDependencies(equivInheriting));
+		// return getCurrentCache().getBuilder().internalSetInstance(equivInheriting, clazz, adjustedMeta, overrides, value, components);
 	}
 
 	@SuppressWarnings("unchecked")
-	T writeAdjustMeta(Class<?> clazz, Serializable value, List<T> components) {
+	T writeAdjustMeta(Serializable value, List<T> components) {
 		T meta = (T) this;
 		if (isMeta())
-			meta = setMeta(components.size());
+			// TODO KK
+			meta = ((T) getRoot()).setMeta(components.size());
 		return meta.readAdjustMeta(value, components);
 	}
 
@@ -191,6 +200,15 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		for (T instance : getInstances())
 			if (instance.equiv(this, value, components))
 				return instance;
+		return null;
+	}
+
+	T getDirectEquivInheriting(T meta, Serializable value, List<T> components) {
+		if (equiv(meta, value, components))
+			return meta;
+		for (T inheriting : getInheritings())
+			if (inheriting.equiv(meta, value, components))
+				return inheriting;
 		return null;
 	}
 

@@ -52,12 +52,6 @@ public interface DefaultWritable<T extends AbstractVertex<T>> extends IVertex<T>
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T setInheriting(Serializable value, T... components) {
-		return setInheriting(null, value, components);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
 	default T addInstance(Serializable value, T... components) {
 		return addInstance(Collections.emptyList(), value, components);
 	}

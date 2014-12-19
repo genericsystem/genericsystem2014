@@ -380,11 +380,6 @@ public interface Generic extends IVertex<Generic> {
 	}
 
 	@Override
-	default Generic setInheriting(Serializable value, Generic... components) {
-		return getCurrentCache().wrap(getCurrentCache().unwrap(this).setInheriting(value, getCurrentCache().unwrap(components)));
-	}
-
-	@Override
 	default Generic addRoot(Serializable value) {
 		return getCurrentCache().wrap(getCurrentCache().unwrap(this).addRoot(value));
 	}
