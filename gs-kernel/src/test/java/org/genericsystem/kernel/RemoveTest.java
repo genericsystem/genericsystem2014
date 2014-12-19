@@ -1,9 +1,20 @@
 package org.genericsystem.kernel;
 
+import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test
 public class RemoveTest extends AbstractTest {
+
+	public void test001_removeTypeWithHolder() {
+		Vertex engine = new Root();
+		Vertex car = engine.addInstance("Car");
+		Vertex power = car.addAttribute("Power");
+		Vertex myBmw = car.addInstance("myBmw");
+		myBmw.addHolder(power, 123);
+
+		catchAndCheckCause(() -> car.remove(), ReferentialIntegrityConstraintViolationException.class);
+	}
 
 	public void test001_simpleHolder() {
 		Vertex engine = new Root();

@@ -4,16 +4,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.kernel.Config.SystemMap;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 
@@ -73,52 +70,15 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public void remove() {
-		buildOrderedDependenciesToRemove().forEach(getCurrentCache()::unplug);
+		getCurrentCache().remove((T) this);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public T update(List<T> overrides, Serializable newValue, T... newComponents) {
 		return getCurrentCache().getBuilder().update((T) this, overrides, newValue, Arrays.asList(newComponents));
-	}
-
-	@SuppressWarnings("unchecked")
-	private List<T> buildOrderedDependenciesToRemove() {
-		return Statics.reverseCollections(new LinkedHashSet<T>() {
-			private static final long serialVersionUID = -3610035019789480505L;
-			{
-				visit((T) AbstractVertex.this);
-			}
-
-			public void visit(T generic) {
-				if (add(generic)) {// protect from loop
-					if (!generic.getInheritings().isEmpty() || !generic.getInstances().isEmpty())
-						getCurrentCache().discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + generic + " has an inheritance or instance dependency"));
-					for (T composite : generic.getComposites()) {
-						for (int componentPos = 0; componentPos < composite.getComponents().size(); componentPos++)
-							if (/* !componentDependency.isAutomatic() && */composite.getComponents().get(componentPos).equals(generic) && !contains(composite) && composite.getMeta().isReferentialIntegrityEnabled(componentPos))
-								getCurrentCache().discardWithException(new ReferentialIntegrityConstraintViolationException(composite + " is Referential Integrity for ancestor " + generic + " by composite position : " + componentPos));
-						visit(composite);
-					}
-					for (int axe = 0; axe < generic.getComponents().size(); axe++)
-						if (generic.isCascadeRemove(axe))
-							visit(generic.getComponents().get(axe));
-				}
-			}
-		});
-	}
-
-	@SuppressWarnings("unchecked")
-	protected Set<T> computePotentialDependencies(List<T> supers, Serializable value, List<T> components) {
-		return new PotentialDependenciesComputer<T>() {
-			private static final long serialVersionUID = -3611136800445783634L;
-
-			@Override
-			boolean isSelected(T node) {
-				return node.isDependencyOf((T) AbstractVertex.this, supers, value, components);
-			}
-		}.visit((T) this);
 	}
 
 	protected T getDirectInstance(Serializable value, List<T> components) {

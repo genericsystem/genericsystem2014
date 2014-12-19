@@ -69,7 +69,7 @@ public class Builder<T extends AbstractVertex<T>> {
 	private T internalSetInstance(T equivInstance, Class<?> clazz, T ajustedMeta, List<T> overrides, Serializable value, List<T> components) {
 		List<T> supers = computeAndCheckOverridesAreReached(ajustedMeta, overrides, value, components);
 		Supplier<T> rebuilder = () -> build(clazz, ajustedMeta, supers, value, components);
-		return rebuildAll(equivInstance, rebuilder, equivInstance == null ? ajustedMeta.computePotentialDependencies(supers, value, components) : context.computeDependencies(equivInstance));
+		return rebuildAll(equivInstance, rebuilder, equivInstance == null ? context.computePotentialDependencies(ajustedMeta, supers, value, components) : context.computeDependencies(equivInstance));
 	}
 
 	T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents) {
@@ -169,7 +169,7 @@ public class Builder<T extends AbstractVertex<T>> {
 		T[] components = newTArray(dim);
 		Arrays.fill(components, root);
 		return rebuildAll(null, () -> build(clazz, null, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)),
-				adjustedMeta.computePotentialDependencies(Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)));
+				context.computePotentialDependencies(adjustedMeta, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)));
 	}
 
 	public T writeAdjustMeta(T meta, Serializable value, @SuppressWarnings("unchecked") T... components) {

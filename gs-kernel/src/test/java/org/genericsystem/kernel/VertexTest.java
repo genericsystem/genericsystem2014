@@ -332,6 +332,6 @@ public class VertexTest extends AbstractTest {
 		Vertex car233 = car.setHolder(vehiclePower, 233);
 		assert car233.isAlive();
 		assert !car233.isAncestorOf(v233);
-		assert vehiclePower.computePotentialDependencies(Collections.emptyList(), 233, Arrays.asList(car)).contains(car233);
+		assert engine.getCurrentCache().computePotentialDependencies(vehiclePower, Collections.emptyList(), 233, Arrays.asList(car)).contains(car233);
 	}
 }

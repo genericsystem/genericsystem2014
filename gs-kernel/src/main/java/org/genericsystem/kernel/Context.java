@@ -1,10 +1,14 @@
 package org.genericsystem.kernel;
 
+import java.io.Serializable;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.NotFoundException;
+import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
 
 public abstract class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
@@ -75,6 +79,10 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		computeDependencies(generic).forEach(this::unplug);
 	}
 
+	protected void remove(T generic) {
+		buildOrderedDependenciesToRemove(generic).forEach(this::unplug);
+	}
+
 	private T getAlive(T vertex) {
 		if (vertex.isRoot())
 			return vertex;
@@ -140,6 +148,21 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		return new OrderedDependencies().visit(node);
 	}
 
+	public Set<T> computePotentialDependencies(T meta, List<T> supers, Serializable value, List<T> components) {
+		return new PotentialDependenciesComputer() {
+			private static final long serialVersionUID = -3611136800445783634L;
+
+			@Override
+			boolean isSelected(T node) {
+				return node.isDependencyOf(meta, supers, value, components);
+			}
+		}.visit(meta);
+	}
+
+	private List<T> buildOrderedDependenciesToRemove(T node) {
+		return Statics.reverseCollections(new OrderedDependenciesRemove().visit(node));
+	}
+
 	class OrderedDependencies extends LinkedHashSet<T> {
 		private static final long serialVersionUID = -5970021419012502402L;
 
@@ -149,6 +172,57 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 				getInheritings(node).forEach(this::visit);
 				getInstances(node).forEach(this::visit);
 				add(node);
+			}
+			return this;
+		}
+	}
+
+	abstract class PotentialDependenciesComputer extends LinkedHashSet<T> {
+		private static final long serialVersionUID = -5970021419012502402L;
+		private final Set<T> alreadyVisited = new HashSet<>();
+
+		abstract boolean isSelected(T node);
+
+		PotentialDependenciesComputer visit(T node) {
+			if (!alreadyVisited.contains(node))
+				if (isSelected(node))
+					addDependency(node);
+				else {
+					alreadyVisited.add(node);
+					node.getComposites().forEach(this::visit);
+					node.getInheritings().forEach(this::visit);
+					node.getInstances().forEach(this::visit);
+				}
+			return this;
+		}
+
+		private void addDependency(T node) {
+			if (!alreadyVisited.contains(node)) {
+				alreadyVisited.add(node);
+				node.getComposites().forEach(this::addDependency);
+				node.getInheritings().forEach(this::addDependency);
+				node.getInstances().forEach(this::addDependency);
+				super.add(node);
+			}
+		}
+	}
+
+	class OrderedDependenciesRemove extends LinkedHashSet<T> {
+		private static final long serialVersionUID = 2597589882338317751L;
+
+		OrderedDependenciesRemove visit(T generic) {
+			if (add(generic)) {// protect from loop
+				if (!generic.getInheritings().isEmpty() || !generic.getInstances().isEmpty())
+					discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + generic + " has an inheritance or instance dependency"));
+				for (T composite : generic.getComposites()) {
+					for (int componentPos = 0; componentPos < composite.getComponents().size(); componentPos++)
+						if (/* !componentDependency.isAutomatic() && */composite.getComponents().get(componentPos).equals(generic) && !contains(composite) && composite.getMeta().isReferentialIntegrityEnabled(componentPos))
+							discardWithException(new ReferentialIntegrityConstraintViolationException(composite + " is Referential Integrity for ancestor " + generic + " by composite position : " + componentPos));
+					visit(composite);
+				}
+				for (int axe = 0; axe < generic.getComponents().size(); axe++)
+					if (generic.isCascadeRemove(axe))
+						visit(generic.getComponents().get(axe));
 			}
 			return this;
 		}

@@ -175,6 +175,7 @@ public class PersistenceTest extends AbstractTest {
 		List<Generic> readVisit = new ArrayList<>(readNode.getCurrentCache().computeDependencies(readNode));
 		assert persistVisit.size() == readVisit.size() : persistVisit + " \n " + readVisit;
 		for (int i = 0; i < persistVisit.size(); i++) {
+			assert persistVisit.get(i).genericEquals(readVisit.get(i));
 			LifeManager persistLifeManager = persistVisit.get(i).getLifeManager();
 			LifeManager readLifeManager = readVisit.get(i).getLifeManager();
 			assert persistLifeManager.getBirthTs() == readLifeManager.getBirthTs();
