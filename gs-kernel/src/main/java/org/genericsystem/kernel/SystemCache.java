@@ -51,6 +51,7 @@ public class SystemCache<T extends AbstractVertex<T>> {
 		initialized = true;
 	}
 
+	@SuppressWarnings("unchecked")
 	private T set(Class<?> clazz) {
 		if (initialized)
 			throw new IllegalStateException("Class : " + clazz + " has not been built at startup");
@@ -62,7 +63,7 @@ public class SystemCache<T extends AbstractVertex<T>> {
 		T result;
 		T meta = setMeta(clazz);
 		if (meta == null)
-			result = root.getCurrentCache().getBuilder().setMeta(clazz, setComponents(clazz).size());
+			result = ((T) root).setMeta(clazz, setComponents(clazz).size());
 		else
 			result = meta.setInstance(clazz, setOverrides(clazz), findValue(clazz), setComponents(clazz));
 		put(clazz, result);

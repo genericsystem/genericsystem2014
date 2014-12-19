@@ -26,12 +26,12 @@ public class MetasTests extends AbstractTest {
 		Root engine = new Root();
 		assert engine.getCurrentCache().getMeta(1).equals(engine.getMetaAttribute());
 		assert engine.getCurrentCache().getMeta(5) == null;
-		Vertex pentaMeta = engine.getCurrentCache().getBuilder().setMeta(null, 5);
+		Vertex pentaMeta = engine.setMeta(5);
 		assert engine.getCurrentCache().getMeta(5) == pentaMeta;
-		assert pentaMeta == engine.getCurrentCache().getBuilder().setMeta(null, 5);
+		assert pentaMeta == engine.setMeta(5);
 		assert pentaMeta.equals(engine.getCurrentCache().getMeta(5));
 		assert engine.getCurrentCache().getMeta(3) == null;
-		Vertex ternaryMeta = engine.getCurrentCache().getBuilder().setMeta(null, 3);
+		Vertex ternaryMeta = engine.setMeta(3);
 		assert !pentaMeta.isAlive();
 		assert engine.getCurrentCache().getMeta(5).inheritsFrom(ternaryMeta);
 	}

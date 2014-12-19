@@ -123,22 +123,33 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	@SuppressWarnings("unchecked")
 	T setInheriting(Class<?> clazz, T meta, Serializable value, List<T> components) {
-		T root = (T) getRoot();
-		T adjustedMeta = getCurrentCache().getBuilder().readAdjustMeta(root, components.size());
+		List<T> overrides = Collections.singletonList((T) this);
+		getCurrentCache().getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
+		T adjustedMeta = getCurrentCache().getBuilder().readAdjustMeta(meta, components.size());
 		if (adjustedMeta.getComponents().size() == components.size())
 			return adjustedMeta;
-		T[] componentsArray = getCurrentCache().getBuilder().newTArray(components.size());
-		Arrays.fill(componentsArray, root);
-		return getCurrentCache().getBuilder().rebuildAll(null, () -> getCurrentCache().getBuilder().build(clazz, null, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(componentsArray)),
-				getCurrentCache().computePotentialDependencies(adjustedMeta, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(componentsArray)));
+		return getCurrentCache().getBuilder().rebuildAll(null, () -> getCurrentCache().getBuilder().build(clazz, null, Collections.singletonList(adjustedMeta), value, components),
+				getCurrentCache().computePotentialDependencies(adjustedMeta, Collections.singletonList(adjustedMeta), value, components));
 	}
 
 	@SuppressWarnings("unchecked")
 	T writeAdjustMeta(Class<?> clazz, Serializable value, List<T> components) {
 		T meta = (T) this;
 		if (isMeta())
-			meta = setInheriting(clazz, meta, value, components);
+			meta = setMeta(components.size());
 		return meta.readAdjustMeta(value, components);
+	}
+
+	T setMeta(int dim) {
+		return setMeta(null, dim);
+	}
+
+	@SuppressWarnings("unchecked")
+	T setMeta(Class<?> clazz, int dim) {
+		T root = (T) getRoot();
+		T[] componentsArray = getCurrentCache().getBuilder().newTArray(dim);
+		Arrays.fill(componentsArray, root);
+		return setInheriting(clazz, root, root.getValue(), Arrays.asList(componentsArray));
 	}
 
 	@SuppressWarnings("unchecked")
