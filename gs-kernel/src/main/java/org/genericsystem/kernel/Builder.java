@@ -11,8 +11,6 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.genericsystem.api.exception.AmbiguousSelectionException;
-import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.UnreachableOverridesException;
 import org.genericsystem.kernel.Vertex.SystemClass;
 import org.genericsystem.kernel.annotations.InstanceClass;
@@ -48,25 +46,7 @@ public class Builder<T extends AbstractVertex<T>> {
 		return newT(clazz, meta).init(meta, supers, value, components);
 	}
 
-	T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
-		context.getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
-		T adjustedMeta = writeAdjustMeta(meta, value, components);
-		T equalsInstance = adjustedMeta.getDirectInstance(value, components);
-		if (equalsInstance != null)
-			context.discardWithException(new ExistsException("An equivalent instance already exists : " + equalsInstance.info()));
-		return internalSetInstance(null, clazz, adjustedMeta, overrides, value, components);
-	}
-
-	T setInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
-		context.getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
-		T adjustedMeta = writeAdjustMeta(meta, value, components);
-		T equivInstance = adjustedMeta.getDirectEquivInstance(value, components);
-		if (equivInstance != null && equivInstance.equalsAndOverrides(adjustedMeta, overrides, value, components))
-			return equivInstance;
-		return internalSetInstance(equivInstance, clazz, adjustedMeta, overrides, value, components);
-	}
-
-	private T internalSetInstance(T equivInstance, Class<?> clazz, T ajustedMeta, List<T> overrides, Serializable value, List<T> components) {
+	T internalSetInstance(T equivInstance, Class<?> clazz, T ajustedMeta, List<T> overrides, Serializable value, List<T> components) {
 		List<T> supers = computeAndCheckOverridesAreReached(ajustedMeta, overrides, value, components);
 		Supplier<T> rebuilder = () -> build(clazz, ajustedMeta, supers, value, components);
 		return rebuildAll(equivInstance, rebuilder, equivInstance == null ? context.computePotentialDependencies(ajustedMeta, supers, value, components) : context.computeDependencies(equivInstance));
@@ -74,7 +54,7 @@ public class Builder<T extends AbstractVertex<T>> {
 
 	T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents) {
 		context.getChecker().checkBeforeBuild(update.getClass(), update.getMeta(), overrides, newValue, newComponents);
-		T adjustedMeta = writeAdjustMeta(update.getMeta(), newValue, newComponents);
+		T adjustedMeta = update.getMeta().writeAdjustMeta(update.getClass(), newValue, newComponents);
 		Supplier<T> rebuilder = () -> {
 			T equalsInstance = adjustedMeta.getDirectInstance(newValue, newComponents);
 			if (equalsInstance != null) {
@@ -101,7 +81,7 @@ public class Builder<T extends AbstractVertex<T>> {
 				else {
 					List<T> overrides = oldDependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
 					List<T> components = oldDependency.getComponents().stream().map(x -> x != null ? convert(x) : null).collect(Collectors.toList());
-					T adjustedMeta = readAdjustMeta(convert(oldDependency.getMeta()), oldDependency.getValue(), components);
+					T adjustedMeta = convert(oldDependency.getMeta()).readAdjustMeta(oldDependency.getValue(), components);
 					List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, oldDependency.getValue(), components);
 					// TODO KK designTs
 					newDependency = getOrBuild(oldDependency.getClass(), adjustedMeta, supers, oldDependency.getValue(), components, 0L);
@@ -147,7 +127,7 @@ public class Builder<T extends AbstractVertex<T>> {
 		return vertexClass;
 	}
 
-	private T rebuildAll(T toRebuild, Supplier<T> rebuilder, Set<T> dependenciesToRebuild) {
+	T rebuildAll(T toRebuild, Supplier<T> rebuilder, Set<T> dependenciesToRebuild) {
 		dependenciesToRebuild.forEach(context::unplug);
 		T build = rebuilder.get();
 		dependenciesToRebuild.remove(toRebuild);
@@ -173,13 +153,7 @@ public class Builder<T extends AbstractVertex<T>> {
 	}
 
 	public T writeAdjustMeta(T meta, Serializable value, @SuppressWarnings("unchecked") T... components) {
-		return writeAdjustMeta(meta, value, Arrays.asList(components));
-	}
-
-	private T writeAdjustMeta(T meta, Serializable value, List<T> components) {
-		if (meta.isMeta())
-			meta = setMeta(null, components.size());
-		return readAdjustMeta(meta, value, components);
+		return meta.writeAdjustMeta(null, value, Arrays.asList(components));
 	}
 
 	T readAdjustMeta(T meta, int dim) {
@@ -193,26 +167,12 @@ public class Builder<T extends AbstractVertex<T>> {
 		return directInheriting != null && directInheriting.getComponents().size() <= dim ? readAdjustMeta(directInheriting, dim) : meta;
 	}
 
-	T readAdjustMeta(T meta, Serializable value, List<T> components) {
-		T result = null;
-		if (!components.equals(meta.getComponents()))
-			for (T directInheriting : meta.getInheritings()) {
-				if (meta.componentsDepends(components, directInheriting.getComponents())) {
-					if (result == null)
-						result = directInheriting;
-					else
-						getContext().discardWithException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
-				}
-			}
-		return result == null ? meta : readAdjustMeta(result, value, components);
-	}
-
 	protected T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, Long designTs, Long... otherTs) {
 		T instance = meta == null ? context.getMeta(components.size()) : meta.getDirectInstance(value, components);
 		return instance == null ? build(clazz, meta, supers, value, components) : instance;
 	}
 
-	private T build(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
+	T build(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
 		return context.plug(newT(clazz, meta, supers, value, components));
 	}
 

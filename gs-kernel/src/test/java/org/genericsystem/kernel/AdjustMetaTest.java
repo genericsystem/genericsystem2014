@@ -128,7 +128,7 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex color = engine.addInstance("Color");
 		engine.addInstance("CarColor", car, color);
 		Vertex finition = engine.addInstance("Finition");
-		Vertex adjustMeta = engine.getCurrentCache().getBuilder().readAdjustMeta(engine, "CarColorFinition", Arrays.asList(car, color, finition));
+		Vertex adjustMeta = engine.readAdjustMeta("CarColorFinition", Arrays.asList(car, color, finition));
 		assert metaRelation == adjustMeta : adjustMeta.info();
 	}
 

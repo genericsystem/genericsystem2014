@@ -72,7 +72,7 @@ public interface DefaultDependencies<T extends AbstractVertex<T>> extends IVerte
 	@Override
 	default T getInstance(List<T> overrides, Serializable value, T... components) {
 		List<T> componentsList = Arrays.asList(components);
-		T adjustMeta = getCurrentCache().getBuilder().readAdjustMeta((T) this, value, componentsList);
+		T adjustMeta = ((T) this).readAdjustMeta(value, componentsList);
 		if (adjustMeta.getComponents().size() != components.length)
 			return null;
 		return adjustMeta.getDirectInstance(overrides, value, componentsList);

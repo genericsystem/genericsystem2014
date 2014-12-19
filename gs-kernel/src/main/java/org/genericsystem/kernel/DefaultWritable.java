@@ -9,18 +9,6 @@ import org.genericsystem.api.core.IVertex;
 
 public interface DefaultWritable<T extends AbstractVertex<T>> extends IVertex<T> {
 
-	@SuppressWarnings("unchecked")
-	@Override
-	default T addInstance(List<T> overrides, Serializable value, T... components) {
-		return ((Context<T>) getCurrentCache()).getBuilder().addInstance(null, (T) this, overrides, value, Arrays.asList(components));
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	default T setInstance(List<T> overrides, Serializable value, T... components) {
-		return ((Context<T>) getCurrentCache()).getBuilder().setInstance(null, (T) this, overrides, value, Arrays.asList(components));
-	}
-
 	@Override
 	default T updateValue(Serializable newValue) {
 		return update(getSupers(), newValue, coerceToTArray(getComponents().toArray()));
@@ -44,7 +32,6 @@ public interface DefaultWritable<T extends AbstractVertex<T>> extends IVertex<T>
 		return update(Collections.emptyList(), newValue, newComposites);
 	}
 
-
 	@SuppressWarnings("unchecked")
 	@Override
 	default public T update(T override, Serializable newValue, T... newComposites) {
@@ -61,6 +48,12 @@ public interface DefaultWritable<T extends AbstractVertex<T>> extends IVertex<T>
 	@SuppressWarnings("unchecked")
 	default T setInstance(T override, Serializable value, T... components) {
 		return setInstance(Collections.singletonList(override), value, components);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T setInheriting(Serializable value, T... components) {
+		return setInheriting(null, value, components);
 	}
 
 	@Override

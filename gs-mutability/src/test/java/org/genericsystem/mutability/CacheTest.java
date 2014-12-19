@@ -1,7 +1,7 @@
 package org.genericsystem.mutability;
 
 import java.util.stream.Collectors;
-import org.genericsystem.api.exception.CacheNoStartedException;
+
 import org.testng.annotations.Test;
 
 @Test
@@ -146,15 +146,6 @@ public class CacheTest extends AbstractTest {
 		Generic vehicle = engine.addInstance("Vehicle");
 		engine.getCurrentCache().clear();
 		assert !engine.getInstances().get().anyMatch(g -> g.equals(vehicle));
-	}
-
-	public void test001_mountNewCache_nostarted() {
-		Engine engine = new Engine();
-		Cache currentCache = engine.getCurrentCache();
-		Cache mountNewCache = currentCache.mountAndStartNewCache();
-		currentCache.start();
-
-		catchAndCheckCause(() -> mountNewCache.flush(), CacheNoStartedException.class);
 	}
 
 	public void test002_mountNewCache() {

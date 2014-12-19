@@ -11,6 +11,8 @@ import java.util.stream.Stream;
 
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.Snapshot;
+import org.genericsystem.api.exception.AmbiguousSelectionException;
+import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.kernel.Config.SystemMap;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 
@@ -79,6 +81,79 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	@Override
 	public T update(List<T> overrides, Serializable newValue, T... newComponents) {
 		return getCurrentCache().getBuilder().update((T) this, overrides, newValue, Arrays.asList(newComponents));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public T addInstance(List<T> overrides, Serializable value, T... components) {
+		return addInstance(null, overrides, value, Arrays.asList(components));
+	}
+
+	@SuppressWarnings("unchecked")
+	T addInstance(Class<?> clazz, List<T> overrides, Serializable value, List<T> components) {
+		getCurrentCache().getChecker().checkBeforeBuild(clazz, (T) this, overrides, value, components);
+		T adjustedMeta = writeAdjustMeta(clazz, value, components);
+		T equalsInstance = adjustedMeta.getDirectInstance(value, components);
+		if (equalsInstance != null)
+			getCurrentCache().discardWithException(new ExistsException("An equivalent instance already exists : " + equalsInstance.info()));
+		return getCurrentCache().getBuilder().internalSetInstance(null, clazz, adjustedMeta, overrides, value, components);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public T setInstance(List<T> overrides, Serializable value, T... components) {
+		return setInstance(null, overrides, value, Arrays.asList(components));
+	}
+
+	@SuppressWarnings("unchecked")
+	T setInstance(Class<?> clazz, List<T> overrides, Serializable value, List<T> components) {
+		getCurrentCache().getChecker().checkBeforeBuild(clazz, (T) this, overrides, value, components);
+		T adjustedMeta = writeAdjustMeta(clazz, value, components);
+		T equivInstance = adjustedMeta.getDirectEquivInstance(value, components);
+		if (equivInstance != null && equivInstance.equalsAndOverrides(adjustedMeta, overrides, value, components))
+			return equivInstance;
+		return getCurrentCache().getBuilder().internalSetInstance(equivInstance, clazz, adjustedMeta, overrides, value, components);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public T setInheriting(T meta, Serializable value, T... components) {
+		return setInheriting(null, meta, value, Arrays.asList(components));
+	}
+
+	@SuppressWarnings("unchecked")
+	T setInheriting(Class<?> clazz, T meta, Serializable value, List<T> components) {
+		T root = (T) getRoot();
+		T adjustedMeta = getCurrentCache().getBuilder().readAdjustMeta(root, components.size());
+		if (adjustedMeta.getComponents().size() == components.size())
+			return adjustedMeta;
+		T[] componentsArray = getCurrentCache().getBuilder().newTArray(components.size());
+		Arrays.fill(componentsArray, root);
+		return getCurrentCache().getBuilder().rebuildAll(null, () -> getCurrentCache().getBuilder().build(clazz, null, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(componentsArray)),
+				getCurrentCache().computePotentialDependencies(adjustedMeta, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(componentsArray)));
+	}
+
+	@SuppressWarnings("unchecked")
+	T writeAdjustMeta(Class<?> clazz, Serializable value, List<T> components) {
+		T meta = (T) this;
+		if (isMeta())
+			meta = setInheriting(clazz, meta, value, components);
+		return meta.readAdjustMeta(value, components);
+	}
+
+	@SuppressWarnings("unchecked")
+	T readAdjustMeta(Serializable value, List<T> components) {
+		T result = null;
+		if (!components.equals(getComponents()))
+			for (T directInheriting : getInheritings()) {
+				if (componentsDepends(components, directInheriting.getComponents())) {
+					if (result == null)
+						result = directInheriting;
+					else
+						getCurrentCache().discardWithException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
+				}
+			}
+		return result == null ? (T) this : result.readAdjustMeta(value, components);
 	}
 
 	protected T getDirectInstance(Serializable value, List<T> components) {
