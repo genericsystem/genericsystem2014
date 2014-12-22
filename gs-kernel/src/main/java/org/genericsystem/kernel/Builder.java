@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -140,17 +141,17 @@ public class Builder<T extends AbstractVertex<T>> {
 		return build;
 	}
 
-	// @SuppressWarnings("unchecked")
-	// T setMeta(Class<?> clazz, int dim) {
-	// T root = (T) context.getRoot();
-	// T adjustedMeta = readAdjustMeta(root, dim);
-	// if (adjustedMeta.getComponents().size() == dim)
-	// return adjustedMeta;
-	// T[] components = newTArray(dim);
-	// Arrays.fill(components, root);
-	// return rebuildAll(null, () -> build(clazz, null, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)),
-	// context.computePotentialDependencies(adjustedMeta, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)));
-	// }
+	@SuppressWarnings("unchecked")
+	T setMeta(Class<?> clazz, int dim) {
+		T root = (T) context.getRoot();
+		T adjustedMeta = readAdjustMeta(root, dim);
+		if (adjustedMeta.getComponents().size() == dim)
+			return adjustedMeta;
+		T[] components = newTArray(dim);
+		Arrays.fill(components, root);
+		return rebuildAll(null, () -> build(clazz, null, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)),
+				context.computePotentialDependencies(adjustedMeta, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)));
+	}
 
 	public T writeAdjustMeta(T meta, Serializable value, @SuppressWarnings("unchecked") T... components) {
 		return meta.writeAdjustMeta(value, Arrays.asList(components));

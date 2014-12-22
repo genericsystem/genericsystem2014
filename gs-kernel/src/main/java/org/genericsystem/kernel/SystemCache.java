@@ -51,7 +51,6 @@ public class SystemCache<T extends AbstractVertex<T>> {
 		initialized = true;
 	}
 
-	@SuppressWarnings("unchecked")
 	private T set(Class<?> clazz) {
 		if (initialized)
 			throw new IllegalStateException("Class : " + clazz + " has not been built at startup");

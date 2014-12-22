@@ -746,20 +746,6 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	@SuppressWarnings("unchecked")
 	T setInstance(List<T> overrides, Serializable value, T... components);
 
-	/**
-	 * Returns an existing or a new inheriting of this type that satisfies the specified meta, value and components
-	 *
-	 * @param meta
-	 *            a vertex reference from which the returned instance shall instance
-	 * @param value
-	 *            the expected value
-	 * @param components
-	 *            the expected component references
-	 * @return a new inheriting or the existing instance that satisfies the specified meta, value and components
-	 */
-	@SuppressWarnings("unchecked")
-	T setInheriting(T meta, Serializable value, T... components);
-
 	T addRoot(Serializable value);
 
 	T setRoot(Serializable value);

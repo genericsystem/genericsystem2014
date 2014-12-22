@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.genericsystem.api.core.ISignature;
@@ -89,7 +88,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	public T addInstance(List<T> overrides, Serializable value, T... components) {
 		return addInstance(null, overrides, value, Arrays.asList(components));
 	}
-
+	@Override
+	@SuppressWarnings("unchecked")
+	public T setInstance(List<T> overrides, Serializable value, T... components) {
+		return setInstance(null, overrides, value, Arrays.asList(components));
+	}
 	@SuppressWarnings("unchecked")
 	T addInstance(Class<?> clazz, List<T> overrides, Serializable value, List<T> components) {
 		getCurrentCache().getChecker().checkBeforeBuild(clazz, (T) this, overrides, value, components);
@@ -98,12 +101,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		if (equalsInstance != null)
 			getCurrentCache().discardWithException(new ExistsException("An equivalent instance already exists : " + equalsInstance.info()));
 		return getCurrentCache().getBuilder().internalSetInstance(null, clazz, adjustedMeta, overrides, value, components);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public T setInstance(List<T> overrides, Serializable value, T... components) {
-		return setInstance(null, overrides, value, Arrays.asList(components));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -116,36 +113,9 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getCurrentCache().getBuilder().internalSetInstance(equivInstance, clazz, adjustedMeta, overrides, value, components);
 	}
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public T setInheriting(T meta, Serializable value, T... components) {
-		return setInheriting(null, meta, value, Arrays.asList(components));
-	}
-
-	@SuppressWarnings("unchecked")
-	T setInheriting(Class<?> clazz, T meta, Serializable value, List<T> components) {
-		List<T> overrides = Collections.singletonList((T) this);
-		getCurrentCache().getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
-		T adjustedMeta = getCurrentCache().getBuilder().readAdjustMeta(meta, components.size());
-		T equivInheriting = getDirectEquivInheriting(adjustedMeta, value, components);
-		if (equivInheriting != null && equivInheriting.equalsAndOverrides(adjustedMeta, overrides, value, components))
-			return equivInheriting;
-		// TODO KK
-		if (adjustedMeta.getComponents().size() == components.size())
-			return adjustedMeta;
-		List<T> supers = getCurrentCache().getBuilder().computeAndCheckOverridesAreReached(adjustedMeta, overrides, value, components);
-		Supplier<T> rebuilder = () -> getCurrentCache().getBuilder().build(clazz, null, supers, value, components);
-		return getCurrentCache().getBuilder()
-				.rebuildAll(equivInheriting, rebuilder, equivInheriting == null ? getCurrentCache().computePotentialDependencies(adjustedMeta, supers, value, components) : getCurrentCache().computeDependencies(equivInheriting));
-		// return getCurrentCache().getBuilder().internalSetInstance(equivInheriting, clazz, adjustedMeta, overrides, value, components);
-	}
-
 	@SuppressWarnings("unchecked")
 	T writeAdjustMeta(Serializable value, List<T> components) {
-		T meta = (T) this;
-		if (isMeta())
-			// TODO KK
-			meta = ((T) getRoot()).setMeta(components.size());
+		T meta = isMeta() ? ((T) getRoot()).setMeta(components.size()) : (T) this;
 		return meta.readAdjustMeta(value, components);
 	}
 
@@ -153,12 +123,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return setMeta(null, dim);
 	}
 
-	@SuppressWarnings("unchecked")
 	T setMeta(Class<?> clazz, int dim) {
-		T root = (T) getRoot();
-		T[] componentsArray = getCurrentCache().getBuilder().newTArray(dim);
-		Arrays.fill(componentsArray, root);
-		return setInheriting(clazz, root, root.getValue(), Arrays.asList(componentsArray));
+		return getCurrentCache().getBuilder().setMeta(clazz, dim);
 	}
 
 	@SuppressWarnings("unchecked")
