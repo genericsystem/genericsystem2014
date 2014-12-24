@@ -293,7 +293,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 		}
 
 		protected Long[] loadOtherTs() throws IOException {
-			return new Long[0];
+			return new Long[]{};
 		}
 
 		protected void loadDependency(Map<Long, T> vertexMap) throws IOException, ClassNotFoundException {
@@ -303,8 +303,13 @@ public class Archiver<T extends AbstractVertex<T>> {
 			T meta = loadAncestor(vertexMap);
 			List<T> supers = loadAncestors(vertexMap);
 			List<T> components = loadAncestors(vertexMap);
-			vertexMap.put(id, transaction.getBuilder().getOrBuild(null, meta, supers, value, components, id, otherTs));
+			vertexMap.put(id, getOrBuild(null, meta, supers, value, components, id, otherTs));
 			//log.info("load dependency " + vertexMap.get(id).info() + " " + id);
+		}
+		
+		protected T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, Long designTs, Long... otherTs) {
+			T instance = meta == null ? transaction.getMeta(components.size()) : meta.getDirectInstance(value, components);
+			return instance == null ? transaction.getBuilder().build(clazz, meta, supers, value, components) : instance;
 		}
 
 		protected List<T> loadAncestors(Map<Long, T> vertexMap) throws IOException {

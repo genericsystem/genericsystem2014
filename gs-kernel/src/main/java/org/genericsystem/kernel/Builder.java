@@ -85,7 +85,7 @@ public class Builder<T extends AbstractVertex<T>> {
 					T adjustedMeta = convert(oldDependency.getMeta()).readAdjustMeta(oldDependency.getValue(), components);
 					List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, oldDependency.getValue(), components);
 					// TODO KK designTs
-					newDependency = getOrBuild(oldDependency.getClass(), adjustedMeta, supers, oldDependency.getValue(), components, 0L);
+					newDependency = getOrBuild(oldDependency.getClass(), adjustedMeta, supers, oldDependency.getValue(), components);
 				}
 				put(oldDependency, newDependency);// triggers mutation
 			}
@@ -153,9 +153,7 @@ public class Builder<T extends AbstractVertex<T>> {
 				context.computePotentialDependencies(adjustedMeta, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)));
 	}
 
-//	public T writeAdjustMeta(T meta, Serializable value, @SuppressWarnings("unchecked") T... components) {
-//		return meta.writeAdjustMeta(value, Arrays.asList(components));
-//	}
+
 
 	T readAdjustMeta(T meta, int dim) {
 		assert meta.isMeta();
@@ -168,11 +166,11 @@ public class Builder<T extends AbstractVertex<T>> {
 		return directInheriting != null && directInheriting.getComponents().size() <= dim ? readAdjustMeta(directInheriting, dim) : meta;
 	}
 
-	protected T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, Long designTs, Long... otherTs) {
+	protected T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
 		T instance = meta == null ? context.getMeta(components.size()) : meta.getDirectInstance(value, components);
 		return instance == null ? build(clazz, meta, supers, value, components) : instance;
 	}
-
+	
 	T build(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
 		return context.plug(newT(clazz, meta, supers, value, components));
 	}

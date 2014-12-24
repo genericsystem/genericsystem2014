@@ -133,6 +133,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getCurrentCache().getBuilder().setMeta(clazz, dim);
 	}
 
+
 	@SuppressWarnings("unchecked")
 	T readAdjustMeta(Serializable value, List<T> components) {
 		T result = null;
