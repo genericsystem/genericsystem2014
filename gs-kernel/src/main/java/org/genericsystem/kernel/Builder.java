@@ -153,9 +153,9 @@ public class Builder<T extends AbstractVertex<T>> {
 				context.computePotentialDependencies(adjustedMeta, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)));
 	}
 
-	public T writeAdjustMeta(T meta, Serializable value, @SuppressWarnings("unchecked") T... components) {
-		return meta.writeAdjustMeta(value, Arrays.asList(components));
-	}
+//	public T writeAdjustMeta(T meta, Serializable value, @SuppressWarnings("unchecked") T... components) {
+//		return meta.writeAdjustMeta(value, Arrays.asList(components));
+//	}
 
 	T readAdjustMeta(T meta, int dim) {
 		assert meta.isMeta();

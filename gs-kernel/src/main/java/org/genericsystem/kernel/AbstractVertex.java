@@ -113,11 +113,15 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getCurrentCache().getBuilder().internalSetInstance(equivInstance, clazz, adjustedMeta, overrides, value, components);
 	}
 
+	protected T writeAdjustMeta(Serializable value, T...components){
+		return writeAdjustMeta(value, Arrays.asList(components));
+	}
+	
 	@SuppressWarnings("unchecked")
 	T writeAdjustMeta(Serializable value, List<T> components) {
 		T meta = (T)this;
 		if( isMeta())
-			meta = ((T) getRoot()).setMeta(components.size());
+			return ((T) getRoot()).setMeta(components.size());
 		return meta.readAdjustMeta(value, components);
 	}
 
@@ -151,6 +155,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	T getDirectInstance(List<T> overrides, Serializable value, List<T> components) {
 		if (isMeta() && equalsRegardlessSupers(this, value, components))
 			return (T) this;

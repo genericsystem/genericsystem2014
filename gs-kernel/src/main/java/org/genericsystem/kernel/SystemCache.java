@@ -65,7 +65,7 @@ public class SystemCache<T extends AbstractVertex<T>> {
 		List<T> components = setComponents(clazz);
 		if (meta == null) {
 			assert overrides.size() == 1;
-			result = overrides.get(0).setMeta(clazz, components.size());
+			result = overrides.get(0).setInstance(clazz,overrides ,findValue(clazz),components);
 		} else
 			result = meta.setInstance(clazz, overrides, findValue(clazz), components);
 		put(clazz, result);

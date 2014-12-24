@@ -9,13 +9,13 @@ public class MetasTests extends AbstractTest {
 		Root engine = new Root();
 
 		Vertex metaAttribute = engine.getMetaAttribute();
-		assert metaAttribute == engine.getCurrentCache().getBuilder().writeAdjustMeta(engine, engine.getValue(), engine);
+		assert metaAttribute == engine.writeAdjustMeta(engine.getValue(), engine);
 		assert metaAttribute.getMeta() == metaAttribute;
 		assert metaAttribute.isMeta();
 		assert metaAttribute.getBaseComponent().equals(engine);
 		assert metaAttribute.inheritsFrom(engine);
 		Vertex metaRelation = engine.getMetaAttribute().getInheritings().first();
-		assert metaRelation == engine.getCurrentCache().getBuilder().writeAdjustMeta(engine, engine.getValue(), engine, engine);
+		assert metaRelation == engine.writeAdjustMeta( engine.getValue(), engine, engine);
 		assert metaRelation.isMeta();
 		assert metaRelation.getBaseComponent().equals(engine);
 		assert metaRelation.getTargetComponent().equals(engine);

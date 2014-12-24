@@ -1,6 +1,7 @@
 package org.genericsystem.cache;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 
 import org.genericsystem.kernel.AbstractVertex;
@@ -52,5 +53,10 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 
 	@Override
 	protected abstract Dependencies<T> getCompositesDependencies();
+	
+	protected T writeAdjustMeta(Serializable value, T...components){
+		return super.writeAdjustMeta(value, components);
+	}
+	
 
 }
