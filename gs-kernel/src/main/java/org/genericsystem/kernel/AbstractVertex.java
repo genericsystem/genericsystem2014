@@ -115,7 +115,9 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	@SuppressWarnings("unchecked")
 	T writeAdjustMeta(Serializable value, List<T> components) {
-		T meta = isMeta() ? ((T) getRoot()).setMeta(components.size()) : (T) this;
+		T meta = (T)this;
+		if( isMeta())
+			meta = ((T) getRoot()).setMeta(components.size());
 		return meta.readAdjustMeta(value, components);
 	}
 
@@ -150,6 +152,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	T getDirectInstance(List<T> overrides, Serializable value, List<T> components) {
+		if (isMeta() && equalsRegardlessSupers(this, value, components))
+			return (T) this;
 		T result = getDirectInstance(value, components);
 		return result != null && Statics.areOverridesReached(result.getSupers(), overrides) ? result : null;
 	}
@@ -161,20 +165,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	@SuppressWarnings("unchecked")
 	T getDirectEquivInstance(Serializable value, List<T> components) {
-		if (equiv(this, value, components))
+		if (isMeta() && equalsRegardlessSupers(this, value, components))
 			return (T) this;
 		for (T instance : getInstances())
 			if (instance.equiv(this, value, components))
 				return instance;
-		return null;
-	}
-
-	T getDirectEquivInheriting(T meta, Serializable value, List<T> components) {
-		if (equiv(meta, value, components))
-			return meta;
-		for (T inheriting : getInheritings())
-			if (inheriting.equiv(meta, value, components))
-				return inheriting;
 		return null;
 	}
 

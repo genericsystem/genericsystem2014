@@ -142,7 +142,7 @@ public class Builder<T extends AbstractVertex<T>> {
 	}
 
 	@SuppressWarnings("unchecked")
-	T setMeta(Class<?> clazz, int dim) {
+	T setMeta(Class<?> clazz,  int dim) {
 		T root = (T) context.getRoot();
 		T adjustedMeta = readAdjustMeta(root, dim);
 		if (adjustedMeta.getComponents().size() == dim)

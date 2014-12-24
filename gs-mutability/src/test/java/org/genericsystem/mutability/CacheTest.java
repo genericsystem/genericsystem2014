@@ -81,6 +81,7 @@ public class CacheTest extends AbstractTest {
 		assert vehicle.isAlive();
 	}
 
+
 	public void test001_getInheritings() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
