@@ -2,6 +2,8 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -59,14 +61,15 @@ public class SystemCache<T extends AbstractVertex<T>> {
 			assert systemProperty.isAlive();
 			return systemProperty;
 		}
-		T result;
 		T meta = setMeta(clazz);
 		List<T> overrides = setOverrides(clazz);
 		List<T> components = setComponents(clazz);
+		T result;
 		if (meta == null) {
 			assert overrides.size() == 1;
-			result = overrides.get(0).setInstance(clazz,overrides ,findValue(clazz),components);
-		} else
+			result = overrides.get(0).getCurrentCache().getBuilder().build(clazz, null, overrides, findValue(clazz), components);
+		}
+		else
 			result = meta.setInstance(clazz, overrides, findValue(clazz), components);
 		put(clazz, result);
 		mountConstraints(clazz, result);

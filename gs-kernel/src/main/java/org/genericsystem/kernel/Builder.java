@@ -142,14 +142,14 @@ public class Builder<T extends AbstractVertex<T>> {
 	}
 
 	@SuppressWarnings("unchecked")
-	T setMeta(Class<?> clazz,  int dim) {
+	T setMeta(int dim) {
 		T root = (T) context.getRoot();
 		T adjustedMeta = readAdjustMeta(root, dim);
 		if (adjustedMeta.getComponents().size() == dim)
 			return adjustedMeta;
 		T[] components = newTArray(dim);
 		Arrays.fill(components, root);
-		return rebuildAll(null, () -> build(clazz, null, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)),
+		return rebuildAll(null, () -> build(null, null, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)),
 				context.computePotentialDependencies(adjustedMeta, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)));
 	}
 

@@ -112,6 +112,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 			return equivInstance;
 		return getCurrentCache().getBuilder().internalSetInstance(equivInstance, clazz, adjustedMeta, overrides, value, components);
 	}
+	
+	
 
 	protected T writeAdjustMeta(Serializable value, T...components){
 		return writeAdjustMeta(value, Arrays.asList(components));
@@ -126,12 +128,20 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	T setMeta(int dim) {
-		return setMeta(null, dim);
+		return getCurrentCache().getBuilder().setMeta(dim);
 	}
 
-	T setMeta(Class<?> clazz, int dim) {
-		return getCurrentCache().getBuilder().setMeta(clazz, dim);
+	T readAdjustMeta(int dim) {
+		assert isMeta();
+		int size = getComponents().size();
+		if (size > dim)
+			return null;
+		if (size == dim)
+			return (T)this;
+		T directInheriting = getInheritings().first();
+		return directInheriting != null && directInheriting.getComponents().size() <= dim ? directInheriting.readAdjustMeta(dim) : (T)this;
 	}
+
 
 
 	@SuppressWarnings("unchecked")
