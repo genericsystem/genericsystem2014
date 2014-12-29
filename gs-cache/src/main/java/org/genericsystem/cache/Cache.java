@@ -118,8 +118,9 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 
 	public void unmount() {
 		AbstractCacheElement<T> subCache = cacheElement.getSubCache();
-		if (subCache instanceof CacheElement)
+		if (subCache instanceof CacheElement) {
 			cacheElement = (CacheElement<T>) cacheElement.getSubCache();
+		}
 	}
 
 	@Override

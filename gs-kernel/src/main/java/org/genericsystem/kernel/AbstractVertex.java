@@ -88,11 +88,13 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	public T addInstance(List<T> overrides, Serializable value, T... components) {
 		return addInstance(null, overrides, value, Arrays.asList(components));
 	}
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public T setInstance(List<T> overrides, Serializable value, T... components) {
 		return setInstance(null, overrides, value, Arrays.asList(components));
 	}
+
 	@SuppressWarnings("unchecked")
 	T addInstance(Class<?> clazz, List<T> overrides, Serializable value, List<T> components) {
 		getCurrentCache().getChecker().checkBeforeBuild(clazz, (T) this, overrides, value, components);
@@ -112,17 +114,15 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 			return equivInstance;
 		return getCurrentCache().getBuilder().internalSetInstance(equivInstance, clazz, adjustedMeta, overrides, value, components);
 	}
-	
-	
 
-	protected T writeAdjustMeta(Serializable value, T...components){
+	protected T writeAdjustMeta(Serializable value, T... components) {
 		return writeAdjustMeta(value, Arrays.asList(components));
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	T writeAdjustMeta(Serializable value, List<T> components) {
-		T meta = (T)this;
-		if( isMeta())
+		T meta = (T) this;
+		if (isMeta())
 			return ((T) getRoot()).setMeta(components.size());
 		return meta.readAdjustMeta(value, components);
 	}
@@ -131,18 +131,17 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getCurrentCache().getBuilder().setMeta(dim);
 	}
 
+	@SuppressWarnings("unchecked")
 	T readAdjustMeta(int dim) {
 		assert isMeta();
 		int size = getComponents().size();
 		if (size > dim)
 			return null;
 		if (size == dim)
-			return (T)this;
+			return (T) this;
 		T directInheriting = getInheritings().first();
-		return directInheriting != null && directInheriting.getComponents().size() <= dim ? directInheriting.readAdjustMeta(dim) : (T)this;
+		return directInheriting != null && directInheriting.getComponents().size() <= dim ? directInheriting.readAdjustMeta(dim) : (T) this;
 	}
-
-
 
 	@SuppressWarnings("unchecked")
 	T readAdjustMeta(Serializable value, List<T> components) {
@@ -221,7 +220,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		if (componentsList.size() != service.getComponents().size())
 			return false;
 		for (int i = 0; i < componentsList.size(); i++)
-			if (!componentsGenericEquals(componentsList.get(i), service.getComponents().get(i)))
+			if (!genericEquals(componentsList.get(i), service.getComponents().get(i)))
 				return false;
 		List<T> supersList = getSupers();
 		if (supersList.size() != service.getSupers().size())
@@ -232,11 +231,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return true;
 	}
 
-	static <T extends AbstractVertex<T>> boolean componentsGenericEquals(AbstractVertex<T> component, ISignature<?> compare) {
+	static <T extends AbstractVertex<T>> boolean genericEquals(AbstractVertex<T> component, ISignature<?> compare) {
 		return (component == compare) || (component != null && component.genericEquals(compare));
 	}
 
-	private static <T extends AbstractVertex<T>> boolean componentEquiv(T component, ISignature<?> compare) {
+	private static <T extends AbstractVertex<T>> boolean equiv(T component, ISignature<?> compare) {
 		return (component == compare) || (component != null && component.equiv(compare));
 	}
 
@@ -256,9 +255,9 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 			return false;
 		for (int i = 0; i < componentsList.size(); i++)
 			if (!isReferentialIntegrityEnabled(i) && isSingularConstraintEnabled(i))
-				return componentEquiv(componentsList.get(i), components.get(i));
+				return equiv(componentsList.get(i), components.get(i));
 		for (int i = 0; i < componentsList.size(); i++)
-			if (!componentEquiv(componentsList.get(i), components.get(i)))
+			if (!equiv(componentsList.get(i), components.get(i)))
 				return false;
 		if (!getMeta().isPropertyConstraintEnabled())
 			return Objects.equals(getValue(), value);

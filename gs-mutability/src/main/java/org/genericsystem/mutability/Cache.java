@@ -11,9 +11,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
+
 import org.genericsystem.api.core.IContext;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.concurrency.Cache.ContextEventListener;
@@ -21,13 +23,11 @@ import org.genericsystem.kernel.annotations.InstanceClass;
 
 public class Cache implements IContext<Generic>, ContextEventListener<org.genericsystem.concurrency.Generic> {
 	private final Engine engine;
-	private org.genericsystem.concurrency.Cache<org.genericsystem.concurrency.Generic> concurrencyCache;
+	private final org.genericsystem.concurrency.Cache<org.genericsystem.concurrency.Generic> concurrencyCache;
 	private final Map<Generic, org.genericsystem.concurrency.Generic> mutabilityMap = new IdentityHashMap<>();
 	private final Map<org.genericsystem.concurrency.Generic, Set<Generic>> reverseMultiMap = new IdentityHashMap<>();
 
 	private Deque<Map<Generic, org.genericsystem.concurrency.Generic>> revertMutations = new ArrayDeque<>();
-
-	// private Map<Generic, org.genericsystem.concurrency.Generic> revertMutations = new IdentityHashMap<>();
 
 	public Cache(Engine engine, org.genericsystem.concurrency.Engine concurrencyEngine) {
 		this.engine = engine;
@@ -193,21 +193,18 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 		return instance;
 	}
 
-	public Cache mountAndStartNewCache() {
-		concurrencyCache = concurrencyCache.mountAndStartNewCache();
+	public void mount() {
+		concurrencyCache.mount();
 		revertMutations.push(new IdentityHashMap<>());
-		return this;
 	}
 
-	public Cache flushAndUnmount() {
-		concurrencyCache = concurrencyCache.flushAndUnmount();
+	public void unmount() {
+		concurrencyCache.unmount();// triggersClearEvent
 		revertMutations.pop();
-		return this;
 	}
 
-	public Cache clearAndUnmount() {
-		concurrencyCache = concurrencyCache.clearAndUnmount();
-		revertMutations.pop();
-		return this;
+	public int getCacheLevel() {
+		return concurrencyCache.getCacheLevel();
 	}
+
 }

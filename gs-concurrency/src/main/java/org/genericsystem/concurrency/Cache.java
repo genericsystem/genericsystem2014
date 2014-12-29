@@ -8,6 +8,7 @@ import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
+import org.genericsystem.cache.AbstractCacheElement;
 import org.genericsystem.cache.CacheElement;
 import org.genericsystem.concurrency.Generic.SystemClass;
 import org.genericsystem.kernel.Builder;
@@ -161,6 +162,16 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 		super.clear();
 		listener.triggersClearEvent();
 		listener.triggersRefreshEvent();
+	}
+
+	@Override
+	public void unmount() {
+		AbstractCacheElement<T> subCache = cacheElement.getSubCache();
+		if (subCache instanceof CacheElement) {
+			cacheElement = (CacheElement<T>) cacheElement.getSubCache();
+			listener.triggersClearEvent();
+			listener.triggersRefreshEvent();
+		}
 	}
 
 	public static interface ContextEventListener<X> {

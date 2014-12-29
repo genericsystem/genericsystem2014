@@ -39,9 +39,19 @@ public class CacheTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		assert vehicle.isAlive();
-		engine.getCurrentCache().mountAndStartNewCache();
+		engine.getCurrentCache().mount();
 		assert vehicle.isAlive();
-		engine.getCurrentCache().clearAndUnmount();
+		engine.getCurrentCache().clear();
+		assert vehicle.isAlive();
+	}
+
+	public void test0021() {
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		assert vehicle.isAlive();
+		engine.getCurrentCache().mount();
+		assert vehicle.isAlive();
+		engine.getCurrentCache().unmount();
 		assert vehicle.isAlive();
 	}
 
@@ -49,10 +59,21 @@ public class CacheTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		assert vehicle.isAlive();
-		engine.getCurrentCache().mountAndStartNewCache();
+		engine.getCurrentCache().mount();
 		vehicle.remove();
 		assert !vehicle.isAlive();
-		engine.getCurrentCache().clearAndUnmount();
+		engine.getCurrentCache().clear();
+		assert vehicle.isAlive();
+	}
+
+	public void test0031() {
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		assert vehicle.isAlive();
+		engine.getCurrentCache().mount();
+		vehicle.remove();
+		assert !vehicle.isAlive();
+		engine.getCurrentCache().unmount();
 		assert vehicle.isAlive();
 	}
 
@@ -60,13 +81,28 @@ public class CacheTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		assert vehicle.isAlive();
-		engine.getCurrentCache().mountAndStartNewCache();
+		engine.getCurrentCache().mount();
 		assert vehicle.isAlive();
 		Generic generic = vehicle.update("Vehicle2");
 		assert generic == vehicle;
 		assert "Vehicle2".equals(vehicle.getValue());
 		assert vehicle.isAlive();
-		engine.getCurrentCache().clearAndUnmount();
+		engine.getCurrentCache().clear();
+		assert vehicle.isAlive();
+		assert "Vehicle".equals(vehicle.getValue());
+	}
+
+	public void test0041() {
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		assert vehicle.isAlive();
+		engine.getCurrentCache().mount();
+		assert vehicle.isAlive();
+		Generic generic = vehicle.update("Vehicle2");
+		assert generic == vehicle;
+		assert "Vehicle2".equals(vehicle.getValue());
+		assert vehicle.isAlive();
+		engine.getCurrentCache().unmount();
 		assert vehicle.isAlive();
 		assert "Vehicle".equals(vehicle.getValue());
 	}
@@ -80,7 +116,6 @@ public class CacheTest extends AbstractTest {
 		assert "Vehicle2".equals(vehicle.getValue());
 		assert vehicle.isAlive();
 	}
-
 
 	public void test001_getInheritings() {
 		Engine engine = new Engine();
@@ -154,11 +189,9 @@ public class CacheTest extends AbstractTest {
 		Cache cache = engine.newCache().start();
 		Cache currentCache = engine.getCurrentCache();
 		assert cache == currentCache;
-		Cache mountNewCache = currentCache.mountAndStartNewCache();
-		// assert mountNewCache.getSubContext() == currentCache;
-		// assert mountNewCache != currentCache;
+		currentCache.mount();
 		engine.addInstance("Vehicle");
-		assert currentCache == mountNewCache.flushAndUnmount();
+		currentCache.unmount();
 		currentCache.flush();
 	}
 
@@ -167,14 +200,13 @@ public class CacheTest extends AbstractTest {
 		Cache currentCache = engine.getCurrentCache();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic vehiclePower = engine.addInstance("vehiclePower", vehicle);
-		Cache mountNewCache = currentCache.mountAndStartNewCache();
-		assert engine.getCurrentCache() == mountNewCache;
+		currentCache.mount();
 		assert vehiclePower.isAlive();
 		assert !vehicle.getComposites().isEmpty() : vehicle.getComposites().get().collect(Collectors.toList());
 		vehiclePower.remove();
 		assert !vehiclePower.isAlive();
 		assert vehicle.getComposites().isEmpty() : vehicle.getComposites().get().collect(Collectors.toList());
-		mountNewCache.flush();
+		currentCache.flush();
 		assert vehicle.isAlive();
 		assert !vehiclePower.isAlive();
 		assert vehicle.getComposites().isEmpty() : vehicle.getComposites().get().collect(Collectors.toList());
