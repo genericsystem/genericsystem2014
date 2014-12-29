@@ -1,13 +1,16 @@
 package org.genericsystem.concurrency;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.ConstraintViolationException;
+import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
+import org.genericsystem.cache.CacheElement;
 import org.genericsystem.concurrency.Generic.SystemClass;
 import org.genericsystem.kernel.Builder;
-import org.genericsystem.kernel.Context;
-import org.genericsystem.kernel.DefaultContext;
 import org.genericsystem.kernel.Statics;
 
 public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache.Cache<T> {
@@ -18,14 +21,69 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 		this(new Transaction<>(engine));
 	}
 
-	protected Cache(Context<T> subContext) {
+	protected Cache(Transaction<T> subContext) {
 		this(subContext, new ContextEventListener<T>() {
 		});
 	}
 
-	protected Cache(Context<T> subContext, ContextEventListener<T> listener) {
+	protected Cache(Transaction<T> subContext, ContextEventListener<T> listener) {
 		super(subContext);
 		this.listener = listener;
+	}
+
+	@Override
+	protected void initialize() {
+		cacheElement = new CacheElement<T>(cacheElement == null || cacheElement.getSubCache() == null ? new TransactionElement() : cacheElement.getSubCache());
+	}
+
+	@Override
+	public Cache<T> start() {
+		return (Cache<T>) super.start();
+	}
+
+	private class TransactionElement extends org.genericsystem.cache.Cache<T>.TransactionElement {
+		private Set<LifeManager> lockedLifeManagers = new HashSet<>();
+
+		@Override
+		protected void apply(Iterable<T> removes, Iterable<T> adds) throws ConstraintViolationException, ConcurrencyControlException {
+			try {
+				writeLockAllAndCheckMvcc(adds, removes);
+				super.apply(removes, adds);
+			} finally {
+				writeUnlockAll();
+			}
+		}
+
+		private void writeLockAllAndCheckMvcc(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
+			for (T remove : removes)
+				writeLockAndCheckMvcc(remove);
+			for (T add : adds) {
+				writeLockAndCheckMvcc(add.getMeta());
+				for (T superT : add.getSupers())
+					writeLockAndCheckMvcc(superT);
+				for (T component : add.getComponents())
+					if (component != null)
+						writeLockAndCheckMvcc(component);
+				writeLockAndCheckMvcc(add);
+			}
+		}
+
+		private void writeLockAndCheckMvcc(T generic) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
+			if (generic != null) {
+				LifeManager manager = generic.getLifeManager();
+				if (!lockedLifeManagers.contains(manager)) {
+					manager.writeLock();
+					lockedLifeManagers.add(manager);
+					manager.checkMvcc(getTs());
+				}
+			}
+		}
+
+		private void writeUnlockAll() {
+			for (LifeManager lifeManager : lockedLifeManagers)
+				lifeManager.writeUnlock();
+			lockedLifeManagers = new HashSet<>();
+		}
 	}
 
 	@Override
@@ -46,26 +104,6 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 	}
 
 	@Override
-	public Cache<T> mountAndStartNewCache() {
-		return getRoot().newCache(this, listener).start();
-	}
-
-	@Override
-	public Cache<T> flushAndUnmount() {
-		return (Cache<T>) super.flushAndUnmount();
-	}
-
-	@Override
-	public Cache<T> clearAndUnmount() {
-		return (Cache<T>) super.clearAndUnmount();
-	}
-
-	@Override
-	public Cache<T> start() {
-		return (Cache<T>) getRoot().start(this);
-	}
-
-	@Override
 	protected void triggersMutation(T oldDependency, T newDependency) {
 		if (listener != null)
 			listener.triggersMutationEvent(oldDependency, newDependency);
@@ -76,19 +114,8 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 		return (DefaultEngine<T>) super.getRoot();
 	}
 
-	@Override
-	public Builder<T> getBuilder() {
-		return super.getBuilder();
-	}
-
 	public void pickNewTs() throws RollbackException {
-		if (getSubContext() instanceof Cache)
-			((Cache<?>) getSubContext()).pickNewTs();
-		else {
-			long ts = getTs();
-			subContext = new Transaction<>(getRoot());
-			assert getTs() > ts;
-		}
+		transaction = new Transaction<T>(getRoot());
 		listener.triggersRefreshEvent();
 	}
 
@@ -103,12 +130,13 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 				// if (getEngine().pickNewTs() - getTs() >= timeOut)
 				// throw new ConcurrencyControlException("The timestamp cache (" + getTs() + ") is bigger than the life time out : " + Statics.LIFE_TIMEOUT);
 				checkConstraints();
-				if (subContext instanceof Cache) {
-					((Cache<T>) subContext).start();
-					((Cache<T>) subContext).apply(adds, removes);
-				} else {
-					stop();// No context during transaction apply for more security
-					((Transaction<T>) subContext).apply(adds, removes);
+				CacheElement<T> cacheElement = this.cacheElement;
+				if (cacheElement.getSubCache() instanceof CacheElement)
+					this.cacheElement = (CacheElement<T>) cacheElement.getSubCache();
+				try {
+					apply(cacheElement);
+				} finally {
+					this.cacheElement = cacheElement;
 				}
 				initialize();
 				listener.triggersFlushEvent();
@@ -123,16 +151,9 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 				}
 			} catch (Exception e) {
 				discardWithException(e);
-			} finally {
-				start();
 			}
 		}
 		discardWithException(cause);
-	}
-
-	@Override
-	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
-		super.apply(adds, removes);
 	}
 
 	@Override
@@ -140,11 +161,6 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 		super.clear();
 		listener.triggersClearEvent();
 		listener.triggersRefreshEvent();
-	}
-
-	@Override
-	protected DefaultContext<T> getSubContext() {
-		return super.getSubContext();
 	}
 
 	public static interface ContextEventListener<X> {

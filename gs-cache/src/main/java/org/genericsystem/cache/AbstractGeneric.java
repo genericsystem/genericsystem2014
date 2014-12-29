@@ -1,7 +1,6 @@
 package org.genericsystem.cache;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.List;
 
 import org.genericsystem.kernel.AbstractVertex;

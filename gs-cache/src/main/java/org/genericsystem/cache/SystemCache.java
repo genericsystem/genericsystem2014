@@ -9,7 +9,7 @@ public class SystemCache<T extends AbstractGeneric<T>> extends org.genericsystem
 	}
 	
 	public void mount(List<Class<?>> systemClasses, Class<?>... userClasses) {
-		Cache<T> cache = ((DefaultEngine<T>) root).newCache().start();
+		Cache<T> cache = ((DefaultEngine<T>) root).start(((DefaultEngine<T>) root).newCache());
 		super.mount(systemClasses, userClasses);
 		cache.flush();
 	}

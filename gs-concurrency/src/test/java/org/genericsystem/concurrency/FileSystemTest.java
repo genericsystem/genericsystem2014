@@ -74,7 +74,7 @@ public class FileSystemTest extends AbstractTest {
 		final Directory directory2 = rootDirectory.addDirectory("directory2");
 		assert !directory2.addDirectory("directory1").equals(directory1); // No Exception
 		Cache<Generic> cache = engine.getCurrentCache();
-		Cache<Generic> mountAndStartNewCache = engine.getCurrentCache().mountAndStartNewCache();
+		engine.getCurrentCache().mount();
 
 		catchAndCheckCause(() -> directory2.addDirectory("directory1"), ExistsException.class); // Exception
 

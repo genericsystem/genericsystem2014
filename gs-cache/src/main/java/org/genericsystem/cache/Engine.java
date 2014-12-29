@@ -35,16 +35,16 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	}
 
 	@Override
-	public Cache<Generic> start(Cache<Generic> cache) {
-		if (!equals(cache.getRoot()))
+	public Cache<Generic> start(Cache<Generic> cacheManager) {
+		if (!equals(cacheManager.getRoot()))
 			throw new IllegalStateException();
-		cacheLocal.set(cache);
-		return cache;
+		cacheLocal.set(cacheManager);
+		return cacheManager;
 	}
 
 	@Override
-	public void stop(Cache<Generic> cache) {
-		assert cacheLocal.get() == cache;
+	public void stop(Cache<Generic> cacheManager) {
+		assert cacheLocal.get() == cacheManager;
 		cacheLocal.set(null);
 	}
 

@@ -1,7 +1,5 @@
 package org.genericsystem.cache;
 
-import org.genericsystem.api.exception.ConcurrencyControlException;
-import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.Builder;
 import org.genericsystem.kernel.Checker;
@@ -22,9 +20,14 @@ public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem
 		};
 	}
 
-	protected void apply(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, ConstraintViolationException {
-		removes.forEach(this::unplug);
-		adds.forEach(this::plug);
+	@Override
+	protected T plug(T generic) {
+		return super.plug(generic);
+	}
+
+	@Override
+	protected void unplug(T generic) {
+		super.unplug(generic);
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package org.genericsystem.concurrency;
 
 import org.genericsystem.concurrency.Cache.ContextEventListener;
-import org.genericsystem.kernel.Context;
 
 public interface DefaultEngine<T extends AbstractGeneric<T>> extends org.genericsystem.cache.DefaultEngine<T>, DefaultGeneric<T> {
 
@@ -12,15 +11,6 @@ public interface DefaultEngine<T extends AbstractGeneric<T>> extends org.generic
 
 	default Cache<T> newCache(ContextEventListener<T> listener) {
 		return new Cache<>(new Transaction<>(getRoot()), listener);
-	}
-
-	@Override
-	default Cache<T> newCache(Context<T> subContext) {
-		return new Cache<>(subContext);
-	}
-
-	default Cache<T> newCache(Context<T> subContext, ContextEventListener<T> listener) {
-		return new Cache<>(subContext, listener);
 	}
 
 	@Override

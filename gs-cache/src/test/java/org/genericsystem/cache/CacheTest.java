@@ -1,6 +1,7 @@
 package org.genericsystem.cache;
 
 import java.util.stream.Collectors;
+
 import org.genericsystem.api.exception.CacheNoStartedException;
 import org.testng.annotations.Test;
 
@@ -38,9 +39,9 @@ public class CacheTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		assert vehicle.isAlive();
-		engine.getCurrentCache().mountAndStartNewCache();
+		engine.getCurrentCache().mount();
 		assert vehicle.isAlive();
-		engine.getCurrentCache().clearAndUnmount();
+		engine.getCurrentCache().unmount();
 		assert vehicle.isAlive();
 	}
 
@@ -48,10 +49,10 @@ public class CacheTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		assert vehicle.isAlive();
-		engine.getCurrentCache().mountAndStartNewCache();
+		engine.getCurrentCache().mount();
 		vehicle.remove();
 		assert !vehicle.isAlive();
-		engine.getCurrentCache().clearAndUnmount();
+		engine.getCurrentCache().unmount();
 		assert vehicle.isAlive();
 	}
 
@@ -125,10 +126,9 @@ public class CacheTest extends AbstractTest {
 	public void test001_mountNewCache_nostarted() {
 		Engine engine = new Engine();
 		Cache<Generic> currentCache = engine.getCurrentCache();
-		Cache<Generic> mountNewCache = currentCache.mountAndStartNewCache();
-		currentCache.start();
-
-		catchAndCheckCause(() -> mountNewCache.flush(), CacheNoStartedException.class);
+		currentCache.mount();
+		engine.newCache().start();
+		catchAndCheckCause(() -> currentCache.flush(), CacheNoStartedException.class);
 	}
 
 	public void test002_mountNewCache() {
@@ -136,12 +136,8 @@ public class CacheTest extends AbstractTest {
 		Cache<Generic> cache = engine.newCache().start();
 		Cache<Generic> currentCache = engine.getCurrentCache();
 		assert cache == currentCache;
-		Cache<Generic> mountNewCache = currentCache.mountAndStartNewCache();
-		engine.getCurrentCache();
-		assert mountNewCache.getSubContext() == currentCache;
-		assert mountNewCache != currentCache;
+		currentCache.mount();
 		engine.addInstance("Vehicle");
-		assert currentCache == mountNewCache.flushAndUnmount();
 		currentCache.flush();
 	}
 
@@ -150,14 +146,17 @@ public class CacheTest extends AbstractTest {
 		Cache<Generic> currentCache = engine.getCurrentCache();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic vehiclePower = engine.addInstance("vehiclePower", vehicle);
-		Cache<Generic> mountNewCache = currentCache.mountAndStartNewCache();
-		assert engine.getCurrentCache() == mountNewCache;
+		assert currentCache.getCacheLevel() == 0;
+		currentCache.mount();
+		assert currentCache.getCacheLevel() == 1;
 		assert vehiclePower.isAlive();
 		assert !vehicle.getComposites().isEmpty() : vehicle.getComposites().get().collect(Collectors.toList());
 		vehiclePower.remove();
 		assert !vehiclePower.isAlive();
 		assert vehicle.getComposites().isEmpty() : vehicle.getComposites().get().collect(Collectors.toList());
-		mountNewCache.flush();
+		assert currentCache.getCacheLevel() == 1;
+		currentCache.flush();
+		currentCache.unmount();
 		assert vehicle.isAlive();
 		assert !vehiclePower.isAlive();
 		assert vehicle.getComposites().isEmpty() : vehicle.getComposites().get().collect(Collectors.toList());
