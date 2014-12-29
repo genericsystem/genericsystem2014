@@ -34,7 +34,7 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 
 	@Override
 	protected void initialize() {
-		cacheElement = new CacheElement<T>(cacheElement == null || cacheElement.getSubCache() == null ? new TransactionElement() : cacheElement.getSubCache());
+		cacheElement = new CacheElement<T>(cacheElement == null ? new TransactionElement() : cacheElement.getSubCache());
 	}
 
 	@Override
