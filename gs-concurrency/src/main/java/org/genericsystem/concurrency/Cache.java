@@ -42,7 +42,7 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 		return (Cache<T>) super.start();
 	}
 
-	private class TransactionElement extends org.genericsystem.cache.Cache<T>.TransactionElement {
+	protected class TransactionElement extends org.genericsystem.cache.Cache<T>.TransactionElement {
 		private Set<LifeManager> lockedLifeManagers = new HashSet<>();
 
 		@Override

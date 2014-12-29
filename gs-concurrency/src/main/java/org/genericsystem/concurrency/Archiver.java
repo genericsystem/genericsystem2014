@@ -6,7 +6,6 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.genericsystem.concurrency.Generic.SystemClass;
 import org.genericsystem.kernel.Builder;
@@ -80,20 +79,20 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 
 		@Override
 		protected T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, Long designTs, Long... otherTs) {
-			T instance = meta == null ? ((TsTransaction)transaction).getMeta(components.size()) : meta.getDirectInstance(value, components);
-			return instance == null ? ((TsTransaction.TsBuilder)transaction.getBuilder()).build(clazz, meta, supers, value, components,designTs,otherTs) :  instance.restore(designTs, otherTs[0], otherTs[1], otherTs[2]);
+			T instance = meta == null ? ((TsTransaction) transaction).getMeta(components.size()) : meta.getDirectInstance(value, components);
+			return instance == null ? ((TsTransaction.TsBuilder) transaction.getBuilder()).build(clazz, meta, supers, value, components, designTs, otherTs) : instance.restore(designTs, otherTs[0], otherTs[1], otherTs[2]);
 		}
 
 		private class TsTransaction extends org.genericsystem.cache.Transaction<T> {
 			TsTransaction() {
-				super((DefaultEngine<T>) root,((DefaultEngine<T>) root).pickNewTs());
+				super((DefaultEngine<T>) root, ((DefaultEngine<T>) root).pickNewTs());
 			}
 
 			@Override
 			protected T getMeta(int dim) {
 				return super.getMeta(dim);
 			}
-			
+
 			@Override
 			protected T plug(T generic) {
 				return super.plug(generic);
@@ -127,7 +126,6 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 				protected Class<T> getSystemTClass() {
 					return (Class<T>) SystemClass.class;
 				}
-
 
 				private T build(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, Long designTs, Long[] otherTs) {
 					return getContext().plug(newT(clazz, meta, supers, value, components).restore(designTs, otherTs[0], otherTs[1], otherTs[2]));

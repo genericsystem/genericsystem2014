@@ -43,49 +43,6 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 		cacheElement = new CacheElement<T>(cacheElement == null ? new TransactionElement() : cacheElement.getSubCache());
 	}
 
-	public class TransactionElement extends AbstractCacheElement<T> {
-
-		@Override
-		T plug(T generic) {
-			return transaction.plug(generic);
-		}
-
-		@Override
-		void unplug(T generic) {
-			transaction.unplug(generic);
-		}
-
-		@Override
-		boolean isAlive(T generic) {
-			return transaction.isAlive(generic);
-		}
-
-		@Override
-		Snapshot<T> getInheritings(T generic) {
-			return transaction.getInheritings(generic);
-		}
-
-		@Override
-		Snapshot<T> getInstances(T generic) {
-			return transaction.getInstances(generic);
-		}
-
-		@Override
-		Snapshot<T> getComposites(T generic) {
-			return transaction.getComposites(generic);
-		}
-
-		@Override
-		protected AbstractCacheElement<T> getSubCache() {
-			return null;
-		}
-
-		@Override
-		int getCacheLevel() {
-			return -1;
-		}
-	}
-
 	public void flush() {
 		if (!equals(getRoot().getCurrentCache()))
 			discardWithException(new CacheNoStartedException("The Cache isn't started"));
@@ -183,6 +140,49 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 
 	public int getCacheLevel() {
 		return cacheElement.getCacheLevel();
+	}
+
+	protected class TransactionElement extends AbstractCacheElement<T> {
+
+		@Override
+		T plug(T generic) {
+			return transaction.plug(generic);
+		}
+
+		@Override
+		void unplug(T generic) {
+			transaction.unplug(generic);
+		}
+
+		@Override
+		boolean isAlive(T generic) {
+			return transaction.isAlive(generic);
+		}
+
+		@Override
+		Snapshot<T> getInheritings(T generic) {
+			return transaction.getInheritings(generic);
+		}
+
+		@Override
+		Snapshot<T> getInstances(T generic) {
+			return transaction.getInstances(generic);
+		}
+
+		@Override
+		Snapshot<T> getComposites(T generic) {
+			return transaction.getComposites(generic);
+		}
+
+		@Override
+		protected AbstractCacheElement<T> getSubCache() {
+			return null;
+		}
+
+		@Override
+		int getCacheLevel() {
+			return -1;
+		}
 	}
 
 }
