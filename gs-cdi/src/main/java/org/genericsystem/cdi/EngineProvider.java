@@ -56,8 +56,7 @@ public class EngineProvider {
 		log.info("-  userClasses : " + Arrays.toString(userClassesProvider.getUserClassesArray()));
 		log.info("-----------------------------------------------------------------------------------------------");
 
-		engine = new Engine(() -> cacheRequestProvider.getCurrentCache(), Statics.ENGINE_VALUE, userClassesProvider.getUserClassesArray());// TODO GenericSystem.newPersistentEngine(persistentDirectoryProvider.getDirectoryPath(),
-																																			// userClassesProvider.getUserClassesArray());
+		engine = new Engine(() -> cacheRequestProvider.getCurrentCache(), Statics.ENGINE_VALUE, persistentDirectoryProvider.getDirectoryPath(), userClassesProvider.getUserClassesArray());
 	}
 
 	@Produces
@@ -69,7 +68,7 @@ public class EngineProvider {
 	public void destroy() {
 		eventLauncher.launchStopEvent();
 		log.info("$$$$$$$$$$$$$$ STOP GS ENGINE $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-		// engine.close();
+		engine.close();
 		engine = null;
 	}
 }

@@ -24,18 +24,6 @@ public class CacheSessionProvider implements Serializable {
 		currentCache = engine.newCache();
 	}
 
-	public void mountAndStartNewCache() {
-		currentCache = currentCache.mountAndStartNewCache();
-	}
-
-	public void flushAndUnmount() {
-		currentCache = (Cache) currentCache.flushAndUnmount();
-	}
-
-	public void clearAndUnmount() {
-		currentCache = (Cache) currentCache.clearAndUnmount();
-	}
-
 	public Cache getCurrentCache() {
 		return currentCache;
 	}

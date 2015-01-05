@@ -9,8 +9,8 @@ public class Engine extends org.genericsystem.concurrency.Engine {
 
 	private final Supplier<Cache> cacheSupplier;
 
-	public Engine(Supplier<Cache> cacheSupplier, Serializable engineValue, Class<?>... userClasses) {
-		super(engineValue, userClasses);
+	public Engine(Supplier<Cache> cacheSupplier, Serializable engineValue, String persistentDirectoryPath, Class<?>... userClasses) {
+		super(engineValue, persistentDirectoryPath, userClasses);
 		assert cacheSupplier != null : "Unable to find the current cache. Did you miss to call start() method on it ?";
 		this.cacheSupplier = cacheSupplier;
 		getCurrentCache().stop();

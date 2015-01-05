@@ -182,25 +182,8 @@ public class PersistenceTest extends AbstractTest {
 			// assert persistLifeManager.getLastReadTs() == readLifeManager.getLastReadTs();
 			assert persistLifeManager.getDeathTs() == readLifeManager.getDeathTs();
 			assert persistLifeManager.getDesignTs() == readLifeManager.getDesignTs() : persistVisit.get(i).info() + " / " + persistLifeManager.getDesignTs();
-
+			assert persistVisit.get(i).genericEquals(readVisit.get(i));
 		}
 	}
-
-	// private void compareGraph(Generic persistedNode, Generic readNode) {
-	// DependenciesOrder<Generic> persistVisit = new DependenciesOrder<Generic>().visit(persistedNode);
-	// DependenciesOrder<Generic> readVisit = new DependenciesOrder<Generic>().visit(readNode);
-	// assert persistVisit.size() == readVisit.size() : persistVisit + " \n " + readVisit;
-	// for (Generic persist : persistVisit) {
-	// for (Generic read : readVisit)
-	// if (persist == read)
-	// assert false : persistVisit + " \n " + readVisit;
-	// }
-	// LOOP: for (Generic persist : persistVisit) {
-	// for (Generic read : readVisit)
-	// if (persist.genericEquals(read))
-	// continue LOOP;
-	// assert false : persistVisit + " \n " + readVisit;
-	// }
-	// }
 
 }

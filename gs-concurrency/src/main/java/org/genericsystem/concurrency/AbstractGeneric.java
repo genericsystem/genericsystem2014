@@ -30,7 +30,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.
 		return (T) this;
 	}
 
-	LifeManager getLifeManager() {
+	public LifeManager getLifeManager() {
 		return lifeManager;
 	}
 
@@ -38,7 +38,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.
 		return lifeManager.isAlive(ts);
 	}
 
-	//TODO remove this
+	// TODO remove this
 	@Override
 	protected T getDirectInstance(Serializable value, List<T> components) {
 		return super.getDirectInstance(value, components);

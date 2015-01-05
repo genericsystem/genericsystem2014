@@ -2,6 +2,7 @@ package org.genericsystem.concurrency;
 
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
 import org.slf4j.Logger;
@@ -79,11 +80,11 @@ public class LifeManager {
 		return lastReadTs.get();
 	}
 
-	long getDesignTs() {
+	public long getDesignTs() {
 		return designTs;
 	}
 
-	long getDeathTs() {
+	public long getDeathTs() {
 		return deathTs;
 	}
 
@@ -118,7 +119,7 @@ public class LifeManager {
 		return lock.isWriteLockedByCurrentThread();
 	}
 
-	long getBirthTs() {
+	public long getBirthTs() {
 		return birthTs;
 	}
 
