@@ -67,13 +67,13 @@ class InheritanceComputer<T extends AbstractVertex<T>> extends HashSet<T> {
 			if (compositesBySuper(localBase, holder).count() != 0)
 				add(holder);
 			Stream<T> indexStream = Stream.concat(holder.getLevel() < level ? compositesByMeta(localBase, holder) : Stream.empty(), compositesBySuper(localBase, holder));
-			return Stream.concat(Stream.of(holder), indexStream.filter(y -> !y.equals(holder)).flatMap(x -> getStream(x)).distinct());
+			return Stream.concat(Stream.of(holder), indexStream.flatMap(x -> getStream(x)).distinct());
 		}
 
 	}
 
 	private static <T extends AbstractVertex<T>> Stream<T> compositesByMeta(T localBase, T holder) {
-		return localBase.getComposites().get().filter(x -> x.getMeta().equals(holder));// TODO if x== null && if x==holder
+		return localBase.getComposites().get().filter(x -> !x.equals(holder) && x.getMeta().equals(holder));
 	}
 
 	private static <T extends AbstractVertex<T>> Stream<T> compositesBySuper(T localBase, T holder) {
