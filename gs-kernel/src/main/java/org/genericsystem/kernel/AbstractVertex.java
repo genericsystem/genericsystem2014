@@ -115,6 +115,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getCurrentCache().getBuilder().internalSetInstance(equivInstance, clazz, adjustedMeta, overrides, value, components);
 	}
 
+	@SuppressWarnings("unchecked")
 	protected T writeAdjustMeta(Serializable value, T... components) {
 		return writeAdjustMeta(value, Arrays.asList(components));
 	}

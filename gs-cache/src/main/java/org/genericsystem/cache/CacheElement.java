@@ -3,7 +3,8 @@ package org.genericsystem.cache;
 import java.util.stream.Stream;
 
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.api.exception.ConstraintViolationException;
+import org.genericsystem.api.exception.ConcurrencyControlException;
+import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.Checker;
 import org.genericsystem.kernel.DependenciesImpl;
@@ -93,7 +94,7 @@ public class CacheElement<T extends AbstractGeneric<T>> extends AbstractCacheEle
 		};
 	}
 
-	void apply() throws ConstraintViolationException {
+	void apply() throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
 		getSubCache().apply(removes, adds);
 	}
 

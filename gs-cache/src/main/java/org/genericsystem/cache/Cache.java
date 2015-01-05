@@ -2,7 +2,8 @@ package org.genericsystem.cache;
 
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.CacheNoStartedException;
-import org.genericsystem.api.exception.ConstraintViolationException;
+import org.genericsystem.api.exception.ConcurrencyControlException;
+import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.cache.Generic.SystemClass;
 import org.genericsystem.kernel.Builder;
@@ -47,22 +48,29 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 		if (!equals(getRoot().getCurrentCache()))
 			discardWithException(new CacheNoStartedException("The Cache isn't started"));
 		checkConstraints();
+		try {
+			doSynchronizedApplyInSubContext();
+		} catch (ConcurrencyControlException | OptimisticLockConstraintViolationException exception) {
+			discardWithException(exception);
+		}
+		initialize();
+	}
+
+	protected void doSynchronizedApplyInSubContext() throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
 		CacheElement<T> originalCacheElement = this.cacheElement;
 		if (this.cacheElement.getSubCache() instanceof CacheElement)
 			this.cacheElement = (CacheElement<T>) this.cacheElement.getSubCache();
 		try {
-			synchronized (getRoot()) {
-				apply(originalCacheElement);
-			}
-		} catch (ConstraintViolationException exception) {
-			discardWithException(exception);
+			synchronizedApply(originalCacheElement);
+		} finally {
+			this.cacheElement = originalCacheElement;
 		}
-		this.cacheElement = originalCacheElement;
-		initialize();
 	}
 
-	protected void apply(CacheElement<T> cacheElement) throws ConstraintViolationException {
-		cacheElement.apply();
+	private void synchronizedApply(CacheElement<T> cacheElement) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
+		synchronized (getRoot()) {
+			cacheElement.apply();
+		}
 	}
 
 	public void clear() {

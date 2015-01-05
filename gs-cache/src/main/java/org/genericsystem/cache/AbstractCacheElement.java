@@ -2,7 +2,7 @@ package org.genericsystem.cache;
 
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.ConcurrencyControlException;
-import org.genericsystem.api.exception.ConstraintViolationException;
+import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
 
 public abstract class AbstractCacheElement<T extends AbstractGeneric<T>> {
 
@@ -20,7 +20,7 @@ public abstract class AbstractCacheElement<T extends AbstractGeneric<T>> {
 
 	abstract AbstractCacheElement<T> getSubCache();
 
-	protected void apply(Iterable<T> removes, Iterable<T> adds) throws ConcurrencyControlException, ConstraintViolationException {
+	protected void apply(Iterable<T> removes, Iterable<T> adds) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
 		for (T generic : removes)
 			unplug(generic);
 		for (T generic : adds)

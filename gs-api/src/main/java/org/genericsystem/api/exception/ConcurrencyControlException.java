@@ -5,7 +5,7 @@ package org.genericsystem.api.exception;
  * 
  * @author Nicolas Feybesse
  */
-public class ConcurrencyControlException extends ConstraintViolationException {
+public class ConcurrencyControlException extends Exception {
 
 	public ConcurrencyControlException(String string) {
 		super(string);

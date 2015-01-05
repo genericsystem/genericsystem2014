@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +73,7 @@ class InheritanceComputer<T extends AbstractVertex<T>> extends HashSet<T> {
 	}
 
 	private static <T extends AbstractVertex<T>> Stream<T> compositesByMeta(T localBase, T holder) {
-		return localBase.getComposites().get().filter(x -> x.getMeta().equals(holder));
+		return localBase.getComposites().get().filter(x -> x.getMeta().equals(holder));// TODO if x== null && if x==holder
 	}
 
 	private static <T extends AbstractVertex<T>> Stream<T> compositesBySuper(T localBase, T holder) {

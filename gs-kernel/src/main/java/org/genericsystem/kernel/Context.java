@@ -47,7 +47,7 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		return builder;
 	}
 
-	@Override
+	// @Override
 	public DefaultRoot<T> getRoot() {
 		return root;
 	}
