@@ -1,7 +1,7 @@
 package org.genericsystem.cdi;
 
-import org.genericsystem.concurrency.Generic;
 import org.genericsystem.kernel.annotations.SystemGeneric;
+import org.genericsystem.mutability.Generic;
 import org.testng.annotations.Test;
 
 @Test
@@ -20,7 +20,7 @@ public class PersistenceTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	public static class Count extends Generic {
+	public static class Count {
 	}
 
 }

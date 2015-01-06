@@ -6,7 +6,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
-import org.genericsystem.concurrency.Cache;
+import org.genericsystem.mutability.Cache;
 
 @RequestScoped
 public class CacheRequestProvider {

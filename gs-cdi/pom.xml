@@ -14,7 +14,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.genericsystem</groupId>
-			<artifactId>gs-concurrency</artifactId>
+			<artifactId>gs-mutability</artifactId>
 			<version>3.0-SNAPSHOT</version>
 		</dependency>
 

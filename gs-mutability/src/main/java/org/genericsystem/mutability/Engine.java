@@ -11,7 +11,7 @@ import org.genericsystem.kernel.Statics;
 
 public class Engine implements Generic, IRoot<Generic>, MethodHandler {
 
-	private final ThreadLocal<Cache> cacheLocal = new ThreadLocal<>();
+	protected final ThreadLocal<Cache> cacheLocal = new ThreadLocal<>();
 
 	private final org.genericsystem.concurrency.Engine concurrencyEngine;
 

@@ -1,8 +1,8 @@
 package org.genericsystem.cdi;
 
 import org.genericsystem.api.exception.CacheNoStartedException;
-import org.genericsystem.concurrency.Cache;
-import org.genericsystem.concurrency.Generic;
+import org.genericsystem.mutability.Cache;
+import org.genericsystem.mutability.Generic;
 import org.testng.annotations.Test;
 
 @Test
@@ -25,13 +25,13 @@ public class CacheTest extends AbstractTest {
 	}
 
 	public void test001_newCache_nostarted() {
-		Cache<Generic> currentCache = engine.getCurrentCache();
+		Cache currentCache = engine.getCurrentCache();
 		engine.newCache().start();
 		catchAndCheckCause(() -> currentCache.flush(), CacheNoStartedException.class);
 	}
 
 	public void test001_mountNewCache() {
-		Cache<Generic> currentCache = engine.getCurrentCache();
+		Cache currentCache = engine.getCurrentCache();
 		currentCache.mount();
 		assert engine.getCurrentCache() == currentCache;
 		engine.addInstance("Vehicle");
@@ -42,7 +42,7 @@ public class CacheTest extends AbstractTest {
 	}
 
 	public void test002_mountNewCache() {
-		Cache<Generic> currentCache = engine.getCurrentCache();
+		Cache currentCache = engine.getCurrentCache();
 		assert currentCache.getCacheLevel() == 0;
 		currentCache.mount();
 		Generic vehicle = engine.addInstance("Vehicle");

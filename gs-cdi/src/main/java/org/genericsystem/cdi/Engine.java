@@ -3,9 +3,12 @@ package org.genericsystem.cdi;
 import java.io.Serializable;
 import java.util.function.Supplier;
 
-import org.genericsystem.concurrency.Cache;
+import javax.enterprise.inject.Vetoed;
 
-public class Engine extends org.genericsystem.concurrency.Engine {
+import org.genericsystem.mutability.Cache;
+
+@Vetoed
+public class Engine extends org.genericsystem.mutability.Engine {
 
 	private final Supplier<Cache> cacheSupplier;
 

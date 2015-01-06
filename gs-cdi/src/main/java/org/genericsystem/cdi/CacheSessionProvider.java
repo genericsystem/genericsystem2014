@@ -7,7 +7,7 @@ import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 
-import org.genericsystem.concurrency.Cache;
+import org.genericsystem.mutability.Cache;
 
 @SessionScoped
 public class CacheSessionProvider implements Serializable {
@@ -15,7 +15,7 @@ public class CacheSessionProvider implements Serializable {
 	private static final long serialVersionUID = 5201003234496546928L;
 
 	@Inject
-	private transient org.genericsystem.concurrency.Engine engine;
+	private transient Engine engine;
 
 	private transient Cache currentCache;
 
