@@ -45,7 +45,6 @@
 		<module>gs-concurrency</module>
 		<module>gs-mutability</module>
 		<module>gs-cdi</module>
-		<module>gs-example</module>
 		<!-- <module>gs-tracker</module> -->
 		<!-- <module>gs-framework</module> -->
 		<!-- <module>gs-security</module> -->
