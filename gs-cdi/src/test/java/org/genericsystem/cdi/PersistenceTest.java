@@ -1,5 +1,7 @@
 package org.genericsystem.cdi;
 
+import java.io.Serializable;
+
 import org.genericsystem.kernel.annotations.SystemGeneric;
 import org.genericsystem.mutability.Generic;
 import org.testng.annotations.Test;
@@ -13,9 +15,10 @@ public class PersistenceTest extends AbstractTest {
 			count.addInstance(0);
 			engine.getCurrentCache().flush();
 		}
-		Generic previousValue = count.getInstances().first();
-		Generic actualValue = previousValue.updateValue((int) previousValue.getValue() + 1);
-		log.info("previousValue " + previousValue.info() + " actualValue " + actualValue.info());
+		Generic actualValue = count.getInstances().first();
+		Serializable previousValue = actualValue.getValue();
+		actualValue.updateValue((int) actualValue.getValue() + 1);
+		log.info("previousValue " + previousValue + " actualValue " + actualValue.getValue());
 		engine.getCurrentCache().flush();
 	}
 
