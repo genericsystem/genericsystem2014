@@ -14,6 +14,13 @@
 		
 		<maven-compiler-plugin.version>3.2</maven-compiler-plugin.version>
 	</properties>
+	
+	<distributionManagement>
+		<repository>
+			<id>middlewarefactory</id>
+			<url>ftp://genericsystem.org/home/middleware/repository/</url>
+		</repository>
+	</distributionManagement>
 
 	<dependencies>
 		<dependency>
