@@ -7,6 +7,26 @@ Generic System (GS) est un moteur d’information **open-source** développé pa
 Ce moteur innovant implémenté en Java est à la fois persistant, transactionnel, concurrentiel et restructurable.
 Generic System vient s’intégrer dans l’écosystème des bases de données NoSQL, en mettant en œuvre une logique tout objet, et sans **aucune dépendance à une base de données relationnelle**.
 
+Examples
+--------
+
+### First example
+    // Create an engine named myDataBase and which is persistent
+	Engine engine = new Engine("myDataBase", System.getenv("HOME") + "/my_directory_path");
+	
+    // Create a vehicle with a color
+	Generic vehicle = engine.addInstance("Vehicle");
+	Generic color = vehicle.addAttribute("Color");
+	
+    // Instantiate a red vehicle
+    Generic myVehicle = vehicle.addInstance("myVehicle");
+    myVehicle.addInstance("red", color);
+    
+    // Save the database
+    engine.getCurrentCache().flush();
+
+Key highlights
+--------------
 Some of the key highlights include:
 * Persistant : Generic System est exécuté en mémoire et possède son propre mécanisme de persistance.
 Au démarrage, le moteur de Generic System récupère l’image archivée la plus récente (dans un répertoire prévu à cet effet) et construit le système d’information.
@@ -36,20 +56,6 @@ donne sa grande souplesse.
 Prerequisites
 -------------
 Some prerequisites.
-
-Examples
---------
-
-### First example
-    // Create an engine named myDataBase and which is persistent
-	Engine engine = new Engine("myDataBase", "[1]");
-    // Create a vehicle with a color
-	Generic vehicle = engine.addInstance("Vehicle");
-	Generic color = vehicle.addAttribute("Color");
-    // Instantiate a red vehicle
-    Generic myVehicle = vehicle.addInstance("myVehicle");
-    myVehicle.addInstance("red", color);
-*[1] répertoire de sauvegarde du modèle de données sous la forme de chaîne de caractères*
 
 Directory structure
 -------------------
