@@ -22,7 +22,7 @@ Pour information les opérations de lecture sont globalement prioritaires sur le
 * Concurrentiel : GS permet à plusieurs personnes de travailler en parallèle.
 Les algorithmes sont inspirés de ceux dits [MVCC (MultiVersion Concurrency Control)](http://en.wikipedia.org/wiki/Multiversion_concurrency_control).
 Ils assurent aux utilisateurs de Generic System des transactions correctement isolées et des données requêtées parfaitement cohérentes.
-* Restructurable et Souple : GS est dit fortement restructurable car il offre la possibilité de modifier la structure de l’information de la même manière que l’information elle-même (c’est à dire de 
+* Souple et personnalisable : GS est dit fortement restructurable car il offre la possibilité de modifier la structure de l’information de la même manière que l’information elle-même (c’est à dire de 
 manière transactionnelle et concurrentielle).
 Ainsi, et contrairement aux bases de données relationnelles, GS permet de modifier à chaud la structure de l’information.  
 Un des défauts majeurs des bases de données relationnelles est que la structure de la base de données n’est pas adressée de la même manière que les données elles-mêmes.
@@ -31,11 +31,41 @@ figeant la structure des données sur laquelle elles reposent.
 Ce choix est tout simplement en contradiction directe avec ce que préconisent les méthodologies modernes de développement d’applications, dans lesquelles on a besoin de faire évoluer le cahier des charges 
 au cours d’un projet.  
 Encore une fois, Generic System fait ici le choix d’adresser la structure de l’information comme n’importe quelle autre information, c’est à dire de manière transactionnelle et concurrentielle, ce qui 
-donne sa grande souplesse.
+permet une grande souplesse.
 
 Prerequisites
 -------------
-Some prerequisites.
+Pour faire fonctionner Generic System, il est nécessaire :
+* d'installer Java 8
+
+* de configurer dans le pom.xml de votre projet, le repository Generic System :
+    <pre>
+    &lt;repositories&gt;
+    	&lt;repository&gt;
+    		&lt;id&gt;middlewarefactory&lt;/id&gt;
+    		&lt;url&gt;ftp://genericsystem.org/home/middleware/repository&lt;/url&gt;
+    		&lt;releases&gt;
+    			&lt;enabled&gt;true&lt;/enabled&gt;
+    			&lt;updatePolicy&gt;daily&lt;/updatePolicy&gt;
+    		&lt;/releases&gt;
+    		&lt;snapshots&gt;
+    			&lt;enabled&gt;true&lt;/enabled&gt;
+    			&lt;updatePolicy&gt;daily&lt;/updatePolicy&gt;
+    		&lt;/snapshots&gt;
+    	&lt;/repository&gt;
+    &lt;/repositories&gt;
+    </pre>
+
+* d'ajouter la dépendance à Generic System, toujours dans le pom.xml de votre projet :
+    <pre>
+    &lt;dependencies&gt;
+    	&lt;dependency&gt;
+    		&lt;groupId&gt;org.genericsystem&lt;/groupId&gt;
+    		&lt;artifactId&gt;gs-mutability&lt;/artifactId&gt;
+    		&lt;version&gt;3.0-SNAPSHOT&lt;/version&gt;
+    	&lt;/dependency&gt;
+    &lt;/dependencies&gt;
+    </pre>
 
 Examples
 --------
