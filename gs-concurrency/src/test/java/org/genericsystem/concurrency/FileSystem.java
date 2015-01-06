@@ -5,8 +5,6 @@ import java.util.Optional;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.concurrency.FileSystem.Directory;
 import org.genericsystem.concurrency.FileSystem.FileType;
-import org.genericsystem.concurrency.FileSystem.FileType.File;
-import org.genericsystem.concurrency.FileSystem.FileType.FileContent;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Dependencies;
@@ -87,25 +85,28 @@ public class FileSystem extends Generic {
 	@InstanceClass(File.class)
 	@Dependencies(FileContent.class)
 	public static class FileType extends Generic {
-		@SystemGeneric
-		@SingularConstraint
-		@Components(FileType.class)
-		@InstanceValueClassConstraint(byte[].class)
-		public static class FileContent extends Generic {}
 
-		public static class File extends Generic {
-			public byte[] getContent() {
-				return (byte[]) getHolders(getRoot().find(FileContent.class)).get().findFirst().get().getValue();
-			}
+	}
 
-			public Generic setContent(byte[] content) {
-				return setHolder(getRoot().find(FileContent.class), content);
-			}
-
-			public String getShortPath() {
-				return (String) getValue();
-			}
+	public static class File extends Generic {
+		public byte[] getContent() {
+			return (byte[]) getHolders(getRoot().find(FileContent.class)).get().findFirst().get().getValue();
 		}
+
+		public Generic setContent(byte[] content) {
+			return setHolder(getRoot().find(FileContent.class), content);
+		}
+
+		public String getShortPath() {
+			return (String) getValue();
+		}
+	}
+
+	@SystemGeneric
+	@SingularConstraint
+	@Components(FileType.class)
+	@InstanceValueClassConstraint(byte[].class)
+	public static class FileContent extends Generic {
 	}
 
 	public Snapshot<Generic> getRootDirectories() {

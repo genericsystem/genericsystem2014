@@ -5,8 +5,8 @@ import java.util.Arrays;
 import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.InstanceValueClassViolationConstraint;
 import org.genericsystem.concurrency.FileSystem.Directory;
+import org.genericsystem.concurrency.FileSystem.File;
 import org.genericsystem.concurrency.FileSystem.FileType;
-import org.genericsystem.concurrency.FileSystem.FileType.File;
 import org.testng.annotations.Test;
 
 @Test

@@ -1,6 +1,5 @@
 package org.genericsystem.kernel;
 
-import org.genericsystem.kernel.Config.DefaultNoReferentialIntegrityProperty.DefaultValue;
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Dependencies;
 import org.genericsystem.kernel.annotations.Meta;
@@ -19,7 +18,8 @@ public class Config {
 	@Components(Root.class)
 	@EngineValue
 	@Dependencies({ DefaultNoReferentialIntegrityProperty.class })
-	public static class MetaAttribute {}
+	public static class MetaAttribute {
+	}
 
 	@SystemGeneric
 	@Meta(MetaAttribute.class)
@@ -28,13 +28,13 @@ public class Config {
 	@AxedPropertyClassValue(propertyClass = NoReferentialIntegrityProperty.class, pos = Statics.BASE_POSITION)
 	@Dependencies({ DefaultValue.class })
 	public static class DefaultNoReferentialIntegrityProperty {
+	}
 
-		@SystemGeneric
-		@Meta(DefaultNoReferentialIntegrityProperty.class)
-		@Components(MetaAttribute.class)
-		@BooleanValue(true)
-		public static class DefaultValue {}
-
+	@SystemGeneric
+	@Meta(DefaultNoReferentialIntegrityProperty.class)
+	@Components(MetaAttribute.class)
+	@BooleanValue(true)
+	public static class DefaultValue {
 	}
 
 	@SystemGeneric
@@ -42,12 +42,15 @@ public class Config {
 	@Supers(MetaAttribute.class)
 	@Components({ Root.class, Root.class })
 	@EngineValue
-	public static class MetaRelation {}
+	public static class MetaRelation {
+	}
 
 	@SystemGeneric
 	@Meta(MetaAttribute.class)
 	@Components(Root.class)
-	@PropertyConstraint // TODO do this with annotated classes
-	public static class SystemMap {}
+	@PropertyConstraint
+	// TODO do this with annotated classes
+	public static class SystemMap {
+	}
 
 }
