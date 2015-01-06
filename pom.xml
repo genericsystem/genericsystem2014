@@ -52,7 +52,7 @@
 
 	<distributionManagement>
 		<repository>
-			<id>ftp-repository</id>
+			<id>middlewarefactory</id>
 			<url>ftp://genericsystem.org/home/middleware/repository/</url>
 		</repository>
 	</distributionManagement>
@@ -100,6 +100,18 @@
 	</build>
 
 	<repositories>
+		<repository>
+			<id>middlewarefactory</id>
+			<url>ftp://genericsystem.org/home/middleware/repository</url>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+			</snapshots>
+		</repository>
 		<repository>
 			<id>jboss-nexus</id>
 			<name>JBoss (Nexus) Stable Repository</name>
