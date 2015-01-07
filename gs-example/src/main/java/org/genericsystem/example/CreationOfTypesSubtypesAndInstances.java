@@ -8,8 +8,8 @@ public class CreationOfTypesSubtypesAndInstances {
 		// Create an engine which is in memory
 		Engine engine = new Engine();
 
-		// Create a type Vehicle and instantiate an instance
-		Generic vehicle = engine.addInstance("Vehicle");
+		// Create a type Vehicle and instantiate it
+		Generic vehicle = engine.addType("Vehicle");
 		vehicle.addInstance("myVehicle");
 	}
 
@@ -17,7 +17,7 @@ public class CreationOfTypesSubtypesAndInstances {
 		Engine engine = new Engine();
 
 		// Create a type Vehicle
-		Generic vehicle = engine.addInstance("Vehicle");
+		Generic vehicle = engine.addType("Vehicle");
 		// Instantiate a first instance
 		vehicle.addInstance("myFirstVehicle");
 		// Instantiate a second instance
@@ -28,11 +28,11 @@ public class CreationOfTypesSubtypesAndInstances {
 		Engine engine = new Engine();
 
 		// Create a type Vehicle
-		Generic vehicle = engine.addInstance("Vehicle");
+		Generic vehicle = engine.addType("Vehicle");
 		// Create the type Car which is a subtype of Vehicle
-		Generic car = engine.addInstance(vehicle, "Car");
+		Generic car = engine.addType(vehicle, "Car");
 		// Create the type Bike which is another subtype of Vehicle
-		Generic bike = engine.addInstance(vehicle, "Bike");
+		Generic bike = engine.addType(vehicle, "Bike");
 
 		// Create an instance of Vehicle
 		vehicle.addInstance("myVehicle");

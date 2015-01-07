@@ -9,7 +9,7 @@ public class Configuration {
 		Engine engine = new Engine("myDataBase", System.getenv("HOME") + "/my_directory_path");
 
 		// Create a vehicle with a color
-		Generic vehicle = engine.addInstance("Vehicle");
+		Generic vehicle = engine.addType("Vehicle");
 		Generic color = vehicle.addAttribute("Color");
 
 		// Instantiate a vehicle with a color red
