@@ -76,6 +76,18 @@ public interface DefaultWritable<T extends AbstractVertex<T>> extends IVertex<T>
 
 	@Override
 	@SuppressWarnings("unchecked")
+	default T addRelation(Serializable value, T firstTarget, T... otherTargets) {
+		return addRelation(Collections.emptyList(), value, firstTarget, otherTargets);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T setRelation(Serializable value, T firstTarget, T... otherTargets) {
+		return setRelation(Collections.emptyList(), value, firstTarget, otherTargets);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
 	default T addHolder(T attribute, Serializable value, T... targets) {
 		return attribute.addInstance(value, addThisToTargets(targets));
 	}
@@ -84,6 +96,18 @@ public interface DefaultWritable<T extends AbstractVertex<T>> extends IVertex<T>
 	@SuppressWarnings("unchecked")
 	default T setHolder(T attribute, Serializable value, T... targets) {
 		return attribute.setInstance(value, addThisToTargets(targets));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T addLink(T relation, Serializable value, T firstTarget, T... otherTargets) {
+		return relation.addInstance(value, addThisToTargets(firstTarget, otherTargets));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T setLink(T relation, Serializable value, T firstTarget, T... otherTargets) {
+		return relation.setInstance(value, addThisToTargets(firstTarget, otherTargets));
 	}
 
 	@Override
@@ -100,6 +124,18 @@ public interface DefaultWritable<T extends AbstractVertex<T>> extends IVertex<T>
 
 	@Override
 	@SuppressWarnings("unchecked")
+	default T addRelation(T override, Serializable value, T firstTarget, T... otherTargets) {
+		return addRelation(Collections.singletonList(override), value, firstTarget, otherTargets);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T setRelation(T override, Serializable value, T firstTarget, T... otherTargets) {
+		return setRelation(Collections.singletonList(override), value, firstTarget, otherTargets);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
 	default T addHolder(T attribute, T override, Serializable value, T... targets) {
 		return attribute.addInstance(override, value, addThisToTargets(targets));
 	}
@@ -108,6 +144,18 @@ public interface DefaultWritable<T extends AbstractVertex<T>> extends IVertex<T>
 	@SuppressWarnings("unchecked")
 	default T setHolder(T attribute, T override, Serializable value, T... targets) {
 		return attribute.setInstance(override, value, addThisToTargets(targets));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T addLink(T relation, T override, Serializable value, T firstTarget, T... otherTargets) {
+		return relation.addInstance(override, value, addThisToTargets(firstTarget, otherTargets));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T setLink(T relation, T override, Serializable value, T firstTarget, T... otherTargets) {
+		return relation.setInstance(override, value, addThisToTargets(firstTarget, otherTargets));
 	}
 
 	@Override
@@ -124,6 +172,18 @@ public interface DefaultWritable<T extends AbstractVertex<T>> extends IVertex<T>
 
 	@Override
 	@SuppressWarnings("unchecked")
+	default T addRelation(List<T> overrides, Serializable value, T firstTarget, T... otherTargets) {
+		return getRoot().addInstance(overrides, value, addThisToTargets(firstTarget, otherTargets));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T setRelation(List<T> overrides, Serializable value, T firstTarget, T... otherTargets) {
+		return getRoot().setInstance(overrides, value, addThisToTargets(firstTarget, otherTargets));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
 	default T addHolder(T attribute, List<T> overrides, Serializable value, T... targets) {
 		return attribute.addInstance(overrides, value, addThisToTargets(targets));
 	}
@@ -132,6 +192,33 @@ public interface DefaultWritable<T extends AbstractVertex<T>> extends IVertex<T>
 	@SuppressWarnings("unchecked")
 	default T setHolder(T attribute, List<T> overrides, Serializable value, T... targets) {
 		return attribute.setInstance(overrides, value, addThisToTargets(targets));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T addLink(T relation, List<T> overrides, Serializable value, T firstTarget, T... otherTargets) {
+		return relation.addInstance(overrides, value, addThisToTargets(firstTarget, otherTargets));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T setLink(T relation, List<T> overrides, Serializable value, T firstTarget, T... otherTargets) {
+		return relation.setInstance(overrides, value, addThisToTargets(firstTarget, otherTargets));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default T[] addThisToTargets(T... targets) {
+		T[] composites = ((Context<T>) getCurrentCache()).getBuilder().newTArray(targets.length + 1);
+		composites[0] = (T) this;
+		System.arraycopy(targets, 0, composites, 1, targets.length);
+		return composites;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default T[] addThisToTargets(T firstTarget, T... otherTargets) {
+		return addThisToTargets(firstTarget.addThisToTargets(otherTargets));
 	}
 
 }

@@ -280,15 +280,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
-	public T[] addThisToTargets(T... targets) {
-		T[] composites = getCurrentCache().getBuilder().newTArray(targets.length + 1);
-		composites[0] = (T) this;
-		System.arraycopy(targets, 0, composites, 1, targets.length);
-		return composites;
-	}
-
-	@SuppressWarnings("unchecked")
 	boolean componentsDepends(List<T> subComponents, List<T> superComponents) {
 		int subIndex = 0;
 		loop: for (T superComponent : superComponents) {

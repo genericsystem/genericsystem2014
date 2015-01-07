@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
+
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
 
@@ -34,6 +35,35 @@ public interface DefaultCompositesInheritance<T extends AbstractVertex<T>> exten
 	default Snapshot<T> getHolders(T attribute, int pos) {
 		return () -> getHolders(attribute).get().filter(holder -> holder.getComponent(pos) != null && ((T) this).isSpecializationOf(holder.getComponent(pos)));
 
+	}
+
+	@Override
+	default Snapshot<T> getRelations() {
+		return getRelations(getRoot().getMetaRelation());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Snapshot<T> getRelations(int pos) {
+		return () -> getRelations().get().filter(relation -> relation.getComponent(pos) != null && ((T) this).isSpecializationOf(relation.getComponent(pos)));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Snapshot<T> getRelations(T relation) {
+		return ((T) this).getInheritings(relation, Statics.STRUCTURAL);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Snapshot<T> getLinks(T relation) {
+		return ((T) this).getInheritings(relation, Statics.CONCRETE);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Snapshot<T> getLinks(T relation, int pos) {
+		return () -> getLinks(relation).get().filter(link -> link.getComponent(pos) != null && ((T) this).isSpecializationOf(link.getComponent(pos)));
 	}
 
 	@Override
