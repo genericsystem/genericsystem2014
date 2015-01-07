@@ -15,15 +15,17 @@ Examples
 	Engine engine = new Engine("myDataBase", System.getenv("HOME") + "/my_directory_path");
 	
     // Create a vehicle with a color
-	Generic vehicle = engine.addInstance("Vehicle");
+	Generic vehicle = engine.addType("Vehicle");
 	Generic color = vehicle.addAttribute("Color");
 	
-    // Instantiate a red vehicle
+    // Instantiate a vehicle with a color red
     Generic myVehicle = vehicle.addInstance("myVehicle");
-    myVehicle.addInstance("red", color);
+    myVehicle.addHolder(color, "red");
     
     // Save the database
     engine.getCurrentCache().flush();
+
+To see other examples, report to the page of the [Example project](https://github.com/genericsystem/genericsystem2014/tree/master/gs-example).
 
 Key highlights
 --------------
@@ -98,5 +100,5 @@ Directory structure
 Licence
 -------
 
-The content of this repository is released under the ??? as provided in the LICENSE file that accompanied this code.
+The content of this repository is released under the Licence Apache version 2.0 as provided in the LICENSE file that accompanied this code.
 
