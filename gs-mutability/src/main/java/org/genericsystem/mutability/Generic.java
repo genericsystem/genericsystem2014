@@ -75,6 +75,11 @@ public interface Generic extends IVertex<Generic> {
 	}
 
 	@Override
+	default Generic[] addThisToTargets(Generic firstTarget, Generic... otherTargets) {
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).addThisToTargets(getCurrentCache().unwrap(firstTarget), getCurrentCache().unwrap(otherTargets)));
+	}
+
+	@Override
 	default int getLevel() {
 		return getCurrentCache().unwrap(this).getLevel();
 	}
@@ -152,6 +157,31 @@ public interface Generic extends IVertex<Generic> {
 	@Override
 	default Snapshot<Generic> getHolders(Generic attribute, int pos) {
 		return () -> getCurrentCache().unwrap(this).getHolders(getCurrentCache().unwrap(attribute), pos).get().map(getCurrentCache()::wrap);
+	}
+
+	@Override
+	default Snapshot<Generic> getRelations() {
+		return () -> getCurrentCache().unwrap(this).getRelations().get().map(getCurrentCache()::wrap);
+	}
+
+	@Override
+	default Snapshot<Generic> getRelations(int pos) {
+		return () -> getCurrentCache().unwrap(this).getRelations(pos).get().map(getCurrentCache()::wrap);
+	}
+
+	@Override
+	default Snapshot<Generic> getRelations(Generic relation) {
+		return () -> getCurrentCache().unwrap(this).getRelations(getCurrentCache().unwrap(relation)).get().map(getCurrentCache()::wrap);
+	}
+
+	@Override
+	default Snapshot<Generic> getLinks(Generic link) {
+		return () -> getCurrentCache().unwrap(this).getLinks(getCurrentCache().unwrap(link)).get().map(getCurrentCache()::wrap);
+	}
+
+	@Override
+	default Snapshot<Generic> getLinks(Generic link, int pos) {
+		return () -> getCurrentCache().unwrap(this).getLinks(getCurrentCache().unwrap(link), pos).get().map(getCurrentCache()::wrap);
 	}
 
 	@Override
@@ -472,6 +502,66 @@ public interface Generic extends IVertex<Generic> {
 	@Override
 	default Generic setHolder(Generic attribute, List<Generic> overrides, Serializable value, Generic... targets) {
 		return getCurrentCache().wrap(getCurrentCache().unwrap(this).setHolder(getCurrentCache().unwrap(attribute), getCurrentCache().unwrap(overrides), value, getCurrentCache().unwrap(targets)));
+	}
+
+	@Override
+	default Generic addRelation(Serializable value, Generic firstTarget, Generic... otherTargets) {
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).addRelation(value, getCurrentCache().unwrap(firstTarget), getCurrentCache().unwrap(otherTargets)));
+	}
+
+	@Override
+	default Generic addRelation(Generic override, Serializable value, Generic firstTarget, Generic... otherTargets) {
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).addRelation(getCurrentCache().unwrap(override), value, getCurrentCache().unwrap(firstTarget), getCurrentCache().unwrap(otherTargets)));
+	}
+
+	@Override
+	default Generic addRelation(List<Generic> overrides, Serializable value, Generic firstTarget, Generic... otherTargets) {
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).addRelation(getCurrentCache().unwrap(overrides), value, getCurrentCache().unwrap(firstTarget), getCurrentCache().unwrap(otherTargets)));
+	}
+
+	@Override
+	default Generic setRelation(Serializable value, Generic firstTarget, Generic... otherTargets) {
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).setRelation(value, getCurrentCache().unwrap(firstTarget), getCurrentCache().unwrap(otherTargets)));
+	}
+
+	@Override
+	default Generic setRelation(Generic override, Serializable value, Generic firstTarget, Generic... otherTargets) {
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).setRelation(getCurrentCache().unwrap(override), value, getCurrentCache().unwrap(firstTarget), getCurrentCache().unwrap(otherTargets)));
+	}
+
+	@Override
+	default Generic setRelation(List<Generic> overrides, Serializable value, Generic firstTarget, Generic... otherTargets) {
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).setRelation(getCurrentCache().unwrap(overrides), value, getCurrentCache().unwrap(firstTarget), getCurrentCache().unwrap(otherTargets)));
+	}
+
+	@Override
+	default Generic addLink(Generic relation, Serializable value, Generic firstTarget, Generic... otherTargets) {
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).addLink(getCurrentCache().unwrap(relation), value, getCurrentCache().unwrap(firstTarget), getCurrentCache().unwrap(otherTargets)));
+	}
+
+	@Override
+	default Generic addLink(Generic relation, Generic override, Serializable value, Generic firstTarget, Generic... otherTargets) {
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).addLink(getCurrentCache().unwrap(relation), getCurrentCache().unwrap(override), value, getCurrentCache().unwrap(firstTarget), getCurrentCache().unwrap(otherTargets)));
+	}
+
+	@Override
+	default Generic addLink(Generic relation, List<Generic> overrides, Serializable value, Generic firstTarget, Generic... otherTargets) {
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).addLink(getCurrentCache().unwrap(relation), getCurrentCache().unwrap(overrides), value, getCurrentCache().unwrap(firstTarget), getCurrentCache().unwrap(otherTargets)));
+	}
+
+	@Override
+	default Generic setLink(Generic relation, Serializable value, Generic firstTarget, Generic... otherTargets) {
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).setLink(getCurrentCache().unwrap(relation), value, getCurrentCache().unwrap(firstTarget), getCurrentCache().unwrap(otherTargets)));
+	}
+
+	@Override
+	default Generic setLink(Generic link, Generic override, Serializable value, Generic firstTarget, Generic... otherTargets) {
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).setLink(getCurrentCache().unwrap(link), getCurrentCache().unwrap(override), value, getCurrentCache().unwrap(firstTarget), getCurrentCache().unwrap(otherTargets)));
+	}
+
+	@Override
+	default Generic setLink(Generic relation, List<Generic> overrides, Serializable value, Generic firstTarget, Generic... otherTargets) {
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).setLink(getCurrentCache().unwrap(relation), getCurrentCache().unwrap(overrides), value, getCurrentCache().unwrap(firstTarget), getCurrentCache().unwrap(otherTargets)));
 	}
 
 	@Override
