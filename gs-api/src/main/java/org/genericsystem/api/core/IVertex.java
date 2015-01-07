@@ -87,6 +87,19 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	T[] addThisToTargets(T... targets);
 
 	/**
+	 * Utility method for create a real array of T implementation with this in first position, target in second position and targets after
+	 * 
+	 * @param firstTarget
+	 *            the first target
+	 * @param otherTargets
+	 *            an array of targets stored in an objects array
+	 *
+	 * @return a real array of T implementation augmented of this Vertex in first position and target in second
+	 */
+	@SuppressWarnings("unchecked")
+	T[] addThisToTargets(T firstTarget, T... otherTargets);
+
+	/**
 	 * Returns the meta level of this vertex
 	 *
 	 *
@@ -244,6 +257,57 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 * @return the holders of this vertex for the specified attribute and the specified position
 	 */
 	Snapshot<T> getHolders(T attribute, int pos);
+
+	/**
+	 * Returns the relations of this vertex (directly if this vertex is a type, the relations of its type if this vertex is an instance)
+	 *
+	 * @return the relations of this vertex regardless of the position of this vertex in the components of these relations
+	 */
+	Snapshot<T> getRelations();
+
+	/**
+	 * Returns the relations of this vertex (directly if this vertex is a type, the relations of its type if this vertex is an instance)<br>
+	 * for which this vertex is in the specified position in their components<br>
+	 *
+	 * @param pos
+	 *            the expected position of this vertex in the components of these relations
+	 *
+	 * @return the relations of this vertex
+	 */
+	Snapshot<T> getRelations(int pos);
+
+	/**
+	 * Returns the relations of this vertex that inherit from the specified relation.
+	 *
+	 * @param relation
+	 *            the relation from which the result relations inherit
+	 *
+	 * @return the relations of this vertex regardless of the position of this vertex in their components
+	 */
+	Snapshot<T> getRelations(T relation);
+
+	/**
+	 * Returns the links of this vertex that are instances of the specified relation.
+	 *
+	 * @param relation
+	 *            the relation of which the result links are instances
+	 *
+	 * @return the links of this vertex regardless of the position of this vertex in their components
+	 */
+	Snapshot<T> getLinks(T relation);
+
+	/**
+	 * Returns the links of this vertex that are instances of the specified relation<br>
+	 * and for which this vertex is in the specified position in the components of these links
+	 *
+	 ** @param relation
+	 *            the relation of which the result links are instances
+	 * @param pos
+	 *            the expected position of this vertex in the components of these links
+	 *
+	 * @return the links of this vertex for the specified relation and the specified position
+	 */
+	Snapshot<T> getLinks(T relation, int pos);
 
 	/**
 	 * Returns values for each holder that is instances of the specified attribute.
@@ -935,6 +999,204 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	T setHolder(T attribute, List<T> overrides, Serializable value, T... targets);
+
+	/**
+	 * Returns a new relation on this type that satisfies the specified value, first target and other targets
+	 *
+	 * @param value
+	 *            the expected value
+	 * @param firstTarget
+	 *            the expected first target of the relation
+	 * @param otherTargets
+	 *            the expected other targets references
+	 * @return a new relation
+	 */
+	@SuppressWarnings("unchecked")
+	T addRelation(Serializable value, T firstTarget, T... otherTargets);
+
+	/**
+	 * Returns a new relation on this type that satisfies the specified override, value, first target and other targets
+	 *
+	 * @param override
+	 *            a vertex reference from which the returned relation shall inherit
+	 * @param value
+	 *            the expected value
+	 * @param firstTarget
+	 *            the expected first target of the relation
+	 * @param otherTargets
+	 *            the expected other targets references
+	 * @return a new relation
+	 */
+	@SuppressWarnings("unchecked")
+	T addRelation(T override, Serializable value, T firstTarget, T... otherTargets);
+
+	/**
+	 * Returns a new relation on this type that satisfies the specified overrides, value, first target and other targets
+	 *
+	 * @param overrides
+	 *            vertex references from which the returned relation shall inherit
+	 * @param value
+	 *            the expected value
+	 * @param firstTarget
+	 *            the expected first target of the relation
+	 * @param otherTargets
+	 *            the expected other targets references
+	 * @return a new relation
+	 */
+	@SuppressWarnings("unchecked")
+	T addRelation(List<T> overrides, Serializable value, T firstTarget, T... otherTargets);
+
+	/**
+	 * Returns a new or the existing relation on this type that satisfies the specified value, first target and other targets
+	 *
+	 * @param value
+	 *            the expected value
+	 * @param firstTarget
+	 *            the expected first target of the relation
+	 * @param otherTargets
+	 *            the expected other targets references
+	 * @return a new or the existing relation
+	 */
+	@SuppressWarnings("unchecked")
+	T setRelation(Serializable value, T firstTarget, T... otherTargets);
+
+	/**
+	 * Returns a new or the existing relation on this type that satisfies the specified override, value, first target and other targets
+	 *
+	 * @param override
+	 *            a vertex reference from which the returned relation inherits
+	 * @param value
+	 *            the expected value
+	 * @param firstTarget
+	 *            the expected first target of the relation
+	 * @param otherTargets
+	 *            the expected other targets references
+	 * @return a new or the existing relation
+	 */
+	@SuppressWarnings("unchecked")
+	T setRelation(T override, Serializable value, T firstTarget, T... otherTargets);
+
+	/**
+	 * Returns a new or the existing relation on this type that satisfies the specified overrides, value, first target and other targets
+	 *
+	 * @param overrides
+	 *            vertex references from which the returned relation inherits
+	 * @param value
+	 *            the expected value
+	 * @param firstTarget
+	 *            the expected first target of the relation
+	 * @param otherTargets
+	 *            the expected other targets references
+	 * @return a new or the existing relation
+	 */
+	@SuppressWarnings("unchecked")
+	T setRelation(List<T> overrides, Serializable value, T firstTarget, T... otherTargets);
+
+	/**
+	 * Returns a new link on this instance that satisfies the specified value, first target and other targets
+	 *
+	 * @param relation
+	 *            the relation of which the result link is instance
+	 * @param value
+	 *            the expected value
+	 * @param firstTarget
+	 *            the expected first target
+	 * @param otherTargets
+	 *            the expected other targets references
+	 * @return a new link
+	 */
+	@SuppressWarnings("unchecked")
+	T addLink(T relation, Serializable value, T firstTarget, T... otherTargets);
+
+	/**
+	 * Returns a new link on this instance that satisfies the specified override, value, first target and other targets
+	 *
+	 * @param relation
+	 *            the relation of which the result link is instance
+	 *
+	 * @param override
+	 *            a vertex reference from which the returned link shall inherit
+	 * @param value
+	 *            the expected value
+	 * @param firstTarget
+	 *            the expected first target
+	 * @param otherTargets
+	 *            the expected other targets references
+	 * @return a new link
+	 */
+	@SuppressWarnings("unchecked")
+	T addLink(T relation, T override, Serializable value, T firstTarget, T... otherTargets);
+
+	/**
+	 * Returns a new link on this instance that satisfies the specified overrides, value, first target and other targets
+	 *
+	 * @param relation
+	 *            the relation of which the result link is instance
+	 *
+	 * @param overrides
+	 *            vertex references from which the returned link shall inherit
+	 * @param value
+	 *            the expected value
+	 * @param firstTarget
+	 *            the expected first target
+	 * @param otherTargets
+	 *            the expected other targets references
+	 * @return a new link
+	 */
+	@SuppressWarnings("unchecked")
+	T addLink(T relation, List<T> overrides, Serializable value, T firstTarget, T... otherTargets);
+
+	/**
+	 * Returns a new or the existing link on this type that satisfies the specified overrides, value, first target and other targets
+	 *
+	 * @param relation
+	 *            the relation of which the result link is instance
+	 * @param value
+	 *            the expected value
+	 * @param firstTarget
+	 *            the expected first target
+	 * @param otherTargets
+	 *            the expected other targets references
+	 * @return a new or the existing link
+	 */
+	@SuppressWarnings("unchecked")
+	T setLink(T relation, Serializable value, T firstTarget, T... otherTargets);
+
+	/**
+	 * Returns a new or the existing link on this type that satisfies the specified overrides, value, first target and other targets
+	 *
+	 * @param relation
+	 *            the relation of which the result link is instance
+	 * @param override
+	 *            vertex reference from which the returned relation inherits
+	 * @param value
+	 *            the expected value
+	 * @param firstTarget
+	 *            the expected first target
+	 * @param otherTargets
+	 *            the expected other targets references
+	 * @return a new or the existing link
+	 */
+	@SuppressWarnings("unchecked")
+	T setLink(T relation, T override, Serializable value, T firstTarget, T... otherTargets);
+
+	/**
+	 * Returns a new or the existing link on this type that satisfies the specified overrides, value, first target and other targets
+	 *
+	 * @param relation
+	 *            the relation of which the result link is instance
+	 * @param overrides
+	 *            vertex references from which the returned relation shall inherit
+	 * @param value
+	 *            the expected value
+	 * @param firstTarget
+	 *            the expected first target
+	 * @param otherTargets
+	 *            the expected other targets references
+	 * @return a new or the existing link
+	 */
+	@SuppressWarnings("unchecked")
+	T setLink(T relation, List<T> overrides, Serializable value, T firstTarget, T... otherTargets);
 
 	T updateValue(Serializable newValue);
 
