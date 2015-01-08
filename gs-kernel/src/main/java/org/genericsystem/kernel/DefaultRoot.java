@@ -1,7 +1,6 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
-import java.util.List;
 
 import org.genericsystem.api.core.IRoot;
 
@@ -12,35 +11,19 @@ public interface DefaultRoot<T extends AbstractVertex<T>> extends IRoot<T> {
 
 	Class<?> findAnnotedClass(T vertex);
 
-	@Override
-	default T addType(Serializable value) {
-		return addInstance(value, coerceToTArray());
-	}
-
-	@Override
-	default T addType(T override, Serializable value) {
-		return addInstance(override, value, coerceToTArray());
-	}
-
-	@Override
-	default T addType(List<T> overrides, Serializable value) {
-		return addInstance(overrides, value, coerceToTArray());
-	}
-
-	@Override
-	default T setType(Serializable value) {
-		return setInstance(value, coerceToTArray());
-	}
-
-	@Override
-	default T setType(T override, Serializable value) {
-		return setInstance(override, value, coerceToTArray());
-	}
-
-	@Override
-	default T setType(List<T> overrides, Serializable value) {
-		return setInstance(overrides, value, coerceToTArray());
-	}
+	/*
+	 * @Override default T addType(Serializable value) { return addInstance(value, coerceToTArray()); }
+	 * 
+	 * @Override default T addType(T override, Serializable value) { return addInstance(override, value, coerceToTArray()); }
+	 * 
+	 * @Override default T addType(List<T> overrides, Serializable value) { return addInstance(overrides, value, coerceToTArray()); }
+	 * 
+	 * @Override default T setType(Serializable value) { return setInstance(value, coerceToTArray()); }
+	 * 
+	 * @Override default T setType(T override, Serializable value) { return setInstance(override, value, coerceToTArray()); }
+	 * 
+	 * @Override default T setType(List<T> overrides, Serializable value) { return setInstance(overrides, value, coerceToTArray()); }
+	 */
 
 	@Override
 	default T addTree(Serializable value) {

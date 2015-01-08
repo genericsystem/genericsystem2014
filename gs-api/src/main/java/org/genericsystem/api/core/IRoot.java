@@ -1,7 +1,6 @@
 package org.genericsystem.api.core;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * @author Nicolas Feybesse
@@ -20,17 +19,19 @@ public interface IRoot<T extends IVertex<T>> extends IVertex<T> {
 	 */
 	<Custom extends T> Custom find(Class<?> clazz);
 
-	T addType(Serializable value);
-
-	T addType(T override, Serializable value);
-
-	T addType(List<T> overrides, Serializable value);
-
-	T setType(Serializable value);
-
-	T setType(T override, Serializable value);
-
-	T setType(List<T> overrides, Serializable value);
+	/*
+	 * T addType(Serializable value);
+	 * 
+	 * T addType(T override, Serializable value);
+	 * 
+	 * T addType(List<T> overrides, Serializable value);
+	 * 
+	 * T setType(Serializable value);
+	 * 
+	 * T setType(T override, Serializable value);
+	 * 
+	 * T setType(List<T> overrides, Serializable value);
+	 */
 
 	/**
 	 * Return a new tree with the specified value

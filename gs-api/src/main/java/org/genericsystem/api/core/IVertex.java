@@ -199,6 +199,70 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	T getInstance(List<T> supers, Serializable value, T... components);
 
 	/**
+	 * Returns a predicate for the targets.
+	 * 
+	 * @param targets
+	 *            the targets from which to have a predicate
+	 * @return a predicate for targets
+	 */
+	// @SuppressWarnings("unchecked")
+	// Predicate<T> targetsFilter(T... targets);
+
+	// T getType(Serializable value, T... components);
+
+	/**
+	 * Returns the attribute of this vertex if exists of this (meta) vertex. The returned attribute satisfies the specified value and targets
+	 *
+	 * @param value
+	 *            the value of returned attribute
+	 * @param targets
+	 *            the targets of returned attribute
+	 * @return an attribute if exists, null otherwise
+	 */
+	@SuppressWarnings("unchecked")
+	T getAttribute(Serializable value, T... targets);
+
+	/**
+	 * Returns the holder of this vertex if exists of this (meta) vertex. The returned holder satisfies the specified attribute, value and targets
+	 * 
+	 * @param attribute
+	 *            the attribute from which retrieve the holder
+	 * @param value
+	 *            the value of returned holder
+	 * @param targets
+	 *            the targets of returned holder
+	 * @return a holder if exists, null otherwise
+	 */
+	@SuppressWarnings("unchecked")
+	T getHolder(T attribute, Serializable value, T... targets);
+
+	/**
+	 * Returns the relation of this vertex if exists of this (meta) vertex. The returned relation satisfies the specified value and targets
+	 *
+	 * @param value
+	 *            the value of returned relation
+	 * @param targets
+	 *            the targets of returned relation
+	 * @return a relation if exists, null otherwise
+	 */
+	@SuppressWarnings("unchecked")
+	T getRelation(Serializable value, T... targets);
+
+	/**
+	 * Returns the link of this vertex if exists of this (meta) vertex. The returned link satisfies the specified relation, value and targets
+	 * 
+	 * @param relation
+	 *            the relation from which retrieve the link
+	 * @param value
+	 *            the value of returned link
+	 * @param targets
+	 *            the targets of returned link
+	 * @return a link if exists, null otherwise
+	 */
+	@SuppressWarnings("unchecked")
+	T getLink(T relation, Serializable value, T... targets);
+
+	/**
 	 * Indicates whether this vertex has a component that is a specialization of vertex.<br>
 	 *
 	 * @param vertex

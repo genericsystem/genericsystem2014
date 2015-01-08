@@ -8,8 +8,8 @@ public class ReferentialIntegrityConstraintTest extends AbstractTest {
 
 	public void test001_enableReferentialIntegrity_remove() {
 		Root engine = new Root();
-		Vertex vehicle = engine.addType("Vehicle");
-		Vertex color = engine.addType("Color");
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex color = engine.addInstance("Color");
 		vehicle.addAttribute("VehicleColor", color);
 		color.enableReferentialIntegrity(Statics.BASE_POSITION);
 		catchAndCheckCause(() -> color.remove(), ReferentialIntegrityConstraintViolationException.class);
@@ -17,16 +17,16 @@ public class ReferentialIntegrityConstraintTest extends AbstractTest {
 
 	public void test002_enableReferentialIntegrity_remove() {
 		Root engine = new Root();
-		Vertex vehicle = engine.addType("Vehicle");
-		Vertex color = engine.addType("Color");
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex color = engine.addInstance("Color");
 		vehicle.addAttribute("VehicleColor", color);
 		vehicle.remove();
 	}
 
 	public void test004_enableReferentialIntegrity_remove() {
 		Root engine = new Root();
-		Vertex vehicle = engine.addType("Vehicle");
-		Vertex color = engine.addType("Color");
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex color = engine.addInstance("Color");
 		vehicle.addAttribute("VehicleColor", color);
 		engine.getMetaAttribute().disableReferentialIntegrity(Statics.BASE_POSITION);
 		vehicle.remove();
@@ -34,9 +34,9 @@ public class ReferentialIntegrityConstraintTest extends AbstractTest {
 
 	public void test005_enableReferentialIntegrity_remove() {
 		Root engine = new Root();
-		Vertex vehicle = engine.addType("Vehicle");
+		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex myVehicle = vehicle.addInstance("myVechile");
-		Vertex color = engine.addType("Color");
+		Vertex color = engine.addInstance("Color");
 		Vertex red = color.addInstance("red");
 		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
 		myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
@@ -47,9 +47,9 @@ public class ReferentialIntegrityConstraintTest extends AbstractTest {
 
 	public void test006_enableReferentialIntegrity_remove() {
 		Root engine = new Root();
-		Vertex vehicle = engine.addType("Vehicle");
+		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex myVehicle = vehicle.addInstance("myVechile");
-		Vertex color = engine.addType("Color");
+		Vertex color = engine.addInstance("Color");
 		Vertex red = color.addInstance("red");
 		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
 		myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
@@ -58,9 +58,9 @@ public class ReferentialIntegrityConstraintTest extends AbstractTest {
 
 	public void test007_enableReferentialIntegrity_remove() {
 		Root engine = new Root();
-		Vertex vehicle = engine.addType("Vehicle");
+		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex myVehicle = vehicle.addInstance("myVechile");
-		Vertex color = engine.addType("Color");
+		Vertex color = engine.addInstance("Color");
 		Vertex red = color.addInstance("red");
 		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
 		myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
@@ -69,9 +69,9 @@ public class ReferentialIntegrityConstraintTest extends AbstractTest {
 
 	public void test008_enableReferentialIntegrity_remove() {
 		Root engine = new Root();
-		Vertex vehicle = engine.addType("Vehicle");
+		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex myVehicle = vehicle.addInstance("myVechile");
-		Vertex color = engine.addType("Color");
+		Vertex color = engine.addInstance("Color");
 		Vertex red = color.addInstance("red");
 		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
 		myVehicle.addHolder(vehicleColor, "myVehicleRed", red);

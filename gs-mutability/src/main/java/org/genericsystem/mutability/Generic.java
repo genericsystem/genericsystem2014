@@ -130,6 +130,26 @@ public interface Generic extends IVertex<Generic> {
 	}
 
 	@Override
+	default Generic getAttribute(Serializable value, Generic... components) {
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).getAttribute(value, getCurrentCache().unwrap(components)));
+	}
+
+	@Override
+	default Generic getHolder(Generic attribute, Serializable value, Generic... components) {
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).getHolder(getCurrentCache().unwrap(attribute), value, getCurrentCache().unwrap(components)));
+	}
+
+	@Override
+	default Generic getRelation(Serializable value, Generic... components) {
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).getRelation(value, getCurrentCache().unwrap(components)));
+	}
+
+	@Override
+	default Generic getLink(Generic relation, Serializable value, Generic... components) {
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).getLink(getCurrentCache().unwrap(relation), value, getCurrentCache().unwrap(components)));
+	}
+
+	@Override
 	default boolean isCompositeOf(Generic vertex) {
 		return getCurrentCache().unwrap(this).isCompositeOf(getCurrentCache().unwrap(vertex));
 	}

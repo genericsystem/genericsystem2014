@@ -103,7 +103,7 @@ public class TreeTest extends AbstractTest {
 		Root root = new Root();
 
 		Vertex tree = root.addTree("Tree");
-		Vertex color = root.addType("Color");
+		Vertex color = root.addInstance("Color");
 		Vertex treeColor = tree.addAttribute("TreeColor", color);
 
 		Vertex blue = color.addInstance("blue");
@@ -130,7 +130,7 @@ public class TreeTest extends AbstractTest {
 		Root root = new Root();
 
 		Vertex tree = root.addTree("Tree");
-		Vertex color = root.addType("Color");
+		Vertex color = root.addInstance("Color");
 		Vertex treeColor = tree.addAttribute("TreeColor", color);
 
 		Vertex blue = color.addInstance("blue");

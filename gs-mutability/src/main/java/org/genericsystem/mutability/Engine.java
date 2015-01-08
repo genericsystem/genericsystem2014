@@ -2,7 +2,6 @@ package org.genericsystem.mutability;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.util.List;
 
 import javassist.util.proxy.MethodHandler;
 
@@ -73,35 +72,19 @@ public class Engine implements Generic, IRoot<Generic>, MethodHandler {
 		return currentCache;
 	}
 
-	@Override
-	public Generic addType(Serializable value) {
-		return getCurrentCache().wrap(concurrencyEngine.addType(value));
-	}
-
-	@Override
-	public Generic addType(Generic override, Serializable value) {
-		return getCurrentCache().wrap(concurrencyEngine.addType(getCurrentCache().unwrap(override), value));
-	}
-
-	@Override
-	public Generic addType(List<Generic> overrides, Serializable value) {
-		return getCurrentCache().wrap(concurrencyEngine.addType(getCurrentCache().unwrap(overrides), value));
-	}
-
-	@Override
-	public Generic setType(Serializable value) {
-		return getCurrentCache().wrap(concurrencyEngine.setType(value));
-	}
-
-	@Override
-	public Generic setType(Generic override, Serializable value) {
-		return getCurrentCache().wrap(concurrencyEngine.setType(getCurrentCache().unwrap(override), value));
-	}
-
-	@Override
-	public Generic setType(List<Generic> overrides, Serializable value) {
-		return getCurrentCache().wrap(concurrencyEngine.setType(getCurrentCache().unwrap(overrides), value));
-	}
+	/*
+	 * @Override public Generic addType(Serializable value) { return getCurrentCache().wrap(concurrencyEngine.addType(value)); }
+	 * 
+	 * @Override public Generic addType(Generic override, Serializable value) { return getCurrentCache().wrap(concurrencyEngine.addType(getCurrentCache().unwrap(override), value)); }
+	 * 
+	 * @Override public Generic addType(List<Generic> overrides, Serializable value) { return getCurrentCache().wrap(concurrencyEngine.addType(getCurrentCache().unwrap(overrides), value)); }
+	 * 
+	 * @Override public Generic setType(Serializable value) { return getCurrentCache().wrap(concurrencyEngine.setType(value)); }
+	 * 
+	 * @Override public Generic setType(Generic override, Serializable value) { return getCurrentCache().wrap(concurrencyEngine.setType(getCurrentCache().unwrap(override), value)); }
+	 * 
+	 * @Override public Generic setType(List<Generic> overrides, Serializable value) { return getCurrentCache().wrap(concurrencyEngine.setType(getCurrentCache().unwrap(overrides), value)); }
+	 */
 
 	@Override
 	public Generic addTree(Serializable value) {
