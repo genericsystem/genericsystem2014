@@ -30,8 +30,8 @@ public class CreationOfAttributesPropertiesAndHolders {
 		myVehicle.addHolder(power, 213);
 		// myVehicle has one power : 213
 
-		// Update the power of myVehicle
-		myVehicle.setHolder(power, 220);
-		// myVehicle has always one power which is now 220
+		// Add another power on myVehicle
+		myVehicle.addHolder(power, 220);
+		// error : power is a property, it can have only one value
 	}
 }
