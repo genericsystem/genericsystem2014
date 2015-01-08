@@ -8,7 +8,7 @@ public class CreationOfAttributesPropertiesAndHolders {
 		Engine engine = new Engine();
 
 		// Create a type vehicle with an attribute options
-		Generic vehicle = engine.addType("Vehicle");
+		Generic vehicle = engine.addInstance("Vehicle");
 		Generic options = vehicle.addAttribute("Options");
 
 		// Create an instance of vehicle and instantiate two options on it
@@ -22,7 +22,7 @@ public class CreationOfAttributesPropertiesAndHolders {
 		Engine engine = new Engine();
 
 		// Create a type vehicle with a property power
-		Generic vehicle = engine.addType("Vehicle");
+		Generic vehicle = engine.addInstance("Vehicle");
 		Generic power = vehicle.addAttribute("Power").enablePropertyConstraint();
 
 		// Create an instance of vehicle and instantiate a power on it
