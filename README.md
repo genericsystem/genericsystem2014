@@ -63,31 +63,23 @@ Pour faire fonctionner Generic System, il est nécessaire :
 
 * de configurer dans le pom.xml de votre projet, le repository Generic System :
     <pre>
-    &lt;repositories&gt;
-    	&lt;repository&gt;
-    		&lt;id&gt;middlewarefactory&lt;/id&gt;
-    		&lt;url&gt;ftp://genericsystem.org/home/middleware/repository&lt;/url&gt;
-    		&lt;releases&gt;
-    			&lt;enabled&gt;true&lt;/enabled&gt;
-    			&lt;updatePolicy&gt;daily&lt;/updatePolicy&gt;
-    		&lt;/releases&gt;
-    		&lt;snapshots&gt;
-    			&lt;enabled&gt;true&lt;/enabled&gt;
-    			&lt;updatePolicy&gt;daily&lt;/updatePolicy&gt;
-    		&lt;/snapshots&gt;
-    	&lt;/repository&gt;
-    &lt;/repositories&gt;
+	&lt;repository&gt;
+		&lt;id&gt;middlewarefactory&lt;/id&gt;
+		&lt;url&gt;ftp://genericsystem.org/home/middleware/repository&lt;/url&gt;
+		&lt;releases&gt;
+			&lt;enabled&gt;true&lt;/enabled&gt;
+			&lt;updatePolicy&gt;daily&lt;/updatePolicy&gt;
+		&lt;/releases&gt;
+	&lt;/repository&gt;
     </pre>
 
 * d'ajouter la dépendance à Generic System, toujours dans le pom.xml de votre projet :
     <pre>
-    &lt;dependencies&gt;
-    	&lt;dependency&gt;
-    		&lt;groupId&gt;org.genericsystem&lt;/groupId&gt;
-    		&lt;artifactId&gt;gs-mutability&lt;/artifactId&gt;
-    		&lt;version&gt;3.0-SNAPSHOT&lt;/version&gt;
-    	&lt;/dependency&gt;
-    &lt;/dependencies&gt;
+	&lt;dependency&gt;
+		&lt;groupId&gt;org.genericsystem&lt;/groupId&gt;
+		&lt;artifactId&gt;gs-mutability&lt;/artifactId&gt;
+		&lt;version&gt;3.0-SNAPSHOT&lt;/version&gt;
+	&lt;/dependency&gt;
     </pre>
 
 Directory structure
