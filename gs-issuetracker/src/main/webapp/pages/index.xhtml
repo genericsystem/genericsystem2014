@@ -10,46 +10,6 @@
 	xmlns:a4j="http://richfaces.org/a4j"
 	xmlns:rich="http://richfaces.org/rich">
 
-	<ui:define name="script">
-		<script type="text/javascript" src="../jquery-2.1.3.min.js">
-     </script>
-		<script type="text/javascript">
-	function newIssue() {
-		$.ajax({
-			type: 'POST',
-			contentType: 'application/json',
-			url: 'http://localhost:8080/gs-issuetracker/rest/issueManager/createIssue',
-			dataType: "json",
-			data: JSON.stringify({
-				"id": $('#id').val(),
-				"descriptif": $('#descriptif').val(),
-				"priority": $('#priority').val(),
-				"type": $('#type').val()
-				}),
-		});
-	}	
-		
-	function getIssues() {
-	    $.ajax({
-	        type: 'GET',
-	        url: 'http://localhost:8080/gs-issuetracker/rest/issueManager/getIssues',
-	        dataType: "json", // data type of response
-	        success: renderList
-	    });
-	}
-	
-	function renderList(data) {
-		// JAX-RS serializes an empty list as null, and a 'collection of one' as an object (not an 'array of one')
-		$('#issues li').remove();
-		$.each(data.list, function(index, issue) {
-			$('#issues').append('<li>'+issue.id+' '+issue.descriptif+' '+issue.priority+' '+issue.type+'</li>');
-		});
-	}
-	
-	getIssues();
-</script>
-	</ui:define>
-
 	<ui:define name="bodySection">
 		<h:outputText value="Create Issue" />
 		<h:panelGrid columns="2">
@@ -79,22 +39,6 @@
 				<h:outputText value="#{issue.type}" />
 			</h:column>
 		</h:dataTable>
-
-		<!-- BY JAVASCRIPT -->
-
-		<div>
-		Create Issue By JS
-			<label>Id:</label> <input id="id" name="id" type="text" /> <label>Descriptif:</label><input
-				type="text" id="descriptif" name="descriptif" /> <label>Priority:</label><input
-				type="text" id="priority" name="priority" /> <label>Type:</label><input
-				type="text" id="type" name="type" />
-			<button id="createJS" onclick="newIssue()">create by JS</button>
-		</div>
-
-		<div>
-		List Issues By Js
-			<ul id="issues"></ul>
-		</div>
 	</ui:define>
 
 </ui:composition>

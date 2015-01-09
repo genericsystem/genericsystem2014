@@ -1,18 +1,13 @@
 package org.genericsystem.issuetracker.bean;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
 
-import org.genericsystem.issuetracker.Issue;
-import org.genericsystem.issuetracker.IssueWrapper;
+import org.genericsystem.issuetracker.IssueDTO;
+import org.genericsystem.issuetracker.crud.IssueCRUD;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,34 +25,51 @@ public class IssueBean {
 
 	private String type;
 
-	private final String BASE_URL = "http://localhost:8080/gs-issuetracker/rest/issueManager";
+	@Inject
+	private IssueCRUD issueCrud;
 
-	public List<Issue> getIssues() {
-		Client client = ClientBuilder.newClient();
-		WebTarget myResource = client.target(BASE_URL + "/getIssues");
-		try {
-			return myResource.request(MediaType.APPLICATION_JSON).get(IssueWrapper.class).getList();
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-		}
-		return new ArrayList<Issue>();
+	public List<IssueDTO> getIssues() {
+		return issueCrud.getIssues();
 	}
 
 	public String createIssue() {
-		Client client = ClientBuilder.newClient();
-		WebTarget myResource = client.target(BASE_URL + "/createIssue");
-		try {
-			Issue issue = new Issue();
-			issue.setId(id);
-			issue.setDescriptif(descriptif);
-			issue.setPriority(priority);
-			issue.setType(type);
-			myResource.request(MediaType.APPLICATION_JSON).buildPost(Entity.entity(issue, MediaType.APPLICATION_JSON)).invoke();
-		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-		}
+		IssueDTO issueDTO = new IssueDTO();
+		issueDTO.setId(id);
+		issueDTO.setDescriptif(descriptif);
+		issueDTO.setPriority(priority);
+		issueDTO.setType(type);
+		issueCrud.createIssue(issueDTO);
 		return "#";
 	}
+
+	// private final String BASE_URL = "http://localhost:8080/gs-issuetracker/rest/issueManager";
+	//
+	// public List<Issue> getIssues() {
+	// Client client = ClientBuilder.newClient();
+	// WebTarget myResource = client.target(BASE_URL + "/getIssues");
+	// try {
+	// return myResource.request(MediaType.APPLICATION_JSON).get(IssueWrapper.class).getList();
+	// } catch (Exception e) {
+	// log.error(e.getMessage(), e);
+	// }
+	// return new ArrayList<Issue>();
+	// }
+	//
+	// public String createIssue() {
+	// Client client = ClientBuilder.newClient();
+	// WebTarget myResource = client.target(BASE_URL + "/createIssue");
+	// try {
+	// Issue issue = new Issue();
+	// issue.setId(id);
+	// issue.setDescriptif(descriptif);
+	// issue.setPriority(priority);
+	// issue.setType(type);
+	// myResource.request(MediaType.APPLICATION_JSON).buildPost(Entity.entity(issue, MediaType.APPLICATION_JSON)).invoke();
+	// } catch (Exception e) {
+	// log.error(e.getMessage(), e);
+	// }
+	// return "#";
+	// }
 
 	public String getId() {
 		return id;

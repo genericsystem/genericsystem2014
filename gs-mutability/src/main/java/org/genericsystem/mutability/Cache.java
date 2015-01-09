@@ -27,7 +27,7 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 	private final Map<Generic, org.genericsystem.concurrency.Generic> mutabilityMap = new IdentityHashMap<>();
 	private final Map<org.genericsystem.concurrency.Generic, Set<Generic>> reverseMultiMap = new IdentityHashMap<>();
 
-	private Deque<Map<Generic, org.genericsystem.concurrency.Generic>> revertMutations = new ArrayDeque<>();
+	private final Deque<Map<Generic, org.genericsystem.concurrency.Generic>> revertMutations = new ArrayDeque<>();
 
 	public Cache(Engine engine, org.genericsystem.concurrency.Engine concurrencyEngine) {
 		this.engine = engine;

@@ -1,6 +1,10 @@
 package org.genericsystem.issuetracker;
 
-public class Issue {
+import java.io.Serializable;
+
+public class IssueDTO implements Serializable {
+
+	private static final long serialVersionUID = -7700268747811447119L;
 
 	private String id;
 
@@ -9,9 +13,6 @@ public class Issue {
 	private String priority;
 
 	private String type;
-
-	public Issue() {
-	}
 
 	public String getId() {
 		return id;
@@ -43,11 +44,6 @@ public class Issue {
 
 	public void setType(String type) {
 		this.type = type;
-	}
-
-	@Override
-	public String toString() {
-		return "id " + id + " descriptif " + descriptif + " priority " + priority + " type " + type;
 	}
 
 }
