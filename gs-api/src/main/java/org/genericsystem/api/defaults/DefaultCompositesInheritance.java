@@ -1,6 +1,7 @@
 package org.genericsystem.api.defaults;
 
 import java.io.Serializable;
+import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
 
@@ -61,5 +62,17 @@ public interface DefaultCompositesInheritance<T extends DefaultVertex<T>> extend
 	@Override
 	default Snapshot<Serializable> getValues(T attribute, int pos) {
 		return () -> getHolders(attribute, pos).get().map(T::getValue);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Snapshot<T> getAttributes(T attribute) {
+		return () -> new InheritanceComputer<>((T) DefaultCompositesInheritance.this, attribute, ApiStatics.STRUCTURAL).inheritanceStream();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Snapshot<T> getHolders(T attribute) {
+		return () -> new InheritanceComputer<>((T) DefaultCompositesInheritance.this, attribute, ApiStatics.CONCRETE).inheritanceStream();
 	}
 }

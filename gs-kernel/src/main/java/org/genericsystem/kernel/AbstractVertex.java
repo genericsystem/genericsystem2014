@@ -6,9 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.ISignature;
-import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
 import org.genericsystem.kernel.Config.SystemMap;
@@ -222,23 +220,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		if (adjustMeta.getComponents().size() != components.length)
 			return null;
 		return adjustMeta.getDirectInstance(overrides, value, componentsList);
-	}
-
-	@SuppressWarnings("unchecked")
-	Snapshot<T> getInheritings(final T origin, final int level) {
-		return () -> new InheritanceComputer<>((T) AbstractVertex.this, origin, level).inheritanceStream();
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public Snapshot<T> getAttributes(T attribute) {
-		return ((T) this).getInheritings(attribute, ApiStatics.STRUCTURAL);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public Snapshot<T> getHolders(T attribute) {
-		return ((T) this).getInheritings(attribute, ApiStatics.CONCRETE);
 	}
 
 	@Override
