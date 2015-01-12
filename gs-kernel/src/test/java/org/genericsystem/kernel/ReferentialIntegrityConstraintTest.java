@@ -54,7 +54,7 @@ public class ReferentialIntegrityConstraintTest extends AbstractTest {
 		Vertex red = color.addInstance("red");
 		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
 		myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
-		vehicleColor.enableReferentialIntegrity(Statics.BASE_POSITION);
+		vehicleColor.enableReferentialIntegrity(ApiStatics.BASE_POSITION);
 		catchAndCheckCause(() -> myVehicle.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
@@ -63,7 +63,7 @@ public class ReferentialIntegrityConstraintTest extends AbstractTest {
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex color = engine.addInstance("Color");
 		vehicle.addAttribute("vehicleColor", color);
-		engine.find(MetaRelation.class).enableReferentialIntegrity(Statics.BASE_POSITION);
+		engine.find(MetaRelation.class).enableReferentialIntegrity(ApiStatics.BASE_POSITION);
 		catchAndCheckCause(() -> vehicle.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
