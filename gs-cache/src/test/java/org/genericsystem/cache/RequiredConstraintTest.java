@@ -2,9 +2,8 @@ package org.genericsystem.cache;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
+import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.exception.RequiredConstraintViolationException;
-import org.genericsystem.kernel.Statics;
 import org.testng.annotations.Test;
 
 @Test
@@ -66,25 +65,25 @@ public class RequiredConstraintTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic car = engine.addInstance("Car");
 		Generic power = car.addAttribute("Power");
-		power.enableRequiredConstraint(Statics.BASE_POSITION);
+		power.enableRequiredConstraint(ApiStatics.BASE_POSITION);
 
-		assert power.isRequiredConstraintEnabled(Statics.BASE_POSITION);
-		assert !car.isRequiredConstraintEnabled(Statics.BASE_POSITION);
-		power.disableRequiredConstraint(Statics.BASE_POSITION);
-		assert !car.isRequiredConstraintEnabled(Statics.BASE_POSITION);
+		assert power.isRequiredConstraintEnabled(ApiStatics.BASE_POSITION);
+		assert !car.isRequiredConstraintEnabled(ApiStatics.BASE_POSITION);
+		power.disableRequiredConstraint(ApiStatics.BASE_POSITION);
+		assert !car.isRequiredConstraintEnabled(ApiStatics.BASE_POSITION);
 		List<Generic> list = power.getHolders(engine).get().collect(Collectors.toList());
 
-		assert !power.isRequiredConstraintEnabled(Statics.BASE_POSITION) : power.getHolders(engine).get().map(x -> x.info()).collect(Collectors.toList()).toString();
+		assert !power.isRequiredConstraintEnabled(ApiStatics.BASE_POSITION) : power.getHolders(engine).get().map(x -> x.info()).collect(Collectors.toList()).toString();
 	}
 
 	public void test002_removeAttribute() {
 		Engine engine = new Engine();
 		Generic car = engine.addInstance("Car");
 		Generic power = car.addAttribute("Power");
-		power.enableRequiredConstraint(Statics.BASE_POSITION);
+		power.enableRequiredConstraint(ApiStatics.BASE_POSITION);
 		Generic myBmw = car.addInstance("myBmw");
 		Generic v236 = myBmw.addHolder(power, 236);
-		assert power.isRequiredConstraintEnabled(Statics.BASE_POSITION);
+		assert power.isRequiredConstraintEnabled(ApiStatics.BASE_POSITION);
 		Cache cache = engine.getCurrentCache();
 		assert myBmw.getHolders(power).contains(v236);
 		cache.flush();
@@ -99,10 +98,10 @@ public class RequiredConstraintTest extends AbstractTest {
 		Generic car = engine.addInstance(vehicle, "Car");
 		Generic power = vehicle.addAttribute("Power");
 
-		power.enableRequiredConstraint(Statics.BASE_POSITION);
+		power.enableRequiredConstraint(ApiStatics.BASE_POSITION);
 		Generic myBmw = car.addInstance("myBmw");
 		Generic v236 = myBmw.addHolder(power, 236);
-		assert power.isRequiredConstraintEnabled(Statics.BASE_POSITION);
+		assert power.isRequiredConstraintEnabled(ApiStatics.BASE_POSITION);
 		Cache cache = engine.getCurrentCache();
 		// power.getComponents().stream().forEach(x -> System.out.println(x.detailedInfo()));
 		cache.flush();

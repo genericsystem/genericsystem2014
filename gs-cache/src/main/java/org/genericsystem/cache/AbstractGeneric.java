@@ -2,14 +2,18 @@ package org.genericsystem.cache;
 
 import java.io.Serializable;
 import java.util.List;
-
 import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.Dependencies;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends AbstractVertex<T> implements DefaultGeneric<T> {
 
 	@Override
-	protected void forceRemove() {
+	public Cache<T> getCurrentCache() {
+		return getRoot().getCurrentCache();
+	}
+
+	@Override
+	public void forceRemove() {
 		super.forceRemove();
 	}
 

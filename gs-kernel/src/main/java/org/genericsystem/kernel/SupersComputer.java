@@ -6,6 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import org.genericsystem.api.core.ApiStatics;
 
 public class SupersComputer<T extends AbstractVertex<T>> extends LinkedHashSet<T> {
 
@@ -22,7 +23,7 @@ public class SupersComputer<T extends AbstractVertex<T>> extends LinkedHashSet<T
 
 	SupersComputer(T meta, List<T> overrides, Serializable value, List<T> components) {
 		assert meta != null;
-		reachLevel = isMeta(meta, value, components) ? Statics.META : meta.getLevel() + 1;
+		reachLevel = isMeta(meta, value, components) ? ApiStatics.META : meta.getLevel() + 1;
 		this.meta = meta;
 		this.overrides = overrides;
 		this.components = components;

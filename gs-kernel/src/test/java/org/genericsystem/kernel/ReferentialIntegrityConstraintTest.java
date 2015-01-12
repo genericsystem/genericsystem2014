@@ -1,6 +1,8 @@
 package org.genericsystem.kernel;
 
+import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
+import org.genericsystem.kernel.Config.MetaRelation;
 import org.testng.annotations.Test;
 
 @Test
@@ -11,7 +13,7 @@ public class ReferentialIntegrityConstraintTest extends AbstractTest {
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex color = engine.addInstance("Color");
 		vehicle.addAttribute("VehicleColor", color);
-		color.enableReferentialIntegrity(Statics.BASE_POSITION);
+		color.enableReferentialIntegrity(ApiStatics.BASE_POSITION);
 		catchAndCheckCause(() -> color.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
@@ -28,7 +30,7 @@ public class ReferentialIntegrityConstraintTest extends AbstractTest {
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex color = engine.addInstance("Color");
 		vehicle.addAttribute("VehicleColor", color);
-		engine.getMetaAttribute().disableReferentialIntegrity(Statics.BASE_POSITION);
+		engine.getMetaAttribute().disableReferentialIntegrity(ApiStatics.BASE_POSITION);
 		vehicle.remove();
 	}
 
@@ -40,9 +42,29 @@ public class ReferentialIntegrityConstraintTest extends AbstractTest {
 		Vertex red = color.addInstance("red");
 		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
 		myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
-		color.enableReferentialIntegrity(Statics.BASE_POSITION);
+		color.enableReferentialIntegrity(ApiStatics.BASE_POSITION);
 		catchAndCheckCause(() -> red.remove(), ReferentialIntegrityConstraintViolationException.class);
+	}
 
+	public void test005_enableReferentialIntegrity_remove2() {
+		Root engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex myVehicle = vehicle.addInstance("myVechile");
+		Vertex color = engine.addInstance("Color");
+		Vertex red = color.addInstance("red");
+		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
+		myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
+		vehicleColor.enableReferentialIntegrity(ApiStatics.BASE_POSITION);
+		catchAndCheckCause(() -> myVehicle.remove(), ReferentialIntegrityConstraintViolationException.class);
+	}
+
+	public void test005_enableReferentialIntegrity_remove3() {
+		Root engine = new Root();
+		Vertex vehicle = engine.addInstance("Vehicle");
+		Vertex color = engine.addInstance("Color");
+		vehicle.addAttribute("vehicleColor", color);
+		engine.find(MetaRelation.class).enableReferentialIntegrity(ApiStatics.BASE_POSITION);
+		catchAndCheckCause(() -> vehicle.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
 	public void test006_enableReferentialIntegrity_remove() {
@@ -75,7 +97,7 @@ public class ReferentialIntegrityConstraintTest extends AbstractTest {
 		Vertex red = color.addInstance("red");
 		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
 		myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
-		engine.getMetaAttribute().disableReferentialIntegrity(Statics.BASE_POSITION);
+		engine.getMetaAttribute().disableReferentialIntegrity(ApiStatics.BASE_POSITION);
 		myVehicle.remove();
 	}
 }

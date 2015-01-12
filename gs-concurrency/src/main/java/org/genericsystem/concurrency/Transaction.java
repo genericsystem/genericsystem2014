@@ -2,7 +2,6 @@ package org.genericsystem.concurrency;
 
 import java.util.Set;
 import java.util.TreeSet;
-
 import org.genericsystem.kernel.Builder;
 
 public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem.cache.Transaction<T> {
@@ -58,7 +57,7 @@ public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem
 
 	@Override
 	protected Builder<T> buildBuilder() {
-		return new Builder<T>(this) {
+		return new AbstractVertexBuilder<T>(this) {
 			@Override
 			protected Class<T> getTClass() {
 				throw new UnsupportedOperationException();

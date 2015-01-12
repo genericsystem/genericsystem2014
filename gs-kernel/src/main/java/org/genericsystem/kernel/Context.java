@@ -1,17 +1,23 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.api.exception.NotFoundException;
+import org.genericsystem.api.defaults.DefaultContext;
+import org.genericsystem.api.defaults.DefaultRoot;
+import org.genericsystem.api.defaults.DefaultVertex;
+import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
-import org.genericsystem.api.exception.RollbackException;
+import org.genericsystem.api.exception.UnreachableOverridesException;
 
-public abstract class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
+public abstract class Context<T extends DefaultVertex<T>> implements DefaultContext<T> {
 
 	private final DefaultRoot<T> root;
 
@@ -31,23 +37,20 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		return new Checker<>(this);
 	}
 
-	protected Builder<T> buildBuilder() {
-		return new Builder<>(this);
-	}
+	protected abstract Builder<T> buildBuilder();
 
-	public void discardWithException(Throwable exception) throws RollbackException {
-		throw new RollbackException(exception);
-	}
-
+	@Override
 	public Checker<T> getChecker() {
 		return checker;
 	}
 
+	@Override
 	public Builder<T> getBuilder() {
 		return builder;
 	}
 
 	// @Override
+	@Override
 	public DefaultRoot<T> getRoot() {
 		return root;
 	}
@@ -57,29 +60,17 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		return vertex != null && vertex.equals(getAlive(vertex));
 	}
 
-	protected T plug(T generic) {
-		if (!generic.isMeta())
-			indexInstance(generic.getMeta(), generic);
-		generic.getSupers().forEach(superGeneric -> indexInheriting(superGeneric, generic));
-		generic.getComponents().stream().filter(component -> component != null).distinct().forEach(component -> indexComposite(component, generic));
-		checker.checkAfterBuild(true, false, generic);
-		return generic;
-	}
+	abstract protected T plug(T generic);
 
-	protected void unplug(T generic) {
-		checker.checkAfterBuild(false, false, generic);
-		boolean result = generic != generic.getMeta() ? unIndexInstance(generic.getMeta(), generic) : true;
-		if (!result)
-			discardWithException(new NotFoundException(generic.info()));
-		generic.getSupers().forEach(superGeneric -> unIndexInheriting(superGeneric, generic));
-		generic.getComponents().stream().filter(component -> component != null).forEach(component -> unIndexComposite(component, generic));
-	}
+	abstract protected void unplug(T generic);
 
-	protected void forceRemove(T generic) {
+	@Override
+	public void forceRemove(T generic) {
 		computeDependencies(generic).forEach(this::unplug);
 	}
 
-	protected void remove(T generic) {
+	@Override
+	public void remove(T generic) {
 		buildOrderedDependenciesToRemove(generic).forEach(this::unplug);
 	}
 
@@ -109,40 +100,7 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 	@Override
 	public abstract Snapshot<T> getComposites(T vertex);
 
-	protected void indexInstance(T generic, T instance) {
-		index(generic.getInstancesDependencies(), instance);
-	}
-
-	protected void indexInheriting(T generic, T inheriting) {
-		index(generic.getInheritingsDependencies(), inheriting);
-	}
-
-	protected void indexComposite(T generic, T composite) {
-		index(generic.getCompositesDependencies(), composite);
-	}
-
-	protected void index(Dependencies<T> dependencies, T dependency) {
-		dependencies.add(dependency);
-	}
-
-	protected boolean unIndexInstance(T generic, T instance) {
-		return unIndex(generic.getInstancesDependencies(), instance);
-	}
-
-	protected boolean unIndexInheriting(T generic, T inheriting) {
-		return unIndex(generic.getInheritingsDependencies(), inheriting);
-	}
-
-	protected boolean unIndexComposite(T generic, T composite) {
-		return unIndex(generic.getCompositesDependencies(), composite);
-	}
-
-	protected boolean unIndex(Dependencies<T> dependencies, T dependency) {
-		return dependencies.remove(dependency);
-	}
-
-	protected void triggersMutation(T oldDependency, T newDependency) {
-	}
+	protected void triggersMutation(T oldDependency, T newDependency) {}
 
 	public Set<T> computeDependencies(T node) {
 		return new OrderedDependencies().visit(node);
@@ -225,6 +183,118 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 						visit(generic.getComponents().get(axe));
 			}
 			return this;
+		}
+	}
+
+	protected static class AbstractVertexBuilder<T extends AbstractVertex<T>> extends Builder<T> {
+		protected AbstractVertexBuilder(Context<T> context) {
+			super(context);
+		}
+
+		@Override
+		public T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents) {
+			getContext().getChecker().checkBeforeBuild(update.getClass(), update.getMeta(), overrides, newValue, newComponents);
+			T adjustedMeta = update.getMeta().writeAdjustMeta(newValue, newComponents);
+			Supplier<T> rebuilder = () -> {
+				T equalsInstance = adjustedMeta.getDirectInstance(newValue, newComponents);
+				if (equalsInstance != null) {
+					if (!Statics.areOverridesReached(equalsInstance.getSupers(), overrides))
+						getContext().discardWithException(new UnreachableOverridesException("Unable to reach overrides : " + overrides + " with computed supers : " + equalsInstance.getSupers()));
+					return equalsInstance;
+				}
+				List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, newValue, newComponents);
+				return build(update.getClass(), adjustedMeta, supers, newValue, newComponents);
+			};
+			return rebuildAll(update, rebuilder, getContext().computeDependencies(update));
+		}
+
+		@Override
+		public T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
+			getContext().getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
+			T adjustedMeta = meta.writeAdjustMeta(value, components);
+			T equalsInstance = adjustedMeta.getDirectInstance(value, components);
+			if (equalsInstance != null)
+				getContext().discardWithException(new ExistsException("An equivalent instance already exists : " + equalsInstance.info()));
+			List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, value, components);
+			Supplier<T> rebuilder = () -> build(clazz, adjustedMeta, supers, value, components);
+			return rebuildAll(null, rebuilder, getContext().computePotentialDependencies(adjustedMeta, supers, value, components));
+		}
+
+		@Override
+		public T setInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
+			getContext().getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
+			T adjustedMeta = meta.writeAdjustMeta(value, components);
+			T equivInstance = adjustedMeta.getDirectEquivInstance(value, components);
+			if (equivInstance != null && equivInstance.equalsAndOverrides(adjustedMeta, overrides, value, components))
+				return equivInstance;
+			List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, value, components);
+			Supplier<T> rebuilder = () -> build(clazz, adjustedMeta, supers, value, components);
+			return rebuildAll(equivInstance, rebuilder, equivInstance == null ? getContext().computePotentialDependencies(adjustedMeta, supers, value, components) : getContext().computeDependencies(equivInstance));
+		}
+
+		private class ConvertMap extends HashMap<T, T> {
+			private static final long serialVersionUID = 5003546962293036021L;
+
+			private T convert(T oldDependency) {
+				if (oldDependency.isAlive())
+					return oldDependency;
+				T newDependency = get(oldDependency);
+				if (newDependency == null) {
+					if (oldDependency.isMeta()) {
+						assert oldDependency.getSupers().size() == 1;
+						newDependency = oldDependency.getSupers().get(0).setMeta(oldDependency.getComponents().size());
+					} else {
+						List<T> overrides = oldDependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
+						List<T> components = oldDependency.getComponents().stream().map(x -> x != null ? convert(x) : null).collect(Collectors.toList());
+						T adjustedMeta = convert(oldDependency.getMeta()).readAdjustMeta(oldDependency.getValue(), components);
+						List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, oldDependency.getValue(), components);
+						// TODO KK designTs
+						newDependency = getOrBuild(oldDependency.getClass(), adjustedMeta, supers, oldDependency.getValue(), components);
+					}
+					put(oldDependency, newDependency);// triggers mutation
+				}
+				return newDependency;
+			}
+
+			@Override
+			public T put(T oldDependency, T newDependency) {
+				T result = super.put(oldDependency, newDependency);
+				getContext().triggersMutation(oldDependency, newDependency);
+				return result;
+			}
+		}
+
+		@Override
+		T rebuildAll(T toRebuild, Supplier<T> rebuilder, Set<T> dependenciesToRebuild) {
+			dependenciesToRebuild.forEach(getContext()::unplug);
+			T build = rebuilder.get();
+			dependenciesToRebuild.remove(toRebuild);
+			ConvertMap convertMap = new ConvertMap();
+			if (toRebuild != null) {
+				convertMap.put(toRebuild, build);
+				getContext().triggersMutation(toRebuild, build);
+			}
+			Statics.reverseCollections(dependenciesToRebuild).forEach(x -> convertMap.convert(x));
+			return build;
+		}
+
+		@Override
+		List<T> computeAndCheckOverridesAreReached(T adjustedMeta, List<T> overrides, Serializable value, List<T> components) {
+			List<T> supers = new ArrayList<>(new SupersComputer<>(adjustedMeta, overrides, value, components));
+			if (!Statics.areOverridesReached(supers, overrides))
+				getContext().discardWithException(new UnreachableOverridesException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
+			return supers;
+		}
+
+		@Override
+		protected T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
+			return newT(clazz, meta).init(meta, supers, value, components);
+		}
+
+		@Override
+		protected T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
+			T instance = meta == null ? getContext().getMeta(components.size()) : meta.getDirectInstance(value, components);
+			return instance == null ? build(clazz, meta, supers, value, components) : instance;
 		}
 	}
 

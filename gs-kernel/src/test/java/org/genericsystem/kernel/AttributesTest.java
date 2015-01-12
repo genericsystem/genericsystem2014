@@ -2,12 +2,93 @@ package org.genericsystem.kernel;
 
 import java.util.Arrays;
 import java.util.Collections;
-
 import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test
 public class AttributesTest extends AbstractTest {
+
+	public void test001_getAttribute() {
+		Root root = new Root();
+		Vertex vehicle = root.addInstance("Vehicle");
+		Vertex powerVehicle = vehicle.addAttribute("power");
+		assert powerVehicle == vehicle.getAttribute("power", vehicle);
+	}
+
+	public void test001b_getAttribute() {
+		Root root = new Root();
+		Vertex vehicle = root.addInstance("Vehicle");
+		Vertex powerVehicle = vehicle.addAttribute("power");
+		assert powerVehicle == vehicle.getAttribute("power");
+	}
+
+	public void test002_getAttribute() {
+		Root root = new Root();
+		Vertex vehicle = root.addInstance("Vehicle");
+		Vertex myVehicle = vehicle.addInstance("myVehicle");
+		Vertex powerVehicle = vehicle.addAttribute("power");
+		assert powerVehicle == myVehicle.getAttribute("power", vehicle);
+	}
+
+	public void test003_getAttribute() {
+		Root root = new Root();
+		Vertex vehicle = root.addInstance("Vehicle");
+		Vertex car = root.addInstance(vehicle, "Car");
+		Vertex powerVehicle = vehicle.addAttribute("power");
+		assert powerVehicle == car.getAttribute("power", vehicle);
+	}
+
+	public void test004_getAttribute() {
+		Root root = new Root();
+		Vertex vehicle = root.addInstance("Vehicle");
+		Vertex car = root.addInstance(vehicle, "Car");
+		Vertex myCar = car.addInstance("myCar");
+		Vertex powerVehicle = vehicle.addAttribute("power");
+		assert powerVehicle == myCar.getAttribute("power", vehicle);
+	}
+
+	public void test005_getAttribute() {
+		Root root = new Root();
+		Vertex vehicle = root.addInstance("Vehicle");
+		Vertex color = root.addInstance("Color");
+		Vertex colorVehicle = vehicle.addAttribute("colorVehicle", color);
+		assert colorVehicle == vehicle.getAttribute("colorVehicle", vehicle, color);
+	}
+
+	public void test006_getAttribute() {
+		Root root = new Root();
+		Vertex vehicle = root.addInstance("Vehicle");
+		Vertex color = root.addInstance("Color");
+		Vertex ultraColor = root.addInstance(color, "UltraColor");
+		vehicle.addAttribute("colorVehicle", color);
+		Vertex ultraColorVehicle = vehicle.addAttribute("colorVehicle", ultraColor);
+		assert ultraColorVehicle == vehicle.getAttribute("colorVehicle", vehicle, color);
+		assert ultraColorVehicle == vehicle.getAttribute("colorVehicle", vehicle, ultraColor);
+	}
+
+	public void test007_getAttribute() {
+		Root root = new Root();
+		Vertex vehicle = root.addInstance("Vehicle");
+		Vertex myVehicle = vehicle.addInstance("myVehicle");
+		Vertex color = root.addInstance("Color");
+		Vertex ultraColor = root.addInstance(color, "UltraColor");
+		vehicle.addAttribute("colorVehicle", color);
+		Vertex ultraColorVehicle = vehicle.addAttribute("colorVehicle", ultraColor);
+		assert ultraColorVehicle == myVehicle.getAttribute("colorVehicle", vehicle, color);
+		assert ultraColorVehicle == myVehicle.getAttribute("colorVehicle", vehicle, ultraColor);
+	}
+
+	public void test007b_getAttribute() {
+		Root root = new Root();
+		Vertex vehicle = root.addInstance("Vehicle");
+		Vertex myVehicle = vehicle.addInstance("myVehicle");
+		Vertex color = root.addInstance("Color");
+		Vertex ultraColor = root.addInstance(color, "UltraColor");
+		vehicle.addAttribute("colorVehicle", color);
+		Vertex ultraColorVehicle = vehicle.addAttribute("colorVehicle", ultraColor);
+		assert ultraColorVehicle == myVehicle.getAttribute("colorVehicle", color);
+		assert ultraColorVehicle == myVehicle.getAttribute("colorVehicle", ultraColor);
+	}
 
 	public void test001_getInstance() {
 		Root root = new Root();

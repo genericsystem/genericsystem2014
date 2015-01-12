@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.util.Arrays;
+import org.genericsystem.api.core.ApiStatics;
 import org.testng.annotations.Test;
 
 @Test
@@ -52,9 +53,9 @@ public class WeakEquivTest extends AbstractTest {
 		Vertex car = engine.addInstance("Car");
 		Vertex color = engine.addInstance("Color");
 		Vertex carColor = car.addAttribute("CarColor", color);
-		carColor.enableSingularConstraint(Statics.TARGET_POSITION);
+		carColor.enableSingularConstraint(ApiStatics.TARGET_POSITION);
 		// carColor.disableReferentialIntegrity(Statics.TARGET_POSITION);
-		assert engine.getMetaAttribute().isReferentialIntegrityEnabled(Statics.TARGET_POSITION);
+		assert engine.getMetaAttribute().isReferentialIntegrityEnabled(ApiStatics.TARGET_POSITION);
 		Vertex myBmw = car.addInstance("myBmw");
 		Vertex myAudi = car.addInstance("myAudi");
 		Vertex green = color.addInstance("green");
