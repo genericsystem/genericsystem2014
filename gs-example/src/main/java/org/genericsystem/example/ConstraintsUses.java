@@ -3,9 +3,7 @@ package org.genericsystem.example;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.mutability.Engine;
 import org.genericsystem.mutability.Generic;
-import org.testng.annotations.Test;
 
-@Test
 public class ConstraintsUses {
 	public void propertyConstraint() {
 		Engine engine = new Engine();
