@@ -215,20 +215,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	@SuppressWarnings("unchecked")
-	Snapshot<T> getInheritings(final T origin, final int level) {
-		return () -> new InheritanceComputer<>((T) AbstractVertex.this, origin, level).inheritanceStream();
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public T[] coerceToTArray(Object... array) {
-		T[] result = getCurrentCache().getBuilder().newTArray(array.length);
-		for (int i = 0; i < array.length; i++)
-			result[i] = (T) array[i];
-		return result;
-	}
-
-	@SuppressWarnings("unchecked")
 	@Override
 	public T getInstance(List<T> overrides, Serializable value, T... components) {
 		List<T> componentsList = Arrays.asList(components);
@@ -236,6 +222,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		if (adjustMeta.getComponents().size() != components.length)
 			return null;
 		return adjustMeta.getDirectInstance(overrides, value, componentsList);
+	}
+
+	@SuppressWarnings("unchecked")
+	Snapshot<T> getInheritings(final T origin, final int level) {
+		return () -> new InheritanceComputer<>((T) AbstractVertex.this, origin, level).inheritanceStream();
 	}
 
 	@SuppressWarnings("unchecked")

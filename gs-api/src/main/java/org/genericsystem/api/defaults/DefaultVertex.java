@@ -78,4 +78,14 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 		}
 		return true;
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default T[] coerceToTArray(Object... array) {
+		T[] result = getCurrentCache().getBuilder().newTArray(array.length);
+		for (int i = 0; i < array.length; i++)
+			result[i] = (T) array[i];
+		return result;
+	}
+
 }
