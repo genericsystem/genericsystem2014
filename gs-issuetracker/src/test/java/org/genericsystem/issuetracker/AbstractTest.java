@@ -14,7 +14,7 @@ import org.jboss.arquillian.testng.Arquillian;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,20 +26,18 @@ public abstract class AbstractTest extends Arquillian {
 	protected Engine engine;
 
 	@Deployment
-	public static JavaArchive createTestArchive() {
+	public static WebArchive createTestArchive() {
 		return new Archiver(Issue.class, IssueCRUD.class, IssueDTO.class, IssueWS.class).archive();
 	}
 
 	public static class Archiver {
-		JavaArchive archive = ShrinkWrap.create(JavaArchive.class);
+		WebArchive archive = ShrinkWrap.create(WebArchive.class);
 
 		public Archiver(Class<?>... classes) {
 			BeansXml beanXml = new BeansXml();
 			archive.addClasses(classes);
 			archive.addPackage("org.genericsystem.cdi");
 			archive.addPackage("org.genericsystem.cdi.event");
-			archive.addPackage("org.jboss.resteasy.plugins.providers");
-			archive.addPackage("org.jboss.resteasy.client");
 			archive.addPackage("org.apache.deltaspike.core.impl.scope.window");
 			archive.addPackage("org.apache.deltaspike.core.impl.message");
 			archive.addPackage("org.apache.deltaspike.core.impl.scope.conversation");
@@ -49,7 +47,7 @@ public abstract class AbstractTest extends Arquillian {
 			archive.addAsManifestResource(beanXml.byteArraySet(), ArchivePaths.create("beans.xml"));
 		}
 
-		public JavaArchive archive() {
+		public WebArchive archive() {
 			return archive;
 		}
 	}
