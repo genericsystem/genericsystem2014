@@ -1,13 +1,11 @@
-package org.genericsystem.kernel;
+package org.genericsystem.api.defaults;
 
 import java.io.Serializable;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
 
-
-public interface DefaultTree <T extends AbstractVertex<T>> extends IVertex<T> {
+public interface DefaultTree<T extends DefaultVertex<T>> extends IVertex<T> {
 	@Override
 	default T addRoot(Serializable value) {
 		return addInstance(value, coerceToTArray(new Object[getMeta().getComponents().size()]));

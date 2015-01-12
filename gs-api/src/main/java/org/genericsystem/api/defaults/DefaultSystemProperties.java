@@ -1,9 +1,10 @@
-package org.genericsystem.kernel;
+package org.genericsystem.api.defaults;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Optional;
-
+import java.util.Objects;
+import java.util.stream.Stream;
+import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
@@ -15,17 +16,18 @@ import org.genericsystem.kernel.systemproperty.constraints.RequiredConstraint;
 import org.genericsystem.kernel.systemproperty.constraints.SingularConstraint;
 import org.genericsystem.kernel.systemproperty.constraints.UniqueValueConstraint;
 
-public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IVertex<T> {
+public interface DefaultSystemProperties<T extends DefaultVertex<T>> extends IVertex<T> {
+
+	T getMap();
 
 	@Override
-	@SuppressWarnings("unchecked")
 	default Serializable getSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos) {
-		Optional<T> key = ((T) this).getKey(new AxedPropertyClass(propertyClass, pos));
-		if (key.isPresent()) {
-			Optional<T> result = getHolders(key.get()).get().filter(x -> this.isSpecializationOf(x.getBaseComponent())).findFirst();
-			if (result.isPresent())
-				return result.get().getValue();
-
+		T map = getMap();
+		Stream<T> keys = map != null ? getAttributes(map).get() : Stream.empty();
+		T key = keys.filter(x -> Objects.equals(x.getValue(), new AxedPropertyClass(propertyClass, pos))).findFirst().orElse(null);
+		if (key != null) {
+			T result = getHolders(key).get().filter(x -> this.isSpecializationOf(x.getBaseComponent())).findFirst().orElse(null);
+			return result != null ? result.getValue() : null;
 		}
 		return null;
 	}
@@ -33,8 +35,8 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 	@SuppressWarnings("unchecked")
 	@Override
 	default T setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value, T... targets) {
-		T map = ((T)this).getMap();
-		T[] roots = ((Context<T>) getCurrentCache()).getBuilder().newTArray(targets.length + 1);
+		T map = getMap();
+		T[] roots = ((DefaultContext<T>) getCurrentCache()).getBuilder().newTArray(targets.length + 1);
 		Arrays.fill(roots, getRoot());
 		map.getMeta().setInstance(map, new AxedPropertyClass(propertyClass, pos), roots).setInstance(value, addThisToTargets(targets));
 		return (T) this;
@@ -43,8 +45,8 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 	@Override
 	@SuppressWarnings("unchecked")
 	default T enableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos, T... targets) {
-		if (pos != Statics.NO_POSITION && getComponent(pos) == null)
-			((Context<T>) getCurrentCache()).discardWithException(new NotFoundException("System property is not apply because no component exists for position : " + pos));
+		if (pos != ApiStatics.NO_POSITION && getComponent(pos) == null)
+			((DefaultContext<T>) getCurrentCache()).discardWithException(new NotFoundException("System property is not apply because no component exists for position : " + pos));
 		setSystemPropertyValue(propertyClass, pos, Boolean.TRUE, targets);
 		return (T) this;
 	}
@@ -99,46 +101,46 @@ public interface DefaultSystemProperties<T extends AbstractVertex<T>> extends IV
 	@SuppressWarnings("unchecked")
 	@Override
 	default T enablePropertyConstraint() {
-		return enableSystemProperty(PropertyConstraint.class, Statics.NO_POSITION);
+		return enableSystemProperty(PropertyConstraint.class, ApiStatics.NO_POSITION);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default T disablePropertyConstraint() {
-		return disableSystemProperty(PropertyConstraint.class, Statics.NO_POSITION);
+		return disableSystemProperty(PropertyConstraint.class, ApiStatics.NO_POSITION);
 	}
 
 	@Override
 	default boolean isPropertyConstraintEnabled() {
-		return isSystemPropertyEnabled(PropertyConstraint.class, Statics.NO_POSITION);
+		return isSystemPropertyEnabled(PropertyConstraint.class, ApiStatics.NO_POSITION);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default T enableUniqueValueConstraint() {
-		return enableSystemProperty(UniqueValueConstraint.class, Statics.NO_POSITION);
+		return enableSystemProperty(UniqueValueConstraint.class, ApiStatics.NO_POSITION);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default T disableUniqueValueConstraint() {
-		return disableSystemProperty(UniqueValueConstraint.class, Statics.NO_POSITION);
+		return disableSystemProperty(UniqueValueConstraint.class, ApiStatics.NO_POSITION);
 	}
 
 	@Override
 	default boolean isUniqueValueEnabled() {
-		return isSystemPropertyEnabled(UniqueValueConstraint.class, Statics.NO_POSITION);
+		return isSystemPropertyEnabled(UniqueValueConstraint.class, ApiStatics.NO_POSITION);
 	}
 
 	@Override
 	default Class<?> getClassConstraint() {
-		return (Class<?>) getSystemPropertyValue(InstanceValueClassConstraint.class, Statics.NO_POSITION);
+		return (Class<?>) getSystemPropertyValue(InstanceValueClassConstraint.class, ApiStatics.NO_POSITION);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	default T setClassConstraint(Class<?> constraintClass) {
-		setSystemPropertyValue(InstanceValueClassConstraint.class, Statics.NO_POSITION, constraintClass);
+		setSystemPropertyValue(InstanceValueClassConstraint.class, ApiStatics.NO_POSITION, constraintClass);
 		return (T) this;
 	}
 

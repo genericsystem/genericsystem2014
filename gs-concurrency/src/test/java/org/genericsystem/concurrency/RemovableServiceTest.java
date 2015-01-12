@@ -1,7 +1,7 @@
 package org.genericsystem.concurrency;
 
+import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
-import org.genericsystem.kernel.Statics;
 import org.testng.annotations.Test;
 
 @Test
@@ -151,7 +151,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Generic red = color.addInstance("red");
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Generic carRed = vehicleColor.addInstance("CarRed", car, red);
-		engine.getRoot().getMetaRelation().disableReferentialIntegrity(Statics.TARGET_POSITION);
+		engine.getRoot().getMetaRelation().disableReferentialIntegrity(ApiStatics.TARGET_POSITION);
 
 		// when
 		red.remove();

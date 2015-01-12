@@ -2,8 +2,7 @@ package org.genericsystem.mutability;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.genericsystem.kernel.Statics;
+import org.genericsystem.api.core.ApiStatics;
 import org.testng.annotations.Test;
 
 @Test
@@ -65,15 +64,15 @@ public class RequiredConstraintTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic car = engine.addInstance("Car");
 		Generic power = car.addAttribute("Power");
-		power.enableRequiredConstraint(Statics.BASE_POSITION);
+		power.enableRequiredConstraint(ApiStatics.BASE_POSITION);
 
-		assert power.isRequiredConstraintEnabled(Statics.BASE_POSITION);
-		assert !car.isRequiredConstraintEnabled(Statics.BASE_POSITION);
-		power.disableRequiredConstraint(Statics.BASE_POSITION);
-		assert !car.isRequiredConstraintEnabled(Statics.BASE_POSITION);
+		assert power.isRequiredConstraintEnabled(ApiStatics.BASE_POSITION);
+		assert !car.isRequiredConstraintEnabled(ApiStatics.BASE_POSITION);
+		power.disableRequiredConstraint(ApiStatics.BASE_POSITION);
+		assert !car.isRequiredConstraintEnabled(ApiStatics.BASE_POSITION);
 		List<Generic> list = power.getHolders(engine).get().collect(Collectors.toList());
 
-		assert !power.isRequiredConstraintEnabled(Statics.BASE_POSITION) : power.getHolders(engine).get().map(x -> x.info()).collect(Collectors.toList()).toString();
+		assert !power.isRequiredConstraintEnabled(ApiStatics.BASE_POSITION) : power.getHolders(engine).get().map(x -> x.info()).collect(Collectors.toList()).toString();
 	}
 
 	//

@@ -1,5 +1,6 @@
 package org.genericsystem.kernel;
 
+import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.testng.annotations.Test;
 
@@ -150,7 +151,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Vertex carRed = vehicleColor.addInstance("CarRed", car, red);
 
-		vehicleColor.disableReferentialIntegrity(Statics.TARGET_POSITION);
+		vehicleColor.disableReferentialIntegrity(ApiStatics.TARGET_POSITION);
 		red.remove();
 
 		assert engine.isAlive();

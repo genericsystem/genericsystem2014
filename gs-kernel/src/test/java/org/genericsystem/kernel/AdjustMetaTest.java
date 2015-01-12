@@ -2,9 +2,10 @@ package org.genericsystem.kernel;
 
 import java.util.Arrays;
 import java.util.Collections;
-
+import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.exception.CollisionException;
 import org.genericsystem.api.exception.ExistsException;
+import org.genericsystem.kernel.Config.SystemMap;
 import org.testng.annotations.Test;
 
 @Test
@@ -60,8 +61,8 @@ public class AdjustMetaTest extends AbstractTest {
 
 		Vertex myBmw = car.addInstance("myBmw");
 		Vertex red = color.addInstance("red");
-		assert myBmw.getAttributes(Statics.BASE_POSITION).contains(carColor);
-		assert !myBmw.getAttributes(Statics.TARGET_POSITION).contains(carColor);
+		assert myBmw.getAttributes(ApiStatics.BASE_POSITION).contains(carColor);
+		assert !myBmw.getAttributes(ApiStatics.TARGET_POSITION).contains(carColor);
 		// assert false : myBmw.getAttributes(vehicleColor).info() + "   " + color.getAttributes(vehicleColor).info();
 		// assert false : color.getAttributes().stream().filter(x -> x.inheritsFrom(vehicleColor)).collect(Collectors.toList());
 		Vertex myBmwRed = myBmw.addHolder(vehicleColor, "myBmwRed", red);
@@ -84,7 +85,7 @@ public class AdjustMetaTest extends AbstractTest {
 	public void test001_AdjustMeta_SystemMap() {
 		Root engine = new Root();
 		Vertex metaAttribute = engine.getMetaAttribute();
-		Vertex systemMap = engine.getMap();
+		Vertex systemMap = engine.find(SystemMap.class);
 		assert systemMap.getMeta().equals(metaAttribute);
 	}
 

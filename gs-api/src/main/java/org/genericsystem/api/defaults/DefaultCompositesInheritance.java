@@ -1,17 +1,10 @@
-package org.genericsystem.kernel;
+package org.genericsystem.api.defaults;
 
 import java.io.Serializable;
-
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
 
-public interface DefaultCompositesInheritance<T extends AbstractVertex<T>> extends IVertex<T> {
-
-	@SuppressWarnings("unchecked")
-	@Override
-	default Snapshot<T> getAttributes(T attribute) {
-		return ((T) this).getInheritings(attribute, Statics.STRUCTURAL);
-	}
+public interface DefaultCompositesInheritance<T extends DefaultVertex<T>> extends IVertex<T> {
 
 	@Override
 	default Snapshot<T> getAttributes() {
@@ -22,12 +15,6 @@ public interface DefaultCompositesInheritance<T extends AbstractVertex<T>> exten
 	@Override
 	default Snapshot<T> getAttributes(int pos) {
 		return () -> getAttributes().get().filter(attribute -> attribute.getComponent(pos) != null && ((T) this).isSpecializationOf(attribute.getComponent(pos)));
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	default Snapshot<T> getHolders(T attribute) {
-		return ((T) this).getInheritings(attribute, Statics.CONCRETE);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -51,13 +38,13 @@ public interface DefaultCompositesInheritance<T extends AbstractVertex<T>> exten
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getRelations(T relation) {
-		return ((T) this).getInheritings(relation, Statics.STRUCTURAL);
+		return ((T) this).getAttributes(relation);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getLinks(T relation) {
-		return ((T) this).getInheritings(relation, Statics.CONCRETE);
+		return ((T) this).getHolders(relation);
 	}
 
 	@SuppressWarnings("unchecked")

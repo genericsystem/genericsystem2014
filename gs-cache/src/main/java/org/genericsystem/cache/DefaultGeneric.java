@@ -1,6 +1,6 @@
 package org.genericsystem.cache;
 
-import org.genericsystem.kernel.DefaultVertex;
+import org.genericsystem.api.defaults.DefaultVertex;
 
 public interface DefaultGeneric<T extends AbstractGeneric<T>> extends DefaultVertex<T> {
 

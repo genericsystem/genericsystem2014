@@ -1,5 +1,9 @@
-package org.genericsystem.kernel;
+package org.genericsystem.api.defaults;
 
+import static org.genericsystem.api.core.ApiStatics.CONCRETE;
+import static org.genericsystem.api.core.ApiStatics.META;
+import static org.genericsystem.api.core.ApiStatics.SENSOR;
+import static org.genericsystem.api.core.ApiStatics.STRUCTURAL;
 import java.io.StringWriter;
 import java.util.HashMap;
 import javax.json.Json;
@@ -10,8 +14,9 @@ import javax.json.JsonValue;
 import javax.json.JsonWriter;
 import javax.json.stream.JsonGenerator;
 import org.genericsystem.api.core.IVertex;
+import org.genericsystem.api.core.ApiStatics;
 
-public interface DefaultDisplay<T extends AbstractVertex<T>> extends IVertex<T> {
+public interface DefaultDisplay<T extends DefaultVertex<T>> extends IVertex<T> {
 
 	@Override
 	default String info() {
@@ -23,8 +28,8 @@ public interface DefaultDisplay<T extends AbstractVertex<T>> extends IVertex<T> 
 		String s = "\n\n*******************************" + System.identityHashCode(this) + "******************************\n";
 		s += " Value       : " + getValue() + "\n";
 		s += " Meta        : " + getMeta() + " (" + System.identityHashCode(getMeta()) + ")\n";
-		s += " MetaLevel   : " + Statics.getMetaLevelString(getLevel()) + "\n";
-		s += " Category    : " + Statics.getCategoryString(getLevel(), getComponents().size()) + "\n";
+		s += " MetaLevel   : " + getMetaLevelString(getLevel()) + "\n";
+		s += " Category    : " + getCategoryString(getLevel(), getComponents().size()) + "\n";
 		s += " Class       : " + getClass().getName() + "\n";
 		s += "**********************************************************************\n";
 		for (T superGeneric : getSupers())
@@ -86,5 +91,60 @@ public interface DefaultDisplay<T extends AbstractVertex<T>> extends IVertex<T> 
 			arrayBuilder.add(System.identityHashCode(composite));
 		builder.add("Composites", arrayBuilder);
 		return builder.build();
+	}
+
+	public static String getMetaLevelString(int metaLevel) {
+		switch (metaLevel) {
+		case META:
+			return "META";
+		case STRUCTURAL:
+			return "STRUCTURAL";
+		case CONCRETE:
+			return "CONCRETE";
+		case SENSOR:
+			return "SENSOR";
+		default:
+			return "UNKNOWN";
+		}
+	}
+
+	public static String getCategoryString(int metaLevel, int dim) {
+		switch (metaLevel) {
+		case ApiStatics.META:
+			switch (dim) {
+			case ApiStatics.TYPE_SIZE:
+				return "MetaType";
+			case ApiStatics.ATTRIBUTE_SIZE:
+				return "MetaAttribute";
+			case ApiStatics.RELATION_SIZE:
+				return "MetaRelation";
+			default:
+				return "MetaNRelation";
+			}
+		case ApiStatics.STRUCTURAL:
+			switch (dim) {
+			case ApiStatics.TYPE_SIZE:
+				return "Type";
+			case ApiStatics.ATTRIBUTE_SIZE:
+				return "Attribute";
+			case ApiStatics.RELATION_SIZE:
+				return "Relation";
+			default:
+				return "NRelation";
+			}
+		case ApiStatics.CONCRETE:
+			switch (dim) {
+			case ApiStatics.TYPE_SIZE:
+				return "Instance";
+			case ApiStatics.ATTRIBUTE_SIZE:
+				return "Holder";
+			case ApiStatics.RELATION_SIZE:
+				return "Link";
+			default:
+				return "NLink";
+			}
+		default:
+			return null;
+		}
 	}
 }

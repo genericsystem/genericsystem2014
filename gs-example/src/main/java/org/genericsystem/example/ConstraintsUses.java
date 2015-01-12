@@ -1,6 +1,6 @@
 package org.genericsystem.example;
 
-import org.genericsystem.kernel.Statics;
+import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.mutability.Engine;
 import org.genericsystem.mutability.Generic;
 
@@ -51,7 +51,7 @@ public class ConstraintsUses {
 		// Create the relation vehicleColor between Vehicle and Color
 		Generic vehicleColor = vehicle.addRelation("VehicleColor", color);
 		// Instances of Vehicle can be linked to 1 Color maximum
-		vehicleColor.enableSingularConstraint(Statics.BASE_POSITION);
+		vehicleColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
 
 		// Create an instance of Vehicle
 		Generic myVehicle = vehicle.addInstance("myVehicle");

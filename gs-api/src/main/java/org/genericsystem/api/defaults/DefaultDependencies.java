@@ -1,17 +1,14 @@
-package org.genericsystem.kernel;
+package org.genericsystem.api.defaults;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
 
-public interface DefaultDependencies<T extends AbstractVertex<T>> extends IVertex<T> {
+public interface DefaultDependencies<T extends DefaultVertex<T>> extends IVertex<T> {
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -25,8 +22,8 @@ public interface DefaultDependencies<T extends AbstractVertex<T>> extends IVerte
 	}
 
 	@Override
-	default Context<T> getCurrentCache() {
-		return (Context<T>) getRoot().getCurrentCache();
+	default DefaultContext<T> getCurrentCache() {
+		return (DefaultContext<T>) getRoot().getCurrentCache();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -60,38 +57,29 @@ public interface DefaultDependencies<T extends AbstractVertex<T>> extends IVerte
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T getInstance(T superT, Serializable value, T... components) {
-		return getInstance(Collections.singletonList(superT), value, components);
+	default T getInstance(T superT, Serializable value, T... composites) {
+		return getInstance(Collections.singletonList(superT), value, composites);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T getInstance(Serializable value, T... components) {
-		return getInstance(Collections.emptyList(), value, components);
+	default T getInstance(Serializable value, T... composites) {
+		return getInstance(Collections.emptyList(), value, composites);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	default T getInstance(List<T> overrides, Serializable value, T... components) {
-		List<T> componentsList = Arrays.asList(components);
-		T adjustMeta = ((T) this).readAdjustMeta(value, componentsList);
-		if (adjustMeta.getComponents().size() != components.length)
-			return null;
-		return adjustMeta.getDirectInstance(overrides, value, componentsList);
-	}
-
-	public static <T extends AbstractVertex<T>> Predicate<T> valueFilter(Serializable value) {
+	public static <T extends DefaultVertex<T>> Predicate<T> valueFilter(Serializable value) {
 		return attribute -> Objects.equals(attribute.getValue(), value);
 	}
 
 	@SuppressWarnings("unchecked")
-	default Predicate<T> componentsFilter(T... components) {
+	// @Override
+	default Predicate<T> targetsFilter(T... targets) {
 		return attribute -> {
 			int subIndex = 0;
-			loop: for (T component : components) {
+			loop: for (T target : addThisToTargets(targets)) {
 				for (; subIndex < attribute.getComponents().size(); subIndex++) {
 					T subTarget = attribute.getComponents().get(subIndex);
-					if (subTarget.isSpecializationOf(component)) {
+					if (subTarget.isSpecializationOf(target)) {
 						if (isSingularConstraintEnabled(subIndex))
 							return true;
 						subIndex++;
@@ -106,25 +94,25 @@ public interface DefaultDependencies<T extends AbstractVertex<T>> extends IVerte
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T getAttribute(Serializable value, T... components) {
-		return getAttributes().get().filter(valueFilter(value)).filter(componentsFilter(components)).findFirst().orElse(null);
+	default T getAttribute(Serializable value, T... targets) {
+		return getAttributes().get().filter(valueFilter(value)).filter(targetsFilter(targets)).findFirst().orElse(null);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T getHolder(T attribute, Serializable value, T... components) {
-		return getHolders(attribute).get().filter(valueFilter(value)).filter(componentsFilter(components)).findFirst().orElse(null);
+	default T getHolder(T attribute, Serializable value, T... targets) {
+		return getHolders(attribute).get().filter(valueFilter(value)).filter(targetsFilter(targets)).findFirst().orElse(null);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T getRelation(Serializable value, T... components) {
-		return getRelations().get().filter(valueFilter(value)).filter(componentsFilter(components)).findFirst().orElse(null);
+	default T getRelation(Serializable value, T... targets) {
+		return getRelations().get().filter(valueFilter(value)).filter(targetsFilter(targets)).findFirst().orElse(null);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T getLink(T relation, Serializable value, T... components) {
-		return getLinks(relation).get().filter(valueFilter(value)).filter(componentsFilter(components)).findFirst().orElse(null);
+	default T getLink(T relation, Serializable value, T... targets) {
+		return getLinks(relation).get().filter(valueFilter(value)).filter(targetsFilter(targets)).findFirst().orElse(null);
 	}
 }

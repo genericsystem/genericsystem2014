@@ -1,12 +1,9 @@
-package org.genericsystem.kernel;
+package org.genericsystem.api.defaults;
 
 import org.genericsystem.api.core.IVertex;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.genericsystem.api.core.ApiStatics;
 
-public interface DefaultAncestors<T extends AbstractVertex<T>> extends IVertex<T> {
-
-	static Logger log = LoggerFactory.getLogger(DefaultAncestors.class);
+public interface DefaultAncestors<T extends DefaultVertex<T>> extends IVertex<T> {
 
 	@Override
 	default boolean isRoot() {
@@ -24,30 +21,29 @@ public interface DefaultAncestors<T extends AbstractVertex<T>> extends IVertex<T
 		return !isMeta() ? getMeta().getRoot() : getSupers().isEmpty() ? (DefaultRoot<T>) this : getSupers().get(0).getRoot();
 	}
 
-
 	@Override
 	default boolean isMeta() {
-		return getLevel() == Statics.META;
+		return getLevel() == ApiStatics.META;
 	}
 
 	@Override
 	default boolean isStructural() {
-		return getLevel() == Statics.STRUCTURAL;
+		return getLevel() == ApiStatics.STRUCTURAL;
 	}
 
 	@Override
 	default boolean isConcrete() {
-		return getLevel() == Statics.CONCRETE;
+		return getLevel() == ApiStatics.CONCRETE;
 	}
 
 	@Override
 	default boolean inheritsFrom(T superVertex) {
 		if (equals(superVertex))
 			return true;
-		if (getLevel() != superVertex.getLevel())//Not necessary
+		if (getLevel() != superVertex.getLevel())// Not necessary
 			return false;
-		for(T superT: getSupers())
-			if(superT.inheritsFrom(superVertex))
+		for (T superT : getSupers())
+			if (superT.inheritsFrom(superVertex))
 				return true;
 		return false;
 	}
@@ -71,19 +67,19 @@ public interface DefaultAncestors<T extends AbstractVertex<T>> extends IVertex<T
 	default T getComponent(int pos) {
 		return pos >= 0 && pos < getComponents().size() ? getComponents().get(pos) : null;
 	}
-	
+
 	@Override
 	default T getBaseComponent() {
-		return getComponent(Statics.BASE_POSITION);
+		return getComponent(ApiStatics.BASE_POSITION);
 	}
 
 	@Override
 	default T getTargetComponent() {
-		return getComponent(Statics.TARGET_POSITION);
+		return getComponent(ApiStatics.TARGET_POSITION);
 	}
 
 	@Override
 	default T getTernaryComponent() {
-		return getComponent(Statics.TERNARY_POSITION);
+		return getComponent(ApiStatics.TERNARY_POSITION);
 	}
 }

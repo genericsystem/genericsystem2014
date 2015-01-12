@@ -1,5 +1,6 @@
 package org.genericsystem.kernel;
 
+import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.exception.InstanceValueClassViolationConstraint;
 import org.genericsystem.api.exception.PropertyConstraintViolationException;
 import org.genericsystem.api.exception.SingularConstraintViolationException;
@@ -20,7 +21,7 @@ public class ConsitencyConstraintTest extends AbstractTest {
 
 		myVehicle.addHolder(vehicleColor, "vehicleRed", red);
 		myVehicle.addHolder(vehicleColor, "vehicleYellow", yellow);
-		catchAndCheckCause(() -> vehicleColor.enableSingularConstraint(Statics.BASE_POSITION), SingularConstraintViolationException.class);
+		catchAndCheckCause(() -> vehicleColor.enableSingularConstraint(ApiStatics.BASE_POSITION), SingularConstraintViolationException.class);
 	}
 
 	public void test002_enableUniqueValueConstraint() {

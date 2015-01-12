@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
 import org.genericsystem.api.core.IVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,26 +14,12 @@ public class Statics {
 	private static Logger log = LoggerFactory.getLogger(Statics.class);
 
 	private static ThreadLocal<Long> threadDebugged = new ThreadLocal<>();
-	public static final int NO_POSITION = -1;
-	public static final int BASE_POSITION = 0;
-	public static final int TARGET_POSITION = 1;
-	public static final int TERNARY_POSITION = 2;
 
 	public final static String ENGINE_VALUE = "Engine";
 	public static final long MILLI_TO_NANOSECONDS = 1000000L;
 
 	public static final int ATTEMPT_SLEEP = 15;
 	public static final int ATTEMPTS = 50;
-
-	public static final int META = 0;
-	public static final int STRUCTURAL = 1;
-	public static final int CONCRETE = 2;
-	public static final int SENSOR = 3;
-
-	public static final int TYPE_SIZE = 0;
-	public static final int ATTRIBUTE_SIZE = 1;
-	public static final int RELATION_SIZE = 2;
-	public static final int TERNARY_RELATION_SIZE = 3;
 
 	public static final long GARBAGE_PERIOD = 1000L;
 	public static final long GARBAGE_INITIAL_DELAY = 1000L;
@@ -55,61 +40,6 @@ public class Statics {
 	public static void logTimeIfCurrentThreadDebugged(String message) {
 		if (isCurrentThreadDebugged())
 			log.info(message + " : " + (System.currentTimeMillis() - threadDebugged.get()));
-	}
-
-	public static String getMetaLevelString(int metaLevel) {
-		switch (metaLevel) {
-		case META:
-			return "META";
-		case STRUCTURAL:
-			return "STRUCTURAL";
-		case CONCRETE:
-			return "CONCRETE";
-		case SENSOR:
-			return "SENSOR";
-		default:
-			return "UNKNOWN";
-		}
-	}
-
-	public static String getCategoryString(int metaLevel, int dim) {
-		switch (metaLevel) {
-		case Statics.META:
-			switch (dim) {
-			case Statics.TYPE_SIZE:
-				return "MetaType";
-			case Statics.ATTRIBUTE_SIZE:
-				return "MetaAttribute";
-			case Statics.RELATION_SIZE:
-				return "MetaRelation";
-			default:
-				return "MetaNRelation";
-			}
-		case Statics.STRUCTURAL:
-			switch (dim) {
-			case Statics.TYPE_SIZE:
-				return "Type";
-			case Statics.ATTRIBUTE_SIZE:
-				return "Attribute";
-			case Statics.RELATION_SIZE:
-				return "Relation";
-			default:
-				return "NRelation";
-			}
-		case Statics.CONCRETE:
-			switch (dim) {
-			case Statics.TYPE_SIZE:
-				return "Instance";
-			case Statics.ATTRIBUTE_SIZE:
-				return "Holder";
-			case Statics.RELATION_SIZE:
-				return "Link";
-			default:
-				return "NLink";
-			}
-		default:
-			return null;
-		}
 	}
 
 	public static class Supers<T extends AbstractVertex<T>> extends ArrayList<T> {

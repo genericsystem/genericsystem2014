@@ -1,13 +1,12 @@
 package org.genericsystem.kernel.systemproperty.constraints;
 
 import java.io.Serializable;
-
+import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.RequiredConstraintViolationException;
-import org.genericsystem.kernel.AbstractVertex;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint.AxedCheckableConstraint;
 
-public class RequiredConstraint<T extends AbstractVertex<T>> implements AxedCheckableConstraint<T> {
+public class RequiredConstraint<T extends DefaultVertex<T>> implements AxedCheckableConstraint<T> {
 
 	@Override
 	public void check(T modified, T attribute, Serializable value, int axe, boolean isRevert) throws ConstraintViolationException {

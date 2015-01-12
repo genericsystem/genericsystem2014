@@ -1,5 +1,6 @@
 package org.genericsystem.kernel;
 
+import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.kernel.Config.DefaultNoReferentialIntegrityProperty;
 import org.genericsystem.kernel.Config.MetaAttribute;
 import org.genericsystem.kernel.Config.MetaRelation;
@@ -101,18 +102,15 @@ public class AnnotationTest extends AbstractTest {
 
 	@SystemGeneric
 	@Meta(VehicleType.class)
-	public static class MyAudi extends VehicleInstance {
-	}
+	public static class MyAudi extends VehicleInstance {}
 
 	@SystemGeneric
 	@Meta(VehicleType.class)
-	public static class MyBmw extends Vertex {
-	}
+	public static class MyBmw extends Vertex {}
 
 	@SystemGeneric
 	@Meta(VehicleType.class)
-	public static class MyMercedes {
-	}
+	public static class MyMercedes {}
 
 	@SystemGeneric
 	@InstanceClass(VehicleInstance.class)
@@ -399,57 +397,46 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	public static class Games extends Vertex {
-	}
+	public static class Games extends Vertex {}
 
 	@SystemGeneric
 	@Meta(Games.class)
-	public static class MyGames extends Vertex {
-	}
+	public static class MyGames extends Vertex {}
 
 	@SystemGeneric
 	@Meta(Games.class)
-	public static class MyGames2 extends Vertex {
-	}
+	public static class MyGames2 extends Vertex {}
 
 	@SystemGeneric
-	public static class Children extends Vertex {
-	}
+	public static class Children extends Vertex {}
 
 	@SystemGeneric
 	@Meta(Children.class)
-	public static class MyChildren extends Vertex {
-	}
+	public static class MyChildren extends Vertex {}
 
 	@SystemGeneric
 	@Supers({ Games.class, Children.class })
-	public static class ChildrenGames extends Vertex {
-	}
+	public static class ChildrenGames extends Vertex {}
 
 	@SystemGeneric
 	@Meta(ChildrenGames.class)
-	public static class MyChildrenGames extends Vertex {
-	}
+	public static class MyChildrenGames extends Vertex {}
 
 	@SystemGeneric
 	@Supers({ Human.class, Vehicle.class })
-	public static class Transformer extends Vertex {
-	}
+	public static class Transformer extends Vertex {}
 
 	@SystemGeneric
 	@Meta(Transformer.class)
-	public static class MyTransformer extends Vertex {
-	}
+	public static class MyTransformer extends Vertex {}
 
 	@SystemGeneric
 	@Supers({ Transformer.class, ChildrenGames.class })
-	public static class TransformerChildrenGames extends Vertex {
-	}
+	public static class TransformerChildrenGames extends Vertex {}
 
 	@SystemGeneric
 	@Meta(TransformerChildrenGames.class)
-	public static class MyTransformerChildrenGames extends Vertex {
-	}
+	public static class MyTransformerChildrenGames extends Vertex {}
 
 	@SystemGeneric
 	public static class GraphicComposite extends Vertex {
@@ -504,8 +491,7 @@ public class AnnotationTest extends AbstractTest {
 
 	@SystemGeneric
 	@Meta(Vehicle.class)
-	public static class MyVehicle extends Vertex {
-	}
+	public static class MyVehicle extends Vertex {}
 
 	@SystemGeneric
 	@Components(Vehicle.class)
@@ -516,7 +502,7 @@ public class AnnotationTest extends AbstractTest {
 	@SystemGeneric
 	@Components(Vehicle.class)
 	@PropertyConstraint
-	@SingularConstraint(Statics.BASE_POSITION)
+	@SingularConstraint(ApiStatics.BASE_POSITION)
 	// @RequiredConstraint
 	@UniqueValueConstraint
 	@InstanceValueClassConstraint(Integer.class)
@@ -550,8 +536,7 @@ public class AnnotationTest extends AbstractTest {
 
 	@SystemGeneric
 	@Meta(Car.class)
-	public static class myCar extends Vertex {
-	}
+	public static class myCar extends Vertex {}
 
 	@SystemGeneric
 	@Components(Car.class)
@@ -567,42 +552,34 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	public static class Human extends Vertex {
-	}
+	public static class Human extends Vertex {}
 
 	@SystemGeneric
-	public static class Man extends Human {
-	}
+	public static class Man extends Human {}
 
 	@SystemGeneric
 	@Meta(Human.class)
-	public static class Myck extends Vertex {
-	}
+	public static class Myck extends Vertex {}
 
 	@SystemGeneric
-	public static class Time extends Vertex {
-	}
+	public static class Time extends Vertex {}
 
 	@SystemGeneric
 	@Components({ Human.class, Vehicle.class })
-	public static class HumanPossessVehicle extends Vertex {
-	}
+	public static class HumanPossessVehicle extends Vertex {}
 
 	@SystemGeneric
 	@Components({ Human.class, Car.class })
 	@Supers(HumanPossessVehicle.class)
-	public static class HumanPossessCar extends HumanPossessVehicle {
-	}
+	public static class HumanPossessCar extends HumanPossessVehicle {}
 
 	@SystemGeneric
 	@Components({ Man.class, Car.class })
 	@Supers(HumanPossessVehicle.class)
-	public static class ManPossessCar extends HumanPossessVehicle {
-	}
+	public static class ManPossessCar extends HumanPossessVehicle {}
 
 	@SystemGeneric
 	@Components({ Human.class, Vehicle.class, Time.class })
-	public static class HumanPossessVehicleTime extends Vertex {
-	}
+	public static class HumanPossessVehicleTime extends Vertex {}
 
 }
