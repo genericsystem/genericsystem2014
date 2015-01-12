@@ -215,7 +215,9 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 			T equalsInstance = adjustedMeta.getDirectInstance(value, components);
 			if (equalsInstance != null)
 				getContext().discardWithException(new ExistsException("An equivalent instance already exists : " + equalsInstance.info()));
-			return internalSetInstance(null, clazz, adjustedMeta, overrides, value, components);
+			List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, value, components);
+			Supplier<T> rebuilder = () -> build(clazz, adjustedMeta, supers, value, components);
+			return rebuildAll(null, rebuilder, getContext().computePotentialDependencies(adjustedMeta, supers, value, components));
 		}
 
 		@Override
@@ -225,7 +227,9 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 			T equivInstance = adjustedMeta.getDirectEquivInstance(value, components);
 			if (equivInstance != null && equivInstance.equalsAndOverrides(adjustedMeta, overrides, value, components))
 				return equivInstance;
-			return internalSetInstance(equivInstance, clazz, adjustedMeta, overrides, value, components);
+			List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, value, components);
+			Supplier<T> rebuilder = () -> build(clazz, adjustedMeta, supers, value, components);
+			return rebuildAll(equivInstance, rebuilder, equivInstance == null ? getContext().computePotentialDependencies(adjustedMeta, supers, value, components) : getContext().computeDependencies(equivInstance));
 		}
 
 		private class ConvertMap extends HashMap<T, T> {

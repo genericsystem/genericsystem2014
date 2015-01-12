@@ -20,7 +20,8 @@ public abstract class Builder<T extends DefaultVertex<T>> implements DefaultBuil
 		this.context = context;
 	}
 
-	protected Context<T> getContext() {
+	@Override
+	public Context<T> getContext() {
 		return context;
 	}
 
@@ -41,12 +42,6 @@ public abstract class Builder<T extends DefaultVertex<T>> implements DefaultBuil
 	}
 
 	abstract protected T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components);
-
-	T internalSetInstance(T equivInstance, Class<?> clazz, T ajustedMeta, List<T> overrides, Serializable value, List<T> components) {
-		List<T> supers = computeAndCheckOverridesAreReached(ajustedMeta, overrides, value, components);
-		Supplier<T> rebuilder = () -> build(clazz, ajustedMeta, supers, value, components);
-		return rebuildAll(equivInstance, rebuilder, equivInstance == null ? context.computePotentialDependencies(ajustedMeta, supers, value, components) : context.computeDependencies(equivInstance));
-	}
 
 	@SuppressWarnings("unchecked")
 	protected T newT(Class<?> clazz, T meta) {
