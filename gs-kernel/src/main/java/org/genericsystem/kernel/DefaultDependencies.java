@@ -60,14 +60,14 @@ public interface DefaultDependencies<T extends AbstractVertex<T>> extends IVerte
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T getInstance(T superT, Serializable value, T... composites) {
-		return getInstance(Collections.singletonList(superT), value, composites);
+	default T getInstance(T superT, Serializable value, T... components) {
+		return getInstance(Collections.singletonList(superT), value, components);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T getInstance(Serializable value, T... composites) {
-		return getInstance(Collections.emptyList(), value, composites);
+	default T getInstance(Serializable value, T... components) {
+		return getInstance(Collections.emptyList(), value, components);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -85,14 +85,13 @@ public interface DefaultDependencies<T extends AbstractVertex<T>> extends IVerte
 	}
 
 	@SuppressWarnings("unchecked")
-	// @Override
-	default Predicate<T> targetsFilter(T... targets) {
+	default Predicate<T> componentsFilter(T... components) {
 		return attribute -> {
 			int subIndex = 0;
-			loop: for (T target : addThisToTargets(targets)) {
+			loop: for (T component : components) {
 				for (; subIndex < attribute.getComponents().size(); subIndex++) {
 					T subTarget = attribute.getComponents().get(subIndex);
-					if (subTarget.isSpecializationOf(target)) {
+					if (subTarget.isSpecializationOf(component)) {
 						if (isSingularConstraintEnabled(subIndex))
 							return true;
 						subIndex++;
@@ -107,25 +106,25 @@ public interface DefaultDependencies<T extends AbstractVertex<T>> extends IVerte
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T getAttribute(Serializable value, T... targets) {
-		return getAttributes().get().filter(valueFilter(value)).filter(targetsFilter(targets)).findFirst().orElse(null);
+	default T getAttribute(Serializable value, T... components) {
+		return getAttributes().get().filter(valueFilter(value)).filter(componentsFilter(components)).findFirst().orElse(null);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T getHolder(T attribute, Serializable value, T... targets) {
-		return getHolders(attribute).get().filter(valueFilter(value)).filter(targetsFilter(targets)).findFirst().orElse(null);
+	default T getHolder(T attribute, Serializable value, T... components) {
+		return getHolders(attribute).get().filter(valueFilter(value)).filter(componentsFilter(components)).findFirst().orElse(null);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T getRelation(Serializable value, T... targets) {
-		return getRelations().get().filter(valueFilter(value)).filter(targetsFilter(targets)).findFirst().orElse(null);
+	default T getRelation(Serializable value, T... components) {
+		return getRelations().get().filter(valueFilter(value)).filter(componentsFilter(components)).findFirst().orElse(null);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T getLink(T relation, Serializable value, T... targets) {
-		return getLinks(relation).get().filter(valueFilter(value)).filter(targetsFilter(targets)).findFirst().orElse(null);
+	default T getLink(T relation, Serializable value, T... components) {
+		return getLinks(relation).get().filter(valueFilter(value)).filter(componentsFilter(components)).findFirst().orElse(null);
 	}
 }

@@ -42,35 +42,6 @@ public class IssueBean {
 		return "#";
 	}
 
-	// private final String BASE_URL = "http://localhost:8080/gs-issuetracker/rest/issueManager";
-	//
-	// public List<Issue> getIssues() {
-	// Client client = ClientBuilder.newClient();
-	// WebTarget myResource = client.target(BASE_URL + "/getIssues");
-	// try {
-	// return myResource.request(MediaType.APPLICATION_JSON).get(IssueWrapper.class).getList();
-	// } catch (Exception e) {
-	// log.error(e.getMessage(), e);
-	// }
-	// return new ArrayList<Issue>();
-	// }
-	//
-	// public String createIssue() {
-	// Client client = ClientBuilder.newClient();
-	// WebTarget myResource = client.target(BASE_URL + "/createIssue");
-	// try {
-	// Issue issue = new Issue();
-	// issue.setId(id);
-	// issue.setDescriptif(descriptif);
-	// issue.setPriority(priority);
-	// issue.setType(type);
-	// myResource.request(MediaType.APPLICATION_JSON).buildPost(Entity.entity(issue, MediaType.APPLICATION_JSON)).invoke();
-	// } catch (Exception e) {
-	// log.error(e.getMessage(), e);
-	// }
-	// return "#";
-	// }
-
 	public String getId() {
 		return id;
 	}
