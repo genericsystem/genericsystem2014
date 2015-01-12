@@ -1,17 +1,14 @@
-package org.genericsystem.kernel;
+package org.genericsystem.api.defaults;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
 
-public interface DefaultDependencies<T extends AbstractVertex<T>> extends IVertex<T> {
+public interface DefaultDependencies<T extends DefaultVertex<T>> extends IVertex<T> {
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -25,8 +22,8 @@ public interface DefaultDependencies<T extends AbstractVertex<T>> extends IVerte
 	}
 
 	@Override
-	default Context<T> getCurrentCache() {
-		return (Context<T>) getRoot().getCurrentCache();
+	default DefaultContext<T> getCurrentCache() {
+		return (DefaultContext<T>) getRoot().getCurrentCache();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -70,17 +67,7 @@ public interface DefaultDependencies<T extends AbstractVertex<T>> extends IVerte
 		return getInstance(Collections.emptyList(), value, composites);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	default T getInstance(List<T> overrides, Serializable value, T... components) {
-		List<T> componentsList = Arrays.asList(components);
-		T adjustMeta = ((T) this).readAdjustMeta(value, componentsList);
-		if (adjustMeta.getComponents().size() != components.length)
-			return null;
-		return adjustMeta.getDirectInstance(overrides, value, componentsList);
-	}
-
-	public static <T extends AbstractVertex<T>> Predicate<T> valueFilter(Serializable value) {
+	public static <T extends DefaultVertex<T>> Predicate<T> valueFilter(Serializable value) {
 		return attribute -> Objects.equals(attribute.getValue(), value);
 	}
 

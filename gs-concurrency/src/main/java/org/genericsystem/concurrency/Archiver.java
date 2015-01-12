@@ -6,7 +6,6 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.genericsystem.concurrency.Generic.SystemClass;
 import org.genericsystem.kernel.Builder;
 
@@ -105,7 +104,7 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 
 			// TODO checker
 
-			private class TsBuilder extends Builder<T> {
+			private class TsBuilder extends AbstractVertexBuilder<T> {
 				protected TsBuilder() {
 					super(TsTransaction.this);
 				}

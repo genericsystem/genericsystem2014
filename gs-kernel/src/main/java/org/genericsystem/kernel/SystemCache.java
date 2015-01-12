@@ -2,13 +2,12 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-
+import org.genericsystem.api.core.ApiStatics;
+import org.genericsystem.api.defaults.DefaultRoot;
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Dependencies;
 import org.genericsystem.kernel.annotations.Meta;
@@ -53,6 +52,7 @@ public class SystemCache<T extends AbstractVertex<T>> {
 		initialized = true;
 	}
 
+	@SuppressWarnings("unchecked")
 	private T set(Class<?> clazz) {
 		if (initialized)
 			throw new IllegalStateException("Class : " + clazz + " has not been built at startup");
@@ -67,10 +67,9 @@ public class SystemCache<T extends AbstractVertex<T>> {
 		T result;
 		if (meta == null) {
 			assert overrides.size() == 1;
-			result = overrides.get(0).getCurrentCache().getBuilder().build(clazz, null, overrides, findValue(clazz), components);
-		}
-		else
-			result = meta.setInstance(clazz, overrides, findValue(clazz), components);
+			result = ((T) root).getCurrentCache().getBuilder().build(clazz, null, overrides, findValue(clazz), components);
+		} else
+			result = ((T) root).getCurrentCache().getBuilder().setInstance(clazz, meta, overrides, findValue(clazz), components);
 		put(clazz, result);
 		mountConstraints(clazz, result);
 		triggersDependencies(clazz);
@@ -108,7 +107,7 @@ public class SystemCache<T extends AbstractVertex<T>> {
 			result.setClassConstraint(clazz.getAnnotation(InstanceValueClassConstraint.class).value());
 
 		if (clazz.getAnnotation(RequiredConstraint.class) != null)
-			result.enableRequiredConstraint(Statics.NO_POSITION);
+			result.enableRequiredConstraint(ApiStatics.NO_POSITION);
 
 		NoReferentialIntegrityProperty referentialIntegrity = clazz.getAnnotation(NoReferentialIntegrityProperty.class);
 		if (referentialIntegrity != null)

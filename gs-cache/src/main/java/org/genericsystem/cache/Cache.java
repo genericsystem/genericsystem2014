@@ -41,7 +41,7 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 	}
 
 	protected void initialize() {
-		cacheElement = new CacheElement<T>(cacheElement == null ? new TransactionElement() : cacheElement.getSubCache());
+		cacheElement = new CacheElement<>(cacheElement == null ? new TransactionElement() : cacheElement.getSubCache());
 	}
 
 	public void flush() {
@@ -78,7 +78,7 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 	}
 
 	public void mount() {
-		cacheElement = new CacheElement<T>(cacheElement);
+		cacheElement = new CacheElement<>(cacheElement);
 	}
 
 	public void unmount() {
@@ -103,7 +103,7 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 
 	@Override
 	protected Builder<T> buildBuilder() {
-		return new Builder<T>(this) {
+		return new AbstractVertexBuilder<T>(this) {
 			@Override
 			@SuppressWarnings("unchecked")
 			protected Class<T> getTClass() {

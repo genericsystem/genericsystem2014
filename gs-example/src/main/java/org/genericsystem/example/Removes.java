@@ -1,7 +1,7 @@
 package org.genericsystem.example;
 
+import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.kernel.Config.MetaRelation;
-import org.genericsystem.kernel.Statics;
 import org.genericsystem.mutability.Engine;
 import org.genericsystem.mutability.Generic;
 
@@ -98,7 +98,7 @@ public class Removes {
 		vehicle.addRelation("VehicleColor", color);
 
 		// Enable referential integrity for vehicle in vehicleColor for the base : vehicle
-		engine.find(MetaRelation.class).enableReferentialIntegrity(Statics.BASE_POSITION);
+		engine.find(MetaRelation.class).enableReferentialIntegrity(ApiStatics.BASE_POSITION);
 
 		// Remove the type Vehicle
 		vehicle.remove();
@@ -113,10 +113,10 @@ public class Removes {
 		Generic vehicleColor = vehicle.addRelation("VehicleColor", color);
 
 		// Disable default referential integrity for vehicle in vehicleColor for the first target : color
-		engine.find(MetaRelation.class).disableReferentialIntegrity(Statics.TARGET_POSITION);
+		engine.find(MetaRelation.class).disableReferentialIntegrity(ApiStatics.TARGET_POSITION);
 
 		// Enable cascade remove for Color in vehicleColor
-		engine.find(MetaRelation.class).enableCascadeRemove(Statics.TARGET_POSITION);
+		engine.find(MetaRelation.class).enableCascadeRemove(ApiStatics.TARGET_POSITION);
 
 		// Remove the type vehicle
 		vehicle.remove();

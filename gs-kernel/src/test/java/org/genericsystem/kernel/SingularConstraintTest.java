@@ -1,5 +1,6 @@
 package org.genericsystem.kernel;
 
+import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.exception.SingularConstraintViolationException;
 import org.testng.annotations.Test;
 
@@ -14,9 +15,9 @@ public class SingularConstraintTest extends AbstractTest {
 		Vertex red = color.addInstance("red");
 		Vertex yellow = color.addInstance("yellow");
 		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
-		vehicleColor.enableSingularConstraint(Statics.BASE_POSITION);
-		assert vehicleColor.isSingularConstraintEnabled(Statics.BASE_POSITION);
-		assert !vehicleColor.isReferentialIntegrityEnabled(Statics.BASE_POSITION);
+		vehicleColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
+		assert vehicleColor.isSingularConstraintEnabled(ApiStatics.BASE_POSITION);
+		assert !vehicleColor.isReferentialIntegrityEnabled(ApiStatics.BASE_POSITION);
 		myVehicle.addHolder(vehicleColor, "vehicleRed", red);
 		catchAndCheckCause(() -> myVehicle.addHolder(vehicleColor, "vehicleYellow", yellow), SingularConstraintViolationException.class);
 	}
@@ -29,8 +30,8 @@ public class SingularConstraintTest extends AbstractTest {
 		Vertex color = engine.addInstance("Color");
 		Vertex red = color.addInstance("red");
 		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
-		vehicleColor.enableSingularConstraint(Statics.BASE_POSITION);
-		assert vehicleColor.isSingularConstraintEnabled(Statics.BASE_POSITION);
+		vehicleColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
+		assert vehicleColor.isSingularConstraintEnabled(ApiStatics.BASE_POSITION);
 		myVehicle.addHolder(vehicleColor, "vehicleRed", red);
 		yourVehicle.addHolder(vehicleColor, "vehicleRed", red);
 	}
@@ -42,8 +43,8 @@ public class SingularConstraintTest extends AbstractTest {
 		Vertex red = color.addInstance("red");
 		Vertex yellow = color.addInstance("yellow");
 		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
-		vehicleColor.enableSingularConstraint(Statics.BASE_POSITION);
-		assert vehicleColor.isSingularConstraintEnabled(Statics.BASE_POSITION);
+		vehicleColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
+		assert vehicleColor.isSingularConstraintEnabled(ApiStatics.BASE_POSITION);
 		vehicle.addHolder(vehicleColor, "vehicleRed", red);
 		catchAndCheckCause(() -> vehicle.addHolder(vehicleColor, "vehicleYellow", yellow), SingularConstraintViolationException.class);
 	}
@@ -59,8 +60,8 @@ public class SingularConstraintTest extends AbstractTest {
 		Vertex yesterday = time.addInstance("yesterday");
 
 		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color, time);
-		vehicleColor.enableSingularConstraint(Statics.BASE_POSITION);
-		assert vehicleColor.isSingularConstraintEnabled(Statics.BASE_POSITION);
+		vehicleColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
+		assert vehicleColor.isSingularConstraintEnabled(ApiStatics.BASE_POSITION);
 		myVehicle.addHolder(vehicleColor, "vehicleRedToday", red, today);
 		catchAndCheckCause(() -> myVehicle.addHolder(vehicleColor, "vehicleRedYesterday", red, yesterday), SingularConstraintViolationException.class);
 
@@ -74,8 +75,8 @@ public class SingularConstraintTest extends AbstractTest {
 		Vertex color = engine.addInstance("Color");
 		Vertex red = color.addInstance("red");
 		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
-		vehicleColor.enableSingularConstraint(Statics.TARGET_POSITION);
-		assert vehicleColor.isSingularConstraintEnabled(Statics.TARGET_POSITION);
+		vehicleColor.enableSingularConstraint(ApiStatics.TARGET_POSITION);
+		assert vehicleColor.isSingularConstraintEnabled(ApiStatics.TARGET_POSITION);
 		myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
 
 		catchAndCheckCause(() -> myVehicle2.addHolder(vehicleColor, "myVehicleRed2", red), SingularConstraintViolationException.class);
@@ -89,7 +90,7 @@ public class SingularConstraintTest extends AbstractTest {
 		Vertex red = color.addInstance("red");
 		Vertex yellow = color.addInstance("yellow");
 		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
-		vehicleColor.enableSingularConstraint(Statics.TARGET_POSITION);
+		vehicleColor.enableSingularConstraint(ApiStatics.TARGET_POSITION);
 
 		Vertex myVehicleRed = myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
 		Vertex myVehicleYellow = myVehicle.addHolder(vehicleColor, "myVehicleYellow", yellow);
@@ -108,7 +109,7 @@ public class SingularConstraintTest extends AbstractTest {
 		Vertex red = color.addInstance("red");
 		Vertex yellow = color.addInstance("yellow");
 		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
-		vehicleColor.enableSingularConstraint(Statics.TARGET_POSITION);
+		vehicleColor.enableSingularConstraint(ApiStatics.TARGET_POSITION);
 
 		Vertex myVehicleRed = myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
 		Vertex myVehicle2Yellow = myVehicle2.addHolder(vehicleColor, "myVehicle2Yellow", yellow);
@@ -128,7 +129,7 @@ public class SingularConstraintTest extends AbstractTest {
 		Vertex red = color.addInstance("red");
 		Vertex yellow = color.addInstance("yellow");
 		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
-		vehicleColor.enableSingularConstraint(Statics.TARGET_POSITION);
+		vehicleColor.enableSingularConstraint(ApiStatics.TARGET_POSITION);
 
 		Vertex myVehicleRed = myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
 		Vertex myVehicle2Yellow = myVehicle2.addHolder(vehicleColor, "myVehicle2Yellow", yellow);
@@ -149,7 +150,7 @@ public class SingularConstraintTest extends AbstractTest {
 		Vertex outside = location.addInstance("outside");
 
 		Vertex vehicleColorLocation = vehicle.addAttribute("vehicleColor", color, location);
-		vehicleColorLocation.enableSingularConstraint(Statics.TERNARY_POSITION);
+		vehicleColorLocation.enableSingularConstraint(ApiStatics.TERNARY_POSITION);
 
 		Vertex myVehicleRedOutside = myVehicle.addHolder(vehicleColorLocation, "myVehicleRedOutside", red, outside);
 		catchAndCheckCause(() -> myVehicle2.addHolder(vehicleColorLocation, "myVehicle2RedOutside", red, outside), SingularConstraintViolationException.class);
@@ -165,7 +166,7 @@ public class SingularConstraintTest extends AbstractTest {
 		Vertex red = color.addInstance("red");
 		Vertex yellow = color.addInstance("yellow");
 		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
-		vehicleColor.enableSingularConstraint(Statics.BASE_POSITION);
+		vehicleColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
 		myCar.addHolder(vehicleColor, "myCarRed", red);
 		catchAndCheckCause(() -> myCar.addHolder(vehicleColor, "myCarYellow", yellow), SingularConstraintViolationException.class);
 
@@ -179,7 +180,7 @@ public class SingularConstraintTest extends AbstractTest {
 		Vertex red = color.addInstance("red");
 		Vertex yellow = color.addInstance("yellow");
 		Vertex carColor = car.addAttribute("vehicleColor", color);
-		carColor.enableSingularConstraint(Statics.BASE_POSITION);
+		carColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
 		carColor.enablePropertyConstraint();
 		Vertex carRed = car.addHolder(carColor, "CarRed", red);
 		Vertex myCarYellow = myCar.addHolder(carColor, "myCarRed", yellow);

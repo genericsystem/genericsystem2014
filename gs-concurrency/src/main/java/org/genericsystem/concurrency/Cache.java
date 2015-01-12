@@ -2,7 +2,6 @@ package org.genericsystem.concurrency;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
@@ -22,8 +21,7 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 	}
 
 	protected Cache(Transaction<T> subContext) {
-		this(subContext, new ContextEventListener<T>() {
-		});
+		this(subContext, new ContextEventListener<T>() {});
 	}
 
 	protected Cache(Transaction<T> subContext, ContextEventListener<T> listener) {
@@ -43,7 +41,7 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 
 	@Override
 	protected Builder<T> buildBuilder() {
-		return new Builder<T>(this) {
+		return new Transaction.AbstractVertexBuilder<T>(this) {
 			@Override
 			@SuppressWarnings("unchecked")
 			protected Class<T> getTClass() {
@@ -168,16 +166,12 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 
 	public static interface ContextEventListener<X> {
 
-		default void triggersMutationEvent(X oldDependency, X newDependency) {
-		}
+		default void triggersMutationEvent(X oldDependency, X newDependency) {}
 
-		default void triggersRefreshEvent() {
-		}
+		default void triggersRefreshEvent() {}
 
-		default void triggersClearEvent() {
-		}
+		default void triggersClearEvent() {}
 
-		default void triggersFlushEvent() {
-		}
+		default void triggersFlushEvent() {}
 	}
 }

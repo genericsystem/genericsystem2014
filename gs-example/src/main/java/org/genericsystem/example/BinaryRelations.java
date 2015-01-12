@@ -1,6 +1,6 @@
 package org.genericsystem.example;
 
-import org.genericsystem.kernel.Statics;
+import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.mutability.Engine;
 import org.genericsystem.mutability.Generic;
 
@@ -13,8 +13,8 @@ public class BinaryRelations {
 		Generic vehicleColor = vehicle.addRelation("VehicleColor", color);
 
 		// Make vehicleColor a 1-1 relation
-		vehicleColor.enableSingularConstraint(Statics.BASE_POSITION);
-		vehicleColor.enableSingularConstraint(Statics.TARGET_POSITION);
+		vehicleColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
+		vehicleColor.enableSingularConstraint(ApiStatics.TARGET_POSITION);
 
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		Generic yourVehicle = vehicle.addInstance("yourVehicle");
@@ -50,7 +50,7 @@ public class BinaryRelations {
 		Generic vehicleColor = vehicle.addRelation("VehicleColor", color);
 
 		// Make vehicleColor a 1-n relation
-		vehicleColor.enableSingularConstraint(Statics.BASE_POSITION);
+		vehicleColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
 
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		Generic yourVehicle = vehicle.addInstance("yourVehicle");
@@ -82,7 +82,7 @@ public class BinaryRelations {
 		Generic vehicleColor = vehicle.addRelation("VehicleColor", color);
 
 		// Make vehicleColor a n-1 relation
-		vehicleColor.enableSingularConstraint(Statics.TARGET_POSITION);
+		vehicleColor.enableSingularConstraint(ApiStatics.TARGET_POSITION);
 
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		Generic yourVehicle = vehicle.addInstance("yourVehicle");

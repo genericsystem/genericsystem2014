@@ -2,12 +2,16 @@ package org.genericsystem.concurrency;
 
 import java.io.Serializable;
 import java.util.List;
-
 import org.genericsystem.kernel.Dependencies;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.genericsystem.cache.AbstractGeneric<T> implements DefaultGeneric<T>, Comparable<T> {
 
 	private LifeManager lifeManager;
+
+	@Override
+	public Cache<T> getCurrentCache() {
+		return getRoot().getCurrentCache();
+	}
 
 	@Override
 	public DefaultEngine<T> getRoot() {

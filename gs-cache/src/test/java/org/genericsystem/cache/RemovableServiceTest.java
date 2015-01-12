@@ -1,8 +1,8 @@
 package org.genericsystem.cache;
 
+import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
-import org.genericsystem.kernel.Statics;
 import org.testng.annotations.Test;
 
 @Test
@@ -87,7 +87,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Generic engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic power = vehicle.addAttribute("Power");
-		assert !engine.getRoot().getMetaAttribute().isReferentialIntegrityEnabled(Statics.BASE_POSITION);
+		assert !engine.getRoot().getMetaAttribute().isReferentialIntegrityEnabled(ApiStatics.BASE_POSITION);
 
 		// when
 		vehicle.remove();
@@ -153,7 +153,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Generic red = color.addInstance("red");
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Generic carRed = vehicleColor.addInstance("CarRed", car, red);
-		engine.getRoot().getMetaRelation().disableReferentialIntegrity(Statics.TARGET_POSITION);
+		engine.getRoot().getMetaRelation().disableReferentialIntegrity(ApiStatics.TARGET_POSITION);
 
 		// when
 		red.remove();

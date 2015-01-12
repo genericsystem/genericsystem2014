@@ -5,7 +5,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
-
+import org.genericsystem.api.core.ApiStatics;
+import org.genericsystem.api.defaults.DefaultChecker;
+import org.genericsystem.api.defaults.DefaultRoot;
+import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.CollisionException;
 import org.genericsystem.api.exception.ConstraintViolationException;
@@ -17,12 +20,13 @@ import org.genericsystem.api.exception.NotAliveConstraintViolationException;
 import org.genericsystem.api.exception.NotAllowedSerializableTypeException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
+import org.genericsystem.kernel.Config.SystemMap;
 import org.genericsystem.kernel.annotations.Priority;
 import org.genericsystem.kernel.annotations.SystemGeneric;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint;
 
-public class Checker<T extends AbstractVertex<T>> {
+public class Checker<T extends DefaultVertex<T>> implements DefaultChecker<T> {
 
 	private final Context<T> context;
 
@@ -197,7 +201,7 @@ public class Checker<T extends AbstractVertex<T>> {
 	}
 
 	private void checkLevel(T vertex) {
-		if (vertex.getLevel() > Statics.CONCRETE)
+		if (vertex.getLevel() > ApiStatics.CONCRETE)
 			context.discardWithException(new MetaLevelConstraintViolationException("Unable to instanciate a concrete generic : " + vertex.getMeta()));
 	}
 
@@ -213,7 +217,7 @@ public class Checker<T extends AbstractVertex<T>> {
 	}
 
 	private void checkConstraints(boolean isOnAdd, boolean isFlushTime, T vertex) {
-		T map = vertex.getMap();
+		T map = getContext().getRoot().find(SystemMap.class);
 		if (map != null) {
 			Stream<T> contraintsHolders = vertex.getMeta().getHolders(map).get().filter(holder -> holder.getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) holder.getMeta().getValue()).getClazz()))
 					.filter(holder -> holder.getValue() != null && !Boolean.FALSE.equals(holder.getValue())).sorted(CONSTRAINT_PRIORITY);
@@ -253,12 +257,12 @@ public class Checker<T extends AbstractVertex<T>> {
 	}
 
 	private void checkConsistency(T vertex) {
-		T map = vertex.getMap();
+		T map = getContext().getRoot().find(SystemMap.class);
 		if (map != null && vertex.isInstanceOf(map) && vertex.getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) vertex.getMeta().getValue()).getClazz()) && vertex.getValue() != null
 				&& !Boolean.FALSE.equals(vertex.getValue())) {
-			T baseConstraint = vertex.getComponent(Statics.BASE_POSITION);
+			T baseConstraint = vertex.getComponent(ApiStatics.BASE_POSITION);
 			int axe = ((AxedPropertyClass) vertex.getMeta().getValue()).getAxe();
-			if (((AxedPropertyClass) vertex.getMeta().getValue()).getAxe() == Statics.NO_POSITION)
+			if (((AxedPropertyClass) vertex.getMeta().getValue()).getAxe() == ApiStatics.NO_POSITION)
 				baseConstraint.getAllInstances().forEach(x -> check(vertex, baseConstraint, true, true, false, x));
 			else
 				baseConstraint.getComponents().get(axe).getAllInstances().forEach(x -> check(vertex, baseConstraint, true, true, true, x));
