@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -271,6 +272,14 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 			}
 			Statics.reverseCollections(dependenciesToRebuild).forEach(x -> convertMap.convert(x));
 			return build;
+		}
+
+		@Override
+		List<T> computeAndCheckOverridesAreReached(T adjustedMeta, List<T> overrides, Serializable value, List<T> components) {
+			List<T> supers = new ArrayList<>(new SupersComputer<>(adjustedMeta, overrides, value, components));
+			if (!Statics.areOverridesReached(supers, overrides))
+				getContext().discardWithException(new UnreachableOverridesException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
+			return supers;
 		}
 
 		@Override

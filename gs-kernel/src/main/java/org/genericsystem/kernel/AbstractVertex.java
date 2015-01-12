@@ -139,8 +139,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return equalsRegardlessSupers(meta, value, components) && Statics.areOverridesReached(getSupers(), overrides);
 	}
 
-	@Override
-	public boolean equals(ISignature<?> meta, List<? extends ISignature<?>> supers, Serializable value, List<? extends ISignature<?>> components) {
+	boolean equals(ISignature<?> meta, List<? extends ISignature<?>> supers, Serializable value, List<? extends ISignature<?>> components) {
 		return equalsRegardlessSupers(meta, value, components) && getSupers().equals(supers);
 	}
 

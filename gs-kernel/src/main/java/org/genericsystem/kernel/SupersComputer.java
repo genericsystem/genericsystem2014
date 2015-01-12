@@ -7,9 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.genericsystem.api.core.ApiStatics;
-import org.genericsystem.api.defaults.DefaultVertex;
 
-public class SupersComputer<T extends DefaultVertex<T>> extends LinkedHashSet<T> {
+public class SupersComputer<T extends AbstractVertex<T>> extends LinkedHashSet<T> {
 
 	private static final long serialVersionUID = -1078004898524170057L;
 
