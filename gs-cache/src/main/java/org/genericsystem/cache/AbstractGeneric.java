@@ -9,11 +9,6 @@ import org.genericsystem.kernel.Dependencies;
 public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends AbstractVertex<T> implements DefaultGeneric<T> {
 
 	@Override
-	public Cache<T> getCurrentCache() {
-		return getRoot().getCurrentCache();
-	}
-
-	@Override
 	protected void forceRemove() {
 		super.forceRemove();
 	}

@@ -15,11 +15,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.
 	}
 
 	@Override
-	public Cache<T> getCurrentCache() {
-		return getRoot().getCurrentCache();
-	}
-
-	@Override
 	protected T init(T meta, List<T> supers, Serializable value, List<T> components) {
 		return super.init(meta, supers, value, components).restore(getRoot().pickNewTs(), Long.MAX_VALUE, 0L, Long.MAX_VALUE);
 	}
