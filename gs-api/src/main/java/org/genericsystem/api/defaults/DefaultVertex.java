@@ -1,6 +1,7 @@
 package org.genericsystem.api.defaults;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import org.genericsystem.api.core.ISignature;
@@ -10,6 +11,24 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 	@Override
 	default DefaultContext<T> getCurrentCache() {
 		return (DefaultContext<T>) getRoot().getCurrentCache();
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T addInstance(List<T> overrides, Serializable value, T... components) {
+		return getCurrentCache().getBuilder().addInstance(null, (T) this, overrides, value, Arrays.asList(components));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T setInstance(List<T> overrides, Serializable value, T... components) {
+		return getCurrentCache().getBuilder().setInstance(null, (T) this, overrides, value, Arrays.asList(components));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default T update(List<T> overrides, Serializable newValue, T... newComponents) {
+		return getCurrentCache().getBuilder().update((T) this, overrides, newValue, Arrays.asList(newComponents));
 	}
 
 	static <T extends DefaultVertex<T>> boolean isSuperOf(T subMeta, Serializable subValue, List<T> subComponents, T superMeta, Serializable superValue, List<T> superComponents) {

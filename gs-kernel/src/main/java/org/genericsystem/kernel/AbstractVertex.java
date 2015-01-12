@@ -63,46 +63,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return new DependenciesImpl<>();
 	}
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public void forceRemove() {
-		getCurrentCache().forceRemove((T) this);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public void remove() {
-		getCurrentCache().remove((T) this);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public T update(List<T> overrides, Serializable newValue, T... newComponents) {
-		return getCurrentCache().getBuilder().update((T) this, overrides, newValue, Arrays.asList(newComponents));
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public T addInstance(List<T> overrides, Serializable value, T... components) {
-		return addInstance(overrides, value, Arrays.asList(components));
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public T setInstance(List<T> overrides, Serializable value, T... components) {
-		return setInstance(overrides, value, Arrays.asList(components));
-	}
-
-	@SuppressWarnings("unchecked")
-	T addInstance(List<T> overrides, Serializable value, List<T> components) {
-		return getCurrentCache().getBuilder().addInstance(null, (T) this, overrides, value, components);
-	}
-
-	@SuppressWarnings("unchecked")
-	T setInstance(List<T> overrides, Serializable value, List<T> components) {
-		return getCurrentCache().getBuilder().setInstance(null, (T) this, overrides, value, components);
-	}
-
 	@SuppressWarnings("unchecked")
 	protected T writeAdjustMeta(Serializable value, T... components) {
 		return writeAdjustMeta(value, Arrays.asList(components));
@@ -267,25 +227,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 			result[i] = (T) array[i];
 		return result;
 	}
-
-	// private static <T extends AbstractVertex<T>> boolean isSuperOf(T subMeta, Serializable subValue, List<T> subComponents, T superMeta, Serializable superValue, List<T> superComponents) {
-	// if (subMeta == null) {
-	// if (!superMeta.isMeta())
-	// return false;
-	// } else if (!subMeta.inheritsFrom(superMeta))
-	// return false;
-	// if (!superMeta.componentsDepends(subComponents, superComponents))
-	// return false;
-	// if (superMeta.isPropertyConstraintEnabled())
-	// return !subComponents.equals(superComponents);
-	// return Objects.equals(subValue, superValue);
-	// }
-
-	// Optional<T> getKey(AxedPropertyClass property) {
-	// T map = getMap();
-	// Stream<T> keys = map != null ? getAttributes(map).get() : Stream.empty();
-	// return keys.filter(x -> Objects.equals(x.getValue(), property)).findFirst();
-	// }
 
 	@SuppressWarnings("unchecked")
 	@Override
