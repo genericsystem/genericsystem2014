@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -214,7 +215,9 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 			T equalsInstance = adjustedMeta.getDirectInstance(value, components);
 			if (equalsInstance != null)
 				getContext().discardWithException(new ExistsException("An equivalent instance already exists : " + equalsInstance.info()));
-			return internalSetInstance(null, clazz, adjustedMeta, overrides, value, components);
+			List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, value, components);
+			Supplier<T> rebuilder = () -> build(clazz, adjustedMeta, supers, value, components);
+			return rebuildAll(null, rebuilder, getContext().computePotentialDependencies(adjustedMeta, supers, value, components));
 		}
 
 		@Override
@@ -224,7 +227,9 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 			T equivInstance = adjustedMeta.getDirectEquivInstance(value, components);
 			if (equivInstance != null && equivInstance.equalsAndOverrides(adjustedMeta, overrides, value, components))
 				return equivInstance;
-			return internalSetInstance(equivInstance, clazz, adjustedMeta, overrides, value, components);
+			List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, value, components);
+			Supplier<T> rebuilder = () -> build(clazz, adjustedMeta, supers, value, components);
+			return rebuildAll(equivInstance, rebuilder, equivInstance == null ? getContext().computePotentialDependencies(adjustedMeta, supers, value, components) : getContext().computeDependencies(equivInstance));
 		}
 
 		private class ConvertMap extends HashMap<T, T> {
@@ -271,6 +276,14 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 			}
 			Statics.reverseCollections(dependenciesToRebuild).forEach(x -> convertMap.convert(x));
 			return build;
+		}
+
+		@Override
+		List<T> computeAndCheckOverridesAreReached(T adjustedMeta, List<T> overrides, Serializable value, List<T> components) {
+			List<T> supers = new ArrayList<>(new SupersComputer<>(adjustedMeta, overrides, value, components));
+			if (!Statics.areOverridesReached(supers, overrides))
+				getContext().discardWithException(new UnreachableOverridesException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
+			return supers;
 		}
 
 		@Override

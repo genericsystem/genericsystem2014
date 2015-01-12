@@ -1,4 +1,4 @@
-package org.genericsystem.kernel;
+package org.genericsystem.api.defaults;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -7,13 +7,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-class InheritanceComputer<T extends AbstractVertex<T>> extends HashSet<T> {
+class InheritanceComputer<T extends DefaultVertex<T>> extends HashSet<T> {
 
 	private static final long serialVersionUID = 1877502935577170921L;
-	protected static Logger log = LoggerFactory.getLogger(InheritanceComputer.class);
 
 	private final Map<T, Collection<T>> inheritingsCache = new HashMap<>();
 
@@ -72,11 +68,11 @@ class InheritanceComputer<T extends AbstractVertex<T>> extends HashSet<T> {
 
 	}
 
-	private static <T extends AbstractVertex<T>> Stream<T> compositesByMeta(T localBase, T holder) {
+	private static <T extends DefaultVertex<T>> Stream<T> compositesByMeta(T localBase, T holder) {
 		return localBase.getComposites().get().filter(x -> !x.equals(holder) && x.getMeta().equals(holder));
 	}
 
-	private static <T extends AbstractVertex<T>> Stream<T> compositesBySuper(T localBase, T holder) {
+	private static <T extends DefaultVertex<T>> Stream<T> compositesBySuper(T localBase, T holder) {
 		return localBase.getComposites().get().filter(x -> x.getSupers().contains(holder));
 	}
 }

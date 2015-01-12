@@ -2,7 +2,6 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -10,7 +9,6 @@ import java.util.Set;
 import java.util.function.Supplier;
 import org.genericsystem.api.defaults.DefaultBuilder;
 import org.genericsystem.api.defaults.DefaultVertex;
-import org.genericsystem.api.exception.UnreachableOverridesException;
 import org.genericsystem.kernel.Vertex.SystemClass;
 import org.genericsystem.kernel.annotations.InstanceClass;
 
@@ -22,7 +20,8 @@ public abstract class Builder<T extends DefaultVertex<T>> implements DefaultBuil
 		this.context = context;
 	}
 
-	protected Context<T> getContext() {
+	@Override
+	public Context<T> getContext() {
 		return context;
 	}
 
@@ -43,12 +42,6 @@ public abstract class Builder<T extends DefaultVertex<T>> implements DefaultBuil
 	}
 
 	abstract protected T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components);
-
-	T internalSetInstance(T equivInstance, Class<?> clazz, T ajustedMeta, List<T> overrides, Serializable value, List<T> components) {
-		List<T> supers = computeAndCheckOverridesAreReached(ajustedMeta, overrides, value, components);
-		Supplier<T> rebuilder = () -> build(clazz, ajustedMeta, supers, value, components);
-		return rebuildAll(equivInstance, rebuilder, equivInstance == null ? context.computePotentialDependencies(ajustedMeta, supers, value, components) : context.computeDependencies(equivInstance));
-	}
 
 	@SuppressWarnings("unchecked")
 	protected T newT(Class<?> clazz, T meta) {
@@ -109,10 +102,5 @@ public abstract class Builder<T extends DefaultVertex<T>> implements DefaultBuil
 		return context.plug(newT(clazz, meta, supers, value, components));
 	}
 
-	List<T> computeAndCheckOverridesAreReached(T adjustedMeta, List<T> overrides, Serializable value, List<T> components) {
-		List<T> supers = new ArrayList<>(new SupersComputer<>(adjustedMeta, overrides, value, components));
-		if (!Statics.areOverridesReached(supers, overrides))
-			context.discardWithException(new UnreachableOverridesException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
-		return supers;
-	}
+	abstract List<T> computeAndCheckOverridesAreReached(T adjustedMeta, List<T> overrides, Serializable value, List<T> components);
 }

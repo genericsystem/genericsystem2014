@@ -5,11 +5,13 @@ import java.util.List;
 
 public interface DefaultBuilder<T extends DefaultVertex<T>> {
 
+	DefaultContext<T> getContext();
+
 	T[] newTArray(int i);
 
-	public T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components);
+	T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components);
 
-	public T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents);
+	T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents);
 
 	T setInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components);
 
