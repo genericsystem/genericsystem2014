@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.defaults.DefaultContext;
 import org.genericsystem.api.defaults.DefaultRoot;
@@ -87,7 +88,7 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 
 	@SuppressWarnings("unchecked")
 	protected T getMeta(int dim) {
-		T adjustedMeta = getBuilder().readAdjustMeta((T) getRoot(), dim);
+		T adjustedMeta = getBuilder().adjustMeta((T) getRoot(), dim);
 		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
 	}
 
@@ -100,7 +101,8 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 	@Override
 	public abstract Snapshot<T> getComposites(T vertex);
 
-	protected void triggersMutation(T oldDependency, T newDependency) {}
+	protected void triggersMutation(T oldDependency, T newDependency) {
+	}
 
 	public Set<T> computeDependencies(T node) {
 		return new OrderedDependencies().visit(node);
@@ -194,7 +196,7 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 		@Override
 		public T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents) {
 			getContext().getChecker().checkBeforeBuild(update.getClass(), update.getMeta(), overrides, newValue, newComponents);
-			T adjustedMeta = update.getMeta().writeAdjustMeta(newValue, newComponents);
+			T adjustedMeta = update.getMeta().isMeta() ? setMeta(newComponents.size()) : update.getMeta().adjustMeta(newValue, newComponents);
 			Supplier<T> rebuilder = () -> {
 				T equalsInstance = adjustedMeta.getDirectInstance(newValue, newComponents);
 				if (equalsInstance != null) {
@@ -210,8 +212,9 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 
 		@Override
 		public T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
+
 			getContext().getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
-			T adjustedMeta = meta.writeAdjustMeta(value, components);
+			T adjustedMeta = meta.isMeta() ? setMeta(components.size()) : meta.adjustMeta(value, components);
 			T equalsInstance = adjustedMeta.getDirectInstance(value, components);
 			if (equalsInstance != null)
 				getContext().discardWithException(new ExistsException("An equivalent instance already exists : " + equalsInstance.info()));
@@ -223,7 +226,7 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 		@Override
 		public T setInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
 			getContext().getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
-			T adjustedMeta = meta.writeAdjustMeta(value, components);
+			T adjustedMeta = meta.isMeta() ? setMeta(components.size()) : meta.adjustMeta(value, components);
 			T equivInstance = adjustedMeta.getDirectEquivInstance(value, components);
 			if (equivInstance != null && equivInstance.equalsAndOverrides(adjustedMeta, overrides, value, components))
 				return equivInstance;
@@ -242,11 +245,11 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 				if (newDependency == null) {
 					if (oldDependency.isMeta()) {
 						assert oldDependency.getSupers().size() == 1;
-						newDependency = oldDependency.getSupers().get(0).setMeta(oldDependency.getComponents().size());
+						newDependency = setMeta(oldDependency.getComponents().size());
 					} else {
 						List<T> overrides = oldDependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
 						List<T> components = oldDependency.getComponents().stream().map(x -> x != null ? convert(x) : null).collect(Collectors.toList());
-						T adjustedMeta = convert(oldDependency.getMeta()).readAdjustMeta(oldDependency.getValue(), components);
+						T adjustedMeta = convert(oldDependency.getMeta()).adjustMeta(oldDependency.getValue(), components);
 						List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, oldDependency.getValue(), components);
 						// TODO KK designTs
 						newDependency = getOrBuild(oldDependency.getClass(), adjustedMeta, supers, oldDependency.getValue(), components);

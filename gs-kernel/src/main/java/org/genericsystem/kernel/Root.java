@@ -3,6 +3,7 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
+
 import org.genericsystem.api.defaults.DefaultRoot;
 import org.genericsystem.kernel.Config.MetaAttribute;
 import org.genericsystem.kernel.Config.MetaRelation;

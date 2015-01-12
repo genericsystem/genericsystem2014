@@ -110,7 +110,7 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 				}
 
 				@Override
-				protected TsTransaction getContext() {
+				public TsTransaction getContext() {
 					return (TsTransaction) super.getContext();
 				}
 

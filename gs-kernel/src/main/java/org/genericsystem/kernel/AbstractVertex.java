@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
@@ -62,20 +63,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	@SuppressWarnings("unchecked")
-	protected T writeAdjustMeta(Serializable value, T... components) {
-		return writeAdjustMeta(value, Arrays.asList(components));
-	}
-
-	@SuppressWarnings("unchecked")
-	T writeAdjustMeta(Serializable value, List<T> components) {
-		T meta = (T) this;
-		if (isMeta())
-			return ((T) getRoot()).setMeta(components.size());
-		return meta.readAdjustMeta(value, components);
-	}
-
-	T setMeta(int dim) {
-		return getCurrentCache().getBuilder().setMeta(dim);
+	protected T adjustMeta(Serializable value, T... components) {
+		return adjustMeta(value, Arrays.asList(components));
 	}
 
 	@Override
@@ -84,19 +73,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	}
 
 	@SuppressWarnings("unchecked")
-	T readAdjustMeta(int dim) {
-		assert isMeta();
-		int size = getComponents().size();
-		if (size > dim)
-			return null;
-		if (size == dim)
-			return (T) this;
-		T directInheriting = getInheritings().first();
-		return directInheriting != null && directInheriting.getComponents().size() <= dim ? directInheriting.readAdjustMeta(dim) : (T) this;
-	}
-
-	@SuppressWarnings("unchecked")
-	T readAdjustMeta(Serializable value, List<T> components) {
+	T adjustMeta(Serializable value, List<T> components) {
 		T result = null;
 		if (!components.equals(getComponents()))
 			for (T directInheriting : getInheritings()) {
@@ -107,20 +84,20 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 						getCurrentCache().discardWithException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
 				}
 			}
-		return result == null ? (T) this : result.readAdjustMeta(value, components);
+		return result == null ? (T) this : result.adjustMeta(value, components);
 	}
 
+	@SuppressWarnings("unchecked")
 	protected T getDirectInstance(Serializable value, List<T> components) {
+		if (isMeta() && equalsRegardlessSupers(this, value, components))
+			return (T) this;
 		for (T instance : getInstances())
 			if (((AbstractVertex<?>) instance).equalsRegardlessSupers(this, value, components))
 				return instance;
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	T getDirectInstance(List<T> overrides, Serializable value, List<T> components) {
-		if (isMeta() && equalsRegardlessSupers(this, value, components))
-			return (T) this;
 		T result = getDirectInstance(value, components);
 		return result != null && Statics.areOverridesReached(result.getSupers(), overrides) ? result : null;
 	}
@@ -133,6 +110,16 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 			if (instance.equiv(this, value, components))
 				return instance;
 		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public T getInstance(List<T> overrides, Serializable value, T... components) {
+		List<T> componentsList = Arrays.asList(components);
+		T adjustMeta = ((T) this).adjustMeta(value, componentsList);
+		if (adjustMeta.getComponents().size() != components.length)
+			return null;
+		return adjustMeta.getDirectInstance(overrides, value, componentsList);
 	}
 
 	boolean equalsAndOverrides(T meta, List<T> overrides, Serializable value, List<T> components) {
@@ -209,16 +196,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		if (!getMeta().isPropertyConstraintEnabled())
 			return Objects.equals(getValue(), value);
 		return true;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public T getInstance(List<T> overrides, Serializable value, T... components) {
-		List<T> componentsList = Arrays.asList(components);
-		T adjustMeta = ((T) this).readAdjustMeta(value, componentsList);
-		if (adjustMeta.getComponents().size() != components.length)
-			return null;
-		return adjustMeta.getDirectInstance(overrides, value, componentsList);
 	}
 
 	@Override

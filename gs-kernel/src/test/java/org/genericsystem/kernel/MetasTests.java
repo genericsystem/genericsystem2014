@@ -9,13 +9,13 @@ public class MetasTests extends AbstractTest {
 		Root engine = new Root();
 
 		Vertex metaAttribute = engine.getMetaAttribute();
-		assert metaAttribute == engine.writeAdjustMeta(engine.getValue(), engine);
+		assert metaAttribute == engine.adjustMeta(engine.getValue(), engine);
 		assert metaAttribute.getMeta() == metaAttribute;
 		assert metaAttribute.isMeta();
 		assert metaAttribute.getBaseComponent().equals(engine);
 		assert metaAttribute.inheritsFrom(engine);
 		Vertex metaRelation = engine.getMetaAttribute().getInheritings().first();
-		assert metaRelation == engine.writeAdjustMeta( engine.getValue(), engine, engine);
+		assert metaRelation == engine.adjustMeta(engine.getValue(), engine, engine);
 		assert metaRelation.isMeta();
 		assert metaRelation.getBaseComponent().equals(engine);
 		assert metaRelation.getTargetComponent().equals(engine);
@@ -26,12 +26,12 @@ public class MetasTests extends AbstractTest {
 		Root engine = new Root();
 		assert engine.getCurrentCache().getMeta(1).equals(engine.getMetaAttribute());
 		assert engine.getCurrentCache().getMeta(5) == null;
-		Vertex pentaMeta = engine.setMeta(5);
+		Vertex pentaMeta = engine.getCurrentCache().getBuilder().setMeta(5);
 		assert engine.getCurrentCache().getMeta(5) == pentaMeta;
-		assert pentaMeta == engine.setMeta(5);
+		assert pentaMeta == engine.getCurrentCache().getBuilder().setMeta(5);
 		assert pentaMeta.equals(engine.getCurrentCache().getMeta(5));
 		assert engine.getCurrentCache().getMeta(3) == null;
-		Vertex ternaryMeta = engine.setMeta(3);
+		Vertex ternaryMeta = engine.getCurrentCache().getBuilder().setMeta(3);
 		assert !pentaMeta.isAlive();
 		assert engine.getCurrentCache().getMeta(5).inheritsFrom(ternaryMeta);
 	}

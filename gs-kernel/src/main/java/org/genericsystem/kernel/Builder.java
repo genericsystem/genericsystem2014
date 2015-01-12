@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
+
 import org.genericsystem.api.defaults.DefaultBuilder;
 import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.kernel.Vertex.SystemClass;
@@ -76,7 +77,7 @@ public abstract class Builder<T extends DefaultVertex<T>> implements DefaultBuil
 	@SuppressWarnings("unchecked")
 	T setMeta(int dim) {
 		T root = (T) context.getRoot();
-		T adjustedMeta = readAdjustMeta(root, dim);
+		T adjustedMeta = adjustMeta(root, dim);
 		if (adjustedMeta.getComponents().size() == dim)
 			return adjustedMeta;
 		T[] components = newTArray(dim);
@@ -85,7 +86,7 @@ public abstract class Builder<T extends DefaultVertex<T>> implements DefaultBuil
 				context.computePotentialDependencies(adjustedMeta, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)));
 	}
 
-	T readAdjustMeta(T meta, int dim) {
+	T adjustMeta(T meta, int dim) {
 		assert meta.isMeta();
 		int size = meta.getComponents().size();
 		if (size > dim)
@@ -93,7 +94,7 @@ public abstract class Builder<T extends DefaultVertex<T>> implements DefaultBuil
 		if (size == dim)
 			return meta;
 		T directInheriting = meta.getInheritings().first();
-		return directInheriting != null && directInheriting.getComponents().size() <= dim ? readAdjustMeta(directInheriting, dim) : meta;
+		return directInheriting != null && directInheriting.getComponents().size() <= dim ? adjustMeta(directInheriting, dim) : meta;
 	}
 
 	abstract protected T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components);

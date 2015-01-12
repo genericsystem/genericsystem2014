@@ -54,8 +54,8 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 
 	// TODO remove this
 	@Override
-	protected T writeAdjustMeta(Serializable value, T... components) {
-		return super.writeAdjustMeta(value, components);
+	protected T adjustMeta(Serializable value, T... components) {
+		return super.adjustMeta(value, components);
 	}
 
 }
