@@ -212,7 +212,6 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 
 		@Override
 		public T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
-
 			getContext().getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
 			T adjustedMeta = meta.isMeta() ? setMeta(components.size()) : meta.adjustMeta(value, components);
 			T equalsInstance = adjustedMeta.getDirectInstance(value, components);
