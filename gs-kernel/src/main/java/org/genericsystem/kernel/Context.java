@@ -197,28 +197,34 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 		public T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents) {
 			getContext().getChecker().checkBeforeBuild(update.getClass(), update.getMeta(), overrides, newValue, newComponents);
 			T adjustedMeta = update.getMeta().isMeta() ? setMeta(newComponents.size()) : update.getMeta().adjustMeta(newValue, newComponents);
+			List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, newValue, newComponents);
+
+			if (supers.size() == 1 && supers.get(0).equalsRegardlessSupers(update.getMeta(), update.getValue(), update.getComponents()))
+				if (Statics.areOverridesReached(supers.get(0).getSupers(), update.getSupers()))
+					return rebuildAll(update, () -> build(update.getClass(), adjustedMeta, overrides, newValue, newComponents), getContext().computeDependencies(update));
+
 			Supplier<T> rebuilder = () -> {
 				T equalsInstance = adjustedMeta.getDirectInstance(newValue, newComponents);
-				if (equalsInstance != null) {
-					if (!Statics.areOverridesReached(equalsInstance.getSupers(), overrides))
-						getContext().discardWithException(new UnreachableOverridesException("Unable to reach overrides : " + overrides + " with computed supers : " + equalsInstance.getSupers()));
-					return equalsInstance;
-				}
-				List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, newValue, newComponents);
-				return build(update.getClass(), adjustedMeta, supers, newValue, newComponents);
+				List<T> filterSupers = supers.stream().filter(x -> !x.equals(update)).collect(Collectors.toList());
+				return equalsInstance != null ? equalsInstance : build(update.getClass(), adjustedMeta, filterSupers, newValue, newComponents);
 			};
 			return rebuildAll(update, rebuilder, getContext().computeDependencies(update));
 		}
 
 		@Override
 		public T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
-
 			getContext().getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
 			T adjustedMeta = meta.isMeta() ? setMeta(components.size()) : meta.adjustMeta(value, components);
-			T equalsInstance = adjustedMeta.getDirectInstance(value, components);
-			if (equalsInstance != null)
-				getContext().discardWithException(new ExistsException("An equivalent instance already exists : " + equalsInstance.info()));
 			List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, value, components);
+
+			if (supers.size() == 1 && supers.get(0).equalsRegardlessSupers(adjustedMeta, value, components))
+				// if (Statics.areOverridesReached(supers.get(0).getSupers(), overrides))
+				getContext().discardWithException(new ExistsException("An equivalent instance already exists : " + supers.get(0).info()));
+
+			// T equalsInstance = adjustedMeta.getDirectInstance(value, components);
+			// if (equalsInstance != null)
+			// getContext().discardWithException(new ExistsException("An equivalent instance already exists : " + equalsInstance.info()));
+
 			Supplier<T> rebuilder = () -> build(clazz, adjustedMeta, supers, value, components);
 			return rebuildAll(null, rebuilder, getContext().computePotentialDependencies(adjustedMeta, supers, value, components));
 		}
@@ -227,10 +233,16 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 		public T setInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
 			getContext().getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
 			T adjustedMeta = meta.isMeta() ? setMeta(components.size()) : meta.adjustMeta(value, components);
+			List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, value, components);
+
+			if (supers.size() == 1 && supers.get(0).equalsRegardlessSupers(adjustedMeta, value, components))
+				if (Statics.areOverridesReached(supers.get(0).getSupers(), overrides))
+					return supers.get(0);
+
 			T equivInstance = adjustedMeta.getDirectEquivInstance(value, components);
 			if (equivInstance != null && equivInstance.equalsAndOverrides(adjustedMeta, overrides, value, components))
 				return equivInstance;
-			List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, value, components);
+
 			Supplier<T> rebuilder = () -> build(clazz, adjustedMeta, supers, value, components);
 			return rebuildAll(equivInstance, rebuilder, equivInstance == null ? getContext().computePotentialDependencies(adjustedMeta, supers, value, components) : getContext().computeDependencies(equivInstance));
 		}

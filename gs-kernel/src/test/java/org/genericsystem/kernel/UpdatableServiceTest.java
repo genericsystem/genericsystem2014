@@ -251,7 +251,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		Vertex car = engine.addInstance(vehicle, "Car");
 
 		// when
-		car.updateSupers(vehicle);
+		System.out.println(car.updateSupers(vehicle).info());
 
 		// then
 		assert engine.isAlive();
@@ -264,7 +264,7 @@ public class UpdatableServiceTest extends AbstractTest {
 
 		Vertex newVehicle = engine.getInstance("Vehicle");
 		Set<Vertex> newVehicleDependencies = newVehicle.getCurrentCache().computeDependencies(newVehicle);
-		assert newVehicleDependencies.size() == 2;
+		assert newVehicleDependencies.size() == 2 : newVehicleDependencies;
 		assert newVehicle.getInheritings().size() == 1;
 
 		Vertex newCar = engine.getInstance("Car");

@@ -6,6 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
 import org.genericsystem.api.core.ApiStatics;
 
 public class SupersComputer<T extends AbstractVertex<T>> extends LinkedHashSet<T> {
@@ -71,7 +72,7 @@ public class SupersComputer<T extends AbstractVertex<T>> extends LinkedHashSet<T
 		boolean[] selectableSelected = new boolean[] { selectable, true };
 		result = alreadyComputed.put(candidate, selectableSelected);
 		assert result == null : candidate.info();
-		if (selectableSelected[0] && (candidate.getLevel() == reachLevel) && !candidate.equals(meta, overrides, value, components))
+		if (selectableSelected[0] && (candidate.getLevel() == reachLevel))
 			add(candidate);
 		return selectableSelected;
 	}
