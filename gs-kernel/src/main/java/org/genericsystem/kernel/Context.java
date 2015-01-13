@@ -203,12 +203,8 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 				if (Statics.areOverridesReached(supers.get(0).getSupers(), update.getSupers()))
 					return rebuildAll(update, () -> build(update.getClass(), adjustedMeta, overrides, newValue, newComponents), getContext().computeDependencies(update));
 
-			Supplier<T> rebuilder = () -> {
-				T equalsInstance = adjustedMeta.getDirectInstance(newValue, newComponents);
-				List<T> filterSupers = supers.stream().filter(x -> !x.equals(update)).collect(Collectors.toList());
-				return equalsInstance != null ? equalsInstance : build(update.getClass(), adjustedMeta, filterSupers, newValue, newComponents);
-			};
-			return rebuildAll(update, rebuilder, getContext().computeDependencies(update));
+			List<T> filterSupers = supers.stream().filter(x -> !x.equals(update)).collect(Collectors.toList());
+			return rebuildAll(update, () -> getOrBuild(update.getClass(), adjustedMeta, filterSupers, newValue, newComponents), getContext().computeDependencies(update));
 		}
 
 		@Override
@@ -225,6 +221,12 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 			// if (equalsInstance != null)
 			// getContext().discardWithException(new ExistsException("An equivalent instance already exists : " + equalsInstance.info()));
 
+			// Supplier<T> rebuilder = () -> build(clazz, adjustedMeta, supers, value, components);
+			// return rebuildAll(null, rebuilder, getContext().computePotentialDependencies(adjustedMeta, supers, value, components));
+			return internalAddInstance(clazz, adjustedMeta, supers, value, components);
+		}
+
+		private T internalAddInstance(Class<?> clazz, T adjustedMeta, List<T> supers, Serializable value, List<T> components) {
 			Supplier<T> rebuilder = () -> build(clazz, adjustedMeta, supers, value, components);
 			return rebuildAll(null, rebuilder, getContext().computePotentialDependencies(adjustedMeta, supers, value, components));
 		}
@@ -240,11 +242,14 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 					return supers.get(0);
 
 			T equivInstance = adjustedMeta.getDirectEquivInstance(value, components);
-			if (equivInstance != null && equivInstance.equalsAndOverrides(adjustedMeta, overrides, value, components))
-				return equivInstance;
+			// if (equivInstance != null)
+			// return equivInstance;
+
+			if (equivInstance == null)
+				return internalAddInstance(clazz, adjustedMeta, supers, value, components);
 
 			Supplier<T> rebuilder = () -> build(clazz, adjustedMeta, supers, value, components);
-			return rebuildAll(equivInstance, rebuilder, equivInstance == null ? getContext().computePotentialDependencies(adjustedMeta, supers, value, components) : getContext().computeDependencies(equivInstance));
+			return rebuildAll(equivInstance, rebuilder, getContext().computeDependencies(equivInstance));
 		}
 
 		private class ConvertMap extends HashMap<T, T> {

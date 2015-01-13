@@ -122,21 +122,21 @@ public class UpdateTest extends AbstractTest {
 	public void test008_updateToAlreadyExists() {
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
-		// Vertex myVehicle = vehicle.addInstance("myVehicle");
+		Vertex myVehicle = vehicle.addInstance("myVehicle");
 		Vertex car = root.addInstance("Car");
-		// Vertex power = car.addAttribute("Power");
-		// Vertex myCar = car.addInstance("myCar");
-		// Vertex v233 = myCar.addHolder(power, 233);
+		Vertex power = car.addAttribute("Power");
+		Vertex myCar = car.addInstance("myCar");
+		Vertex v233 = myCar.addHolder(power, 233);
 
 		Vertex carUpdate = car.update("Vehicle");
 
-		// assert carUpdate.equals(vehicle) : carUpdate.info();
-		// assert !car.isAlive();
-		// assert !myCar.isAlive();
-		//
-		// assert vehicle.getInstance("myCar") != null;
-		// assert vehicle.getInstance("myVehicle") != null : carUpdate.getInstances().info();
-		// assert vehicle.getInstances().size() == 2;
+		assert carUpdate.equals(vehicle) : carUpdate.info();
+		assert !car.isAlive();
+		assert !myCar.isAlive();
+
+		assert vehicle.getInstance("myCar") != null;
+		assert vehicle.getInstance("myVehicle") != null : carUpdate.getInstances().info();
+		assert vehicle.getInstances().size() == 2;
 	}
 
 	public void test009_updateToAlreadyExists() {
