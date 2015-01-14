@@ -1,5 +1,8 @@
 package org.genericsystem.kernel;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.exception.SingularConstraintViolationException;
 import org.testng.annotations.Test;
@@ -172,7 +175,25 @@ public class SingularConstraintTest extends AbstractTest {
 
 	}
 
-	public void test011_enableSingularConstraint_inherintings() {
+	public void test011_enablePropertyConstraint_inherintings() {
+		Root engine = new Root();
+		Vertex car = engine.addInstance("Car");
+		Vertex myCar = car.addInstance("myCar");
+		Vertex color = engine.addInstance("Color");
+		Vertex red = color.addInstance("red");
+		Vertex yellow = color.addInstance("yellow");
+		Vertex carColor = car.addAttribute("vehicleColor", color);
+		carColor.enablePropertyConstraint();
+		Vertex carRed = car.addHolder(carColor, "CarRed", red);
+		assert carRed.isSuperOf(carColor, Collections.emptyList(), "myCarRed", Arrays.asList(myCar, red));
+		Vertex myCarRed = myCar.addHolder(carColor, "myCarRed", red);
+		assert myCar.getHolders(carColor).contains(myCarRed);
+		assert myCar.getHolders(carColor).size() == 1;
+		assert red.getHolders(carColor).contains(myCarRed);
+		assert red.getHolders(carColor).size() == 1;
+	}
+
+	public void test0112_enableSingularConstraint_inherintings() {
 		Root engine = new Root();
 		Vertex car = engine.addInstance("Car");
 		Vertex myCar = car.addInstance("myCar");
@@ -181,9 +202,9 @@ public class SingularConstraintTest extends AbstractTest {
 		Vertex yellow = color.addInstance("yellow");
 		Vertex carColor = car.addAttribute("vehicleColor", color);
 		carColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
-		carColor.enablePropertyConstraint();
 		Vertex carRed = car.addHolder(carColor, "CarRed", red);
-		Vertex myCarYellow = myCar.addHolder(carColor, "myCarRed", yellow);
+		assert carRed.isSuperOf(carColor, Collections.emptyList(), "myCarYellow", Arrays.asList(myCar, yellow));
+		Vertex myCarYellow = myCar.addHolder(carColor, "myCarYellow", yellow);
 		assert myCar.getHolders(carColor).contains(myCarYellow);
 		assert myCar.getHolders(carColor).size() == 1;
 		assert yellow.getHolders(carColor).contains(myCarYellow);

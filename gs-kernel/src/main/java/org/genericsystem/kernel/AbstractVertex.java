@@ -78,9 +78,9 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		if (!components.equals(getComponents()))
 			for (T directInheriting : getInheritings()) {
 				if (componentsDepends(components, directInheriting.getComponents())) {
-					if (result == null)
+					if (result == null) {
 						result = directInheriting;
-					else
+					} else
 						getCurrentCache().discardWithException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
 				}
 			}

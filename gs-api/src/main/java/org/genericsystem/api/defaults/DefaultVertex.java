@@ -36,10 +36,15 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 				return false;
 		} else if (!subMeta.inheritsFrom(superMeta))
 			return false;
-		if (!superMeta.componentsDepends(subComponents, superComponents))
+		boolean[] singular = new boolean[1];
+		if (!superMeta.componentsDepends(subComponents, superComponents, singular))
 			return false;
+		if (singular[0])
+			return true;
+
 		if (superMeta.isPropertyConstraintEnabled())
-			return Objects.equals(subValue, superValue);// true;// !subComponents.equals(superComponents);
+			if (!subComponents.equals(superComponents))
+				return true;
 		return Objects.equals(subValue, superValue);
 	}
 
@@ -49,7 +54,8 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 
 	default boolean isDependencyOf(T meta, List<T> supers, Serializable value, List<T> components) {
 		return inheritsFrom(meta, value, components) || getComponents().stream().filter(component -> component != null).anyMatch(component -> component.isDependencyOf(meta, supers, value, components))
-				|| (!isMeta() && getMeta().isDependencyOf(meta, supers, value, components)) || (!components.isEmpty() && componentsDepends(getComponents(), components) && supers.stream().anyMatch(override -> override.inheritsFrom(getMeta())));
+				|| (!isMeta() && getMeta().isDependencyOf(meta, supers, value, components))
+				|| (!components.equals(getComponents()) && componentsDepends(getComponents(), components) && supers.stream().anyMatch(override -> override.inheritsFrom(getMeta())));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -57,21 +63,26 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 		return overrides.stream().anyMatch(override -> override.inheritsFrom((T) this)) || isSuperOf(subMeta, subValue, subComponents, getMeta(), getValue(), getComponents());
 	}
 
-	@SuppressWarnings("unchecked")
 	default boolean componentsDepends(List<T> subComponents, List<T> superComponents) {
+		return componentsDepends(subComponents, superComponents, new boolean[1]);
+	}
+
+	@SuppressWarnings("unchecked")
+	default boolean componentsDepends(List<T> subComponents, List<T> superComponents, boolean[] singular) {
+		singular[0] = false;
 		int subIndex = 0;
 		loop: for (T superComponent : superComponents) {
 			for (; subIndex < subComponents.size(); subIndex++) {
 				T subComponent = subComponents.get(subIndex);
 				if ((subComponent == null && superComponent == null) || (subComponent != null && superComponent != null && subComponent.isSpecializationOf(superComponent))
 						|| (subComponent == null && superComponent != null && this.isSpecializationOf(superComponent)) || (subComponent != null && superComponent == null && subComponent.isSpecializationOf((T) this))) {
-					if (isSingularConstraintEnabled(subIndex))
-						return true;
+					if (isSingularConstraintEnabled(subIndex) && subComponent != superComponent)
+						singular[0] = true;
 					subIndex++;
 					continue loop;
 				}
 			}
-			return false;
+			return singular[0];
 		}
 		return true;
 	}
