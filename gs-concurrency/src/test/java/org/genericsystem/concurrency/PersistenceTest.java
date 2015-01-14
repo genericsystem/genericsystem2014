@@ -139,9 +139,9 @@ public class PersistenceTest extends AbstractTest {
 		Engine root = new Engine(Statics.ENGINE_VALUE, snapshot);
 		Generic tree = root.addTree("Tree");
 		Generic rootTree = tree.addRoot("Engine");
-		Generic child = rootTree.setNode("Child");
-		rootTree.setNode("Child2");
-		child.setNode("Child3");
+		Generic child = rootTree.setChild("Child");
+		rootTree.setChild("Child2");
+		child.setChild("Child3");
 		root.getCurrentCache().flush();
 		root.close();
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
@@ -153,9 +153,9 @@ public class PersistenceTest extends AbstractTest {
 		Engine root = new Engine(Statics.ENGINE_VALUE, snapshot);
 		Generic tree = root.addTree("Tree");
 		Generic rootTree = tree.addRoot("Engine");
-		Generic child = rootTree.setInheritingNode("Child");
-		rootTree.setInheritingNode("Child2");
-		child.setInheritingNode("Child3");
+		Generic child = rootTree.setInheritingChild("Child");
+		rootTree.setInheritingChild("Child2");
+		child.setInheritingChild("Child3");
 		root.getCurrentCache().flush();
 		root.close();
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);

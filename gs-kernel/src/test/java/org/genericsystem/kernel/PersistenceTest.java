@@ -91,9 +91,9 @@ public class PersistenceTest extends AbstractTest {
 		Root root = new Root(Statics.ENGINE_VALUE, snapshot);
 		Vertex tree = root.addTree("Tree");
 		Vertex rootTree = tree.addRoot("Root");
-		Vertex child = rootTree.setNode("Child");
-		rootTree.setNode("Child2");
-		child.setNode("Child3");
+		Vertex child = rootTree.setChild("Child");
+		rootTree.setChild("Child2");
+		child.setChild("Child3");
 		root.close();
 		compareGraph(root, new Root(Statics.ENGINE_VALUE, snapshot));
 	}
@@ -103,9 +103,9 @@ public class PersistenceTest extends AbstractTest {
 		Root root = new Root(Statics.ENGINE_VALUE, snapshot);
 		Vertex tree = root.addTree("Tree");
 		Vertex rootTree = tree.addRoot("Root");
-		Vertex child = rootTree.setInheritingNode("Child");
-		rootTree.setInheritingNode("Child2");
-		child.setInheritingNode("Child3");
+		Vertex child = rootTree.setInheritingChild("Child");
+		rootTree.setInheritingChild("Child2");
+		child.setInheritingChild("Child3");
 		root.close();
 		compareGraph(root, new Root(Statics.ENGINE_VALUE, snapshot));
 	}

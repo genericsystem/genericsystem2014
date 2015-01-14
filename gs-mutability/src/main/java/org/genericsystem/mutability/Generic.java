@@ -435,33 +435,33 @@ public interface Generic extends IVertex<Generic> {
 	}
 
 	@Override
-	default Generic addNode(Serializable value) {
-		return getCurrentCache().wrap(getCurrentCache().unwrap(this).addNode(value));
+	default Generic addChild(Serializable value, Generic... targets) {
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).addChild(value, getCurrentCache().unwrap(targets)));
 	}
 
 	@Override
-	default Generic setNode(Serializable value) {
-		return getCurrentCache().wrap(getCurrentCache().unwrap(this).setNode(value));
+	default Generic setChild(Serializable value, Generic... targets) {
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).setChild(value, getCurrentCache().unwrap(targets)));
 	}
 
 	@Override
-	default Generic addInheritingNode(Serializable value) {
-		return getCurrentCache().wrap(getCurrentCache().unwrap(this).addInheritingNode(value));
+	default Generic addInheritingChild(Serializable value, Generic... targets) {
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).addInheritingChild(value, getCurrentCache().unwrap(targets)));
 	}
 
 	@Override
-	default Generic setInheritingNode(Serializable value) {
-		return getCurrentCache().wrap(getCurrentCache().unwrap(this).setInheritingNode(value));
+	default Generic setInheritingChild(Serializable value, Generic... targets) {
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).setInheritingChild(value, getCurrentCache().unwrap(targets)));
 	}
 
 	@Override
-	default Snapshot<Generic> getAllSubNodes() {
-		return () -> getCurrentCache().unwrap(this).getAllSubNodes().get().map(getCurrentCache()::wrap);
+	default Snapshot<Generic> getAllChildren() {
+		return () -> getCurrentCache().unwrap(this).getAllChildren().get().map(getCurrentCache()::wrap);
 	}
 
 	@Override
-	default Snapshot<Generic> getSubNodes() {
-		return () -> getCurrentCache().unwrap(this).getSubNodes().get().map(getCurrentCache()::wrap);
+	default Snapshot<Generic> getChildren() {
+		return () -> getCurrentCache().unwrap(this).getChildren().get().map(getCurrentCache()::wrap);
 	}
 
 	@Override
