@@ -54,7 +54,8 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 
 	default boolean isDependencyOf(T meta, List<T> supers, Serializable value, List<T> components) {
 		return inheritsFrom(meta, value, components) || getComponents().stream().filter(component -> component != null).anyMatch(component -> component.isDependencyOf(meta, supers, value, components))
-				|| (!isMeta() && getMeta().isDependencyOf(meta, supers, value, components)) || (!components.isEmpty() && componentsDepends(getComponents(), components) && supers.stream().anyMatch(override -> override.inheritsFrom(getMeta())));
+				|| (!isMeta() && getMeta().isDependencyOf(meta, supers, value, components))
+				|| (!components.equals(getComponents()) && componentsDepends(getComponents(), components) && supers.stream().anyMatch(override -> override.inheritsFrom(getMeta())));
 	}
 
 	@SuppressWarnings("unchecked")
