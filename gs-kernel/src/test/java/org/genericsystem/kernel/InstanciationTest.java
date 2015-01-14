@@ -3,6 +3,8 @@ package org.genericsystem.kernel;
 import java.util.Arrays;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
+import org.genericsystem.api.exception.CollisionException;
 import org.genericsystem.api.exception.ExistsException;
 import org.testng.annotations.Test;
 
@@ -71,8 +73,8 @@ public class InstanciationTest extends AbstractTest {
 	public void test004_addInstance_sameValueParameter() {
 		Root root = new Root();
 		Vertex car = root.addInstance("Car");
-//		Vertex car2 = root.addInstance("Car");
-//		assert false : root.getInstances().info();
+		// Vertex car2 = root.addInstance("Car");
+		// assert false : root.getInstances().info();
 		catchAndCheckCause(() -> root.addInstance("Car"), ExistsException.class);
 	}
 
@@ -113,7 +115,7 @@ public class InstanciationTest extends AbstractTest {
 	public void test007_addInstance_selfInheriting() {
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
-		catchAndCheckCause(() -> root.addInstance(vehicle, "Vehicle"), ExistsException.class);
+		catchAndCheckCause(() -> root.addInstance(vehicle, "Vehicle"), CollisionException.class);
 	}
 
 	public void test008_addInstance_multipleOverrides() {
