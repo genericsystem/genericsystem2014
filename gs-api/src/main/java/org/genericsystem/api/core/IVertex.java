@@ -878,17 +878,21 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 
 	T setRoot(Serializable value);
 
-	T addNode(Serializable value);
+	@SuppressWarnings("unchecked")
+	T addChild(Serializable value, T... targets);
 
-	T setNode(Serializable value);
+	@SuppressWarnings("unchecked")
+	T setChild(Serializable value, T... targets);
 
-	T addInheritingNode(Serializable value);
+	@SuppressWarnings("unchecked")
+	T addInheritingChild(Serializable value, T... targets);
 
-	T setInheritingNode(Serializable value);
+	@SuppressWarnings("unchecked")
+	T setInheritingChild(Serializable value, T... targets);
 
-	Snapshot<T> getAllSubNodes();
+	Snapshot<T> getAllChildren();
 
-	Snapshot<T> getSubNodes();
+	Snapshot<T> getChildren();
 
 	/**
 	 * Returns a new attribute on this type that satisfies the specified value and targets

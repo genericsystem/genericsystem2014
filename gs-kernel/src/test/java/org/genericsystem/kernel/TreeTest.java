@@ -3,6 +3,7 @@ package org.genericsystem.kernel;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.exception.ExistsException;
 import org.testng.annotations.Test;
 
@@ -51,28 +52,28 @@ public class TreeTest extends AbstractTest {
 		Root root = new Root();
 		Vertex tree = root.addTree("tree");
 		Vertex html = tree.addRoot("html");
-		Vertex head = html.addNode("head");
-		Vertex body = html.addNode("body");
-		Vertex div = body.addNode("div");
+		Vertex head = html.addChild("head");
+		Vertex body = html.addChild("body");
+		Vertex div = body.addChild("div");
 
-		assert !html.getSubNodes().contains(html);
-		assert html.getSubNodes().containsAll(Arrays.asList(head, body)) : html.getSubNodes().info();
-		assert html.getSubNodes().size() == 2;
-		assert html.getAllSubNodes().containsAll(Arrays.asList(html, head, body, div));
-		assert html.getAllSubNodes().size() == 4;
+		assert !html.getChildren().contains(html);
+		assert html.getChildren().containsAll(Arrays.asList(head, body)) : html.getChildren().info();
+		assert html.getChildren().size() == 2;
+		assert html.getAllChildren().containsAll(Arrays.asList(html, head, body, div));
+		assert html.getAllChildren().size() == 4;
 
-		assert head.getSubNodes().isEmpty();
-		assert head.getAllSubNodes().contains(head);
-		assert head.getAllSubNodes().size() == 1;
+		assert head.getChildren().isEmpty();
+		assert head.getAllChildren().contains(head);
+		assert head.getAllChildren().size() == 1;
 
-		assert body.getSubNodes().contains(div);
-		assert body.getSubNodes().size() == 1;
-		assert body.getAllSubNodes().containsAll(Arrays.asList(body, div));
-		assert body.getAllSubNodes().size() == 2;
+		assert body.getChildren().contains(div);
+		assert body.getChildren().size() == 1;
+		assert body.getAllChildren().containsAll(Arrays.asList(body, div));
+		assert body.getAllChildren().size() == 2;
 
-		assert div.getSubNodes().isEmpty();
-		assert div.getAllSubNodes().contains(div);
-		assert div.getAllSubNodes().size() == 1;
+		assert div.getChildren().isEmpty();
+		assert div.getAllChildren().contains(div);
+		assert div.getAllChildren().size() == 1;
 
 	}
 
@@ -80,10 +81,10 @@ public class TreeTest extends AbstractTest {
 		Root root = new Root();
 		Vertex tree = root.addTree("tree");
 		Vertex rootNode = tree.addRoot("rootNode");
-		Vertex htmlNode = rootNode.addNode("htmlNode");
-		Vertex bodyNode = htmlNode.addNode("bodyNode");
-		Vertex divNode = bodyNode.addNode("divNode");
-		Vertex formNode = divNode.addNode("formNode");
+		Vertex htmlNode = rootNode.addChild("htmlNode");
+		Vertex bodyNode = htmlNode.addChild("bodyNode");
+		Vertex divNode = bodyNode.addChild("divNode");
+		Vertex formNode = divNode.addChild("formNode");
 
 		assert tree.getAllInstances().contains(rootNode);
 		assert tree.getAllInstances().contains(htmlNode);
@@ -114,9 +115,9 @@ public class TreeTest extends AbstractTest {
 
 		Vertex html = tree.addRoot("html");
 		html.setHolder(treeColor, "htmlIsRed", red);
-		Vertex head = html.addNode("head");
-		Vertex body = html.addNode("body");
-		Vertex div = body.addNode("div");
+		Vertex head = html.addChild("head");
+		Vertex body = html.addChild("body");
+		Vertex div = body.addChild("div");
 		div.setHolder(treeColor, "divIsGreen", green);
 
 		assert tree.getHolders(treeColor).first().getTargetComponent().equals(blue);
@@ -141,9 +142,9 @@ public class TreeTest extends AbstractTest {
 
 		Vertex html = tree.addRoot("html");
 		html.setHolder(treeColor, "htmlIsRed", red);
-		Vertex head = html.addInheritingNode("head");
-		Vertex body = html.addInheritingNode("body");
-		Vertex div = body.addInheritingNode("div");
+		Vertex head = html.addInheritingChild("head");
+		Vertex body = html.addInheritingChild("body");
+		Vertex div = body.addInheritingChild("div");
 		div.setHolder(treeColor, "divIsGreen", green);
 
 		assert tree.getHolders(treeColor).first().getTargetComponent().equals(blue);
@@ -157,18 +158,43 @@ public class TreeTest extends AbstractTest {
 		Root root = new Root(Statics.ENGINE_VALUE);
 		Vertex tree = root.addTree("Tree");
 		Vertex rootTree = tree.addRoot("Root");
-		Vertex child = rootTree.addInheritingNode("Child");
-		rootTree.addInheritingNode("Child2");
-		child.addInheritingNode("Child3");
+		Vertex child = rootTree.addInheritingChild("Child");
+		rootTree.addInheritingChild("Child2");
+		child.addInheritingChild("Child3");
 	}
 
 	public void testSetInheritanceTree() {
 		Root root = new Root(Statics.ENGINE_VALUE);
 		Vertex tree = root.addTree("Tree");
 		Vertex rootTree = tree.addRoot("Root");
-		Vertex child = rootTree.setInheritingNode("Child");
-		rootTree.setInheritingNode("Child2");
-		child.setInheritingNode("Child3");
+		Vertex child = rootTree.setInheritingChild("Child");
+		rootTree.setInheritingChild("Child2");
+		child.setInheritingChild("Child3");
+	}
+
+	public void testInheritingTree() {
+		Root engine = new Root();
+
+		Vertex graphicComponent = engine.addTree("graphicComponent");
+
+		Vertex webPage = graphicComponent.addRoot("webPage");
+
+		Vertex header = webPage.addInheritingChild("header");
+		Vertex body = webPage.addInheritingChild("body");
+
+		Vertex color = engine.addInstance("Color");
+		Vertex red = color.addInstance("red");
+		Vertex blue = color.addInstance("blue");
+
+		Vertex graphicComponentColor = graphicComponent.addRelation("graphicComponentColor", color);
+		graphicComponentColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
+
+		webPage.addLink(graphicComponentColor, "webPageRed", red);
+		header.addLink(graphicComponentColor, "headerBlue", blue);
+		
+		assert webPage.getLink(graphicComponentColor, "webPageRed").getTargetComponent().equals(red);
+		assert header.getLink(graphicComponentColor, "headerBlue").getTargetComponent().equals(blue);
+		assert body.getLink(graphicComponentColor, "webPageRed").getTargetComponent().equals(red);
 	}
 
 }

@@ -55,22 +55,22 @@ public class FileSystem extends Generic {
 		}
 
 		public Snapshot<Directory> getDirectories() {
-			return (Snapshot) getSubNodes();
+			return (Snapshot) getChildren();
 		}
 
 		public Directory getDirectory(String name) {
-			Optional<Generic> optional = getSubNodes().get().filter(x -> x.getValue().equals(name)).findFirst();
+			Optional<Generic> optional = getChildren().get().filter(x -> x.getValue().equals(name)).findFirst();
 			return optional.isPresent() ? (Directory) optional.get() : null;
 
 		}
 
 		public Directory addDirectory(String name) {
-			return (Directory) addNode(name);
+			return (Directory) addChild(name);
 
 		}
 
 		public Directory setDirectory(String name) {
-			return (Directory) setNode(name);
+			return (Directory) setChild(name);
 		}
 
 		public String getShortPath() {

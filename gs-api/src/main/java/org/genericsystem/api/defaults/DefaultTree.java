@@ -1,7 +1,9 @@
 package org.genericsystem.api.defaults;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
 
@@ -17,35 +19,37 @@ public interface DefaultTree<T extends DefaultVertex<T>> extends IVertex<T> {
 	}
 
 	@Override
-	default T addNode(Serializable value) {
-		return addHolder(getMeta(), value, coerceToTArray());
-	}
-
-	@Override
-	default T setNode(Serializable value) {
-		return setHolder(getMeta(), value, coerceToTArray());
-	}
-
 	@SuppressWarnings("unchecked")
-	@Override
-	default T addInheritingNode(Serializable value) {
-		return addHolder(getMeta(), (T) this, value, coerceToTArray());
+	default T addChild(Serializable value, T... targets) {
+		return addHolder(getMeta(), value, targets);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
-	@Override
-	default T setInheritingNode(Serializable value) {
-		return setHolder(getMeta(), (T) this, value, coerceToTArray());
+	default T setChild(Serializable value, T... targets) {
+		return setHolder(getMeta(), value, targets);
 	}
 
 	@Override
-	default Snapshot<T> getSubNodes() {
+	@SuppressWarnings("unchecked")
+	default T addInheritingChild(Serializable value, T... targets) {
+		return addHolder(getMeta(), Arrays.asList(addThisToTargets(targets)), value, targets);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T setInheritingChild(Serializable value, T... targets) {
+		return setHolder(getMeta(), Arrays.asList(addThisToTargets(targets)), value, targets);
+	}
+
+	@Override
+	default Snapshot<T> getChildren() {
 		return () -> getComposites().get().filter(x -> x.getMeta().equals(getMeta()));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default Snapshot<T> getAllSubNodes() {
-		return () -> Stream.concat(Stream.of((T) this), getSubNodes().get().flatMap(node -> node.getAllSubNodes().get())).distinct();
+	default Snapshot<T> getAllChildren() {
+		return () -> Stream.concat(Stream.of((T) this), getChildren().get().flatMap(node -> node.getAllChildren().get())).distinct();
 	}
 }
