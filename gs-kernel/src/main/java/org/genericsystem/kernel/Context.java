@@ -243,7 +243,7 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 					supers = supers.get(0).getSupers();
 			//
 			List<T> filterSupers = supers.stream().filter(x -> !x.equals(update)).collect(Collectors.toList());
-			// List<T> filterSupers = supers;
+
 			return rebuildAll(update, () -> getOrBuild(update.getClass(), adjustedMeta, filterSupers, newValue, newComponents), getContext().computeDependencies(update, true));
 		}
 

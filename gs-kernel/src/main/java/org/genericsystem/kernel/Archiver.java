@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+
 import org.genericsystem.api.defaults.DefaultRoot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -238,7 +239,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 			writeAncestorId(dependency.getMeta());
 			writeAncestorsId(dependency.getSupers());
 			writeAncestorsId(dependency.getComponents());
-			//log.info("write dependency " + dependency.info());
+			// log.info("write dependency " + dependency.info());
 		}
 
 		protected void writeOtherTs(T dependency) throws IOException {
@@ -293,7 +294,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 		}
 
 		protected Long[] loadOtherTs() throws IOException {
-			return new Long[]{};
+			return new Long[] {};
 		}
 
 		protected void loadDependency(Map<Long, T> vertexMap) throws IOException, ClassNotFoundException {
@@ -304,9 +305,9 @@ public class Archiver<T extends AbstractVertex<T>> {
 			List<T> supers = loadAncestors(vertexMap);
 			List<T> components = loadAncestors(vertexMap);
 			vertexMap.put(id, getOrBuild(null, meta, supers, value, components, id, otherTs));
-			//log.info("load dependency " + vertexMap.get(id).info() + " " + id);
+			// log.info("load dependency " + vertexMap.get(id).info() + " " + id);
 		}
-		
+
 		protected T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, Long designTs, Long... otherTs) {
 			T instance = meta == null ? transaction.getMeta(components.size()) : meta.getDirectInstance(value, components);
 			return instance == null ? transaction.getBuilder().build(clazz, meta, supers, value, components) : instance;
