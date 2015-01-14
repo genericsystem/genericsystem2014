@@ -1,5 +1,8 @@
 package org.genericsystem.kernel;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.exception.SingularConstraintViolationException;
 import org.testng.annotations.Test;
@@ -183,6 +186,7 @@ public class SingularConstraintTest extends AbstractTest {
 		carColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
 		carColor.enablePropertyConstraint();
 		Vertex carRed = car.addHolder(carColor, "CarRed", red);
+		assert carRed.isSuperOf(carColor, Collections.emptyList(), "myCarRed", Arrays.asList(myCar, yellow));
 		Vertex myCarYellow = myCar.addHolder(carColor, "myCarRed", yellow);
 		assert myCar.getHolders(carColor).contains(myCarYellow);
 		assert myCar.getHolders(carColor).size() == 1;
