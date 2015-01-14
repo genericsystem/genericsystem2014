@@ -39,7 +39,7 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 		if (!superMeta.componentsDepends(subComponents, superComponents))
 			return false;
 		if (superMeta.isPropertyConstraintEnabled())
-			return !subComponents.equals(superComponents);
+			return true;// !subComponents.equals(superComponents);
 		return Objects.equals(subValue, superValue);
 	}
 

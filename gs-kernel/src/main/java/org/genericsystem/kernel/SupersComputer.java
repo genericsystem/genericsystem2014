@@ -33,7 +33,7 @@ public class SupersComputer<T extends AbstractVertex<T>> extends LinkedHashSet<T
 	}
 
 	private boolean isMeta(T meta, Serializable value, List<T> components) {
-		return meta.isMeta() && components.stream().filter(x -> x != null).allMatch(c -> c.isRoot()) && Objects.equals(value, meta.getRoot().getValue());
+		return meta.isMeta() && components.stream().allMatch(c -> c != null && c.isRoot()) && Objects.equals(value, meta.getRoot().getValue());
 	}
 
 	private void visitSupers(T candidate) {
