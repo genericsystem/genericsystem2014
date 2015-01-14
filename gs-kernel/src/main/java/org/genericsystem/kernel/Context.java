@@ -206,8 +206,6 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 			T equivInstance = adjustedMeta.getDirectEquivInstance(value, components);
 			if (equivInstance == null)
 				return internalAddInstance(clazz, adjustedMeta, supers, value, components);
-			if (equivInstance.equalsAndOverrides(adjustedMeta, supers, value, components))
-				assert false : equivInstance.info() + "   " + adjustedMeta + " " + value + " " + components;
 			Supplier<T> rebuilder = () -> build(clazz, adjustedMeta, supers, value, components);
 			return rebuildAll(equivInstance, rebuilder, getContext().computeDependencies(equivInstance));
 		}
