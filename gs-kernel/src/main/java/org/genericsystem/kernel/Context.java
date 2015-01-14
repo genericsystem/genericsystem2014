@@ -97,28 +97,24 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 		OrderedDependencies visit(T node) {
 			if (!contains(node)) {
 				if (!force && !node.getInheritings().isEmpty())
-					discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + node + " has an inheritance dependency"));
+					discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + node + " has a inheriting dependencies : " + node.getInheritings()));
 				getInheritings(node).forEach(this::visit);
 
 				if (!force && !node.getInstances().isEmpty())
-					discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + node + " has an instance dependency"));
+					discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + node + " has a instance dependencies : " + node.getInstances()));
 				getInstances(node).forEach(this::visit);
 
 				for (T composite : node.getComposites()) {
-					if (force)
-						visit(composite);
-					else {
+					if (!force)
 						for (int componentPos = 0; componentPos < composite.getComponents().size(); componentPos++)
 							if (composite.getComponents().get(componentPos).equals(node) && !contains(composite) && composite.getMeta().isReferentialIntegrityEnabled(componentPos))
 								discardWithException(new ReferentialIntegrityConstraintViolationException(composite + " is Referential Integrity for ancestor " + node + " by composite position : " + componentPos));
-						visit(composite);
-					}
+					visit(composite);
 				}
+				add(node);
 				for (int axe = 0; axe < node.getComponents().size(); axe++)
 					if (node.isCascadeRemove(axe))
 						visit(node.getComponents().get(axe));
-
-				add(node);
 			}
 			return this;
 		}
