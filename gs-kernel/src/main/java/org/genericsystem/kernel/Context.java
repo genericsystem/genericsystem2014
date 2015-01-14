@@ -67,12 +67,57 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 
 	@Override
 	public void forceRemove(T generic) {
-		computeDependencies(generic).forEach(this::unplug);
+		computeDependencies(generic, true).forEach(this::unplug);
 	}
 
 	@Override
 	public void remove(T generic) {
-		buildOrderedDependenciesToRemove(generic).forEach(this::unplug);
+		computeDependencies(generic, false).forEach(this::unplug);
+	}
+
+	@Deprecated
+	public// TODO to remove
+	Set<T> computeDependencies(T node) {
+		return computeDependencies(node, true);
+	}
+
+	private Set<T> computeDependencies(T node, boolean force) {
+		return new OrderedDependencies(force).visit(node);
+	}
+
+	class OrderedDependencies extends LinkedHashSet<T> {
+		private static final long serialVersionUID = -5970021419012502402L;
+
+		private final boolean force;
+
+		public OrderedDependencies(boolean force) {
+			this.force = force;
+		}
+
+		OrderedDependencies visit(T node) {
+			if (!contains(node)) {
+				if (!force && !node.getInheritings().isEmpty())
+					discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + node + " has a inheriting dependencies : " + node.getInheritings()));
+				getInheritings(node).forEach(this::visit);
+
+				if (!force && !node.getInstances().isEmpty())
+					discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + node + " has a instance dependencies : " + node.getInstances()));
+				getInstances(node).forEach(this::visit);
+
+				for (T composite : node.getComposites()) {
+					if (!force)
+						for (int componentPos = 0; componentPos < composite.getComponents().size(); componentPos++)
+							if (composite.getComponents().get(componentPos).equals(node) && !contains(composite) && composite.getMeta().isReferentialIntegrityEnabled(componentPos))
+								discardWithException(new ReferentialIntegrityConstraintViolationException(composite + " is Referential Integrity for ancestor " + node + " by composite position : " + componentPos));
+					visit(composite);
+				}
+				add(node);
+				for (int axe = 0; axe < node.getComponents().size(); axe++)
+					if (node.isCascadeRemove(axe))
+						visit(node.getComponents().get(axe));
+			}
+			return this;
+		}
 	}
 
 	private T getAlive(T vertex) {
@@ -104,10 +149,6 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 	protected void triggersMutation(T oldDependency, T newDependency) {
 	}
 
-	public Set<T> computeDependencies(T node) {
-		return new OrderedDependencies().visit(node);
-	}
-
 	public Set<T> computePotentialDependencies(T meta, List<T> supers, Serializable value, List<T> components) {
 		return new PotentialDependenciesComputer() {
 			private static final long serialVersionUID = -3611136800445783634L;
@@ -117,24 +158,6 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 				return node.isDependencyOf(meta, supers, value, components);
 			}
 		}.visit(meta);
-	}
-
-	private List<T> buildOrderedDependenciesToRemove(T node) {
-		return Statics.reverseCollections(new OrderedDependenciesRemove().visit(node));
-	}
-
-	class OrderedDependencies extends LinkedHashSet<T> {
-		private static final long serialVersionUID = -5970021419012502402L;
-
-		OrderedDependencies visit(T node) {
-			if (!contains(node)) {
-				getComposites(node).forEach(this::visit);
-				getInheritings(node).forEach(this::visit);
-				getInstances(node).forEach(this::visit);
-				add(node);
-			}
-			return this;
-		}
 	}
 
 	abstract class PotentialDependenciesComputer extends LinkedHashSet<T> {
@@ -167,27 +190,6 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 		}
 	}
 
-	class OrderedDependenciesRemove extends LinkedHashSet<T> {
-		private static final long serialVersionUID = 2597589882338317751L;
-
-		OrderedDependenciesRemove visit(T generic) {
-			if (add(generic)) {// protect from loop
-				if (!generic.getInheritings().isEmpty() || !generic.getInstances().isEmpty())
-					discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + generic + " has an inheritance or instance dependency"));
-				for (T composite : generic.getComposites()) {
-					for (int componentPos = 0; componentPos < composite.getComponents().size(); componentPos++)
-						if (/* !componentDependency.isAutomatic() && */composite.getComponents().get(componentPos).equals(generic) && !contains(composite) && composite.getMeta().isReferentialIntegrityEnabled(componentPos))
-							discardWithException(new ReferentialIntegrityConstraintViolationException(composite + " is Referential Integrity for ancestor " + generic + " by composite position : " + componentPos));
-					visit(composite);
-				}
-				for (int axe = 0; axe < generic.getComponents().size(); axe++)
-					if (generic.isCascadeRemove(axe))
-						visit(generic.getComponents().get(axe));
-			}
-			return this;
-		}
-	}
-
 	protected static class AbstractVertexBuilder<T extends AbstractVertex<T>> extends Builder<T> {
 		protected AbstractVertexBuilder(Context<T> context) {
 			super(context);
@@ -216,7 +218,7 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 			// T equivInstance = adjustedMeta.getDirectEquivInstance(value, components);
 			// if (equivInstance == null)
 			// return internalAddInstance(clazz, adjustedMeta, supers, value, components);
-			// return rebuildAll(equivInstance, () -> build(clazz, adjustedMeta, supers, value, components), getContext().computeDependencies(equivInstance));
+			// return rebuildAll(equivInstance, () -> build(clazz, adjustedMeta, supers, value, components), getContext().computeDependencies(equivInstance, true));
 		}
 
 		@Override
@@ -226,9 +228,9 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 			genericBuilder.check();
 			genericBuilder.adjustMeta();
 			genericBuilder.reComputeSupers();
-			// T generic = genericBuilder.get();
-			// if (generic != null)
-			// return generic;
+			T generic = genericBuilder.get();
+			if (generic != null)
+				return generic;
 			// generic = genericBuilder.getEquiv();
 			// return generic == null ? genericBuilder.add() : genericBuilder.update(generic);
 
@@ -239,9 +241,10 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 			if (supers.size() == 1 && supers.get(0).equalsRegardlessSupers(adjustedMeta, newValue, newComponents))
 				if (Statics.areOverridesReached(supers.get(0).getSupers(), overrides))
 					supers = supers.get(0).getSupers();
-
+			//
 			List<T> filterSupers = supers.stream().filter(x -> !x.equals(update)).collect(Collectors.toList());
-			return rebuildAll(update, () -> getOrBuild(update.getClass(), adjustedMeta, filterSupers, newValue, newComponents), getContext().computeDependencies(update));
+			// List<T> filterSupers = supers;
+			return rebuildAll(update, () -> getOrBuild(update.getClass(), adjustedMeta, filterSupers, newValue, newComponents), getContext().computeDependencies(update, true));
 		}
 
 		@Override
