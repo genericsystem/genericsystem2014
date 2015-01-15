@@ -10,9 +10,9 @@ public class Mutability {
 		Generic vehicle = engine.addInstance("VehicleZ");
 		Generic car = engine.addInstance(vehicle, "Car");
 
-		// Update the value of vehicle
+		// Update the value of VehicleZ
 		vehicle.updateValue("Vehicle");
-		// dependencies (here car) are automatically updated
+		// dependencies (here Car) are automatically updated
 
 		assert vehicle.isAlive();
 		assert car.isAlive();

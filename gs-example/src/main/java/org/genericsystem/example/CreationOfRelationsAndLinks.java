@@ -12,7 +12,7 @@ public class CreationOfRelationsAndLinks {
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = vehicle.addRelation("VehicleColor", color);
 
-		// 2. Instantiate a vehicle and a color
+		// 2. Instantiate a Vehicle and a Color
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		Generic red = color.addInstance("red");
 
