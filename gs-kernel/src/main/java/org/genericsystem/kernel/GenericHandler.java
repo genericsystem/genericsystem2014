@@ -80,7 +80,6 @@ public class GenericHandler<T extends AbstractVertex<T>> {
 	public T update(T update) {
 		assert update != null;
 		assert supers != null;
-		System.out.println("update : " + update + "   supers : " + supers);
 		return builder.rebuildAll(update, () -> builder.getOrBuild(clazz, adjustedMeta, supers, value, components), builder.getContext().computeDependencies(update, true));
 	}
 
