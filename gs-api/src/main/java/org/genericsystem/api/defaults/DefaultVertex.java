@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import org.genericsystem.api.core.ApiStatics;
 
 public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncestors<T>, DefaultDependencies<T>, DefaultDisplay<T>, DefaultSystemProperties<T>, DefaultCompositesInheritance<T>, DefaultWritable<T>, DefaultTree<T> {
 
@@ -60,7 +61,7 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 
 	@SuppressWarnings("unchecked")
 	default boolean isSuperOf(T subMeta, List<T> overrides, Serializable subValue, List<T> subComponents) {
-		return overrides.stream().anyMatch(override -> override.inheritsFrom((T) this)) || isSuperOf(subMeta, subValue, subComponents, getMeta(), getValue(), getComponents());
+		return overrides.stream().anyMatch(override -> override.inheritsFrom((T) this)) || (ApiStatics.areOverridesReached(getSupers(), overrides) && isSuperOf(subMeta, subValue, subComponents, getMeta(), getValue(), getComponents()));
 	}
 
 	default boolean componentsDepends(List<T> subComponents, List<T> superComponents) {

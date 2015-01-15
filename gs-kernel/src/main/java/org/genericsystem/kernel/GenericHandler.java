@@ -2,7 +2,6 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class GenericHandler<T extends AbstractVertex<T>> {
 	private final Builder<T> builder;
@@ -75,13 +74,14 @@ public class GenericHandler<T extends AbstractVertex<T>> {
 	public T set(T update) {
 		assert update != null;
 		assert supers != null;
-		return builder.rebuildAll(update, () -> builder.build(clazz, adjustedMeta, supers.stream().filter(x -> !x.equals(update)).collect(Collectors.toList()), value, components), builder.getContext().computeDependencies(update, true));
+		return builder.rebuildAll(update, () -> builder.build(clazz, adjustedMeta, supers, value, components), builder.getContext().computeDependencies(update, true));
 	}
 
 	public T update(T update) {
 		assert update != null;
 		assert supers != null;
-		return builder.rebuildAll(update, () -> builder.getOrBuild(clazz, adjustedMeta, supers.stream().filter(x -> !x.equals(update)).collect(Collectors.toList()), value, components), builder.getContext().computeDependencies(update, true));
+		System.out.println("update : " + update + "   supers : " + supers);
+		return builder.rebuildAll(update, () -> builder.getOrBuild(clazz, adjustedMeta, supers, value, components), builder.getContext().computeDependencies(update, true));
 	}
 
 	public void remove() {

@@ -1,9 +1,9 @@
 package org.genericsystem.kernel;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
 import org.testng.annotations.Test;
 
@@ -194,6 +194,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		Vertex vehicle = engine.addInstance("Vehicle");
 		Vertex car = engine.addInstance("Car");
 
+		assert !car.isSuperOf(car.getMeta(), Collections.singletonList(vehicle), car.getValue(), car.getComponents());
 		// when
 		car.updateSupers(vehicle);
 
