@@ -24,10 +24,10 @@ public class TreesUses {
 		// Create the child daughter
 		Generic daughter = father.addChild("daughter", mother);
 
-		// Get children of father
+		// Get children of Father
 		assert father.getChildren().containsAll(Arrays.asList(son, daughter));
 
-		// Get children of mother
+		// Get children of Mother
 		assert mother.getChildren().containsAll(Arrays.asList(son, daughter));
 	}
 
