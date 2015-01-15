@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.defaults.DefaultContext;
 import org.genericsystem.api.defaults.DefaultRoot;
@@ -164,7 +165,8 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 	@Override
 	public abstract Snapshot<T> getComposites(T vertex);
 
-	protected void triggersMutation(T oldDependency, T newDependency) {}
+	protected void triggersMutation(T oldDependency, T newDependency) {
+	}
 
 	@Override
 	public void forceRemove(T generic) {
@@ -194,15 +196,14 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		@Override
 		T rebuildAll(T toRebuild, Supplier<T> rebuilder, Set<T> dependenciesToRebuild) {
 			dependenciesToRebuild.forEach(getContext()::unplug);
-			T build = rebuilder.get();
+			T build = rebuilder == null ? null : rebuilder.get();
 			dependenciesToRebuild.remove(toRebuild);
 			ConvertMap convertMap = new ConvertMap();
 			if (toRebuild != null) {
 				convertMap.put(toRebuild, build);
 				getContext().triggersMutation(toRebuild, build);
 			}
-			if (build != null)
-				Statics.reverseCollections(dependenciesToRebuild).forEach(x -> convertMap.convert(x));
+			Statics.reverseCollections(dependenciesToRebuild).forEach(x -> convertMap.convert(x));
 			return build;
 		}
 
