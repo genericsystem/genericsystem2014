@@ -178,6 +178,11 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		new GenericHandler<>(generic).remove();
 	}
 
+	@Override
+	public void conserveRemove(T generic) {
+		new GenericHandler<>(generic).conserveRemove();
+	}
+
 	@Deprecated
 	public// TODO to remove
 	Set<T> computeDependencies(T node) {
@@ -196,15 +201,18 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		@Override
 		T rebuildAll(T toRebuild, Supplier<T> rebuilder, Set<T> dependenciesToRebuild) {
 			dependenciesToRebuild.forEach(getContext()::unplug);
-			T build = rebuilder == null ? null : rebuilder.get();
-			dependenciesToRebuild.remove(toRebuild);
-			ConvertMap convertMap = new ConvertMap();
-			if (toRebuild != null) {
-				convertMap.put(toRebuild, build);
-				getContext().triggersMutation(toRebuild, build);
+			if (rebuilder != null) {
+				ConvertMap convertMap = new ConvertMap();
+				dependenciesToRebuild.remove(toRebuild);
+				T build = rebuilder.get();
+				if (toRebuild != null) {
+					convertMap.put(toRebuild, build);
+					getContext().triggersMutation(toRebuild, build);
+				}
+				Statics.reverseCollections(dependenciesToRebuild).forEach(x -> convertMap.convert(x));
+				return build;
 			}
-			Statics.reverseCollections(dependenciesToRebuild).forEach(x -> convertMap.convert(x));
-			return build;
+			return null;
 		}
 
 		@Override
@@ -244,6 +252,12 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 						newDependency = setMeta(oldDependency.getComponents().size());
 					} else {
 						List<T> overrides = oldDependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
+						// TODO PB SI 2 ETAGE
+						for (int i = 0; i < overrides.size(); i++)
+							if (!overrides.get(i).isAlive()) {
+								overrides.addAll(overrides.get(i).getSupers());
+								overrides.remove(i);
+							}
 						List<T> components = oldDependency.getComponents().stream().map(x -> x != null ? convert(x) : null).collect(Collectors.toList());
 						T adjustedMeta = convert(oldDependency.getMeta()).adjustMeta(oldDependency.getValue(), components);
 						List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, oldDependency.getValue(), components);

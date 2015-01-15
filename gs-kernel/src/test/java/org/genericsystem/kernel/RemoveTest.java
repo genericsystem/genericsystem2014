@@ -8,6 +8,24 @@ import org.testng.annotations.Test;
 @Test
 public class RemoveTest extends AbstractTest {
 
+	public void test001_conserveRemove() {
+		Vertex engine = new Root();
+		Vertex car = engine.addInstance("Car");
+		Vertex color = engine.addInstance("Color");
+		Vertex myBmw = car.addInstance("myBmw");
+		Vertex red = color.addInstance("red");
+		Vertex carColor = car.addRelation("CarColor", color);
+		Vertex carRed = car.addLink(carColor, "carRed", red);
+		myBmw.addLink(carColor, carRed, "myBmwRed", red);
+
+		carRed.conserveRemove();
+		Vertex myBmwRed = myBmw.getLink(carColor, "myBmwRed", red);
+		assert myBmwRed != null;
+		assert myBmwRed.isAlive();
+		assert myBmwRed.getSupers().size() == 0;
+		assert !carRed.isAlive();
+	}
+
 	public void test001_removeTypeWithHolder() {
 		Vertex engine = new Root();
 		Vertex car = engine.addInstance("Car");

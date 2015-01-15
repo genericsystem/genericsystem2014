@@ -27,4 +27,6 @@ public interface DefaultContext<T extends DefaultVertex<T>> extends IContext<T> 
 	void forceRemove(T generic);
 
 	void remove(T generic);
+
+	void conserveRemove(T generic);
 }
