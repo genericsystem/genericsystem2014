@@ -13,12 +13,11 @@ import java.util.stream.Collectors;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.defaults.DefaultContext;
 import org.genericsystem.api.defaults.DefaultRoot;
-import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.api.exception.UnreachableOverridesException;
 
-public abstract class Context<T extends DefaultVertex<T>> implements DefaultContext<T> {
+public abstract class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 
 	private final DefaultRoot<T> root;
 
@@ -50,7 +49,6 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 		return builder;
 	}
 
-	// @Override
 	@Override
 	public DefaultRoot<T> getRoot() {
 		return root;
@@ -64,26 +62,6 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 	abstract protected T plug(T generic);
 
 	abstract protected void unplug(T generic);
-
-	@Override
-	public void forceRemove(T generic) {
-		computeDependencies(generic, true).forEach(this::unplug);
-	}
-
-	@Override
-	public void remove(T generic) {
-		computeDependencies(generic, false).forEach(this::unplug);
-	}
-
-	@Deprecated
-	public// TODO to remove
-	Set<T> computeDependencies(T node) {
-		return computeDependencies(node, true);
-	}
-
-	Set<T> computeDependencies(T node, boolean force) {
-		return new OrderedDependencies(force).visit(node);
-	}
 
 	class OrderedDependencies extends LinkedHashSet<T> {
 		private static final long serialVersionUID = -5970021419012502402L;
@@ -118,35 +96,6 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 			}
 			return this;
 		}
-	}
-
-	private T getAlive(T vertex) {
-		if (vertex.isRoot())
-			return vertex;
-		if (vertex.isMeta()) {
-			T aliveSuper = getAlive(vertex.getSupers().get(0));
-			return aliveSuper != null ? getInheritings(aliveSuper).get(vertex) : null;
-		}
-		T aliveMeta = getAlive(vertex.getMeta());
-		return aliveMeta != null ? getInstances(aliveMeta).get(vertex) : null;
-	}
-
-	@SuppressWarnings("unchecked")
-	protected T getMeta(int dim) {
-		T adjustedMeta = getBuilder().adjustMeta((T) getRoot(), dim);
-		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
-	}
-
-	@Override
-	public abstract Snapshot<T> getInstances(T vertex);
-
-	@Override
-	public abstract Snapshot<T> getInheritings(T vertex);
-
-	@Override
-	public abstract Snapshot<T> getComposites(T vertex);
-
-	protected void triggersMutation(T oldDependency, T newDependency) {
 	}
 
 	public Set<T> computePotentialDependencies(T meta, List<T> supers, Serializable value, List<T> components) {
@@ -190,14 +139,78 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 		}
 	}
 
+	private T getAlive(T vertex) {
+		if (vertex.isRoot())
+			return vertex;
+		if (vertex.isMeta()) {
+			T aliveSuper = getAlive(vertex.getSupers().get(0));
+			return aliveSuper != null ? getInheritings(aliveSuper).get(vertex) : null;
+		}
+		T aliveMeta = getAlive(vertex.getMeta());
+		return aliveMeta != null ? getInstances(aliveMeta).get(vertex) : null;
+	}
+
+	@SuppressWarnings("unchecked")
+	protected T getMeta(int dim) {
+		T adjustedMeta = getBuilder().adjustMeta((T) getRoot(), dim);
+		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
+	}
+
+	@Override
+	public abstract Snapshot<T> getInstances(T vertex);
+
+	@Override
+	public abstract Snapshot<T> getInheritings(T vertex);
+
+	@Override
+	public abstract Snapshot<T> getComposites(T vertex);
+
+	protected void triggersMutation(T oldDependency, T newDependency) {
+	}
+
+	@Override
+	public void forceRemove(T generic) {
+		new GenericHandler<>(generic).forceRemove();
+	}
+
+	@Override
+	public void remove(T generic) {
+		new GenericHandler<>(generic).remove();
+	}
+
+	@Deprecated
+	public// TODO to remove
+	Set<T> computeDependencies(T node) {
+		return computeDependencies(node, true);
+	}
+
+	Set<T> computeDependencies(T node, boolean force) {
+		return new OrderedDependencies(force).visit(node);
+	}
+
 	protected static class AbstractVertexBuilder<T extends AbstractVertex<T>> extends Builder<T> {
 		protected AbstractVertexBuilder(Context<T> context) {
 			super(context);
 		}
 
 		@Override
+		T rebuildAll(T toRebuild, Supplier<T> rebuilder, Set<T> dependenciesToRebuild) {
+			dependenciesToRebuild.forEach(getContext()::unplug);
+			T build = rebuilder.get();
+			dependenciesToRebuild.remove(toRebuild);
+			ConvertMap convertMap = new ConvertMap();
+			if (toRebuild != null) {
+				convertMap.put(toRebuild, build);
+				getContext().triggersMutation(toRebuild, build);
+			}
+			if (build != null)
+				Statics.reverseCollections(dependenciesToRebuild).forEach(x -> convertMap.convert(x));
+			return build;
+		}
+
+		@Override
 		public T setInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
-			GenericBuilder<T> genericBuilder = new GenericBuilder<T>(this, clazz, meta, overrides, value, components);
+			GenericHandler<T> genericBuilder = new GenericHandler<T>(this, clazz, meta, overrides, value, components);
 			T generic = genericBuilder.get();
 			if (generic != null)
 				return generic;
@@ -207,12 +220,12 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 
 		@Override
 		public T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents) {
-			return new GenericBuilder<T>(this, update.getClass(), update.getMeta(), overrides, newValue, newComponents).update(update);
+			return new GenericHandler<T>(this, update.getClass(), update.getMeta(), overrides, newValue, newComponents).update(update);
 		}
 
 		@Override
 		public T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
-			GenericBuilder<T> genericBuilder = new GenericBuilder<T>(this, clazz, meta, overrides, value, components);
+			GenericHandler<T> genericBuilder = new GenericHandler<T>(this, clazz, meta, overrides, value, components);
 			T generic = genericBuilder.get();
 			if (generic != null)
 				getContext().discardWithException(new ExistsException("An equivalent instance already exists : " + generic.info()));
@@ -249,20 +262,6 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 				getContext().triggersMutation(oldDependency, newDependency);
 				return result;
 			}
-		}
-
-		@Override
-		T rebuildAll(T toRebuild, Supplier<T> rebuilder, Set<T> dependenciesToRebuild) {
-			dependenciesToRebuild.forEach(getContext()::unplug);
-			T build = rebuilder.get();
-			dependenciesToRebuild.remove(toRebuild);
-			ConvertMap convertMap = new ConvertMap();
-			if (toRebuild != null) {
-				convertMap.put(toRebuild, build);
-				getContext().triggersMutation(toRebuild, build);
-			}
-			Statics.reverseCollections(dependenciesToRebuild).forEach(x -> convertMap.convert(x));
-			return build;
 		}
 
 		@Override

@@ -9,11 +9,10 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import org.genericsystem.api.defaults.DefaultBuilder;
-import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.kernel.Vertex.SystemClass;
 import org.genericsystem.kernel.annotations.InstanceClass;
 
-public abstract class Builder<T extends DefaultVertex<T>> implements DefaultBuilder<T> {
+public abstract class Builder<T extends AbstractVertex<T>> implements DefaultBuilder<T> {
 
 	private final Context<T> context;
 

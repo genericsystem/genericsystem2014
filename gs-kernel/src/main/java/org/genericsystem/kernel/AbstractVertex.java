@@ -62,14 +62,14 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return new DependenciesImpl<>();
 	}
 
-	@SuppressWarnings("unchecked")
-	protected T adjustMeta(Serializable value, T... components) {
-		return adjustMeta(value, Arrays.asList(components));
-	}
-
 	@Override
 	public Context<T> getCurrentCache() {
 		return (Context<T>) getRoot().getCurrentCache();
+	}
+
+	@SuppressWarnings("unchecked")
+	protected T adjustMeta(Serializable value, T... components) {
+		return adjustMeta(value, Arrays.asList(components));
 	}
 
 	@SuppressWarnings("unchecked")

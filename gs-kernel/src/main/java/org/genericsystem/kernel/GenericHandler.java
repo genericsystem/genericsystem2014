@@ -4,18 +4,19 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class GenericBuilder<T extends AbstractVertex<T>> {
+public class GenericHandler<T extends AbstractVertex<T>> {
 	private final Builder<T> builder;
 	private final Class<?> clazz;
 	private final T meta;
 	private T adjustedMeta;
-	private final List<T> overrides;
+	private List<T> overrides;
 	private List<T> supers;
 	private final Serializable value;
 	private final List<T> components;
 	private T gettable;
 
-	public GenericBuilder(Builder<T> builder, Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
+	public GenericHandler(Builder<T> builder, Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
+		assert overrides != null;
 		this.builder = builder;
 		this.clazz = clazz;
 		this.meta = meta;
@@ -25,6 +26,16 @@ public class GenericBuilder<T extends AbstractVertex<T>> {
 		check();
 		adjustMeta();
 		reComputeSupers();
+	}
+
+	public GenericHandler(T gettable) {
+		this.builder = gettable.getCurrentCache().getBuilder();
+		this.clazz = gettable.getClass();
+		this.meta = gettable.getMeta();
+		this.supers = gettable.getSupers();
+		this.value = gettable.getValue();
+		this.components = gettable.getComponents();
+		this.gettable = gettable;
 	}
 
 	public void check() {
@@ -71,5 +82,15 @@ public class GenericBuilder<T extends AbstractVertex<T>> {
 		assert update != null;
 		assert supers != null;
 		return builder.rebuildAll(update, () -> builder.getOrBuild(clazz, adjustedMeta, supers.stream().filter(x -> !x.equals(update)).collect(Collectors.toList()), value, components), builder.getContext().computeDependencies(update, true));
+	}
+
+	public void remove() {
+		assert supers != null;
+		builder.rebuildAll(null, () -> null, builder.getContext().computeDependencies(gettable, false));
+	}
+
+	public void forceRemove() {
+		assert supers != null;
+		builder.rebuildAll(null, () -> null, builder.getContext().computeDependencies(gettable, true));
 	}
 }
