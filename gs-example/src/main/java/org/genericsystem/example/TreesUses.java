@@ -96,7 +96,7 @@ public class TreesUses {
 		body.addInheritingChild("text1");
 		body.addInheritingChild("text2");
 
-		// Pass through the tree from webPage
+		// Pass through the tree from html
 		html.traverse(new Visitor<Generic>() {
 			@Override
 			public void before(Generic node) {
