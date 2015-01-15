@@ -125,8 +125,8 @@ public class VertexTest extends AbstractTest {
 		assert carGreen.isSuperOf(vehicleColor, Collections.singletonList(carGreen), "CarRed", Arrays.asList(myBmw, yellow));
 		assert myBmwYellow.inheritsFrom(carGreen);
 
-		assert carRed.isSuperOf(vehicleColor, Collections.singletonList(carGreen), "CarRed", Arrays.asList(myBmw, red));
 		Vertex myBmwRed = vehicleColor.addInstance(carRed, "myBmwRed", myBmw, red);
+		assert carRed.isSuperOf(vehicleColor, Collections.singletonList(carRed), "myBmwRed", Arrays.asList(myBmw, red));
 		assert vehicleColor.getInstances().contains(myBmwRed);
 		assert myBmwRed.inheritsFrom(carRed);
 		assert !yellow.inheritsFrom(red);
