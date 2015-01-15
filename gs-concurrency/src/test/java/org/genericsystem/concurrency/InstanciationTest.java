@@ -3,7 +3,7 @@ package org.genericsystem.concurrency;
 import java.util.Arrays;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
+import org.genericsystem.api.exception.CollisionException;
 import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.kernel.Statics;
 import org.testng.annotations.Test;
@@ -115,7 +115,7 @@ public class InstanciationTest extends AbstractTest {
 	public void test007_addInstance_selfInheriting() {
 		Engine Engine = new Engine();
 		Generic vehicle = Engine.addInstance("Vehicle");
-		catchAndCheckCause(() -> Engine.addInstance(Arrays.asList(vehicle), "Vehicle"), ExistsException.class);
+		catchAndCheckCause(() -> Engine.addInstance(Arrays.asList(vehicle), "Vehicle"), CollisionException.class);
 	}
 
 	public void test008_addInstance_multipleOverrides() {
