@@ -465,6 +465,11 @@ public interface Generic extends IVertex<Generic> {
 	}
 
 	@Override
+	default void traverse(Visitor<Generic> visitor) {
+		visitor.traverse(this);
+	}
+
+	@Override
 	default Generic addAttribute(Serializable value, Generic... targets) {
 		return getCurrentCache().wrap(getCurrentCache().unwrap(this).addAttribute(value, getCurrentCache().unwrap(targets)));
 	}

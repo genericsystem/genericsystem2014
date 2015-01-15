@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import org.genericsystem.api.core.ApiStatics;
+import org.genericsystem.api.core.IVertex.Visitor;
 import org.genericsystem.api.exception.ExistsException;
 import org.testng.annotations.Test;
 
@@ -175,26 +176,76 @@ public class TreeTest extends AbstractTest {
 	public void testInheritingTree() {
 		Root engine = new Root();
 
-		Vertex graphicComponent = engine.addTree("graphicComponent");
+		Vertex webPage = engine.addTree("webPage");
 
-		Vertex webPage = graphicComponent.addRoot("webPage");
+		Vertex html = webPage.addRoot("html");
 
-		Vertex header = webPage.addInheritingChild("header");
-		Vertex body = webPage.addInheritingChild("body");
+		Vertex header = html.addInheritingChild("header");
+		Vertex body = html.addInheritingChild("body");
+		Vertex footer = html.addInheritingChild("footer");
+
+		body.addInheritingChild("text1");
+		body.addInheritingChild("text2");
 
 		Vertex color = engine.addInstance("Color");
 		Vertex red = color.addInstance("red");
 		Vertex blue = color.addInstance("blue");
+		Vertex yellow = color.addInstance("yellow");
 
-		Vertex graphicComponentColor = graphicComponent.addRelation("graphicComponentColor", color);
-		graphicComponentColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
+		Vertex webPageComponentColor = webPage.addRelation("webPageComponentColor", color);
+		webPageComponentColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
 
-		webPage.addLink(graphicComponentColor, "webPageRed", red);
-		header.addLink(graphicComponentColor, "headerBlue", blue);
-		
-		assert webPage.getLink(graphicComponentColor, "webPageRed").getTargetComponent().equals(red);
-		assert header.getLink(graphicComponentColor, "headerBlue").getTargetComponent().equals(blue);
-		assert body.getLink(graphicComponentColor, "webPageRed").getTargetComponent().equals(red);
+		html.addLink(webPageComponentColor, "htmlRed", red);
+		header.addLink(webPageComponentColor, "headerBlue", blue);
+		footer.addLink(webPageComponentColor, "footerYellow", yellow);
+
+		assert html.getLink(webPageComponentColor, "htmlRed").getTargetComponent().equals(red);
+		assert header.getLink(webPageComponentColor, "headerBlue").getTargetComponent().equals(blue);
+		assert footer.getLink(webPageComponentColor, "footerYellow").getTargetComponent().equals(yellow);
+		assert body.getLink(webPageComponentColor, "htmlRed").getTargetComponent().equals(red);
+	}
+
+	public void testTraverseTree() {
+		Root engine = new Root();
+
+		Vertex webPage = engine.addTree("webPage");
+
+		Vertex html = webPage.addRoot("html");
+
+		html.addInheritingChild("header");
+		Vertex body = html.addInheritingChild("body");
+		html.addInheritingChild("footer");
+
+		body.addInheritingChild("text1");
+		body.addInheritingChild("text2");
+
+		int[] result = { 0 };
+
+		webPage.traverse(new Visitor<Vertex>() {
+			@Override
+			public void before(Vertex node) {
+				if (node.getValue().equals("webPage")) {
+					result[0] += 1;
+				} else if (node.getValue().equals("header") || node.getValue().equals("body") || node.getValue().equals("footer")) {
+					result[0] += 2;
+				} else if (node.getValue().equals("text1") || node.getValue().equals("text2")) {
+					result[0] += 3;
+				}
+			}
+
+			@Override
+			public void after(Vertex node) {
+				if (node.getValue().equals("webPage")) {
+					result[0] -= 1;
+				} else if (node.getValue().equals("header") || node.getValue().equals("body") || node.getValue().equals("footer")) {
+					result[0] -= 2;
+				} else if (node.getValue().equals("message1") || node.getValue().equals("message2")) {
+					result[0] -= 3;
+				}
+			}
+		});
+
+		assert result[0] == 0;
 	}
 
 }

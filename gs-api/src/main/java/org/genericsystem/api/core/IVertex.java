@@ -1,7 +1,9 @@
 package org.genericsystem.api.core;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.json.JsonObject;
 
@@ -893,6 +895,35 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	Snapshot<T> getAllChildren();
 
 	Snapshot<T> getChildren();
+
+	/**
+	 * Traverse the Tree.
+	 *
+	 * @param visitor
+	 *            The class Visitor.
+	 */
+	void traverse(Visitor<T> visitor);
+
+	public abstract static class Visitor<T extends IVertex<T>> {
+		protected Set<T> alreadyVisited = new HashSet<>();
+
+		public void traverse(T node) {
+			if (alreadyVisited.add(node)) {
+				before(node);
+				for (T child : node.getChildren())
+					traverse(child);
+				after(node);
+			}
+		}
+
+		public void before(T node) {
+
+		}
+
+		public void after(T node) {
+
+		}
+	}
 
 	/**
 	 * Returns a new attribute on this type that satisfies the specified value and targets

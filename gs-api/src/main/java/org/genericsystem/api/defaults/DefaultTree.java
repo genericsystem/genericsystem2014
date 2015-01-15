@@ -52,4 +52,10 @@ public interface DefaultTree<T extends DefaultVertex<T>> extends IVertex<T> {
 	default Snapshot<T> getAllChildren() {
 		return () -> Stream.concat(Stream.of((T) this), getChildren().get().flatMap(node -> node.getAllChildren().get())).distinct();
 	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default void traverse(Visitor<T> visitor) {
+		visitor.traverse((T) this);
+	}
 }
