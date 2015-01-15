@@ -22,6 +22,9 @@ public class GenericBuilder<T extends AbstractVertex<T>> {
 		this.overrides = overrides;
 		this.value = value;
 		this.components = components;
+		check();
+		adjustMeta();
+		reComputeSupers();
 	}
 
 	public void check() {
@@ -54,17 +57,19 @@ public class GenericBuilder<T extends AbstractVertex<T>> {
 	}
 
 	public T add() {
+		assert supers != null;
 		return builder.rebuildAll(null, () -> builder.build(clazz, adjustedMeta, supers, value, components), builder.getContext().computePotentialDependencies(adjustedMeta, supers, value, components));
+	}
+
+	public T set(T update) {
+		assert update != null;
+		assert supers != null;
+		return builder.rebuildAll(update, () -> builder.build(clazz, adjustedMeta, supers, value, components), builder.getContext().computeDependencies(update, true));
 	}
 
 	public T update(T update) {
 		assert update != null;
-		return builder.rebuildAll(update, () -> builder.build(clazz, adjustedMeta, supers, value, components), builder.getContext().computeDependencies(update, true));
-	}
-
-	public T update2(T update) {
-		assert update != null;
+		assert supers != null;
 		return builder.rebuildAll(update, () -> builder.getOrBuild(update.getClass(), adjustedMeta, supers.stream().filter(x -> !x.equals(update)).collect(Collectors.toList()), value, components), builder.getContext().computeDependencies(update, true));
-
 	}
 }

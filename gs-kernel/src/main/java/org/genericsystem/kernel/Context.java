@@ -198,14 +198,11 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 		@Override
 		public T setInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
 			GenericBuilder<T> genericBuilder = new GenericBuilder<T>(this, clazz, meta, overrides, value, components);
-			genericBuilder.check();
-			genericBuilder.adjustMeta();
-			genericBuilder.reComputeSupers();
 			T generic = genericBuilder.get();
 			if (generic != null)
 				return generic;
 			generic = genericBuilder.getEquiv();
-			return generic == null ? genericBuilder.add() : genericBuilder.update(generic);
+			return generic == null ? genericBuilder.add() : genericBuilder.set(generic);
 
 			// getContext().getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
 			// T adjustedMeta = meta.isMeta() ? setMeta(components.size()) : meta.adjustMeta(value, components);
@@ -225,10 +222,7 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 		public T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents) {
 
 			GenericBuilder<T> genericBuilder = new GenericBuilder<T>(this, null, update.getMeta(), overrides, newValue, newComponents);
-			genericBuilder.check();
-			genericBuilder.adjustMeta();
-			genericBuilder.reComputeSupers();
-			return genericBuilder.update2(update);
+			return genericBuilder.update(update);
 
 			// getContext().getChecker().checkBeforeBuild(update.getClass(), update.getMeta(), overrides, newValue, newComponents);
 			// T adjustedMeta = update.getMeta().isMeta() ? setMeta(newComponents.size()) : update.getMeta().adjustMeta(newValue, newComponents);
@@ -248,9 +242,6 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 		@Override
 		public T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
 			GenericBuilder<T> genericBuilder = new GenericBuilder<T>(this, clazz, meta, overrides, value, components);
-			genericBuilder.check();
-			genericBuilder.adjustMeta();
-			genericBuilder.reComputeSupers();
 			T generic = genericBuilder.get();
 			if (generic != null)
 				getContext().discardWithException(new ExistsException("An equivalent instance already exists : " + generic.info()));
