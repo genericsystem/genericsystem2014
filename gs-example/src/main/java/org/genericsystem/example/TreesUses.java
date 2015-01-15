@@ -11,7 +11,7 @@ public class TreesUses {
 	public void notInheritingTree() {
 		Engine engine = new Engine();
 
-		// Create a binary tree
+		// Create a binary tree called genealogicTree
 		Generic genealogicTree = engine.addTree("genealogicTree", 2);
 
 		// Create the root father
@@ -34,7 +34,7 @@ public class TreesUses {
 	public void inheritingTree() {
 		Engine engine = new Engine();
 
-		// Create a tree
+		// Create a tree called webPage
 		Generic webPage = engine.addTree("webPage");
 
 		// Create the root html
@@ -59,18 +59,18 @@ public class TreesUses {
 		Generic blue = color.addInstance("blue");
 		Generic yellow = color.addInstance("yellow");
 
-		// Create the relation webPageComponentColor between webPage and Color
-		Generic webPageComponentColor = webPage.addRelation("webPageComponentColor", color);
+		// Create the relation WebPageComponentColor between webPage and Color
+		Generic webPageComponentColor = webPage.addRelation("WebPageComponentColor", color);
 		// Enable singular constraint on the base
 		webPageComponentColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
 
-		// Associate the color red to the webPageComponent html
+		// Associate the Color red to the webPageComponent html
 		html.addLink(webPageComponentColor, "htmlRed", red);
-		// Associate the color blue to the webPageComponent header
+		// Associate the Color blue to the webPageComponent header
 		header.addLink(webPageComponentColor, "headerBlue", blue);
-		// Associate the color yellow to the webPageComponent footer
+		// Associate the Color yellow to the webPageComponent footer
 		footer.addLink(webPageComponentColor, "footerYellow", yellow);
-		// No explicitly associated color to the webPageComponent body
+		// No explicitly associated Color to the webPageComponent body
 
 		// Get color of the webPageComponent html
 		assert html.getLink(webPageComponentColor, "htmlRed").getTargetComponent().equals(red);

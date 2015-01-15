@@ -9,17 +9,17 @@ public class CacheUses {
 		Engine engine = new Engine();
 		// A cache is automatically created
 
-		// Create a type vehicle
+		// Create a type Vehicle
 		Generic vehicle = engine.addInstance("Vehicle");
-		// Create an attribute options to the vehicle
+		// Create an attribute Options to the Vehicle
 		Generic options = vehicle.addAttribute("Options");
 
-		// Create an instance of vehicle
+		// Create an instance of Vehicle
 		Generic myVehicle = vehicle.addInstance("myVehicle");
-		// Add an option to myVehicle
-		myVehicle.addHolder(options, "Music player");
+		// Add an Options to myVehicle
+		myVehicle.addHolder(options, "music player");
 
-		// Get the current cache and validate the modifications done on it : vehicle and others will be visible in other caches
+		// Get the current cache and validate the modifications done on it
 		engine.getCurrentCache().flush();
 	}
 
@@ -28,28 +28,28 @@ public class CacheUses {
 		Engine engine = new Engine();
 		// A cache is automatically created
 
-		// Create a type vehicle
+		// Create a type Vehicle
 		Generic vehicle = engine.addInstance("Vehicle");
 
-		// Create a property power on vehicle
+		// Create a property Power on Vehicle
 		Generic power = vehicle.addAttribute("Power").enablePropertyConstraint();
 
 		// Mount a cache on the current cache
 		engine.getCurrentCache().mount();
 
-		// Create an instance of vehicle
+		// Create an instance of Vehicle
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 
-		// Instantiate a power on it
+		// Instantiate a Power on it
 		myVehicle.addHolder(power, 213);
-		// myVehicle has one power : 213
+		// myVehicle has one Power : 213
 
-		// Add another power on myVehicle
+		// Add another Power on myVehicle
 		myVehicle.addHolder(power, 220);
-		// error : power is a property, it can have only one value
+		// Error : Power is a property, it can have only one value
 
 		// A rollback is performed by Generic System
-		// The instance of power and the instance of vehicle are lost
-		// but thanks to the cache we mount, the vehicle and its instance are NOT lost
+		// The instance of Power and the instance of Vehicle are lost
+		// but thanks to the cache we mount, the Vehicle and its Power are NOT lost
 	}
 }

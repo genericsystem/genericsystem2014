@@ -54,10 +54,10 @@ public class BasicSearches {
 		Generic options = vehicle.addAttribute("Options");
 
 		Generic myVehicle = vehicle.addInstance("myVehicle");
-		myVehicle.addHolder(options, "Music player");
+		myVehicle.addHolder(options, "music player");
 
-		// Find the holder Music player for the attribute Options
-		myVehicle.getHolder(options, "Music player");
+		// Find the holder music player for the attribute Options
+		myVehicle.getHolder(options, "music player");
 	}
 
 	public void findLink() {
@@ -72,10 +72,10 @@ public class BasicSearches {
 
 		myVehicle.addLink(vehicleColor, "myVehicleRed", red);
 
-		// Find the link myVehicleRed for the relation vehicleColor from myVehicle
+		// Find the link myVehicleRed for the relation VehicleColor from myVehicle
 		myVehicle.getLink(vehicleColor, "myVehicleRed");
 
-		// Find the link myVehicleRed for the relation vehicleColor from red
+		// Find the link myVehicleRed for the relation VehicleColor from red
 		red.getLink(vehicleColor, "myVehicleRed");
 	}
 }

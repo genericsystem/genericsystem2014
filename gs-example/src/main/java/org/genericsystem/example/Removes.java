@@ -21,7 +21,7 @@ public class Removes {
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic options = vehicle.addAttribute("Options");
 
-		// Remove the attribute options
+		// Remove the attribute Options
 		options.remove();
 	}
 
@@ -32,7 +32,7 @@ public class Removes {
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = vehicle.addRelation("VehicleColor", color);
 
-		// Remove the relation vehicleColor
+		// Remove the relation VehicleColor
 		vehicleColor.remove();
 	}
 
@@ -53,8 +53,8 @@ public class Removes {
 		Generic options = vehicle.addAttribute("Options");
 
 		Generic myVehicle = vehicle.addInstance("myVehicle");
-		Generic musicPlayer = myVehicle.addHolder(options, "Music player");
-		myVehicle.addHolder(options, "Air conditioning");
+		Generic musicPlayer = myVehicle.addHolder(options, "music player");
+		myVehicle.addHolder(options, "air conditioning");
 
 		// Remove the holder musicPlayer
 		musicPlayer.remove();
@@ -83,7 +83,7 @@ public class Removes {
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = vehicle.addRelation("VehicleColor", color);
 
-		// Remove the type vehicle
+		// Remove the type Vehicle
 		vehicle.remove();
 		assert !vehicle.isAlive();
 		assert !vehicleColor.isAlive();
@@ -97,12 +97,12 @@ public class Removes {
 		Generic color = engine.addInstance("Color");
 		vehicle.addRelation("VehicleColor", color);
 
-		// Enable referential integrity for vehicle in vehicleColor for the base : vehicle
+		// Enable referential integrity for Vehicle in VehicleColor for the base : Vehicle
 		engine.find(MetaRelation.class).enableReferentialIntegrity(ApiStatics.BASE_POSITION);
 
 		// Remove the type Vehicle
 		vehicle.remove();
-		// error : VehicleColor is Referential Integrity for ancestor Vehicle by composite position : 0
+		// Error : VehicleColor is Referential Integrity for ancestor Vehicle by composite position : 0
 	}
 
 	public void cascadeRemove() {
@@ -112,13 +112,13 @@ public class Removes {
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = vehicle.addRelation("VehicleColor", color);
 
-		// Disable default referential integrity for vehicle in vehicleColor for the first target : color
+		// Disable default referential integrity for Vehicle in VehicleColor for the first target : Color
 		engine.find(MetaRelation.class).disableReferentialIntegrity(ApiStatics.TARGET_POSITION);
 
-		// Enable cascade remove for Color in vehicleColor
+		// Enable cascade remove for Color in VehicleColor
 		engine.find(MetaRelation.class).enableCascadeRemove(ApiStatics.TARGET_POSITION);
 
-		// Remove the type vehicle
+		// Remove the type Vehicle
 		vehicle.remove();
 		assert !vehicle.isAlive();
 		assert !vehicleColor.isAlive();
