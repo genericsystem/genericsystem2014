@@ -70,6 +70,6 @@ public class GenericBuilder<T extends AbstractVertex<T>> {
 	public T update(T update) {
 		assert update != null;
 		assert supers != null;
-		return builder.rebuildAll(update, () -> builder.getOrBuild(update.getClass(), adjustedMeta, supers.stream().filter(x -> !x.equals(update)).collect(Collectors.toList()), value, components), builder.getContext().computeDependencies(update, true));
+		return builder.rebuildAll(update, () -> builder.getOrBuild(clazz, adjustedMeta, supers.stream().filter(x -> !x.equals(update)).collect(Collectors.toList()), value, components), builder.getContext().computeDependencies(update, true));
 	}
 }

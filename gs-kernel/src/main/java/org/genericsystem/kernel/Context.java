@@ -207,7 +207,7 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 
 		@Override
 		public T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents) {
-			return new GenericBuilder<T>(this, null, update.getMeta(), overrides, newValue, newComponents).update(update);
+			return new GenericBuilder<T>(this, update.getClass(), update.getMeta(), overrides, newValue, newComponents).update(update);
 		}
 
 		@Override
