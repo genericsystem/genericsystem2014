@@ -75,7 +75,7 @@ public class GenericHandler<T extends AbstractVertex<T>> {
 	public T set(T update) {
 		assert update != null;
 		assert supers != null;
-		return builder.rebuildAll(update, () -> builder.build(clazz, adjustedMeta, supers, value, components), builder.getContext().computeDependencies(update, true));
+		return builder.rebuildAll(update, () -> builder.build(clazz, adjustedMeta, supers.stream().filter(x -> !x.equals(update)).collect(Collectors.toList()), value, components), builder.getContext().computeDependencies(update, true));
 	}
 
 	public T update(T update) {

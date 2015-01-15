@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
@@ -117,7 +116,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	public T getInstance(List<T> overrides, Serializable value, T... components) {
 		List<T> componentsList = Arrays.asList(components);
 		T adjustMeta = ((T) this).adjustMeta(value, componentsList);
-		if (adjustMeta.getComponents().size() != components.length)
+		if (adjustMeta.getComponents().size() < components.length)
 			return null;
 		return adjustMeta.getDirectInstance(overrides, value, componentsList);
 	}

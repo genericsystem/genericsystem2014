@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.defaults.DefaultContext;
 import org.genericsystem.api.defaults.DefaultRoot;
@@ -165,8 +164,7 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 	@Override
 	public abstract Snapshot<T> getComposites(T vertex);
 
-	protected void triggersMutation(T oldDependency, T newDependency) {
-	}
+	protected void triggersMutation(T oldDependency, T newDependency) {}
 
 	@Override
 	public void forceRemove(T generic) {
@@ -210,7 +208,7 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 
 		@Override
 		public T setInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
-			GenericHandler<T> genericBuilder = new GenericHandler<T>(this, clazz, meta, overrides, value, components);
+			GenericHandler<T> genericBuilder = new GenericHandler<>(this, clazz, meta, overrides, value, components);
 			T generic = genericBuilder.get();
 			if (generic != null)
 				return generic;
@@ -220,12 +218,12 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 
 		@Override
 		public T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents) {
-			return new GenericHandler<T>(this, update.getClass(), update.getMeta(), overrides, newValue, newComponents).update(update);
+			return new GenericHandler<>(this, update.getClass(), update.getMeta(), overrides, newValue, newComponents).update(update);
 		}
 
 		@Override
 		public T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
-			GenericHandler<T> genericBuilder = new GenericHandler<T>(this, clazz, meta, overrides, value, components);
+			GenericHandler<T> genericBuilder = new GenericHandler<>(this, clazz, meta, overrides, value, components);
 			T generic = genericBuilder.get();
 			if (generic != null)
 				getContext().discardWithException(new ExistsException("An equivalent instance already exists : " + generic.info()));
