@@ -81,7 +81,7 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 		return computeDependencies(node, true);
 	}
 
-	private Set<T> computeDependencies(T node, boolean force) {
+	Set<T> computeDependencies(T node, boolean force) {
 		return new OrderedDependencies(force).visit(node);
 	}
 
@@ -228,23 +228,21 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 			genericBuilder.check();
 			genericBuilder.adjustMeta();
 			genericBuilder.reComputeSupers();
-			T generic = genericBuilder.get();
-			if (generic != null)
-				return generic;
-			// generic = genericBuilder.getEquiv();
-			// return generic == null ? genericBuilder.add() : genericBuilder.update(generic);
+			return genericBuilder.update2(update);
 
-			getContext().getChecker().checkBeforeBuild(update.getClass(), update.getMeta(), overrides, newValue, newComponents);
-			T adjustedMeta = update.getMeta().isMeta() ? setMeta(newComponents.size()) : update.getMeta().adjustMeta(newValue, newComponents);
-			List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, newValue, newComponents);
-
-			if (supers.size() == 1 && supers.get(0).equalsRegardlessSupers(adjustedMeta, newValue, newComponents))
-				if (Statics.areOverridesReached(supers.get(0).getSupers(), overrides))
-					supers = supers.get(0).getSupers();
+			// getContext().getChecker().checkBeforeBuild(update.getClass(), update.getMeta(), overrides, newValue, newComponents);
+			// T adjustedMeta = update.getMeta().isMeta() ? setMeta(newComponents.size()) : update.getMeta().adjustMeta(newValue, newComponents);
+			// List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, newValue, newComponents);
 			//
-			List<T> filterSupers = supers.stream().filter(x -> !x.equals(update)).collect(Collectors.toList());
-
-			return rebuildAll(update, () -> getOrBuild(update.getClass(), adjustedMeta, filterSupers, newValue, newComponents), getContext().computeDependencies(update, true));
+			// if (supers.size() == 1 && supers.get(0).equalsRegardlessSupers(adjustedMeta, newValue, newComponents))
+			// if (Statics.areOverridesReached(supers.get(0).getSupers(), overrides))
+			// supers = supers.get(0).getSupers();
+			// else
+			// assert false;
+			// //
+			// List<T> filterSupers = supers;
+			//
+			// return rebuildAll(update, () -> getOrBuild(update.getClass(), adjustedMeta, filterSupers.stream().filter(x -> !x.equals(update)).collect(Collectors.toList()), newValue, newComponents), getContext().computeDependencies(update, true));
 		}
 
 		@Override

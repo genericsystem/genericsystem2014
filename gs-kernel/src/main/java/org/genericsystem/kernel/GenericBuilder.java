@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GenericBuilder<T extends AbstractVertex<T>> {
 	private final Builder<T> builder;
@@ -12,6 +13,7 @@ public class GenericBuilder<T extends AbstractVertex<T>> {
 	private List<T> supers;
 	private final Serializable value;
 	private final List<T> components;
+	private T gettable;
 
 	public GenericBuilder(Builder<T> builder, Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
 		this.builder = builder;
@@ -31,16 +33,19 @@ public class GenericBuilder<T extends AbstractVertex<T>> {
 	}
 
 	public void reComputeSupers() {
+		assert supers == null;
 		supers = builder.computeAndCheckOverridesAreReached(adjustedMeta, overrides, value, components);
+		if (supers.size() == 1 && supers.get(0).equalsRegardlessSupers(adjustedMeta, value, components)) {
+			if (Statics.areOverridesReached(supers.get(0).getSupers(), overrides)) {
+				gettable = supers.get(0);
+				supers = supers.get(0).getSupers();
+			}
+		}
 	}
 
 	public T get() {
 		assert supers != null;
-		if (supers.size() == 1 && supers.get(0).equalsRegardlessSupers(adjustedMeta, value, components)) {
-			if (Statics.areOverridesReached(supers.get(0).getSupers(), overrides))
-				return supers.get(0);
-		}
-		return null;
+		return gettable;
 	}
 
 	public T getEquiv() {
@@ -54,6 +59,12 @@ public class GenericBuilder<T extends AbstractVertex<T>> {
 
 	public T update(T update) {
 		assert update != null;
-		return builder.rebuildAll(update, () -> builder.build(clazz, adjustedMeta, supers, value, components), builder.getContext().computeDependencies(update));
+		return builder.rebuildAll(update, () -> builder.build(clazz, adjustedMeta, supers, value, components), builder.getContext().computeDependencies(update, true));
+	}
+
+	public T update2(T update) {
+		assert update != null;
+		return builder.rebuildAll(update, () -> builder.getOrBuild(update.getClass(), adjustedMeta, supers.stream().filter(x -> !x.equals(update)).collect(Collectors.toList()), value, components), builder.getContext().computeDependencies(update, true));
+
 	}
 }
