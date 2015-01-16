@@ -1,6 +1,5 @@
 package org.genericsystem.concurrency;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
@@ -45,11 +44,6 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 		protected List<T> getOrderedVertices() {
 			return new ArrayList<>(getTransaction().computeDependencies((T) root));
 		}
-
-		@Override
-		protected void writeAncestorId(T ancestor) throws IOException {
-			objectOutputStream.writeLong(ancestor != null ? ancestor.getTs() : -1L);
-		}
 	}
 
 	protected class Loader extends org.genericsystem.kernel.Archiver<T>.Loader {
@@ -69,25 +63,19 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 
 			@Override
 			protected Builder<T> buildBuilder() {
-				return new TsBuilder();
-			}
+				return new AbstractVertexBuilder<T>(this) {
+					@Override
+					@SuppressWarnings("unchecked")
+					protected Class<T> getTClass() {
+						return (Class<T>) Generic.class;
+					}
 
-			private class TsBuilder extends AbstractVertexBuilder<T> {
-				protected TsBuilder() {
-					super(TsTransaction.this);
-				}
-
-				@Override
-				@SuppressWarnings("unchecked")
-				protected Class<T> getTClass() {
-					return (Class<T>) Generic.class;
-				}
-
-				@Override
-				@SuppressWarnings("unchecked")
-				protected Class<T> getSystemTClass() {
-					return (Class<T>) SystemClass.class;
-				}
+					@Override
+					@SuppressWarnings("unchecked")
+					protected Class<T> getSystemTClass() {
+						return (Class<T>) SystemClass.class;
+					}
+				};
 			}
 		}
 	}

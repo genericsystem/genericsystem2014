@@ -255,7 +255,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 		}
 
 		protected void writeAncestorId(T ancestor) throws IOException {
-			objectOutputStream.writeLong(System.identityHashCode(ancestor));
+			objectOutputStream.writeLong(ancestor != null ? ancestor.getTs() : -1L);
 		}
 
 		@SuppressWarnings("unchecked")
