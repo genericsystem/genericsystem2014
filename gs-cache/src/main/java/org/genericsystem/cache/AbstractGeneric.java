@@ -13,11 +13,6 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 	}
 
 	@Override
-	public void forceRemove() {
-		super.forceRemove();
-	}
-
-	@Override
 	public DefaultEngine<T> getRoot() {
 		return (DefaultEngine<T>) super.getRoot();
 	}
