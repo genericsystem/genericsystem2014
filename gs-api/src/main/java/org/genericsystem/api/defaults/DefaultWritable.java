@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import org.genericsystem.api.core.IVertex;
 
 public interface DefaultWritable<T extends DefaultVertex<T>> extends IVertex<T> {
@@ -228,18 +227,18 @@ public interface DefaultWritable<T extends DefaultVertex<T>> extends IVertex<T> 
 
 	@SuppressWarnings("unchecked")
 	default void forceRemove() {
-		getCurrentCache().forceRemove((T) this);
+		getCurrentCache().getBuilder().forceRemove((T) this);
 	}
 
 	@SuppressWarnings("unchecked")
 	default void conserveRemove() {
-		getCurrentCache().conserveRemove((T) this);
+		getCurrentCache().getBuilder().conserveRemove((T) this);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	default void remove() {
-		getCurrentCache().remove((T) this);
+		getCurrentCache().getBuilder().remove((T) this);
 	}
 
 }

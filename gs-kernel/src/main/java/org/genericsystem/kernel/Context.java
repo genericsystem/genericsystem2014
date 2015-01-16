@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -49,6 +50,7 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		return builder;
 	}
 
+	// @Override
 	@Override
 	public DefaultRoot<T> getRoot() {
 		return root;
@@ -168,21 +170,6 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 	protected void triggersMutation(T oldDependency, T newDependency) {
 	}
 
-	@Override
-	public void forceRemove(T generic) {
-		new GenericHandler<>(generic).forceRemove();
-	}
-
-	@Override
-	public void remove(T generic) {
-		new GenericHandler<>(generic).remove();
-	}
-
-	@Override
-	public void conserveRemove(T generic) {
-		new GenericHandler<>(generic).conserveRemove();
-	}
-
 	@Deprecated
 	public// TODO to remove
 	Set<T> computeDependencies(T node) {
@@ -242,6 +229,8 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		private class ConvertMap extends HashMap<T, T> {
 			private static final long serialVersionUID = 5003546962293036021L;
 
+			Function<List<T>, List<T>> CONVERT = t -> t.stream().map(x -> convert(x)).collect(Collectors.toList());
+
 			private T convert(T oldDependency) {
 				if (oldDependency.isAlive())
 					return oldDependency;
@@ -251,15 +240,9 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 						assert oldDependency.getSupers().size() == 1;
 						newDependency = setMeta(oldDependency.getComponents().size());
 					} else {
-						List<T> overrides = oldDependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
-						// TODO PB SI 2 ETAGE
-						for (int i = 0; i < overrides.size(); i++)
-							if (!overrides.get(i).isAlive()) {
-								overrides.addAll(overrides.get(i).getSupers());
-								overrides.remove(i);
-							}
-						List<T> components = oldDependency.getComponents().stream().map(x -> x != null ? convert(x) : null).collect(Collectors.toList());
-						T adjustedMeta = convert(oldDependency.getMeta()).adjustMeta(oldDependency.getValue(), components);
+						List<T> overrides = transform(oldDependency, x -> CONVERT.apply(x.getSupers()));
+						List<T> components = transform(oldDependency, x -> CONVERT.apply(x.getComponents()));
+						T adjustedMeta = transformMeta(components, convert(oldDependency.getMeta())).adjustMeta(oldDependency.getValue(), components);
 						List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, oldDependency.getValue(), components);
 						// TODO KK designTs
 						newDependency = getOrBuild(oldDependency.getClass(), adjustedMeta, supers, oldDependency.getValue(), components);
@@ -277,13 +260,22 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 			}
 		}
 
-		private List<T> transformSupers(T node, List<T> supers) {
-			for (int i = 0; i < supers.size(); i++)
-				if (!supers.get(i).isAlive()) {
-					supers.addAll(transformSupers(supers.get(i), supers.get(i).getSupers()));
-					supers.remove(i);
+		private List<T> transform(T node, Function<T, List<T>> getDependencies) {
+			List<T> dependencies = getDependencies.apply(node);
+			for (int i = 0; i < dependencies.size(); i++) {
+				T dependency = dependencies.get(i);
+				if (!dependency.isAlive()) {
+					dependencies.addAll(transform(dependency, getDependencies));
+					dependencies.remove(i);
 				}
-			return null;
+			}
+			return dependencies;
+		}
+
+		private T transformMeta(List<T> components, T meta) {
+			if (components.size() != meta.getComponents().size())
+				return transformMeta(components, meta.getSupers().get(0));
+			return meta;
 		}
 
 		@Override

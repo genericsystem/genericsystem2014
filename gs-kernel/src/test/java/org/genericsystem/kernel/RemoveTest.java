@@ -1,5 +1,8 @@
 package org.genericsystem.kernel;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.kernel.Config.MetaRelation;
@@ -29,24 +32,42 @@ public class RemoveTest extends AbstractTest {
 	public void test002_conserveRemove() {
 		Vertex engine = new Root();
 		Vertex vehicle = engine.addInstance("vehicle");
-		Vertex car = engine.addInstance(vehicle, "Car");
 		Vertex color = engine.addInstance("Color");
 		Vertex outsideColor = engine.addInstance(color, "OutsideColor");
 
-		Vertex myBmw = car.addInstance("myBmw");
+		Vertex myBmw = vehicle.addInstance("myBmw");
 		Vertex red = color.addInstance("red");
 		Vertex outsideRed = outsideColor.addInstance("OutsideRed");
 
 		Vertex vehicleColor = vehicle.addRelation("vehicleColor", color);
 		Vertex vehicleRed = vehicle.addLink(vehicleColor, "vehicleRed", red);
-		myBmw.addLink(carColor, carRed, "myBmwRed", red);
 
-		carRed.conserveRemove();
-		Vertex myBmwRed = myBmw.getLink(carColor, "myBmwRed", red);
+		Vertex vehicleOutsideColor = vehicle.addRelation(vehicleColor, "vehicleOutsideColor", outsideColor);
+		Vertex vehicleOutsideRed = vehicle.addLink(vehicleOutsideColor, "vehicleOutsideRed", outsideRed);
+
+		myBmw.addLink(vehicleOutsideColor, vehicleOutsideRed, "myBmwOutsideRed", outsideRed);
+
+		vehicleRed.conserveRemove();
+		Vertex myBmwRed = myBmw.getLink(vehicleOutsideColor, "myBmwOutsideRed", outsideRed);
 		assert myBmwRed != null;
 		assert myBmwRed.isAlive();
-		assert myBmwRed.getSupers().size() == 0;
-		assert !carRed.isAlive();
+		assert myBmwRed.getSupers().size() == 1;
+		assert myBmwRed.getSupers().get(0).equals(vehicleOutsideColor, Collections.emptyList(), "vehicleOutsideRed", Arrays.asList(vehicle, outsideRed)) : myBmwRed.getSupers().get(0).info();
+		assert !vehicleRed.isAlive();
+	}
+
+	public void test003_conserveRemove() {
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("vehicle");
+		Vertex color = engine.addInstance("Color");
+		Vertex vehicleColor = vehicle.addRelation("vehicleColor", color);
+		color.conserveRemove();
+
+		Vertex newVehicleColor = vehicle.getAttribute("vehicleColor");
+		assert !vehicleColor.isAlive();
+		assert newVehicleColor.isAlive();
+		assert newVehicleColor.getComponents().size() == 1 : newVehicleColor.info();
+		assert newVehicleColor.getComponent(ApiStatics.BASE_POSITION).equals(vehicle) : vehicle.info() + " " + vehicle.getComposites();
 	}
 
 	public void test001_removeTypeWithHolder() {

@@ -23,6 +23,11 @@ public class Generic extends AbstractGeneric<Generic> implements DefaultGeneric<
 		return composites;
 	}
 
+	@Override
+	public Cache<Generic> getCurrentCache() {
+		return super.getCurrentCache();
+	}
+
 	public static final class SystemClass extends Generic {
 
 	}

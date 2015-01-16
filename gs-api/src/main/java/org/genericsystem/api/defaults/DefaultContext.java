@@ -24,9 +24,4 @@ public interface DefaultContext<T extends DefaultVertex<T>> extends IContext<T> 
 
 	DefaultChecker<T> getChecker();
 
-	void forceRemove(T generic);
-
-	void remove(T generic);
-
-	void conserveRemove(T generic);
 }
