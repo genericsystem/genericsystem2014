@@ -277,6 +277,15 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 			}
 		}
 
+		private List<T> transformSupers(T node, List<T> supers) {
+			for (int i = 0; i < supers.size(); i++)
+				if (!supers.get(i).isAlive()) {
+					supers.addAll(transformSupers(supers.get(i), supers.get(i).getSupers()));
+					supers.remove(i);
+				}
+			return null;
+		}
+
 		@Override
 		List<T> computeAndCheckOverridesAreReached(T adjustedMeta, List<T> overrides, Serializable value, List<T> components) {
 			List<T> supers = new ArrayList<>(new SupersComputer<>(adjustedMeta, overrides, value, components));

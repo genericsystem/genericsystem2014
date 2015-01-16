@@ -26,6 +26,29 @@ public class RemoveTest extends AbstractTest {
 		assert !carRed.isAlive();
 	}
 
+	public void test002_conserveRemove() {
+		Vertex engine = new Root();
+		Vertex vehicle = engine.addInstance("vehicle");
+		Vertex car = engine.addInstance(vehicle, "Car");
+		Vertex color = engine.addInstance("Color");
+		Vertex outsideColor = engine.addInstance(color, "OutsideColor");
+
+		Vertex myBmw = car.addInstance("myBmw");
+		Vertex red = color.addInstance("red");
+		Vertex outsideRed = outsideColor.addInstance("OutsideRed");
+
+		Vertex vehicleColor = vehicle.addRelation("vehicleColor", color);
+		Vertex vehicleRed = vehicle.addLink(vehicleColor, "vehicleRed", red);
+		myBmw.addLink(carColor, carRed, "myBmwRed", red);
+
+		carRed.conserveRemove();
+		Vertex myBmwRed = myBmw.getLink(carColor, "myBmwRed", red);
+		assert myBmwRed != null;
+		assert myBmwRed.isAlive();
+		assert myBmwRed.getSupers().size() == 0;
+		assert !carRed.isAlive();
+	}
+
 	public void test001_removeTypeWithHolder() {
 		Vertex engine = new Root();
 		Vertex car = engine.addInstance("Car");
