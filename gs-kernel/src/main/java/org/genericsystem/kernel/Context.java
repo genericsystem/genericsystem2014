@@ -229,7 +229,7 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		private class ConvertMap extends HashMap<T, T> {
 			private static final long serialVersionUID = 5003546962293036021L;
 
-			Function<List<T>, List<T>> CONVERT = t -> t.stream().map(x -> convert(x)).collect(Collectors.toList());
+			Function<List<T>, List<T>> CONVERT_LIST = t -> t.stream().map(x -> convert(x)).collect(Collectors.toList());
 
 			private T convert(T oldDependency) {
 				if (oldDependency.isAlive())
@@ -240,8 +240,8 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 						assert oldDependency.getSupers().size() == 1;
 						newDependency = setMeta(oldDependency.getComponents().size());
 					} else {
-						List<T> overrides = transform(oldDependency, x -> CONVERT.apply(x.getSupers()));
-						List<T> components = transform(oldDependency, x -> CONVERT.apply(x.getComponents()));
+						List<T> overrides = transform(oldDependency, x -> CONVERT_LIST.apply(x.getSupers()));
+						List<T> components = transform(oldDependency, x -> CONVERT_LIST.apply(x.getComponents()));
 						T adjustedMeta = transformMeta(components, convert(oldDependency.getMeta())).adjustMeta(oldDependency.getValue(), components);
 						List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, oldDependency.getValue(), components);
 						// TODO KK designTs
