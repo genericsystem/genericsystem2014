@@ -10,6 +10,7 @@ import org.genericsystem.cache.AbstractCacheElement;
 import org.genericsystem.cache.CacheElement;
 import org.genericsystem.concurrency.Generic.SystemClass;
 import org.genericsystem.kernel.Builder;
+import org.genericsystem.kernel.LifeManager;
 import org.genericsystem.kernel.Statics;
 
 public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache.Cache<T> {
@@ -31,7 +32,7 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 
 	@Override
 	protected void initialize() {
-		cacheElement = new CacheElement<T>(cacheElement == null ? new TransactionElement() : cacheElement.getSubCache());
+		cacheElement = new CacheElement<>(cacheElement == null ? new TransactionElement() : cacheElement.getSubCache());
 	}
 
 	@Override
@@ -68,7 +69,7 @@ public class Cache<T extends AbstractGeneric<T>> extends org.genericsystem.cache
 	}
 
 	public void pickNewTs() throws RollbackException {
-		transaction = new Transaction<T>(getRoot());
+		transaction = new Transaction<>(getRoot());
 		listener.triggersRefreshEvent();
 	}
 

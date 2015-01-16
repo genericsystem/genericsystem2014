@@ -15,4 +15,9 @@ public interface DefaultBuilder<T extends DefaultVertex<T>> {
 
 	T setInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components);
 
+	void forceRemove(T generic);
+
+	void remove(T generic);
+
+	void conserveRemove(T generic);
 }

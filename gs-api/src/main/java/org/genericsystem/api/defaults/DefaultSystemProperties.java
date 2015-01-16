@@ -182,7 +182,7 @@ public interface DefaultSystemProperties<T extends DefaultVertex<T>> extends IVe
 	}
 
 	@Override
-	default boolean isCascadeRemove(int pos) {
+	default boolean isCascadeRemoveEnabled(int pos) {
 		return isSystemPropertyEnabled(CascadeRemoveProperty.class, pos);
 	}
 

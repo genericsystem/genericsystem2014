@@ -2,8 +2,8 @@ package org.genericsystem.concurrency;
 
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.genericsystem.kernel.Dependencies;
+import org.genericsystem.kernel.LifeManager;
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
 public abstract class AbstractTsDependencies<T extends AbstractGeneric<T>> implements Dependencies<T> {

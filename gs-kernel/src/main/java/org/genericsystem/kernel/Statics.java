@@ -16,6 +16,8 @@ public class Statics {
 	private static ThreadLocal<Long> threadDebugged = new ThreadLocal<>();
 
 	public final static String ENGINE_VALUE = "Engine";
+	public final static long[] SYSTEM_TS = new long[] { Long.MIN_VALUE, 0L, Long.MAX_VALUE };
+
 	public static final long MILLI_TO_NANOSECONDS = 1000000L;
 
 	public static final int ATTEMPT_SLEEP = 15;
