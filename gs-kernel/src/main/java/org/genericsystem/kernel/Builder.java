@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
-
 import org.genericsystem.api.defaults.DefaultBuilder;
 import org.genericsystem.kernel.Vertex.SystemClass;
 import org.genericsystem.kernel.annotations.InstanceClass;
@@ -100,6 +99,21 @@ public abstract class Builder<T extends AbstractVertex<T>> implements DefaultBui
 
 	T build(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
 		return context.plug(newT(clazz, meta, supers, value, components));
+	}
+
+	@Override
+	public void forceRemove(T generic) {
+		new GenericHandler<>(generic).forceRemove();
+	}
+
+	@Override
+	public void remove(T generic) {
+		new GenericHandler<>(generic).remove();
+	}
+
+	@Override
+	public void conserveRemove(T generic) {
+		new GenericHandler<>(generic).conserveRemove();
 	}
 
 	abstract List<T> computeAndCheckOverridesAreReached(T adjustedMeta, List<T> overrides, Serializable value, List<T> components);
