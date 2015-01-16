@@ -3,9 +3,9 @@ package org.genericsystem.concurrency;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.genericsystem.concurrency.Generic.SystemClass;
 import org.genericsystem.kernel.Builder;
 
@@ -62,24 +62,9 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 			return new TsTransaction();
 		}
 
-		@Override
-		protected T getOrBuild(long ts, Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
-			return super.getOrBuild(ts, clazz, meta, supers, value, components, otherTs);
-		}
-
 		private class TsTransaction extends org.genericsystem.cache.Transaction<T> {
 			TsTransaction() {
 				super((DefaultEngine<T>) root, ((DefaultEngine<T>) root).pickNewTs());
-			}
-
-			@Override
-			protected T getMeta(int dim) {
-				return super.getMeta(dim);
-			}
-
-			@Override
-			protected T plug(T generic) {
-				return super.plug(generic);
 			}
 
 			@Override
@@ -87,16 +72,9 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 				return new TsBuilder();
 			}
 
-			// TODO checker
-
 			private class TsBuilder extends AbstractVertexBuilder<T> {
 				protected TsBuilder() {
 					super(TsTransaction.this);
-				}
-
-				@Override
-				public TsTransaction getContext() {
-					return (TsTransaction) super.getContext();
 				}
 
 				@Override
@@ -109,11 +87,6 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 				@SuppressWarnings("unchecked")
 				protected Class<T> getSystemTClass() {
 					return (Class<T>) SystemClass.class;
-				}
-
-				@Override
-				protected T build(long ts, Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
-					return super.build(ts, clazz, meta, supers, value, components, otherTs);
 				}
 			}
 		}
