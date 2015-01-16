@@ -10,7 +10,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.
 
 	@Override
 	public Cache<T> getCurrentCache() {
-		return getRoot().getCurrentCache();
+		return (Cache<T>) super.getCurrentCache();
 	}
 
 	@Override
