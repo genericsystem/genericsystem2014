@@ -385,8 +385,8 @@ public interface Generic extends IVertex<Generic> {
 	}
 
 	@Override
-	default boolean isCascadeRemove(int pos) {
-		return getCurrentCache().unwrap(this).isCascadeRemove(pos);
+	default boolean isCascadeRemoveEnabled(int pos) {
+		return getCurrentCache().unwrap(this).isCascadeRemoveEnabled(pos);
 	}
 
 	@Override
@@ -600,8 +600,8 @@ public interface Generic extends IVertex<Generic> {
 	}
 
 	@Override
-	default Generic updateComposites(Generic... newComposites) {
-		return getCurrentCache().wrap(getCurrentCache().unwrap(this).updateComposites(getCurrentCache().unwrap(newComposites)));
+	default Generic updateComponents(Generic... newComposites) {
+		return getCurrentCache().wrap(getCurrentCache().unwrap(this).updateComponents(getCurrentCache().unwrap(newComposites)));
 	}
 
 	@Override
