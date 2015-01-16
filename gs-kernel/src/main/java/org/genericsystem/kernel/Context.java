@@ -7,8 +7,10 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.defaults.DefaultContext;
 import org.genericsystem.api.defaults.DefaultRoot;
@@ -67,19 +69,21 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		private static final long serialVersionUID = -5970021419012502402L;
 
 		private final boolean force;
+		private final boolean dependenciesToRemove;
 
-		public OrderedDependencies(boolean force) {
+		public OrderedDependencies(boolean force, boolean dependenciesToRemove) {
 			this.force = force;
+			this.dependenciesToRemove = dependenciesToRemove;
 		}
 
 		OrderedDependencies visit(T node) {
 			if (!contains(node)) {
-				if (!force && !node.getInheritings().isEmpty())
-					discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + node + " has a inheriting dependencies : " + node.getInheritings()));
+				if (!force && dependenciesToRemove && !node.getInheritings().isEmpty())
+					discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + node + " has a inheriting dependencies : " + node.getInheritings().info()));
 				getInheritings(node).forEach(this::visit);
 
-				if (!force && !node.getInstances().isEmpty())
-					discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + node + " has a instance dependencies : " + node.getInstances()));
+				if (!force && dependenciesToRemove && !node.getInstances().isEmpty())
+					discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + node + " has a instance dependencies : " + node.getInstances().info()));
 				getInstances(node).forEach(this::visit);
 
 				for (T composite : node.getComposites()) {
@@ -91,7 +95,7 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 				}
 				add(node);
 				for (int axe = 0; axe < node.getComponents().size(); axe++)
-					if (node.isCascadeRemove(axe))
+					if (node.isCascadeRemoveEnabled(axe))
 						visit(node.getComponents().get(axe));
 			}
 			return this;
@@ -165,16 +169,17 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 	@Override
 	public abstract Snapshot<T> getComposites(T vertex);
 
-	protected void triggersMutation(T oldDependency, T newDependency) {}
+	protected void triggersMutation(T oldDependency, T newDependency) {
+	}
 
 	@Deprecated
 	public// TODO to remove
 	Set<T> computeDependencies(T node) {
-		return computeDependencies(node, true);
+		return computeDependencies(node, true, true);
 	}
 
-	Set<T> computeDependencies(T node, boolean force) {
-		return new OrderedDependencies(force).visit(node);
+	Set<T> computeDependencies(T node, boolean force, boolean dependenciesToRemove) {
+		return new OrderedDependencies(force, dependenciesToRemove).visit(node);
 	}
 
 	protected static class AbstractVertexBuilder<T extends AbstractVertex<T>> extends Builder<T> {
@@ -226,6 +231,8 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		private class ConvertMap extends HashMap<T, T> {
 			private static final long serialVersionUID = 5003546962293036021L;
 
+			Function<List<T>, List<T>> CONVERT_LIST = t -> t.stream().map(x -> convert(x)).collect(Collectors.toList());
+
 			private T convert(T oldDependency) {
 				if (oldDependency.isAlive())
 					return oldDependency;
@@ -235,15 +242,9 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 						assert oldDependency.getSupers().size() == 1;
 						newDependency = setMeta(oldDependency.getComponents().size());
 					} else {
-						List<T> overrides = oldDependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
-						// TODO PB SI 2 ETAGE
-						for (int i = 0; i < overrides.size(); i++)
-							if (!overrides.get(i).isAlive()) {
-								overrides.addAll(overrides.get(i).getSupers());
-								overrides.remove(i);
-							}
-						List<T> components = oldDependency.getComponents().stream().map(x -> x != null ? convert(x) : null).collect(Collectors.toList());
-						T adjustedMeta = convert(oldDependency.getMeta()).adjustMeta(oldDependency.getValue(), components);
+						List<T> overrides = transform(oldDependency, x -> CONVERT_LIST.apply(x.getSupers()));
+						List<T> components = transform(oldDependency, x -> CONVERT_LIST.apply(x.getComponents()));
+						T adjustedMeta = transformMeta(components, convert(oldDependency.getMeta())).adjustMeta(oldDependency.getValue(), components);
 						List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, oldDependency.getValue(), components);
 						// TODO KK designTs
 						newDependency = getOrBuild(oldDependency.getClass(), adjustedMeta, supers, oldDependency.getValue(), components);
@@ -261,6 +262,24 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 			}
 		}
 
+		private List<T> transform(T node, Function<T, List<T>> getDependencies) {
+			List<T> dependencies = getDependencies.apply(node);
+			for (int i = 0; i < dependencies.size(); i++) {
+				T dependency = dependencies.get(i);
+				if (!dependency.isAlive()) {
+					dependencies.addAll(transform(dependency, getDependencies));
+					dependencies.remove(i);
+				}
+			}
+			return dependencies;
+		}
+
+		private T transformMeta(List<T> components, T meta) {
+			if (components.size() != meta.getComponents().size())
+				return transformMeta(components, meta.getSupers().get(0));
+			return meta;
+		}
+
 		@Override
 		List<T> computeAndCheckOverridesAreReached(T adjustedMeta, List<T> overrides, Serializable value, List<T> components) {
 			List<T> supers = new ArrayList<>(new SupersComputer<>(adjustedMeta, overrides, value, components));
@@ -270,8 +289,8 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		}
 
 		@Override
-		protected T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
-			return newT(clazz, meta).init(meta, supers, value, components);
+		protected T newT(long ts, Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
+			return newT(clazz, meta).init(ts, meta, supers, value, components, otherTs);
 		}
 
 		@Override
@@ -279,6 +298,7 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 			T instance = meta == null ? getContext().getMeta(components.size()) : meta.getDirectInstance(value, components);
 			return instance == null ? build(clazz, meta, supers, value, components) : instance;
 		}
+
 	}
 
 }
