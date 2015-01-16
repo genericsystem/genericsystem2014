@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.defaults.DefaultChecker;
 import org.genericsystem.api.defaults.DefaultRoot;
@@ -133,8 +132,12 @@ public class Checker<T extends AbstractVertex<T>> implements DefaultChecker<T> {
 		checkRemoveGenericAnnoted(isOnAdd, vertex);
 	}
 
+	private boolean isSystem(T vertex) {
+		return context.getBuilder().getAnnotedClass(vertex).getAnnotation(SystemGeneric.class) != null;
+	}
+
 	private void checkRemoveGenericAnnoted(boolean isOnAdd, T vertex) {
-		if (!isOnAdd && context.getBuilder().getAnnotedClass(vertex).getAnnotation(SystemGeneric.class) != null)
+		if (!isOnAdd && isSystem(vertex))
 			getContext().discardWithException(new IllegalAccessException("@SystemGeneric annoted generic can't be removed"));
 	}
 

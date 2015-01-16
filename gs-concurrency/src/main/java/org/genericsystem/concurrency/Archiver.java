@@ -46,18 +46,9 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 			return new ArrayList<>(getTransaction().computeDependencies((T) root));
 		}
 
-		// TODO remove this
-
-		@Override
-		protected void writeOtherTs(T dependency) throws IOException {
-			objectOutputStream.writeLong(dependency.getLifeManager().getBirthTs());
-			objectOutputStream.writeLong(dependency.getLifeManager().getLastReadTs());
-			objectOutputStream.writeLong(dependency.getLifeManager().getDeathTs());
-		}
-
 		@Override
 		protected void writeAncestorId(T ancestor) throws IOException {
-			objectOutputStream.writeLong(ancestor != null ? ancestor.getLifeManager().getDesignTs() : -1L);
+			objectOutputStream.writeLong(ancestor != null ? ancestor.getTs() : -1L);
 		}
 	}
 
@@ -67,19 +58,13 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 		}
 
 		@Override
-		protected Long[] loadOtherTs() throws IOException {
-			return new Long[] { objectInputStream.readLong(), objectInputStream.readLong(), objectInputStream.readLong() };
-		}
-
-		@Override
 		protected org.genericsystem.cache.Transaction<T> buildTransaction() {
 			return new TsTransaction();
 		}
 
 		@Override
-		protected T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, Long designTs, Long... otherTs) {
-			T instance = meta == null ? ((TsTransaction) transaction).getMeta(components.size()) : meta.getDirectInstance(value, components);
-			return instance == null ? ((TsTransaction.TsBuilder) transaction.getBuilder()).build(clazz, meta, supers, value, components, designTs, otherTs) : instance.restore(designTs, otherTs[0], otherTs[1], otherTs[2]);
+		protected T getOrBuild(long ts, Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
+			return super.getOrBuild(ts, clazz, meta, supers, value, components, otherTs);
 		}
 
 		private class TsTransaction extends org.genericsystem.cache.Transaction<T> {
@@ -126,8 +111,9 @@ public class Archiver<T extends AbstractGeneric<T>> extends org.genericsystem.ke
 					return (Class<T>) SystemClass.class;
 				}
 
-				private T build(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, Long designTs, Long[] otherTs) {
-					return getContext().plug(newT(clazz, meta, supers, value, components).restore(designTs, otherTs[0], otherTs[1], otherTs[2]));
+				@Override
+				protected T build(long ts, Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
+					return super.build(ts, clazz, meta, supers, value, components, otherTs);
 				}
 			}
 		}

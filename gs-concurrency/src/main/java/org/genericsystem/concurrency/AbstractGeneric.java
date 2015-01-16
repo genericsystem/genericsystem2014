@@ -3,14 +3,22 @@ package org.genericsystem.concurrency;
 import java.io.Serializable;
 import java.util.List;
 import org.genericsystem.kernel.Dependencies;
+import org.genericsystem.kernel.LifeManager;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.genericsystem.cache.AbstractGeneric<T> implements DefaultGeneric<T>, Comparable<T> {
 
-	private LifeManager lifeManager;
+	boolean isAlive(long ts) {
+		return getLifeManager().isAlive(ts);
+	}
 
 	@Override
 	public Cache<T> getCurrentCache() {
 		return (Cache<T>) super.getCurrentCache();
+	}
+
+	@Override
+	public LifeManager getLifeManager() {
+		return super.getLifeManager();
 	}
 
 	@Override
@@ -19,35 +27,14 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends org.
 	}
 
 	@Override
-	protected T init(T meta, List<T> supers, Serializable value, List<T> components) {
-		return super.init(meta, supers, value, components).restore(getRoot().pickNewTs(), Long.MAX_VALUE, 0L, Long.MAX_VALUE);
-	}
-
-	@SuppressWarnings("unchecked")
-	protected T restore(Long designTs, long birthTs, long lastReadTs, long deathTs) {
-		lifeManager = new LifeManager(designTs, birthTs, lastReadTs, deathTs);
-		return (T) this;
-	}
-
-	public LifeManager getLifeManager() {
-		return lifeManager;
-	}
-
-	boolean isAlive(long ts) {
-		return lifeManager.isAlive(ts);
+	protected T init(long ts, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
+		return super.init(ts, meta, supers, value, components, otherTs);
 	}
 
 	// TODO remove this
 	@Override
 	protected T getDirectInstance(Serializable value, List<T> components) {
 		return super.getDirectInstance(value, components);
-	}
-
-	@Override
-	public int compareTo(T vertex) {
-		long birthTs = lifeManager.getBirthTs();
-		long compareBirthTs = vertex.getLifeManager().getBirthTs();
-		return birthTs == compareBirthTs ? Long.compare(lifeManager.getDesignTs(), vertex.getLifeManager().getDesignTs()) : Long.compare(birthTs, compareBirthTs);
 	}
 
 	@Override

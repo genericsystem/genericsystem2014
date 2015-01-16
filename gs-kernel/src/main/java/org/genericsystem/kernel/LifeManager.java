@@ -1,8 +1,7 @@
-package org.genericsystem.concurrency;
+package org.genericsystem.kernel;
 
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
 import org.slf4j.Logger;
@@ -11,17 +10,15 @@ import org.slf4j.LoggerFactory;
 public class LifeManager {
 	protected static Logger log = LoggerFactory.getLogger(LifeManager.class);
 
-	private final long designTs;
 	private long birthTs;
 	private final AtomicLong lastReadTs;
 	private long deathTs;
 	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
-	public LifeManager(long designTs, long birthTs, long lastReadTs, long deathTs) {
-		this.designTs = designTs;
-		this.birthTs = birthTs;
-		this.lastReadTs = new AtomicLong(lastReadTs);
-		this.deathTs = deathTs;
+	public LifeManager(long[] otherTs) {
+		this.birthTs = otherTs[0];
+		this.lastReadTs = new AtomicLong(otherTs[1]);
+		this.deathTs = otherTs[2];
 	}
 
 	// public void beginLifeIfNecessary(long birthTs) {
@@ -33,8 +30,9 @@ public class LifeManager {
 
 	public void beginLife(long birthTs) {
 		// assert isWriteLockedByCurrentThread();
-		assert this.birthTs == Long.MAX_VALUE : "Generic is already born";
-		this.birthTs = birthTs;
+		assert this.birthTs == Long.MAX_VALUE || this.birthTs == Long.MIN_VALUE : "Generic is already born";
+		if (this.birthTs != Long.MIN_VALUE)
+			this.birthTs = birthTs;
 	}
 
 	void cancelBeginLife() {
@@ -54,7 +52,7 @@ public class LifeManager {
 		}
 	}
 
-	void checkMvcc(long contextTs) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
+	public void checkMvcc(long contextTs) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
 		if (deathTs != Long.MAX_VALUE)
 			throw new OptimisticLockConstraintViolationException("Attempt to kill a generic that is already killed by another thread");
 		assert isWriteLockedByCurrentThread();
@@ -62,7 +60,7 @@ public class LifeManager {
 			throw new ConcurrencyControlException("" + contextTs + " " + lastReadTs.get());
 	}
 
-	void kill(long contextTs) {
+	public void kill(long contextTs) {
 		assert lock.isWriteLockedByCurrentThread();
 		assert contextTs >= birthTs : "Can not kill a generic that is not yet born";
 		assert deathTs == Long.MAX_VALUE : "Can not kill a generic that will die in the future";
@@ -76,12 +74,8 @@ public class LifeManager {
 		deathTs = Long.MAX_VALUE;
 	}
 
-	long getLastReadTs() {
+	public long getLastReadTs() {
 		return lastReadTs.get();
-	}
-
-	public long getDesignTs() {
-		return designTs;
 	}
 
 	public long getDeathTs() {
@@ -99,7 +93,7 @@ public class LifeManager {
 		}
 	}
 
-	void writeLock() {
+	public void writeLock() {
 		lock.writeLock().lock();
 	}
 

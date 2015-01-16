@@ -40,7 +40,7 @@ public abstract class Builder<T extends AbstractVertex<T>> implements DefaultBui
 		return (T[]) Array.newInstance(getTClass(), dim);
 	}
 
-	abstract protected T newT(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components);
+	abstract T newT(long ts, Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs);
 
 	@SuppressWarnings("unchecked")
 	protected T newT(Class<?> clazz, T meta) {
@@ -97,9 +97,15 @@ public abstract class Builder<T extends AbstractVertex<T>> implements DefaultBui
 
 	abstract protected T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components);
 
-	T build(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
-		return context.plug(newT(clazz, meta, supers, value, components));
+	protected T build(long ts, Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
+		return context.plug(newT(ts, clazz, meta, supers, value, components, otherTs));
 	}
+
+	T build(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
+		return build(getContext().getRoot().pickNewTs(), clazz, meta, supers, value, components, new long[] { Long.MAX_VALUE, 0L, Long.MAX_VALUE });
+	}
+
+	abstract List<T> computeAndCheckOverridesAreReached(T adjustedMeta, List<T> overrides, Serializable value, List<T> components);
 
 	@Override
 	public void forceRemove(T generic) {
@@ -116,5 +122,4 @@ public abstract class Builder<T extends AbstractVertex<T>> implements DefaultBui
 		new GenericHandler<>(generic).conserveRemove();
 	}
 
-	abstract List<T> computeAndCheckOverridesAreReached(T adjustedMeta, List<T> overrides, Serializable value, List<T> components);
 }

@@ -1,6 +1,7 @@
 package org.genericsystem.concurrency;
 
 import org.genericsystem.kernel.Dependencies;
+import org.genericsystem.kernel.LifeManager;
 
 public class Generic extends AbstractGeneric<Generic> implements DefaultGeneric<Generic> {
 

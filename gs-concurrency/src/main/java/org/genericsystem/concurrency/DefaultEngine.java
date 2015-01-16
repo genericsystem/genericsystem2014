@@ -16,8 +16,6 @@ public interface DefaultEngine<T extends AbstractGeneric<T>> extends org.generic
 	@Override
 	public Cache<T> getCurrentCache();
 
-	long pickNewTs();
-
 	GarbageCollector<T> getGarbageCollector();
 
 }

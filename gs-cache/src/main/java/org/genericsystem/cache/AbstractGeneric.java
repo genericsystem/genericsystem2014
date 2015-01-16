@@ -18,8 +18,8 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 	}
 
 	@Override
-	protected T init(T meta, List<T> supers, Serializable value, List<T> components) {
-		return super.init(meta, supers, value, components);
+	protected T init(long ts, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
+		return super.init(ts, meta, supers, value, components, otherTs);
 	}
 
 	// @Override

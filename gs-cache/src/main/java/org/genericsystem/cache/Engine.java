@@ -3,24 +3,25 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
-
 import org.genericsystem.kernel.Config.MetaAttribute;
 import org.genericsystem.kernel.Config.MetaRelation;
 import org.genericsystem.kernel.Config.SystemMap;
 import org.genericsystem.kernel.Root;
+import org.genericsystem.kernel.Root.TsGenerator;
 import org.genericsystem.kernel.Statics;
 
 public class Engine extends Generic implements DefaultEngine<Generic> {
 
+	private final TsGenerator generator = new TsGenerator();
 	private final ThreadLocal<Cache<Generic>> cacheLocal = new ThreadLocal<>();
-	private final SystemCache<Generic> systemCache = new SystemCache<Generic>(this, Root.class);
+	private final SystemCache<Generic> systemCache = new SystemCache<>(this, Root.class);
 
 	public Engine(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
 	}
 
 	public Engine(Serializable engineValue, Class<?>... userClasses) {
-		init(null, Collections.emptyList(), engineValue, Collections.emptyList());
+		init(0L, null, Collections.emptyList(), engineValue, Collections.emptyList(), Statics.SYSTEM_TS);
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
 	}
 
@@ -71,4 +72,10 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	public void close() {
 		// TODO block caches to flush
 	}
+
+	@Override
+	public long pickNewTs() {
+		return generator.pickNewTs();
+	}
+
 }

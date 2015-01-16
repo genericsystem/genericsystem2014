@@ -28,4 +28,6 @@ public interface DefaultRoot<T extends DefaultVertex<T>> extends IRoot<T> {
 		return setInstance(value, (T[]) new Object[parentsCount]);
 	}
 
+	long pickNewTs();
+
 }

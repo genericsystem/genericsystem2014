@@ -11,19 +11,44 @@ import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
 import org.genericsystem.kernel.Config.SystemMap;
 
-public abstract class AbstractVertex<T extends AbstractVertex<T>> implements DefaultVertex<T> {
+public abstract class AbstractVertex<T extends AbstractVertex<T>> implements DefaultVertex<T>, Comparable<T> {
+	private long ts;
 	private T meta;
 	private List<T> components;
 	private Serializable value;
 	private List<T> supers;
+	private LifeManager lifeManager;
 
 	@SuppressWarnings("unchecked")
-	protected T init(T meta, List<T> supers, Serializable value, List<T> components) {
+	protected T init(long ts, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
+		this.ts = ts;
 		this.meta = meta != null ? meta : (T) this;
 		this.value = value;
 		this.components = Collections.unmodifiableList(new ArrayList<>(components));
 		this.supers = Collections.unmodifiableList(new ArrayList<>(supers));
+		lifeManager = new LifeManager(otherTs);
 		return (T) this;
+	}
+
+	public long getTs() {
+		return ts;
+	}
+
+	protected LifeManager getLifeManager() {
+		return lifeManager;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public final boolean isAlive() {
+		return getCurrentCache().isAlive((T) this);
+	}
+
+	@Override
+	public int compareTo(T vertex) {
+		long birthTs = lifeManager.getBirthTs();
+		long compareBirthTs = vertex.getLifeManager().getBirthTs();
+		return birthTs == compareBirthTs ? Long.compare(getTs(), vertex.getTs()) : Long.compare(birthTs, compareBirthTs);
 	}
 
 	@Override

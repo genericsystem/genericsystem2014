@@ -28,7 +28,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-
 import org.genericsystem.api.defaults.DefaultRoot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -243,7 +242,9 @@ public class Archiver<T extends AbstractVertex<T>> {
 		}
 
 		protected void writeOtherTs(T dependency) throws IOException {
-
+			objectOutputStream.writeLong(dependency.getLifeManager().getBirthTs());
+			objectOutputStream.writeLong(dependency.getLifeManager().getLastReadTs());
+			objectOutputStream.writeLong(dependency.getLifeManager().getDeathTs());
 		}
 
 		private void writeAncestorsId(List<T> ancestors) throws IOException {
@@ -285,32 +286,31 @@ public class Archiver<T extends AbstractVertex<T>> {
 				Map<Long, T> vertexMap = new HashMap<>();
 				for (;;)
 					loadDependency(vertexMap);
-			} catch (EOFException ignore) {
-			}
+			} catch (EOFException ignore) {}
 		}
 
 		protected long loadId() throws IOException {
 			return objectInputStream.readLong();
 		}
 
-		protected Long[] loadOtherTs() throws IOException {
-			return new Long[] {};
+		protected long[] loadOtherTs() throws IOException {
+			return new long[] { objectInputStream.readLong(), objectInputStream.readLong(), objectInputStream.readLong() };
 		}
 
 		protected void loadDependency(Map<Long, T> vertexMap) throws IOException, ClassNotFoundException {
-			Long id = loadId();
-			Long[] otherTs = loadOtherTs();
+			long id = loadId();
+			long[] otherTs = loadOtherTs();
 			Serializable value = (Serializable) objectInputStream.readObject();
 			T meta = loadAncestor(vertexMap);
 			List<T> supers = loadAncestors(vertexMap);
 			List<T> components = loadAncestors(vertexMap);
-			vertexMap.put(id, getOrBuild(null, meta, supers, value, components, id, otherTs));
+			vertexMap.put(id, getOrBuild(id, null, meta, supers, value, components, otherTs));
 			// log.info("load dependency " + vertexMap.get(id).info() + " " + id);
 		}
 
-		protected T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, Long designTs, Long... otherTs) {
+		protected T getOrBuild(long ts, Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
 			T instance = meta == null ? transaction.getMeta(components.size()) : meta.getDirectInstance(value, components);
-			return instance == null ? transaction.getBuilder().build(clazz, meta, supers, value, components) : instance;
+			return instance == null ? transaction.getBuilder().build(ts, clazz, meta, supers, value, components, otherTs) : instance;
 		}
 
 		protected List<T> loadAncestors(Map<Long, T> vertexMap) throws IOException {

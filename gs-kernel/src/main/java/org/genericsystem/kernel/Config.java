@@ -6,11 +6,11 @@ import org.genericsystem.kernel.annotations.Dependencies;
 import org.genericsystem.kernel.annotations.Meta;
 import org.genericsystem.kernel.annotations.Supers;
 import org.genericsystem.kernel.annotations.SystemGeneric;
-import org.genericsystem.kernel.annotations.constraints.PropertyConstraint;
 import org.genericsystem.kernel.annotations.value.AxedPropertyClassValue;
 import org.genericsystem.kernel.annotations.value.BooleanValue;
 import org.genericsystem.kernel.annotations.value.EngineValue;
 import org.genericsystem.kernel.systemproperty.NoReferentialIntegrityProperty;
+import org.genericsystem.kernel.systemproperty.constraints.PropertyConstraint;
 
 public class Config {
 	@SystemGeneric
@@ -45,8 +45,23 @@ public class Config {
 	@SystemGeneric
 	@Meta(MetaAttribute.class)
 	@Components(Root.class)
-	@PropertyConstraint
-	// TODO do this with annotated classes
-	public static class SystemMap {}
+	@Dependencies({ DefaultPropertyConstraint.class })
+	public static class SystemMap {
+
+	}
+
+	@SystemGeneric
+	@Meta(MetaAttribute.class)
+	@Supers(SystemMap.class)
+	@Components(Root.class)
+	@AxedPropertyClassValue(propertyClass = PropertyConstraint.class, pos = ApiStatics.NO_POSITION)
+	@Dependencies({ DefaultPropertyConstraintValue.class })
+	public static class DefaultPropertyConstraint {}
+
+	@SystemGeneric
+	@Meta(DefaultPropertyConstraint.class)
+	@Components(SystemMap.class)
+	@BooleanValue(true)
+	public static class DefaultPropertyConstraintValue {}
 
 }

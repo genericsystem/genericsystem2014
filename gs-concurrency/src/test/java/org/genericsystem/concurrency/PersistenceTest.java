@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-
+import org.genericsystem.kernel.LifeManager;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.annotations.SystemGeneric;
 import org.testng.annotations.Test;
@@ -51,8 +51,7 @@ public class PersistenceTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	public static class Vehicle extends Generic {
-	}
+	public static class Vehicle extends Generic {}
 
 	public void testType() {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
@@ -84,10 +83,10 @@ public class PersistenceTest extends AbstractTest {
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic car = root.addInstance(vehicle, "Car");
 		Generic truck = root.addInstance(vehicle, "Truck");
-		assert vehicle.getLifeManager().getDesignTs() < truck.getLifeManager().getDesignTs();
+		assert vehicle.getTs() < truck.getTs();
 		car.remove();
 		root.getCurrentCache().flush();
-		assert vehicle.getLifeManager().getDesignTs() < truck.getLifeManager().getDesignTs();
+		assert vehicle.getTs() < truck.getTs();
 		assert vehicle.getLifeManager().getBirthTs() == truck.getLifeManager().getBirthTs();
 		root.close();
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
@@ -178,10 +177,10 @@ public class PersistenceTest extends AbstractTest {
 			assert persistVisit.get(i).genericEquals(readVisit.get(i));
 			LifeManager persistLifeManager = persistVisit.get(i).getLifeManager();
 			LifeManager readLifeManager = readVisit.get(i).getLifeManager();
-			assert persistLifeManager.getBirthTs() == readLifeManager.getBirthTs();
+			assert persistLifeManager.getBirthTs() == readLifeManager.getBirthTs() : persistVisit.get(i).info() + " " + persistLifeManager.getBirthTs() + "  " + readLifeManager.getBirthTs();
 			// assert persistLifeManager.getLastReadTs() == readLifeManager.getLastReadTs();
 			assert persistLifeManager.getDeathTs() == readLifeManager.getDeathTs();
-			assert persistLifeManager.getDesignTs() == readLifeManager.getDesignTs() : persistVisit.get(i).info() + " / " + persistLifeManager.getDesignTs();
+			// assert persistVisit.get(i).getTs() == readVisit.get(i).getTs();
 			assert persistVisit.get(i).genericEquals(readVisit.get(i));
 		}
 	}
