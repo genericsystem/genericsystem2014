@@ -21,14 +21,14 @@ public class AnnotationsUses {
 
 		// Create the structure
 		Generic vehicle = engine.addInstance("Vehicle");
-		Generic options = vehicle.addAttribute("options");
+		Generic options = vehicle.addAttribute("Options");
 		Generic color = engine.addInstance("Color");
-		Generic vehicleColor = vehicle.addRelation("vehicleColor", color);
+		Generic vehicleColor = vehicle.addRelation("VehicleColor", color);
 
 		// Add datas
 		Generic myVehicle = vehicle.addInstance("myVehicle");
-		Generic musicPlayer = myVehicle.addHolder(options, "Music player");
-		Generic airConditioning = myVehicle.addHolder(options, "Air conditioning");
+		Generic musicPlayer = myVehicle.addHolder(options, "music player");
+		Generic airConditioning = myVehicle.addHolder(options, "air conditioning");
 		Generic red = color.addInstance("red");
 		Generic myVehicleRed = myVehicle.addLink(vehicleColor, "myVehicleRed", red);
 	}
@@ -40,21 +40,21 @@ public class AnnotationsUses {
 
 		// Retrieve the type Vehicle
 		Generic vehicle = engine.find(Vehicle.class);
-		// Retrieve the attribute options for the type Vehicle
+		// Retrieve the attribute Options for the type Vehicle
 		Generic options = engine.find(Options.class);
 		// Retrieve the type Color
 		Generic color = engine.find(Color.class);
-		// Retrieve the relation vehicleColor between Vehicle and Color
+		// Retrieve the relation VehicleColor between Vehicle and Color
 		Generic vehicleColor = engine.find(VehicleColor.class);
 
 		// Retrieve the instance of Vehicle
 		Generic myVehicle = engine.find(MyVehicle.class);
-		// Retrieve values for options
+		// Retrieve values for Options
 		Generic musicPlayer = engine.find(MusicPlayer.class);
 		Generic airConditioning = engine.find(AirConditioning.class);
 		// Retrieve the instance of Color
 		Generic red = engine.find(Red.class);
-		// Retrieve the link between myVehicle and red from the relation vehicleColor
+		// Retrieve the link between myVehicle and red from the relation VehicleColor
 		Generic myVehicleRed = engine.find(MyVehicleRed.class);
 	}
 
@@ -92,7 +92,7 @@ public class AnnotationsUses {
 	@SystemGeneric
 	@Meta(Options.class)
 	@Components(MyVehicle.class)
-	@StringValue("Music player")
+	@StringValue("music player")
 	public static class MusicPlayer {
 
 	}
@@ -100,7 +100,7 @@ public class AnnotationsUses {
 	@SystemGeneric
 	@Meta(Options.class)
 	@Components(MyVehicle.class)
-	@StringValue("Air conditioning")
+	@StringValue("air conditioning")
 	public static class AirConditioning {
 
 	}

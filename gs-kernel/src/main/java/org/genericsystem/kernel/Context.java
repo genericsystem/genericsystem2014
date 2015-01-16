@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.defaults.DefaultContext;
 import org.genericsystem.api.defaults.DefaultRoot;
@@ -164,7 +165,8 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 	@Override
 	public abstract Snapshot<T> getComposites(T vertex);
 
-	protected void triggersMutation(T oldDependency, T newDependency) {}
+	protected void triggersMutation(T oldDependency, T newDependency) {
+	}
 
 	@Override
 	public void forceRemove(T generic) {
@@ -174,6 +176,11 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 	@Override
 	public void remove(T generic) {
 		new GenericHandler<>(generic).remove();
+	}
+
+	@Override
+	public void conserveRemove(T generic) {
+		new GenericHandler<>(generic).conserveRemove();
 	}
 
 	@Deprecated
@@ -194,16 +201,18 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		@Override
 		T rebuildAll(T toRebuild, Supplier<T> rebuilder, Set<T> dependenciesToRebuild) {
 			dependenciesToRebuild.forEach(getContext()::unplug);
-			T build = rebuilder.get();
-			dependenciesToRebuild.remove(toRebuild);
-			ConvertMap convertMap = new ConvertMap();
-			if (toRebuild != null) {
-				convertMap.put(toRebuild, build);
-				getContext().triggersMutation(toRebuild, build);
-			}
-			if (build != null)
+			if (rebuilder != null) {
+				ConvertMap convertMap = new ConvertMap();
+				dependenciesToRebuild.remove(toRebuild);
+				T build = rebuilder.get();
+				if (toRebuild != null) {
+					convertMap.put(toRebuild, build);
+					getContext().triggersMutation(toRebuild, build);
+				}
 				Statics.reverseCollections(dependenciesToRebuild).forEach(x -> convertMap.convert(x));
-			return build;
+				return build;
+			}
+			return null;
 		}
 
 		@Override
@@ -243,6 +252,12 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 						newDependency = setMeta(oldDependency.getComponents().size());
 					} else {
 						List<T> overrides = oldDependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList());
+						// TODO PB SI 2 ETAGE
+						for (int i = 0; i < overrides.size(); i++)
+							if (!overrides.get(i).isAlive()) {
+								overrides.addAll(overrides.get(i).getSupers());
+								overrides.remove(i);
+							}
 						List<T> components = oldDependency.getComponents().stream().map(x -> x != null ? convert(x) : null).collect(Collectors.toList());
 						T adjustedMeta = convert(oldDependency.getMeta()).adjustMeta(oldDependency.getValue(), components);
 						List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, oldDependency.getValue(), components);

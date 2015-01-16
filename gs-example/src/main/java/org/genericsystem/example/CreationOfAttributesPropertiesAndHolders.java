@@ -7,31 +7,31 @@ public class CreationOfAttributesPropertiesAndHolders {
 	public void createAttribute() {
 		Engine engine = new Engine();
 
-		// Create a type vehicle with an attribute options
+		// Create a type vehicle with an attribute Options
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic options = vehicle.addAttribute("Options");
 
-		// Create an instance of vehicle and instantiate two options on it
+		// Create an instance of Vehicle and instantiate two Options on it
 		Generic myVehicle = vehicle.addInstance("myVehicle");
-		myVehicle.addHolder(options, "Music player");
-		myVehicle.addHolder(options, "Air conditioning");
-		// myVehicle has 2 options : Music player and Air conditioning
+		myVehicle.addHolder(options, "music player");
+		myVehicle.addHolder(options, "air conditioning");
+		// myVehicle has two Options : music player and air conditioning
 	}
 
 	public void createProperty() {
 		Engine engine = new Engine();
 
-		// Create a type vehicle with a property power
+		// Create a type Vehicle with a property Power
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic power = vehicle.addAttribute("Power").enablePropertyConstraint();
 
-		// Create an instance of vehicle and instantiate a power on it
+		// Create an instance of Vehicle and instantiate a Power on it
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		myVehicle.addHolder(power, 213);
-		// myVehicle has one power : 213
+		// myVehicle has one Power : 213
 
-		// Add another power on myVehicle
+		// Add another Power on myVehicle
 		myVehicle.addHolder(power, 220);
-		// error : power is a property, it can have only one value
+		// Error : Power is a property, it can have only one value
 	}
 }
