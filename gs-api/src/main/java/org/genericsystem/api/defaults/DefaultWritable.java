@@ -21,7 +21,7 @@ public interface DefaultWritable<T extends DefaultVertex<T>> extends IVertex<T> 
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T updateComposites(T... newComposites) {
+	default T updateComponents(T... newComposites) {
 		return update(getSupers(), getValue(), newComposites);
 	}
 

@@ -95,7 +95,7 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 				}
 				add(node);
 				for (int axe = 0; axe < node.getComponents().size(); axe++)
-					if (node.isCascadeRemove(axe))
+					if (node.isCascadeRemoveEnabled(axe))
 						visit(node.getComponents().get(axe));
 			}
 			return this;

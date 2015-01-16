@@ -326,7 +326,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		Generic myVehicleGreen = vehicleColor.addInstance("MyVehicleGreen", myVehicle, green);
 
 		// when
-		myCarRed.updateComposites(myCar, blue);
+		myCarRed.updateComponents(myCar, blue);
 
 		// then
 		assert engine.isAlive();
@@ -359,7 +359,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Generic myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
 
-		catchAndCheckCause(() -> myCarRed.updateComposites(blue), MetaRuleConstraintViolationException.class);
+		catchAndCheckCause(() -> myCarRed.updateComponents(blue), MetaRuleConstraintViolationException.class);
 	}
 
 	public void test300_replaceCompositeWithValueModification() {

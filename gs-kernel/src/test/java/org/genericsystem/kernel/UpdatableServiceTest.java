@@ -342,7 +342,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		Vertex myVehicleGreen = vehicleColor.addInstance("MyVehicleGreen", myVehicle, green);
 
 		// when
-		myCarRed.updateComposites(myCar, blue);
+		myCarRed.updateComponents(myCar, blue);
 
 		// then
 		assert engine.isAlive();
@@ -374,7 +374,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		Vertex blue = color.addInstance("Blue");
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Vertex myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
-		catchAndCheckCause(() -> myCarRed.updateComposites(blue), MetaRuleConstraintViolationException.class);
+		catchAndCheckCause(() -> myCarRed.updateComponents(blue), MetaRuleConstraintViolationException.class);
 
 	}
 
@@ -388,7 +388,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		Vertex red = color.addInstance("Red");
 		Vertex blue = color.addInstance("Blue");
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		vehicleColor.updateComposites(vehicle, color, date);
+		vehicleColor.updateComponents(vehicle, color, date);
 
 	}
 
