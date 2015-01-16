@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicLong;
+
 import org.genericsystem.api.defaults.DefaultRoot;
 import org.genericsystem.kernel.Config.MetaAttribute;
 import org.genericsystem.kernel.Config.MetaRelation;
@@ -25,7 +26,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 	}
 
 	public Root(Serializable value, String persistentDirectoryPath, Class<?>... userClasses) {
-		init(0L, null, Collections.emptyList(), value, Collections.emptyList(), new long[] { 0L, 0L, Long.MAX_VALUE });
+		init(0L, null, Collections.emptyList(), value, Collections.emptyList(), Statics.SYSTEM_TS);
 		context = new Transaction<>(this, 0L);
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
 		archiver = new Archiver<>(this, persistentDirectoryPath);

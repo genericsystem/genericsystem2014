@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
 import org.slf4j.Logger;
@@ -30,8 +31,8 @@ public class LifeManager {
 
 	public void beginLife(long birthTs) {
 		// assert isWriteLockedByCurrentThread();
-		assert this.birthTs == Long.MAX_VALUE || this.birthTs == Long.MIN_VALUE : "Generic is already born";
-		if (this.birthTs != Long.MIN_VALUE)
+		assert this.birthTs == Long.MAX_VALUE || this.birthTs == 0L : "Generic is already born";
+		if (this.birthTs != 0L)
 			this.birthTs = birthTs;
 	}
 

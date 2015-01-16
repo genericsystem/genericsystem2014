@@ -66,14 +66,14 @@ public class SystemCache<T extends AbstractVertex<T>> {
 		List<T> overrides = setOverrides(clazz);
 		List<T> components = setComponents(clazz);
 		T result;
+		Builder<T> builder = ((T) root).getCurrentCache().getBuilder();
 		if (meta == null) {
 			assert overrides.size() == 1;
-			result = ((T) root).getCurrentCache().getBuilder().build(root.pickNewTs(), clazz, null, overrides, findValue(clazz), components, Statics.SYSTEM_TS);
 		} else {
 			if (meta.isMeta())
-				meta = ((T) root).getCurrentCache().getBuilder().setMeta(components.size());
-			result = ((T) root).getCurrentCache().getBuilder().build(root.pickNewTs(), clazz, meta, overrides, findValue(clazz), components, Statics.SYSTEM_TS);
+				meta = builder.setMeta(components.size());
 		}
+		result = builder.build(root.pickNewTs(), clazz, meta, overrides, findValue(clazz), components, Statics.SYSTEM_TS);
 		put(clazz, result);
 		mountConstraints(clazz, result);
 		triggersDependencies(clazz);
