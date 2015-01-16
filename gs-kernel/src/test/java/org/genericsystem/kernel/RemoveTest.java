@@ -61,6 +61,7 @@ public class RemoveTest extends AbstractTest {
 		Vertex vehicle = engine.addInstance("vehicle");
 		Vertex color = engine.addInstance("Color");
 		Vertex vehicleColor = vehicle.addRelation("vehicleColor", color);
+		vehicleColor.getMeta().disableReferentialIntegrity(ApiStatics.TARGET_POSITION);
 		color.conserveRemove();
 
 		Vertex newVehicleColor = vehicle.getAttribute("vehicleColor");

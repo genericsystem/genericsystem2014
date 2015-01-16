@@ -69,19 +69,21 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		private static final long serialVersionUID = -5970021419012502402L;
 
 		private final boolean force;
+		private final boolean dependenciesToRemove;
 
-		public OrderedDependencies(boolean force) {
+		public OrderedDependencies(boolean force, boolean dependenciesToRemove) {
 			this.force = force;
+			this.dependenciesToRemove = dependenciesToRemove;
 		}
 
 		OrderedDependencies visit(T node) {
 			if (!contains(node)) {
-				if (!force && !node.getInheritings().isEmpty())
-					discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + node + " has a inheriting dependencies : " + node.getInheritings()));
+				if (!force && dependenciesToRemove && !node.getInheritings().isEmpty())
+					discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + node + " has a inheriting dependencies : " + node.getInheritings().info()));
 				getInheritings(node).forEach(this::visit);
 
-				if (!force && !node.getInstances().isEmpty())
-					discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + node + " has a instance dependencies : " + node.getInstances()));
+				if (!force && dependenciesToRemove && !node.getInstances().isEmpty())
+					discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + node + " has a instance dependencies : " + node.getInstances().info()));
 				getInstances(node).forEach(this::visit);
 
 				for (T composite : node.getComposites()) {
@@ -173,11 +175,11 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 	@Deprecated
 	public// TODO to remove
 	Set<T> computeDependencies(T node) {
-		return computeDependencies(node, true);
+		return computeDependencies(node, true, true);
 	}
 
-	Set<T> computeDependencies(T node, boolean force) {
-		return new OrderedDependencies(force).visit(node);
+	Set<T> computeDependencies(T node, boolean force, boolean dependenciesToRemove) {
+		return new OrderedDependencies(force, dependenciesToRemove).visit(node);
 	}
 
 	protected static class AbstractVertexBuilder<T extends AbstractVertex<T>> extends Builder<T> {
