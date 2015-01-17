@@ -7,7 +7,7 @@ import org.genericsystem.kernel.Checker;
 
 public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem.kernel.Transaction<T> {
 
-	protected Transaction(DefaultEngine<T> engine, long ts) {
+	public Transaction(DefaultEngine<T> engine, long ts) {
 		super(engine, ts);
 	}
 
@@ -33,7 +33,7 @@ public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem
 
 	@Override
 	protected Builder<T> buildBuilder() {
-		return new AbstractVertexBuilder<T>(this) {
+		return new Builder<T>(this) {
 			@Override
 			@SuppressWarnings("unchecked")
 			protected Class<T> getTClass() {

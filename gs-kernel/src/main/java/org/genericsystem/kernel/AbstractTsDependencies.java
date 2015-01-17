@@ -1,12 +1,11 @@
-package org.genericsystem.concurrency;
+package org.genericsystem.kernel;
 
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
-import org.genericsystem.kernel.Dependencies;
-import org.genericsystem.kernel.LifeManager;
+
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
-public abstract class AbstractTsDependencies<T extends AbstractGeneric<T>> implements Dependencies<T> {
+public abstract class AbstractTsDependencies<T extends AbstractVertex<T>> implements Dependencies<T> {
 
 	private Node<T> head = null;
 	private Node<T> tail = null;
@@ -36,7 +35,7 @@ public abstract class AbstractTsDependencies<T extends AbstractGeneric<T>> imple
 	@Override
 	public void add(T element) {
 		assert element != null;
-		//assert getLifeManager().isWriteLockedByCurrentThread();
+		// assert getLifeManager().isWriteLockedByCurrentThread();
 		Node<T> newNode = new Node<>(element);
 		if (head == null)
 			head = newNode;

@@ -73,7 +73,7 @@ public class SystemCache<T extends AbstractVertex<T>> {
 			if (meta.isMeta())
 				meta = builder.setMeta(components.size());
 		}
-		result = builder.build(root.pickNewTs(), clazz, meta, overrides, findValue(clazz), components, Statics.SYSTEM_TS);
+		result = builder.internalBuild(root.pickNewTs(), clazz, meta, overrides, findValue(clazz), components, Statics.SYSTEM_TS);
 		put(clazz, result);
 		mountConstraints(clazz, result);
 		triggersDependencies(clazz);

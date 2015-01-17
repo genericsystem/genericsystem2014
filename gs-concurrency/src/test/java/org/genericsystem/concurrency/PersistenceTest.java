@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+
+import org.genericsystem.cache.Generic;
 import org.genericsystem.kernel.LifeManager;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.annotations.SystemGeneric;
@@ -51,7 +53,8 @@ public class PersistenceTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	public static class Vehicle extends Generic {}
+	public static class Vehicle extends Generic {
+	}
 
 	public void testType() {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
@@ -174,14 +177,14 @@ public class PersistenceTest extends AbstractTest {
 		List<Generic> readVisit = new ArrayList<>(readNode.getCurrentCache().computeDependencies(readNode));
 		assert persistVisit.size() == readVisit.size() : persistVisit + " \n " + readVisit;
 		for (int i = 0; i < persistVisit.size(); i++) {
-			assert persistVisit.get(i).genericEquals(readVisit.get(i));
+			// assert persistVisit.get(i).genericEquals(readVisit.get(i));
 			LifeManager persistLifeManager = persistVisit.get(i).getLifeManager();
 			LifeManager readLifeManager = readVisit.get(i).getLifeManager();
 			assert persistLifeManager.getBirthTs() == readLifeManager.getBirthTs() : persistVisit.get(i).info() + " " + persistLifeManager.getBirthTs() + "  " + readLifeManager.getBirthTs();
 			// assert persistLifeManager.getLastReadTs() == readLifeManager.getLastReadTs();
 			assert persistLifeManager.getDeathTs() == readLifeManager.getDeathTs();
 			// assert persistVisit.get(i).getTs() == readVisit.get(i).getTs();
-			assert persistVisit.get(i).genericEquals(readVisit.get(i));
+			assert persistVisit.get(i).genericEquals(readVisit.get(i)) : persistVisit.get(i).info() + " " + readVisit.get(i).info();
 		}
 	}
 

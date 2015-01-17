@@ -2,6 +2,7 @@ package org.genericsystem.concurrency;
 
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
+import org.genericsystem.cache.Generic;
 import org.testng.annotations.Test;
 
 @Test

@@ -1,5 +1,6 @@
 package org.genericsystem.concurrency;
 
+import org.genericsystem.cache.Generic;
 import org.testng.annotations.Test;
 
 @Test
@@ -7,8 +8,8 @@ public class ConcurrentTest extends AbstractTest {
 
 	public void test() {
 		Engine engine = new Engine();
-		Cache<Generic> cache = engine.getCurrentCache();
-		Cache<Generic> cache2 = engine.newCache().start();
+		Cache cache = engine.getCurrentCache();
+		Cache cache2 = engine.newCache().start();
 		Generic car = engine.addInstance("Car");
 
 		assert cache2.isAlive(car);
@@ -26,7 +27,7 @@ public class ConcurrentTest extends AbstractTest {
 	public void testNonFlushedModificationsStillAliveInCache() {
 		Engine engine = new Engine();
 		Generic car = engine.addInstance("Car");
-		Cache<Generic> cache = engine.getCurrentCache();
+		Cache cache = engine.getCurrentCache();
 
 		assert cache.isAlive(car);
 		assert engine.getInstances().contains(car);
@@ -34,14 +35,14 @@ public class ConcurrentTest extends AbstractTest {
 
 	public void testFlushedModificationsAvailableInNewCacheOk() {
 		Engine engine = new Engine();
-		Cache<Generic> cache = engine.getCurrentCache();
+		Cache cache = engine.getCurrentCache();
 		Generic car = engine.addInstance("Car");
 		cache.flush();
 
 		assert cache.isAlive(car);
 		assert engine.getInstances().contains(car);
 
-		Cache<Generic> cache2 = engine.newCache().start();
+		Cache cache2 = engine.newCache().start();
 
 		assert cache2.isAlive(car);
 		assert engine.getInstances().contains(car);
@@ -49,13 +50,13 @@ public class ConcurrentTest extends AbstractTest {
 
 	public void testNonFlushedModificationsAreNotAvailableInNewCacheOk() {
 		Engine engine = new Engine();
-		Cache<Generic> cache = engine.getCurrentCache();
+		Cache cache = engine.getCurrentCache();
 		Generic car = engine.addInstance("Car");
 
 		assert cache.isAlive(car);
 		assert engine.getInstances().contains(car);
 
-		Cache<Generic> cache2 = engine.newCache().start();
+		Cache cache2 = engine.newCache().start();
 		assert !cache2.isAlive(car);
 		assert !engine.getInstances().contains(car);
 	}

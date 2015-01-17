@@ -3,6 +3,7 @@ package org.genericsystem.concurrency;
 import java.util.Arrays;
 
 import org.genericsystem.api.exception.CrossEnginesAssignementsException;
+import org.genericsystem.cache.Generic;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.Vertex;

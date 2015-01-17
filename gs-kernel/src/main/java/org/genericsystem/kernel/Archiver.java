@@ -66,7 +66,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 		return GS_EXTENSION + ZIP_EXTENSION;
 	}
 
-	protected Archiver(DefaultRoot<T> root, String directoryPath) {
+	public Archiver(DefaultRoot<T> root, String directoryPath) {
 		this.root = root;
 		directory = prepareAndLockDirectory(directoryPath);
 		if (directory != null) {
@@ -119,12 +119,8 @@ public class Archiver<T extends AbstractVertex<T>> {
 		}
 	}
 
-	protected long pickTs() {
-		return 0L;
-	}
-
 	private void doSnapshot() throws IOException {
-		long ts = pickTs();
+		long ts = root.pickNewTs();
 		String fileName = getFilename(ts);
 		String partFileName = directory.getAbsolutePath() + File.separator + fileName + getFileExtension() + PART_EXTENSION;
 		ObjectOutputStream outputStream = zipFileManager.getObjectOutputStream(partFileName);
@@ -239,7 +235,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 			writeAncestorId(dependency.getMeta());
 			writeAncestorsId(dependency.getSupers());
 			writeAncestorsId(dependency.getComponents());
-			// log.info("write dependency " + dependency.info());
+			log.info("write dependency : " + dependency.info());
 		}
 
 		protected void writeOtherTs(T dependency) throws IOException {
@@ -275,7 +271,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 		}
 
 		protected Transaction<T> buildTransaction() {
-			return new Transaction<>(root, 0L);
+			return new Transaction<>(root, root.pickNewTs());
 		}
 
 		public Transaction<T> getTransaction() {
@@ -307,12 +303,12 @@ public class Archiver<T extends AbstractVertex<T>> {
 			List<T> supers = loadAncestors(vertexMap);
 			List<T> components = loadAncestors(vertexMap);
 			vertexMap.put(id, getOrBuild(id, null, meta, supers, value, components, otherTs));
-			// log.info("load dependency " + vertexMap.get(id).info() + " " + id);
+			log.info("load dependency : " + vertexMap.get(id).info() + " " + id);
 		}
 
 		protected T getOrBuild(long ts, Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
 			T instance = meta == null ? transaction.getMeta(components.size()) : meta.getDirectInstance(value, components);
-			return instance == null ? transaction.getBuilder().build(ts, clazz, meta, supers, value, components, otherTs) : instance;
+			return instance == null ? transaction.getBuilder().internalBuild(ts, clazz, meta, supers, value, components, otherTs) : instance;
 		}
 
 		protected List<T> loadAncestors(Map<Long, T> vertexMap) throws IOException {

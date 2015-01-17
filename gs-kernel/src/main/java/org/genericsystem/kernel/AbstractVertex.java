@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
@@ -34,7 +35,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return ts;
 	}
 
-	protected LifeManager getLifeManager() {
+	public LifeManager getLifeManager() {
 		return lifeManager;
 	}
 
@@ -42,6 +43,10 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	@Override
 	public final boolean isAlive() {
 		return getCurrentCache().isAlive((T) this);
+	}
+
+	protected boolean isAlive(long ts) {
+		return getLifeManager().isAlive(ts);
 	}
 
 	@Override
@@ -83,7 +88,13 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	protected abstract Dependencies<T> getCompositesDependencies();
 
 	protected Dependencies<T> buildDependencies() {
-		return new DependenciesImpl<>();
+		return new AbstractTsDependencies<T>() {
+
+			@Override
+			public LifeManager getLifeManager() {
+				return AbstractVertex.this.getLifeManager();
+			}
+		};
 	}
 
 	@Override

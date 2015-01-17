@@ -103,7 +103,7 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 
 	@Override
 	protected Builder<T> buildBuilder() {
-		return new AbstractVertexBuilder<T>(this) {
+		return new Builder<T>(this) {
 			@Override
 			@SuppressWarnings("unchecked")
 			protected Class<T> getTClass() {
@@ -116,11 +116,6 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 				return (Class<T>) SystemClass.class;
 			}
 		};
-	}
-
-	@Override
-	public Builder<T> getBuilder() {
-		return super.getBuilder();
 	}
 
 	@Override

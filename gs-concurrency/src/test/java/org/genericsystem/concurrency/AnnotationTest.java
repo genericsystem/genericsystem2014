@@ -1,5 +1,7 @@
 package org.genericsystem.concurrency;
 
+import org.genericsystem.cache.Engine;
+import org.genericsystem.cache.Generic;
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.InstanceClass;
 import org.genericsystem.kernel.annotations.Meta;

@@ -1,5 +1,7 @@
 package org.genericsystem.cache;
 
+import org.genericsystem.kernel.GarbageCollector;
+
 public interface DefaultEngine<T extends AbstractGeneric<T>> extends org.genericsystem.api.defaults.DefaultRoot<T>, DefaultGeneric<T> {
 
 	default Cache<T> newCache() {
@@ -14,5 +16,7 @@ public interface DefaultEngine<T extends AbstractGeneric<T>> extends org.generic
 	default Cache<T> getCurrentCache() {
 		return getRoot().getCurrentCache();
 	}
+
+	GarbageCollector<T> getGarbageCollector();
 
 }

@@ -2,6 +2,8 @@ package org.genericsystem.concurrency;
 
 import java.util.Arrays;
 
+import org.genericsystem.cache.Engine;
+import org.genericsystem.cache.Generic;
 import org.testng.annotations.Test;
 
 @Test

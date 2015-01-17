@@ -3,6 +3,7 @@ package org.genericsystem.concurrency;
 import java.util.Iterator;
 
 import org.genericsystem.api.core.Snapshot;
+import org.genericsystem.cache.Generic;
 import org.testng.annotations.Test;
 
 @Test
@@ -146,7 +147,6 @@ public class IteratorAndRemoveCacheTest extends AbstractTest {
 	public void test006_IterateAndAdd_pickNewTs() {
 		Engine engine = new Engine();
 		Cache cache1 = engine.getCurrentCache();
-
 		Generic car = engine.addInstance("Car");
 		Generic myCar1 = car.addInstance("myCar1");
 		Generic myCar2 = car.addInstance("myCar2");

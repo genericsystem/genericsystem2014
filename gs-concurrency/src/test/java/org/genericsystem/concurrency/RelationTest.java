@@ -3,6 +3,7 @@ package org.genericsystem.concurrency;
 import java.util.List;
 
 import org.genericsystem.api.exception.AliveConstraintViolationException;
+import org.genericsystem.cache.Generic;
 import org.testng.annotations.Test;
 
 @Test

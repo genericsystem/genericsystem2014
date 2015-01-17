@@ -1,11 +1,16 @@
 package org.genericsystem.cache;
 
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
+
+import org.genericsystem.kernel.Archiver;
+import org.genericsystem.kernel.Builder;
 import org.genericsystem.kernel.Config.MetaAttribute;
 import org.genericsystem.kernel.Config.MetaRelation;
 import org.genericsystem.kernel.Config.SystemMap;
+import org.genericsystem.kernel.GarbageCollector;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Root.TsGenerator;
 import org.genericsystem.kernel.Statics;
@@ -15,14 +20,49 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	private final TsGenerator generator = new TsGenerator();
 	private final ThreadLocal<Cache<Generic>> cacheLocal = new ThreadLocal<>();
 	private final SystemCache<Generic> systemCache = new SystemCache<>(this, Root.class);
+	private final GarbageCollector<Generic> garbageCollector = new GarbageCollector<>(this);
+	private final Archiver<Generic> archiver;
 
 	public Engine(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
 	}
 
 	public Engine(Serializable engineValue, Class<?>... userClasses) {
-		init(0L, null, Collections.emptyList(), engineValue, Collections.emptyList(), Statics.SYSTEM_TS);
+		this(engineValue, null, userClasses);
+	}
+
+	public Engine(Serializable engineValue, String persistentDirectoryPath, Class<?>... userClasses) {
+		super.init(0L, null, Collections.emptyList(), engineValue, Collections.emptyList(), Statics.SYSTEM_TS);
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
+		archiver = new Archiver<Generic>(this, persistentDirectoryPath) {
+			@Override
+			protected Loader getLoader(ObjectInputStream objectInputStream) {
+
+				return new Loader(objectInputStream) {
+					@Override
+					protected Transaction<Generic> buildTransaction() {
+						return new Transaction<Generic>((DefaultEngine<Generic>) root, ((DefaultEngine<Generic>) root).pickNewTs()) {
+
+							@Override
+							protected Builder<Generic> buildBuilder() {
+								return new Builder<Generic>(this) {
+									@Override
+									protected Class<Generic> getTClass() {
+										return Generic.class;
+									}
+
+									@Override
+									@SuppressWarnings("unchecked")
+									protected Class<Generic> getSystemTClass() {
+										return (Class) SystemClass.class;
+									}
+								};
+							}
+						};
+					}
+				};
+			}
+		};
 	}
 
 	@Override
@@ -70,12 +110,17 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 
 	@Override
 	public void close() {
-		// TODO block caches to flush
+		archiver.close();
 	}
 
 	@Override
 	public long pickNewTs() {
 		return generator.pickNewTs();
+	}
+
+	@Override
+	public GarbageCollector<Generic> getGarbageCollector() {
+		return garbageCollector;
 	}
 
 }

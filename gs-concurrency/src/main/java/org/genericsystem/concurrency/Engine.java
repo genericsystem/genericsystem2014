@@ -1,112 +1,37 @@
 package org.genericsystem.concurrency;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.concurrent.atomic.AtomicLong;
-import org.genericsystem.cache.SystemCache;
-import org.genericsystem.kernel.Config.MetaAttribute;
-import org.genericsystem.kernel.Config.MetaRelation;
-import org.genericsystem.kernel.Config.SystemMap;
-import org.genericsystem.kernel.Root;
-import org.genericsystem.kernel.Statics;
 
-public class Engine extends Generic implements DefaultEngine<Generic> {
+import org.genericsystem.cache.Generic;
+import org.genericsystem.concurrency.Cache.ContextEventListener;
 
-	protected final ThreadLocal<Cache<Generic>> cacheLocal = new ThreadLocal<>();
-	private final SystemCache<Generic> systemCache = new SystemCache<Generic>(this, Root.class);
-	private final Archiver<Generic> archiver;
-	private final TsGenerator generator = new TsGenerator();
-	private final GarbageCollector<Generic> garbageCollector = new GarbageCollector<>(this);
+public class Engine extends org.genericsystem.cache.Engine {
+
+	protected final ThreadLocal<Cache> cacheLocal = new ThreadLocal<>();
 
 	public Engine(Class<?>... userClasses) {
-		this(Statics.ENGINE_VALUE, userClasses);
+		super(userClasses);
 	}
 
 	public Engine(Serializable engineValue, Class<?>... userClasses) {
-		this(engineValue, null, userClasses);
+		super(engineValue, userClasses);
 	}
 
 	public Engine(Serializable engineValue, String persistentDirectoryPath, Class<?>... userClasses) {
-		super.init(0L, null, Collections.emptyList(), engineValue, Collections.emptyList(), Statics.SYSTEM_TS);
-		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
-		archiver = new Archiver<>(this, persistentDirectoryPath);
+		super(engineValue, persistentDirectoryPath, userClasses);
 	}
 
 	@Override
-	public Generic getMetaAttribute() {
-		return find(MetaAttribute.class);
+	public Cache newCache() {
+		return new Cache(new Transaction((Engine) getRoot()));
+	}
+
+	public Cache newCache(ContextEventListener<Generic> listener) {
+		return new Cache(new Transaction((Engine) getRoot()), listener);
 	}
 
 	@Override
-	public Generic getMetaRelation() {
-		return find(MetaRelation.class);
+	public Cache getCurrentCache() {
+		return (Cache) super.getCurrentCache();
 	}
-
-	// TODO mount this in API
-	@Override
-	public void close() {
-		archiver.close();
-	}
-
-	@Override
-	public Cache<Generic> start(org.genericsystem.cache.Cache<Generic> cache) {
-		if (!equals(cache.getRoot()))
-			throw new IllegalStateException();
-		cacheLocal.set((Cache<Generic>) cache);
-		return (Cache<Generic>) cache;
-	}
-
-	@Override
-	public void stop(org.genericsystem.cache.Cache<Generic> cache) {
-		assert cacheLocal.get() == cache;
-		cacheLocal.set(null);
-	}
-
-	@Override
-	public Cache<Generic> getCurrentCache() {
-		Cache<Generic> currentCache = cacheLocal.get();
-		if (currentCache == null)
-			throw new IllegalStateException("Unable to find the current cache. Did you miss to call start() method on it ?");
-		return currentCache;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <Custom extends Generic> Custom find(Class<?> clazz) {
-		return (Custom) systemCache.get(clazz);
-	}
-
-	@Override
-	public Class<?> findAnnotedClass(Generic generic) {
-		return systemCache.getByVertex(generic);
-	}
-
-	@Override
-	public GarbageCollector<Generic> getGarbageCollector() {
-		return garbageCollector;
-	}
-
-	@Override
-	public long pickNewTs() {
-		return generator.pickNewTs();
-	}
-
-	private static class TsGenerator {
-		private final long startTime = System.currentTimeMillis() * Statics.MILLI_TO_NANOSECONDS - System.nanoTime();
-		private final AtomicLong lastTime = new AtomicLong(0L);
-
-		long pickNewTs() {
-			long nanoTs;
-			long current;
-			for (;;) {
-				nanoTs = startTime + System.nanoTime();
-				current = lastTime.get();
-				if (nanoTs - current > 0)
-					if (lastTime.compareAndSet(current, nanoTs))
-						return nanoTs;
-			}
-		}
-	}
-
 }
