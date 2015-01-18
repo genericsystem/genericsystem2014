@@ -235,7 +235,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 			writeAncestorId(dependency.getMeta());
 			writeAncestorsId(dependency.getSupers());
 			writeAncestorsId(dependency.getComponents());
-			log.info("write dependency : " + dependency.info() + " " + dependency.getTs());
+			log.info("write dependency : " + dependency.info() + " " + dependency.getTs() + " birthTs : " + dependency.getLifeManager().getBirthTs());
 		}
 
 		protected void writeOtherTs(T dependency) throws IOException {
@@ -271,7 +271,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 		}
 
 		protected Transaction<T> buildTransaction() {
-			return new Transaction<>(root, root.pickNewTs());
+			return (Transaction<T>) root.buildTransaction();
 		}
 
 		public Transaction<T> getTransaction() {
@@ -303,7 +303,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 			List<T> supers = loadAncestors(vertexMap);
 			List<T> components = loadAncestors(vertexMap);
 			vertexMap.put(id, getOrBuild(id, null, meta, supers, value, components, otherTs));
-			log.info("load dependency : " + vertexMap.get(id).info() + " " + id + " " + vertexMap.get(id).getTs());
+			log.info("load dependency : " + vertexMap.get(id).info() + " " + id + " " + vertexMap.get(id).getTs() + " birthTs : " + vertexMap.get(id).getLifeManager().getBirthTs());
 			assert vertexMap.get(id).isAlive();
 		}
 

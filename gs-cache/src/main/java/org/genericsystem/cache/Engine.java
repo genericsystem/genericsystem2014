@@ -1,12 +1,10 @@
 package org.genericsystem.cache;
 
-import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 
 import org.genericsystem.kernel.Archiver;
-import org.genericsystem.kernel.Builder;
 import org.genericsystem.kernel.Config.MetaAttribute;
 import org.genericsystem.kernel.Config.MetaRelation;
 import org.genericsystem.kernel.Config.SystemMap;
@@ -34,35 +32,12 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	public Engine(Serializable engineValue, String persistentDirectoryPath, Class<?>... userClasses) {
 		super.init(0L, null, Collections.emptyList(), engineValue, Collections.emptyList(), Statics.SYSTEM_TS);
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
-		archiver = new Archiver<Generic>(this, persistentDirectoryPath) {
-			@Override
-			protected Loader getLoader(ObjectInputStream objectInputStream) {
+		archiver = new Archiver<Generic>(this, persistentDirectoryPath);
+	}
 
-				return new Loader(objectInputStream) {
-					@Override
-					protected Transaction<Generic> buildTransaction() {
-						return new Transaction<Generic>((DefaultEngine<Generic>) root, ((DefaultEngine<Generic>) root).pickNewTs()) {
-
-							@Override
-							protected Builder<Generic> buildBuilder() {
-								return new Builder<Generic>(this) {
-									@Override
-									protected Class<Generic> getTClass() {
-										return Generic.class;
-									}
-
-									@Override
-									@SuppressWarnings("unchecked")
-									protected Class<Generic> getSystemTClass() {
-										return (Class) SystemClass.class;
-									}
-								};
-							}
-						};
-					}
-				};
-			}
-		};
+	@Override
+	public Transaction<Generic> buildTransaction() {
+		return new Transaction<Generic>(Engine.this, pickNewTs());
 	}
 
 	@Override

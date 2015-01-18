@@ -84,4 +84,9 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 			}
 		}
 	}
+
+	@Override
+	public Context<Vertex> buildTransaction() {
+		return new Transaction<Vertex>(this, pickNewTs());
+	}
 }

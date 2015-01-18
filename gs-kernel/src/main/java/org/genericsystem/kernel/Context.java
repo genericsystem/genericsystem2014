@@ -55,7 +55,7 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 	}
 
 	@Override
-	public boolean isAlive(T vertex) {
+	public final boolean isAlive(T vertex) {
 		return vertex != null && vertex.equals(getAlive(vertex));
 	}
 

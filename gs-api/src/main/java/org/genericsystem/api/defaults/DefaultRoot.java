@@ -1,6 +1,8 @@
 package org.genericsystem.api.defaults;
 
 import java.io.Serializable;
+
+import org.genericsystem.api.core.IContext;
 import org.genericsystem.api.core.IRoot;
 
 public interface DefaultRoot<T extends DefaultVertex<T>> extends IRoot<T> {
@@ -29,5 +31,7 @@ public interface DefaultRoot<T extends DefaultVertex<T>> extends IRoot<T> {
 	}
 
 	long pickNewTs();
+
+	IContext<T> buildTransaction();
 
 }
