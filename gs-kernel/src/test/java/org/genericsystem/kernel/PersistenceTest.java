@@ -2,8 +2,8 @@ package org.genericsystem.kernel;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Random;
-import java.util.Set;
 
 import org.testng.annotations.Test;
 
@@ -135,8 +135,8 @@ public class PersistenceTest extends AbstractTest {
 	// }
 
 	private void compareGraph(Vertex persistedNode, Vertex readNode) {
-		Set<Vertex> persistVisit = persistedNode.getCurrentCache().computeDependencies(persistedNode);
-		Set<Vertex> readVisit = readNode.getCurrentCache().computeDependencies(readNode);
+		Collection<Vertex> persistVisit = persistedNode.getCurrentCache().computeDependencies(persistedNode);
+		Collection<Vertex> readVisit = readNode.getCurrentCache().computeDependencies(readNode);
 		assert persistVisit.size() == readVisit.size() : persistVisit + " \n " + readVisit;
 		for (Vertex persist : persistVisit) {
 			for (Vertex read : readVisit)

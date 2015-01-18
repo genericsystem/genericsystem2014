@@ -22,7 +22,7 @@ public class PersistenceTest extends AbstractTest {
 		Engine root = new Engine(Statics.ENGINE_VALUE, snapshot);
 		root.close();
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
-		compareGraph(root, engine, engine.getCurrentCache().getTs());
+		compareGraph(root, engine);
 	}
 
 	public void testAnnotType() {
@@ -31,7 +31,7 @@ public class PersistenceTest extends AbstractTest {
 		root.getCurrentCache().flush();
 		root.close();
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot, Vehicle.class);
-		compareGraph(root, engine, engine.getCurrentCache().getTs());
+		compareGraph(root, engine);
 		assert engine.find(Vehicle.class) instanceof Vehicle : engine.find(Vehicle.class).info();
 	}
 
@@ -42,12 +42,12 @@ public class PersistenceTest extends AbstractTest {
 		root.close();
 
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
-		compareGraph(root, engine, engine.getCurrentCache().getTs());
+		compareGraph(root, engine);
 		engine.getCurrentCache().flush();
 		engine.close();
 
 		Engine engine2 = new Engine(Statics.ENGINE_VALUE, snapshot, Vehicle.class);
-		compareGraph(engine, engine2, engine2.getCurrentCache().getTs());
+		compareGraph(engine, engine2);
 
 		assert engine2.find(Vehicle.class) instanceof Vehicle : engine2.find(Vehicle.class).info();
 	}
@@ -63,7 +63,7 @@ public class PersistenceTest extends AbstractTest {
 		root.getCurrentCache().flush();
 		root.close();
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
-		compareGraph(root, engine, engine.getCurrentCache().getTs());
+		compareGraph(root, engine);
 		assert null != engine.getInstance("Vehicle");
 	}
 
@@ -77,7 +77,7 @@ public class PersistenceTest extends AbstractTest {
 		root.getCurrentCache().flush();
 		root.close();
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
-		compareGraph(root, engine, engine.getCurrentCache().getTs());
+		compareGraph(root, engine);
 	}
 
 	public void testAddAndRemove() throws InterruptedException {
@@ -93,7 +93,7 @@ public class PersistenceTest extends AbstractTest {
 		assert vehicle.getLifeManager().getBirthTs() == truck.getLifeManager().getBirthTs();
 		root.close();
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
-		compareGraph(root, engine, engine.getCurrentCache().getTs());
+		compareGraph(root, engine);
 	}
 
 	public void testLink() {
@@ -108,7 +108,7 @@ public class PersistenceTest extends AbstractTest {
 		root.getCurrentCache().flush();
 		root.close();
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
-		compareGraph(root, engine, engine.getCurrentCache().getTs());
+		compareGraph(root, engine);
 	}
 
 	public void testHeritageMultiple() {
@@ -120,7 +120,7 @@ public class PersistenceTest extends AbstractTest {
 		root.getCurrentCache().flush();
 		root.close();
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
-		compareGraph(root, engine, engine.getCurrentCache().getTs());
+		compareGraph(root, engine);
 	}
 
 	public void testHeritageMultipleDiamond() {
@@ -133,7 +133,7 @@ public class PersistenceTest extends AbstractTest {
 		root.getCurrentCache().flush();
 		root.close();
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
-		compareGraph(root, engine, engine.getCurrentCache().getTs());
+		compareGraph(root, engine);
 	}
 
 	public void testTree() {
@@ -147,7 +147,7 @@ public class PersistenceTest extends AbstractTest {
 		root.getCurrentCache().flush();
 		root.close();
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
-		compareGraph(root, engine, engine.getCurrentCache().getTs());
+		compareGraph(root, engine);
 	}
 
 	public void testInheritanceTree() {
@@ -161,7 +161,7 @@ public class PersistenceTest extends AbstractTest {
 		root.getCurrentCache().flush();
 		root.close();
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
-		compareGraph(root, engine, engine.getCurrentCache().getTs());
+		compareGraph(root, engine);
 	}
 
 	private static String cleanDirectory(String directoryPath) {
@@ -172,12 +172,13 @@ public class PersistenceTest extends AbstractTest {
 		return directoryPath;
 	}
 
-	private void compareGraph(Generic persistedNode, Generic readNode, long ts) {
+	private void compareGraph(Generic persistedNode, Generic readNode) {
 		List<Generic> persistVisit = new ArrayList<>(persistedNode.getCurrentCache().computeDependencies(persistedNode));
 		List<Generic> readVisit = new ArrayList<>(readNode.getCurrentCache().computeDependencies(readNode));
 		assert persistVisit.size() == readVisit.size() : persistVisit + " \n " + readVisit;
 		for (int i = 0; i < persistVisit.size(); i++) {
-			// assert persistVisit.get(i).genericEquals(readVisit.get(i));
+			log.info("YYY"+persistVisit.get(i).info() + " " + readVisit.get(i).info());
+			assert persistVisit.get(i).genericEquals(readVisit.get(i));
 			LifeManager persistLifeManager = persistVisit.get(i).getLifeManager();
 			LifeManager readLifeManager = readVisit.get(i).getLifeManager();
 			assert persistLifeManager.getBirthTs() == readLifeManager.getBirthTs() : persistVisit.get(i).info() + " " + persistLifeManager.getBirthTs() + "  " + readLifeManager.getBirthTs();

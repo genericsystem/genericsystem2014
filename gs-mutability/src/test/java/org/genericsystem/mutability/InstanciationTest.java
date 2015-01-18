@@ -3,6 +3,8 @@ package org.genericsystem.mutability;
 import java.util.Arrays;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
+import org.genericsystem.api.exception.CollisionException;
 import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.kernel.Statics;
 import org.testng.annotations.Test;
@@ -118,7 +120,7 @@ public class InstanciationTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		// log.info(vehicle.info());
-		catchAndCheckCause(() -> engine.addInstance(Arrays.asList(vehicle), "Vehicle"), ExistsException.class);
+		catchAndCheckCause(() -> engine.addInstance(Arrays.asList(vehicle), "Vehicle"), CollisionException.class);
 	}
 
 	public void test3TypeInstanciationWithMultipleInheritence() {

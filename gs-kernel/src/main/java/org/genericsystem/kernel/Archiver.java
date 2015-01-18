@@ -235,7 +235,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 			writeAncestorId(dependency.getMeta());
 			writeAncestorsId(dependency.getSupers());
 			writeAncestorsId(dependency.getComponents());
-			log.info("write dependency : " + dependency.info());
+			log.info("write dependency : " + dependency.info() + " " + dependency.getTs());
 		}
 
 		protected void writeOtherTs(T dependency) throws IOException {
@@ -303,7 +303,8 @@ public class Archiver<T extends AbstractVertex<T>> {
 			List<T> supers = loadAncestors(vertexMap);
 			List<T> components = loadAncestors(vertexMap);
 			vertexMap.put(id, getOrBuild(id, null, meta, supers, value, components, otherTs));
-			log.info("load dependency : " + vertexMap.get(id).info() + " " + id);
+			log.info("load dependency : " + vertexMap.get(id).info() + " " + id + " " + vertexMap.get(id).getTs());
+			assert vertexMap.get(id).isAlive();
 		}
 
 		protected T getOrBuild(long ts, Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {

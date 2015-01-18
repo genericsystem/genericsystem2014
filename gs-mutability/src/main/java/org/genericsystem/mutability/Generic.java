@@ -36,7 +36,7 @@ public interface Generic extends IVertex<Generic> {
 
 	@Override
 	default Engine getRoot() {
-		return (Engine) getCurrentCache().wrap(getCurrentCache().unwrap(this).getRoot());
+		return getCurrentCache().getRoot();
 	}
 
 	@Override

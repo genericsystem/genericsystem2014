@@ -21,13 +21,13 @@ import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.concurrency.Cache.ContextEventListener;
 import org.genericsystem.kernel.annotations.InstanceClass;
 
-public class Cache implements IContext<Generic>, ContextEventListener<org.genericsystem.concurrency.Generic> {
+public class Cache implements IContext<Generic>, ContextEventListener<org.genericsystem.cache.Generic> {
 	private final Engine engine;
-	private final org.genericsystem.concurrency.Cache<org.genericsystem.concurrency.Generic> concurrencyCache;
-	private final Map<Generic, org.genericsystem.concurrency.Generic> mutabilityMap = new IdentityHashMap<>();
-	private final Map<org.genericsystem.concurrency.Generic, Set<Generic>> reverseMultiMap = new IdentityHashMap<>();
+	private final org.genericsystem.concurrency.Cache concurrencyCache;
+	private final Map<Generic, org.genericsystem.cache.Generic> mutabilityMap = new IdentityHashMap<>();
+	private final Map<org.genericsystem.cache.Generic, Set<Generic>> reverseMultiMap = new IdentityHashMap<>();
 
-	private final Deque<Map<Generic, org.genericsystem.concurrency.Generic>> revertMutations = new ArrayDeque<>();
+	private final Deque<Map<Generic, org.genericsystem.cache.Generic>> revertMutations = new ArrayDeque<>();
 
 	public Cache(Engine engine, org.genericsystem.concurrency.Engine concurrencyEngine) {
 		this.engine = engine;
@@ -50,14 +50,14 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 		engine.stop(this);
 	}
 
-	protected org.genericsystem.concurrency.Generic unwrap(Generic mutable) {
-		org.genericsystem.concurrency.Generic result = mutabilityMap.get(mutable);
+	protected org.genericsystem.cache.Generic unwrap(Generic mutable) {
+		org.genericsystem.cache.Generic result = mutabilityMap.get(mutable);
 		if (result == null)
 			concurrencyCache.discardWithException(new AliveConstraintViolationException("Your mutable is not still available"));
 		return result;
 	}
 
-	protected Generic wrap(Class<?> clazz, org.genericsystem.concurrency.Generic generic) {
+	protected Generic wrap(Class<?> clazz, org.genericsystem.cache.Generic generic) {
 		if (generic == null)
 			return null;
 		Set<Generic> resultSet = reverseMultiMap.get(generic);
@@ -78,11 +78,11 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 		return result;
 	}
 
-	protected Generic wrap(org.genericsystem.concurrency.Generic generic) {
+	protected Generic wrap(org.genericsystem.cache.Generic generic) {
 		return wrap(null, generic);
 	}
 
-	private void put(Generic mutable, org.genericsystem.concurrency.Generic generic) {
+	private void put(Generic mutable, org.genericsystem.cache.Generic generic) {
 		mutabilityMap.put(mutable, generic);
 		Set<Generic> set = Collections.newSetFromMap(new IdentityHashMap<Generic, Boolean>());
 		set.add(mutable);
@@ -90,7 +90,7 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 	}
 
 	@Override
-	public void triggersMutationEvent(org.genericsystem.concurrency.Generic oldDependency, org.genericsystem.concurrency.Generic newDependency) {
+	public void triggersMutationEvent(org.genericsystem.cache.Generic oldDependency, org.genericsystem.cache.Generic newDependency) {
 		Set<Generic> resultSet = reverseMultiMap.get(oldDependency);
 		if (resultSet != null) {
 			for (Generic mutable : resultSet) {
@@ -105,9 +105,9 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 
 	@Override
 	public void triggersRefreshEvent() {
-		Iterator<Entry<org.genericsystem.concurrency.Generic, Set<Generic>>> iterator = reverseMultiMap.entrySet().iterator();
+		Iterator<Entry<org.genericsystem.cache.Generic, Set<Generic>>> iterator = reverseMultiMap.entrySet().iterator();
 		while (iterator.hasNext()) {
-			Entry<org.genericsystem.concurrency.Generic, Set<Generic>> entry = iterator.next();
+			Entry<org.genericsystem.cache.Generic, Set<Generic>> entry = iterator.next();
 			if (!concurrencyCache.isAlive(entry.getKey())) {
 				for (Generic mutable : entry.getValue())
 					mutabilityMap.remove(mutable);
@@ -118,8 +118,8 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 
 	@Override
 	public void triggersClearEvent() {
-		for (Entry<Generic, org.genericsystem.concurrency.Generic> entry : revertMutations.peek().entrySet()) {
-			org.genericsystem.concurrency.Generic newDependency = mutabilityMap.get(entry.getKey());
+		for (Entry<Generic, org.genericsystem.cache.Generic> entry : revertMutations.peek().entrySet()) {
+			org.genericsystem.cache.Generic newDependency = mutabilityMap.get(entry.getKey());
 			mutabilityMap.put(entry.getKey(), entry.getValue());
 			if (newDependency != null) {
 				Set<Generic> set = reverseMultiMap.get(newDependency);
@@ -137,19 +137,19 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 
 	}
 
-	protected List<Generic> wrap(List<org.genericsystem.concurrency.Generic> listT) {
+	protected List<Generic> wrap(List<org.genericsystem.cache.Generic> listT) {
 		return listT.stream().map(this::wrap).collect(Collectors.toList());
 	}
 
-	protected List<org.genericsystem.concurrency.Generic> unwrap(List<Generic> listM) {
+	protected List<org.genericsystem.cache.Generic> unwrap(List<Generic> listM) {
 		return listM.stream().map(this::unwrap).collect(Collectors.toList());
 	}
 
-	protected Generic[] wrap(org.genericsystem.concurrency.Generic... array) {
+	protected Generic[] wrap(org.genericsystem.cache.Generic... array) {
 		return Arrays.asList(array).stream().map(this::wrap).collect(Collectors.toList()).toArray(new Generic[array.length]);
 	}
 
-	protected org.genericsystem.concurrency.Generic[] unwrap(Generic... listM) {
+	protected org.genericsystem.cache.Generic[] unwrap(Generic... listM) {
 		return engine.getConcurrencyEngine().coerceToTArray(Arrays.asList(listM).stream().map(this::unwrap).collect(Collectors.toList()).toArray());
 	}
 
@@ -159,7 +159,7 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 	}
 
 	public boolean isAlive(Generic mutable) {
-		org.genericsystem.concurrency.Generic generic = mutabilityMap.get(mutable);
+		org.genericsystem.cache.Generic generic = mutabilityMap.get(mutable);
 		return generic != null && concurrencyCache.isAlive(generic);
 	}
 
