@@ -15,4 +15,11 @@ public class Transaction<T extends AbstractVertex<T>> extends Context<T> {
 	public final long getTs() {
 		return ts;
 	}
+
+	public void apply(Iterable<T> removes, Iterable<T> adds) {
+		for (T generic : removes)
+			unplug(generic);
+		for (T generic : adds)
+			plug(generic);
+	}
 }

@@ -22,16 +22,6 @@ public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem
 	}
 
 	@Override
-	protected T plug(T generic) {
-		return super.plug(generic);
-	}
-
-	@Override
-	protected void unplug(T generic) {
-		super.unplug(generic);
-	}
-
-	@Override
 	protected Builder<T> buildBuilder() {
 		return new Builder<T>(this) {
 			@Override
@@ -47,5 +37,4 @@ public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem
 			}
 		};
 	}
-
 }

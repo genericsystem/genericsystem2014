@@ -64,7 +64,7 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		return internalPlug(generic);
 	}
 
-	protected T internalPlug(T generic) {
+	T internalPlug(T generic) {
 		if (!generic.isMeta())
 			indexInstance(generic.getMeta(), generic);
 		generic.getSupers().forEach(superGeneric -> indexInheriting(superGeneric, generic));
@@ -79,7 +79,7 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		internalUnplug(generic);
 	}
 
-	protected void internalUnplug(T generic) {
+	void internalUnplug(T generic) {
 		boolean result = generic != generic.getMeta() ? unIndexInstance(generic.getMeta(), generic) : true;
 		if (!result)
 			discardWithException(new NotFoundException(generic.info()));

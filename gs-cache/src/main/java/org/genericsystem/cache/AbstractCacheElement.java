@@ -6,10 +6,6 @@ import org.genericsystem.api.exception.OptimisticLockConstraintViolationExceptio
 
 public abstract class AbstractCacheElement<T extends AbstractGeneric<T>> {
 
-	abstract T plug(T generic);
-
-	abstract void unplug(T generic);
-
 	abstract boolean isAlive(T vertex);
 
 	abstract Snapshot<T> getInheritings(T vertex);
@@ -18,17 +14,6 @@ public abstract class AbstractCacheElement<T extends AbstractGeneric<T>> {
 
 	abstract Snapshot<T> getComposites(T vertex);
 
-	abstract AbstractCacheElement<T> getSubCache();
-
-	protected void apply(Iterable<T> removes, Iterable<T> adds) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
-		for (T generic : removes)
-			unplug(generic);
-		for (T generic : adds)
-			plug(generic);
-	}
-
-	int getCacheLevel() {
-		return getSubCache().getCacheLevel() + 1;
-	}
+	protected abstract void apply(Iterable<T> removes, Iterable<T> adds) throws ConcurrencyControlException, OptimisticLockConstraintViolationException;
 
 }

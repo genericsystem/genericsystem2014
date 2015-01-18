@@ -304,6 +304,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 			List<T> components = loadAncestors(vertexMap);
 			vertexMap.put(id, getOrBuild(id, null, meta, supers, value, components, otherTs));
 			log.info("load dependency : " + vertexMap.get(id).info() + " " + id + " " + vertexMap.get(id).getTs() + " birthTs : " + vertexMap.get(id).getLifeManager().getBirthTs());
+
 			assert vertexMap.get(id).isAlive();
 		}
 

@@ -19,9 +19,12 @@ public class CacheElement<T extends AbstractGeneric<T>> extends AbstractCacheEle
 		this.subCache = subCache;
 	}
 
-	@Override
 	public AbstractCacheElement<T> getSubCache() {
 		return subCache;
+	}
+
+	public int getCacheLevel() {
+		return subCache instanceof CacheElement ? ((CacheElement<T>) subCache).getCacheLevel() + 1 : 0;
 	}
 
 	@Override
@@ -34,13 +37,11 @@ public class CacheElement<T extends AbstractGeneric<T>> extends AbstractCacheEle
 		removes.forEach(x -> checker.checkAfterBuild(false, true, x));
 	}
 
-	@Override
 	protected T plug(T generic) {
 		adds.add(generic);
 		return generic;
 	}
 
-	@Override
 	protected void unplug(T generic) {
 		if (!adds.remove(generic))
 			removes.add(generic);
@@ -98,4 +99,11 @@ public class CacheElement<T extends AbstractGeneric<T>> extends AbstractCacheEle
 		getSubCache().apply(removes, adds);
 	}
 
+	@Override
+	protected void apply(Iterable<T> removes, Iterable<T> adds) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
+		for (T generic : removes)
+			unplug(generic);
+		for (T generic : adds)
+			plug(generic);
+	}
 }

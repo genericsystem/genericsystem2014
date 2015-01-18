@@ -12,6 +12,7 @@ import org.genericsystem.kernel.GarbageCollector;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Root.TsGenerator;
 import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.SystemCache;
 
 public class Engine extends Generic implements DefaultEngine<Generic> {
 
@@ -31,7 +32,9 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 
 	public Engine(Serializable engineValue, String persistentDirectoryPath, Class<?>... userClasses) {
 		super.init(0L, null, Collections.emptyList(), engineValue, Collections.emptyList(), Statics.SYSTEM_TS);
+		Cache<Generic> cache = start(newCache());
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
+		cache.flush();
 		archiver = new Archiver<Generic>(this, persistentDirectoryPath);
 	}
 

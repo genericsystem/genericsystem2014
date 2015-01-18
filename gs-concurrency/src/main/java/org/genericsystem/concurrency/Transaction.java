@@ -17,13 +17,13 @@ public class Transaction extends org.genericsystem.cache.Transaction<Generic> {
 	}
 
 	@Override
-	public Generic plug(Generic generic) {
+	protected Generic plug(Generic generic) {
 		// generic.getLifeManager().beginLife(getTs());
 		return super.plug(generic);
 	}
 
 	@Override
-	public void unplug(Generic generic) {
+	protected void unplug(Generic generic) {
 		generic.getLifeManager().kill(getTs());
 		((Engine) getRoot()).getGarbageCollector().add(generic);
 	}

@@ -1,5 +1,8 @@
 package org.genericsystem.cache;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConcurrencyControlException;
@@ -8,6 +11,7 @@ import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.cache.Generic.SystemClass;
 import org.genericsystem.kernel.Builder;
 import org.genericsystem.kernel.Context;
+import org.genericsystem.kernel.LifeManager;
 
 public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 
@@ -83,9 +87,7 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 
 	public void unmount() {
 		AbstractCacheElement<T> subCache = cacheElement.getSubCache();
-		if (subCache instanceof CacheElement) {
-			cacheElement = (CacheElement<T>) cacheElement.getSubCache();
-		}
+		cacheElement = subCache instanceof CacheElement ? (CacheElement<T>) subCache : new CacheElement<T>(subCache);
 	}
 
 	@Override
@@ -147,14 +149,47 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 
 	protected class TransactionElement extends AbstractCacheElement<T> {
 
-		@Override
-		T plug(T generic) {
-			return transaction.plug(generic);
+		private Set<LifeManager> lockedLifeManagers = new HashSet<>();
+
+		private void writeLockAllAndCheckMvcc(Iterable<T> adds, Iterable<T> removes) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
+			for (T remove : removes)
+				writeLockAndCheckMvcc(remove);
+			for (T add : adds) {
+				writeLockAndCheckMvcc(add.getMeta());
+				for (T superT : add.getSupers())
+					writeLockAndCheckMvcc(superT);
+				for (T component : add.getComponents())
+					if (component != null)
+						writeLockAndCheckMvcc(component);
+				writeLockAndCheckMvcc(add);
+			}
+		}
+
+		private void writeLockAndCheckMvcc(T generic) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
+			if (generic != null) {
+				LifeManager manager = generic.getLifeManager();
+				if (!lockedLifeManagers.contains(manager)) {
+					manager.writeLock();
+					lockedLifeManagers.add(manager);
+					manager.checkMvcc(getTs());
+				}
+			}
+		}
+
+		private void writeUnlockAll() {
+			for (LifeManager lifeManager : lockedLifeManagers)
+				lifeManager.writeUnlock();
+			lockedLifeManagers = new HashSet<>();
 		}
 
 		@Override
-		void unplug(T generic) {
-			transaction.unplug(generic);
+		protected void apply(Iterable<T> removes, Iterable<T> adds) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
+			try {
+				writeLockAllAndCheckMvcc(adds, removes);
+				transaction.apply(removes, adds);
+			} finally {
+				writeUnlockAll();
+			}
 		}
 
 		@Override
@@ -175,16 +210,6 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 		@Override
 		Snapshot<T> getComposites(T generic) {
 			return transaction.getComposites(generic);
-		}
-
-		@Override
-		protected AbstractCacheElement<T> getSubCache() {
-			return null;
-		}
-
-		@Override
-		int getCacheLevel() {
-			return -1;
 		}
 	}
 
