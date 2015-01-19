@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The value is a long value.
+ * Indicates the value is a <code>long</code> value.
  * 
  * @author Nicolas Feybesse
  * @author Michael Ory
@@ -14,10 +14,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
 public @interface LongValue {
-
 	/**
+	 * The <code>long</code> value.
 	 * 
-	 * @return Return the long.
+	 * @return the <code>long</code> value.
 	 */
 	long value();
 }

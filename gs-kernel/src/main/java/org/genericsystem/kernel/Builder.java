@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -126,7 +125,7 @@ public class Builder<T extends AbstractVertex<T>> implements DefaultBuilder<T> {
 		new GenericHandler<>(generic).conserveRemove();
 	}
 
-	T rebuildAll(T toRebuild, Supplier<T> rebuilder, Set<T> dependenciesToRebuild) {
+	T rebuildAll(T toRebuild, Supplier<T> rebuilder, List<T> dependenciesToRebuild) {
 		dependenciesToRebuild.forEach(getContext()::unplug);
 		if (rebuilder != null) {
 			ConvertMap convertMap = new ConvertMap();
