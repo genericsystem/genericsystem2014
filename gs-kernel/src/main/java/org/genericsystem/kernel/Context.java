@@ -88,18 +88,22 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		generic.getComponents().stream().filter(component -> component != null).forEach(component -> unIndexComposite(component, generic));
 	}
 
-	private abstract class OrderedDependencies extends TreeSet<T> {
+	private class OrderedDependencies extends TreeSet<T> {
 		private static final long serialVersionUID = -5970021419012502402L;
 
 		private final boolean force;
 		private final boolean dependenciesToRemove;
+
+		final Set<T> alreadyVisited = new HashSet<>();
 
 		public OrderedDependencies(boolean force, boolean dependenciesToRemove) {
 			this.force = force;
 			this.dependenciesToRemove = dependenciesToRemove;
 		}
 
-		abstract void addDependecy(T dependency);
+		protected void addDependecy(T dependency) {
+			super.add(dependency);
+		}
 
 		OrderedDependencies visit(T node) {
 			if (!contains(node)) {
@@ -134,14 +138,7 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 	}
 
 	List<T> computeDependencies(T node, boolean force, boolean dependenciesToRemove) {
-		ArrayList<T> dependencies = new ArrayList<>(new OrderedDependencies(force, dependenciesToRemove) {
-			private static final long serialVersionUID = 5907990987735872544L;
-
-			@Override
-			void addDependecy(T dependency) {
-				super.add(dependency);
-			}
-		}.visit(node));
+		ArrayList<T> dependencies = new ArrayList<>(new OrderedDependencies(force, dependenciesToRemove).visit(node));
 		Collections.reverse(dependencies);
 		return dependencies;
 	}
@@ -162,7 +159,6 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 	private abstract class PotentialDependenciesComputer extends OrderedDependencies {
 
 		private static final long serialVersionUID = -5970021419012502402L;
-		private final Set<T> alreadyVisited = new HashSet<>();
 
 		public PotentialDependenciesComputer() {
 			super(true, true);
@@ -171,7 +167,7 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		abstract boolean isSelected(T node);
 
 		@Override
-		void addDependecy(T dependency) {
+		protected void addDependecy(T dependency) {
 			alreadyVisited.add(dependency);
 		}
 
