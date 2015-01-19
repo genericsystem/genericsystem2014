@@ -2,14 +2,22 @@ package org.genericsystem.kernel.systemproperty.constraints;
 
 import java.io.Serializable;
 import java.util.stream.Collectors;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.PropertyConstraintViolationException;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint.CheckableConstraint;
 
+/**
+ * Represents the constraint to allow only one value for an attribute.
+ * 
+ * @author Nicolas Feybesse
+ *
+ * @param <T>
+ *            the implementation of DefaultVertex.
+ */
 public class PropertyConstraint<T extends DefaultVertex<T>> implements CheckableConstraint<T> {
-
 	@Override
 	public void check(T modified, T attribute, Serializable value) throws ConstraintViolationException {
 		T base = modified.getBaseComponent();
