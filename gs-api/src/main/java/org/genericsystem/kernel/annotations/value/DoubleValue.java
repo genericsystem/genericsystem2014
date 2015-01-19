@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The value is a double value.
+ * Indicates the value is a <code>double</code> value.
  * 
  * @author Nicolas Feybesse
  * @author Michael Ory
@@ -14,10 +14,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
 public @interface DoubleValue {
-
 	/**
+	 * The <code>double</code> value.
 	 * 
-	 * @return Return the double.
+	 * @return the <code>double</code> value.
 	 */
 	double value();
 }

@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The value is the Engine value.
+ * Indicates the value is the Engine value.
  * 
  * @author Nicolas Feybesse
  * @author Michael Ory

@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The value is a boolean value.
+ * Indicates the value is a <code>boolean</code> value.
  * 
  * @author Nicolas Feybesse
  * @author Michael Ory
@@ -14,10 +14,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
 public @interface BooleanValue {
-
 	/**
+	 * The <code>boolean</code> value.
 	 * 
-	 * @return Return the boolean.
+	 * @return the <code>boolean</code> value.
 	 */
 	boolean value();
 }

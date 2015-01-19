@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The value is a float value.
+ * Indicates the value is a <code>float</code> value.
  * 
  * @author Nicolas Feybesse
  * @author Michael Ory
@@ -14,10 +14,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
 public @interface FloatValue {
-
 	/**
+	 * The <code>float</code> value.
 	 * 
-	 * @return Return the float.
+	 * @return the <code>float</code> value.
 	 */
 	float value();
 }

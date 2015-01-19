@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The value is a short value.
+ * Indicates the value is a <code>short</code> value.
  * 
  * @author Nicolas Feybesse
  * @author Michael Ory
@@ -14,10 +14,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
 public @interface ShortValue {
-
 	/**
+	 * The <code>short</code> value
 	 * 
-	 * @return Return the short.
+	 * @return the <code>short</code> value.
 	 */
 	short value();
 }

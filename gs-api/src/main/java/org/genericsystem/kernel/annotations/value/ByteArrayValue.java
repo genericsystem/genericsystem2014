@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The value is a array byte value.
+ * Indicates the value is an array byte value.
  * 
  * @author Nicolas Feybesse
  * @author Michael Ory
@@ -14,10 +14,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
 public @interface ByteArrayValue {
-
 	/**
+	 * The array byte value.
 	 * 
-	 * @return Return the array byte.
+	 * @return the array byte value.
 	 */
 	byte[] value();
 }
