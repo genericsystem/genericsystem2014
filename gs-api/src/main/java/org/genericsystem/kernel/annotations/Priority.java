@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Priority of the contraints.
+ * Indicates the priority of the constraints.
  * 
  * @author Nicolas Feybesse
  * @author Michael Ory
@@ -16,10 +16,10 @@ import java.lang.annotation.Target;
 @Target({ ElementType.TYPE })
 @Inherited
 public @interface Priority {
-
 	/**
+	 * The priority of the constraints.
 	 * 
-	 * @return The priority value.
+	 * @return the priority of the constraints.
 	 */
 	int value();
 }

@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Used to declare the dependencies of generic.
+ * Indicates the dependencies of a generic.
  * 
  * @author Nicolas Feybesse
  * @author Michael Ory
@@ -16,11 +16,10 @@ import java.lang.annotation.Target;
 @Target({ ElementType.TYPE })
 @Inherited
 public @interface Dependencies {
-
 	/**
-	 * Returns the class of the dependencies.
+	 * The classes of the dependencies of a generic.
 	 * 
-	 * @return An array of class of the dependencies.
+	 * @return An array of classes of the dependencies of a generic.
 	 */
 	Class<?>[] value();
 }

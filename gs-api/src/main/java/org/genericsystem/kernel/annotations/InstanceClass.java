@@ -6,18 +6,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The class of the generic instances.
+ * Indicates the class of the instances of a generic.
  *
  * @author Nicolas Feybesse
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
 public @interface InstanceClass {
-
 	/**
-	 * Define the class of the instance.
+	 * The class of the instances of a generic.
 	 *
-	 * @return the class of the composites.
+	 * @return the class of the instances of a generic.
 	 */
 	Class<?> value();
 }

@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The composites of a generic.
+ * Indicates the components of a generic.
  * 
  * @author Nicolas Feybesse
  * @author Michael Ory
@@ -14,11 +14,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
 public @interface Components {
-
 	/**
-	 * Returns the class of the composites.
+	 * The classes of the components of a generic.
 	 * 
-	 * @return An array of class of the composites.
+	 * @return An array of classes of the components of a generic.
 	 */
 	Class<?>[] value();
 }
