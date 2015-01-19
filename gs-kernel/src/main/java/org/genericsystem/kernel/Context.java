@@ -1,6 +1,8 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -87,7 +89,7 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		generic.getComponents().stream().filter(component -> component != null).forEach(component -> unIndexComposite(component, generic));
 	}
 
-	class OrderedDependencies extends LinkedHashSet<T> {
+	private class OrderedDependencies extends TreeSet<T> {
 		private static final long serialVersionUID = -5970021419012502402L;
 
 		private final boolean force;
@@ -124,15 +126,15 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		}
 	}
 
-	public Set<T> computePotentialDependencies(T meta, List<T> supers, Serializable value, List<T> components) {
-		return new PotentialDependenciesComputer() {
+	public List<T> computePotentialDependencies(T meta, List<T> supers, Serializable value, List<T> components) {
+		return new ArrayList<T>(new PotentialDependenciesComputer() {
 			private static final long serialVersionUID = -3611136800445783634L;
 
 			@Override
 			boolean isSelected(T node) {
 				return node.isDependencyOf(meta, supers, value, components);
 			}
-		}.visit(meta);
+		}.visit(meta));
 	}
 
 	abstract class PotentialDependenciesComputer extends LinkedHashSet<T> {
@@ -230,30 +232,20 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 	protected void triggersMutation(T oldDependency, T newDependency) {
 	}
 
-	// public Set<T> computeDependencies(T node) {
-	// return computeDependencies(node, true, true);
+	@Deprecated
+	// TODO TO REMOVE
+	public List<T> computeDependencies(T node) {
+		return computeDependencies(node, true, true);
+	}
+
+	// public List<T> computeDependencies(T node) {
+	// return Statics.reverseCollections(new OrderedDependencies2().visit(node));
 	// }
 
-	public List<T> computeDependencies(T node) {
-		return Statics.reverseCollections(new OrderedDependencies2().visit(node));
-	}
-
-	private class OrderedDependencies2 extends TreeSet<T> {
-		private static final long serialVersionUID = -5970021419012502402L;
-
-		OrderedDependencies2 visit(T node) {
-			if (!contains(node)) {
-				getComposites(node).forEach(this::visit);
-				getInheritings(node).forEach(this::visit);
-				getInstances(node).forEach(this::visit);
-				add(node);
-			}
-			return this;
-		}
-	}
-
-	Set<T> computeDependencies(T node, boolean force, boolean dependenciesToRemove) {
-		return new OrderedDependencies(force, dependenciesToRemove).visit(node);
+	List<T> computeDependencies(T node, boolean force, boolean dependenciesToRemove) {
+		ArrayList<T> dependencies = new ArrayList<>(new OrderedDependencies(force, dependenciesToRemove).visit(node));
+		Collections.reverse(dependencies);
+		return dependencies;
 	}
 
 	private void indexInstance(T generic, T instance) {
