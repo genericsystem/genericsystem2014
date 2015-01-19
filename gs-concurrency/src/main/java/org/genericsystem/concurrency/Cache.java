@@ -45,8 +45,9 @@ public class Cache extends org.genericsystem.cache.Cache<Generic> {
 		return (Engine) super.getRoot();
 	}
 
+	@Override
 	public void pickNewTs() throws RollbackException {
-		transaction = new Transaction(getRoot());
+		super.pickNewTs();
 		listener.triggersRefreshEvent();
 	}
 

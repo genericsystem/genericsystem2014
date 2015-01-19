@@ -7,8 +7,12 @@ import org.genericsystem.kernel.Checker;
 
 public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem.kernel.Transaction<T> {
 
-	public Transaction(DefaultEngine<T> engine, long ts) {
+	protected Transaction(DefaultEngine<T> engine, long ts) {
 		super(engine, ts);
+	}
+
+	protected Transaction(DefaultEngine<T> engine) {
+		super(engine);
 	}
 
 	@Override

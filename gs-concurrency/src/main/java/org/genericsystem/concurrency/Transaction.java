@@ -5,10 +5,10 @@ import org.genericsystem.cache.Generic;
 public class Transaction extends org.genericsystem.cache.Transaction<Generic> {
 
 	Transaction(Engine engine) {
-		this(engine, engine.pickNewTs());
+		super(engine);
 	}
 
-	Transaction(Engine engine, long ts) {
+	protected Transaction(Engine engine, long ts) {
 		super(engine, ts);
 	}
 

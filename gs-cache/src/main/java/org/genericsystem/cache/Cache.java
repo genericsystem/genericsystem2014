@@ -48,6 +48,10 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 		cacheElement = new CacheElement<>(cacheElement == null ? new TransactionElement() : cacheElement.getSubCache());
 	}
 
+	public void pickNewTs() throws RollbackException {
+		transaction = new Transaction<>(getRoot(), getRoot().pickNewTs());
+	}
+
 	public void flush() {
 		if (!equals(getRoot().getCurrentCache()))
 			discardWithException(new CacheNoStartedException("The Cache isn't started"));

@@ -267,11 +267,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 
 		protected Loader(ObjectInputStream objectInputStream) {
 			this.objectInputStream = objectInputStream;
-			this.transaction = buildTransaction();
-		}
-
-		protected Transaction<T> buildTransaction() {
-			return (Transaction<T>) root.buildTransaction();
+			this.transaction = (Transaction<T>) root.buildTransaction();
 		}
 
 		public Transaction<T> getTransaction() {
@@ -305,12 +301,16 @@ public class Archiver<T extends AbstractVertex<T>> {
 			vertexMap.put(id, getOrBuild(id, null, meta, supers, value, components, otherTs));
 			log.info("load dependency : " + vertexMap.get(id).info() + " " + id + " " + vertexMap.get(id).getTs() + " birthTs : " + vertexMap.get(id).getLifeManager().getBirthTs());
 
-			assert vertexMap.get(id).isAlive();
+			assert getTransaction().isAlive(vertexMap.get(id)) : vertexMap.get(id).info();
 		}
 
 		protected T getOrBuild(long ts, Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
 			T instance = meta == null ? transaction.getMeta(components.size()) : meta.getDirectInstance(value, components);
-			return instance == null ? transaction.getBuilder().internalBuild(ts, clazz, meta, supers, value, components, otherTs) : instance;
+			if (instance != null)
+				return instance;
+			if (otherTs[0] == 0L)
+				otherTs[0] = getTransaction().getTs();
+			return transaction.getBuilder().internalBuild(ts, clazz, meta, supers, value, components, otherTs);
 		}
 
 		protected List<T> loadAncestors(Map<Long, T> vertexMap) throws IOException {

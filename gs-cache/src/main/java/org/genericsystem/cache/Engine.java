@@ -36,11 +36,12 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
 		cache.flush();
 		archiver = new Archiver<Generic>(this, persistentDirectoryPath);
+		cache.pickNewTs();
 	}
 
 	@Override
 	public Transaction<Generic> buildTransaction() {
-		return new Transaction<Generic>(Engine.this, pickNewTs());
+		return new Transaction<Generic>(Engine.this);
 	}
 
 	@Override

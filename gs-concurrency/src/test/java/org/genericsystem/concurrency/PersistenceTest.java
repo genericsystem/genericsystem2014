@@ -42,6 +42,9 @@ public class PersistenceTest extends AbstractTest {
 		root.close();
 
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
+		// assert false : engine.find(Vehicle.class);
+		// assert false : engine.getInstance(Vehicle.class).getLifeManager().getBirthTs() + " " + root.getInstance(Vehicle.class).getLifeManager().getBirthTs();
+		// assert false : root.getCurrentCache().computeDependencies(root) + "\n" + engine.getCurrentCache().computeDependencies(engine);
 		compareGraph(root, engine);
 		engine.getCurrentCache().flush();
 		engine.close();
@@ -177,7 +180,7 @@ public class PersistenceTest extends AbstractTest {
 		List<Generic> readVisit = new ArrayList<>(readNode.getCurrentCache().computeDependencies(readNode));
 		assert persistVisit.size() == readVisit.size() : persistVisit + " \n " + readVisit;
 		for (int i = 0; i < persistVisit.size(); i++) {
-			log.info("YYY"+persistVisit.get(i).info() + " " + readVisit.get(i).info());
+			log.info("YYY" + persistVisit.get(i).info() + " " + readVisit.get(i).info());
 			assert persistVisit.get(i).genericEquals(readVisit.get(i));
 			LifeManager persistLifeManager = persistVisit.get(i).getLifeManager();
 			LifeManager readLifeManager = readVisit.get(i).getLifeManager();
