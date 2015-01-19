@@ -13,7 +13,7 @@ import org.genericsystem.api.exception.CollisionException;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.CrossEnginesAssignementsException;
 import org.genericsystem.api.exception.ExistsException;
-import org.genericsystem.api.exception.MetaLevelConstraintViolationException;
+import org.genericsystem.api.exception.LevelConstraintViolationException;
 import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
 import org.genericsystem.api.exception.NotAliveConstraintViolationException;
 import org.genericsystem.api.exception.NotAllowedSerializableTypeException;
@@ -205,13 +205,13 @@ public class Checker<T extends AbstractVertex<T>> implements DefaultChecker<T> {
 
 	private void checkLevel(T vertex) {
 		if (vertex.getLevel() > ApiStatics.CONCRETE)
-			context.discardWithException(new MetaLevelConstraintViolationException("Unable to instanciate a concrete generic : " + vertex.getMeta()));
+			context.discardWithException(new LevelConstraintViolationException("Unable to instanciate a concrete generic : " + vertex.getMeta()));
 	}
 
 	private void checkLevelComponents(T vertex) {
 		for (T component : vertex.getComponents())
 			if ((component == null ? vertex.getLevel() : component.getLevel()) > vertex.getLevel())
-				context.discardWithException(new MetaLevelConstraintViolationException("Inappropriate component meta level : " + component.getLevel() + " for component : " + component + ". Component meta level for added node is : " + vertex.getLevel()));
+				context.discardWithException(new LevelConstraintViolationException("Inappropriate component meta level : " + component.getLevel() + " for component : " + component + ". Component meta level for added node is : " + vertex.getLevel()));
 	}
 
 	private void checkSignatureUnicity(T vertex) {

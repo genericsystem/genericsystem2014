@@ -4,6 +4,8 @@ import java.util.List;
 
 /**
  * Statics constants and methods useful when dealing with Generics.
+ * 
+ * @author Nicolas Feybesse
  */
 public class ApiStatics {
 	/**
@@ -54,6 +56,8 @@ public class ApiStatics {
 	/**
 	 * Checks that each of the <code>overrides</code> is inherited by at least one of the <code>supers</code>.
 	 * 
+	 * @param <T>
+	 *            the implementation of IVertex used for all nodes.
 	 * @param supers
 	 *            the Generics that may inherit.
 	 * @param overrides

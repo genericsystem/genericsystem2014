@@ -1,7 +1,7 @@
 package org.genericsystem.kernel;
 
 import org.genericsystem.api.core.ApiStatics;
-import org.genericsystem.api.exception.InstanceValueClassViolationConstraint;
+import org.genericsystem.api.exception.InstanceValueClassConstraintViolationException;
 import org.genericsystem.api.exception.PropertyConstraintViolationException;
 import org.genericsystem.api.exception.SingularConstraintViolationException;
 import org.genericsystem.api.exception.UniqueValueConstraintViolationException;
@@ -54,7 +54,7 @@ public class ConsitencyConstraintTest extends AbstractTest {
 		vehicle.addAttribute(power, "Power");
 		myVehicle.addHolder(power, "125");
 
-		catchAndCheckCause(() -> power.setClassConstraint(Integer.class), InstanceValueClassViolationConstraint.class);
+		catchAndCheckCause(() -> power.setClassConstraint(Integer.class), InstanceValueClassConstraintViolationException.class);
 
 	}
 }

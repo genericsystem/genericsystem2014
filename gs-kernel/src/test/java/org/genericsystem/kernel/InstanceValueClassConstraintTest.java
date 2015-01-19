@@ -2,7 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.stream.Stream;
 
-import org.genericsystem.api.exception.InstanceValueClassViolationConstraint;
+import org.genericsystem.api.exception.InstanceValueClassConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test
@@ -43,7 +43,7 @@ public class InstanceValueClassConstraintTest extends AbstractTest {
 		vehicle.addAttribute(power, "Power");
 		power.setClassConstraint(Integer.class);
 
-		catchAndCheckCause(() -> myVehicle.addHolder(power, "125"), InstanceValueClassViolationConstraint.class);
+		catchAndCheckCause(() -> myVehicle.addHolder(power, "125"), InstanceValueClassConstraintViolationException.class);
 
 	}
 

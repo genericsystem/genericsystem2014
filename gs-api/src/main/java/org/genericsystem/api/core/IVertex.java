@@ -218,7 +218,7 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 *            the value of returned attribute.
 	 * @param components
 	 *            the components of returned attribute.
-	 * @return an attribute if exists, <code>null<code> otherwise.
+	 * @return an attribute if exists, <code>null</code> otherwise.
 	 */
 	@SuppressWarnings("unchecked")
 	T getAttribute(Serializable value, T... components);

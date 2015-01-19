@@ -11,6 +11,8 @@ import java.util.stream.Stream;
  * This is a functional interface whose functional method is {@link #get}.
  * </p>
  * 
+ * @author Nicolas Feybesse
+ * 
  * @param <T>
  *            the type of element contained by the <code>Snapshot</code>.
  */

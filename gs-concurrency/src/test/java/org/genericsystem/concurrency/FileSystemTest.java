@@ -3,7 +3,7 @@ package org.genericsystem.concurrency;
 import java.util.Arrays;
 
 import org.genericsystem.api.exception.ExistsException;
-import org.genericsystem.api.exception.InstanceValueClassViolationConstraint;
+import org.genericsystem.api.exception.InstanceValueClassConstraintViolationException;
 import org.genericsystem.concurrency.FileSystem.Directory;
 import org.genericsystem.concurrency.FileSystem.File;
 import org.genericsystem.concurrency.FileSystem.FileType;
@@ -104,7 +104,7 @@ public class FileSystemTest extends AbstractTest {
 		final Directory rootDirectory = directoryTree.addRootDirectory("rootDirectory");
 		final FileType fileSystem = engine.find(FileType.class);
 
-		catchAndCheckCause(() -> rootDirectory.addHolder(fileSystem, 2L), InstanceValueClassViolationConstraint.class); // Exception
+		catchAndCheckCause(() -> rootDirectory.addHolder(fileSystem, 2L), InstanceValueClassConstraintViolationException.class); // Exception
 	}
 
 	// Modifier par rapport au test d'origine

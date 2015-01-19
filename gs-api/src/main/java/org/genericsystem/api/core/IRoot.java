@@ -15,6 +15,8 @@ public interface IRoot<T extends IVertex<T>> extends IVertex<T> {
 	/**
 	 * Return a vertex built during new Root.
 	 *
+	 * @param <Custom>
+	 *            an implementation of a customizable subtype of T.
 	 * @param clazz
 	 *            the expected vertex.
 	 * @return a vertex.
