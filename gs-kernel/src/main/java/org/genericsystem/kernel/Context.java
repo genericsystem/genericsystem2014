@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -89,7 +88,7 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		generic.getComponents().stream().filter(component -> component != null).forEach(component -> unIndexComposite(component, generic));
 	}
 
-	private class OrderedDependencies extends TreeSet<T> {
+	private abstract class OrderedDependencies extends TreeSet<T> {
 		private static final long serialVersionUID = -5970021419012502402L;
 
 		private final boolean force;
@@ -99,6 +98,8 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 			this.force = force;
 			this.dependenciesToRemove = dependenciesToRemove;
 		}
+
+		abstract void addDependecy(T dependency);
 
 		OrderedDependencies visit(T node) {
 			if (!contains(node)) {
@@ -117,7 +118,7 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 								discardWithException(new ReferentialIntegrityConstraintViolationException(composite + " is Referential Integrity for ancestor " + node + " by composite position : " + componentPos));
 					visit(composite);
 				}
-				add(node);
+				addDependecy(node);
 				for (int axe = 0; axe < node.getComponents().size(); axe++)
 					if (node.isCascadeRemoveEnabled(axe))
 						visit(node.getComponents().get(axe));
@@ -126,8 +127,27 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		}
 	}
 
+	@Deprecated
+	// TODO TO REMOVE
+	public List<T> computeDependencies(T node) {
+		return computeDependencies(node, true, true);
+	}
+
+	List<T> computeDependencies(T node, boolean force, boolean dependenciesToRemove) {
+		ArrayList<T> dependencies = new ArrayList<>(new OrderedDependencies(force, dependenciesToRemove) {
+			private static final long serialVersionUID = 5907990987735872544L;
+
+			@Override
+			void addDependecy(T dependency) {
+				super.add(dependency);
+			}
+		}.visit(node));
+		Collections.reverse(dependencies);
+		return dependencies;
+	}
+
 	public List<T> computePotentialDependencies(T meta, List<T> supers, Serializable value, List<T> components) {
-		return new ArrayList<T>(new PotentialDependenciesComputer() {
+		ArrayList<T> dependencies = new ArrayList<>(new PotentialDependenciesComputer() {
 			private static final long serialVersionUID = -3611136800445783634L;
 
 			@Override
@@ -135,35 +155,34 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 				return node.isDependencyOf(meta, supers, value, components);
 			}
 		}.visit(meta));
+		Collections.reverse(dependencies);
+		return dependencies;
 	}
 
-	abstract class PotentialDependenciesComputer extends LinkedHashSet<T> {
+	private abstract class PotentialDependenciesComputer extends OrderedDependencies {
+
 		private static final long serialVersionUID = -5970021419012502402L;
 		private final Set<T> alreadyVisited = new HashSet<>();
 
-		abstract boolean isSelected(T node);
-
-		PotentialDependenciesComputer visit(T node) {
-			if (!alreadyVisited.contains(node))
-				if (isSelected(node))
-					addDependency(node);
-				else {
-					alreadyVisited.add(node);
-					node.getComposites().forEach(this::visit);
-					node.getInheritings().forEach(this::visit);
-					node.getInstances().forEach(this::visit);
-				}
-			return this;
+		public PotentialDependenciesComputer() {
+			super(true, true);
 		}
 
-		private void addDependency(T node) {
+		abstract boolean isSelected(T node);
+
+		@Override
+		void addDependecy(T dependency) {
+			alreadyVisited.add(dependency);
+		}
+
+		@Override
+		PotentialDependenciesComputer visit(T node) {
 			if (!alreadyVisited.contains(node)) {
-				alreadyVisited.add(node);
-				node.getComposites().forEach(this::addDependency);
-				node.getInheritings().forEach(this::addDependency);
-				node.getInstances().forEach(this::addDependency);
-				super.add(node);
+				super.visit(node);
+				if (isSelected(node))
+					super.add(node);
 			}
+			return this;
 		}
 	}
 
@@ -230,22 +249,6 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 	}
 
 	protected void triggersMutation(T oldDependency, T newDependency) {
-	}
-
-	@Deprecated
-	// TODO TO REMOVE
-	public List<T> computeDependencies(T node) {
-		return computeDependencies(node, true, true);
-	}
-
-	// public List<T> computeDependencies(T node) {
-	// return Statics.reverseCollections(new OrderedDependencies2().visit(node));
-	// }
-
-	List<T> computeDependencies(T node, boolean force, boolean dependenciesToRemove) {
-		ArrayList<T> dependencies = new ArrayList<>(new OrderedDependencies(force, dependenciesToRemove).visit(node));
-		Collections.reverse(dependencies);
-		return dependencies;
 	}
 
 	private void indexInstance(T generic, T instance) {
