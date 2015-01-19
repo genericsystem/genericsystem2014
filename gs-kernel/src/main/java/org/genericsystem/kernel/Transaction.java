@@ -6,9 +6,13 @@ public class Transaction<T extends AbstractVertex<T>> extends Context<T> {
 
 	private final long ts;
 
-	public Transaction(DefaultRoot<T> root, long ts) {
+	protected Transaction(DefaultRoot<T> root, long ts) {
 		super(root);
 		this.ts = ts;
+	}
+
+	protected Transaction(DefaultRoot<T> root) {
+		this(root, root.pickNewTs());
 	}
 
 	@Override

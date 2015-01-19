@@ -78,7 +78,7 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 	protected void unplug(T generic) {
 		getChecker().checkAfterBuild(false, false, generic);
 		generic.getLifeManager().kill(getTs());
-		internalUnplug(generic);
+		// internalUnplug(generic);
 	}
 
 	void internalUnplug(T generic) {

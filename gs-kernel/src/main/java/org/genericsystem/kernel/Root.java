@@ -27,7 +27,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 
 	public Root(Serializable value, String persistentDirectoryPath, Class<?>... userClasses) {
 		init(0L, null, Collections.emptyList(), value, Collections.emptyList(), Statics.SYSTEM_TS);
-		context = new Transaction<>(this, 0L);
+		context = new Transaction<>(this, pickNewTs());
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
 		archiver = new Archiver<>(this, persistentDirectoryPath);
 	}
