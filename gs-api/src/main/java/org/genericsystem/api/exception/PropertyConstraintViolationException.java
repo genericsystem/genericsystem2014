@@ -1,7 +1,7 @@
 package org.genericsystem.api.exception;
 
 /**
- * Thrown when a user operation violates the <code>PropertyConstraint</code>.
+ * Thrown when a user operation violates the <code>PropertyConstraint</code>. The user tries to add a second value for an attribute.
  * 
  * @author Nicolas Feybesse
  * @see org.genericsystem.kernel.systemproperty.constraints.PropertyConstraint

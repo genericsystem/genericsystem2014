@@ -1,7 +1,7 @@
 package org.genericsystem.api.exception;
 
 /**
- * Thrown when a user operation violates the <code>UniqueValueConstraint</code>.
+ * Thrown when a user operation violates the <code>UniqueValueConstraint</code>. The user tries to add a second instance on a type.
  * 
  * @author Nicolas Feybesse
  * @see org.genericsystem.kernel.systemproperty.constraints.UniqueValueConstraint

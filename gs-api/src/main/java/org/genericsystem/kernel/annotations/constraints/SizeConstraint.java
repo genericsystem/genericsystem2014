@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This constraint represent the links size for an attribute.
+ * The System Property to allow a fixed number of links for a relation.
  * 
  * @author Nicolas Feybesse
  * @author Michael Ory
@@ -14,11 +14,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
 public @interface SizeConstraint {
-
 	/**
-	 * Returns the positions of the composites.
+	 * The positions of the components.
 	 * 
-	 * @return An array of composite position.
+	 * @return An array of component positions.
 	 */
 	int[] value() default { 0 };
 }

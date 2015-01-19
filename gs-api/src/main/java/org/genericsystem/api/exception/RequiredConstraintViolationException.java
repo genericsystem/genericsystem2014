@@ -1,7 +1,7 @@
 package org.genericsystem.api.exception;
 
 /**
- * Thrown when a user operation violates the <code>RequiredConstraint</code>.
+ * Thrown when a user operation violates the <code>RequiredConstraint</code>. An attribute should have a value.
  * 
  * @author Nicolas Feybesse
  * @see org.genericsystem.kernel.systemproperty.constraints.RequiredConstraint

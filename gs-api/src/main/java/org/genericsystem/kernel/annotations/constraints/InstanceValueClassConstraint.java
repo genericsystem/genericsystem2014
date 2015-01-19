@@ -16,12 +16,10 @@ import java.lang.annotation.Target;
 @Target({ ElementType.TYPE })
 @Inherited
 public @interface InstanceValueClassConstraint {
-
 	/**
-	 * Returns the class of type constrained.
+	 * The class of type constrained.
 	 * 
-	 * @return The class.
+	 * @return the class of type constrained.
 	 */
 	Class<?> value();
-
 }

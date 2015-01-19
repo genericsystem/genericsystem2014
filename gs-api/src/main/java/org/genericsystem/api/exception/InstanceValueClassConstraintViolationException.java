@@ -2,6 +2,10 @@ package org.genericsystem.api.exception;
 
 /**
  * Thrown when a user operation violates the <code>InstanceValueClassConstraint</code>.
+ * <p>
+ * The <code>Class</code> for the value of an instance is incorrect.<br>
+ * For example, adding a value of type <code>String</code> when the expected type is <code>Integer</code> will throw a InstanceValueClassConstraintViolationException.
+ * </p>
  * 
  * @author Nicolas Feybesse
  * @see org.genericsystem.kernel.systemproperty.constraints.InstanceValueClassConstraint
