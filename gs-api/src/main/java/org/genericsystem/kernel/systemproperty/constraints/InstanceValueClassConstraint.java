@@ -1,13 +1,21 @@
 package org.genericsystem.kernel.systemproperty.constraints;
 
 import java.io.Serializable;
+
 import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.api.exception.InstanceValueClassConstraintViolationException;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint.CheckedConstraint;
 
+/**
+ * Represents the constraint to precise the <code>Class</code> of the value of instances.
+ * 
+ * @author Nicolas Feybesse
+ *
+ * @param <T>
+ *            the implementation of DefaultVertex.
+ */
 public class InstanceValueClassConstraint<T extends DefaultVertex<T>> implements CheckedConstraint<T> {
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public void check(T modified, T attribute, Serializable value) throws ConstraintViolationException {
