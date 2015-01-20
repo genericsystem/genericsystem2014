@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
+import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test
@@ -24,10 +25,12 @@ public class IteratorAndRemoveCacheTest extends AbstractTest {
 		for (Generic g : car.getInstances()) {
 			if (cpt % 2 == 0) {
 				cache1.start();
+				cache1.pickNewTs();
 				g.remove();
 				cache1.flush();
 			} else {
 				cache2.start();
+				cache2.pickNewTs();
 				g.remove();
 				cache2.flush();
 			}
@@ -52,18 +55,19 @@ public class IteratorAndRemoveCacheTest extends AbstractTest {
 	public void test002_() {
 		Engine engine = new Engine();
 		Generic car = engine.addInstance("Car");
-		Generic myCar1 = car.addInstance("myCar1");
-		Cache cache1 = engine.getCurrentCache();
-		cache1.flush();
+		Generic myCar = car.addInstance("myCar");
+		Cache cache = engine.getCurrentCache();
+		cache.flush();
 
 		Cache cache2 = engine.newCache().start();
-		myCar1.remove();
+		myCar.remove();
 
-		cache1.start();
-		myCar1.remove();
-		cache1.flush();
+		cache.start();
+		cache.pickNewTs();
+		myCar.remove();
+		cache.flush();
 		cache2.start();
-		catchAndCheckCause(() -> cache2.flush(), AliveConstraintViolationException.class);
+		catchAndCheckCause(() -> cache2.flush(), OptimisticLockConstraintViolationException.class);
 	}
 
 	public void test003_IterateAndRemove() {
@@ -83,10 +87,12 @@ public class IteratorAndRemoveCacheTest extends AbstractTest {
 				cache2.flush();
 			if (cpt % 2 == 0) {
 				cache1.start();
+				cache1.pickNewTs();
 				g.remove();
 				cache1.flush();
 			} else {
 				cache2.start();
+				cache2.pickNewTs();
 				g.remove();
 			}
 			cpt++;
@@ -94,44 +100,8 @@ public class IteratorAndRemoveCacheTest extends AbstractTest {
 		cache2.flush();
 		assert car.getInstances().size() == 0;
 		cache1.start();
+		cache1.pickNewTs();
 		assert car.getInstances().size() == 0;
-	}
-
-	public void test004_IterateAndRemove() {
-		Engine engine = new Engine();
-		Cache cache1 = engine.getCurrentCache();
-		Cache cache2 = engine.newCache().start();
-		Generic car = engine.addInstance("Car");
-		Generic myCar1 = car.addInstance("myCar1");
-		Generic myCar2 = car.addInstance("myCar2");
-		cache2.flush();
-		Generic myCar3 = car.addInstance("myCar3");
-		Generic myCar4 = car.addInstance("myCar4");
-
-		cache1.start();
-		int cpt = 0;
-		for (Generic g : car.getInstances()) {
-			if (cpt % 2 == 0) {
-				cache1.start();
-				g.remove();
-				cache1.flush();
-			} else {
-				cache2.start();
-				g.remove();
-			}
-			cpt++;
-		}
-		assert car.getInstances().contains(myCar4);
-		assert car.getInstances().contains(myCar3);
-		assert car.getInstances().size() == 2;
-		cache1.start();
-		assert car.getInstances().contains(myCar2);
-		assert car.getInstances().size() == 1;
-		cache2.start().flush();
-		cache1.start();
-		assert car.getInstances().contains(myCar4);
-		assert car.getInstances().contains(myCar3);
-		assert car.getInstances().size() == 2;
 	}
 
 	// public void test005_IterateAndRemove() {
@@ -165,35 +135,6 @@ public class IteratorAndRemoveCacheTest extends AbstractTest {
 	// assert cpt == 4 : cpt;
 	//
 	// }
-
-	public void test006_IterateAndRemove() {
-		Engine engine = new Engine();
-		Cache cache1 = engine.getCurrentCache();
-
-		Generic car = engine.addInstance("Car");
-		Generic myCar1 = car.addInstance("myCar1");
-		Generic myCar2 = car.addInstance("myCar2");
-		Generic myCar3 = car.addInstance("myCar3");
-		Generic myCar4 = car.addInstance("myCar4");
-		cache1.flush();
-		Cache cache2 = engine.newCache().start();
-		cache1.start();
-
-		Snapshot<Generic> myCars = car.getInstances();
-		Iterator<Generic> iterator = myCars.iterator();
-		int cpt = 0;
-		while (iterator.hasNext()) {
-			Generic g = iterator.next();
-			if (g.equals(myCar2)) {
-				cache2.start();
-				myCar3.remove();
-				cache2.flush();
-				cache1.start();
-			}
-			cpt++;
-		}
-		assert cpt == 3 : cpt;
-	}
 
 	public void test009_IterateAndAdd() {
 		Engine engine = new Engine();

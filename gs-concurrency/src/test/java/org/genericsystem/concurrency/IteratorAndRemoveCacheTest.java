@@ -3,11 +3,29 @@ package org.genericsystem.concurrency;
 import java.util.Iterator;
 
 import org.genericsystem.api.core.Snapshot;
+import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
 import org.genericsystem.cache.Generic;
 import org.testng.annotations.Test;
 
 @Test
 public class IteratorAndRemoveCacheTest extends AbstractTest {
+
+	public void test002_() {
+		Engine engine = new Engine();
+		Generic car = engine.addInstance("Car");
+		Generic myCar = car.addInstance("myCar");
+		Cache cache = engine.getCurrentCache();
+		cache.flush();
+
+		Cache cache2 = engine.newCache().start();
+		myCar.remove();
+
+		cache.start();
+		myCar.remove();
+		cache.flush();
+		cache2.start();
+		catchAndCheckCause(() -> cache2.flush(), OptimisticLockConstraintViolationException.class);
+	}
 
 	public void test002_IterateAndRemove() {
 		Engine engine = new Engine();
