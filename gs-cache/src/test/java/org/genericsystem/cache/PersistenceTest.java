@@ -1,4 +1,4 @@
-package org.genericsystem.concurrency;
+package org.genericsystem.cache;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import org.genericsystem.cache.Generic;
 import org.genericsystem.kernel.LifeManager;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.annotations.SystemGeneric;

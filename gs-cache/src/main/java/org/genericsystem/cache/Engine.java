@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 
+import org.genericsystem.cache.Cache.ContextEventListener;
 import org.genericsystem.kernel.Archiver;
 import org.genericsystem.kernel.Config.MetaAttribute;
 import org.genericsystem.kernel.Config.MetaRelation;
@@ -37,6 +38,10 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 		cache.flush();
 		archiver = new Archiver<Generic>(this, persistentDirectoryPath);
 		cache.pickNewTs();
+	}
+
+	public Cache<Generic> newCache(ContextEventListener<Generic> listener) {
+		return new Cache<Generic>(new Transaction<Generic>(getRoot()), listener);
 	}
 
 	@Override

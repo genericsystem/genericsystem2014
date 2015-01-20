@@ -16,6 +16,12 @@ public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem
 	}
 
 	@Override
+	protected void unplug(T generic) {
+		generic.getLifeManager().kill(getTs());
+		((DefaultEngine<T>) getRoot()).getGarbageCollector().add(generic);
+	}
+
+	@Override
 	protected Checker<T> buildChecker() {
 		return new Checker<T>(Transaction.this) {
 			@Override

@@ -12,15 +12,27 @@ import org.genericsystem.cache.Generic.SystemClass;
 import org.genericsystem.kernel.Builder;
 import org.genericsystem.kernel.Context;
 import org.genericsystem.kernel.LifeManager;
+import org.genericsystem.kernel.Statics;
 
 public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 
 	protected Transaction<T> transaction;
 	protected CacheElement<T> cacheElement;
+	private final ContextEventListener<T> listener;
 
-	protected Cache(Transaction<T> transaction) {
-		super(transaction.getRoot());
-		this.transaction = transaction;
+	protected Cache(DefaultEngine<T> engine) {
+		this(new Transaction<T>(engine));
+	}
+
+	protected Cache(Transaction<T> subContext) {
+		this(subContext, new ContextEventListener<T>() {
+		});
+	}
+
+	protected Cache(Transaction<T> subContext, ContextEventListener<T> listener) {
+		super(subContext.getRoot());
+		this.listener = listener;
+		this.transaction = subContext;
 		initialize();
 	}
 
@@ -50,18 +62,49 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 
 	public void pickNewTs() throws RollbackException {
 		transaction = new Transaction<>(getRoot(), getRoot().pickNewTs());
+		listener.triggersRefreshEvent();
 	}
 
 	public void flush() {
 		if (!equals(getRoot().getCurrentCache()))
 			discardWithException(new CacheNoStartedException("The Cache isn't started"));
-		checkConstraints();
 		try {
+			checkConstraints();
 			doSynchronizedApplyInSubContext();
+			initialize();
+			listener.triggersFlushEvent();
 		} catch (ConcurrencyControlException | OptimisticLockConstraintViolationException exception) {
 			discardWithException(exception);
 		}
-		initialize();
+	}
+
+	public void flushLater() {
+		if (!equals(getRoot().getCurrentCache()))
+			discardWithException(new CacheNoStartedException("The Cache isn't started"));
+		Throwable cause = null;
+		for (int attempt = 0; attempt < Statics.ATTEMPTS; attempt++) {
+			try {
+				// TODO reactivate this
+				// if (getEngine().pickNewTs() - getTs() >= timeOut)
+				// throw new ConcurrencyControlException("The timestamp cache (" + getTs() + ") is bigger than the life time out : " + Statics.LIFE_TIMEOUT);
+				checkConstraints();
+				doSynchronizedApplyInSubContext();
+				initialize();
+				listener.triggersFlushEvent();
+				return;
+			} catch (ConcurrencyControlException e) {
+				cause = e;
+				try {
+					Thread.sleep(Statics.ATTEMPT_SLEEP);
+					pickNewTs();
+				} catch (InterruptedException ex) {
+					throw new IllegalStateException(ex);
+				}
+			} catch (Exception e) {
+				discardWithException(e);
+			}
+		}
+		discardWithException(cause);
 	}
 
 	protected void doSynchronizedApplyInSubContext() throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
@@ -83,6 +126,8 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 
 	public void clear() {
 		initialize();
+		listener.triggersClearEvent();
+		listener.triggersRefreshEvent();
 	}
 
 	public void mount() {
@@ -92,6 +137,8 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 	public void unmount() {
 		AbstractCacheElement<T> subCache = cacheElement.getSubCache();
 		cacheElement = subCache instanceof CacheElement ? (CacheElement<T>) subCache : new CacheElement<T>(subCache);
+		listener.triggersClearEvent();
+		listener.triggersRefreshEvent();
 	}
 
 	@Override
@@ -105,6 +152,12 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 
 	public void stop() {
 		getRoot().stop(this);
+	}
+
+	@Override
+	protected void triggersMutation(T oldDependency, T newDependency) {
+		if (listener != null)
+			listener.triggersMutationEvent(oldDependency, newDependency);
 	}
 
 	@Override
@@ -214,6 +267,21 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 		@Override
 		Snapshot<T> getComposites(T generic) {
 			return transaction.getComposites(generic);
+		}
+	}
+
+	public static interface ContextEventListener<X> {
+
+		default void triggersMutationEvent(X oldDependency, X newDependency) {
+		}
+
+		default void triggersRefreshEvent() {
+		}
+
+		default void triggersClearEvent() {
+		}
+
+		default void triggersFlushEvent() {
 		}
 	}
 

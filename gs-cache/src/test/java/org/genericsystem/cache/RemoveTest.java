@@ -64,8 +64,14 @@ public class RemoveTest extends AbstractTest {
 		Generic myBmwBlue = myBmw.addHolder(color, "blue");
 
 		myBmwRed.remove();
-		myBmwRed = myBmw.addHolder(color, "red");
-		myBmwRed.remove();
+		assert !myBmwRed.isAlive();
+		engine.getCurrentCache().flush();
+		assert !myBmwRed.isAlive();
+		Generic myBmwRed2 = myBmw.addHolder(color, "red");
+		engine.getCurrentCache().flush();
+		assert !myBmwRed.isAlive();
+		assert myBmwRed2.isAlive();
+		myBmwRed2.remove();
 
 		assert myBmw.getHolders(color).contains(myBmwBlue);
 		assert myBmw.getHolders(color).size() == 1;

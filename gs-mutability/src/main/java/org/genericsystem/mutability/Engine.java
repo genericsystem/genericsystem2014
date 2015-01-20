@@ -12,10 +12,10 @@ public class Engine implements Generic, IRoot<Generic>, MethodHandler {
 
 	protected final ThreadLocal<Cache> cacheLocal = new ThreadLocal<>();
 
-	private final org.genericsystem.concurrency.Engine concurrencyEngine;
+	private final org.genericsystem.cache.Engine cacheEngine;
 
 	public Engine() {
-		this.concurrencyEngine = new org.genericsystem.concurrency.Engine();
+		this.cacheEngine = new org.genericsystem.cache.Engine();
 		newCache().start();
 	}
 
@@ -28,7 +28,7 @@ public class Engine implements Generic, IRoot<Generic>, MethodHandler {
 	}
 
 	public Engine(Serializable engineValue, String persistentDirectoryPath, Class<?>... userClasses) {
-		this.concurrencyEngine = new org.genericsystem.concurrency.Engine(engineValue, persistentDirectoryPath, userClasses);
+		this.cacheEngine = new org.genericsystem.cache.Engine(engineValue, persistentDirectoryPath, userClasses);
 		newCache().start();
 	}
 
@@ -45,11 +45,11 @@ public class Engine implements Generic, IRoot<Generic>, MethodHandler {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <Custom extends Generic> Custom find(Class<?> clazz) {
-		return (Custom) getCurrentCache().wrap(clazz, concurrencyEngine.find(clazz));
+		return (Custom) getCurrentCache().wrap(clazz, cacheEngine.find(clazz));
 	}
 
 	public Cache newCache() {
-		return new Cache(this, concurrencyEngine);
+		return new Cache(this, cacheEngine);
 	}
 
 	Cache start(Cache cache) {
@@ -88,41 +88,41 @@ public class Engine implements Generic, IRoot<Generic>, MethodHandler {
 
 	@Override
 	public Generic addTree(Serializable value) {
-		return getCurrentCache().wrap(concurrencyEngine.addTree(value));
+		return getCurrentCache().wrap(cacheEngine.addTree(value));
 	}
 
 	@Override
 	public Generic addTree(Serializable value, int parentsNumber) {
-		return getCurrentCache().wrap(concurrencyEngine.addTree(value, parentsNumber));
+		return getCurrentCache().wrap(cacheEngine.addTree(value, parentsNumber));
 	}
 
 	@Override
 	public Generic setTree(Serializable value) {
-		return getCurrentCache().wrap(concurrencyEngine.setTree(value));
+		return getCurrentCache().wrap(cacheEngine.setTree(value));
 	}
 
 	@Override
 	public Generic setTree(Serializable value, int parentsNumber) {
-		return getCurrentCache().wrap(concurrencyEngine.setTree(value, parentsNumber));
+		return getCurrentCache().wrap(cacheEngine.setTree(value, parentsNumber));
 	}
 
 	@Override
 	public Generic getMetaAttribute() {
-		return getCurrentCache().wrap(concurrencyEngine.getMetaAttribute());
+		return getCurrentCache().wrap(cacheEngine.getMetaAttribute());
 	}
 
 	@Override
 	public Generic getMetaRelation() {
-		return getCurrentCache().wrap(concurrencyEngine.getMetaRelation());
+		return getCurrentCache().wrap(cacheEngine.getMetaRelation());
 	}
 
-	public org.genericsystem.concurrency.Engine getConcurrencyEngine() {
-		return concurrencyEngine;
+	public org.genericsystem.cache.Engine getConcurrencyEngine() {
+		return cacheEngine;
 	}
 
 	@Override
 	public void close() {
-		concurrencyEngine.close();
+		cacheEngine.close();
 	}
 
 }

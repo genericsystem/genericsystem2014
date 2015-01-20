@@ -18,21 +18,21 @@ import javassist.util.proxy.ProxyObject;
 
 import org.genericsystem.api.core.IContext;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
-import org.genericsystem.concurrency.Cache.ContextEventListener;
+import org.genericsystem.cache.Cache.ContextEventListener;
 import org.genericsystem.kernel.annotations.InstanceClass;
 
 public class Cache implements IContext<Generic>, ContextEventListener<org.genericsystem.cache.Generic> {
 	private final Engine engine;
-	private final org.genericsystem.concurrency.Cache concurrencyCache;
+	private final org.genericsystem.cache.Cache<org.genericsystem.cache.Generic> cache;
 	private final Map<Generic, org.genericsystem.cache.Generic> mutabilityMap = new IdentityHashMap<>();
 	private final Map<org.genericsystem.cache.Generic, Set<Generic>> reverseMultiMap = new IdentityHashMap<>();
 
 	private final Deque<Map<Generic, org.genericsystem.cache.Generic>> revertMutations = new ArrayDeque<>();
 
-	public Cache(Engine engine, org.genericsystem.concurrency.Engine concurrencyEngine) {
+	public Cache(Engine engine, org.genericsystem.cache.Engine cacheEngine) {
 		this.engine = engine;
-		put(engine, concurrencyEngine);
-		this.concurrencyCache = concurrencyEngine.newCache(this);
+		put(engine, cacheEngine);
+		this.cache = cacheEngine.newCache(this);
 		revertMutations.push(new IdentityHashMap<>());
 	}
 
@@ -41,19 +41,19 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 	}
 
 	public Cache start() {
-		concurrencyCache.start();
+		cache.start();
 		return engine.start(this);
 	}
 
 	public void stop() {
-		concurrencyCache.stop();
+		cache.stop();
 		engine.stop(this);
 	}
 
 	protected org.genericsystem.cache.Generic unwrap(Generic mutable) {
 		org.genericsystem.cache.Generic result = mutabilityMap.get(mutable);
 		if (result == null)
-			concurrencyCache.discardWithException(new AliveConstraintViolationException("Your mutable is not still available"));
+			cache.discardWithException(new AliveConstraintViolationException("Your mutable is not still available"));
 		return result;
 	}
 
@@ -70,7 +70,7 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 			instanceClassAnnotation = findAnnotedClass.getAnnotation(InstanceClass.class);
 		if (clazz != null) {
 			if (instanceClassAnnotation != null && !instanceClassAnnotation.value().isAssignableFrom(clazz))
-				concurrencyCache.discardWithException(new InstantiationException(clazz + " must extends " + instanceClassAnnotation.value()));
+				cache.discardWithException(new InstantiationException(clazz + " must extends " + instanceClassAnnotation.value()));
 			result = (Generic) newInstance(clazz);
 		} else
 			result = (Generic) newInstance(instanceClassAnnotation != null ? instanceClassAnnotation.value() : Object.class);
@@ -108,7 +108,7 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 		Iterator<Entry<org.genericsystem.cache.Generic, Set<Generic>>> iterator = reverseMultiMap.entrySet().iterator();
 		while (iterator.hasNext()) {
 			Entry<org.genericsystem.cache.Generic, Set<Generic>> entry = iterator.next();
-			if (!concurrencyCache.isAlive(entry.getKey())) {
+			if (!cache.isAlive(entry.getKey())) {
 				for (Generic mutable : entry.getValue())
 					mutabilityMap.remove(mutable);
 				iterator.remove();
@@ -160,19 +160,19 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 
 	public boolean isAlive(Generic mutable) {
 		org.genericsystem.cache.Generic generic = mutabilityMap.get(mutable);
-		return generic != null && concurrencyCache.isAlive(generic);
+		return generic != null && cache.isAlive(generic);
 	}
 
 	public void pickNewTs() {
-		concurrencyCache.pickNewTs();// triggers refresh automatically
+		cache.pickNewTs();// triggers refresh automatically
 	}
 
 	public void flush() {
-		concurrencyCache.flush(); // triggers flush automatically
+		cache.flush(); // triggers flush automatically
 	}
 
 	public void clear() {
-		concurrencyCache.clear();// triggers clear and refresh automatically
+		cache.clear();// triggers clear and refresh automatically
 	}
 
 	private final static ProxyFactory PROXY_FACTORY = new ProxyFactory();
@@ -187,24 +187,24 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 		try {
 			instance = (T) PROXY_FACTORY.createClass(METHOD_FILTER).newInstance();
 		} catch (InstantiationException | IllegalAccessException e) {
-			concurrencyCache.discardWithException(e);
+			cache.discardWithException(e);
 		}
 		((ProxyObject) instance).setHandler(engine);
 		return instance;
 	}
 
 	public void mount() {
-		concurrencyCache.mount();
+		cache.mount();
 		revertMutations.push(new IdentityHashMap<>());
 	}
 
 	public void unmount() {
-		concurrencyCache.unmount();// triggersClearEvent
+		cache.unmount();// triggersClearEvent
 		revertMutations.pop();
 	}
 
 	public int getCacheLevel() {
-		return concurrencyCache.getCacheLevel();
+		return cache.getCacheLevel();
 	}
 
 }

@@ -1,12 +1,12 @@
-package org.genericsystem.concurrency;
+package org.genericsystem.cache;
+
 
 import java.util.Optional;
 
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.cache.Generic;
-import org.genericsystem.concurrency.FileSystem.Directory;
-import org.genericsystem.concurrency.FileSystem.FileType;
+import org.genericsystem.cache.FileSystem.Directory;
+import org.genericsystem.cache.FileSystem.FileType;
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Dependencies;
 import org.genericsystem.kernel.annotations.InstanceClass;

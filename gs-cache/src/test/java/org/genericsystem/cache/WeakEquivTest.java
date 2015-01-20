@@ -1,7 +1,6 @@
-package org.genericsystem.concurrency;
+package org.genericsystem.cache;
 
 import org.genericsystem.api.exception.SingularConstraintViolationException;
-import org.genericsystem.cache.Generic;
 import org.testng.annotations.Test;
 
 @Test

@@ -1,6 +1,7 @@
 package org.genericsystem.cache;
 
 import org.genericsystem.api.exception.AliveConstraintViolationException;
+import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.testng.annotations.Test;
 
@@ -61,5 +62,35 @@ public class NotRemovableTestManyCaches extends AbstractTest {
 		cache.start();
 		cache.pickNewTs();
 		catchAndCheckCause(() -> car.remove(), ReferentialIntegrityConstraintViolationException.class);
+	}
+
+	public void test001_() {
+		Engine engine = new Engine();
+		Generic car = engine.addInstance("Car");
+		Generic myCar1 = car.addInstance("myCar1");
+		Cache cache1 = engine.getCurrentCache();
+		cache1.flush();
+		myCar1.remove();
+		cache1.flush();
+		Cache cache2 = engine.newCache().start();
+		catchAndCheckCause(() -> myCar1.remove(), AliveConstraintViolationException.class);
+		cache2.flush();
+	}
+
+	public void test002_() {
+		Engine engine = new Engine();
+		Generic car = engine.addInstance("Car");
+		Generic myCar = car.addInstance("myCar");
+		Cache cache = engine.getCurrentCache();
+		cache.flush();
+
+		Cache cache2 = engine.newCache().start();
+		myCar.remove();
+
+		cache.start();
+		myCar.remove();
+		cache.flushLater();
+		cache2.start();
+		catchAndCheckCause(() -> cache2.flush(), OptimisticLockConstraintViolationException.class);
 	}
 }

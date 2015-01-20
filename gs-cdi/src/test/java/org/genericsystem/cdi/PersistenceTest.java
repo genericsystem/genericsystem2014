@@ -20,6 +20,7 @@ public class PersistenceTest extends AbstractTest {
 		actualValue.updateValue((int) actualValue.getValue() + 1);
 		log.info("previousValue " + previousValue + " actualValue " + actualValue.getValue());
 		engine.getCurrentCache().flush();
+		engine.close();
 	}
 
 	@SystemGeneric
