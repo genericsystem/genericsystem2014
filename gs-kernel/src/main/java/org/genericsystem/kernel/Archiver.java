@@ -230,12 +230,12 @@ public class Archiver<T extends AbstractVertex<T>> {
 		}
 
 		private void writeDependency(T dependency) throws IOException {
-			writeAncestorId(dependency);
+			writeAncestorId(dependency, dependency);
 			writeOtherTs(dependency);
 			objectOutputStream.writeObject(dependency.getValue());
-			writeAncestorId(dependency.getMeta());
-			writeAncestorsId(dependency.getSupers());
-			writeAncestorsId(dependency.getComponents());
+			writeAncestorId(dependency, dependency.getMeta());
+			writeAncestorsId(dependency, dependency.getSupers());
+			writeAncestorsId(dependency, dependency.getComponents());
 			log.info("write dependency : " + dependency.info() + " " + dependency.getTs() + " birthTs : " + dependency.getLifeManager().getBirthTs());
 		}
 
@@ -245,14 +245,14 @@ public class Archiver<T extends AbstractVertex<T>> {
 			objectOutputStream.writeLong(dependency.getLifeManager().getDeathTs());
 		}
 
-		private void writeAncestorsId(List<T> ancestors) throws IOException {
+		private void writeAncestorsId(T dependency, List<T> ancestors) throws IOException {
 			objectOutputStream.writeInt(ancestors.size());
 			for (T ancestor : ancestors)
-				writeAncestorId(ancestor);
+				writeAncestorId(dependency, ancestor);
 		}
 
-		protected void writeAncestorId(T ancestor) throws IOException {
-			objectOutputStream.writeLong(ancestor != null ? ancestor.getTs() : -1L);
+		protected void writeAncestorId(T dependency, T ancestor) throws IOException {
+			objectOutputStream.writeLong(ancestor != null ? ancestor.getTs() : dependency.getTs());
 		}
 
 		@SuppressWarnings("unchecked")
@@ -284,7 +284,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 			}
 		}
 
-		protected long loadId() throws IOException {
+		protected long loadTs() throws IOException {
 			return objectInputStream.readLong();
 		}
 
@@ -293,16 +293,16 @@ public class Archiver<T extends AbstractVertex<T>> {
 		}
 
 		protected void loadDependency(Map<Long, T> vertexMap) throws IOException, ClassNotFoundException {
-			long id = loadId();
+			long ts = loadTs();
 			long[] otherTs = loadOtherTs();
 			Serializable value = (Serializable) objectInputStream.readObject();
-			T meta = loadAncestor(vertexMap);
-			List<T> supers = loadAncestors(vertexMap);
-			List<T> components = loadAncestors(vertexMap);
-			vertexMap.put(id, getOrBuild(id, null, meta, supers, value, components, otherTs));
-			log.info("load dependency : " + vertexMap.get(id).info() + " " + id + " " + vertexMap.get(id).getTs() + " birthTs : " + vertexMap.get(id).getLifeManager().getBirthTs());
+			T meta = loadAncestor(ts, vertexMap);
+			List<T> supers = loadAncestors(ts, vertexMap);
+			List<T> components = loadAncestors(ts, vertexMap);
+			vertexMap.put(ts, getOrBuild(ts, null, meta, supers, value, components, otherTs));
+			log.info("load dependency : " + vertexMap.get(ts).info() + " " + ts + " " + vertexMap.get(ts).getTs() + " birthTs : " + vertexMap.get(ts).getLifeManager().getBirthTs());
 
-			assert getTransaction().isAlive(vertexMap.get(id)) : vertexMap.get(id).info();
+			assert getTransaction().isAlive(vertexMap.get(ts)) : vertexMap.get(ts).info();
 		}
 
 		protected T getOrBuild(long ts, Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
@@ -314,17 +314,19 @@ public class Archiver<T extends AbstractVertex<T>> {
 			return transaction.getBuilder().internalBuild(ts, clazz, meta, supers, value, components, otherTs);
 		}
 
-		protected List<T> loadAncestors(Map<Long, T> vertexMap) throws IOException {
+		protected List<T> loadAncestors(long ts, Map<Long, T> vertexMap) throws IOException {
 			List<T> ancestors = new ArrayList<>();
 			int sizeComponents = objectInputStream.readInt();
 			for (int j = 0; j < sizeComponents; j++)
-				ancestors.add(loadAncestor(vertexMap));
+				ancestors.add(loadAncestor(ts, vertexMap));
 			return ancestors;
 		}
 
-		protected T loadAncestor(Map<Long, T> vertexMap) throws IOException {
+		protected T loadAncestor(long ts, Map<Long, T> vertexMap) throws IOException {
 			long designTs = objectInputStream.readLong();
-			return vertexMap.get(designTs);
+			T ancestor = vertexMap.get(designTs);
+			assert ancestor != null || designTs == ts;
+			return ancestor;
 		}
 	}
 
