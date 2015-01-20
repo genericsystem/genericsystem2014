@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
+import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -222,7 +223,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 			objectOutputStream.close();
 		}
 
-		private void writeDependencies(List<T> dependencies, Set<T> vertexSet) throws IOException {
+		private void writeDependencies(NavigableSet<T> dependencies, Set<T> vertexSet) throws IOException {
 			for (T dependency : dependencies)
 				if (vertexSet.add(dependency))
 					writeDependency(dependency);
@@ -255,8 +256,8 @@ public class Archiver<T extends AbstractVertex<T>> {
 		}
 
 		@SuppressWarnings("unchecked")
-		protected List<T> getOrderedVertices() {
-			return Statics.reverseCollections(transaction.computeDependencies((T) root));
+		protected NavigableSet<T> getOrderedVertices() {
+			return transaction.computeDependencies((T) root);
 		}
 	}
 

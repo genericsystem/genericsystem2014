@@ -1,8 +1,6 @@
 package org.genericsystem.kernel;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.genericsystem.api.exception.ExistsException;
 import org.testng.annotations.Test;
@@ -61,19 +59,16 @@ public class MultiInheritanceTest extends AbstractTest {
 		Root engine = new Root();
 		Vertex car = engine.addInstance("Car");
 		Vertex robot = engine.addInstance("Robot");
-		engine.addInstance(Arrays.asList(car,robot), "Transformer");
-		catchAndCheckCause(() -> engine.addInstance(Arrays.asList(robot,car), "Transformer"), ExistsException.class);
+		engine.addInstance(Arrays.asList(car, robot), "Transformer");
+		catchAndCheckCause(() -> engine.addInstance(Arrays.asList(robot, car), "Transformer"), ExistsException.class);
 	}
 
 	public void test002_orderSupers() {
 		Root engine = new Root();
 		Vertex car = engine.addInstance("Car");
 		Vertex robot = engine.addInstance("Robot");
-		List<Vertex> list = new ArrayList<>();
-		list.add(car);
-		list.add(robot);
-		Vertex transformer = engine.setInstance(list, "Transformer");
-		Vertex transformer2 = engine.setInstance(Statics.reverseCollections(list), "Transformer");
+		Vertex transformer = engine.setInstance(Arrays.asList(car, robot), "Transformer");
+		Vertex transformer2 = engine.setInstance(Arrays.asList(robot, car), "Transformer");
 		assert transformer.equals(transformer2);
 	}
 }

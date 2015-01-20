@@ -1,11 +1,10 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -94,8 +93,6 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		private final boolean force;
 		private final boolean dependenciesToRemove;
 
-		final Set<T> alreadyVisited = new HashSet<>();
-
 		public OrderedDependencies(boolean force, boolean dependenciesToRemove) {
 			this.force = force;
 			this.dependenciesToRemove = dependenciesToRemove;
@@ -131,53 +128,41 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		}
 	}
 
-	@Deprecated
-	// TODO TO REMOVE
-	public List<T> computeDependencies(T node) {
+	public NavigableSet<T> computeDependencies(T node) {
 		return computeDependencies(node, true, true);
 	}
 
-	List<T> computeDependencies(T node, boolean force, boolean dependenciesToRemove) {
-		ArrayList<T> dependencies = new ArrayList<>(new OrderedDependencies(force, dependenciesToRemove).visit(node));
-		Collections.reverse(dependencies);
-		return dependencies;
+	NavigableSet<T> computeDependencies(T node, boolean force, boolean dependenciesToRemove) {
+		return new OrderedDependencies(force, dependenciesToRemove).visit(node);
 	}
 
-	public List<T> computePotentialDependencies(T meta, List<T> supers, Serializable value, List<T> components) {
-		ArrayList<T> dependencies = new ArrayList<>(new PotentialDependenciesComputer() {
+	public NavigableSet<T> computePotentialDependencies(T meta, List<T> supers, Serializable value, List<T> components) {
+		return new PotentialDependenciesComputer() {
 			private static final long serialVersionUID = -3611136800445783634L;
 
 			@Override
 			boolean isSelected(T node) {
 				return node.isDependencyOf(meta, supers, value, components);
 			}
-		}.visit(meta));
-		Collections.reverse(dependencies);
-		return dependencies;
+		}.visit(meta);
 	}
 
-	private abstract class PotentialDependenciesComputer extends OrderedDependencies {
-
+	private abstract class PotentialDependenciesComputer extends TreeSet<T> {
 		private static final long serialVersionUID = -5970021419012502402L;
-
-		public PotentialDependenciesComputer() {
-			super(true, true);
-		}
+		private final Set<T> alreadyVisited = new HashSet<>();
 
 		abstract boolean isSelected(T node);
 
-		@Override
-		protected void addDependecy(T dependency) {
-			alreadyVisited.add(dependency);
-		}
-
-		@Override
 		PotentialDependenciesComputer visit(T node) {
-			if (!alreadyVisited.contains(node)) {
-				super.visit(node);
+			if (!alreadyVisited.contains(node))
 				if (isSelected(node))
-					super.add(node);
-			}
+					super.addAll(computeDependencies(node));
+				else {
+					alreadyVisited.add(node);
+					node.getComposites().forEach(this::visit);
+					node.getInheritings().forEach(this::visit);
+					node.getInstances().forEach(this::visit);
+				}
 			return this;
 		}
 	}
