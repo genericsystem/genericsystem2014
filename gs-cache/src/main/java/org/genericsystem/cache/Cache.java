@@ -69,13 +69,17 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 		if (!equals(getRoot().getCurrentCache()))
 			discardWithException(new CacheNoStartedException("The Cache isn't started"));
 		try {
-			checkConstraints();
-			doSynchronizedApplyInSubContext();
-			initialize();
-			listener.triggersFlushEvent();
+			internalFlush();
 		} catch (ConcurrencyControlException | OptimisticLockConstraintViolationException exception) {
 			discardWithException(exception);
 		}
+	}
+
+	private void internalFlush() throws OptimisticLockConstraintViolationException, ConcurrencyControlException {
+		checkConstraints();
+		doSynchronizedApplyInSubContext();
+		initialize();
+		listener.triggersFlushEvent();
 	}
 
 	public void flushLater() {
@@ -87,10 +91,7 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 				// TODO reactivate this
 				// if (getEngine().pickNewTs() - getTs() >= timeOut)
 				// throw new ConcurrencyControlException("The timestamp cache (" + getTs() + ") is bigger than the life time out : " + Statics.LIFE_TIMEOUT);
-				checkConstraints();
-				doSynchronizedApplyInSubContext();
-				initialize();
-				listener.triggersFlushEvent();
+				internalFlush();
 				return;
 			} catch (ConcurrencyControlException e) {
 				cause = e;
