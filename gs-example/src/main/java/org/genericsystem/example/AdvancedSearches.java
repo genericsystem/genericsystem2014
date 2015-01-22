@@ -120,7 +120,11 @@ public class AdvancedSearches {
 		myThirdVehicle.addHolder(options, "air conditioning");
 
 		// Find all instances of Vehicle with the option Air conditioning
-		Snapshot<Generic> instances = () -> vehicle.getInstances().get().filter(generic -> generic.getHolders(options).get().anyMatch(holder -> holder.getValue().equals("air conditioning")));
+		Snapshot<Generic> instances = () -> vehicle.getInstances().get().filter(
+												generic -> generic.getHolders(options).get().anyMatch(
+														holder -> holder.getValue().equals("air conditioning")
+												)
+											);
 
 		assert instances.size() >= 2;
 		assert instances.containsAll(Arrays.asList(myFirstVehicle, myThirdVehicle));
