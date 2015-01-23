@@ -69,7 +69,6 @@ public class BasicSearches {
 
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		Generic red = color.addInstance("red");
-
 		myVehicle.addLink(vehicleColor, "myVehicleRed", red);
 
 		// Find the link myVehicleRed for the relation VehicleColor from myVehicle

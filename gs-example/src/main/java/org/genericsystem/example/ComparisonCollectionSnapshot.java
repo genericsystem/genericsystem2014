@@ -34,7 +34,7 @@ public class ComparisonCollectionSnapshot {
 		assert instances.containsAll(Arrays.asList(myFirstVehicle, mySecondVehicle));
 	}
 
-	public void createVehicleWithSnpashot() {
+	public void createVehicleWithSnapshot() {
 		// (1)
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");

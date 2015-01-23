@@ -109,17 +109,17 @@ public class AdvancedSearches {
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic options = vehicle.addAttribute("Options");
 
-		// Instantiate three Vehicle
+		// Add three instances of Vehicle
 		Generic myFirstVehicle = vehicle.addInstance("myFirstVehicle");
 		Generic mySecondVehicle = vehicle.addInstance("mySecondVehicle");
 		Generic myThirdVehicle = vehicle.addInstance("myThirdVehicle");
 
-		// Instantiate three Options, one for each vehicle
+		// Add three instances of Options, one for each instance of Vehicle
 		myFirstVehicle.addHolder(options, "air conditioning");
 		mySecondVehicle.addHolder(options, "music player");
 		myThirdVehicle.addHolder(options, "air conditioning");
 
-		// Find all instances of Vehicle with the option Air conditioning
+		// Find all instances of Vehicle with the Options air conditioning
 		Snapshot<Generic> instances = () -> vehicle.getInstances().get().filter(
 												generic -> generic.getHolders(options).get().anyMatch(
 														holder -> holder.getValue().equals("air conditioning")
