@@ -7,16 +7,29 @@ public class CreationOfRelationsAndLinks {
 	public void createRelation() {
 		Engine engine = new Engine();
 
-		// 1. Create the structure : Vehicle, Color and the relation VehicleColor
+		// Create the types Vehicle and Color
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
+
+		// Create the relation VehicleColor between Vehicle and Color
+		vehicle.addRelation("VehicleColor", color);
+	}
+
+	public void createLink() {
+		Engine engine = new Engine();
+
+		// Create the types Vehicle and Color
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic color = engine.addInstance("Color");
+
+		// Create the relation VehicleColor between Vehicle and Color
 		Generic vehicleColor = vehicle.addRelation("VehicleColor", color);
 
-		// 2. Instantiate a Vehicle and a Color
+		// Create an instance of type Vehicle and an instance of type Color
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		Generic red = color.addInstance("red");
 
-		// 3. Do the link between the instance of the vehicle and the color
+		// Do the link between the instance of the vehicle and the instance of the color
 		myVehicle.addLink(vehicleColor, "myVehicleRed", red);
 	}
 }

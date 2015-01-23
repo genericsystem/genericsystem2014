@@ -4,12 +4,21 @@ import org.genericsystem.mutability.Engine;
 import org.genericsystem.mutability.Generic;
 
 public class CreationOfTypesSubtypesAndInstances {
-	public void createTypeAndInstance() {
+	public void createType() {
 		// Create an engine which is in memory
 		Engine engine = new Engine();
 
-		// Create a type Vehicle and instantiate it
+		// Create a type Vehicle
+		engine.addInstance("Vehicle");
+	}
+
+	public void createInstance() {
+		Engine engine = new Engine();
+
+		// Create a type Vehicle
 		Generic vehicle = engine.addInstance("Vehicle");
+
+		// Create an instance of type Vehicle
 		vehicle.addInstance("myVehicle");
 	}
 
@@ -18,17 +27,19 @@ public class CreationOfTypesSubtypesAndInstances {
 
 		// Create a type Vehicle
 		Generic vehicle = engine.addInstance("Vehicle");
-		// Instantiate a first instance
+
+		// Create a first instance of type Vehicle
 		vehicle.addInstance("myFirstVehicle");
-		// Instantiate a second instance
+		// Create a second instance of type Vehicle
 		vehicle.addInstance("mySecondVehicle");
 	}
 
-	public void createTypeAndSubtypes() {
+	public void createSubtypes() {
 		Engine engine = new Engine();
 
 		// Create a type Vehicle
 		Generic vehicle = engine.addInstance("Vehicle");
+
 		// Create the type Car which is a subtype of Vehicle
 		Generic car = engine.addInstance(vehicle, "Car");
 		// Create the type Bike which is another subtype of Vehicle
@@ -36,6 +47,7 @@ public class CreationOfTypesSubtypesAndInstances {
 
 		// Create an instance of Vehicle
 		vehicle.addInstance("myVehicle");
+
 		// Create an instance of Car
 		car.addInstance("myCar");
 		// Create an instance of Bike
