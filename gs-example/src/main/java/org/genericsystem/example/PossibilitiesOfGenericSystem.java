@@ -4,25 +4,21 @@ import java.util.Arrays;
 
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.kernel.annotations.Components;
-import org.genericsystem.kernel.annotations.Meta;
 import org.genericsystem.kernel.annotations.SystemGeneric;
-import org.genericsystem.kernel.annotations.value.StringValue;
 import org.genericsystem.mutability.Engine;
 import org.genericsystem.mutability.Generic;
 
 public class PossibilitiesOfGenericSystem {
 	public void staticSetting() {
 		// Create a database named vehicleManagement, persisted in the directory vehicleManagement and specifying parameterized classes
-		Engine engine = new Engine("vehicleManagement", System.getenv("HOME") + "/vehicleManagement", Vehicle.class, Options.class, Color.class, VehicleColor.class, FirstVehicle.class, MusicPlayer.class, Red.class, FirstVehicleRed.class);
+		Engine engine = new Engine("vehicleManagement", System.getenv("HOME") + "/vehicleManagement", Vehicle.class, Option.class, Color.class, VehicleColor.class);
 
 		// Retrieve our system vehicleManagement
 		Vehicle vehicle = engine.find(Vehicle.class);
 
 		// Manage our system vehicleManagement
-		Options airConditioning = Options.createOptions("air conditioning");
+		Option airConditioning = Option.createOption("air conditioning");
 		vehicle.addOption(airConditioning);
-		assert vehicle.getOption().equals(airConditioning);
-		assert airConditioning.getOwner().equals(vehicle);
 
 		// Commit the transaction
 		engine.getCurrentCache().flush();
@@ -32,32 +28,32 @@ public class PossibilitiesOfGenericSystem {
 
 	@SystemGeneric
 	public static class Vehicle {
-		private Options options;
+		private Option option;
 
-		public Options getOption() {
-			return options;
+		public Option getOption() {
+			return option;
 		}
 
-		public void addOption(Options option) {
-			options = option;
-			options.owner = this;
+		public void addOption(Option option) {
+			this.option = option;
+			option.owner = this;
 		}
 
 		public void removeOption() {
-			options.owner = null;
-			options = null;
+			option.owner = null;
+			option = null;
 		}
 	}
 
 	@SystemGeneric
 	@Components(Vehicle.class)
-	public static class Options {
+	public static class Option {
 		private String name;
 
 		private Vehicle owner;
 
-		public static Options createOptions(String name) {
-			Options option = new Options();
+		public static Option createOption(String name) {
+			Option option = new Option();
 			option.name = name;
 			return option;
 		}
@@ -78,32 +74,6 @@ public class PossibilitiesOfGenericSystem {
 	@SystemGeneric
 	@Components({ Vehicle.class, Color.class })
 	public static class VehicleColor {
-	}
-
-	@SystemGeneric
-	@Meta(Vehicle.class)
-	@StringValue("firstVehicle")
-	public static class FirstVehicle {
-	}
-
-	@SystemGeneric
-	@Meta(Options.class)
-	@Components(FirstVehicle.class)
-	@StringValue("music player")
-	public static class MusicPlayer {
-	}
-
-	@SystemGeneric
-	@Meta(Color.class)
-	@StringValue("red")
-	public static class Red {
-	}
-
-	@SystemGeneric
-	@Meta(VehicleColor.class)
-	@Components({ FirstVehicle.class, Red.class })
-	@StringValue("firstVehicleRed")
-	public static class FirstVehicleRed {
 	}
 
 	public void hotStructuralModification() {
@@ -263,15 +233,8 @@ public class PossibilitiesOfGenericSystem {
 		Generic redFifthVehicle = fifthVehicle.addLink(vehicleColor, "redFifthVehicle", red);
 
 		// Query the database
-		Snapshot<Generic> searchedVehicles = () -> vehicle.getInstances().get().filter(
-														generic -> generic.getHolders(power).get().anyMatch(
-																holder -> (int) holder.getValue() >= 50 && (int) holder.getValue() <= 90
-																)
-													).filter(
-														generic -> generic.getLinks(vehicleColor).get().anyMatch(
-																link -> link.getTargetComponent().equals(white)
-														)
-													);
+		Snapshot<Generic> searchedVehicles = () -> vehicle.getInstances().get().filter(generic -> generic.getHolders(power).get().anyMatch(holder -> (int) holder.getValue() >= 50 && (int) holder.getValue() <= 90))
+				.filter(generic -> generic.getLinks(vehicleColor).get().anyMatch(link -> link.getTargetComponent().equals(white)));
 
 		// Commit the transaction
 		engine.getCurrentCache().flush();
