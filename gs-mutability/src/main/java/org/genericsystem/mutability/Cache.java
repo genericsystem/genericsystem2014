@@ -12,11 +12,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
-
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.defaults.DefaultBuilder;
 import org.genericsystem.api.defaults.DefaultChecker;
@@ -47,8 +45,7 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 	}
 
 	protected DefaultChecker<Generic> buildChecker() {
-		return new DefaultChecker<Generic>() {
-		};
+		return new DefaultChecker<Generic>() {};
 	}
 
 	protected DefaultBuilder<Generic> buildBuilder() {
@@ -189,7 +186,7 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 					reverseMultiMap.remove(newDependency);
 				set = reverseMultiMap.get(entry.getValue());
 				if (set == null)
-					set = Collections.newSetFromMap(new IdentityHashMap<Generic, Boolean>());
+					reverseMultiMap.put(entry.getValue(), set = Collections.newSetFromMap(new IdentityHashMap<Generic, Boolean>()));
 				set.add(entry.getKey());
 			}
 		}
@@ -291,6 +288,7 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 
 	@Override
 	public void discardWithException(Throwable exception) throws RollbackException {
+		assert false;
 		cache.discardWithException(exception);
 	}
 

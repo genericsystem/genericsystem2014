@@ -56,8 +56,9 @@ public class UpdateWithCacheTest extends AbstractTest {
 		Generic ref2 = v233;
 		Generic powerType = engine.addInstance("PowerType");
 		assert v233.getMeta().equals(power);
-
 		engine.getCurrentCache().flush();
+		assert v233.getMeta().equals(power);
+		assert v233.getMeta() == power;
 		catchAndCheckCause(() -> power.update("carPower", powerType), MetaRuleConstraintViolationException.class);
 		assert ref == power;
 		assert ref2 == v233;
@@ -68,7 +69,7 @@ public class UpdateWithCacheTest extends AbstractTest {
 		assert v233.isAlive();
 		assert myCar.isAlive();
 		assert myCar.getComposites().contains(v233);
-		assert v233.getMeta().equals(power) : v233.getMeta().info();
+		assert v233.getMeta() == power : v233.getMeta().info();
 		assert myCar.getHolders(power).contains(v233) : myCar.getHolders(power).info();
 		assert myCar.getHolders(power).size() == 1;
 		assert v233.getValue().equals(233);
