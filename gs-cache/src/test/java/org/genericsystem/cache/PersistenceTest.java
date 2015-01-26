@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-
 import org.genericsystem.kernel.LifeManager;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.annotations.SystemGeneric;
@@ -41,22 +40,27 @@ public class PersistenceTest extends AbstractTest {
 		root.close();
 
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
-		// assert false : engine.find(Vehicle.class);
-		// assert false : engine.getInstance(Vehicle.class).getLifeManager().getBirthTs() + " " + root.getInstance(Vehicle.class).getLifeManager().getBirthTs();
-		// assert false : root.getCurrentCache().computeDependencies(root) + "\n" + engine.getCurrentCache().computeDependencies(engine);
-		compareGraph(root, engine);
+		compareGraphWitoutTs(root, engine);
 		engine.getCurrentCache().flush();
 		engine.close();
 
 		Engine engine2 = new Engine(Statics.ENGINE_VALUE, snapshot, Vehicle.class);
-		compareGraph(engine, engine2);
+		compareGraph(root, engine2);
 
 		assert engine2.find(Vehicle.class) instanceof Vehicle : engine2.find(Vehicle.class).info();
 	}
 
-	@SystemGeneric
-	public static class Vehicle extends Generic {
+	private void compareGraphWitoutTs(Generic persistedNode, Generic readNode) {
+		List<Generic> persistVisit = new ArrayList<>(persistedNode.getCurrentCache().computeDependencies(persistedNode));
+		List<Generic> readVisit = new ArrayList<>(readNode.getCurrentCache().computeDependencies(readNode));
+		assert persistVisit.size() == readVisit.size() : persistVisit + " \n " + readVisit;
+		for (int i = 0; i < persistVisit.size(); i++) {
+			assert persistVisit.get(i).genericEquals(readVisit.get(i));
+		}
 	}
+
+	@SystemGeneric
+	public static class Vehicle extends Generic {}
 
 	public void testType() {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
@@ -179,7 +183,6 @@ public class PersistenceTest extends AbstractTest {
 		List<Generic> readVisit = new ArrayList<>(readNode.getCurrentCache().computeDependencies(readNode));
 		assert persistVisit.size() == readVisit.size() : persistVisit + " \n " + readVisit;
 		for (int i = 0; i < persistVisit.size(); i++) {
-			log.info("YYY" + persistVisit.get(i).info() + " " + readVisit.get(i).info());
 			assert persistVisit.get(i).genericEquals(readVisit.get(i));
 			LifeManager persistLifeManager = persistVisit.get(i).getLifeManager();
 			LifeManager readLifeManager = readVisit.get(i).getLifeManager();
