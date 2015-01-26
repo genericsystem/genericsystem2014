@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.exception.NotFoundException;
@@ -18,11 +19,9 @@ import org.genericsystem.kernel.systemproperty.constraints.UniqueValueConstraint
 
 public interface DefaultSystemProperties<T extends DefaultVertex<T>> extends IVertex<T> {
 
-	T getMap();
-
 	@Override
 	default Serializable getSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos) {
-		T map = getMap();
+		T map = getRoot().getMap();
 		Stream<T> keys = map != null ? getAttributes(map).get() : Stream.empty();
 		T key = keys.filter(x -> Objects.equals(x.getValue(), new AxedPropertyClass(propertyClass, pos))).findFirst().orElse(null);
 		if (key != null) {
@@ -35,7 +34,7 @@ public interface DefaultSystemProperties<T extends DefaultVertex<T>> extends IVe
 	@SuppressWarnings("unchecked")
 	@Override
 	default T setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value, T... targets) {
-		T map = getMap();
+		T map = getRoot().getMap();
 		T[] roots = ((DefaultContext<T>) getCurrentCache()).getBuilder().newTArray(targets.length + 1);
 		Arrays.fill(roots, getRoot());
 		map.getMeta().setInstance(map, new AxedPropertyClass(propertyClass, pos), roots).setInstance(value, addThisToTargets(targets));

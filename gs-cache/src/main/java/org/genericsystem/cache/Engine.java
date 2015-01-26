@@ -107,4 +107,9 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 		return garbageCollector;
 	}
 
+	@Override
+	public Generic getMap() {
+		return find(SystemMap.class);
+	}
+
 }

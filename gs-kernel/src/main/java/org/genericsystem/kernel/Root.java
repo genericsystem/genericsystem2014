@@ -89,4 +89,9 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 	public Context<Vertex> buildTransaction() {
 		return new Transaction<Vertex>(this, pickNewTs());
 	}
+
+	@Override
+	public Vertex getMap() {
+		return find(SystemMap.class);
+	}
 }

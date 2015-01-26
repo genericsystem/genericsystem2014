@@ -2,6 +2,7 @@ package org.genericsystem.api.defaults;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -25,6 +26,12 @@ public interface DefaultDependencies<T extends DefaultVertex<T>> extends IVertex
 	@Override
 	default DefaultContext<T> getCurrentCache() {
 		return (DefaultContext<T>) getRoot().getCurrentCache();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default T getInstance(List<T> overrides, Serializable value, T... components) {
+		return getCurrentCache().getInstance((T) this, overrides, value, components);
 	}
 
 	@SuppressWarnings("unchecked")

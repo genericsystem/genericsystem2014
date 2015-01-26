@@ -10,7 +10,6 @@ import java.util.Objects;
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
-import org.genericsystem.kernel.Config.SystemMap;
 
 public abstract class AbstractVertex<T extends AbstractVertex<T>> implements DefaultVertex<T>, Comparable<T> {
 	private long ts;
@@ -147,16 +146,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public T getInstance(List<T> overrides, Serializable value, T... components) {
-		List<T> componentsList = Arrays.asList(components);
-		T adjustMeta = ((T) this).adjustMeta(value, componentsList);
-		if (adjustMeta.getComponents().size() < components.length)
-			return null;
-		return adjustMeta.getDirectInstance(overrides, value, componentsList);
-	}
-
 	boolean equalsAndOverrides(T meta, List<T> overrides, Serializable value, List<T> components) {
 		return equalsRegardlessSupers(meta, value, components) && Statics.areOverridesReached(getSupers(), overrides);
 	}
@@ -231,10 +220,5 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		if (!getMeta().isPropertyConstraintEnabled())
 			return Objects.equals(getValue(), value);
 		return true;
-	}
-
-	@Override
-	public T getMap() {
-		return getRoot().find(SystemMap.class);
 	}
 }

@@ -50,17 +50,26 @@ public class UpdateWithCacheTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic car = engine.addInstance("Car");
 		Generic power = car.addAttribute("Power");
-		Generic myCar = car.addInstance("MyCar");
+		Generic ref = power;
+		Generic myCar = car.addInstance("myCar");
 		Generic v233 = myCar.addHolder(power, 233);
+		Generic ref2 = v233;
 		Generic powerType = engine.addInstance("PowerType");
+		assert v233.getMeta().equals(power);
 
 		engine.getCurrentCache().flush();
 		catchAndCheckCause(() -> power.update("carPower", powerType), MetaRuleConstraintViolationException.class);
-
+		assert ref == power;
+		assert ref2 == v233;
 		assert engine.getInstances().contains(car);
 		assert car.isAlive();
 		assert car.getInstances().contains(myCar);
-		assert myCar.getHolders(power).contains(v233);
+		assert power.isAlive();
+		assert v233.isAlive();
+		assert myCar.isAlive();
+		assert myCar.getComposites().contains(v233);
+		assert v233.getMeta().equals(power) : v233.getMeta().info();
+		assert myCar.getHolders(power).contains(v233) : myCar.getHolders(power).info();
 		assert myCar.getHolders(power).size() == 1;
 		assert v233.getValue().equals(233);
 
@@ -95,20 +104,20 @@ public class UpdateWithCacheTest extends AbstractTest {
 		assert v233.getValue().equals(233);
 
 	}
-	
+
 	public void test007_simulateRollback() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		engine.getCurrentCache().flush();
 		Generic metaAttribute = engine.getMetaAttribute();
-		Generic car =engine.addInstance("Car");
+		Generic car = engine.addInstance("Car");
 		vehicle.updateValue("VehicleNew");
 		vehicle.updateValue("VehicleNew2");
-		engine.getCurrentCache().clear();//same as rollback
+		engine.getCurrentCache().clear();// same as rollback
 		assert metaAttribute.isAlive();
 		assert !car.isAlive();
 		assert vehicle.isAlive();
 		assert vehicle.getValue().equals("Vehicle");
 	}
-		
+
 }

@@ -5,10 +5,12 @@ import java.lang.reflect.Method;
 
 import javassist.util.proxy.MethodHandler;
 
-import org.genericsystem.api.core.IRoot;
+import org.genericsystem.api.core.IContext;
+import org.genericsystem.api.defaults.DefaultRoot;
+import org.genericsystem.kernel.Config.SystemMap;
 import org.genericsystem.kernel.Statics;
 
-public class Engine implements Generic, IRoot<Generic>, MethodHandler {
+public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 
 	protected final ThreadLocal<Cache> cacheLocal = new ThreadLocal<>();
 
@@ -72,20 +74,6 @@ public class Engine implements Generic, IRoot<Generic>, MethodHandler {
 		return currentCache;
 	}
 
-	/*
-	 * @Override public Generic addType(Serializable value) { return getCurrentCache().wrap(concurrencyEngine.addType(value)); }
-	 * 
-	 * @Override public Generic addType(Generic override, Serializable value) { return getCurrentCache().wrap(concurrencyEngine.addType(getCurrentCache().unwrap(override), value)); }
-	 * 
-	 * @Override public Generic addType(List<Generic> overrides, Serializable value) { return getCurrentCache().wrap(concurrencyEngine.addType(getCurrentCache().unwrap(overrides), value)); }
-	 * 
-	 * @Override public Generic setType(Serializable value) { return getCurrentCache().wrap(concurrencyEngine.setType(value)); }
-	 * 
-	 * @Override public Generic setType(Generic override, Serializable value) { return getCurrentCache().wrap(concurrencyEngine.setType(getCurrentCache().unwrap(override), value)); }
-	 * 
-	 * @Override public Generic setType(List<Generic> overrides, Serializable value) { return getCurrentCache().wrap(concurrencyEngine.setType(getCurrentCache().unwrap(overrides), value)); }
-	 */
-
 	@Override
 	public Generic addTree(Serializable value) {
 		return getCurrentCache().wrap(cacheEngine.addTree(value));
@@ -123,6 +111,29 @@ public class Engine implements Generic, IRoot<Generic>, MethodHandler {
 	@Override
 	public void close() {
 		cacheEngine.close();
+	}
+
+	@Override
+	public Generic getMap() {
+		return find(SystemMap.class);
+	}
+
+	@Override
+	public IContext<Generic> buildTransaction() {
+		assert false;
+		return null;
+	}
+
+	@Override
+	public Class<?> findAnnotedClass(Generic vertex) {
+		assert false;
+		return null;
+	}
+
+	@Override
+	public long pickNewTs() {
+		assert false;
+		return 0;
 	}
 
 }

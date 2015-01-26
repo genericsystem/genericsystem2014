@@ -95,4 +95,6 @@ public interface IRoot<T extends IVertex<T>> extends IVertex<T> {
 	 * Close the root. All changes done in the cache but not committed are automatically rollbacked. Persist the last state of the engine.
 	 */
 	void close();
+
+	T getMap();
 }

@@ -1,5 +1,6 @@
 package org.genericsystem.mutability;
 
+import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,12 +17,16 @@ import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
 
-import org.genericsystem.api.core.IContext;
+import org.genericsystem.api.core.Snapshot;
+import org.genericsystem.api.defaults.DefaultBuilder;
+import org.genericsystem.api.defaults.DefaultChecker;
+import org.genericsystem.api.defaults.DefaultContext;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
+import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.cache.Cache.ContextEventListener;
 import org.genericsystem.kernel.annotations.InstanceClass;
 
-public class Cache implements IContext<Generic>, ContextEventListener<org.genericsystem.cache.Generic> {
+public class Cache implements DefaultContext<Generic>, ContextEventListener<org.genericsystem.cache.Generic> {
 	private final Engine engine;
 	private final org.genericsystem.cache.Cache<org.genericsystem.cache.Generic> cache;
 	private final Map<Generic, org.genericsystem.cache.Generic> mutabilityMap = new IdentityHashMap<>();
@@ -29,13 +34,69 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 
 	private final Deque<Map<Generic, org.genericsystem.cache.Generic>> revertMutations = new ArrayDeque<>();
 
+	private final DefaultChecker<Generic> checker;
+	protected final DefaultBuilder<Generic> builder;
+
 	public Cache(Engine engine, org.genericsystem.cache.Engine cacheEngine) {
 		this.engine = engine;
 		put(engine, cacheEngine);
 		this.cache = cacheEngine.newCache(this);
 		revertMutations.push(new IdentityHashMap<>());
+		this.checker = buildChecker();
+		this.builder = buildBuilder();
 	}
 
+	protected DefaultChecker<Generic> buildChecker() {
+		return new DefaultChecker<Generic>() {
+		};
+	}
+
+	protected DefaultBuilder<Generic> buildBuilder() {
+		return new DefaultBuilder<Generic>() {
+
+			@Override
+			public DefaultContext<Generic> getContext() {
+				return Cache.this;
+			}
+
+			@Override
+			public Generic[] newTArray(int i) {
+				return new Generic[i];
+			}
+
+			@Override
+			public Generic addInstance(Class<?> clazz, Generic meta, List<Generic> overrides, Serializable value, List<Generic> components) {
+				return wrap(cache.getBuilder().addInstance(clazz, unwrap(meta), unwrap(overrides), value, unwrap(components)));
+			}
+
+			@Override
+			public Generic update(Generic update, List<Generic> overrides, Serializable newValue, List<Generic> newComponents) {
+				return wrap(cache.getBuilder().update(unwrap(update), unwrap(overrides), newValue, unwrap(newComponents)));
+			}
+
+			@Override
+			public Generic setInstance(Class<?> clazz, Generic meta, List<Generic> overrides, Serializable value, List<Generic> components) {
+				return wrap(cache.getBuilder().setInstance(clazz, unwrap(meta), unwrap(overrides), value, unwrap(components)));
+			}
+
+			@Override
+			public void forceRemove(Generic generic) {
+				cache.getBuilder().forceRemove(unwrap(generic));
+			}
+
+			@Override
+			public void remove(Generic generic) {
+				cache.getBuilder().remove(unwrap(generic));
+			}
+
+			@Override
+			public void conserveRemove(Generic generic) {
+				cache.getBuilder().conserveRemove(unwrap(generic));
+			}
+		};
+	}
+
+	@Override
 	public Engine getRoot() {
 		return engine;
 	}
@@ -158,6 +219,7 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 		revertMutations.push(new IdentityHashMap<>());
 	}
 
+	@Override
 	public boolean isAlive(Generic mutable) {
 		org.genericsystem.cache.Generic generic = mutabilityMap.get(mutable);
 		return generic != null && cache.isAlive(generic);
@@ -205,6 +267,41 @@ public class Cache implements IContext<Generic>, ContextEventListener<org.generi
 
 	public int getCacheLevel() {
 		return cache.getCacheLevel();
+	}
+
+	@Override
+	public Generic getInstance(Generic meta, List<Generic> overrides, Serializable value, Generic... components) {
+		return wrap(unwrap(meta).getInstance(unwrap(overrides), value, unwrap(components)));
+	}
+
+	@Override
+	public Snapshot<Generic> getInheritings(Generic generic) {
+		return () -> unwrap(generic).getInheritings().get().map(this::wrap);
+	}
+
+	@Override
+	public Snapshot<Generic> getInstances(Generic generic) {
+		return () -> unwrap(generic).getInstances().get().map(this::wrap);
+	}
+
+	@Override
+	public Snapshot<Generic> getComposites(Generic generic) {
+		return () -> unwrap(generic).getComposites().get().map(this::wrap);
+	}
+
+	@Override
+	public void discardWithException(Throwable exception) throws RollbackException {
+		cache.discardWithException(exception);
+	}
+
+	@Override
+	public DefaultBuilder<Generic> getBuilder() {
+		return builder;
+	}
+
+	@Override
+	public DefaultChecker<Generic> getChecker() {
+		return checker;
 	}
 
 }

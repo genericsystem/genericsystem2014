@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -18,10 +19,8 @@ import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationEx
 public abstract class Context<T extends AbstractVertex<T>> implements DefaultContext<T> {
 
 	private final DefaultRoot<T> root;
-
 	private final Checker<T> checker;
-
-	protected Builder<T> builder;
+	private final Builder<T> builder;
 
 	protected Context(DefaultRoot<T> root) {
 		this.root = root;
@@ -182,6 +181,15 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 	protected T getMeta(int dim) {
 		T adjustedMeta = getBuilder().adjustMeta((T) getRoot(), dim);
 		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
+	}
+
+	@Override
+	public T getInstance(T meta, List<T> overrides, Serializable value, T... components) {
+		List<T> componentsList = Arrays.asList(components);
+		T adjustMeta = meta.adjustMeta(value, componentsList);
+		if (adjustMeta.getComponents().size() < components.length)
+			return null;
+		return adjustMeta.getDirectInstance(overrides, value, componentsList);
 	}
 
 	@Override
