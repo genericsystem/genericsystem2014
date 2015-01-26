@@ -11,13 +11,13 @@ public class CacheUses {
 
 		// Create a type Vehicle
 		Generic vehicle = engine.addInstance("Vehicle");
-		// Create an attribute Options to the Vehicle
-		Generic options = vehicle.addAttribute("Options");
+		// Add an attribute Power on Vehicle
+		Generic power = vehicle.addAttribute("Power");
 
 		// Create an instance of Vehicle
 		Generic myVehicle = vehicle.addInstance("myVehicle");
-		// Add an Options to myVehicle
-		myVehicle.addHolder(options, "music player");
+		// Add a value for Power to myVehicle
+		myVehicle.addHolder(power, 213);
 
 		// Get the current cache and validate the modifications done on it
 		engine.getCurrentCache().flush();
@@ -31,7 +31,7 @@ public class CacheUses {
 		// Create a type Vehicle
 		Generic vehicle = engine.addInstance("Vehicle");
 
-		// Create a property Power on Vehicle
+		// Add a property Power on Vehicle
 		Generic power = vehicle.addAttribute("Power").enablePropertyConstraint();
 
 		// Mount a cache on the current cache
@@ -40,16 +40,16 @@ public class CacheUses {
 		// Create an instance of Vehicle
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 
-		// Instantiate a Power on it
+		// Add a value for Power to myVehicle
 		myVehicle.addHolder(power, 213);
 		// myVehicle has one Power : 213
 
-		// Add another Power on myVehicle
+		// Add another value for Power to myVehicle
 		myVehicle.addHolder(power, 220);
 		// Error : Power is a property, it can have only one value
 
 		// A rollback is performed by Generic System
-		// The instance of Power and the instance of Vehicle are lost
-		// but thanks to the cache we mount, the Vehicle and its Power are NOT lost
+		// The value for Power and the instance of Vehicle are lost
+		// but thanks to the cache we mount, the type Vehicle and the property Power are NOT lost
 	}
 }
