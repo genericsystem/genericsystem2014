@@ -135,7 +135,7 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 	}
 
 	private abstract class PotentialDependenciesComputer extends TreeSet<T> {
-		private static final long serialVersionUID = -5970021419012502402L;
+		private static final long serialVersionUID = -4464199068092100672L;
 		private final Set<T> alreadyVisited = new HashSet<>();
 
 		abstract boolean isSelected(T node);
