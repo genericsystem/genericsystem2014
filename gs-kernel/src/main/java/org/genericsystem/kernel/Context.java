@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
-
 import org.genericsystem.api.core.IteratorSnapshot;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.defaults.DefaultContext;
@@ -97,30 +96,26 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 			this.dependenciesToRemove = dependenciesToRemove;
 		}
 
-		protected void addDependecy(T dependency) {
-			super.add(dependency);
-		}
-
 		OrderedDependencies visit(T node) {
 			if (!contains(node)) {
-				if (!force && dependenciesToRemove && !node.getInheritings().isEmpty())
-					discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + node + " has a inheriting dependencies : " + node.getInheritings().info()));
+				if (!force && dependenciesToRemove && !getInheritings(node).isEmpty())
+					discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + node + " has a inheriting dependencies : " + getInheritings(node).info()));
 				getInheritings(node).forEach(this::visit);
 
-				if (!force && dependenciesToRemove && !node.getInstances().isEmpty())
-					discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + node + " has a instance dependencies : " + node.getInstances().info()));
+				if (!force && dependenciesToRemove && !getInstances(node).isEmpty())
+					discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + node + " has a instance dependencies : " + getInstances(node).info()));
 				getInstances(node).forEach(this::visit);
 
-				for (T composite : node.getComposites()) {
+				for (T composite : getComposites(node)) {
 					if (!force)
 						for (int componentPos = 0; componentPos < composite.getComponents().size(); componentPos++)
 							if (composite.getComponents().get(componentPos).equals(node) && !contains(composite) && composite.getMeta().isReferentialIntegrityEnabled(componentPos))
 								discardWithException(new ReferentialIntegrityConstraintViolationException(composite + " is Referential Integrity for ancestor " + node + " by composite position : " + componentPos));
 					visit(composite);
 				}
-				addDependecy(node);
+				add(node);
 				for (int axe = 0; axe < node.getComponents().size(); axe++)
-					if (node.isCascadeRemoveEnabled(axe))
+					if (!force && node.isCascadeRemoveEnabled(axe))
 						visit(node.getComponents().get(axe));
 			}
 			return this;
@@ -237,8 +232,7 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		};
 	}
 
-	protected void triggersMutation(T oldDependency, T newDependency) {
-	}
+	protected void triggersMutation(T oldDependency, T newDependency) {}
 
 	private void indexInstance(T generic, T instance) {
 		generic.getInstancesDependencies().add(instance);

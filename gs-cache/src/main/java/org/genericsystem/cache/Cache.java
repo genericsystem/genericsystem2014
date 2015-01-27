@@ -2,7 +2,6 @@ package org.genericsystem.cache;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConcurrencyControlException;
@@ -21,12 +20,11 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 	private final ContextEventListener<T> listener;
 
 	protected Cache(DefaultEngine<T> engine) {
-		this(new Transaction<T>(engine));
+		this(new Transaction<>(engine));
 	}
 
 	protected Cache(Transaction<T> subContext) {
-		this(subContext, new ContextEventListener<T>() {
-		});
+		this(subContext, new ContextEventListener<T>() {});
 	}
 
 	protected Cache(Transaction<T> subContext, ContextEventListener<T> listener) {
@@ -273,17 +271,13 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 
 	public static interface ContextEventListener<X> {
 
-		default void triggersMutationEvent(X oldDependency, X newDependency) {
-		}
+		default void triggersMutationEvent(X oldDependency, X newDependency) {}
 
-		default void triggersRefreshEvent() {
-		}
+		default void triggersRefreshEvent() {}
 
-		default void triggersClearEvent() {
-		}
+		default void triggersClearEvent() {}
 
-		default void triggersFlushEvent() {
-		}
+		default void triggersFlushEvent() {}
 	}
 
 }

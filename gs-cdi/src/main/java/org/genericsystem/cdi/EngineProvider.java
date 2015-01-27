@@ -1,14 +1,11 @@
 package org.genericsystem.cdi;
 
 import java.util.Arrays;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-
-import org.genericsystem.cdi.event.EventLauncher;
 import org.genericsystem.kernel.Statics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,9 +22,6 @@ public class EngineProvider {
 
 	@Inject
 	private PersistentDirectoryProvider persistentDirectoryProvider;
-
-	@Inject
-	private EventLauncher eventLauncher;
 
 	@Inject
 	private CacheRequestProvider cacheRequestProvider;
@@ -66,7 +60,6 @@ public class EngineProvider {
 
 	@PreDestroy
 	public void destroy() {
-		eventLauncher.launchStopEvent();
 		log.info("$$$$$$$$$$$$$$ STOP GS ENGINE $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
 		engine.close();
 		engine = null;
