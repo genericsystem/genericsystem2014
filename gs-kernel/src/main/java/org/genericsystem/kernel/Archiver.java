@@ -217,8 +217,9 @@ public class Archiver<T extends AbstractVertex<T>> {
 			return transaction;
 		}
 
+		@SuppressWarnings("unchecked")
 		private void saveSnapshot(File directory) throws IOException {
-			writeDependencies(getOrderedVertices(), new HashSet<>());
+			writeDependencies(transaction.computeDependencies((T) root), new HashSet<>());
 			objectOutputStream.flush();
 			objectOutputStream.close();
 		}
@@ -253,11 +254,6 @@ public class Archiver<T extends AbstractVertex<T>> {
 
 		protected void writeAncestorId(T dependency, T ancestor) throws IOException {
 			objectOutputStream.writeLong(ancestor != null ? ancestor.getTs() : dependency.getTs());
-		}
-
-		@SuppressWarnings("unchecked")
-		protected NavigableSet<T> getOrderedVertices() {
-			return transaction.computeDependencies((T) root);
 		}
 	}
 

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
+
 import org.genericsystem.api.core.IteratorSnapshot;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.defaults.DefaultContext;
@@ -85,60 +86,52 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		generic.getComponents().stream().filter(component -> component != null).forEach(component -> unIndexComposite(component, generic));
 	}
 
-	private class OrderedDependencies extends TreeSet<T> {
+	private class OrderedRemoveDependencies extends TreeSet<T> {
 		private static final long serialVersionUID = -5970021419012502402L;
 
-		private final boolean force;
 		private final boolean dependenciesToRemove;
 
-		public OrderedDependencies(boolean force, boolean dependenciesToRemove) {
-			this.force = force;
+		public OrderedRemoveDependencies(boolean dependenciesToRemove) {
 			this.dependenciesToRemove = dependenciesToRemove;
 		}
 
-		OrderedDependencies visit(T node) {
+		OrderedRemoveDependencies visit(T node) {
 			if (!contains(node)) {
-				if (!force && dependenciesToRemove && !getInheritings(node).isEmpty())
+				if (dependenciesToRemove && !getInheritings(node).isEmpty())
 					discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + node + " has a inheriting dependencies : " + getInheritings(node).info()));
 				getInheritings(node).forEach(this::visit);
 
-				if (!force && dependenciesToRemove && !getInstances(node).isEmpty())
+				if (dependenciesToRemove && !getInstances(node).isEmpty())
 					discardWithException(new ReferentialIntegrityConstraintViolationException("Ancestor : " + node + " has a instance dependencies : " + getInstances(node).info()));
 				getInstances(node).forEach(this::visit);
 
 				for (T composite : getComposites(node)) {
-					if (!force)
-						for (int componentPos = 0; componentPos < composite.getComponents().size(); componentPos++)
-							if (composite.getComponents().get(componentPos).equals(node) && !contains(composite) && composite.getMeta().isReferentialIntegrityEnabled(componentPos))
-								discardWithException(new ReferentialIntegrityConstraintViolationException(composite + " is Referential Integrity for ancestor " + node + " by composite position : " + componentPos));
+					for (int componentPos = 0; componentPos < composite.getComponents().size(); componentPos++)
+						if (composite.getComponents().get(componentPos).equals(node) && !contains(composite) && composite.getMeta().isReferentialIntegrityEnabled(componentPos))
+							discardWithException(new ReferentialIntegrityConstraintViolationException(composite + " is Referential Integrity for ancestor " + node + " by composite position : " + componentPos));
 					visit(composite);
 				}
 				add(node);
 				for (int axe = 0; axe < node.getComponents().size(); axe++)
-					if (!force && node.isCascadeRemoveEnabled(axe))
+					if (node.isCascadeRemoveEnabled(axe))
 						visit(node.getComponents().get(axe));
 			}
 			return this;
 		}
 	}
 
-	public NavigableSet<T> computeDependencies(T node) {
-		return computeDependencies(node, true, true);
-	}
+	private class OrderedDependencies extends TreeSet<T> {
+		private static final long serialVersionUID = -441180182522681264L;
 
-	NavigableSet<T> computeDependencies(T node, boolean force, boolean dependenciesToRemove) {
-		return new OrderedDependencies(force, dependenciesToRemove).visit(node);
-	}
-
-	public NavigableSet<T> computePotentialDependencies(T meta, List<T> supers, Serializable value, List<T> components) {
-		return new PotentialDependenciesComputer() {
-			private static final long serialVersionUID = -3611136800445783634L;
-
-			@Override
-			boolean isSelected(T node) {
-				return node.isDependencyOf(meta, supers, value, components);
+		OrderedDependencies visit(T node) {
+			if (!contains(node)) {
+				getInheritings(node).forEach(this::visit);
+				getInstances(node).forEach(this::visit);
+				getComposites(node).forEach(this::visit);
+				add(node);
 			}
-		}.visit(meta);
+			return this;
+		}
 	}
 
 	private abstract class PotentialDependenciesComputer extends TreeSet<T> {
@@ -161,6 +154,25 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		}
 	}
 
+	NavigableSet<T> computeRemoveDependencies(T node, boolean dependenciesToRemove) {
+		return new OrderedRemoveDependencies(dependenciesToRemove).visit(node);
+	}
+
+	public NavigableSet<T> computeDependencies(T node) {
+		return new OrderedDependencies().visit(node);
+	}
+
+	public NavigableSet<T> computePotentialDependencies(T meta, List<T> supers, Serializable value, List<T> components) {
+		return new PotentialDependenciesComputer() {
+			private static final long serialVersionUID = -3611136800445783634L;
+
+			@Override
+			boolean isSelected(T node) {
+				return node.isDependencyOf(meta, supers, value, components);
+			}
+		}.visit(meta);
+	}
+
 	private T getAlive(T vertex) {
 		if (vertex.isRoot())
 			return vertex;
@@ -179,7 +191,7 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 	}
 
 	@Override
-	public T getInstance(T meta, List<T> overrides, Serializable value, T... components) {
+	public T getInstance(T meta, List<T> overrides, Serializable value, @SuppressWarnings("unchecked") T... components) {
 		List<T> componentsList = Arrays.asList(components);
 		T adjustMeta = meta.adjustMeta(value, componentsList);
 		if (adjustMeta.getComponents().size() < components.length)
@@ -232,7 +244,8 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		};
 	}
 
-	protected void triggersMutation(T oldDependency, T newDependency) {}
+	protected void triggersMutation(T oldDependency, T newDependency) {
+	}
 
 	private void indexInstance(T generic, T instance) {
 		generic.getInstancesDependencies().add(instance);

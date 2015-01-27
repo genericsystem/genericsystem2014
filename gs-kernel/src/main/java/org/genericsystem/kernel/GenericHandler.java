@@ -74,27 +74,27 @@ public class GenericHandler<T extends AbstractVertex<T>> {
 	public T set(T update) {
 		assert update != null;
 		assert supers != null;
-		return builder.rebuildAll(update, () -> builder.build(clazz, adjustedMeta, supers, value, components), builder.getContext().computeDependencies(update, false, false));
+		return builder.rebuildAll(update, () -> builder.build(clazz, adjustedMeta, supers, value, components), builder.getContext().computeRemoveDependencies(update, false));
 	}
 
 	public T update(T update) {
 		assert update != null;
 		assert supers != null;
-		return builder.rebuildAll(update, () -> builder.getOrBuild(clazz, adjustedMeta, supers, value, components), builder.getContext().computeDependencies(update, false, false));
+		return builder.rebuildAll(update, () -> builder.getOrBuild(clazz, adjustedMeta, supers, value, components), builder.getContext().computeRemoveDependencies(update, false));
 	}
 
 	public void remove() {
 		assert supers != null;
-		builder.rebuildAll(null, null, builder.getContext().computeDependencies(gettable, false, true));
+		builder.rebuildAll(null, null, builder.getContext().computeRemoveDependencies(gettable, true));
 	}
 
 	public void forceRemove() {
 		assert supers != null;
-		builder.rebuildAll(null, null, builder.getContext().computeDependencies(gettable, true, true));
+		builder.rebuildAll(null, null, builder.getContext().computeDependencies(gettable));
 	}
 
 	public void conserveRemove() {
 		assert supers != null;
-		builder.rebuildAll(gettable, () -> gettable, builder.getContext().computeDependencies(gettable, false, false));
+		builder.rebuildAll(gettable, () -> gettable, builder.getContext().computeDependencies(gettable));
 	}
 }
