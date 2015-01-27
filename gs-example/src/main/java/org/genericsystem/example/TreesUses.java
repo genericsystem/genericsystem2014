@@ -8,37 +8,39 @@ import org.genericsystem.mutability.Engine;
 import org.genericsystem.mutability.Generic;
 
 public class TreesUses {
-	public void notInheritingTree() {
+	public void simpleTree() {
 		Engine engine = new Engine();
 
-		// Create a binary tree called genealogicTree
-		Generic genealogicTree = engine.addTree("genealogicTree", 2);
-
-		// Create the root father
-		Generic father = genealogicTree.addRoot("father");
-		// Create the root mother
-		Generic mother = genealogicTree.addRoot("mother");
-
-		// Create the child son
-		Generic son = father.addChild("son", mother);
-		// Create the child daughter
-		Generic daughter = father.addChild("daughter", mother);
-
-		// Get children of Father
-		assert father.getChildren().containsAll(Arrays.asList(son, daughter));
-
-		// Get children of Mother
-		assert mother.getChildren().containsAll(Arrays.asList(son, daughter));
-	}
-
-	public void inheritingTree() {
-		Engine engine = new Engine();
-
-		// Create a tree called webPage
-		Generic webPage = engine.addTree("webPage");
+		// Create a tree called HtmlTags
+		Generic htmlTags = engine.addTree("HtmlTags");
 
 		// Create the root html
-		Generic html = webPage.addRoot("html");
+		Generic html = htmlTags.addRoot("html");
+
+		// Create the child header
+		Generic header = html.addChild("header");
+		// Create the child body
+		Generic body = html.addChild("body");
+		// Create the child footer
+		Generic footer = html.addChild("footer");
+
+		// Create the child p
+		body.addChild("p");
+		// Create the child table
+		body.addChild("table");
+
+		// Commit changes
+		engine.getCurrentCache().flush();
+	}
+
+	public void inheritingNodes() {
+		Engine engine = new Engine();
+
+		// Create a tree called HtmlTags
+		Generic htmlTags = engine.addTree("HtmlTags");
+
+		// Create the root html
+		Generic html = htmlTags.addRoot("html");
 
 		// Create the child header
 		Generic header = html.addInheritingChild("header");
@@ -47,10 +49,10 @@ public class TreesUses {
 		// Create the child footer
 		Generic footer = html.addInheritingChild("footer");
 
-		// Create the child text1
-		body.addInheritingChild("text1");
-		// Create the child text2
-		body.addInheritingChild("text2");
+		// Create the child p
+		body.addInheritingChild("p");
+		// Create the child table
+		body.addInheritingChild("table");
 
 		// Create a type Color
 		Generic color = engine.addInstance("Color");
@@ -59,42 +61,45 @@ public class TreesUses {
 		Generic blue = color.addInstance("blue");
 		Generic yellow = color.addInstance("yellow");
 
-		// Create the relation WebPageComponentColor between webPage and Color
-		Generic webPageComponentColor = webPage.addRelation("WebPageComponentColor", color);
+		// Create the relation HtmlTagsColor between HtmlTags and Color
+		Generic htmlTagsColor = htmlTags.addRelation("HtmlTagsColor", color);
 		// Enable singular constraint on the base
-		webPageComponentColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
+		htmlTagsColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
 
-		// Associate the Color red to the webPageComponent html
-		html.addLink(webPageComponentColor, "htmlRed", red);
-		// Associate the Color blue to the webPageComponent header
-		header.addLink(webPageComponentColor, "headerBlue", blue);
-		// Associate the Color yellow to the webPageComponent footer
-		footer.addLink(webPageComponentColor, "footerYellow", yellow);
-		// No explicitly associated Color to the webPageComponent body
+		// Associate the Color red to the htmlTags html
+		html.addLink(htmlTagsColor, "htmlRed", red);
+		// Associate the Color blue to the htmlTags header
+		header.addLink(htmlTagsColor, "headerBlue", blue);
+		// Associate the Color yellow to the htmlTags footer
+		footer.addLink(htmlTagsColor, "footerYellow", yellow);
+		// No explicitly associated Color to the htmlTags body
 
-		// Get color of the webPageComponent html
-		assert html.getLink(webPageComponentColor, "htmlRed").getTargetComponent().equals(red);
-		// Get color of the webPageComponent header
-		assert header.getLink(webPageComponentColor, "headerBlue").getTargetComponent().equals(blue);
-		// Get color of the webPageComponent footer
-		assert footer.getLink(webPageComponentColor, "footerYellow").getTargetComponent().equals(yellow);
-		// Get color of the webPageComponent body
-		assert body.getLink(webPageComponentColor, "htmlRed").getTargetComponent().equals(red);
+		// Get color of the htmlTags html
+		assert html.getLink(htmlTagsColor, "htmlRed").getTargetComponent().equals(red);
+		// Get color of the htmlTags header
+		assert header.getLink(htmlTagsColor, "headerBlue").getTargetComponent().equals(blue);
+		// Get color of the htmlTags footer
+		assert footer.getLink(htmlTagsColor, "footerYellow").getTargetComponent().equals(yellow);
+		// Get color of the htmlTags body
+		assert body.getLink(htmlTagsColor, "htmlRed").getTargetComponent().equals(red);
+
+		// Commit changes
+		engine.getCurrentCache().flush();
 	}
 
 	public void traverseTree() {
 		Engine engine = new Engine();
 
-		Generic webPage = engine.addTree("webPage");
+		Generic htmlTags = engine.addTree("HtmlTags");
 
-		Generic html = webPage.addRoot("html");
+		Generic html = htmlTags.addRoot("html");
 
-		html.addInheritingChild("header");
-		Generic body = html.addInheritingChild("body");
-		html.addInheritingChild("footer");
+		html.addChild("header");
+		Generic body = html.addChild("body");
+		html.addChild("footer");
 
-		body.addInheritingChild("text1");
-		body.addInheritingChild("text2");
+		body.addChild("p");
+		body.addChild("table");
 
 		// Pass through the tree from html
 		html.traverse(new Visitor<Generic>() {
@@ -108,5 +113,34 @@ public class TreesUses {
 				System.out.println("after : " + node.getValue());
 			}
 		});
+
+		// Commit changes
+		engine.getCurrentCache().flush();
+	}
+
+	public void binaryTree() {
+		Engine engine = new Engine();
+
+		// Create a binary tree called GenealogicTree
+		Generic genealogicTree = engine.addTree("GenealogicTree", 2);
+
+		// Create the root father
+		Generic father = genealogicTree.addRoot("father");
+		// Create the root mother
+		Generic mother = genealogicTree.addRoot("mother");
+
+		// Create the child son
+		Generic son = father.addChild("son", mother);
+		// Create the child daughter
+		Generic daughter = father.addChild("daughter", mother);
+
+		// Get children of father
+		assert father.getChildren().containsAll(Arrays.asList(son, daughter));
+
+		// Get children of mother
+		assert mother.getChildren().containsAll(Arrays.asList(son, daughter));
+
+		// Commit changes
+		engine.getCurrentCache().flush();
 	}
 }
