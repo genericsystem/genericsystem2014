@@ -11,6 +11,7 @@ import java.util.NavigableSet;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.genericsystem.api.defaults.DefaultBuilder;
 import org.genericsystem.api.exception.ExistsException;
@@ -169,8 +170,6 @@ public class Builder<T extends AbstractVertex<T>> implements DefaultBuilder<T> {
 	private class ConvertMap extends HashMap<T, T> {
 		private static final long serialVersionUID = 5003546962293036021L;
 
-		Function<List<T>, List<T>> CONVERT_LIST = t -> t.stream().map(x -> convert(x)).collect(Collectors.toList());
-
 		private T convert(T oldDependency) {
 			if (oldDependency.isAlive())
 				return oldDependency;
@@ -180,9 +179,9 @@ public class Builder<T extends AbstractVertex<T>> implements DefaultBuilder<T> {
 					assert oldDependency.getSupers().size() == 1;
 					newDependency = setMeta(oldDependency.getComponents().size());
 				} else {
-					List<T> overrides = transform(oldDependency, x -> CONVERT_LIST.apply(x.getSupers()));
-					List<T> components = transform(oldDependency, x -> CONVERT_LIST.apply(x.getComponents()));
-					T adjustedMeta = transformMeta(components, convert(oldDependency.getMeta())).adjustMeta(oldDependency.getValue(), components);
+					List<T> overrides = replaceNotAlive(oldDependency, t -> t.getSupers().stream().map(x -> convert(x)));
+					List<T> components = replaceNotAlive(oldDependency, t -> t.getComponents().stream().map(x -> convert(x)));
+					T adjustedMeta = adjustMeta(components, convert(oldDependency.getMeta())).adjustMeta(oldDependency.getValue(), components);
 					List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, oldDependency.getValue(), components);
 					// TODO KK designTs
 					newDependency = getOrBuild(oldDependency.getClass(), adjustedMeta, supers, oldDependency.getValue(), components);
@@ -192,30 +191,31 @@ public class Builder<T extends AbstractVertex<T>> implements DefaultBuilder<T> {
 			return newDependency;
 		}
 
+		private List<T> replaceNotAlive(T oldDependency, Function<T, Stream<T>> convertDependencies) {
+			List<T> dependencies = convertDependencies.apply(oldDependency).collect(Collectors.toList());
+			List<T> dependenciesAlive = new ArrayList<>();
+			for (int i = 0; i < dependencies.size(); i++) {
+				T dependency = dependencies.get(i);
+				if (!dependency.isAlive())
+					dependencies.addAll(replaceNotAlive(dependency, convertDependencies));
+				else
+					dependenciesAlive.add(dependency);
+			}
+			return dependenciesAlive;
+		}
+
+		private T adjustMeta(List<T> components, T meta) {
+			if (components.size() != meta.getComponents().size())
+				return adjustMeta(components, meta.getSupers().get(0));
+			return meta;
+		}
+
 		@Override
 		public T put(T oldDependency, T newDependency) {
 			T result = super.put(oldDependency, newDependency);
 			getContext().triggersMutation(oldDependency, newDependency);
 			return result;
 		}
-	}
-
-	private List<T> transform(T node, Function<T, List<T>> getDependencies) {
-		List<T> dependencies = getDependencies.apply(node);
-		for (int i = 0; i < dependencies.size(); i++) {
-			T dependency = dependencies.get(i);
-			if (!dependency.isAlive()) {
-				dependencies.addAll(transform(dependency, getDependencies));
-				dependencies.remove(i);
-			}
-		}
-		return dependencies;
-	}
-
-	private T transformMeta(List<T> components, T meta) {
-		if (components.size() != meta.getComponents().size())
-			return transformMeta(components, meta.getSupers().get(0));
-		return meta;
 	}
 
 	List<T> computeAndCheckOverridesAreReached(T adjustedMeta, List<T> overrides, Serializable value, List<T> components) {
