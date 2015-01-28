@@ -197,7 +197,7 @@ public class Builder<T extends AbstractVertex<T>> implements DefaultBuilder<T> {
 			for (int i = 0; i < dependencies.size(); i++) {
 				T dependency = dependencies.get(i);
 				if (!dependency.isAlive())
-					dependencies.addAll(replaceNotAlive(dependency, convertDependencies));
+					replaceNotAlive(dependency, convertDependencies);
 				else
 					dependenciesAlive.add(dependency);
 			}
