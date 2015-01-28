@@ -8,10 +8,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.NavigableSet;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.genericsystem.api.defaults.DefaultBuilder;
 import org.genericsystem.api.exception.ExistsException;
@@ -179,9 +177,9 @@ public class Builder<T extends AbstractVertex<T>> implements DefaultBuilder<T> {
 					assert oldDependency.getSupers().size() == 1;
 					newDependency = setMeta(oldDependency.getComponents().size());
 				} else {
-					List<T> overrides = replaceNotAlive(oldDependency, t -> t.getSupers().stream().map(x -> convert(x)));
-					List<T> components = replaceNotAlive(oldDependency, t -> t.getComponents().stream().map(x -> convert(x)));
-					T adjustedMeta = adjustMeta(components, convert(oldDependency.getMeta())).adjustMeta(oldDependency.getValue(), components);
+					List<T> overrides = reasignSupers(oldDependency, new ArrayList<>());
+					List<T> components = reasignComponents(oldDependency);
+					T adjustedMeta = reasignMeta(components, convert(oldDependency.getMeta())).adjustMeta(oldDependency.getValue(), components);
 					List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, oldDependency.getValue(), components);
 					// TODO KK designTs
 					newDependency = getOrBuild(oldDependency.getClass(), adjustedMeta, supers, oldDependency.getValue(), components);
@@ -191,22 +189,22 @@ public class Builder<T extends AbstractVertex<T>> implements DefaultBuilder<T> {
 			return newDependency;
 		}
 
-		private List<T> replaceNotAlive(T oldDependency, Function<T, Stream<T>> convertDependencies) {
-			List<T> dependencies = convertDependencies.apply(oldDependency).collect(Collectors.toList());
-			List<T> dependenciesAlive = new ArrayList<>();
-			for (int i = 0; i < dependencies.size(); i++) {
-				T dependency = dependencies.get(i);
-				if (!dependency.isAlive())
-					replaceNotAlive(dependency, convertDependencies);
+		private List<T> reasignSupers(T oldDependency, List<T> supersReasign) {
+			for (T ancestor : oldDependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList()))
+				if (!ancestor.isAlive())
+					reasignSupers(ancestor, supersReasign);
 				else
-					dependenciesAlive.add(dependency);
-			}
-			return dependenciesAlive;
+					supersReasign.add(ancestor);
+			return supersReasign;
 		}
 
-		private T adjustMeta(List<T> components, T meta) {
+		private List<T> reasignComponents(T oldDependency) {
+			return oldDependency.getComponents().stream().map(x -> convert(x)).filter(x -> x.isAlive()).collect(Collectors.toList());
+		}
+
+		private T reasignMeta(List<T> components, T meta) {
 			if (components.size() != meta.getComponents().size())
-				return adjustMeta(components, meta.getSupers().get(0));
+				return reasignMeta(components, meta.getSupers().get(0));
 			return meta;
 		}
 
