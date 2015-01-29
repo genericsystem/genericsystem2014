@@ -38,21 +38,21 @@ public class AnnotationsUses {
 	// classes for example staticSetting
 
 	@SystemGeneric
-	public class Vehicle {
+	public static class Vehicle {
 	}
 
 	@SystemGeneric
 	@Components(Vehicle.class)
-	public class Options {
+	public static class Options {
 	}
 
 	@SystemGeneric
-	public class Color {
+	public static class Color {
 	}
 
 	@SystemGeneric
 	@Components({ Vehicle.class, Color.class })
-	public class VehicleColor {
+	public static class VehicleColor {
 	}
 
 	public void crud() {
