@@ -9,19 +9,100 @@
 	<packaging>jar</packaging>
 
 	<properties>
+		<!-- Utilisation Java SE -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
 		
 		<maven-compiler-plugin.version>3.2</maven-compiler-plugin.version>
+		<testng.version>6.8.1</testng.version>
+		
+		<!-- Utilisation Java EE -->
+		<weld.core.version>2.2.6.Final</weld.core.version>
+		<arquillian.version>1.1.4.Final</arquillian.version>
+		<jboss-ejb3-api.version>3.1.0</jboss-ejb3-api.version>
 	</properties>
 
 	<dependencies>
+		<!-- Utilisation Java SE -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.genericsystem</groupId> -->
+<!-- 			<artifactId>gs-mutability</artifactId> -->
+<!-- 			<version>3.0-SNAPSHOT</version> -->
+<!-- 		</dependency> -->
+
 		<dependency>
-			<groupId>org.genericsystem</groupId>
-			<artifactId>gs-mutability</artifactId>
-			<version>3.0-SNAPSHOT</version>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>${testng.version}</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<!-- Utilisation Java EE -->
+		<dependency>
+	        <groupId>org.genericsystem</groupId>
+	        <artifactId>gs-cdi</artifactId>
+	        <version>3.0-SNAPSHOT</version>
+	    </dependency>
+	    
+	    <dependency>
+			<groupId>org.jboss.weld</groupId>
+			<artifactId>weld-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.jboss.arquillian.testng</groupId>
+			<artifactId>arquillian-testng-container</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.jboss.arquillian.container</groupId>
+			<artifactId>arquillian-weld-ee-embedded-1.1</artifactId>
+			<version>1.0.0.Final-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss.arquillian.container</groupId>
+			<artifactId>arquillian-container-test-impl-base</artifactId>
+			<version>${arquillian.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.jboss.ejb3</groupId>
+			<artifactId>jboss-ejb3-api</artifactId>
+			<version>${jboss-ejb3-api.version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.jboss.weld</groupId>
+				<artifactId>weld-core-bom</artifactId>
+				<version>${weld.core.version}</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+			
+			<dependency>
+				<groupId>org.jboss.arquillian</groupId>
+				<artifactId>arquillian-bom</artifactId>
+				<version>${arquillian.version}</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 	
 	<build>
 		<finalName>${project.artifactId}</finalName>

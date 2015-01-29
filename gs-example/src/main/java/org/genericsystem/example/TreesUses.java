@@ -18,11 +18,11 @@ public class TreesUses {
 		Generic html = htmlTags.addRoot("html");
 
 		// Create the child header
-		Generic header = html.addChild("header");
+		html.addChild("header");
 		// Create the child body
 		Generic body = html.addChild("body");
 		// Create the child footer
-		Generic footer = html.addChild("footer");
+		html.addChild("footer");
 
 		// Create the child p
 		body.addChild("p");
