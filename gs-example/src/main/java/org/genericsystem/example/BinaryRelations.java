@@ -110,7 +110,7 @@ public class BinaryRelations {
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = vehicle.addRelation("VehicleColor", color);
 
-		// Make VehicleColor a n-n relation : nothing to do, it is the case by default
+		// Make VehicleColor a n-m relation : nothing to do, it is the case by default
 
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		Generic yourVehicle = vehicle.addInstance("yourVehicle");

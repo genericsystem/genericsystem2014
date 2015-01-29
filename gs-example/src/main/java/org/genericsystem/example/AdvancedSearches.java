@@ -105,7 +105,7 @@ public class AdvancedSearches {
 	public void filter() {
 		Engine engine = new Engine();
 
-		// Create a type Vehicle with Options
+		// Create a type Vehicle with an attribute Options
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic options = vehicle.addAttribute("Options");
 
@@ -114,7 +114,7 @@ public class AdvancedSearches {
 		Generic mySecondVehicle = vehicle.addInstance("mySecondVehicle");
 		Generic myThirdVehicle = vehicle.addInstance("myThirdVehicle");
 
-		// Add three instances of Options, one for each instance of Vehicle
+		// Add three values to Options, one for each instance of Vehicle
 		myFirstVehicle.addHolder(options, "air conditioning");
 		mySecondVehicle.addHolder(options, "music player");
 		myThirdVehicle.addHolder(options, "air conditioning");

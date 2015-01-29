@@ -18,7 +18,7 @@ public class ConstraintsUses {
 		// Create an instance of Vehicle
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		// Add values for Options
-		myVehicle.addHolder(options, "music player");
+		myVehicle.addHolder(options, "music player"); // OK
 		myVehicle.addHolder(options, "air conditioning");
 		// Error : Power is a property, it can have only one value
 	}

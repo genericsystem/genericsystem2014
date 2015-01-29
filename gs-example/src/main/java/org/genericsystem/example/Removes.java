@@ -69,7 +69,6 @@ public class Removes {
 
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		Generic red = color.addInstance("red");
-
 		Generic myVehicleRed = myVehicle.addLink(vehicleColor, "myVehicleRed", red);
 
 		// Remove the link myVehicleRed

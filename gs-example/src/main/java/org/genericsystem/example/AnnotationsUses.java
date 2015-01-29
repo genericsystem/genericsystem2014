@@ -19,9 +19,9 @@ public class AnnotationsUses {
 
 		// Create the structure
 		Generic vehicle = engine.addInstance("Vehicle");
-		Generic options = vehicle.addAttribute("Options");
+		vehicle.addAttribute("Options");
 		Generic color = engine.addInstance("Color");
-		Generic vehicleColor = vehicle.addRelation("VehicleColor", color);
+		vehicle.addRelation("VehicleColor", color);
 	}
 
 	public void staticSetting() {
@@ -29,10 +29,10 @@ public class AnnotationsUses {
 		Engine engine = new Engine(Vehicle.class, Options.class, Color.class, VehicleColor.class);
 
 		// Retrieve annotated classes
-		Generic vehicle = engine.find(Vehicle.class);
-		Generic options = engine.find(Options.class);
-		Generic color = engine.find(Color.class);
-		Generic vehicleColor = engine.find(VehicleColor.class);
+		engine.find(Vehicle.class);
+		engine.find(Options.class);
+		engine.find(Color.class);
+		engine.find(VehicleColor.class);
 	}
 
 	// classes for example staticSetting
