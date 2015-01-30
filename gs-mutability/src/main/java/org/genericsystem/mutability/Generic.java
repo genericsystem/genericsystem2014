@@ -36,4 +36,9 @@ public interface Generic extends DefaultVertex<Generic> {
 		return getCurrentCache().wrap(getCurrentCache().unwrap(this).getComponents());
 	}
 
+	@Override
+	default String info() {
+		return getCurrentCache().unwrap(this).info();
+	}
+
 }
