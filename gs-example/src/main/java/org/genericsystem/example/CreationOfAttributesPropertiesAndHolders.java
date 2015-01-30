@@ -50,6 +50,6 @@ public class CreationOfAttributesPropertiesAndHolders {
 
 		// Add another Power on myVehicle
 		myVehicle.addHolder(power, 220);
-		// Error : Power is a property, it can have only one value
+		// Throws PropertyConstraintViolationException : Power is a property, it can have only one value
 	}
 }
