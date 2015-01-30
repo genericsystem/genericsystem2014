@@ -5,7 +5,7 @@ package org.genericsystem.api.exception;
  * 
  * @author Nicolas Feybesse
  */
-public class ConcurrencyControlException extends Exception {
+public class ConcurrencyControlException extends RuntimeException {
 
 	private static final long serialVersionUID = 7631483467570784262L;
 
