@@ -11,11 +11,11 @@ public class TreesUses {
 	public void simpleTree() {
 		Engine engine = new Engine();
 
-		// Create a tree called HtmlTags
-		Generic htmlTags = engine.addTree("HtmlTags");
+		// Create a tree called Html5Tags
+		Generic html5Tags = engine.addTree("Html5Tags");
 
 		// Create the root html
-		Generic html = htmlTags.addRoot("html");
+		Generic html = html5Tags.addRoot("html");
 
 		// Create the child header
 		html.addChild("header");
@@ -36,11 +36,11 @@ public class TreesUses {
 	public void inheritingNodes() {
 		Engine engine = new Engine();
 
-		// Create a tree called HtmlTags
-		Generic htmlTags = engine.addTree("HtmlTags");
+		// Create a tree called Html5Tags
+		Generic html5Tags = engine.addTree("Html5Tags");
 
 		// Create the root html
-		Generic html = htmlTags.addRoot("html");
+		Generic html = html5Tags.addRoot("html");
 
 		// Create the child header
 		Generic header = html.addInheritingChild("header");
@@ -61,8 +61,8 @@ public class TreesUses {
 		Generic blue = color.addInstance("blue");
 		Generic yellow = color.addInstance("yellow");
 
-		// Create the relation HtmlTagsColor between HtmlTags and Color
-		Generic htmlTagsColor = htmlTags.addRelation("HtmlTagsColor", color);
+		// Create the relation HtmlTagsColor between Html5Tags and Color
+		Generic htmlTagsColor = html5Tags.addRelation("HtmlTagsColor", color);
 		// Enable singular constraint on the base
 		htmlTagsColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
 
@@ -90,9 +90,9 @@ public class TreesUses {
 	public void traverseTree() {
 		Engine engine = new Engine();
 
-		Generic htmlTags = engine.addTree("HtmlTags");
+		Generic html5Tags = engine.addTree("Html5Tags");
 
-		Generic html = htmlTags.addRoot("html");
+		Generic html = html5Tags.addRoot("html");
 
 		html.addChild("header");
 		Generic body = html.addChild("body");
