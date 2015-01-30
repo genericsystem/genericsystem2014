@@ -55,28 +55,28 @@ Prerequisites
 -------------
 
 Pour faire fonctionner Generic System, il est nécessaire :
-* d'installer Java 8
+* d'installer Java 8 (JRE)
 
 * de configurer dans le pom.xml de votre projet, le repository Generic System :
-    <pre>
-	&lt;repository&gt;
-		&lt;id&gt;middlewarefactory&lt;/id&gt;
-		&lt;url&gt;http://www.middlewarefactory.com/repository&lt;/url&gt;
-		&lt;releases&gt;
-			&lt;enabled&gt;true&lt;/enabled&gt;
-			&lt;updatePolicy&gt;daily&lt;/updatePolicy&gt;
-		&lt;/releases&gt;
-	&lt;/repository&gt;
-    </pre>
+<pre>
+&lt;repository&gt;
+	&lt;id&gt;middlewarefactory&lt;/id&gt;
+	&lt;url&gt;http://www.middlewarefactory.com/repository&lt;/url&gt;
+	&lt;releases&gt;
+		&lt;enabled&gt;true&lt;/enabled&gt;
+		&lt;updatePolicy&gt;daily&lt;/updatePolicy&gt;
+	&lt;/releases&gt;
+&lt;/repository&gt;
+</pre>
 
 * d'ajouter la dépendance à Generic System, toujours dans le pom.xml de votre projet :
-    <pre>
-	&lt;dependency&gt;
-		&lt;groupId&gt;org.genericsystem&lt;/groupId&gt;
-		&lt;artifactId&gt;gs-mutability&lt;/artifactId&gt;
-		&lt;version&gt;3.0-SNAPSHOT&lt;/version&gt;
-	&lt;/dependency&gt;
-    </pre>
+<pre>
+&lt;dependency&gt;
+	&lt;groupId&gt;org.genericsystem&lt;/groupId&gt;
+	&lt;artifactId&gt;gs-mutability&lt;/artifactId&gt;
+	&lt;version&gt;3.0-SNAPSHOT&lt;/version&gt;
+&lt;/dependency&gt;
+</pre>
 
 Licence
 -------

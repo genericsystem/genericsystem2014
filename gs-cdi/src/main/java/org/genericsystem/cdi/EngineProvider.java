@@ -1,12 +1,13 @@
 package org.genericsystem.cdi;
 
 import java.util.Arrays;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-import org.genericsystem.kernel.Statics;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +51,7 @@ public class EngineProvider {
 		log.info("-  userClasses : " + Arrays.toString(userClassesProvider.getUserClassesArray()));
 		log.info("-----------------------------------------------------------------------------------------------");
 
-		engine = new Engine(() -> cacheRequestProvider.getCurrentCache(), Statics.ENGINE_VALUE, persistentDirectoryProvider.getDirectoryPath(), userClassesProvider.getUserClassesArray());
+		engine = new Engine(() -> cacheRequestProvider.getCurrentCache(), persistentDirectoryProvider.getEngineValue(), persistentDirectoryProvider.getDirectoryPath(), userClassesProvider.getUserClassesArray());
 	}
 
 	@Produces
