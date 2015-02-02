@@ -15,7 +15,6 @@ import org.genericsystem.api.defaults.DefaultBuilder;
 import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.UnreachableOverridesException;
-import org.genericsystem.kernel.Vertex.SystemClass;
 import org.genericsystem.kernel.annotations.InstanceClass;
 
 public class Builder<T extends AbstractVertex<T>> implements DefaultBuilder<T> {
@@ -36,11 +35,6 @@ public class Builder<T extends AbstractVertex<T>> implements DefaultBuilder<T> {
 		return (Class<T>) Vertex.class;
 	}
 
-	@SuppressWarnings("unchecked")
-	protected Class<T> getSystemTClass() {
-		return (Class<T>) SystemClass.class;
-	}
-
 	@Override
 	@SuppressWarnings("unchecked")
 	public final T[] newTArray(int dim) {
@@ -57,10 +51,8 @@ public class Builder<T extends AbstractVertex<T>> implements DefaultBuilder<T> {
 				getContext().discardWithException(new InstantiationException(clazz + " must extends " + metaAnnotation.value()));
 
 		try {
-			if (clazz == null)
+			if (clazz == null || !getTClass().isAssignableFrom(clazz))
 				return getTClass().newInstance();
-			if (!getTClass().isAssignableFrom(clazz))
-				return getSystemTClass().newInstance();
 			return (T) clazz.newInstance();
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
 			getContext().discardWithException(e);
@@ -69,10 +61,9 @@ public class Builder<T extends AbstractVertex<T>> implements DefaultBuilder<T> {
 	}
 
 	Class<?> getAnnotedClass(T vertex) {
-		Class<?> vertexClass = vertex.getClass();
-		if (vertexClass.equals(context.getBuilder().getSystemTClass()))
+		if (vertex.isSystem())
 			return context.getRoot().findAnnotedClass(vertex);
-		return vertexClass;
+		return vertex.getClass();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -83,7 +74,7 @@ public class Builder<T extends AbstractVertex<T>> implements DefaultBuilder<T> {
 			return adjustedMeta;
 		T[] components = newTArray(dim);
 		Arrays.fill(components, root);
-		return rebuildAll(null, () -> build(null, null, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)),
+		return rebuildAll(null, () -> buildAndPlug(null, null, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)),
 				context.computePotentialDependencies(adjustedMeta, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)));
 	}
 
@@ -100,15 +91,19 @@ public class Builder<T extends AbstractVertex<T>> implements DefaultBuilder<T> {
 
 	protected T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
 		T instance = meta == null ? getContext().getMeta(components.size()) : meta.getDirectInstance(value, components);
-		return instance == null ? build(clazz, meta, supers, value, components) : instance;
+		return instance == null ? buildAndPlug(clazz, meta, supers, value, components) : instance;
 	}
 
-	T internalBuild(long ts, Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
-		return context.internalPlug(newT(clazz, meta).init(ts, meta, supers, value, components, otherTs));
+	T internalBuildAndPlug(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
+		return context.internalPlug(build(clazz, meta, supers, value, components, otherTs));
 	}
 
-	T build(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
-		return context.plug(newT(clazz, meta).init(getContext().getRoot().pickNewTs(), meta, supers, value, components, new long[] { Long.MAX_VALUE, 0L, Long.MAX_VALUE }));
+	T buildAndPlug(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
+		return context.plug(build(clazz, meta, supers, value, components, new long[] { Long.MAX_VALUE, 0L, Long.MAX_VALUE }));
+	}
+
+	private T build(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
+		return newT(clazz, meta).init(getContext().getRoot().pickNewTs(), meta, supers, value, components, otherTs);
 	}
 
 	@Override

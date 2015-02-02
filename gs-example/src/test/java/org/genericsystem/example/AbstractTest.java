@@ -1,5 +1,6 @@
 package org.genericsystem.example;
 
+import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.cdi.CacheRequestProvider;
 import org.genericsystem.cdi.CacheSessionProvider;
 import org.genericsystem.cdi.EngineProvider;
@@ -29,5 +30,23 @@ public abstract class AbstractTest extends Arquillian {
 		stringBuilder.append("<beans xmlns=\"http://java.sun.com/xml/ns/javaee\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\" http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/beans_1_0.xsd\">");
 		stringBuilder.append("</beans>");
 		javaArchive.addAsManifestResource(new StringAsset(stringBuilder.toString()), "beans.xml");
+	}
+
+	@FunctionalInterface
+	public static interface VoidSupplier {
+		public void getNothing();
+	}
+
+	public void catchAndCheckCause(VoidSupplier supplier, Class<? extends Throwable> clazz) {
+		try {
+			supplier.getNothing();
+		} catch (RollbackException ex) {
+			if (ex.getCause() == null)
+				throw new IllegalStateException("Rollback Exception has not any cause", ex);
+			if (!clazz.isAssignableFrom(ex.getCause().getClass()))
+				throw new IllegalStateException("Cause of rollback exception is not of type : " + clazz.getSimpleName() + ", but is " + ex.getCause(), ex);
+			return;
+		}
+		assert false : "Unable to catch any rollback exception!";
 	}
 }

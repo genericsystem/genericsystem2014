@@ -23,8 +23,4 @@ public class Vertex extends AbstractVertex<Vertex> implements DefaultVertex<Vert
 		return composites;
 	}
 
-	public static final class SystemClass extends Vertex {
-
-	}
-
 }

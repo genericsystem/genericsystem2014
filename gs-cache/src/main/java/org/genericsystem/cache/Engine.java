@@ -19,7 +19,7 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 
 	private final TsGenerator generator = new TsGenerator();
 	private final ThreadLocal<Cache<Generic>> cacheLocal = new ThreadLocal<>();
-	private final SystemCache<Generic> systemCache = new SystemCache<>(this, Root.class);
+	private final SystemCache<Generic> systemCache;
 	private final GarbageCollector<Generic> garbageCollector = new GarbageCollector<>(this);
 	private final Archiver<Generic> archiver;
 
@@ -34,6 +34,7 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	public Engine(Serializable engineValue, String persistentDirectoryPath, Class<?>... userClasses) {
 		super.init(0L, null, Collections.emptyList(), engineValue, Collections.emptyList(), Statics.SYSTEM_TS);
 		Cache<Generic> cache = start(newCache());
+		systemCache = new SystemCache<>(this, Root.class);
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
 		cache.flush();
 		archiver = new Archiver<Generic>(this, persistentDirectoryPath);

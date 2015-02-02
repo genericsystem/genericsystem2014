@@ -73,7 +73,7 @@ public class SystemCache<T extends AbstractVertex<T>> {
 			if (meta.isMeta())
 				meta = builder.setMeta(components.size());
 		}
-		result = builder.internalBuild(root.pickNewTs(), clazz, meta, overrides, findValue(clazz), components, Statics.SYSTEM_TS);
+		result = builder.internalBuildAndPlug(clazz, meta, overrides, findValue(clazz), components, Statics.SYSTEM_TS);
 		put(clazz, result);
 		mountConstraints(clazz, result);
 		triggersDependencies(clazz);
@@ -93,14 +93,7 @@ public class SystemCache<T extends AbstractVertex<T>> {
 		return reverseSystemCache.get(vertex);
 	}
 
-	private void triggersDependencies(Class<?> clazz) {
-		Dependencies dependenciesClass = clazz.getAnnotation(Dependencies.class);
-		if (dependenciesClass != null)
-			for (Class<?> dependencyClass : dependenciesClass.value())
-				set(dependencyClass);
-	}
-
-	private void mountConstraints(Class<?> clazz, T result) {
+	void mountConstraints(Class<?> clazz, T result) {
 		if (clazz.getAnnotation(PropertyConstraint.class) != null)
 			result.enablePropertyConstraint();
 
@@ -122,6 +115,13 @@ public class SystemCache<T extends AbstractVertex<T>> {
 		if (singularTarget != null)
 			for (int axe : singularTarget.value())
 				result.enableSingularConstraint(axe);
+	}
+
+	private void triggersDependencies(Class<?> clazz) {
+		Dependencies dependenciesClass = clazz.getAnnotation(Dependencies.class);
+		if (dependenciesClass != null)
+			for (Class<?> dependencyClass : dependenciesClass.value())
+				set(dependencyClass);
 	}
 
 	@SuppressWarnings("unchecked")

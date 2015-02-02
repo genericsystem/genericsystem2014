@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.defaults.DefaultChecker;
 import org.genericsystem.api.defaults.DefaultRoot;
@@ -21,7 +22,6 @@ import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationEx
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.Config.SystemMap;
 import org.genericsystem.kernel.annotations.Priority;
-import org.genericsystem.kernel.annotations.SystemGeneric;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint;
 
@@ -132,13 +132,9 @@ public class Checker<T extends AbstractVertex<T>> implements DefaultChecker<T> {
 		checkRemoveGenericAnnoted(isOnAdd, vertex);
 	}
 
-	private boolean isSystem(T vertex) {
-		return context.getBuilder().getAnnotedClass(vertex).getAnnotation(SystemGeneric.class) != null;
-	}
-
 	private void checkRemoveGenericAnnoted(boolean isOnAdd, T vertex) {
-		if (!isOnAdd && isSystem(vertex))
-			getContext().discardWithException(new IllegalAccessException("@SystemGeneric annoted generic can't be removed"));
+		if (!isOnAdd && vertex.isSystem())
+			getContext().discardWithException(new IllegalAccessException("System node can't be removed"));
 	}
 
 	private void checkIsAlive(T vertex) {

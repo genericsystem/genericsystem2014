@@ -63,6 +63,7 @@ public class LifeManager {
 
 	public void kill(long contextTs) {
 		// assert lock.isWriteLockedByCurrentThread();
+		assert birthTs != 0L;
 		assert contextTs >= birthTs : "Can not kill a generic that is not yet born";
 		assert deathTs == Long.MAX_VALUE : "Can not kill a generic that will die in the future";
 		assert contextTs >= getLastReadTs() : "Mvcc rule violation";

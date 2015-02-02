@@ -70,13 +70,13 @@ public class GenericHandler<T extends AbstractVertex<T>> {
 
 	public T add() {
 		assert supers != null;
-		return builder.rebuildAll(null, () -> builder.build(clazz, adjustedMeta, supers, value, components), builder.getContext().computePotentialDependencies(adjustedMeta, supers, value, components));
+		return builder.rebuildAll(null, () -> builder.buildAndPlug(clazz, adjustedMeta, supers, value, components), builder.getContext().computePotentialDependencies(adjustedMeta, supers, value, components));
 	}
 
 	public T set(T update) {
 		assert update != null;
 		assert supers != null;
-		return builder.rebuildAll(update, () -> builder.build(clazz, adjustedMeta, supers, value, components), builder.getContext().computeRemoveDependencies(update, false));
+		return builder.rebuildAll(update, () -> builder.buildAndPlug(clazz, adjustedMeta, supers, value, components), builder.getContext().computeRemoveDependencies(update, false));
 	}
 
 	public T update(T update) {

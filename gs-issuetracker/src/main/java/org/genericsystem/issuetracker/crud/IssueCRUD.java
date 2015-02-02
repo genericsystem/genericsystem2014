@@ -51,7 +51,6 @@ public class IssueCRUD {
 	}
 
 	private String getHolderValue(Generic instance, Serializable attributeName) {
-		System.out.println("==========> " + instance.getAttribute(attributeName));
 		return (String) instance.getHolders(instance.getAttribute(attributeName)).first().getValue();
 	}
 

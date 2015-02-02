@@ -3,9 +3,7 @@ package org.genericsystem.cache;
 import java.util.Arrays;
 
 import org.genericsystem.api.exception.CrossEnginesAssignementsException;
-import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
-import org.genericsystem.kernel.Vertex;
 import org.testng.annotations.Test;
 
 @Test
@@ -52,10 +50,10 @@ public class MultipleRootsTest extends AbstractTest {
 	}
 
 	public void test005_addInstance_overrides() {
-		Root engine1 = new Root();
-		Root engine2 = new Root("SecondEngine");
-		Vertex car = engine2.addInstance("Car");
-		Vertex robot = engine2.addInstance("Robot");
+		Engine engine1 = new Engine();
+		Engine engine2 = new Engine("SecondEngine");
+		Generic car = engine2.addInstance("Car");
+		Generic robot = engine2.addInstance("Robot");
 		catchAndCheckCause(() -> engine1.addInstance(Arrays.asList(car, robot), "Transformer"), CrossEnginesAssignementsException.class);
 		// catchAndCheckCause(() -> engine1.addInstance(Arrays.asList(car, robot), "Transformer"), IllegalStateException.class);
 	}
