@@ -173,73 +173,88 @@ public class TreeTest extends AbstractTest {
 		child.setInheritingChild("Child3");
 	}
 
-	public void testInheritingTree() {
+	public void testInheritingNodes() {
 		Root engine = new Root();
 
-		Vertex webPage = engine.addTree("webPage");
+		Vertex html5Tags = engine.addTree("Html5Tags");
 
-		Vertex html = webPage.addRoot("html");
+		Vertex html = html5Tags.addRoot("html");
 
 		Vertex header = html.addInheritingChild("header");
 		Vertex body = html.addInheritingChild("body");
 		Vertex footer = html.addInheritingChild("footer");
 
-		body.addInheritingChild("text1");
-		body.addInheritingChild("text2");
+		Vertex p = body.addInheritingChild("p");
+		Vertex table = body.addInheritingChild("table");
+
+		assert html5Tags.getInstances().containsAll(Arrays.asList(html, header, body, footer, p, table)) : html5Tags.getInstances();
+		assert html.getChildren().containsAll(Arrays.asList(header, body, footer)) : html.getChildren();
+		assert header.getChildren().isEmpty() : header.getChildren();
+		assert body.getChildren().containsAll(Arrays.asList(p, table)) : body.getChildren();
+		assert footer.getChildren().isEmpty() : footer.getChildren();
+		assert p.getChildren().isEmpty() : p.getChildren();
+		assert table.getChildren().isEmpty() : table.getChildren();
+
+		assert header.inheritsFrom(html) : header.getSupers();
+		assert body.inheritsFrom(html) : body.getSupers();
+		assert footer.inheritsFrom(html) : footer.getSupers();
+		assert p.inheritsFrom(body) && p.inheritsFrom(html) : p.getSupers();
+		assert table.inheritsFrom(body) && p.inheritsFrom(html) : p.getSupers();
 
 		Vertex color = engine.addInstance("Color");
 		Vertex red = color.addInstance("red");
 		Vertex blue = color.addInstance("blue");
 		Vertex yellow = color.addInstance("yellow");
 
-		Vertex webPageComponentColor = webPage.addRelation("webPageComponentColor", color);
-		webPageComponentColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
+		Vertex htmlTagsColor = html5Tags.addRelation("htmlTagsColor", color);
+		htmlTagsColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
 
-		html.addLink(webPageComponentColor, "htmlRed", red);
-		header.addLink(webPageComponentColor, "headerBlue", blue);
-		footer.addLink(webPageComponentColor, "footerYellow", yellow);
+		html.addLink(htmlTagsColor, "htmlRed", red);
+		header.addLink(htmlTagsColor, "headerBlue", blue);
+		footer.addLink(htmlTagsColor, "footerYellow", yellow);
+		// No explicitly associated Color to the htmlTags body
 
-		assert html.getLink(webPageComponentColor, "htmlRed").getTargetComponent().equals(red);
-		assert header.getLink(webPageComponentColor, "headerBlue").getTargetComponent().equals(blue);
-		assert footer.getLink(webPageComponentColor, "footerYellow").getTargetComponent().equals(yellow);
-		assert body.getLink(webPageComponentColor, "htmlRed").getTargetComponent().equals(red);
+		assert html.getLink(htmlTagsColor, "htmlRed").getTargetComponent().equals(red) : html.getLink(htmlTagsColor, "htmlRed").getTargetComponent();
+		assert header.getLink(htmlTagsColor, "headerBlue").getTargetComponent().equals(blue) : header.getLink(htmlTagsColor, "headerBlue").getTargetComponent();
+		assert footer.getLink(htmlTagsColor, "footerYellow").getTargetComponent().equals(yellow) : footer.getLink(htmlTagsColor, "footerYellow").getTargetComponent();
+		assert body.getLink(htmlTagsColor, "htmlRed").getTargetComponent().equals(red) : body.getLink(htmlTagsColor, "htmlRed").getTargetComponent();
 	}
 
 	public void testTraverseTree() {
 		Root engine = new Root();
 
-		Vertex webPage = engine.addTree("webPage");
+		Vertex html5Tags = engine.addTree("Html5Tags");
 
-		Vertex html = webPage.addRoot("html");
+		Vertex html = html5Tags.addRoot("html");
 
-		html.addInheritingChild("header");
-		Vertex body = html.addInheritingChild("body");
-		html.addInheritingChild("footer");
+		html.addChild("header");
+		Vertex body = html.addChild("body");
+		html.addChild("footer");
 
-		body.addInheritingChild("text1");
-		body.addInheritingChild("text2");
+		body.addChild("p");
+		body.addChild("table");
 
 		int[] result = { 0 };
 
-		webPage.traverse(new Visitor<Vertex>() {
+		html5Tags.traverse(new Visitor<Vertex>() {
 			@Override
 			public void before(Vertex node) {
-				if (node.getValue().equals("webPage")) {
+				if (node.getValue().equals("html")) {
 					result[0] += 1;
 				} else if (node.getValue().equals("header") || node.getValue().equals("body") || node.getValue().equals("footer")) {
 					result[0] += 2;
-				} else if (node.getValue().equals("text1") || node.getValue().equals("text2")) {
+				} else if (node.getValue().equals("p") || node.getValue().equals("table")) {
 					result[0] += 3;
 				}
 			}
 
 			@Override
 			public void after(Vertex node) {
-				if (node.getValue().equals("webPage")) {
+				if (node.getValue().equals("html")) {
 					result[0] -= 1;
 				} else if (node.getValue().equals("header") || node.getValue().equals("body") || node.getValue().equals("footer")) {
 					result[0] -= 2;
-				} else if (node.getValue().equals("message1") || node.getValue().equals("message2")) {
+				} else if (node.getValue().equals("p") || node.getValue().equals("table")) {
 					result[0] -= 3;
 				}
 			}
