@@ -12,20 +12,20 @@
 		<!-- Utilisation Java SE -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
-		
+
 		<maven-compiler-plugin.version>3.2</maven-compiler-plugin.version>
 		<testng.version>6.8.1</testng.version>
-		
+
 		<!-- Utilisation Java EE -->
 		<weld.core.version>2.2.6.Final</weld.core.version>
 		<arquillian.version>1.1.4.Final</arquillian.version>
 		<jboss-ejb3-api.version>3.1.0</jboss-ejb3-api.version>
 	</properties>
-	
+
 	<repositories>
 		<repository>
 			<id>middlewarefactory</id>
-			<url>ftp://genericsystem.org/home/middleware/repository</url>
+			<url>http://genericsystem.org/repository</url>
 			<releases>
 				<enabled>true</enabled>
 				<updatePolicy>daily</updatePolicy>
@@ -35,7 +35,7 @@
 				<updatePolicy>daily</updatePolicy>
 			</snapshots>
 		</repository>
-		
+
 		<repository>
 			<id>jboss-nexus</id>
 			<name>JBoss (Nexus) Stable Repository</name>
@@ -49,87 +49,15 @@
 				<updatePolicy>daily</updatePolicy>
 			</snapshots>
 		</repository>
-
-		<repository>
-			<id>jboss-nexus-snapshots</id>
-			<name>JBoss (Nexus) Snapshots Repository</name>
-			<url>https://repository.jboss.org/nexus/content/repositories/snapshots</url>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>daily</updatePolicy>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>daily</updatePolicy>
-			</snapshots>
-		</repository>
-
-		<repository>
-			<id>maven2-repository.dev.java.net</id>
-			<name>Java .net</name>
-			<url>http://download.java.net/maven/2</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>daily</updatePolicy>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>daily</updatePolicy>
-			</releases>
-		</repository>
-
-		<repository>
-			<id>glassfish</id>
-			<name>Glassfish</name>
-			<url>http://download.java.net/maven/glassfish</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>daily</updatePolicy>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>daily</updatePolicy>
-			</releases>
-		</repository>
-
-		<repository>
-			<id>maven.atlassian</id>
-			<name>maven.atlassian</name>
-			<url>http://maven.atlassian.com/repository/public</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>daily</updatePolicy>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>daily</updatePolicy>
-			</releases>
-		</repository>
-
-		<repository>
-			<id>java.net2</id>
-			<name>Repository hosting the jee6 artifacts</name>
-			<url>http://download.java.net/maven/2</url>
-		</repository>
-
-		<repository>
-			<url>http://download.java.net/maven/2/</url>
-			<id>jsf20</id>
-			<layout>default</layout>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>daily</updatePolicy>
-			</releases>
-		</repository>
 	</repositories>
 
 	<dependencies>
 		<!-- Utilisation Java SE -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.genericsystem</groupId> -->
-<!-- 			<artifactId>gs-mutability</artifactId> -->
-<!-- 			<version>3.0-SNAPSHOT</version> -->
-<!-- 		</dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.genericsystem</groupId> -->
+		<!-- <artifactId>gs-mutability</artifactId> -->
+		<!-- <version>3.0-SNAPSHOT</version> -->
+		<!-- </dependency> -->
 
 		<dependency>
 			<groupId>org.testng</groupId>
@@ -137,26 +65,26 @@
 			<version>${testng.version}</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<!-- Utilisation Java EE -->
 		<dependency>
-	        <groupId>org.genericsystem</groupId>
-	        <artifactId>gs-cdi</artifactId>
-	        <version>3.0-SNAPSHOT</version>
-	    </dependency>
-	    
-	    <dependency>
+			<groupId>org.genericsystem</groupId>
+			<artifactId>gs-cdi</artifactId>
+			<version>3.0-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.jboss.weld</groupId>
 			<artifactId>weld-core</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.jboss.arquillian.testng</groupId>
 			<artifactId>arquillian-testng-container</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.jboss.arquillian.container</groupId>
 			<artifactId>arquillian-weld-ee-embedded-1.1</artifactId>
@@ -176,7 +104,7 @@
 			<artifactId>validation-api</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.jboss.ejb3</groupId>
 			<artifactId>jboss-ejb3-api</artifactId>
@@ -184,7 +112,7 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -194,7 +122,7 @@
 				<scope>import</scope>
 				<type>pom</type>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.jboss.arquillian</groupId>
 				<artifactId>arquillian-bom</artifactId>
@@ -204,7 +132,7 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	
+
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		<plugins>
