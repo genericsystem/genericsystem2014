@@ -21,6 +21,107 @@
 		<arquillian.version>1.1.4.Final</arquillian.version>
 		<jboss-ejb3-api.version>3.1.0</jboss-ejb3-api.version>
 	</properties>
+	
+	<repositories>
+		<repository>
+			<id>middlewarefactory</id>
+			<url>ftp://genericsystem.org/home/middleware/repository</url>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+			</snapshots>
+		</repository>
+		
+		<repository>
+			<id>jboss-nexus</id>
+			<name>JBoss (Nexus) Stable Repository</name>
+			<url>https://repository.jboss.org/nexus/content/groups/public-jboss</url>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+			</snapshots>
+		</repository>
+
+		<repository>
+			<id>jboss-nexus-snapshots</id>
+			<name>JBoss (Nexus) Snapshots Repository</name>
+			<url>https://repository.jboss.org/nexus/content/repositories/snapshots</url>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+			</snapshots>
+		</repository>
+
+		<repository>
+			<id>maven2-repository.dev.java.net</id>
+			<name>Java .net</name>
+			<url>http://download.java.net/maven/2</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+			</releases>
+		</repository>
+
+		<repository>
+			<id>glassfish</id>
+			<name>Glassfish</name>
+			<url>http://download.java.net/maven/glassfish</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+			</releases>
+		</repository>
+
+		<repository>
+			<id>maven.atlassian</id>
+			<name>maven.atlassian</name>
+			<url>http://maven.atlassian.com/repository/public</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+			</releases>
+		</repository>
+
+		<repository>
+			<id>java.net2</id>
+			<name>Repository hosting the jee6 artifacts</name>
+			<url>http://download.java.net/maven/2</url>
+		</repository>
+
+		<repository>
+			<url>http://download.java.net/maven/2/</url>
+			<id>jsf20</id>
+			<layout>default</layout>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>daily</updatePolicy>
+			</releases>
+		</repository>
+	</repositories>
 
 	<dependencies>
 		<!-- Utilisation Java SE -->

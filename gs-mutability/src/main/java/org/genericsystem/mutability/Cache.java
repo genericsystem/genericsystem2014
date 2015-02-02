@@ -110,7 +110,7 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 
 	protected org.genericsystem.cache.Generic unwrap(Generic mutable) {
 		org.genericsystem.cache.Generic result = mutabilityMap.get(mutable);
-		if (result == null)
+		if (mutable != null && result == null)
 			cache.discardWithException(new AliveConstraintViolationException("Your mutable is not still available"));
 		return result;
 	}

@@ -2,6 +2,7 @@ package org.genericsystem.cache;
 
 import java.util.HashSet;
 import java.util.Set;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConcurrencyControlException;
@@ -24,7 +25,8 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 	}
 
 	protected Cache(Transaction<T> subContext) {
-		this(subContext, new ContextEventListener<T>() {});
+		this(subContext, new ContextEventListener<T>() {
+		});
 	}
 
 	protected Cache(Transaction<T> subContext, ContextEventListener<T> listener) {
@@ -63,33 +65,27 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 		listener.triggersRefreshEvent();
 	}
 
-	public void flush() {
+	public void flush() throws ConcurrencyControlException {
 		if (!equals(getRoot().getCurrentCache()))
 			discardWithException(new CacheNoStartedException("The Cache isn't started"));
 		try {
-			internalFlush();
-		} catch (ConcurrencyControlException | OptimisticLockConstraintViolationException exception) {
+			checkConstraints();
+			doSynchronizedApplyInSubContext();
+			initialize();
+			listener.triggersFlushEvent();
+		} catch (OptimisticLockConstraintViolationException exception) {
 			discardWithException(exception);
 		}
 	}
 
-	private void internalFlush() throws OptimisticLockConstraintViolationException, ConcurrencyControlException {
-		checkConstraints();
-		doSynchronizedApplyInSubContext();
-		initialize();
-		listener.triggersFlushEvent();
-	}
-
 	public void flushLater() {
-		if (!equals(getRoot().getCurrentCache()))
-			discardWithException(new CacheNoStartedException("The Cache isn't started"));
 		Throwable cause = null;
 		for (int attempt = 0; attempt < Statics.ATTEMPTS; attempt++) {
 			try {
 				// TODO reactivate this
 				// if (getEngine().pickNewTs() - getTs() >= timeOut)
 				// throw new ConcurrencyControlException("The timestamp cache (" + getTs() + ") is bigger than the life time out : " + Statics.LIFE_TIMEOUT);
-				internalFlush();
+				flush();
 				return;
 			} catch (ConcurrencyControlException e) {
 				cause = e;
@@ -97,10 +93,8 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 					Thread.sleep(Statics.ATTEMPT_SLEEP);
 					pickNewTs();
 				} catch (InterruptedException ex) {
-					throw new IllegalStateException(ex);
+					discardWithException(ex);
 				}
-			} catch (Exception e) {
-				discardWithException(e);
 			}
 		}
 		discardWithException(cause);
@@ -271,13 +265,17 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 
 	public static interface ContextEventListener<X> {
 
-		default void triggersMutationEvent(X oldDependency, X newDependency) {}
+		default void triggersMutationEvent(X oldDependency, X newDependency) {
+		}
 
-		default void triggersRefreshEvent() {}
+		default void triggersRefreshEvent() {
+		}
 
-		default void triggersClearEvent() {}
+		default void triggersClearEvent() {
+		}
 
-		default void triggersFlushEvent() {}
+		default void triggersFlushEvent() {
+		}
 	}
 
 }
