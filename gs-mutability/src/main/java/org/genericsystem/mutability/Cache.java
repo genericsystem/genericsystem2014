@@ -12,9 +12,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.defaults.DefaultBuilder;
 import org.genericsystem.api.defaults.DefaultChecker;
@@ -109,8 +111,11 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 	}
 
 	protected org.genericsystem.cache.Generic unwrap(Generic mutable) {
+		if (mutable == null)
+			return null;
+
 		org.genericsystem.cache.Generic result = mutabilityMap.get(mutable);
-		if (mutable != null && result == null)
+		if (result == null)
 			cache.discardWithException(new AliveConstraintViolationException("Your mutable is not still available"));
 		return result;
 	}
