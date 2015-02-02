@@ -101,7 +101,7 @@
 	<repositories>
 		<repository>
 			<id>middlewarefactory</id>
-			<url>ftp://genericsystem.org/home/middleware/repository</url>
+			<url>http://genericsystem.org/repository</url>
 			<releases>
 				<enabled>true</enabled>
 				<updatePolicy>daily</updatePolicy>
