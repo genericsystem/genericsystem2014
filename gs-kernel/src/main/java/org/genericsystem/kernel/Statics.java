@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.genericsystem.api.core.IVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,10 +70,6 @@ public class Statics {
 					it.remove();
 			return super.add(candidate);
 		}
-	}
-
-	public static <T extends IVertex<T>> boolean areOverridesReached(List<T> supers, List<T> overrides) {
-		return overrides.stream().allMatch(override -> supers.stream().anyMatch(superVertex -> superVertex.inheritsFrom(override)));
 	}
 
 	// public static <T extends IVertex<T>> List<T> reverseCollections(Collection<T> linkedHashSet) {

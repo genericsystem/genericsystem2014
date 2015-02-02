@@ -48,10 +48,4 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 	@Override
 	protected abstract Dependencies<T> getCompositesDependencies();
 
-	// TODO remove this
-	@Override
-	protected T adjustMeta(Serializable value, T... components) {
-		return super.adjustMeta(value, components);
-	}
-
 }

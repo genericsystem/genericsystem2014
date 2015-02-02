@@ -3,6 +3,8 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.List;
 
+import org.genericsystem.api.defaults.DefaultVertex;
+
 public class GenericHandler<T extends AbstractVertex<T>> {
 	private final Builder<T> builder;
 	private final Class<?> clazz;
@@ -49,7 +51,7 @@ public class GenericHandler<T extends AbstractVertex<T>> {
 		assert supers == null;
 		supers = builder.computeAndCheckOverridesAreReached(adjustedMeta, overrides, value, components);
 		if (supers.size() == 1 && supers.get(0).equalsRegardlessSupers(adjustedMeta, value, components)) {
-			if (Statics.areOverridesReached(supers.get(0).getSupers(), overrides)) {
+			if (DefaultVertex.areOverridesReached(supers.get(0).getSupers(), overrides)) {
 				gettable = supers.get(0);
 				supers = supers.get(0).getSupers();
 			}
