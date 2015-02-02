@@ -9,6 +9,9 @@ public class BasicSearches {
 
 		engine.addInstance("Vehicle");
 
+		// Persist changes
+		engine.getCurrentCache().flush();
+
 		// Find the type Vehicle
 		engine.getInstance("Vehicle");
 	}
@@ -18,6 +21,9 @@ public class BasicSearches {
 
 		Generic vehicle = engine.addInstance("Vehicle");
 		vehicle.addAttribute("Options");
+
+		// Persist changes
+		engine.getCurrentCache().flush();
 
 		// Find the attribute Options
 		vehicle.getAttribute("Options");
@@ -29,6 +35,9 @@ public class BasicSearches {
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
 		vehicle.addRelation("VehicleColor", color);
+
+		// Persist changes
+		engine.getCurrentCache().flush();
 
 		// Find the relation VehicleColor from the type Vehicle
 		vehicle.getRelation("VehicleColor");
@@ -43,6 +52,9 @@ public class BasicSearches {
 		Generic vehicle = engine.addInstance("Vehicle");
 		vehicle.addInstance("myVehicle");
 
+		// Persist changes
+		engine.getCurrentCache().flush();
+
 		// Find the instance myVehicle
 		vehicle.getInstance("myVehicle");
 	}
@@ -55,6 +67,9 @@ public class BasicSearches {
 
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		myVehicle.addHolder(options, "music player");
+
+		// Persist changes
+		engine.getCurrentCache().flush();
 
 		// Find the holder music player for the attribute Options
 		myVehicle.getHolder(options, "music player");
@@ -70,6 +85,9 @@ public class BasicSearches {
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		Generic red = color.addInstance("red");
 		myVehicle.addLink(vehicleColor, "myVehicleRed", red);
+
+		// Persist changes
+		engine.getCurrentCache().flush();
 
 		// Find the link myVehicleRed for the relation VehicleColor from myVehicle
 		myVehicle.getLink(vehicleColor, "myVehicleRed");

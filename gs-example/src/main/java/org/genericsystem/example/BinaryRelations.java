@@ -24,21 +24,21 @@ public class BinaryRelations {
 		// Create the link between myVehicle and red from the relation VehicleColor
 		myVehicle.addLink(vehicleColor, "myVehicleRed", red); // OK
 
-		// Flush the changes done in cache
+		// Persist changes
 		engine.getCurrentCache().flush();
 
-		// Create the link between myVehicle and yellow from the relation VehicleColor
 		try {
+			// Create the link between myVehicle and yellow from the relation VehicleColor
 			myVehicle.addLink(vehicleColor, "myVehicleYellow", yellow);
 		} catch (Exception e) {
-			// Error : myVehicle has more than one link : [myVehicleRed, myVehicleYellow] for attribute : VehicleColor
+			// SingularConstraintViolationException : myVehicle has more than one link : [myVehicleRed, myVehicleYellow] for relation VehicleColor
 		}
 
-		// Create the link between yourVehicle and red from the relation VehicleColor
 		try {
+			// Create the link between yourVehicle and red from the relation VehicleColor
 			yourVehicle.addLink(vehicleColor, "yourVehicleRed", red);
 		} catch (Exception e) {
-			// Error : red has more than one link : [myVehicleRed, yourVehicleRed] for attribute : VehicleColor
+			// SingularConstraintViolationException : red has more than one link : [myVehicleRed, yourVehicleRed] for relation VehicleColor
 		}
 	}
 
@@ -60,18 +60,21 @@ public class BinaryRelations {
 		// Create the link between myVehicle and red from the relation VehicleColor
 		myVehicle.addLink(vehicleColor, "myVehicleRed", red); // OK
 
-		// Flush the changes done in cache
+		// Persist changes
 		engine.getCurrentCache().flush();
 
-		// Create the link between myVehicle and yellow from the relation VehicleColor
 		try {
+			// Create the link between myVehicle and yellow from the relation VehicleColor
 			myVehicle.addLink(vehicleColor, "myVehicleYellow", yellow);
 		} catch (Exception e) {
-			// Error : myVehicle has more than one link : [myVehicleRed, myVehicleYellow] for attribute : VehicleColor
+			// SingularConstraintViolationException : myVehicle has more than one link : [myVehicleRed, myVehicleYellow] for relation VehicleColor
 		}
 
 		// Create the link between yourVehicle and red from the relation VehicleColor
 		yourVehicle.addLink(vehicleColor, "yourVehicleRed", red); // OK
+
+		// Persist changes
+		engine.getCurrentCache().flush();
 	}
 
 	public void manyToOneRelation() {
@@ -92,15 +95,21 @@ public class BinaryRelations {
 		// Create the link between myVehicle and red from the relation VehicleColor
 		myVehicle.addLink(vehicleColor, "myVehicleRed", red); // OK
 
-		// Flush the changes done in cache
+		// Persist changes
 		engine.getCurrentCache().flush();
 
 		// Create the link between myVehicle and yellow from the relation VehicleColor
 		myVehicle.addLink(vehicleColor, "myVehicleYellow", yellow); // OK
 
-		// Create the link between yourVehicle and red from the relation VehicleColor
-		yourVehicle.addLink(vehicleColor, "yourVehicleRed", red);
-		// Error : red has more than one link : [myVehicleRed, yourVehicleRed] for attribute : VehicleColor
+		// Persist changes
+		engine.getCurrentCache().flush();
+
+		try {
+			// Create the link between yourVehicle and red from the relation VehicleColor
+			yourVehicle.addLink(vehicleColor, "yourVehicleRed", red);
+		} catch (Exception e) {
+			// SingularConstraintViolationException : red has more than one link : [myVehicleRed, yourVehicleRed] for relation VehicleColor
+		}
 	}
 
 	public void manyToManyRelation() {
@@ -120,7 +129,7 @@ public class BinaryRelations {
 		// Create the link between myVehicle and red from the relation VehicleColor
 		myVehicle.addLink(vehicleColor, "myVehicleRed", red); // OK
 
-		// Flush the changes done in cache
+		// Persist changes
 		engine.getCurrentCache().flush();
 
 		// Create the link between myVehicle and yellow from the relation VehicleColor
@@ -128,5 +137,8 @@ public class BinaryRelations {
 
 		// Create the link between yourVehicle and red from the relation VehicleColor
 		yourVehicle.addLink(vehicleColor, "yourVehicleRed", red); // OK
+
+		// Persist changes
+		engine.getCurrentCache().flush();
 	}
 }

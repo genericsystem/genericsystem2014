@@ -15,5 +15,8 @@ public class Configuration {
 		// Instantiate a Vehicle with a Power 233
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		myVehicle.addHolder(power, 233);
+
+		// Persist changes
+		engine.getCurrentCache().flush();
 	}
 }

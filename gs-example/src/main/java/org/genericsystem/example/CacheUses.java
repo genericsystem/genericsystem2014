@@ -19,7 +19,7 @@ public class CacheUses {
 		// Add a value for Power to myVehicle
 		myVehicle.addHolder(power, 213);
 
-		// Get the current cache and validate the modifications done on it
+		// Persist changes
 		engine.getCurrentCache().flush();
 	}
 

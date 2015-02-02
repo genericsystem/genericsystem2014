@@ -10,6 +10,9 @@ public class CreationOfTypesSubtypesAndInstances {
 
 		// Create a type Vehicle
 		engine.addInstance("Vehicle");
+
+		// Persist changes
+		engine.getCurrentCache().flush();
 	}
 
 	public void createInstance() {
@@ -20,6 +23,9 @@ public class CreationOfTypesSubtypesAndInstances {
 
 		// Create an instance of type Vehicle
 		vehicle.addInstance("myVehicle");
+
+		// Persist changes
+		engine.getCurrentCache().flush();
 	}
 
 	public void createMultiplesInstances() {
@@ -32,6 +38,9 @@ public class CreationOfTypesSubtypesAndInstances {
 		vehicle.addInstance("myFirstVehicle");
 		// Create a second instance of type Vehicle
 		vehicle.addInstance("mySecondVehicle");
+
+		// Persist changes
+		engine.getCurrentCache().flush();
 	}
 
 	public void createSubtypes() {
@@ -52,5 +61,8 @@ public class CreationOfTypesSubtypesAndInstances {
 		car.addInstance("myCar");
 		// Create an instance of Bike
 		bike.addInstance("myBike");
+
+		// Persist changes
+		engine.getCurrentCache().flush();
 	}
 }

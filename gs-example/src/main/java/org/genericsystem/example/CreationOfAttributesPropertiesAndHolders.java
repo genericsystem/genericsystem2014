@@ -12,6 +12,9 @@ public class CreationOfAttributesPropertiesAndHolders {
 
 		// Add an attribute Options
 		vehicle.addAttribute("Options");
+
+		// Persist changes
+		engine.getCurrentCache().flush();
 	}
 
 	public void createHolder() {
@@ -30,6 +33,9 @@ public class CreationOfAttributesPropertiesAndHolders {
 		myVehicle.addHolder(options, "music player");
 		myVehicle.addHolder(options, "air conditioning");
 		// myVehicle has two Options : music player and air conditioning
+
+		// Persist changes
+		engine.getCurrentCache().flush();
 	}
 
 	public void createProperty() {
@@ -48,8 +54,15 @@ public class CreationOfAttributesPropertiesAndHolders {
 		myVehicle.addHolder(power, 213);
 		// myVehicle has one Power : 213
 
-		// Add another Power on myVehicle
-		myVehicle.addHolder(power, 220);
-		// Throws PropertyConstraintViolationException : Power is a property, it can have only one value
+		// Persist changes
+		engine.getCurrentCache().flush();
+
+		try {
+			// Add another Power on myVehicle
+			myVehicle.addHolder(power, 220);
+		} catch (Exception e) {
+			System.out.println(e);
+			// PropertyConstraintViolationException : Power is a property, it can have only one value
+		}
 	}
 }

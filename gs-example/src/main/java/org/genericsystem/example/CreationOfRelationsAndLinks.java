@@ -13,6 +13,9 @@ public class CreationOfRelationsAndLinks {
 
 		// Create the relation VehicleColor between Vehicle and Color
 		vehicle.addRelation("VehicleColor", color);
+
+		// Persist changes
+		engine.getCurrentCache().flush();
 	}
 
 	public void createLink() {
@@ -31,5 +34,8 @@ public class CreationOfRelationsAndLinks {
 
 		// Do the link between the instance of the vehicle and the instance of the color
 		myVehicle.addLink(vehicleColor, "myVehicleRed", red);
+
+		// Persist changes
+		engine.getCurrentCache().flush();
 	}
 }

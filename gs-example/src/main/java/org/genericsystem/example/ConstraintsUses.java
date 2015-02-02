@@ -19,8 +19,15 @@ public class ConstraintsUses {
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		// Add values for Options
 		myVehicle.addHolder(options, "music player"); // OK
-		myVehicle.addHolder(options, "air conditioning");
-		// Error : Power is a property, it can have only one value
+
+		// Persist changes
+		engine.getCurrentCache().flush();
+
+		try {
+			myVehicle.addHolder(options, "air conditioning");
+		} catch (Exception e) {
+			// PropertyConstraintViolationException : Options is a property, it can have only one value
+		}
 	}
 
 	public void instanceValueClassConstraint() {
@@ -37,8 +44,15 @@ public class ConstraintsUses {
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		// Add values for Options
 		myVehicle.addHolder(options, "music player"); // OK
-		myVehicle.addHolder(options, 123);
-		// Error : class of attribute Options is String
+
+		// Persist changes
+		engine.getCurrentCache().flush();
+
+		try {
+			myVehicle.addHolder(options, 123);
+		} catch (Exception e) {
+			// InstanceValueClassConstraintViolationException : class of attribute Options is String
+		}
 	}
 
 	public void singularConstraint() {
@@ -62,8 +76,15 @@ public class ConstraintsUses {
 
 		// Create the link between myVehicle and red from the relation VehicleColor
 		myVehicle.addLink(vehicleColor, "myVehicleRed", red); // OK
-		// Create the link between myVehicle and yellow from the relation VehicleColor
-		myVehicle.addLink(vehicleColor, "myVehicleYellow", yellow);
-		// Error : myVehicle has more than one link
+
+		// Persist changes
+		engine.getCurrentCache().flush();
+
+		try {
+			// Create the link between myVehicle and yellow from the relation VehicleColor
+			myVehicle.addLink(vehicleColor, "myVehicleYellow", yellow);
+		} catch (Exception e) {
+			// SingularConstraintViolationException : myVehicle has more than one link for relation VehicleColor
+		}
 	}
 }

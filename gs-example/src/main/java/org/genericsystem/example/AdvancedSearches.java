@@ -14,6 +14,9 @@ public class AdvancedSearches {
 		Generic car = engine.addInstance("Car");
 		Generic bike = engine.addInstance("Bike");
 
+		// Persist changes
+		engine.getCurrentCache().flush();
+
 		// Find the types Vehicle, Car, Bike
 		Snapshot<Generic> types = engine.getInstances();
 		assert types.size() >= 3;
@@ -27,6 +30,9 @@ public class AdvancedSearches {
 		Generic options = vehicle.addAttribute("Options");
 		Generic wheels = vehicle.addAttribute("Wheels");
 
+		// Persist changes
+		engine.getCurrentCache().flush();
+
 		// Find the attributes Options, Wheels
 		Snapshot<Generic> attributes = vehicle.getAttributes();
 		assert attributes.size() >= 2;
@@ -39,6 +45,9 @@ public class AdvancedSearches {
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = vehicle.addRelation("VehicleColor", color);
+
+		// Persist changes
+		engine.getCurrentCache().flush();
 
 		// Find the relation VehicleColor from the type Vehicle
 		Snapshot<Generic> vehicleRelations = vehicle.getRelations();
@@ -58,6 +67,9 @@ public class AdvancedSearches {
 		Generic myFirstVehicle = vehicle.addInstance("myFirstVehicle");
 		Generic mySecondVehicle = vehicle.addInstance("mySecondVehicle");
 
+		// Persist changes
+		engine.getCurrentCache().flush();
+
 		// Find the instances of Vehicle
 		Snapshot<Generic> instances = vehicle.getInstances();
 		assert instances.size() >= 2;
@@ -73,6 +85,9 @@ public class AdvancedSearches {
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		Generic musicPlayer = myVehicle.addHolder(options, "music player");
 		Generic airConditioning = myVehicle.addHolder(options, "air conditioning");
+
+		// Persist changes
+		engine.getCurrentCache().flush();
 
 		// Find the holders of myVehicle for the attribute Options
 		Snapshot<Generic> holders = myVehicle.getHolders(options);
@@ -90,6 +105,9 @@ public class AdvancedSearches {
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		Generic red = color.addInstance("red");
 		Generic myVehicleRed = myVehicle.addLink(vehicleColor, "myVehicleRed", red);
+
+		// Persist changes
+		engine.getCurrentCache().flush();
 
 		// Find the link myVehicleRed for the relation VehicleColor from myVehicle
 		Snapshot<Generic> myVehicleLinks = myVehicle.getLinks(vehicleColor);
@@ -119,12 +137,11 @@ public class AdvancedSearches {
 		mySecondVehicle.addHolder(options, "music player");
 		myThirdVehicle.addHolder(options, "air conditioning");
 
+		// Persist changes
+		engine.getCurrentCache().flush();
+
 		// Find all instances of Vehicle with the Options air conditioning
-		Snapshot<Generic> instances = () -> vehicle.getInstances().get().filter(
-												generic -> generic.getHolders(options).get().anyMatch(
-														holder -> holder.getValue().equals("air conditioning")
-												)
-											);
+		Snapshot<Generic> instances = () -> vehicle.getInstances().get().filter(generic -> generic.getHolders(options).get().anyMatch(holder -> holder.getValue().equals("air conditioning")));
 
 		assert instances.size() >= 2;
 		assert instances.containsAll(Arrays.asList(myFirstVehicle, myThirdVehicle));

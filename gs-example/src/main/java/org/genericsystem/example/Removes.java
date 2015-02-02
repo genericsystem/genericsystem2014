@@ -13,6 +13,9 @@ public class Removes {
 
 		// Remove the type Vehicle
 		vehicle.remove();
+
+		// Persist changes
+		engine.getCurrentCache().flush();
 	}
 
 	public void removeAttribute() {
@@ -23,6 +26,9 @@ public class Removes {
 
 		// Remove the attribute Options
 		options.remove();
+
+		// Persist changes
+		engine.getCurrentCache().flush();
 	}
 
 	public void removeRelation() {
@@ -34,6 +40,9 @@ public class Removes {
 
 		// Remove the relation VehicleColor
 		vehicleColor.remove();
+
+		// Persist changes
+		engine.getCurrentCache().flush();
 	}
 
 	public void removeInstance() {
@@ -44,6 +53,9 @@ public class Removes {
 
 		// Remove the instance myVehicle
 		myVehicle.remove();
+
+		// Persist changes
+		engine.getCurrentCache().flush();
 	}
 
 	public void removeHolder() {
@@ -58,6 +70,9 @@ public class Removes {
 
 		// Remove the holder musicPlayer
 		musicPlayer.remove();
+
+		// Persist changes
+		engine.getCurrentCache().flush();
 	}
 
 	public void removeLink() {
@@ -73,6 +88,9 @@ public class Removes {
 
 		// Remove the link myVehicleRed
 		myVehicleRed.remove();
+
+		// Persist changes
+		engine.getCurrentCache().flush();
 	}
 
 	public void dependentRemove() {
@@ -87,6 +105,9 @@ public class Removes {
 		assert !vehicle.isAlive();
 		assert !vehicleColor.isAlive();
 		assert color.isAlive();
+
+		// Persist changes
+		engine.getCurrentCache().flush();
 	}
 
 	public void referentialIntegrity() {
@@ -99,9 +120,15 @@ public class Removes {
 		// Enable referential integrity for Vehicle in VehicleColor for the base : Vehicle
 		engine.find(MetaRelation.class).enableReferentialIntegrity(ApiStatics.BASE_POSITION);
 
-		// Remove the type Vehicle
-		vehicle.remove();
-		// Error : VehicleColor is Referential Integrity for ancestor Vehicle by composite position : 0
+		// Persist changes
+		engine.getCurrentCache().flush();
+
+		try {
+			// Remove the type Vehicle
+			vehicle.remove();
+		} catch (Exception e) {
+			// ReferentialIntegrityConstraintViolationException : VehicleColor is Referential Integrity for ancestor Vehicle by composite position : 0
+		}
 	}
 
 	public void cascadeRemove() {
@@ -122,5 +149,8 @@ public class Removes {
 		assert !vehicle.isAlive();
 		assert !vehicleColor.isAlive();
 		assert !color.isAlive();
+
+		// Persist changes
+		engine.getCurrentCache().flush();
 	}
 }
