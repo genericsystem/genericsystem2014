@@ -48,7 +48,7 @@ public class CDIUses extends AbstractTest {
 		Generic myBmw = vehicle.addInstance("myBmw");
 		myBmw.addHolder(power, 233);
 
-		// Get the current cache and validate the modifications done on it
+		// Persist changes
 		engine.getCurrentCache().flush();
 	}
 }

@@ -22,6 +22,9 @@ public class AnnotationsUses {
 		vehicle.addAttribute("Options");
 		Generic color = engine.addInstance("Color");
 		vehicle.addRelation("VehicleColor", color);
+
+		// Persist changes
+		engine.getCurrentCache().flush();
 	}
 
 	public void staticSetting() {
@@ -73,7 +76,7 @@ public class AnnotationsUses {
 		phones.remove("HTC One");
 		phones.remove("HTC One");
 
-		// Get the current cache and validate the modifications done on it
+		// Persist changes
 		engine.getCurrentCache().flush();
 
 		assert phones.size() == 3;

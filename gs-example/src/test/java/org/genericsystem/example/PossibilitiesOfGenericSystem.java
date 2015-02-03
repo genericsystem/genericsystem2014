@@ -10,8 +10,8 @@ import org.genericsystem.mutability.Generic;
 
 public class PossibilitiesOfGenericSystem {
 	public void simpleInheriting() {
-		// Create a database named vehicleManagement and persisted in the directory vehicleManagement
-		Engine engine = new Engine("vehicleManagement", System.getenv("HOME") + "/vehicleManagement");
+		// Create an in memory engine
+		Engine engine = new Engine();
 
 		// Create the structure
 		Generic vehicle = engine.addInstance("Vehicle");
@@ -32,13 +32,13 @@ public class PossibilitiesOfGenericSystem {
 		firstTruck.addHolder(brand, "yankee");
 		firstTruck.addHolder(maximumLoad, 2000);
 
-		// Commit the transaction
+		// Persist changes
 		engine.getCurrentCache().flush();
 	}
 
 	public void multipleInheriting() {
-		// Create a database named vehicleManagement and persisted in the directory vehicleManagement
-		Engine engine = new Engine("vehicleManagement", System.getenv("HOME") + "/vehicleManagement");
+		// Create an in memory engine
+		Engine engine = new Engine();
 
 		// Create the structure
 		Generic vehicle = engine.addInstance("Vehicle");
@@ -54,13 +54,13 @@ public class PossibilitiesOfGenericSystem {
 		firstTransformer.addHolder(brand, "cheetah");
 		firstTransformer.addHolder(name, "super500");
 
-		// Commit the transaction
+		// Persist changes
 		engine.getCurrentCache().flush();
 	}
 
 	public void hotStructuralModification() {
-		// Create a database named vehicleManagement and persisted in the directory vehicleManagement
-		Engine engine = new Engine("vehicleManagement", System.getenv("HOME") + "/vehicleManagement");
+		// Create an in memory engine
+		Engine engine = new Engine();
 
 		// Create the structure
 		Generic vehicle = engine.addInstance("Vehicle");
@@ -78,13 +78,13 @@ public class PossibilitiesOfGenericSystem {
 		secondVehicle.addHolder(brand, "infernus");
 		thirdVehicle.addHolder(brand, "phoenix");
 
-		// Commit the transaction
+		// Persist changes
 		engine.getCurrentCache().flush();
 	}
 
 	public void mutability() {
-		// Create a database named vehicleManagement and persisted in the directory vehicleManagement
-		Engine engine = new Engine("vehicleManagement", System.getenv("HOME") + "/vehicleManagement");
+		// Create an in memory engine
+		Engine engine = new Engine();
 
 		// Create the structure
 		Generic vehicle = engine.addInstance("Vehicle");
@@ -101,13 +101,13 @@ public class PossibilitiesOfGenericSystem {
 		vehicle.addInstance("fourthVehicle");
 		vehicle.addInstance("fifthVehicle");
 
-		// Commit the transaction
+		// Persist changes
 		engine.getCurrentCache().flush();
 	}
 
 	public void defaultLink() {
-		// Create a database named vehicleManagement and persisted in the directory vehicleManagement
-		Engine engine = new Engine("vehicleManagement", System.getenv("HOME") + "/vehicleManagement");
+		// Create an in memory engine
+		Engine engine = new Engine();
 
 		// Create the structure
 		Generic vehicle = engine.addInstance("Vehicle");
@@ -125,13 +125,13 @@ public class PossibilitiesOfGenericSystem {
 		Generic yellow = color.addInstance("yellow");
 		secondVehicle.addLink(vehicleColor, "yellowSecondVehicle", yellow);
 
-		// Commit the transaction
+		// Persist changes
 		engine.getCurrentCache().flush();
 	}
 
 	public void queryDatabase() {
-		// Create a database named vehicleManagement and persisted in the directory vehicleManagement
-		Engine engine = new Engine("vehicleManagement", System.getenv("HOME") + "/vehicleManagement");
+		// Create an in memory engine
+		Engine engine = new Engine();
 
 		// Create the structure
 		Generic vehicle = engine.addInstance("Vehicle");
@@ -172,16 +172,24 @@ public class PossibilitiesOfGenericSystem {
 
 		// Query the database
 		@SuppressWarnings("unused")
-		Snapshot<Generic> searchedVehicles = () -> vehicle.getInstances().get().filter(generic -> generic.getHolders(power).get().anyMatch(holder -> (int) holder.getValue() >= 50 && (int) holder.getValue() <= 90))
-				.filter(generic -> generic.getLinks(vehicleColor).get().anyMatch(link -> link.getTargetComponent().equals(white)));
+		Snapshot<Generic> searchedVehicles = () -> vehicle.getInstances().get().filter(
+														generic -> generic.getHolders(power).get().anyMatch(
+																holder -> (int) holder.getValue() >= 50 && (int) holder.getValue() <= 90
+														)
+												   )
+												   .filter(
+														   generic -> generic.getLinks(vehicleColor).get().anyMatch(
+																   link -> link.getTargetComponent().equals(white)
+														   )
+												   );
 
-		// Commit the transaction
+		// Persist changes
 		engine.getCurrentCache().flush();
 	}
 
 	public void staticSetting() {
-		// Create a database named vehicleManagement, persisted in the directory vehicleManagement and specifying parameterized classes
-		Engine engine = new Engine("vehicleManagement", System.getenv("HOME") + "/vehicleManagement", Vehicle.class, Option.class, Color.class, VehicleColor.class);
+		// Create an in memory engine specifying parameterized classes
+		Engine engine = new Engine(Vehicle.class, Option.class, Color.class, VehicleColor.class);
 
 		// Retrieve our system vehicleManagement
 		Vehicle vehicle = engine.find(Vehicle.class);
@@ -190,7 +198,7 @@ public class PossibilitiesOfGenericSystem {
 		Option airConditioning = Option.createOption("air conditioning");
 		vehicle.addOption(airConditioning);
 
-		// Commit the transaction
+		// Persist changes
 		engine.getCurrentCache().flush();
 	}
 

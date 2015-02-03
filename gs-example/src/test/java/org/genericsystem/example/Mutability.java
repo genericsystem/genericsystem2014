@@ -16,5 +16,8 @@ public class Mutability {
 
 		assert vehicle.isAlive();
 		assert car.isAlive();
+
+		// Persist changes
+		engine.getCurrentCache().flush();
 	}
 }
