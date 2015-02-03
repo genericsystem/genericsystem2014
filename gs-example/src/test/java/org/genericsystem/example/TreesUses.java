@@ -29,7 +29,7 @@ public class TreesUses {
 		// Create the child table
 		body.addChild("table");
 
-		// Commit changes
+		// Persist changes
 		engine.getCurrentCache().flush();
 	}
 
@@ -83,7 +83,7 @@ public class TreesUses {
 		// Get color of the htmlTags body
 		assert body.getLink(htmlTagsColor, "htmlRed").getTargetComponent().equals(red);
 
-		// Commit changes
+		// Persist changes
 		engine.getCurrentCache().flush();
 	}
 
@@ -114,7 +114,7 @@ public class TreesUses {
 			}
 		});
 
-		// Commit changes
+		// Persist changes
 		engine.getCurrentCache().flush();
 	}
 
@@ -140,7 +140,7 @@ public class TreesUses {
 		// Get children of mother
 		assert mother.getChildren().containsAll(Arrays.asList(son, daughter));
 
-		// Commit changes
+		// Persist changes
 		engine.getCurrentCache().flush();
 	}
 }
