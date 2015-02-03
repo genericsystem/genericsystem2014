@@ -60,9 +60,12 @@ public class Builder<T extends AbstractVertex<T>> implements DefaultBuilder<T> {
 		return null; // Not reached
 	}
 
-	Class<?> getAnnotedClass(T vertex) {
-		if (vertex.isSystem())
-			return context.getRoot().findAnnotedClass(vertex);
+	private Class<?> getAnnotedClass(T vertex) {
+		if (vertex.isSystem()) {
+			Class<?> findAnnotedClass = context.getRoot().findAnnotedClass(vertex);
+			if (findAnnotedClass != null)
+				return findAnnotedClass;
+		}
 		return vertex.getClass();
 	}
 
@@ -94,15 +97,11 @@ public class Builder<T extends AbstractVertex<T>> implements DefaultBuilder<T> {
 		return instance == null ? buildAndPlug(clazz, meta, supers, value, components) : instance;
 	}
 
-	T internalBuildAndPlug(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
-		return context.internalPlug(build(clazz, meta, supers, value, components, otherTs));
-	}
-
 	T buildAndPlug(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
-		return context.plug(build(clazz, meta, supers, value, components, new long[] { Long.MAX_VALUE, 0L, Long.MAX_VALUE }));
+		return context.plug(build(clazz, meta, supers, value, components, context.getRoot().isInitialized() ? Statics.USER_TS : Statics.SYSTEM_TS));
 	}
 
-	private T build(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
+	T build(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
 		return newT(clazz, meta).init(getContext().getRoot().pickNewTs(), meta, supers, value, components, otherTs);
 	}
 

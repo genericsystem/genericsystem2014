@@ -35,6 +35,11 @@ public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 	}
 
 	@Override
+	public boolean isInitialized() {
+		return cacheEngine.isInitialized();
+	}
+
+	@Override
 	public Object invoke(Object self, Method m, Method proceed, Object[] args) throws Throwable {
 		return this;
 	}

@@ -59,7 +59,8 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 	}
 
 	protected T plug(T generic) {
-		generic.getLifeManager().beginLife(getTs());
+		if (root.isInitialized())
+			generic.getLifeManager().beginLife(getTs());
 		return internalPlug(generic);
 	}
 

@@ -9,6 +9,8 @@ public interface DefaultRoot<T extends DefaultVertex<T>> extends IRoot<T> {
 
 	Class<?> findAnnotedClass(T vertex);
 
+	boolean isInitialized();
+
 	@Override
 	default T addTree(Serializable value) {
 		return addTree(value, 1);

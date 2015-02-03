@@ -39,6 +39,11 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 	}
 
 	@Override
+	public boolean isInitialized() {
+		return systemCache.isInitialized();
+	}
+
+	@Override
 	public final Vertex getMetaAttribute() {
 		return find(MetaAttribute.class);
 	}
