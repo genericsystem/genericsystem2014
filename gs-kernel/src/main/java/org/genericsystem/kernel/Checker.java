@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.genericsystem.api.core.ApiStatics;
-import org.genericsystem.api.defaults.DefaultChecker;
 import org.genericsystem.api.defaults.DefaultRoot;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.CollisionException;
@@ -25,7 +24,7 @@ import org.genericsystem.kernel.annotations.Priority;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 import org.genericsystem.kernel.systemproperty.constraints.Constraint;
 
-public class Checker<T extends AbstractVertex<T>> implements DefaultChecker<T> {
+public class Checker<T extends AbstractVertex<T>> {
 
 	private final Context<T> context;
 

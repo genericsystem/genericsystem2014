@@ -61,7 +61,7 @@ Pour faire fonctionner Generic System, il est nécessaire :
 <pre>
     &lt;repository&gt;
     	&lt;id&gt;middlewarefactory&lt;/id&gt;
-    	&lt;url&gt;http://www.middlewarefactory.com/repository&lt;/url&gt;
+    	&lt;url&gt;http://genericsystem.org/repository&lt;/url&gt;
     	&lt;releases&gt;
     		&lt;enabled&gt;true&lt;/enabled&gt;
     		&lt;updatePolicy&gt;daily&lt;/updatePolicy&gt;

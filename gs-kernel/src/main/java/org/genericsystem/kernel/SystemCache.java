@@ -45,6 +45,10 @@ public class SystemCache<T extends AbstractVertex<T>> {
 		put(rootClass, (T) root);
 	}
 
+	public boolean isInitialized() {
+		return initialized;
+	}
+
 	public void mount(List<Class<?>> systemClasses, Class<?>... userClasses) {
 		for (Class<?> clazz : systemClasses)
 			set(clazz);
@@ -73,7 +77,7 @@ public class SystemCache<T extends AbstractVertex<T>> {
 			if (meta.isMeta())
 				meta = builder.setMeta(components.size());
 		}
-		result = builder.internalBuildAndPlug(clazz, meta, overrides, findValue(clazz), components, Statics.SYSTEM_TS);
+		result = builder.buildAndPlug(clazz, meta, overrides, findValue(clazz), components);
 		put(clazz, result);
 		mountConstraints(clazz, result);
 		triggersDependencies(clazz);

@@ -11,13 +11,11 @@ import java.util.NavigableSet;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.genericsystem.api.defaults.DefaultBuilder;
 import org.genericsystem.api.defaults.DefaultVertex;
-import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.UnreachableOverridesException;
 import org.genericsystem.kernel.annotations.InstanceClass;
 
-public class Builder<T extends AbstractVertex<T>> implements DefaultBuilder<T> {
+public class Builder<T extends AbstractVertex<T>> {
 
 	private final Context<T> context;
 
@@ -25,7 +23,6 @@ public class Builder<T extends AbstractVertex<T>> implements DefaultBuilder<T> {
 		this.context = context;
 	}
 
-	@Override
 	public Context<T> getContext() {
 		return context;
 	}
@@ -35,7 +32,6 @@ public class Builder<T extends AbstractVertex<T>> implements DefaultBuilder<T> {
 		return (Class<T>) Vertex.class;
 	}
 
-	@Override
 	@SuppressWarnings("unchecked")
 	public final T[] newTArray(int dim) {
 		return (T[]) Array.newInstance(getTClass(), dim);
@@ -60,9 +56,12 @@ public class Builder<T extends AbstractVertex<T>> implements DefaultBuilder<T> {
 		return null; // Not reached
 	}
 
-	Class<?> getAnnotedClass(T vertex) {
-		if (vertex.isSystem())
-			return context.getRoot().findAnnotedClass(vertex);
+	private Class<?> getAnnotedClass(T vertex) {
+		if (vertex.isSystem()) {
+			Class<?> annotedClass = context.getRoot().findAnnotedClass(vertex);
+			if (annotedClass != null)
+				return annotedClass;
+		}
 		return vertex.getClass();
 	}
 
@@ -94,31 +93,12 @@ public class Builder<T extends AbstractVertex<T>> implements DefaultBuilder<T> {
 		return instance == null ? buildAndPlug(clazz, meta, supers, value, components) : instance;
 	}
 
-	T internalBuildAndPlug(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
-		return context.internalPlug(build(clazz, meta, supers, value, components, otherTs));
-	}
-
 	T buildAndPlug(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
-		return context.plug(build(clazz, meta, supers, value, components, new long[] { Long.MAX_VALUE, 0L, Long.MAX_VALUE }));
+		return context.plug(build(clazz, meta, supers, value, components, context.getRoot().isInitialized() ? Statics.USER_TS : Statics.SYSTEM_TS));
 	}
 
-	private T build(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
+	T build(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
 		return newT(clazz, meta).init(getContext().getRoot().pickNewTs(), meta, supers, value, components, otherTs);
-	}
-
-	@Override
-	public void forceRemove(T generic) {
-		new GenericHandler<>(generic).forceRemove();
-	}
-
-	@Override
-	public void remove(T generic) {
-		new GenericHandler<>(generic).remove();
-	}
-
-	@Override
-	public void conserveRemove(T generic) {
-		new GenericHandler<>(generic).conserveRemove();
 	}
 
 	T rebuildAll(T toRebuild, Supplier<T> rebuilder, NavigableSet<T> dependenciesToRebuild) {
@@ -135,30 +115,6 @@ public class Builder<T extends AbstractVertex<T>> implements DefaultBuilder<T> {
 			return build;
 		}
 		return null;
-	}
-
-	@Override
-	public T setInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
-		GenericHandler<T> genericBuilder = new GenericHandler<>(this, clazz, meta, overrides, value, components);
-		T generic = genericBuilder.get();
-		if (generic != null)
-			return generic;
-		generic = genericBuilder.getEquiv();
-		return generic == null ? genericBuilder.add() : genericBuilder.set(generic);
-	}
-
-	@Override
-	public T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents) {
-		return new GenericHandler<>(this, update.getClass(), update.getMeta(), overrides, newValue, newComponents).update(update);
-	}
-
-	@Override
-	public T addInstance(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
-		GenericHandler<T> genericBuilder = new GenericHandler<>(this, clazz, meta, overrides, value, components);
-		T generic = genericBuilder.get();
-		if (generic != null)
-			getContext().discardWithException(new ExistsException("An equivalent instance already exists : " + generic.info()));
-		return genericBuilder.add();
 	}
 
 	private class ConvertMap extends HashMap<T, T> {

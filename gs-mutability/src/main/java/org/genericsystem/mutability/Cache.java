@@ -18,8 +18,6 @@ import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
 
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.api.defaults.DefaultBuilder;
-import org.genericsystem.api.defaults.DefaultChecker;
 import org.genericsystem.api.defaults.DefaultContext;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
@@ -34,65 +32,11 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 
 	private final Deque<Map<Generic, org.genericsystem.cache.Generic>> revertMutations = new ArrayDeque<>();
 
-	private final DefaultChecker<Generic> checker;
-	protected final DefaultBuilder<Generic> builder;
-
 	public Cache(Engine engine, org.genericsystem.cache.Engine cacheEngine) {
 		this.engine = engine;
 		put(engine, cacheEngine);
 		this.cache = cacheEngine.newCache(this);
 		revertMutations.push(new IdentityHashMap<>());
-		this.checker = buildChecker();
-		this.builder = buildBuilder();
-	}
-
-	protected DefaultChecker<Generic> buildChecker() {
-		return new DefaultChecker<Generic>() {};
-	}
-
-	protected DefaultBuilder<Generic> buildBuilder() {
-		return new DefaultBuilder<Generic>() {
-
-			@Override
-			public DefaultContext<Generic> getContext() {
-				return Cache.this;
-			}
-
-			@Override
-			public Generic[] newTArray(int i) {
-				return new Generic[i];
-			}
-
-			@Override
-			public Generic addInstance(Class<?> clazz, Generic meta, List<Generic> overrides, Serializable value, List<Generic> components) {
-				return wrap(cache.getBuilder().addInstance(clazz, unwrap(meta), unwrap(overrides), value, unwrap(components)));
-			}
-
-			@Override
-			public Generic update(Generic update, List<Generic> overrides, Serializable newValue, List<Generic> newComponents) {
-				return wrap(cache.getBuilder().update(unwrap(update), unwrap(overrides), newValue, unwrap(newComponents)));
-			}
-
-			@Override
-			public Generic setInstance(Class<?> clazz, Generic meta, List<Generic> overrides, Serializable value, List<Generic> components) {
-				return wrap(cache.getBuilder().setInstance(clazz, unwrap(meta), unwrap(overrides), value, unwrap(components)));
-			}
-
-			@Override
-			public void forceRemove(Generic generic) {
-				cache.getBuilder().forceRemove(unwrap(generic));
-			}
-
-			@Override
-			public void remove(Generic generic) {
-				cache.getBuilder().remove(unwrap(generic));
-			}
-
-			@Override
-			public void conserveRemove(Generic generic) {
-				cache.getBuilder().conserveRemove(unwrap(generic));
-			}
-		};
 	}
 
 	@Override
@@ -298,13 +242,38 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 	}
 
 	@Override
-	public DefaultBuilder<Generic> getBuilder() {
-		return builder;
+	public Generic[] newTArray(int i) {
+		return wrap(cache.newTArray(i));
 	}
 
 	@Override
-	public DefaultChecker<Generic> getChecker() {
-		return checker;
+	public Generic addInstance(Generic meta, List<Generic> overrides, Serializable value, List<Generic> components) {
+		return wrap(cache.addInstance(unwrap(meta), unwrap(overrides), value, unwrap(components)));
+	}
+
+	@Override
+	public Generic update(Generic update, List<Generic> overrides, Serializable newValue, List<Generic> newComponents) {
+		return wrap(cache.update(unwrap(update), unwrap(overrides), newValue, unwrap(newComponents)));
+	}
+
+	@Override
+	public Generic setInstance(Generic meta, List<Generic> overrides, Serializable value, List<Generic> components) {
+		return wrap(cache.setInstance(unwrap(meta), unwrap(overrides), value, unwrap(components)));
+	}
+
+	@Override
+	public void forceRemove(Generic generic) {
+		cache.forceRemove(unwrap(generic));
+	}
+
+	@Override
+	public void remove(Generic generic) {
+		cache.remove(unwrap(generic));
+	}
+
+	@Override
+	public void conserveRemove(Generic generic) {
+		cache.conserveRemove(unwrap(generic));
 	}
 
 }

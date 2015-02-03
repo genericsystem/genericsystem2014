@@ -44,12 +44,15 @@ public class CacheUses {
 		myVehicle.addHolder(power, 213);
 		// myVehicle has one Power : 213
 
-		// Add another value for Power to myVehicle
-		myVehicle.addHolder(power, 220);
-		// Error : Power is a property, it can have only one value
+		try {
+			// Add another value for Power to myVehicle
+			myVehicle.addHolder(power, 220);
+		} catch (Exception e) {
+			// PropertyConstraintViolationException : Power is a property, it can have only one value
 
-		// A rollback is performed by Generic System
-		// The value for Power and the instance of Vehicle are lost
-		// but thanks to the cache we mount, the type Vehicle and the property Power are NOT lost
+			// A rollback is performed by Generic System
+			// The value for Power and the instance of Vehicle are lost
+			// but thanks to the cache we mount, the type Vehicle and the property Power are NOT lost
+		}
 	}
 }

@@ -29,8 +29,8 @@ public class GenericHandler<T extends AbstractVertex<T>> {
 		reComputeSupers();
 	}
 
-	public GenericHandler(T gettable) {
-		this.builder = gettable.getCurrentCache().getBuilder();
+	public GenericHandler(Builder<T> builder, T gettable) {
+		this.builder = builder;
 		this.clazz = gettable.getClass();
 		this.meta = gettable.getMeta();
 		this.supers = gettable.getSupers();
@@ -76,18 +76,18 @@ public class GenericHandler<T extends AbstractVertex<T>> {
 	public T set(T update) {
 		assert update != null;
 		assert supers != null;
-		return builder.rebuildAll(update, () -> builder.buildAndPlug(clazz, adjustedMeta, supers, value, components), builder.getContext().computeRemoveDependencies(update, false));
+		return builder.rebuildAll(update, () -> builder.buildAndPlug(clazz, adjustedMeta, supers, value, components), builder.getContext().computeDependencies(update));
 	}
 
 	public T update(T update) {
 		assert update != null;
 		assert supers != null;
-		return builder.rebuildAll(update, () -> builder.getOrBuild(clazz, adjustedMeta, supers, value, components), builder.getContext().computeRemoveDependencies(update, false));
+		return builder.rebuildAll(update, () -> builder.getOrBuild(clazz, adjustedMeta, supers, value, components), builder.getContext().computeDependencies(update));
 	}
 
 	public void remove() {
 		assert supers != null;
-		builder.rebuildAll(null, null, builder.getContext().computeRemoveDependencies(gettable, true));
+		builder.rebuildAll(null, null, builder.getContext().computeRemoveDependencies(gettable));
 	}
 
 	public void forceRemove() {
