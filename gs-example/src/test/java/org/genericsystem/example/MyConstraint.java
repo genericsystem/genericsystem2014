@@ -41,13 +41,13 @@ public class MyConstraint extends AbstractTest {
 
 	@Test
 	public void createByFullAnnot() {
-		Engine engine = new Engine(VehicleAnnot2.class);
-		Generic vehicle = engine.find(VehicleAnnot2.class);
+		Engine engine = new Engine(Vehicle.class);
+		Generic vehicle = engine.find(Vehicle.class);
 		catchAndCheckCause(() -> vehicle.addInstance("myVehicle"), ConstraintViolationException.class);
 	}
 
 	@Dependencies({ DefaultInstanceSizeConstraint.class })
-	public static class VehicleAnnot2 {
+	public static class Vehicle {
 
 	}
 
@@ -62,20 +62,20 @@ public class MyConstraint extends AbstractTest {
 
 	@SystemGeneric
 	@Meta(DefaultInstanceSizeConstraint.class)
-	@Components(VehicleAnnot2.class)
+	@Components(Vehicle.class)
 	@IntValue(0)
 	public static class DefaultValue {
 	}
 
 	// @Test
 	// public void createBySimpleFullAnnot() {
-	// Engine engine = new Engine(VehicleAnnot3.class);
-	// Generic vehicle = engine.find(VehicleAnnot3.class);
-	// catchAndCheckCause(() -> vehicle.addInstance("myVehicle"), ConstraintViolationException.class);
+	// Engine engine = new Engine(Car.class);
+	// Generic vehicle = engine.find(Car.class);
+	// catchAndCheckCause(() -> vehicle.addInstance("myCar"), ConstraintViolationException.class);
 	// }
 	//
-	// @Constraint(propertyClass = InstanceSizeConstraint.class, pos = ApiStatics.NO_POSITION, value = 0)
-	// public static class VehicleAnnot3 {
+	// @Constraint(propertyClass = InstanceSizeConstraint.class, pos = ApiStatics.NO_POSITION)
+	// public static class Car {
 	//
 	// }
 
