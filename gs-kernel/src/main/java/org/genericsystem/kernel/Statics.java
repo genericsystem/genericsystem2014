@@ -15,6 +15,7 @@ public class Statics {
 
 	public final static String ENGINE_VALUE = "Engine";
 	public final static long[] SYSTEM_TS = new long[] { 0L, 0L, Long.MAX_VALUE };
+	public final static long[] USER_TS = new long[] { Long.MAX_VALUE, 0L, Long.MAX_VALUE };
 
 	public static final long MILLI_TO_NANOSECONDS = 1000000L;
 

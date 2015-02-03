@@ -61,6 +61,11 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	}
 
 	@Override
+	public boolean isInitialized() {
+		return systemCache.isInitialized();
+	}
+
+	@Override
 	public Cache<Generic> start(Cache<Generic> cacheManager) {
 		if (!equals(cacheManager.getRoot()))
 			throw new IllegalStateException();
