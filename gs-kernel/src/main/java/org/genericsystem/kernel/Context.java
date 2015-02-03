@@ -91,11 +91,6 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		new GenericHandler<>(builder, generic).conserveRemove();
 	}
 
-	@Override
-	public final boolean isAlive(T vertex) {
-		return vertex != null && vertex.equals(getAlive(vertex));
-	}
-
 	protected T plug(T generic) {
 		if (root.isInitialized())
 			generic.getLifeManager().beginLife(getTs());
@@ -123,17 +118,6 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 			discardWithException(new NotFoundException(generic.info()));
 		generic.getSupers().forEach(superGeneric -> unIndexInheriting(superGeneric, generic));
 		generic.getComponents().stream().filter(component -> component != null).forEach(component -> unIndexComposite(component, generic));
-	}
-
-	private T getAlive(T vertex) {
-		if (vertex.isRoot())
-			return vertex;
-		if (vertex.isMeta()) {
-			T aliveSuper = getAlive(vertex.getSupers().get(0));
-			return aliveSuper != null ? getInheritings(aliveSuper).get(vertex) : null;
-		}
-		T aliveMeta = getAlive(vertex.getMeta());
-		return aliveMeta != null ? getInstances(aliveMeta).get(vertex) : null;
 	}
 
 	@SuppressWarnings("unchecked")
