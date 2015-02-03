@@ -45,6 +45,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return getLifeManager().isAlive(ts);
 	}
 
+	@Override
 	public boolean isSystem() {
 		return getLifeManager().getBirthTs() == 0L;
 	}

@@ -42,32 +42,12 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 */
 	boolean isAlive();
 
-	// TODO clean
-	// /**
-	// * Checks if this instance is alive. If not the discardAndRollback() method is called on graph's root.
-	// *
-	// * @throws RollbackException
-	// * if this signature is not alive
-	// */
-	// void checkIsAlive();
-
-	// /**
-	// * Returns the alive reference if it exists<br>
-	// *
-	// * @return the alive instance if it exists, null otherwise
-	// *
-	// */
-	// T getAlive();
-
-	// /**
-	// * Indicates whether this vertex is equivalent to another<br>
-	// *
-	// * @param vertex
-	// * the vertex reference to be tested for the equivalence
-	// * @return true if this instance is equivalent of the service
-	// *
-	// */
-	// boolean equiv(IVertex<?> vertex);
+	/**
+	 * Indicates whether this signature is system. System signatures are created at startup and can not be remove.
+	 * 
+	 * @return <code>true</code> if this signature is system, <code>false</code> otherwise.
+	 */
+	boolean isSystem();
 
 	/**
 	 * Technical method for creating a real array of <code>T</code> implementation for passing safe varags parameter and avoid heap pollution.
@@ -942,7 +922,7 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 *            the implementation of IVertex used for all nodes.
 	 */
 	public abstract static class Visitor<T extends IVertex<T>> {
-		private Set<T> alreadyVisited = new HashSet<>();
+		private final Set<T> alreadyVisited = new HashSet<>();
 
 		/**
 		 * Effectively traverse the tree from the specified <code>node</code>.
