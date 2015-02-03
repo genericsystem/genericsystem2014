@@ -13,6 +13,7 @@ import org.genericsystem.api.core.IteratorSnapshot;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.defaults.DefaultContext;
 import org.genericsystem.api.defaults.DefaultRoot;
+import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 
@@ -51,6 +52,50 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 	@Override
 	public DefaultRoot<T> getRoot() {
 		return root;
+	}
+
+	@Override
+	public final T[] newTArray(int dim) {
+		return builder.newTArray(dim);
+	}
+
+	@Override
+	public T setInstance(T meta, List<T> overrides, Serializable value, List<T> components) {
+		GenericHandler<T> genericBuilder = new GenericHandler<>(builder, null, meta, overrides, value, components);
+		T generic = genericBuilder.get();
+		if (generic != null)
+			return generic;
+		generic = genericBuilder.getEquiv();
+		return generic == null ? genericBuilder.add() : genericBuilder.set(generic);
+	}
+
+	@Override
+	public T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents) {
+		return new GenericHandler<>(builder, update.getClass(), update.getMeta(), overrides, newValue, newComponents).update(update);
+	}
+
+	@Override
+	public T addInstance(T meta, List<T> overrides, Serializable value, List<T> components) {
+		GenericHandler<T> genericBuilder = new GenericHandler<>(builder, null, meta, overrides, value, components);
+		T generic = genericBuilder.get();
+		if (generic != null)
+			discardWithException(new ExistsException("An equivalent instance already exists : " + generic.info()));
+		return genericBuilder.add();
+	}
+
+	@Override
+	public void forceRemove(T generic) {
+		new GenericHandler<>(generic).forceRemove();
+	}
+
+	@Override
+	public void remove(T generic) {
+		new GenericHandler<>(generic).remove();
+	}
+
+	@Override
+	public void conserveRemove(T generic) {
+		new GenericHandler<>(generic).conserveRemove();
 	}
 
 	@Override

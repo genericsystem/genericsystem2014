@@ -29,4 +29,18 @@ public interface DefaultContext<T extends DefaultVertex<T>> extends IContext<T> 
 
 	DefaultChecker<T> getChecker();
 
+	T[] newTArray(int i);
+
+	T addInstance(T meta, List<T> overrides, Serializable value, List<T> components);
+
+	T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents);
+
+	T setInstance(T meta, List<T> overrides, Serializable value, List<T> components);
+
+	void forceRemove(T generic);
+
+	void remove(T generic);
+
+	void conserveRemove(T generic);
+
 }

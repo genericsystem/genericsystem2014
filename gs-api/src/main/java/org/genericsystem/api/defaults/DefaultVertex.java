@@ -20,19 +20,19 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 	@Override
 	@SuppressWarnings("unchecked")
 	default T addInstance(List<T> overrides, Serializable value, T... components) {
-		return getCurrentCache().getBuilder().addInstance(null, (T) this, overrides, value, Arrays.asList(components));
+		return getCurrentCache().addInstance((T) this, overrides, value, Arrays.asList(components));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	default T setInstance(List<T> overrides, Serializable value, T... components) {
-		return getCurrentCache().getBuilder().setInstance(null, (T) this, overrides, value, Arrays.asList(components));
+		return getCurrentCache().setInstance((T) this, overrides, value, Arrays.asList(components));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default T update(List<T> overrides, Serializable newValue, T... newComponents) {
-		return getCurrentCache().getBuilder().update((T) this, overrides, newValue, Arrays.asList(newComponents));
+		return getCurrentCache().update((T) this, overrides, newValue, Arrays.asList(newComponents));
 	}
 
 	static <T extends DefaultVertex<T>> boolean isSuperOf(T subMeta, Serializable subValue, List<T> subComponents, T superMeta, Serializable superValue, List<T> superComponents) {
@@ -95,7 +95,7 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 	@SuppressWarnings("unchecked")
 	@Override
 	default T[] coerceToTArray(Object... array) {
-		T[] result = getCurrentCache().getBuilder().newTArray(array.length);
+		T[] result = getCurrentCache().newTArray(array.length);
 		for (int i = 0; i < array.length; i++)
 			result[i] = (T) array[i];
 		return result;
