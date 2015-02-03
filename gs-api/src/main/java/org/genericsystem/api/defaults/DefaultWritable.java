@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
 import org.genericsystem.api.core.IVertex;
 
 public interface DefaultWritable<T extends DefaultVertex<T>> extends IVertex<T> {
@@ -213,7 +214,7 @@ public interface DefaultWritable<T extends DefaultVertex<T>> extends IVertex<T> 
 	@SuppressWarnings("unchecked")
 	@Override
 	default T[] addThisToTargets(T... targets) {
-		T[] composites = getCurrentCache().getBuilder().newTArray(targets.length + 1);
+		T[] composites = getCurrentCache().newTArray(targets.length + 1);
 		composites[0] = (T) this;
 		System.arraycopy(targets, 0, composites, 1, targets.length);
 		return composites;
@@ -227,18 +228,18 @@ public interface DefaultWritable<T extends DefaultVertex<T>> extends IVertex<T> 
 
 	@SuppressWarnings("unchecked")
 	default void forceRemove() {
-		getCurrentCache().getBuilder().forceRemove((T) this);
+		getCurrentCache().forceRemove((T) this);
 	}
 
 	@SuppressWarnings("unchecked")
 	default void conserveRemove() {
-		getCurrentCache().getBuilder().conserveRemove((T) this);
+		getCurrentCache().conserveRemove((T) this);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	default void remove() {
-		getCurrentCache().getBuilder().remove((T) this);
+		getCurrentCache().remove((T) this);
 	}
 
 }

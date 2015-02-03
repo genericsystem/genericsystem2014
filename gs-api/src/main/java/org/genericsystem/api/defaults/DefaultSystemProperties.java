@@ -35,7 +35,7 @@ public interface DefaultSystemProperties<T extends DefaultVertex<T>> extends IVe
 	@Override
 	default T setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value, T... targets) {
 		T map = getRoot().getMap();
-		T[] roots = ((DefaultContext<T>) getCurrentCache()).getBuilder().newTArray(targets.length + 1);
+		T[] roots = ((DefaultContext<T>) getCurrentCache()).newTArray(targets.length + 1);
 		Arrays.fill(roots, getRoot());
 		map.getMeta().setInstance(map, new AxedPropertyClass(propertyClass, pos), roots).setInstance(value, addThisToTargets(targets));
 		return (T) this;
