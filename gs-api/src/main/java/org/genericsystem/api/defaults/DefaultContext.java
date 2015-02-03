@@ -25,10 +25,6 @@ public interface DefaultContext<T extends DefaultVertex<T>> extends IContext<T> 
 		throw new RollbackException(exception);
 	}
 
-	DefaultBuilder<T> getBuilder();
-
-	DefaultChecker<T> getChecker();
-
 	T[] newTArray(int i);
 
 	T addInstance(T meta, List<T> overrides, Serializable value, List<T> components);

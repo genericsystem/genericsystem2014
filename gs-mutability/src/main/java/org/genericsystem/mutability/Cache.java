@@ -18,8 +18,6 @@ import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
 
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.api.defaults.DefaultBuilder;
-import org.genericsystem.api.defaults.DefaultChecker;
 import org.genericsystem.api.defaults.DefaultContext;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
@@ -34,26 +32,11 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 
 	private final Deque<Map<Generic, org.genericsystem.cache.Generic>> revertMutations = new ArrayDeque<>();
 
-	private final DefaultChecker<Generic> checker;
-	protected final DefaultBuilder<Generic> builder;
-
 	public Cache(Engine engine, org.genericsystem.cache.Engine cacheEngine) {
 		this.engine = engine;
 		put(engine, cacheEngine);
 		this.cache = cacheEngine.newCache(this);
 		revertMutations.push(new IdentityHashMap<>());
-		this.checker = buildChecker();
-		this.builder = buildBuilder();
-	}
-
-	protected DefaultChecker<Generic> buildChecker() {
-		return new DefaultChecker<Generic>() {
-		};
-	}
-
-	protected DefaultBuilder<Generic> buildBuilder() {
-		return new DefaultBuilder<Generic>() {
-		};
 	}
 
 	@Override
@@ -256,16 +239,6 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 	public void discardWithException(Throwable exception) throws RollbackException {
 		assert false;
 		cache.discardWithException(exception);
-	}
-
-	@Override
-	public DefaultBuilder<Generic> getBuilder() {
-		return builder;
-	}
-
-	@Override
-	public DefaultChecker<Generic> getChecker() {
-		return checker;
 	}
 
 	@Override

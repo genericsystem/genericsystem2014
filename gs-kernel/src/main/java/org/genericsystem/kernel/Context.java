@@ -39,13 +39,11 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		return new Builder<>(this);
 	}
 
-	@Override
-	public Checker<T> getChecker() {
+	protected Checker<T> getChecker() {
 		return checker;
 	}
 
-	@Override
-	public Builder<T> getBuilder() {
+	Builder<T> getBuilder() {
 		return builder;
 	}
 

@@ -11,12 +11,11 @@ import java.util.NavigableSet;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.genericsystem.api.defaults.DefaultBuilder;
 import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.api.exception.UnreachableOverridesException;
 import org.genericsystem.kernel.annotations.InstanceClass;
 
-public class Builder<T extends AbstractVertex<T>> implements DefaultBuilder<T> {
+public class Builder<T extends AbstractVertex<T>> {
 
 	private final Context<T> context;
 
