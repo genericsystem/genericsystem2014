@@ -16,7 +16,21 @@ public interface DefaultContext<T extends DefaultVertex<T>> extends IContext<T> 
 
 	DefaultRoot<T> getRoot();
 
-	boolean isAlive(T vertex);
+	default boolean isAlive(T vertex) {
+		class AliveFinder {
+			T find(T vertex) {
+				if (vertex.isRoot())
+					return vertex;
+				if (vertex.isMeta()) {
+					T aliveSuper = new AliveFinder().find(vertex.getSupers().get(0));
+					return aliveSuper != null ? getInheritings(aliveSuper).get(vertex) : null;
+				}
+				T aliveMeta = new AliveFinder().find(vertex.getMeta());
+				return aliveMeta != null ? getInstances(aliveMeta).get(vertex) : null;
+			}
+		}
+		return vertex != null && vertex.equals(new AliveFinder().find(vertex));
+	}
 
 	T getInstance(T meta, List<T> overrides, Serializable value, T... components);
 
