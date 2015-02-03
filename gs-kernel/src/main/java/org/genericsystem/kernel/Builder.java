@@ -62,9 +62,9 @@ public class Builder<T extends AbstractVertex<T>> implements DefaultBuilder<T> {
 
 	private Class<?> getAnnotedClass(T vertex) {
 		if (vertex.isSystem()) {
-			Class<?> findAnnotedClass = context.getRoot().findAnnotedClass(vertex);
-			if (findAnnotedClass != null)
-				return findAnnotedClass;
+			Class<?> annotedClass = context.getRoot().findAnnotedClass(vertex);
+			if (annotedClass != null)
+				return annotedClass;
 		}
 		return vertex.getClass();
 	}
