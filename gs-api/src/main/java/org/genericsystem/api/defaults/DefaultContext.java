@@ -1,6 +1,7 @@
 package org.genericsystem.api.defaults;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NavigableSet;
@@ -32,7 +33,13 @@ public interface DefaultContext<T extends DefaultVertex<T>> extends IContext<T> 
 		return vertex != null && vertex.equals(new AliveFinder().find(vertex));
 	}
 
-	T getInstance(T meta, List<T> overrides, Serializable value, T... components);
+	default T getInstance(T meta, List<T> overrides, Serializable value, T... components) {
+		List<T> componentsList = Arrays.asList(components);
+		T adjustMeta = meta.adjustMeta(value, componentsList);
+		if (adjustMeta.getComponents().size() < components.length)
+			return null;
+		return adjustMeta.getDirectInstance(overrides, value, componentsList);
+	}
 
 	Snapshot<T> getInheritings(T vertex);
 

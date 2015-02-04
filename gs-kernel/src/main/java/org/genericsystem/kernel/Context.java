@@ -1,9 +1,9 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.genericsystem.api.core.IteratorSnapshot;
 import org.genericsystem.api.core.Snapshot;
@@ -53,6 +53,15 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 	}
 
 	@Override
+	public T addInstance(T meta, List<T> overrides, Serializable value, List<T> components) {
+		GenericHandler<T> genericBuilder = new GenericHandler<>(builder, null, meta, overrides, value, components);
+		T generic = genericBuilder.get();
+		if (generic != null)
+			discardWithException(new ExistsException("An equivalent instance already exists : " + generic.info()));
+		return genericBuilder.add();
+	}
+
+	@Override
 	public T setInstance(T meta, List<T> overrides, Serializable value, List<T> components) {
 		GenericHandler<T> genericBuilder = new GenericHandler<>(builder, null, meta, overrides, value, components);
 		T generic = genericBuilder.get();
@@ -68,27 +77,18 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 	}
 
 	@Override
-	public T addInstance(T meta, List<T> overrides, Serializable value, List<T> components) {
-		GenericHandler<T> genericBuilder = new GenericHandler<>(builder, null, meta, overrides, value, components);
-		T generic = genericBuilder.get();
-		if (generic != null)
-			discardWithException(new ExistsException("An equivalent instance already exists : " + generic.info()));
-		return genericBuilder.add();
-	}
-
-	@Override
 	public void forceRemove(T generic) {
-		new GenericHandler<>(builder, generic).forceRemove();
+		getBuilder().rebuildAll(null, null, builder.getContext().computeDependencies(generic));
 	}
 
 	@Override
 	public void remove(T generic) {
-		new GenericHandler<>(builder, generic).remove();
+		builder.rebuildAll(null, null, builder.getContext().computeRemoveDependencies(generic));
 	}
 
 	@Override
 	public void conserveRemove(T generic) {
-		new GenericHandler<>(builder, generic).conserveRemove();
+		builder.rebuildAll(generic, () -> generic, builder.getContext().computeDependencies(generic));
 	}
 
 	protected T plug(T generic) {
@@ -126,58 +126,38 @@ public abstract class Context<T extends AbstractVertex<T>> implements DefaultCon
 		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
 	}
 
-	@Override
-	public T getInstance(T meta, List<T> overrides, Serializable value, @SuppressWarnings("unchecked") T... components) {
-		List<T> componentsList = Arrays.asList(components);
-		T adjustMeta = meta.adjustMeta(value, componentsList);
-		if (adjustMeta.getComponents().size() < components.length)
-			return null;
-		return adjustMeta.getDirectInstance(overrides, value, componentsList);
+	private class AbstractIteratorSnapshot implements IteratorSnapshot<T> {
+
+		private Supplier<Dependencies<T>> dependenciesSupplier;
+
+		private AbstractIteratorSnapshot(Supplier<Dependencies<T>> dependenciesSupplier) {
+			this.dependenciesSupplier = dependenciesSupplier;
+		}
+
+		@Override
+		public Iterator<T> iterator() {
+			return dependenciesSupplier.get().iterator(getTs());
+		}
+
+		@Override
+		public T get(Object o) {
+			return dependenciesSupplier.get().get(o, getTs());
+		}
 	}
 
 	@Override
 	public Snapshot<T> getInstances(T vertex) {
-		return new IteratorSnapshot<T>() {
-			@Override
-			public Iterator<T> iterator() {
-				return vertex.getInstancesDependencies().iterator(getTs());
-			}
-
-			@Override
-			public T get(Object o) {
-				return vertex.getInstancesDependencies().get(o, getTs());
-			}
-		};
+		return new AbstractIteratorSnapshot(() -> vertex.getInstancesDependencies());
 	}
 
 	@Override
 	public Snapshot<T> getInheritings(T vertex) {
-		return new IteratorSnapshot<T>() {
-			@Override
-			public Iterator<T> iterator() {
-				return vertex.getInheritingsDependencies().iterator(getTs());
-			}
-
-			@Override
-			public T get(Object o) {
-				return vertex.getInheritingsDependencies().get(o, getTs());
-			}
-		};
+		return new AbstractIteratorSnapshot(() -> vertex.getInheritingsDependencies());
 	}
 
 	@Override
 	public Snapshot<T> getComposites(T vertex) {
-		return new IteratorSnapshot<T>() {
-			@Override
-			public Iterator<T> iterator() {
-				return vertex.getCompositesDependencies().iterator(getTs());
-			}
-
-			@Override
-			public T get(Object o) {
-				return vertex.getCompositesDependencies().get(o, getTs());
-			}
-		};
+		return new AbstractIteratorSnapshot(() -> vertex.getCompositesDependencies());
 	}
 
 	protected void triggersMutation(T oldDependency, T newDependency) {
