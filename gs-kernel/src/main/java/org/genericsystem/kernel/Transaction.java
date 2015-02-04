@@ -1,5 +1,9 @@
 package org.genericsystem.kernel;
 
+import java.util.Iterator;
+import java.util.function.Supplier;
+import org.genericsystem.api.core.IteratorSnapshot;
+import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.defaults.DefaultRoot;
 
 public class Transaction<T extends AbstractVertex<T>> extends Context<T> {
@@ -22,8 +26,60 @@ public class Transaction<T extends AbstractVertex<T>> extends Context<T> {
 
 	public void apply(Iterable<T> removes, Iterable<T> adds) {
 		for (T generic : removes)
-			unplug(generic);
+			unplug(kill(generic));
 		for (T generic : adds)
-			plug(generic);
+			begin(plug(generic));
+	}
+
+	@Override
+	protected T plug(T generic) {
+		if (!generic.isMeta())
+			generic.getMeta().getInstancesDependencies().add(generic);
+		generic.getSupers().forEach(superGeneric -> superGeneric.getInheritingsDependencies().add(generic));
+		generic.getComponents().stream().filter(component -> component != null).distinct().forEach(component -> component.getCompositesDependencies().add(generic));
+		return generic;
+	}
+
+	@Override
+	protected void internalUnplug(T generic) {
+		getChecker().checkAfterBuild(false, false, generic);
+		if (!generic.isMeta())
+			generic.getMeta().getInstancesDependencies().add(generic);
+		generic.getSupers().forEach(superGeneric -> superGeneric.getInheritingsDependencies().remove(generic));
+		generic.getComponents().stream().filter(component -> component != null).forEach(component -> component.getCompositesDependencies().remove(generic));
+	}
+
+	private class AbstractIteratorSnapshot implements IteratorSnapshot<T> {
+
+		private Supplier<Dependencies<T>> dependenciesSupplier;
+
+		private AbstractIteratorSnapshot(Supplier<Dependencies<T>> dependenciesSupplier) {
+			this.dependenciesSupplier = dependenciesSupplier;
+		}
+
+		@Override
+		public Iterator<T> iterator() {
+			return dependenciesSupplier.get().iterator(getTs());
+		}
+
+		@Override
+		public T get(Object o) {
+			return dependenciesSupplier.get().get(o, getTs());
+		}
+	}
+
+	@Override
+	public Snapshot<T> getInstances(T vertex) {
+		return new AbstractIteratorSnapshot(() -> vertex.getInstancesDependencies());
+	}
+
+	@Override
+	public Snapshot<T> getInheritings(T vertex) {
+		return new AbstractIteratorSnapshot(() -> vertex.getInheritingsDependencies());
+	}
+
+	@Override
+	public Snapshot<T> getComposites(T vertex) {
+		return new AbstractIteratorSnapshot(() -> vertex.getCompositesDependencies());
 	}
 }
