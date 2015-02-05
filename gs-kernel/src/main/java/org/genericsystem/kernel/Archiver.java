@@ -305,8 +305,9 @@ public class Archiver<T extends AbstractVertex<T>> {
 			T instance = meta == null ? transaction.getMeta(components.size()) : meta.getDirectInstance(value, components);
 			if (instance != null)
 				return instance;
-			if (otherTs[0] == 0L)
-				otherTs[0] = getTransaction().getTs();
+
+			if (otherTs[0] == Statics.TS_SYSTEM)
+				otherTs[0] = Statics.TS_OLD_SYSTEM;
 			return transaction.plug(transaction.getBuilder().build(clazz, meta, supers, value, components, otherTs));
 		}
 

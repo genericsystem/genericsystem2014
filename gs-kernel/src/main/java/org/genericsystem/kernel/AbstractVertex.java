@@ -48,7 +48,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 
 	@Override
 	public boolean isSystem() {
-		return getLifeManager().getBirthTs() == 0L;
+		return getLifeManager().getBirthTs() == Statics.TS_SYSTEM;
 	}
 
 	@Override

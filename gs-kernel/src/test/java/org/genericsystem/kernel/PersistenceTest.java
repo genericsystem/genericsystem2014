@@ -32,15 +32,26 @@ public class PersistenceTest extends AbstractTest {
 
 	public void testTypeAnnoted() {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
-		Root root = new Root(Statics.ENGINE_VALUE, snapshot, Vehicle.class);
-		Vertex vehicle = root.find(Vehicle.class);
-		assert vehicle.isSystem();
-		root.close();
-		new Root(Statics.ENGINE_VALUE, snapshot).close();
 		Root engine = new Root(Statics.ENGINE_VALUE, snapshot, Vehicle.class);
-		Vertex vehicle2 = engine.find(Vehicle.class);
-		assert vehicle2.isSystem();
-		compareGraph(root, engine);
+		Vertex vehicle = engine.find(Vehicle.class);
+		vehicle.addInstance("myVehicle");
+		assert vehicle.getLifeManager().getBirthTs() == Statics.TS_SYSTEM;
+		assert vehicle.getInstance("myVehicle").getLifeManager().getBirthTs() > vehicle.getLifeManager().getBirthTs();
+		assert vehicle.isSystem();
+		engine.close();
+
+		Root engine2 = new Root(Statics.ENGINE_VALUE, snapshot);
+		Vertex vehicle2 = engine2.getInstance(Vehicle.class);
+		assert vehicle2.getInstance("myVehicle").getLifeManager().getBirthTs() > vehicle2.getLifeManager().getBirthTs();
+		assert !vehicle2.isSystem();
+		engine2.close();
+
+		Root engine3 = new Root(Statics.ENGINE_VALUE, snapshot, Vehicle.class);
+		Vertex vehicle3 = engine3.find(Vehicle.class);
+		assert vehicle3.getLifeManager().getBirthTs() == Statics.TS_SYSTEM;
+		assert vehicle3.getInstance("myVehicle").getLifeManager().getBirthTs() > vehicle3.getLifeManager().getBirthTs();
+		assert vehicle3.isSystem();
+		engine3.close();
 	}
 
 	@SystemGeneric
