@@ -1,5 +1,8 @@
 package org.genericsystem.cache;
 
+import java.io.Serializable;
+import java.util.List;
+
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.Builder;
 import org.genericsystem.kernel.Checker;
@@ -37,6 +40,11 @@ public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem
 			@SuppressWarnings("unchecked")
 			protected Class<T> getTClass() {
 				return (Class<T>) Generic.class;
+			}
+
+			@Override
+			public T build(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
+				return newT(clazz, meta).init(getContext().getRoot().pickNewTs(), meta, supers, value, components, otherTs);
 			}
 		};
 	}

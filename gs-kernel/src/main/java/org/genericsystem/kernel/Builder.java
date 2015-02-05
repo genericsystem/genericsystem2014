@@ -15,7 +15,7 @@ import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.api.exception.UnreachableOverridesException;
 import org.genericsystem.kernel.annotations.InstanceClass;
 
-public class Builder<T extends DefaultVertex<T>> {
+public abstract class Builder<T extends DefaultVertex<T>> {
 
 	private final Context<T> context;
 
@@ -97,9 +97,7 @@ public class Builder<T extends DefaultVertex<T>> {
 		return context.plug(build(clazz, meta, supers, value, components, context.getRoot().isInitialized() ? Statics.USER_TS : Statics.SYSTEM_TS));
 	}
 
-	T build(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
-		return newT(clazz, meta).init(getContext().getRoot().pickNewTs(), meta, supers, value, components, otherTs);
-	}
+	public abstract T build(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs);
 
 	T rebuildAll(T toRebuild, Supplier<T> rebuilder, NavigableSet<T> dependenciesToRebuild) {
 		dependenciesToRebuild.descendingSet().forEach(getContext()::unplug);

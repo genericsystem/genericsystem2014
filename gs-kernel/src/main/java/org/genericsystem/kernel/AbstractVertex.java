@@ -16,7 +16,6 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	private List<T> supers;
 	private LifeManager lifeManager;
 
-	@Override
 	@SuppressWarnings("unchecked")
 	public T init(long ts, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
 		this.ts = ts;

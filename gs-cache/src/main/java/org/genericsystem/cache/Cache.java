@@ -1,6 +1,8 @@
 package org.genericsystem.cache;
 
+import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.genericsystem.api.core.Snapshot;
@@ -159,6 +161,11 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 			@SuppressWarnings("unchecked")
 			protected Class<T> getTClass() {
 				return (Class<T>) Generic.class;
+			}
+
+			@Override
+			public T build(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
+				return newT(clazz, meta).init(getContext().getRoot().pickNewTs(), meta, supers, value, components, otherTs);
 			}
 		};
 	}

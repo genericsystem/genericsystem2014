@@ -26,9 +26,7 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 		return new Checker<>(this);
 	}
 
-	protected Builder<T> buildBuilder() {
-		return new Builder<>(this);
-	}
+	protected abstract Builder<T> buildBuilder();
 
 	protected Checker<T> getChecker() {
 		return checker;

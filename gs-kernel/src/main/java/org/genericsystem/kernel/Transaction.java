@@ -1,6 +1,8 @@
 package org.genericsystem.kernel;
 
+import java.io.Serializable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.function.Supplier;
 
 import org.genericsystem.api.core.IteratorSnapshot;
@@ -19,6 +21,17 @@ public class Transaction<T extends AbstractVertex<T>> extends Context<T> {
 
 	protected Transaction(DefaultRoot<T> root) {
 		this(root, root.pickNewTs());
+	}
+
+	@Override
+	protected Builder<T> buildBuilder() {
+		return new Builder<T>(this) {
+
+			@Override
+			public T build(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
+				return newT(clazz, meta).init(getContext().getRoot().pickNewTs(), meta, supers, value, components, otherTs);
+			}
+		};
 	}
 
 	@Override
