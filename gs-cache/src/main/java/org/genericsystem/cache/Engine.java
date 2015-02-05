@@ -23,6 +23,8 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	private final GarbageCollector<Generic> garbageCollector = new GarbageCollector<>(this);
 	private final Archiver<Generic> archiver;
 
+	private boolean initialized = false;
+
 	public Engine(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
 	}
@@ -39,6 +41,7 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 		cache.flush();
 		archiver = new Archiver<Generic>(this, persistentDirectoryPath);
 		cache.pickNewTs();
+		initialized = true;
 	}
 
 	public Cache<Generic> newCache(ContextEventListener<Generic> listener) {
@@ -62,7 +65,7 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 
 	@Override
 	public boolean isInitialized() {
-		return systemCache.isInitialized();
+		return initialized;
 	}
 
 	@Override

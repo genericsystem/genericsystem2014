@@ -17,6 +17,8 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 	private final SystemCache<Vertex> systemCache;
 	private final Archiver<Vertex> archiver;
 
+	private boolean initialized = false;
+
 	public Root(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
 	}
@@ -31,6 +33,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 		systemCache = new SystemCache<>(this, getClass());
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
 		archiver = new Archiver<>(this, persistentDirectoryPath);
+		initialized = true;
 	}
 
 	@Override
@@ -40,7 +43,7 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 
 	@Override
 	public boolean isInitialized() {
-		return systemCache.isInitialized();
+		return initialized;
 	}
 
 	@Override

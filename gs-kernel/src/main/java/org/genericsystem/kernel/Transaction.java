@@ -71,17 +71,6 @@ public class Transaction<T extends AbstractVertex<T>> extends Context<T> {
 	protected T plug(T generic) {
 		if (getRoot().isInitialized())
 			generic.getLifeManager().beginLife(getTs());
-		return internalPlug(generic);
-	}
-
-	@Override
-	protected void unplug(T generic) {
-		getChecker().checkAfterBuild(false, false, generic);
-		generic.getLifeManager().kill(getTs());
-		internalUnplug(generic);
-	}
-
-	T internalPlug(T generic) {
 		if (!generic.isMeta())
 			generic.getMeta().getInstancesDependencies().add(generic);
 		generic.getSupers().forEach(superGeneric -> superGeneric.getInheritingsDependencies().add(generic));
@@ -90,7 +79,10 @@ public class Transaction<T extends AbstractVertex<T>> extends Context<T> {
 		return generic;
 	}
 
-	void internalUnplug(T generic) {
+	@Override
+	protected void unplug(T generic) {
+		getChecker().checkAfterBuild(false, false, generic);
+		generic.getLifeManager().kill(getTs());
 		boolean result = generic != generic.getMeta() ? generic.getMeta().getInstancesDependencies().remove(generic) : true;
 		if (!result)
 			discardWithException(new NotFoundException(generic.info()));

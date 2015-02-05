@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
 
+import org.genericsystem.kernel.annotations.SystemGeneric;
 import org.testng.annotations.Test;
 
 @Test
@@ -27,6 +28,24 @@ public class PersistenceTest extends AbstractTest {
 		Root engine = new Root(Statics.ENGINE_VALUE, snapshot);
 		compareGraph(root, engine);
 		assert null != engine.getInstance("Vehicle");
+	}
+
+	public void testTypeAnnoted() {
+		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
+		Root root = new Root(Statics.ENGINE_VALUE, snapshot, Vehicle.class);
+		Vertex vehicle = root.find(Vehicle.class);
+		assert vehicle.isSystem();
+		root.close();
+		new Root(Statics.ENGINE_VALUE, snapshot).close();
+		Root engine = new Root(Statics.ENGINE_VALUE, snapshot, Vehicle.class);
+		Vertex vehicle2 = engine.find(Vehicle.class);
+		assert vehicle2.isSystem();
+		compareGraph(root, engine);
+	}
+
+	@SystemGeneric
+	public static class Vehicle {
+
 	}
 
 	public void testHolder() {

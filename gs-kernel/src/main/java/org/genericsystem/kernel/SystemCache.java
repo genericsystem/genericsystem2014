@@ -35,8 +35,6 @@ public class SystemCache<T extends AbstractVertex<T>> {
 
 	private final Map<T, Class<?>> reverseSystemCache = new IdentityHashMap<>();
 
-	private boolean initialized = false;
-
 	protected final DefaultRoot<T> root;
 
 	@SuppressWarnings("unchecked")
@@ -45,21 +43,16 @@ public class SystemCache<T extends AbstractVertex<T>> {
 		put(rootClass, (T) root);
 	}
 
-	public boolean isInitialized() {
-		return initialized;
-	}
-
 	public void mount(List<Class<?>> systemClasses, Class<?>... userClasses) {
 		for (Class<?> clazz : systemClasses)
 			set(clazz);
 		for (Class<?> clazz : userClasses)
 			set(clazz);
-		initialized = true;
 	}
 
 	@SuppressWarnings("unchecked")
 	private T set(Class<?> clazz) {
-		if (initialized)
+		if (root.isInitialized())
 			throw new IllegalStateException("Class : " + clazz + " has not been built at startup");
 		T systemProperty = systemCache.get(clazz);
 		if (systemProperty != null) {

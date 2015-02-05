@@ -307,7 +307,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 				return instance;
 			if (otherTs[0] == 0L)
 				otherTs[0] = getTransaction().getTs();
-			return transaction.internalPlug(transaction.getBuilder().build(clazz, meta, supers, value, components, otherTs));
+			return transaction.plug(transaction.getBuilder().build(clazz, meta, supers, value, components, otherTs));
 		}
 
 		protected List<T> loadAncestors(long ts, Map<Long, T> vertexMap) throws IOException {
