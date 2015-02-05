@@ -15,7 +15,7 @@ import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.api.exception.UnreachableOverridesException;
 import org.genericsystem.kernel.annotations.InstanceClass;
 
-public class Builder<T extends AbstractVertex<T>> {
+public class Builder<T extends DefaultVertex<T>> {
 
 	private final Context<T> context;
 

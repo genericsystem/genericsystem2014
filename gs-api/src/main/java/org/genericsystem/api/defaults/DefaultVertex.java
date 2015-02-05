@@ -12,6 +12,9 @@ import org.genericsystem.api.exception.AmbiguousSelectionException;
 
 public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncestors<T>, DefaultDependencies<T>, DefaultDisplay<T>, DefaultSystemProperties<T>, DefaultCompositesInheritance<T>, DefaultWritable<T>, DefaultTree<T> {
 
+	@SuppressWarnings("unchecked")
+	T init(long ts, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs);
+
 	@Override
 	default DefaultContext<T> getCurrentCache() {
 		return (DefaultContext<T>) getRoot().getCurrentCache();
