@@ -35,7 +35,7 @@ public class Transaction<T extends AbstractVertex<T>> extends Context<T> {
 
 	private class AbstractIteratorSnapshot implements IteratorSnapshot<T> {
 
-		private Supplier<Dependencies<T>> dependenciesSupplier;
+		private final Supplier<Dependencies<T>> dependenciesSupplier;
 
 		private AbstractIteratorSnapshot(Supplier<Dependencies<T>> dependenciesSupplier) {
 			this.dependenciesSupplier = dependenciesSupplier;
@@ -67,30 +67,6 @@ public class Transaction<T extends AbstractVertex<T>> extends Context<T> {
 		return new AbstractIteratorSnapshot(() -> vertex.getCompositesDependencies());
 	}
 
-	private void indexInstance(T generic, T instance) {
-		generic.getInstancesDependencies().add(instance);
-	}
-
-	private void indexInheriting(T generic, T inheriting) {
-		generic.getInheritingsDependencies().add(inheriting);
-	}
-
-	private void indexComposite(T generic, T composite) {
-		generic.getCompositesDependencies().add(composite);
-	}
-
-	private boolean unIndexInstance(T generic, T instance) {
-		return generic.getInstancesDependencies().remove(instance);
-	}
-
-	private boolean unIndexInheriting(T generic, T inheriting) {
-		return generic.getInheritingsDependencies().remove(inheriting);
-	}
-
-	private boolean unIndexComposite(T generic, T composite) {
-		return generic.getCompositesDependencies().remove(composite);
-	}
-
 	@Override
 	protected T plug(T generic) {
 		if (getRoot().isInitialized())
@@ -102,24 +78,24 @@ public class Transaction<T extends AbstractVertex<T>> extends Context<T> {
 	protected void unplug(T generic) {
 		getChecker().checkAfterBuild(false, false, generic);
 		generic.getLifeManager().kill(getTs());
-		// internalUnplug(generic);
+		internalUnplug(generic);
 	}
 
 	T internalPlug(T generic) {
 		if (!generic.isMeta())
-			indexInstance(generic.getMeta(), generic);
-		generic.getSupers().forEach(superGeneric -> indexInheriting(superGeneric, generic));
-		generic.getComponents().stream().filter(component -> component != null).distinct().forEach(component -> indexComposite(component, generic));
+			generic.getMeta().getInstancesDependencies().add(generic);
+		generic.getSupers().forEach(superGeneric -> superGeneric.getInheritingsDependencies().add(generic));
+		generic.getComponents().stream().filter(component -> component != null).distinct().forEach(component -> component.getCompositesDependencies().add(generic));
 		getChecker().checkAfterBuild(true, false, generic);
 		return generic;
 	}
 
 	void internalUnplug(T generic) {
-		boolean result = generic != generic.getMeta() ? unIndexInstance(generic.getMeta(), generic) : true;
+		boolean result = generic != generic.getMeta() ? generic.getMeta().getInstancesDependencies().remove(generic) : true;
 		if (!result)
 			discardWithException(new NotFoundException(generic.info()));
-		generic.getSupers().forEach(superGeneric -> unIndexInheriting(superGeneric, generic));
-		generic.getComponents().stream().filter(component -> component != null).forEach(component -> unIndexComposite(component, generic));
+		generic.getSupers().forEach(superGeneric -> superGeneric.getInheritingsDependencies().remove(generic));
+		generic.getComponents().stream().filter(component -> component != null).forEach(component -> component.getCompositesDependencies().remove(generic));
 	}
 
 }
