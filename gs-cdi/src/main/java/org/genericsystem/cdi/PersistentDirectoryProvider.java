@@ -8,7 +8,7 @@ import org.genericsystem.kernel.Statics;
  * Persistence is not activated by default. If you want to persist, you have to set a specialized mock persistentDirectoryProvider in your project :
  * 
  * @Specializes <pre>
- * public class MockPersitentDirectoryProvider extends PersitentDirectoryProvider {
+ * public class MockPersistentDirectoryProvider extends PersistentDirectoryProvider {
  * 	public String getEngineValue() {
  * 		return Statics.ENGINE_VALUE;
  * 	}
