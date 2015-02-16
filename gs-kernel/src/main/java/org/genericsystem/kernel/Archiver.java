@@ -302,7 +302,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 		}
 
 		protected T getOrBuild(long ts, Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
-			T instance = meta == null ? transaction.getMeta(components.size()) : meta.getDirectInstance(value, components);
+			T instance = meta == null ? transaction.getMeta(components.size()) : meta.getDirectInstance(supers, value, components);
 			if (instance != null)
 				return instance;
 

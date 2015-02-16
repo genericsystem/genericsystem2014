@@ -82,6 +82,10 @@ public class GenericHandler<T extends DefaultVertex<T>> {
 	public T update(T update) {
 		assert update != null;
 		assert supers != null;
+		// assert !supers.contains(update);
+		System.out.println("SSSSSSSSS" + overrides);
+		System.out.println("UUUUUUUU" + supers);
+		System.out.println("TTTTTTTTT" + builder.getContext().computeDependencies(update));
 		return builder.rebuildAll(update, () -> builder.getOrBuild(clazz, adjustedMeta, supers, value, components), builder.getContext().computeDependencies(update));
 	}
 

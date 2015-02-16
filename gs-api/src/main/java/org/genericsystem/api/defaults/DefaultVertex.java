@@ -2,6 +2,7 @@ package org.genericsystem.api.defaults;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -54,11 +55,15 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 	}
 
 	default boolean inheritsFrom(T superMeta, Serializable superValue, List<T> superComponents) {
-		return isSuperOf(getMeta(), getValue(), getComponents(), superMeta, superValue, superComponents);
+		return inheritsFrom(superMeta, Collections.<T> emptyList(), superValue, superComponents);
+	}
+
+	default boolean inheritsFrom(T superMeta, List<T> overrides, Serializable superValue, List<T> superComponents) {
+		return isSuperOf(getMeta(), getValue(), getComponents(), superMeta, superValue, superComponents) && areOverridesReached(getSupers(), overrides);
 	}
 
 	default boolean isDependencyOf(T meta, List<T> supers, Serializable value, List<T> components) {
-		return inheritsFrom(meta, value, components) || getComponents().stream().filter(component -> component != null).anyMatch(component -> component.isDependencyOf(meta, supers, value, components))
+		return inheritsFrom(meta, supers, value, components) || getComponents().stream().filter(component -> component != null).anyMatch(component -> component.isDependencyOf(meta, supers, value, components))
 				|| (!isMeta() && getMeta().isDependencyOf(meta, supers, value, components))
 				|| (!components.equals(getComponents()) && componentsDepends(getComponents(), components) && supers.stream().anyMatch(override -> override.inheritsFrom(getMeta())));
 	}
@@ -122,18 +127,25 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 	}
 
 	@SuppressWarnings("unchecked")
-	default T getDirectInstance(Serializable value, List<T> components) {
+	default T getDirectInstance(List<T> overrides, Serializable value, List<T> components) {
 		if (isMeta() && equalsRegardlessSupers(this, value, components))
 			return (T) this;
-		for (T instance : getInstances())
-			if (instance.equalsRegardlessSupers(this, value, components))
+		for (T instance : getInstances()) {
+			System.out.println("YYYYYYYYYYYY" + instance.info());
+			if (instance.equalsRegardlessSupers(this, value, components) && areOverridesEquals(instance.getSupers(), overrides))
 				return instance;
+		}
 		return null;
 	}
 
-	default T getDirectInstance(List<T> overrides, Serializable value, List<T> components) {
-		T result = getDirectInstance(value, components);
-		return result != null && areOverridesReached(result.getSupers(), overrides) ? result : null;
+	// default T getDirectInstance(List<T> overrides, Serializable value, List<T> components) {
+	// T result = getDirectInstance(value, components);
+	// System.out.println("ZZZZZZZZZ" + result.info());
+	// return result != null && areOverridesEquals(result.getSupers(), overrides) ? result : null;
+	// }
+
+	public static <T extends IVertex<T>> boolean areOverridesEquals(List<T> supers, List<T> overrides) {
+		return overrides.stream().allMatch(override -> supers.stream().anyMatch(superVertex -> superVertex.inheritsFrom(override)) && supers.stream().allMatch(superV -> overrides.stream().anyMatch(override2 -> superV.inheritsFrom(override2))));
 	}
 
 	@SuppressWarnings("unchecked")

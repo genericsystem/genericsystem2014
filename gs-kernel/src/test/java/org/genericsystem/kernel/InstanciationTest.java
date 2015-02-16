@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import org.genericsystem.api.exception.CollisionException;
 import org.genericsystem.api.exception.ExistsException;
 import org.testng.annotations.Test;
 
@@ -115,7 +114,11 @@ public class InstanciationTest extends AbstractTest {
 	public void test007_addInstance_selfInheriting() {
 		Root root = new Root();
 		Vertex vehicle = root.addInstance("Vehicle");
-		catchAndCheckCause(() -> root.addInstance(vehicle, "Vehicle"), CollisionException.class);
+		Vertex vehicle2 = root.addInstance(vehicle, "Vehicle");
+		assert vehicle.isAlive();
+		assert root.getInstance("Vehicle").equals(vehicle);
+		assert root.getInstance(vehicle, "Vehicle").equals(vehicle2);
+		// catchAndCheckCause(() -> root.addInstance(vehicle, "Vehicle"), CollisionException.class);
 	}
 
 	public void test008_addInstance_multipleOverrides() {

@@ -89,8 +89,10 @@ public abstract class Builder<T extends DefaultVertex<T>> {
 	}
 
 	protected T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
-		T instance = meta == null ? getContext().getMeta(components.size()) : meta.getDirectInstance(value, components);
-		return instance == null ? buildAndPlug(clazz, meta, supers, value, components) : instance;
+		T instance = meta == null ? getContext().getMeta(components.size()) : meta.getDirectInstance(supers, value, components);
+		T result = instance == null ? buildAndPlug(clazz, meta, supers, value, components) : instance;
+		assert !result.info().equals("(Engine)[Power]Power[Vehicle] ");
+		return result;
 	}
 
 	T buildAndPlug(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
@@ -131,8 +133,15 @@ public abstract class Builder<T extends DefaultVertex<T>> {
 					List<T> components = reasignComponents(oldDependency);
 					T adjustedMeta = reasignMeta(components, convert(oldDependency.getMeta())).adjustMeta(oldDependency.getValue(), components);
 					List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, oldDependency.getValue(), components);
-					// TODO KK designTs
-					newDependency = getOrBuild(oldDependency.getClass(), adjustedMeta, supers, oldDependency.getValue(), components);
+
+					if (supers.size() == 1 && supers.get(0).equalsRegardlessSupers(adjustedMeta, oldDependency.getValue(), components)) {
+						if (DefaultVertex.areOverridesReached(supers.get(0).getSupers(), overrides)) {
+							newDependency = supers.get(0);
+							supers = supers.get(0).getSupers();
+						} else
+							newDependency = getOrBuild(oldDependency.getClass(), adjustedMeta, supers, oldDependency.getValue(), components);
+					} else
+						newDependency = getOrBuild(oldDependency.getClass(), adjustedMeta, supers, oldDependency.getValue(), components);
 				}
 				put(oldDependency, newDependency);// triggers mutation
 			}
