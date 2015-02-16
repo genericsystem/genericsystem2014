@@ -130,11 +130,9 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 	default T getDirectInstance(List<T> overrides, Serializable value, List<T> components) {
 		if (isMeta() && equalsRegardlessSupers(this, value, components))
 			return (T) this;
-		for (T instance : getInstances()) {
-			System.out.println("YYYYYYYYYYYY" + instance.info());
+		for (T instance : getInstances())
 			if (instance.equalsRegardlessSupers(this, value, components) && areOverridesEquals(instance.getSupers(), overrides))
 				return instance;
-		}
 		return null;
 	}
 

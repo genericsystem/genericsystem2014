@@ -50,12 +50,13 @@ public class GenericHandler<T extends DefaultVertex<T>> {
 	public void reComputeSupers() {
 		assert supers == null;
 		supers = builder.computeAndCheckOverridesAreReached(adjustedMeta, overrides, value, components);
-		if (supers.size() == 1 && supers.get(0).equalsRegardlessSupers(adjustedMeta, value, components)) {
-			if (DefaultVertex.areOverridesReached(supers.get(0).getSupers(), overrides)) {
-				gettable = supers.get(0);
-				supers = supers.get(0).getSupers();
-			}
-		}
+		// if (supers.size() == 1 && supers.get(0).equalsRegardlessSupers(adjustedMeta, value, components)) {
+		// if (DefaultVertex.areOverridesReached(supers.get(0).getSupers(), overrides)) {
+		// gettable = supers.get(0);
+		// supers = supers.get(0).getSupers();
+		// }
+		// }
+		gettable = adjustedMeta.getDirectInstance(supers, value, components);
 	}
 
 	public T get() {
@@ -83,9 +84,6 @@ public class GenericHandler<T extends DefaultVertex<T>> {
 		assert update != null;
 		assert supers != null;
 		// assert !supers.contains(update);
-		System.out.println("SSSSSSSSS" + overrides);
-		System.out.println("UUUUUUUU" + supers);
-		System.out.println("TTTTTTTTT" + builder.getContext().computeDependencies(update));
 		return builder.rebuildAll(update, () -> builder.getOrBuild(clazz, adjustedMeta, supers, value, components), builder.getContext().computeDependencies(update));
 	}
 

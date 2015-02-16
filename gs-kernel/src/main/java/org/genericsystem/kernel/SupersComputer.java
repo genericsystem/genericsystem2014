@@ -73,8 +73,13 @@ public class SupersComputer<T extends DefaultVertex<T>> extends LinkedHashSet<T>
 		boolean[] selectableSelected = new boolean[] { selectable, true };
 		result = alreadyComputed.put(candidate, selectableSelected);
 		assert result == null : candidate.info();
-		if (selectableSelected[0] && (candidate.getLevel() == reachLevel))
-			add(candidate);
+		if (selectableSelected[0] && (candidate.getLevel() == reachLevel)) {
+			if (!candidate.equals(meta, overrides, value, components))
+				// if (!candidate.inheritsFrom(meta, overrides, value, components))
+				add(candidate);
+			else
+				selectableSelected[1] = false;
+		}
 		return selectableSelected;
 	}
 }
