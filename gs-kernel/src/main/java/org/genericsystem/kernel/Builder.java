@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.NavigableSet;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
+import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.api.exception.UnreachableOverridesException;
 import org.genericsystem.kernel.annotations.InstanceClass;
@@ -166,7 +168,7 @@ public abstract class Builder<T extends DefaultVertex<T>> {
 
 	List<T> computeAndCheckOverridesAreReached(T adjustedMeta, List<T> overrides, Serializable value, List<T> components) {
 		List<T> supers = new ArrayList<>(new SupersComputer<>(adjustedMeta, overrides, value, components));
-		if (!DefaultVertex.areOverridesReached(supers, overrides))
+		if (!ApiStatics.areOverridesReached(supers, overrides))
 			getContext().discardWithException(new UnreachableOverridesException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
 		return supers;
 	}
