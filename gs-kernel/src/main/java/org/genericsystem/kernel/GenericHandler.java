@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.List;
+
 import org.genericsystem.api.defaults.DefaultVertex;
 
 public class GenericHandler<T extends DefaultVertex<T>> {
