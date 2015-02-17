@@ -130,9 +130,10 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 	default T getDirectInstance(List<T> overrides, Serializable value, List<T> components) {
 		if (isMeta() && equalsRegardlessSupers(this, value, components))
 			return (T) this;
-		for (T instance : getInstances())
+		for (T instance : getInstances()) {
 			if (instance.equalsRegardlessSupers(this, value, components) && areOverridesEquals(instance.getSupers(), overrides))
 				return instance;
+		}
 		return null;
 	}
 
@@ -143,7 +144,8 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 	// }
 
 	public static <T extends IVertex<T>> boolean areOverridesEquals(List<T> supers, List<T> overrides) {
-		return overrides.stream().allMatch(override -> supers.stream().anyMatch(superVertex -> superVertex.inheritsFrom(override)) && supers.stream().allMatch(superV -> overrides.stream().anyMatch(override2 -> superV.inheritsFrom(override2))));
+		return overrides.stream().allMatch(override -> supers.stream().anyMatch(superVertex -> superVertex.inheritsFrom(override)))
+				&& supers.stream().allMatch(superV -> !overrides.isEmpty() && overrides.stream().anyMatch(override2 -> override2.inheritsFrom(superV)));
 	}
 
 	@SuppressWarnings("unchecked")
