@@ -38,6 +38,7 @@ public interface DefaultContext<T extends DefaultVertex<T>> extends IContext<T> 
 		T adjustMeta = meta.adjustMeta(value, componentsList);
 		if (adjustMeta.getComponents().size() < components.length)
 			return null;
+		System.out.println("meta : " + meta.info() + " ajustMeta : " + adjustMeta.info());
 		return adjustMeta.getDirectInstance(overrides, value, componentsList);
 	}
 

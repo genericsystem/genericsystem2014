@@ -56,11 +56,12 @@ public class GenericHandler<T extends DefaultVertex<T>> {
 		// supers = supers.get(0).getSupers();
 		// }
 		// }
-		gettable = adjustedMeta.getDirectInstance(supers, value, components);
 	}
 
 	public T get() {
 		assert supers != null;
+		if (gettable == null)
+			gettable = adjustedMeta.getDirectInstance(supers, value, components);
 		return gettable;
 	}
 

@@ -131,21 +131,15 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 		if (isMeta() && equalsRegardlessSupers(this, value, components))
 			return (T) this;
 		for (T instance : getInstances()) {
-			if (instance.equalsRegardlessSupers(this, value, components) && areOverridesEquals(instance.getSupers(), overrides))
+			if (instance.equalsRegardlessSupers(this, value, components)
+					&& (areOverridesEquals(instance.getSupers(), overrides) || (areOverridesReached(instance.getSupers(), overrides) && !instance.getSupers().stream().anyMatch(superG -> superG.getComponents().equals(components)))))
 				return instance;
 		}
 		return null;
 	}
 
-	// default T getDirectInstance(List<T> overrides, Serializable value, List<T> components) {
-	// T result = getDirectInstance(value, components);
-	// System.out.println("ZZZZZZZZZ" + result.info());
-	// return result != null && areOverridesEquals(result.getSupers(), overrides) ? result : null;
-	// }
-
 	public static <T extends IVertex<T>> boolean areOverridesEquals(List<T> supers, List<T> overrides) {
-		return overrides.stream().allMatch(override -> supers.stream().anyMatch(superVertex -> superVertex.inheritsFrom(override)))
-				&& supers.stream().allMatch(superV -> !overrides.isEmpty() && overrides.stream().anyMatch(override2 -> override2.inheritsFrom(superV)));
+		return overrides.stream().allMatch(override -> supers.stream().anyMatch(superVertex -> superVertex.inheritsFrom(override))) && supers.stream().allMatch(superV -> overrides.stream().anyMatch(override2 -> override2.inheritsFrom(superV)));
 	}
 
 	@SuppressWarnings("unchecked")
