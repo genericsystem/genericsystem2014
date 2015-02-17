@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.testng.annotations.Test;
 
@@ -111,7 +110,7 @@ public class VertexTest extends AbstractTest {
 		assert !power.inheritsFrom(engine);
 		assert !v233.inheritsFrom(power);
 		assert v233.isInstanceOf(power);
-		assert engine.getInstance("Car") != null;
+		assert engine.getInstance(vehicle, "Car") != null;
 		assert power.getInstance(233, myBmw) != null;
 		Vertex carRed = vehicleColor.addInstance("CarRed", car, red);
 		Vertex carGreen = vehicleColor.addInstance("CarGreen", car, green);

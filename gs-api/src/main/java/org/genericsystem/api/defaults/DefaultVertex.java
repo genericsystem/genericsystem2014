@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.IVertex;
@@ -133,14 +132,11 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 		for (T instance : getInstances())
 			if (instance.equalsRegardlessSupers(this, value, components))
 				if (areOverridesReached(instance.getSupers(), overrides))
-					if (!instance.getSupers().stream().anyMatch(superG -> superG.getComponents().equals(components)) || instance.getSupers().stream().allMatch(superV -> overrides.stream().anyMatch(override2 -> override2.inheritsFrom(superV))))
+					if (!instance.getSupers().stream().anyMatch(superG -> superG.getComponents().equals(components) && this.equals(superG.getMeta()))
+							|| instance.getSupers().stream().allMatch(superV -> overrides.stream().anyMatch(override2 -> override2.inheritsFrom(superV))))
 						return instance;
 		return null;
 	}
-
-	// public static <T extends IVertex<T>> boolean areOverridesEquals(List<T> supers, List<T> overrides) {
-	// return overrides.stream().allMatch(override -> supers.stream().anyMatch(superVertex -> superVertex.inheritsFrom(override))) && supers.stream().allMatch(superV -> overrides.stream().anyMatch(override2 -> override2.inheritsFrom(superV)));
-	// }
 
 	@SuppressWarnings("unchecked")
 	default T getDirectEquivInstance(Serializable value, List<T> components) {
