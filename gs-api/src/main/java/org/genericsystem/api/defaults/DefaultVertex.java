@@ -2,12 +2,12 @@ package org.genericsystem.api.defaults;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.ISignature;
-import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
 
 public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncestors<T>, DefaultDependencies<T>, DefaultDisplay<T>, DefaultSystemProperties<T>, DefaultCompositesInheritance<T>, DefaultWritable<T>, DefaultTree<T> {
@@ -54,11 +54,15 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 	}
 
 	default boolean inheritsFrom(T superMeta, Serializable superValue, List<T> superComponents) {
-		return isSuperOf(getMeta(), getValue(), getComponents(), superMeta, superValue, superComponents);
+		return inheritsFrom(superMeta, Collections.<T> emptyList(), superValue, superComponents);
+	}
+
+	default boolean inheritsFrom(T superMeta, List<T> overrides, Serializable superValue, List<T> superComponents) {
+		return isSuperOf(getMeta(), getValue(), getComponents(), superMeta, superValue, superComponents) && ApiStatics.areOverridesReached(getSupers(), overrides);
 	}
 
 	default boolean isDependencyOf(T meta, List<T> supers, Serializable value, List<T> components) {
-		return inheritsFrom(meta, value, components) || getComponents().stream().filter(component -> component != null).anyMatch(component -> component.isDependencyOf(meta, supers, value, components))
+		return inheritsFrom(meta, supers, value, components) || getComponents().stream().filter(component -> component != null).anyMatch(component -> component.isDependencyOf(meta, supers, value, components))
 				|| (!isMeta() && getMeta().isDependencyOf(meta, supers, value, components))
 				|| (!components.equals(getComponents()) && componentsDepends(getComponents(), components) && supers.stream().anyMatch(override -> override.inheritsFrom(getMeta())));
 	}
@@ -122,18 +126,15 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 	}
 
 	@SuppressWarnings("unchecked")
-	default T getDirectInstance(Serializable value, List<T> components) {
+	default T getDirectInstance(List<T> overrides, Serializable value, List<T> components) {
 		if (isMeta() && equalsRegardlessSupers(this, value, components))
 			return (T) this;
 		for (T instance : getInstances())
 			if (instance.equalsRegardlessSupers(this, value, components))
-				return instance;
+				if (ApiStatics.areOverridesReached(instance.getSupers(), overrides))
+					if (!instance.getSupers().stream().anyMatch(superG -> superG.getComponents().equals(components) && equals(superG.getMeta())) || ApiStatics.areOverridesReached(overrides, instance.getSupers()))
+						return instance;
 		return null;
-	}
-
-	default T getDirectInstance(List<T> overrides, Serializable value, List<T> components) {
-		T result = getDirectInstance(value, components);
-		return result != null && areOverridesReached(result.getSupers(), overrides) ? result : null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -147,7 +148,7 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 	}
 
 	default boolean equalsAndOverrides(T meta, List<T> overrides, Serializable value, List<T> components) {
-		return equalsRegardlessSupers(meta, value, components) && areOverridesReached(getSupers(), overrides);
+		return equalsRegardlessSupers(meta, value, components) && ApiStatics.areOverridesReached(getSupers(), overrides);
 	}
 
 	default boolean equals(ISignature<?> meta, List<? extends ISignature<?>> supers, Serializable value, List<? extends ISignature<?>> components) {
@@ -220,9 +221,5 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 		if (!getMeta().isPropertyConstraintEnabled())
 			return Objects.equals(getValue(), value);
 		return true;
-	}
-
-	public static <T extends IVertex<T>> boolean areOverridesReached(List<T> supers, List<T> overrides) {
-		return overrides.stream().allMatch(override -> supers.stream().anyMatch(superVertex -> superVertex.inheritsFrom(override)));
 	}
 }

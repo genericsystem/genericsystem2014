@@ -147,11 +147,13 @@ public class UpdateTest extends AbstractTest {
 		Vertex v233 = myVehicle.addHolder(power, 233);
 
 		Vertex car = root.addInstance("Car");
+		assert !root.getCurrentCache().computeDependencies(car).contains(power);
 		Vertex powerBis = car.addAttribute("Power");
 		Vertex myCar = car.addInstance("myCar");
 		Vertex v233Bis = myCar.addHolder(powerBis, 233);
 
 		Vertex carUpdate = car.update("Vehicle");
+		assert power.isAlive();
 
 		assert carUpdate.equals(vehicle);
 		assert !car.isAlive();
@@ -163,9 +165,10 @@ public class UpdateTest extends AbstractTest {
 
 		myCar = vehicle.getInstance("myCar");
 		myVehicle = vehicle.getInstance("myVehicle");
-
-		assert vehicle.getAttributes().contains(power);
+		assert vehicle.isAlive();
 		assert power.isAlive();
+		// assert false : vehicle.getAttributes().first().info();
+		assert vehicle.getAttributes().contains(power);
 		assert v233.isAlive();
 
 		assert !powerBis.isAlive();

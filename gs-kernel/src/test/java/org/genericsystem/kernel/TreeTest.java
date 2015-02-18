@@ -263,4 +263,32 @@ public class TreeTest extends AbstractTest {
 		assert result[0] == 0;
 	}
 
+	public void testTree1() {
+		Root root = new Root();
+		Vertex a1 = root.addInstance("A");
+		Vertex b = root.addInstance(a1, "B");
+		Vertex a2 = root.addInstance(b, "A");
+		assert root.getInstance("A").equals(a1);
+		assert root.getInstance(Arrays.asList(b), "A").equals(a2);
+	}
+
+	public void testTree2() {
+		Root root = new Root();
+		Vertex a1 = root.addInstance("A");
+		Vertex b = root.addInstance("B");
+		Vertex a2 = root.addInstance(b, "A");
+		assert root.getInstance("A").equals(a1);
+		assert root.getInstance(Arrays.asList(b), "A").equals(a2);
+	}
+
+	public void testTree3() {
+		Root root = new Root();
+		Vertex b = root.addInstance("B");
+		Vertex c = root.addInstance("C");
+		Vertex a1 = root.addInstance(b, "A");
+		Vertex a2 = root.addInstance(c, "A");
+		assert root.getInstance("A") == null : root.getInstance("A").info();
+		assert root.getInstance(Arrays.asList(b), "A").equals(a1);
+	}
+
 }

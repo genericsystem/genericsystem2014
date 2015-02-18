@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import org.genericsystem.api.core.ApiStatics;
-import org.genericsystem.api.exception.CollisionException;
 import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.kernel.Config.SystemMap;
 import org.testng.annotations.Test;
@@ -45,9 +44,13 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex type2 = engine.addInstance(type1, "Type2");
 		Vertex type3 = engine.addInstance(type2, "Type3");
 
-		type1.addInstance("instance");
-		type2.addInstance("instance2");
-		catchAndCheckCause(() -> type3.addInstance("instance"), CollisionException.class);
+		Vertex instance1 = type1.addInstance("instance");
+		Vertex instance2 = type2.addInstance("instance2");
+		Vertex instance3 = type3.addInstance("instance");
+		assert type1.getInstance("instance").equals(instance1);
+		assert type2.getInstance("instance2").equals(instance2);
+		assert type3.getInstance("instance").equals(instance3);
+		// catchAndCheckCause(() -> type3.addInstance("instance"), CollisionException.class);
 	}
 
 	public void test003_AdjustMeta() {
@@ -182,8 +185,6 @@ public class AdjustMetaTest extends AbstractTest {
 		Root engine = new Root();
 		assert engine.getMetaAttribute().equals(engine.adjustMeta(engine.getValue(), engine));
 		assert engine.getMetaRelation().equals(engine.adjustMeta(engine.getValue(), engine, engine));
-		System.out.println(engine.getMetaRelation().info());
-		System.out.println(engine.setInstance(engine.getValue(), engine, engine).info());
 		assert engine.getMetaRelation() == engine.setInstance(engine.getValue(), engine, engine);
 		Vertex metaTernaryRelation = engine.setInstance(engine.getValue(), engine, engine, engine);
 		assert engine.getCurrentCache().getMeta(3).equals(metaTernaryRelation);

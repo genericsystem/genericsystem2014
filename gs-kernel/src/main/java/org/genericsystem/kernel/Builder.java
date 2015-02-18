@@ -11,6 +11,7 @@ import java.util.NavigableSet;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.api.exception.UnreachableOverridesException;
 import org.genericsystem.kernel.annotations.InstanceClass;
@@ -89,7 +90,7 @@ public abstract class Builder<T extends DefaultVertex<T>> {
 	}
 
 	protected T getOrBuild(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
-		T instance = meta == null ? getContext().getMeta(components.size()) : meta.getDirectInstance(value, components);
+		T instance = meta == null ? getContext().getMeta(components.size()) : meta.getDirectInstance(supers, value, components);
 		return instance == null ? buildAndPlug(clazz, meta, supers, value, components) : instance;
 	}
 
@@ -131,7 +132,6 @@ public abstract class Builder<T extends DefaultVertex<T>> {
 					List<T> components = reasignComponents(oldDependency);
 					T adjustedMeta = reasignMeta(components, convert(oldDependency.getMeta())).adjustMeta(oldDependency.getValue(), components);
 					List<T> supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, oldDependency.getValue(), components);
-					// TODO KK designTs
 					newDependency = getOrBuild(oldDependency.getClass(), adjustedMeta, supers, oldDependency.getValue(), components);
 				}
 				put(oldDependency, newDependency);// triggers mutation
@@ -168,7 +168,7 @@ public abstract class Builder<T extends DefaultVertex<T>> {
 
 	List<T> computeAndCheckOverridesAreReached(T adjustedMeta, List<T> overrides, Serializable value, List<T> components) {
 		List<T> supers = new ArrayList<>(new SupersComputer<>(adjustedMeta, overrides, value, components));
-		if (!DefaultVertex.areOverridesReached(supers, overrides))
+		if (!ApiStatics.areOverridesReached(supers, overrides))
 			getContext().discardWithException(new UnreachableOverridesException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
 		return supers;
 	}
