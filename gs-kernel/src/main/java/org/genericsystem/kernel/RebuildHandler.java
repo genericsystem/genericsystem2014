@@ -9,13 +9,13 @@ import java.util.stream.Collectors;
 
 import org.genericsystem.api.defaults.DefaultVertex;
 
-public class RemoveHandler<T extends DefaultVertex<T>> extends GenericHandler<T> {
+public class RebuildHandler<T extends DefaultVertex<T>> extends GenericHandler<T> {
 
 	private final T toRebuild;
 	private final Supplier<T> rebuilder;
 	private final NavigableSet<T> dependenciesToRebuild;
 
-	RemoveHandler(Builder<T> builder, T toRebuild, Supplier<T> rebuilder, NavigableSet<T> dependenciesToRebuild) {
+	RebuildHandler(Builder<T> builder, T toRebuild, Supplier<T> rebuilder, NavigableSet<T> dependenciesToRebuild) {
 		super(builder);
 		this.toRebuild = toRebuild;
 		this.rebuilder = rebuilder;

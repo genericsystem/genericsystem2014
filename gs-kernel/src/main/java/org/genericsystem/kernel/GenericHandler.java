@@ -18,7 +18,7 @@ public class GenericHandler<T extends DefaultVertex<T>> {
 	private final Class<?> clazz;
 	private final T meta;
 	private T adjustedMeta;
-	private List<T> overrides;
+	private final List<T> overrides;
 	private List<T> supers;
 	private final Serializable value;
 	private final List<T> components;
@@ -41,8 +41,8 @@ public class GenericHandler<T extends DefaultVertex<T>> {
 			return new GenericHandler<>(builder, null, null, null, root.getValue(), Arrays.asList(components)).adjustMeta(dim);
 		}
 
-		public static <T extends DefaultVertex<T>> RemoveHandler<T> newRemoveHandler(Builder<T> builder, T toRebuild, Supplier<T> rebuilder, NavigableSet<T> dependenciesToRebuild) {
-			return new RemoveHandler<>(builder, toRebuild, rebuilder, dependenciesToRebuild);
+		public static <T extends DefaultVertex<T>> RebuildHandler<T> newRebuildHandler(Builder<T> builder, T toRebuild, Supplier<T> rebuilder, NavigableSet<T> dependenciesToRebuild) {
+			return new RebuildHandler<>(builder, toRebuild, rebuilder, dependenciesToRebuild);
 		}
 	}
 
@@ -66,11 +66,6 @@ public class GenericHandler<T extends DefaultVertex<T>> {
 		this.components = components;
 	}
 
-	private GenericHandler(Builder<T> builder, T gettable) {
-		this(builder, gettable.getClass(), gettable.getMeta(), gettable.getSupers(), gettable.getValue(), gettable.getComponents());
-		this.gettable = gettable;
-	}
-
 	public GenericHandler<T> check() {
 		builder.getContext().getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
 		return this;
@@ -86,14 +81,14 @@ public class GenericHandler<T extends DefaultVertex<T>> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public GenericHandler<T> adjustMeta(int dim) {
+	private GenericHandler<T> adjustMeta(int dim) {
 		adjustedMeta = adjustMeta((T) builder.getContext().getRoot(), dim);
 		if (adjustedMeta.getComponents().size() == dim)
 			gettable = adjustedMeta;
 		return this;
 	}
 
-	T adjustMeta(T meta, int dim) {
+	private T adjustMeta(T meta, int dim) {
 		assert meta.isMeta();
 		int size = meta.getComponents().size();
 		if (size > dim)
@@ -136,26 +131,26 @@ public class GenericHandler<T extends DefaultVertex<T>> {
 	}
 
 	T addMeta() {
-		return GenericHandlerFactory.newRemoveHandler(builder, null, () -> builder.buildAndPlug(clazz, null, Collections.singletonList(adjustedMeta), value, components),
+		return GenericHandlerFactory.newRebuildHandler(builder, null, () -> builder.buildAndPlug(clazz, null, Collections.singletonList(adjustedMeta), value, components),
 				builder.getContext().computePotentialDependencies(adjustedMeta, Collections.singletonList(adjustedMeta), value, components)).rebuildAll();
 	}
 
 	public T add() {
 		assert supers != null;
-		return GenericHandlerFactory.newRemoveHandler(builder, null, () -> buildAndPlug(), builder.getContext().computePotentialDependencies(adjustedMeta, supers, value, components)).rebuildAll();
+		return GenericHandlerFactory.newRebuildHandler(builder, null, () -> buildAndPlug(), builder.getContext().computePotentialDependencies(adjustedMeta, supers, value, components)).rebuildAll();
 	}
 
 	public T set(T update) {
 		assert update != null;
 		assert supers != null;
-		return GenericHandlerFactory.newRemoveHandler(builder, update, () -> buildAndPlug(), builder.getContext().computeDependencies(update)).rebuildAll();
+		return GenericHandlerFactory.newRebuildHandler(builder, update, () -> buildAndPlug(), builder.getContext().computeDependencies(update)).rebuildAll();
 	}
 
 	public T update(T update) {
 		assert update != null;
 		assert supers != null;
 		// assert !supers.contains(update);
-		return GenericHandlerFactory.newRemoveHandler(builder, update, () -> getOrBuild(), builder.getContext().computeDependencies(update)).rebuildAll();
+		return GenericHandlerFactory.newRebuildHandler(builder, update, () -> getOrBuild(), builder.getContext().computeDependencies(update)).rebuildAll();
 	}
 
 	protected T getOrBuild() {

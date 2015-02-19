@@ -78,17 +78,17 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 
 	@Override
 	public void forceRemove(T generic) {
-		GenericHandlerFactory.newRemoveHandler(builder, null, null, builder.getContext().computeDependencies(generic)).rebuildAll();
+		GenericHandlerFactory.newRebuildHandler(builder, null, null, builder.getContext().computeDependencies(generic)).rebuildAll();
 	}
 
 	@Override
 	public void remove(T generic) {
-		GenericHandlerFactory.newRemoveHandler(builder, null, null, builder.getContext().computeRemoveDependencies(generic)).rebuildAll();
+		GenericHandlerFactory.newRebuildHandler(builder, null, null, builder.getContext().computeRemoveDependencies(generic)).rebuildAll();
 	}
 
 	@Override
 	public void conserveRemove(T generic) {
-		GenericHandlerFactory.newRemoveHandler(builder, generic, () -> generic, builder.getContext().computeDependencies(generic)).rebuildAll();
+		GenericHandlerFactory.newRebuildHandler(builder, generic, () -> generic, builder.getContext().computeDependencies(generic)).rebuildAll();
 	}
 
 	protected abstract T plug(T generic);
