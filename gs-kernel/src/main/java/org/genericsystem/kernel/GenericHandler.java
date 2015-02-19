@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.defaults.DefaultVertex;
+import org.genericsystem.api.exception.AmbiguousSelectionException;
 import org.genericsystem.api.exception.UnreachableOverridesException;
 
 public class GenericHandler<T extends DefaultVertex<T>> {
@@ -36,9 +37,16 @@ public class GenericHandler<T extends DefaultVertex<T>> {
 		@SuppressWarnings("unchecked")
 		public static <T extends DefaultVertex<T>> GenericHandler<T> newMetaHandler(Builder<T> builder, int dim) {
 			T root = (T) builder.getContext().getRoot();
-			T[] components = builder.newTArray(dim);
-			Arrays.fill(components, root);
-			return new GenericHandler<>(builder, null, null, null, root.getValue(), Arrays.asList(components)).adjustMeta(dim);
+			List<T> components = new ArrayList<>(dim);
+			for (int i = 0; i < dim; i++)
+				components.add(root);
+			return new GenericHandler<>(builder, null, null, null, root.getValue(), components).adjustMeta(dim);
+		}
+
+		@SuppressWarnings("unchecked")
+		public static <T extends DefaultVertex<T>> GenericHandler<T> newMetaHandler(Builder<T> builder, T meta, Serializable value, T... components) {
+			List<T> componentsList = Arrays.asList(components);
+			return new GenericHandler<>(builder, null, meta, null, value, componentsList).adjustMeta(meta, value, componentsList);
 		}
 
 		public static <T extends DefaultVertex<T>> RebuildHandler<T> newRebuildHandler(Builder<T> builder, T toRebuild, Supplier<T> rebuilder, NavigableSet<T> dependenciesToRebuild) {
@@ -75,9 +83,32 @@ public class GenericHandler<T extends DefaultVertex<T>> {
 		if (meta == null) {
 			assert overrides.size() == 1;
 			adjustedMeta = meta;
-		} else
-			adjustedMeta = meta.isMeta() ? builder.setMeta(components.size()) : meta.adjustMeta(value, components);
+		} else {
+			if (meta.isMeta())
+				adjustedMeta = GenericHandlerFactory.newMetaHandler(builder, components.size()).setMeta();
+			else
+				adjustedMeta = getAdjustMeta(meta, value, components);
+		}
 		return this;
+	}
+
+	private GenericHandler<T> adjustMeta(T meta, Serializable value, List<T> components) {
+		gettable = getAdjustMeta(meta, value, components);
+		return this;
+	}
+
+	private T getAdjustMeta(T meta, Serializable value, List<T> components) {
+		T result = null;
+		if (!components.equals(meta.getComponents()))
+			for (T directInheriting : meta.getInheritings()) {
+				if (meta.componentsDepends(components, directInheriting.getComponents())) {
+					if (result == null)
+						result = directInheriting;
+					else
+						builder.getContext().discardWithException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
+				}
+			}
+		return result == null ? meta : getAdjustMeta(result, value, components);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -130,7 +161,10 @@ public class GenericHandler<T extends DefaultVertex<T>> {
 		return adjustedMeta.getDirectEquivInstance(value, components);
 	}
 
-	T addMeta() {
+	T setMeta() {
+		T meta = get();
+		if (meta != null)
+			return meta;
 		return GenericHandlerFactory.newRebuildHandler(builder, null, () -> builder.buildAndPlug(clazz, null, Collections.singletonList(adjustedMeta), value, components),
 				builder.getContext().computePotentialDependencies(adjustedMeta, Collections.singletonList(adjustedMeta), value, components)).rebuildAll();
 	}

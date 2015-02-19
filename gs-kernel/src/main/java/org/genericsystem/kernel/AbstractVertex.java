@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.genericsystem.api.defaults.DefaultVertex;
+import org.genericsystem.kernel.GenericHandler.GenericHandlerFactory;
 
 public abstract class AbstractVertex<T extends AbstractVertex<T>> implements DefaultVertex<T>, Comparable<T> {
 	private long ts;
@@ -25,6 +26,12 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		this.supers = Collections.unmodifiableList(new ArrayList<>(supers));
 		lifeManager = new LifeManager(otherTs);
 		return (T) this;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public T adjustMeta(Serializable value, T... components) {
+		return GenericHandlerFactory.newMetaHandler(getCurrentCache().getBuilder(), (T) this, value, components).get();
 	}
 
 	public long getTs() {
