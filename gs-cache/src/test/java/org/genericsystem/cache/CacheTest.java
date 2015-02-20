@@ -12,9 +12,9 @@ public class CacheTest extends AbstractTest {
 		Cache cache = engine.getCurrentCache();
 		Generic vehicle = engine.addInstance("Vehicle");
 		assert vehicle.isAlive();
-		cache.flush();
+		cache.tryFlush();
 		assert vehicle.isAlive();
-		cache.flush();
+		cache.tryFlush();
 		assert vehicle.isAlive();
 		cache.clear();
 		assert vehicle.isAlive();
@@ -29,7 +29,7 @@ public class CacheTest extends AbstractTest {
 		assert vehicle.isAlive();
 		cache.clear();
 		assert !vehicle.isAlive();
-		cache.flush();
+		cache.tryFlush();
 		assert !vehicle.isAlive();
 		cache.clear();
 		assert !vehicle.isAlive();
@@ -111,7 +111,7 @@ public class CacheTest extends AbstractTest {
 		Generic vehicle = engine.addInstance("Vehicle");
 		engine.addInstance(vehicle, "Car");
 		assert vehicle.isAlive();
-		engine.getCurrentCache().flush();
+		engine.getCurrentCache().tryFlush();
 		assert vehicle.isAlive();
 		assert vehicle.getMeta().isAlive();
 	}
@@ -128,7 +128,7 @@ public class CacheTest extends AbstractTest {
 		Cache<Generic> currentCache = engine.getCurrentCache();
 		currentCache.mount();
 		engine.newCache().start();
-		catchAndCheckCause(() -> currentCache.flush(), CacheNoStartedException.class);
+		catchAndCheckCause(() -> currentCache.tryFlush(), CacheNoStartedException.class);
 	}
 
 	public void test002_mountNewCache() {
@@ -138,7 +138,7 @@ public class CacheTest extends AbstractTest {
 		assert cache == currentCache;
 		currentCache.mount();
 		engine.addInstance("Vehicle");
-		currentCache.flush();
+		currentCache.tryFlush();
 	}
 
 	public void test005_TwoComponentsWithSameMetaInDifferentCaches_remove() {
@@ -155,7 +155,7 @@ public class CacheTest extends AbstractTest {
 		assert !vehiclePower.isAlive();
 		assert vehicle.getComposites().isEmpty() : vehicle.getComposites().get().collect(Collectors.toList());
 		assert currentCache.getCacheLevel() == 1;
-		currentCache.flush();
+		currentCache.tryFlush();
 		currentCache.unmount();
 		assert vehicle.isAlive();
 		assert !vehiclePower.isAlive();

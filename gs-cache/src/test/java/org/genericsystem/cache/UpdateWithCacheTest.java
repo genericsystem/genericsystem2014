@@ -16,7 +16,7 @@ public class UpdateWithCacheTest extends AbstractTest {
 
 		assert myCar.getMeta().equals(car);
 		Generic carUpdate = car.updateValue("CarUpdate");
-		engine.getCurrentCache().flush();
+		engine.getCurrentCache().tryFlush();
 		assert carUpdate.getInstances().get().allMatch(x -> "MyCar".equals(x.getValue()));
 		assert carUpdate.getInstances().get().allMatch(x -> x.getHolders(power).get().allMatch(y -> "myCarV233".equals(y.getValue())));
 		// on perd les references
@@ -78,7 +78,7 @@ public class UpdateWithCacheTest extends AbstractTest {
 		Generic v233 = myCar.addHolder(power, 233);
 		Generic powerType = engine.addInstance("PowerType");
 
-		engine.getCurrentCache().flush();
+		engine.getCurrentCache().tryFlush();
 		catchAndCheckCause(() -> power.update("carPower", powerType), MetaRuleConstraintViolationException.class);
 
 		assert engine.getInstances().contains(car);
@@ -114,7 +114,7 @@ public class UpdateWithCacheTest extends AbstractTest {
 		assert vehicleUpdate.getInheritings().get().allMatch(x -> x.getInstances().get().allMatch(y -> "myCar".equals(y.getValue())));
 		assert vehicleUpdate.getInheritings().get().allMatch(x -> x.getInstances().get().allMatch(y -> y.getHolders(power).get().allMatch(z -> z.getValue().equals(233))));
 
-		engine.getCurrentCache().flush();
+		engine.getCurrentCache().tryFlush();
 
 		assert v233.getValue().equals(233);
 

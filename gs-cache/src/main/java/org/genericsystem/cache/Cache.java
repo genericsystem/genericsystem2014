@@ -66,7 +66,7 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 		listener.triggersRefreshEvent();
 	}
 
-	public void flush() throws ConcurrencyControlException {
+	public void tryFlush() throws ConcurrencyControlException {
 		if (!equals(getRoot().getCurrentCache()))
 			discardWithException(new CacheNoStartedException("The Cache isn't started"));
 		try {
@@ -79,14 +79,14 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 		}
 	}
 
-	public void flushLater() {
+	public void flush() {
 		Throwable cause = null;
 		for (int attempt = 0; attempt < Statics.ATTEMPTS; attempt++) {
 			try {
 				// TODO reactivate this
 				// if (getEngine().pickNewTs() - getTs() >= timeOut)
 				// throw new ConcurrencyControlException("The timestamp cache (" + getTs() + ") is bigger than the life time out : " + Statics.LIFE_TIMEOUT);
-				flush();
+				tryFlush();
 				return;
 			} catch (ConcurrencyControlException e) {
 				cause = e;
