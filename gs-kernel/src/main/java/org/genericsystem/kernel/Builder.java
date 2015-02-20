@@ -59,9 +59,7 @@ public abstract class Builder<T extends DefaultVertex<T>> {
 	}
 
 	T setMeta(int dim) {
-		GenericHandler<T> metaHandler = GenericHandlerFactory.newMetaHandler(this, dim);
-		T meta = metaHandler.get();
-		return meta != null ? meta : metaHandler.addMeta();
+		return GenericHandlerFactory.newMetaHandler(this, dim).setMeta();
 	}
 
 	T buildAndPlug(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {

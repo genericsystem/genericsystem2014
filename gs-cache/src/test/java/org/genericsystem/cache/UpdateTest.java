@@ -93,7 +93,7 @@ public class UpdateTest extends AbstractTest {
 		Generic v233 = myCar.addHolder(power, 233);
 		Generic powerType = engine.addInstance("PowerType");
 
-		engine.getCurrentCache().flush();
+		engine.getCurrentCache().tryFlush();
 		catchAndCheckCause(() -> power.update("carPower", powerType), MetaRuleConstraintViolationException.class);
 
 		assert engine.getInstances().contains(car);

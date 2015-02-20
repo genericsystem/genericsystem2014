@@ -26,7 +26,7 @@ public class PersistenceTest extends AbstractTest {
 	public void testAnnotType() {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
 		Engine root = new Engine(Statics.ENGINE_VALUE, snapshot, Vehicle.class);
-		root.getCurrentCache().flush();
+		root.getCurrentCache().tryFlush();
 		root.close();
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot, Vehicle.class);
 		compareGraph(root, engine);
@@ -36,12 +36,12 @@ public class PersistenceTest extends AbstractTest {
 	public void testAnnotType2() {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
 		Engine root = new Engine(Statics.ENGINE_VALUE, snapshot, Vehicle.class);
-		root.getCurrentCache().flush();
+		root.getCurrentCache().tryFlush();
 		root.close();
 
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
 		compareGraphWitoutTs(root, engine);
-		engine.getCurrentCache().flush();
+		engine.getCurrentCache().tryFlush();
 		engine.close();
 
 		Engine engine2 = new Engine(Statics.ENGINE_VALUE, snapshot, Vehicle.class);
@@ -66,7 +66,7 @@ public class PersistenceTest extends AbstractTest {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
 		Engine root = new Engine(Statics.ENGINE_VALUE, snapshot);
 		root.addInstance("Vehicle");
-		root.getCurrentCache().flush();
+		root.getCurrentCache().tryFlush();
 		root.close();
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
 		compareGraph(root, engine);
@@ -80,7 +80,7 @@ public class PersistenceTest extends AbstractTest {
 		Generic vehiclePower = vehicle.setAttribute("power");
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		myVehicle.setHolder(vehiclePower, "123");
-		root.getCurrentCache().flush();
+		root.getCurrentCache().tryFlush();
 		root.close();
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
 		compareGraph(root, engine);
@@ -94,7 +94,7 @@ public class PersistenceTest extends AbstractTest {
 		Generic truck = root.addInstance(vehicle, "Truck");
 		assert vehicle.getTs() < truck.getTs();
 		car.remove();
-		root.getCurrentCache().flush();
+		root.getCurrentCache().tryFlush();
 		assert vehicle.getTs() < truck.getTs();
 		assert vehicle.getLifeManager().getBirthTs() == truck.getLifeManager().getBirthTs();
 		root.close();
@@ -111,7 +111,7 @@ public class PersistenceTest extends AbstractTest {
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		Generic red = color.addInstance("red");
 		myVehicle.setHolder(vehicleColor, "myVehicleRed", red);
-		root.getCurrentCache().flush();
+		root.getCurrentCache().tryFlush();
 		root.close();
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
 		compareGraph(root, engine);
@@ -123,7 +123,7 @@ public class PersistenceTest extends AbstractTest {
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic robot = root.addInstance("Robot");
 		root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
-		root.getCurrentCache().flush();
+		root.getCurrentCache().tryFlush();
 		root.close();
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
 		compareGraph(root, engine);
@@ -136,7 +136,7 @@ public class PersistenceTest extends AbstractTest {
 		Generic vehicle = root.addInstance(nommable, "Vehicle");
 		Generic robot = root.addInstance(nommable, "Robot");
 		root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
-		root.getCurrentCache().flush();
+		root.getCurrentCache().tryFlush();
 		root.close();
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
 		compareGraph(root, engine);
@@ -150,7 +150,7 @@ public class PersistenceTest extends AbstractTest {
 		Generic child = rootTree.setChild("Child");
 		rootTree.setChild("Child2");
 		child.setChild("Child3");
-		root.getCurrentCache().flush();
+		root.getCurrentCache().tryFlush();
 		root.close();
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
 		compareGraph(root, engine);
@@ -164,7 +164,7 @@ public class PersistenceTest extends AbstractTest {
 		Generic child = rootTree.setInheritingChild("Child");
 		rootTree.setInheritingChild("Child2");
 		child.setInheritingChild("Child3");
-		root.getCurrentCache().flush();
+		root.getCurrentCache().tryFlush();
 		root.close();
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
 		compareGraph(root, engine);

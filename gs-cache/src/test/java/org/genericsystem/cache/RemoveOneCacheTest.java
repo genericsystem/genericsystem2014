@@ -14,7 +14,7 @@ public class RemoveOneCacheTest extends AbstractTest {
 		Generic color = car.addAttribute("Color");
 		Generic myBmw = car.addInstance("myBmw");
 		Generic myBmwRed = myBmw.addHolder(color, "red");
-		cache.flush();
+		cache.tryFlush();
 		assert myBmw.getHolders(color).contains(myBmwRed);
 		assert myBmw.getHolders(color).size() == 1;
 
@@ -32,9 +32,9 @@ public class RemoveOneCacheTest extends AbstractTest {
 		Generic color = car.addAttribute("Color");
 		Generic myBmw = car.addInstance("myBmw");
 		Generic myBmwRed = myBmw.addHolder(color, "red");
-		cache.flush();
+		cache.tryFlush();
 		cache.clear();
-		cache.flush();
+		cache.tryFlush();
 		assert myBmw.getHolders(color).contains(myBmwRed);
 		assert myBmw.getHolders(color).size() == 1;
 
@@ -54,7 +54,7 @@ public class RemoveOneCacheTest extends AbstractTest {
 		Generic myBmwRed = myBmw.addHolder(color, "red");
 
 		myBmwRed.remove();
-		cache.flush();
+		cache.tryFlush();
 		Generic myBmwBlue = myBmw.addHolder(color, "blue");
 		cache.clear();
 		assert myBmw.getHolders(color).size() == 0;
@@ -75,13 +75,13 @@ public class RemoveOneCacheTest extends AbstractTest {
 		Generic myBmwRed = myBmw.addHolder(color, "red");
 
 		myBmwRed.remove();
-		cache.flush();
+		cache.tryFlush();
 		Generic myBmwBlue = myBmw.addHolder(color, "blue");
 		cache.clear();
 		assert myBmw.getHolders(color).size() == 0;
 
 		Generic myBmwGreen = myBmw.addHolder(color, "green");
-		cache.flush();
+		cache.tryFlush();
 		catchAndCheckCause(() -> myBmwBlue.remove(), AliveConstraintViolationException.class);
 		assert myBmw.getHolders(color).contains(myBmwGreen);
 		assert myBmw.getHolders(color).size() == 1;
@@ -96,7 +96,7 @@ public class RemoveOneCacheTest extends AbstractTest {
 		Generic myBmwRed = myBmw.addHolder(color, "red");
 		Generic myBmwBlue = myBmw.addHolder(color, "blue");
 		myBmwRed.remove();
-		cache.flush();
+		cache.tryFlush();
 		cache.clear();
 		Generic myBmwRed2 = myBmw.addHolder(color, "red");
 		cache.clear();
@@ -115,7 +115,7 @@ public class RemoveOneCacheTest extends AbstractTest {
 		Generic myBmw = car.addInstance("myBmw");
 		Generic myBmwRed = myBmw.addHolder(color, "red");
 		Generic myBmwBlue = myBmw.addHolder(color, "blue");
-		cache.flush();
+		cache.tryFlush();
 		myBmwRed.remove();
 		Generic myBmwRed2 = myBmw.addHolder(color, "red");
 		cache.clear();
@@ -134,7 +134,7 @@ public class RemoveOneCacheTest extends AbstractTest {
 		Generic color = car.addAttribute("Color");
 		Generic myBmw = car.addInstance("myBmw");
 		Generic myBmwRed = myBmw.addHolder(color, "red");
-		cache.flush();
+		cache.tryFlush();
 		cache.clear();
 		Generic myBmwBlue = myBmw.addHolder(color, "blue");
 		cache.clear();
@@ -157,7 +157,7 @@ public class RemoveOneCacheTest extends AbstractTest {
 
 		assert color.getInstances().contains(myBmwRed);
 		assert color.getInstances().size() == 1;
-		cache.flush();
+		cache.tryFlush();
 		myBmw.remove();
 		cache.clear();
 		assert color.getInstances().contains(myBmwRed);
@@ -171,7 +171,7 @@ public class RemoveOneCacheTest extends AbstractTest {
 		Generic color = car.addAttribute("Color");
 		Generic myBmw = car.addInstance("myBmw");
 		Generic myBmwRed = myBmw.addHolder(color, "red");
-		cache.flush();
+		cache.tryFlush();
 		myBmw.remove();
 		cache.clear();
 		catchAndCheckCause(() -> car.remove(), ReferentialIntegrityConstraintViolationException.class);

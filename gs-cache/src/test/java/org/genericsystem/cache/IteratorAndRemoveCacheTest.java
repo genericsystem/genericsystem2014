@@ -20,19 +20,19 @@ public class IteratorAndRemoveCacheTest extends AbstractTest {
 		Generic myCar3 = car.addInstance("myCar3");
 		Generic myCar4 = car.addInstance("myCar4");
 
-		cache2.flush();
+		cache2.tryFlush();
 		int cpt = 0;
 		for (Generic g : car.getInstances()) {
 			if (cpt % 2 == 0) {
 				cache1.start();
 				cache1.pickNewTs();
 				g.remove();
-				cache1.flush();
+				cache1.tryFlush();
 			} else {
 				cache2.start();
 				cache2.pickNewTs();
 				g.remove();
-				cache2.flush();
+				cache2.tryFlush();
 			}
 			cpt++;
 		}
@@ -44,12 +44,12 @@ public class IteratorAndRemoveCacheTest extends AbstractTest {
 		Generic car = engine.addInstance("Car");
 		Generic myCar1 = car.addInstance("myCar1");
 		Cache cache1 = engine.getCurrentCache();
-		cache1.flush();
+		cache1.tryFlush();
 		myCar1.remove();
-		cache1.flush();
+		cache1.tryFlush();
 		Cache cache2 = engine.newCache().start();
 		catchAndCheckCause(() -> myCar1.remove(), AliveConstraintViolationException.class);
-		cache2.flush();
+		cache2.tryFlush();
 	}
 
 	public void test002_() {
@@ -57,7 +57,7 @@ public class IteratorAndRemoveCacheTest extends AbstractTest {
 		Generic car = engine.addInstance("Car");
 		Generic myCar = car.addInstance("myCar");
 		Cache cache = engine.getCurrentCache();
-		cache.flush();
+		cache.tryFlush();
 
 		Cache cache2 = engine.newCache().start();
 		myCar.remove();
@@ -65,9 +65,9 @@ public class IteratorAndRemoveCacheTest extends AbstractTest {
 		cache.start();
 		cache.pickNewTs();
 		myCar.remove();
-		cache.flush();
+		cache.tryFlush();
 		cache2.start();
-		catchAndCheckCause(() -> cache2.flush(), OptimisticLockConstraintViolationException.class);
+		catchAndCheckCause(() -> cache2.tryFlush(), OptimisticLockConstraintViolationException.class);
 	}
 
 	public void test003_IterateAndRemove() {
@@ -77,19 +77,19 @@ public class IteratorAndRemoveCacheTest extends AbstractTest {
 		Generic car = engine.addInstance("Car");
 		Generic myCar1 = car.addInstance("myCar1");
 		Generic myCar2 = car.addInstance("myCar2");
-		cache2.flush();
+		cache2.tryFlush();
 		Generic myCar3 = car.addInstance("myCar3");
 		Generic myCar4 = car.addInstance("myCar4");
 
 		int cpt = 0;
 		for (Generic g : car.getInstances()) {
 			if (g.equals(myCar3))
-				cache2.flush();
+				cache2.tryFlush();
 			if (cpt % 2 == 0) {
 				cache1.start();
 				cache1.pickNewTs();
 				g.remove();
-				cache1.flush();
+				cache1.tryFlush();
 			} else {
 				cache2.start();
 				cache2.pickNewTs();
@@ -97,7 +97,7 @@ public class IteratorAndRemoveCacheTest extends AbstractTest {
 			}
 			cpt++;
 		}
-		cache2.flush();
+		cache2.tryFlush();
 		assert car.getInstances().size() == 0;
 		cache1.start();
 		cache1.pickNewTs();
@@ -146,7 +146,7 @@ public class IteratorAndRemoveCacheTest extends AbstractTest {
 		Generic myCar3 = car.addInstance("myCar3");
 		Generic myCar4 = car.addInstance("myCar4");
 
-		cache1.flush();
+		cache1.tryFlush();
 
 		Snapshot<Generic> myCars = car.getInstances();
 
