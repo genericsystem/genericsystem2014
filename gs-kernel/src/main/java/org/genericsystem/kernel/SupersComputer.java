@@ -21,7 +21,7 @@ public class SupersComputer<T extends DefaultVertex<T>> extends LinkedHashSet<T>
 
 	private final int reachLevel;
 
-	private final Map<T, Boolean> alreadyComputed = new HashMap<>();
+	private final Map<T, boolean[]> alreadyComputed = new HashMap<>();
 
 	SupersComputer(T meta, List<T> overrides, Serializable value, List<T> components) {
 		assert meta != null;
@@ -45,27 +45,38 @@ public class SupersComputer<T extends DefaultVertex<T>> extends LinkedHashSet<T>
 				visitSupers(superOfCandidate);
 	}
 
-	private boolean visit(T candidate) {
-		Boolean result = alreadyComputed.get(candidate);
+	private boolean[] visit(T candidate) {
+		boolean[] result = alreadyComputed.get(candidate);
 		if (result != null)
 			return result;
 		// boolean isMeta = meta == null ? false : meta.isSpecializationOf(candidate);
 		boolean isMeta = meta.isSpecializationOf(candidate);
 		boolean isSuper = !isMeta && candidate.isSuperOf(meta, overrides, value, components);
 		if (!isMeta && !isSuper) {
-			alreadyComputed.put(candidate, false);
-			return true;
+			boolean[] selectableSelected = new boolean[] { true, false };
+			alreadyComputed.put(candidate, selectableSelected);
+			return selectableSelected;
 		}
 		boolean selectable = true;
-		for (T inheriting : candidate.getInheritings())
-			selectable = visit(inheriting);
-		if (isMeta)
-			for (T instance : candidate.getInstances())
-				selectable = visit(instance);
-		boolean test = !selectable || (candidate.getLevel() != reachLevel) || candidate.inheritsFrom(meta, overrides, value, components);
-		alreadyComputed.put(candidate, test);
-		if (!test)
+		for (T inheriting : candidate.getInheritings()) {
+			boolean[] subSelectionableSelectioned = visit(inheriting);
+			if (!subSelectionableSelectioned[0] || subSelectionableSelectioned[1])
+				selectable = false;
+		}
+		if (isMeta) {
+			for (T instance : candidate.getInstances()) {
+				boolean[] subSelectableSelected = visit(instance);
+				if (!subSelectableSelected[0] || subSelectableSelected[1])
+					selectable = false;
+			}
+		}
+		boolean[] selectableSelected = new boolean[] { selectable, false };
+		result = alreadyComputed.put(candidate, selectableSelected);
+		assert result == null : candidate.info();
+		if (selectableSelected[0] && (candidate.getLevel() == reachLevel) && !candidate.inheritsFrom(meta, overrides, value, components)) {
 			add(candidate);
-		return test;
+			selectableSelected[1] = true;
+		}
+		return selectableSelected;
 	}
 }
