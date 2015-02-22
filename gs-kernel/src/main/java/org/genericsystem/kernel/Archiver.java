@@ -301,11 +301,11 @@ public class Archiver<T extends AbstractVertex<T>> {
 			assert getTransaction().isAlive(vertexMap.get(ts)) : vertexMap.get(ts).info();
 		}
 
+		// TODO We have to recompute supers here !!!
 		protected T getOrBuild(long ts, Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
 			T instance = meta == null ? transaction.getMeta(components.size()) : meta.getDirectInstance(supers, value, components);
 			if (instance != null)
 				return instance;
-
 			if (otherTs[0] == Statics.TS_SYSTEM)
 				otherTs[0] = Statics.TS_OLD_SYSTEM;
 			return transaction.plug(transaction.getBuilder().build(clazz, meta, supers, value, components, otherTs));

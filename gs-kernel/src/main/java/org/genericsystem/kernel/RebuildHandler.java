@@ -9,8 +9,10 @@ import java.util.stream.Collectors;
 
 import org.genericsystem.api.defaults.DefaultVertex;
 
+//TODO rename this to Restructurator, remove the extends GenericHandler, It is a constructor parameter
 public class RebuildHandler<T extends DefaultVertex<T>> extends GenericHandler<T> {
 
+	// Add a GenericHandler here;
 	private final T toRebuild;
 	private final Supplier<T> rebuilder;
 	private final NavigableSet<T> dependenciesToRebuild;
@@ -19,7 +21,7 @@ public class RebuildHandler<T extends DefaultVertex<T>> extends GenericHandler<T
 		super(builder);
 		this.toRebuild = toRebuild;
 		this.rebuilder = rebuilder;
-		this.dependenciesToRebuild = dependenciesToRebuild;
+		this.dependenciesToRebuild = dependenciesToRebuild;// must be lazy (supplier?) or not ?
 	}
 
 	T rebuildAll() {
@@ -46,11 +48,13 @@ public class RebuildHandler<T extends DefaultVertex<T>> extends GenericHandler<T
 			if (newDependency == null) {
 				if (oldDependency.isMeta()) {
 					assert oldDependency.getSupers().size() == 1;
+					// The opertion called here must not be lazy, and must be one step operations => they must not call another rebuildHandler themselves
 					newDependency = builder.setMeta(oldDependency.getComponents().size());
 				} else {
 					List<T> overrides = reasignSupers(oldDependency, new ArrayList<>());
 					List<T> components = reasignComponents(oldDependency);
 					T meta = reasignMeta(components, convert(oldDependency.getMeta()));
+					// The opertion called here must not be lazy, and must be one step operations => they must not call another rebuildHandler themselves
 					newDependency = GenericHandlerFactory.newHandlerWithComputeSupers(builder, oldDependency.getClass(), meta, overrides, oldDependency.getValue(), components).getOrBuild();
 				}
 				put(oldDependency, newDependency);// triggers mutation

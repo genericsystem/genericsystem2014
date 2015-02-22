@@ -13,6 +13,7 @@ import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
 import org.genericsystem.api.exception.UnreachableOverridesException;
 
+//TODO must inherits directly from AbstractVertex in fine i think...
 public class GenericHandler<T extends DefaultVertex<T>> {
 	protected final Builder<T> builder;
 
@@ -26,14 +27,19 @@ public class GenericHandler<T extends DefaultVertex<T>> {
 	private T gettable;
 
 	public static class GenericHandlerFactory {
+
+		// TODO must be called by systemCache && archiver
 		public static <T extends DefaultVertex<T>> GenericHandler<T> newHandlerWithComputeSupers(Builder<T> builder, Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
 			return new GenericHandler<>(builder, clazz, meta, overrides, value, components).check().adjustMeta().computeSupers();
 		}
 
+		// TODO to remove, systemCache && archiver must recompute supers
 		public static <T extends DefaultVertex<T>> GenericHandler<T> newHandler(Builder<T> builder, Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
 			return new GenericHandler<>(builder, clazz, meta, overrides, value, components).adjustMeta().affectSupers();
 		}
 
+		// TODO must be called by archiver for upload the metas
+		// To remove, metacreation withe setMeta(int i) must not be lazy, it must be a "one step" and "eager" operation
 		@SuppressWarnings("unchecked")
 		public static <T extends DefaultVertex<T>> GenericHandler<T> newMetaHandler(Builder<T> builder, int dim) {
 			T root = (T) builder.getContext().getRoot();
@@ -43,12 +49,14 @@ public class GenericHandler<T extends DefaultVertex<T>> {
 			return new GenericHandler<>(builder, null, null, null, root.getValue(), components).adjustMeta(dim);
 		}
 
+		// TODO to remove, adjustMeta must a lazy operation i think
 		@SuppressWarnings("unchecked")
 		public static <T extends DefaultVertex<T>> GenericHandler<T> newMetaHandler(Builder<T> builder, T meta, Serializable value, T... components) {
 			List<T> componentsList = Arrays.asList(components);
 			return new GenericHandler<>(builder, null, meta, null, value, componentsList).adjustMeta(meta, value, componentsList);
 		}
 
+		// TODO to remove, Restructurator must not be called from external
 		public static <T extends DefaultVertex<T>> RebuildHandler<T> newRebuildHandler(Builder<T> builder, T toRebuild, Supplier<T> rebuilder, NavigableSet<T> dependenciesToRebuild) {
 			return new RebuildHandler<>(builder, toRebuild, rebuilder, dependenciesToRebuild);
 		}
@@ -136,7 +144,7 @@ public class GenericHandler<T extends DefaultVertex<T>> {
 		return this;
 	}
 
-	List<T> computeAndCheckOverridesAreReached(T adjustedMeta, List<T> overrides, Serializable value, List<T> components) {
+	private List<T> computeAndCheckOverridesAreReached(T adjustedMeta, List<T> overrides, Serializable value, List<T> components) {
 		List<T> supers = new ArrayList<>(new SupersComputer<>(adjustedMeta, overrides, value, components));
 		if (!ApiStatics.areOverridesReached(supers, overrides))
 			builder.getContext().discardWithException(new UnreachableOverridesException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
