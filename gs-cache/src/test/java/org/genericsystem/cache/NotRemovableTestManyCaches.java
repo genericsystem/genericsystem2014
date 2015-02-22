@@ -39,7 +39,7 @@ public class NotRemovableTestManyCaches extends AbstractTest {
 		Engine engine = new Engine();
 		Cache cache = engine.getCurrentCache();
 		Generic car = engine.addInstance("Car");
-		cache.tryFlush();
+		cache.flush();
 		Cache cache2 = engine.newCache().start();
 		Generic color = car.addAttribute("Color");
 		Generic myBmw = car.addInstance("myBmw");
@@ -54,11 +54,11 @@ public class NotRemovableTestManyCaches extends AbstractTest {
 		Generic car = engine.addInstance("Car");
 		Generic color = car.addAttribute("Color");
 		Generic myBmw = car.addInstance("myBmw");
-		cache3.tryFlush();
+		cache3.flush();
 		cache2.start();
 		cache2.pickNewTs();
 		Generic myBmwRed = myBmw.addHolder(color, "red");
-		cache2.tryFlush();
+		cache2.flush();
 		cache.start();
 		cache.pickNewTs();
 		catchAndCheckCause(() -> car.remove(), ReferentialIntegrityConstraintViolationException.class);
@@ -69,12 +69,12 @@ public class NotRemovableTestManyCaches extends AbstractTest {
 		Generic car = engine.addInstance("Car");
 		Generic myCar1 = car.addInstance("myCar1");
 		Cache cache1 = engine.getCurrentCache();
-		cache1.tryFlush();
+		cache1.flush();
 		myCar1.remove();
-		cache1.tryFlush();
+		cache1.flush();
 		Cache cache2 = engine.newCache().start();
 		catchAndCheckCause(() -> myCar1.remove(), AliveConstraintViolationException.class);
-		cache2.tryFlush();
+		cache2.flush();
 	}
 
 	public void test002_() {
@@ -82,15 +82,15 @@ public class NotRemovableTestManyCaches extends AbstractTest {
 		Generic car = engine.addInstance("Car");
 		Generic myCar = car.addInstance("myCar");
 		Cache cache = engine.getCurrentCache();
-		cache.tryFlush();
+		cache.flush();
 
 		Cache cache2 = engine.newCache().start();
 		myCar.remove();
 
 		cache.start();
 		myCar.remove();
-		cache.flush();
+		cache.flushLater();
 		cache2.start();
-		catchAndCheckCause(() -> cache2.tryFlush(), OptimisticLockConstraintViolationException.class);
+		catchAndCheckCause(() -> cache2.flush(), OptimisticLockConstraintViolationException.class);
 	}
 }

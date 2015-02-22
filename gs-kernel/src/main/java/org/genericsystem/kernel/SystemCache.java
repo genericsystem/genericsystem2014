@@ -9,7 +9,6 @@ import java.util.Map;
 
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.defaults.DefaultRoot;
-import org.genericsystem.kernel.GenericHandler.GenericHandlerFactory;
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Dependencies;
 import org.genericsystem.kernel.annotations.Meta;
@@ -63,7 +62,15 @@ public class SystemCache<T extends AbstractVertex<T>> {
 		T meta = setMeta(clazz);
 		List<T> overrides = setOverrides(clazz);
 		List<T> components = setComponents(clazz);
-		T result = GenericHandlerFactory.newHandler(((T) root).getCurrentCache().getBuilder(), clazz, meta, overrides, findValue(clazz), components).buildAndPlug();
+		T result;
+		Builder<T> builder = ((T) root).getCurrentCache().getBuilder();
+		if (meta == null) {
+			assert overrides.size() == 1;
+		} else {
+			if (meta.isMeta())
+				meta = builder.setMeta(components.size());
+		}
+		result = builder.buildAndPlug(clazz, meta, overrides, findValue(clazz), components);
 		put(clazz, result);
 		mountConstraints(clazz, result);
 		triggersDependencies(clazz);

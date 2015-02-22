@@ -7,7 +7,6 @@ import org.genericsystem.api.defaults.DefaultContext;
 import org.genericsystem.api.defaults.DefaultRoot;
 import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.api.exception.ExistsException;
-import org.genericsystem.kernel.GenericHandler.GenericHandlerFactory;
 
 public abstract class Context<T extends DefaultVertex<T>> implements DefaultContext<T> {
 
@@ -47,14 +46,9 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 		return builder.newTArray(dim);
 	}
 
-	protected T getMeta(int dim) {
-		T adjustedMeta = GenericHandlerFactory.newMetaHandler(builder, dim).get();
-		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
-	}
-
 	@Override
 	public T addInstance(T meta, List<T> overrides, Serializable value, List<T> components) {
-		GenericHandler<T> genericBuilder = GenericHandlerFactory.newHandlerWithComputeSupers(builder, null, meta, overrides, value, components);
+		GenericHandler<T> genericBuilder = new GenericHandler<>(builder, null, meta, overrides, value, components);
 		T generic = genericBuilder.get();
 		if (generic != null)
 			discardWithException(new ExistsException("An equivalent instance already exists : " + generic.info()));
@@ -63,7 +57,7 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 
 	@Override
 	public T setInstance(T meta, List<T> overrides, Serializable value, List<T> components) {
-		GenericHandler<T> genericBuilder = GenericHandlerFactory.newHandlerWithComputeSupers(builder, null, meta, overrides, value, components);
+		GenericHandler<T> genericBuilder = new GenericHandler<>(builder, null, meta, overrides, value, components);
 		T generic = genericBuilder.get();
 		if (generic != null)
 			return generic;
@@ -73,27 +67,33 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 
 	@Override
 	public T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents) {
-		return GenericHandlerFactory.newHandlerWithComputeSupers(builder, update.getClass(), update.getMeta(), overrides, newValue, newComponents).update(update);
+		return new GenericHandler<>(builder, update.getClass(), update.getMeta(), overrides, newValue, newComponents).update(update);
 	}
 
 	@Override
 	public void forceRemove(T generic) {
-		GenericHandlerFactory.newRebuildHandler(builder, null, null, builder.getContext().computeDependencies(generic)).rebuildAll();
+		getBuilder().rebuildAll(null, null, builder.getContext().computeDependencies(generic));
 	}
 
 	@Override
 	public void remove(T generic) {
-		GenericHandlerFactory.newRebuildHandler(builder, null, null, builder.getContext().computeRemoveDependencies(generic)).rebuildAll();
+		builder.rebuildAll(null, null, builder.getContext().computeRemoveDependencies(generic));
 	}
 
 	@Override
 	public void conserveRemove(T generic) {
-		GenericHandlerFactory.newRebuildHandler(builder, generic, () -> generic, builder.getContext().computeDependencies(generic)).rebuildAll();
+		builder.rebuildAll(generic, () -> generic, builder.getContext().computeDependencies(generic));
 	}
 
 	protected abstract T plug(T generic);
 
 	protected abstract void unplug(T generic);
+
+	@SuppressWarnings("unchecked")
+	protected T getMeta(int dim) {
+		T adjustedMeta = getBuilder().adjustMeta((T) getRoot(), dim);
+		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
+	}
 
 	protected void triggersMutation(T oldDependency, T newDependency) {
 	}

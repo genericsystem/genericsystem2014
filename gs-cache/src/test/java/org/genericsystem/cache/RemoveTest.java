@@ -65,10 +65,10 @@ public class RemoveTest extends AbstractTest {
 
 		myBmwRed.remove();
 		assert !myBmwRed.isAlive();
-		engine.getCurrentCache().tryFlush();
+		engine.getCurrentCache().flush();
 		assert !myBmwRed.isAlive();
 		Generic myBmwRed2 = myBmw.addHolder(color, "red");
-		engine.getCurrentCache().tryFlush();
+		engine.getCurrentCache().flush();
 		assert !myBmwRed.isAlive();
 		assert myBmwRed2.isAlive();
 		myBmwRed2.remove();

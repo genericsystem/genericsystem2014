@@ -10,7 +10,7 @@ public class RemoveManyCachesTest extends AbstractTest {
 		Cache cache = engine.getCurrentCache();
 		Generic car = engine.addInstance("Car");
 		Generic color = car.addAttribute("Color");
-		cache.tryFlush();
+		cache.flush();
 		Cache cache2 = engine.newCache().start();
 		Generic myBmw = car.addInstance("myBmw");
 		Generic myBmwRed = myBmw.addHolder(color, "red");
@@ -28,7 +28,7 @@ public class RemoveManyCachesTest extends AbstractTest {
 		Cache cache = engine.getCurrentCache();
 		Generic car = engine.addInstance("Car");
 		Generic color = car.addAttribute("Color");
-		cache.tryFlush();
+		cache.flush();
 		Cache cache2 = engine.newCache().start();
 		Generic myBmw2 = car.addInstance("myBmw");
 		Generic myBmwRed2 = myBmw2.addHolder(color, "red");
@@ -36,7 +36,7 @@ public class RemoveManyCachesTest extends AbstractTest {
 		cache.pickNewTs();
 		Generic myBmw = car.addInstance("myBmw");
 		Generic myBmwRed = myBmw.addHolder(color, "red");
-		cache.tryFlush();
+		cache.flush();
 		assert myBmw.getHolders(color).contains(myBmwRed);
 		assert myBmw.getHolders(color).size() == 1;
 

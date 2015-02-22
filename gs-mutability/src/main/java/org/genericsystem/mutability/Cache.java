@@ -176,11 +176,11 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 	}
 
 	public void flush() {
-		cache.tryFlush(); // triggers flush automatically
+		cache.flush(); // triggers flush automatically
 	}
 
 	public void flushLater() {
-		cache.flush();
+		cache.flushLater();
 	}
 
 	public long getTs() {

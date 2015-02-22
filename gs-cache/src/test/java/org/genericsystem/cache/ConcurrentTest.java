@@ -14,7 +14,7 @@ public class ConcurrentTest extends AbstractTest {
 		assert cache2.isAlive(car);
 		assert !cache.isAlive(car);
 
-		cache2.tryFlush();
+		cache2.flush();
 
 		assert cache2.isAlive(car);
 		cache.start();
@@ -36,7 +36,7 @@ public class ConcurrentTest extends AbstractTest {
 		Engine engine = new Engine();
 		Cache cache = engine.getCurrentCache();
 		Generic car = engine.addInstance("Car");
-		cache.tryFlush();
+		cache.flush();
 
 		assert cache.isAlive(car);
 		assert engine.getInstances().contains(car);

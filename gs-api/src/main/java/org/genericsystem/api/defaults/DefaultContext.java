@@ -34,10 +34,11 @@ public interface DefaultContext<T extends DefaultVertex<T>> extends IContext<T> 
 	}
 
 	default T getInstance(T meta, List<T> overrides, Serializable value, T... components) {
-		T adjustMeta = meta.adjustMeta(value, components);
+		List<T> componentsList = Arrays.asList(components);
+		T adjustMeta = meta.adjustMeta(value, componentsList);
 		if (adjustMeta.getComponents().size() < components.length)
 			return null;
-		return adjustMeta.getDirectInstance(overrides, value, Arrays.asList(components));
+		return adjustMeta.getDirectInstance(overrides, value, componentsList);
 	}
 
 	Snapshot<T> getInheritings(T vertex);

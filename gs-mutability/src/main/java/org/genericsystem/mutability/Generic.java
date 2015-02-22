@@ -17,11 +17,6 @@ public interface Generic extends DefaultVertex<Generic> {
 	}
 
 	@Override
-	default Generic adjustMeta(Serializable value, Generic... components) {
-		return getCurrentCache().wrap(getCurrentCache().unwrap(this).adjustMeta(value, getCurrentCache().unwrap(components)));
-	}
-
-	@Override
 	default Generic getMeta() {
 		return getCurrentCache().wrap(getCurrentCache().unwrap(this).getMeta());
 	}
