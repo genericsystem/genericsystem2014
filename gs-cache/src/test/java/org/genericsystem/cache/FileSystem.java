@@ -1,7 +1,5 @@
 package org.genericsystem.cache;
 
-import java.util.Optional;
-
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.cache.FileSystem.Directory;
 import org.genericsystem.cache.FileSystem.FileType;
@@ -16,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 @SystemGeneric
 @InstanceValueClassConstraint(String.class)
-// @Components(FileSystem.class)
 @Dependencies(FileType.class)
 @InstanceClass(Directory.class)
 public class FileSystem extends Generic {
@@ -30,8 +27,7 @@ public class FileSystem extends Generic {
 		}
 
 		public File getFile(String name) {
-			Optional<Generic> holder = getHolders(getRoot().find(FileType.class)).get().filter(x -> name.equals(x.getValue())).findFirst();
-			return holder.isPresent() ? (File) holder.get() : null;
+			return (File) getHolders(getRoot().find(FileType.class)).get().filter(x -> name.equals(x.getValue())).findFirst().orElse(null);
 		}
 
 		public File addFile(String name) {
@@ -39,9 +35,7 @@ public class FileSystem extends Generic {
 		}
 
 		public File addFile(String name, byte[] content) {
-			File result = (File) addHolder(getRoot().find(FileType.class), name);
-			result.setContent(content);
-			return result;
+			return ((File) addHolder(getRoot().find(FileType.class), name)).setContent(content);
 		}
 
 		public File setFile(String name) {
@@ -49,9 +43,7 @@ public class FileSystem extends Generic {
 		}
 
 		public File setFile(String name, byte[] content) {
-			File result = (File) setHolder(getRoot().find(FileType.class), name);
-			result.setContent(content);
-			return result;
+			return ((File) setHolder(getRoot().find(FileType.class), name)).setContent(content);
 		}
 
 		public Snapshot<Directory> getDirectories() {
@@ -59,9 +51,7 @@ public class FileSystem extends Generic {
 		}
 
 		public Directory getDirectory(String name) {
-			Optional<Generic> optional = getInheritings().get().filter(x -> x.getValue().equals(name)).findFirst();
-			return optional.isPresent() ? (Directory) optional.get() : null;
-
+			return (Directory) getInheritings().get().filter(x -> x.getValue().equals(name)).findFirst().orElse(null);
 		}
 
 		public Directory addDirectory(String name) {
@@ -89,11 +79,12 @@ public class FileSystem extends Generic {
 
 	public static class File extends Generic {
 		public byte[] getContent() {
-			return (byte[]) getHolders(getRoot().find(FileContent.class)).get().findFirst().get().getValue();
+			return (byte[]) getHolders(getRoot().find(FileContent.class)).first().getValue();
 		}
 
-		public Generic setContent(byte[] content) {
-			return setHolder(getRoot().find(FileContent.class), content);
+		public File setContent(byte[] content) {
+			setHolder(getRoot().find(FileContent.class), content);
+			return this;
 		}
 
 		public String getShortPath() {
@@ -105,16 +96,14 @@ public class FileSystem extends Generic {
 	@SingularConstraint
 	@Components(FileType.class)
 	@InstanceValueClassConstraint(byte[].class)
-	public static class FileContent extends Generic {
-	}
+	public static class FileContent extends Generic {}
 
 	public Snapshot<Generic> getRootDirectories() {
 		return getInstances();
 	}
 
 	public Directory getRootDirectory(String name) {
-		Optional<Generic> optional = getRootDirectories().get().filter(x -> x.getValue().equals(name)).findFirst();
-		return optional.isPresent() ? (Directory) optional.get() : null;
+		return (Directory) getRootDirectories().get().filter(x -> x.getValue().equals(name)).findFirst().orElse(null);
 	}
 
 	public Directory addRootDirectory(String name) {
