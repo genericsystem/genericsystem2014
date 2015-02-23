@@ -6,8 +6,10 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.defaults.DefaultRoot;
+import org.genericsystem.api.exception.CyclicException;
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Dependencies;
 import org.genericsystem.kernel.annotations.Meta;
@@ -189,7 +191,7 @@ public class SystemCache<T extends AbstractVertex<T>> {
 		if (componentsAnnotation != null)
 			for (Class<?> compositeClass : componentsAnnotation.value())
 				if (compositeClass.equals(clazz))
-					components.add(null);
+					root.getCurrentCache().discardWithException(new CyclicException("The annoted class " + clazz + " has a component with same name"));
 				else
 					components.add(set(compositeClass));
 		return components;
