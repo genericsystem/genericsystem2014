@@ -6,7 +6,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.defaults.DefaultVertex;
 
@@ -53,8 +52,6 @@ public class SupersComputer<T extends DefaultVertex<T>> extends LinkedHashSet<T>
 		boolean isMeta = meta.isSpecializationOf(candidate);
 		boolean isSuper = !isMeta && candidate.isSuperOf(meta, overrides, value, components);
 		if (!isMeta && !isSuper) {
-			// boolean selected = false;
-			// boolean[] selectableSelected = new boolean[] { true, false };
 			alreadyComputed.put(candidate, false);
 			return false;
 		}

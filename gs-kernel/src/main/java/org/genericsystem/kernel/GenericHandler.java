@@ -2,11 +2,10 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.List;
-
 import org.genericsystem.api.defaults.DefaultVertex;
 
 public class GenericHandler<T extends DefaultVertex<T>> {
-	private final Builder<T> builder;
+	private final Context<T> context;
 	private final Class<?> clazz;
 	private final T meta;
 	private T adjustedMeta;
@@ -16,9 +15,9 @@ public class GenericHandler<T extends DefaultVertex<T>> {
 	private final List<T> components;
 	private T gettable;
 
-	public GenericHandler(Builder<T> builder, Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
+	public GenericHandler(Context<T> context, Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
 		assert overrides != null;
-		this.builder = builder;
+		this.context = context;
 		this.clazz = clazz;
 		this.meta = meta;
 		this.overrides = overrides;
@@ -29,8 +28,8 @@ public class GenericHandler<T extends DefaultVertex<T>> {
 		reComputeSupers();
 	}
 
-	public GenericHandler(Builder<T> builder, T gettable) {
-		this.builder = builder;
+	public GenericHandler(Context<T> context, T gettable) {
+		this.context = context;
 		this.clazz = gettable.getClass();
 		this.meta = gettable.getMeta();
 		this.supers = gettable.getSupers();
@@ -40,16 +39,16 @@ public class GenericHandler<T extends DefaultVertex<T>> {
 	}
 
 	public void check() {
-		builder.getContext().getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
+		context.getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
 	}
 
 	public void adjustMeta() {
-		adjustedMeta = meta.isMeta() ? builder.setMeta(components.size()) : meta.adjustMeta(value, components);
+		adjustedMeta = meta.isMeta() ? context.setMeta(components.size()) : meta.adjustMeta(value, components);
 	}
 
 	public void reComputeSupers() {
 		assert supers == null;
-		supers = builder.computeAndCheckOverridesAreReached(adjustedMeta, overrides, value, components);
+		supers = context.getBuilder().computeAndCheckOverridesAreReached(adjustedMeta, overrides, value, components);
 	}
 
 	public T get() {
@@ -66,20 +65,20 @@ public class GenericHandler<T extends DefaultVertex<T>> {
 
 	public T add() {
 		assert supers != null;
-		return builder.rebuildAll(null, () -> builder.buildAndPlug(clazz, adjustedMeta, supers, value, components), builder.getContext().computePotentialDependencies(adjustedMeta, supers, value, components));
+		return context.getRestructurator().rebuildAll(null, () -> context.getBuilder().buildAndPlug(clazz, adjustedMeta, supers, value, components), context.computePotentialDependencies(adjustedMeta, supers, value, components));
 	}
 
 	public T set(T update) {
 		assert update != null;
 		assert supers != null;
-		return builder.rebuildAll(update, () -> builder.buildAndPlug(clazz, adjustedMeta, supers, value, components), builder.getContext().computeDependencies(update));
+		return context.getRestructurator().rebuildAll(update, () -> context.getBuilder().buildAndPlug(clazz, adjustedMeta, supers, value, components), context.computeDependencies(update));
 	}
 
 	public T update(T update) {
 		assert update != null;
 		assert supers != null;
 		// assert !supers.contains(update);
-		return builder.rebuildAll(update, () -> builder.getOrBuild(clazz, adjustedMeta, supers, value, components), builder.getContext().computeDependencies(update));
+		return context.getRestructurator().rebuildAll(update, () -> context.getBuilder().getOrBuild(clazz, adjustedMeta, supers, value, components), context.computeDependencies(update));
 	}
 
 }

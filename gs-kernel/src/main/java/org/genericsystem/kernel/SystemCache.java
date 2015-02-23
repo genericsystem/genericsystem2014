@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.defaults.DefaultRoot;
 import org.genericsystem.kernel.annotations.Components;
@@ -68,7 +67,7 @@ public class SystemCache<T extends AbstractVertex<T>> {
 			assert overrides.size() == 1;
 		} else {
 			if (meta.isMeta())
-				meta = builder.setMeta(components.size());
+				meta = ((T) root).getCurrentCache().setMeta(components.size());
 		}
 		result = builder.buildAndPlug(clazz, meta, overrides, findValue(clazz), components);
 		put(clazz, result);
