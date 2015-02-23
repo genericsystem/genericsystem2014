@@ -37,8 +37,8 @@ public class CarBean {
 		return car.getAllInstances().get().collect(Collectors.toList());
 	}
 
-	public JsfAdapter getPower(Generic instance) {
-		return new JsfAdapter() {
+	public ValueExpressionWrapper getPower(Generic instance) {
+		return new ValueExpressionWrapper() {
 			@Override
 			public String getValue() {
 				// Power is a property constraint
@@ -77,7 +77,7 @@ public class CarBean {
 		return "#";
 	}
 
-	public static interface JsfAdapter {
+	public static interface ValueExpressionWrapper {
 		public String getValue();
 
 		public void setValue(String value);
