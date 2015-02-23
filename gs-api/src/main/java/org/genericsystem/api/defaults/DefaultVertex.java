@@ -62,8 +62,7 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 	}
 
 	default boolean isDependencyOf(T meta, List<T> supers, Serializable value, List<T> components) {
-		return inheritsFrom(meta, supers, value, components) || getComponents().stream().filter(component -> component != null).anyMatch(component -> component.isDependencyOf(meta, supers, value, components))
-				|| (!isMeta() && getMeta().isDependencyOf(meta, supers, value, components))
+		return inheritsFrom(meta, supers, value, components) || getComponents().stream().anyMatch(component -> component.isDependencyOf(meta, supers, value, components)) || (!isMeta() && getMeta().isDependencyOf(meta, supers, value, components))
 				|| (!components.equals(getComponents()) && componentsDepends(getComponents(), components) && supers.stream().anyMatch(override -> override.inheritsFrom(getMeta())));
 	}
 
@@ -83,8 +82,7 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 		loop: for (T superComponent : superComponents) {
 			for (; subIndex < subComponents.size(); subIndex++) {
 				T subComponent = subComponents.get(subIndex);
-				if ((subComponent == null && superComponent == null) || (subComponent != null && superComponent != null && subComponent.isSpecializationOf(superComponent))
-						|| (subComponent == null && superComponent != null && this.isSpecializationOf(superComponent)) || (subComponent != null && superComponent == null && subComponent.isSpecializationOf((T) this))) {
+				if (subComponent.isSpecializationOf(superComponent) || isSpecializationOf(superComponent) || subComponent.isSpecializationOf((T) this)) {
 					if (isSingularConstraintEnabled(subIndex) && subComponent != superComponent)
 						singular[0] = true;
 					subIndex++;

@@ -209,8 +209,7 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 				for (T superT : add.getSupers())
 					writeLockAndCheckMvcc(superT);
 				for (T component : add.getComponents())
-					if (component != null)
-						writeLockAndCheckMvcc(component);
+					writeLockAndCheckMvcc(component);
 				writeLockAndCheckMvcc(add);
 			}
 		}

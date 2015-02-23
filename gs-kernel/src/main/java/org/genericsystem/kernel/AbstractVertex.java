@@ -21,6 +21,8 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		this.ts = ts;
 		this.meta = meta != null ? meta : (T) this;
 		this.value = value;
+		for (T component : components)
+			assert component != null && !equals(component);
 		this.components = Collections.unmodifiableList(new ArrayList<>(components));
 		this.supers = Collections.unmodifiableList(new ArrayList<>(supers));
 		lifeManager = new LifeManager(otherTs);

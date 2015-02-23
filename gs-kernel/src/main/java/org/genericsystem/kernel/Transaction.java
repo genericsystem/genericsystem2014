@@ -87,7 +87,7 @@ public class Transaction<T extends AbstractVertex<T>> extends Context<T> {
 		if (!generic.isMeta())
 			generic.getMeta().getInstancesDependencies().add(generic);
 		generic.getSupers().forEach(superGeneric -> superGeneric.getInheritingsDependencies().add(generic));
-		generic.getComponents().stream().filter(component -> component != null).distinct().forEach(component -> component.getCompositesDependencies().add(generic));
+		generic.getComponents().stream().distinct().forEach(component -> component.getCompositesDependencies().add(generic));
 		getChecker().checkAfterBuild(true, false, generic);
 		return generic;
 	}
@@ -100,7 +100,7 @@ public class Transaction<T extends AbstractVertex<T>> extends Context<T> {
 		if (!result)
 			discardWithException(new NotFoundException(generic.info()));
 		generic.getSupers().forEach(superGeneric -> superGeneric.getInheritingsDependencies().remove(generic));
-		generic.getComponents().stream().filter(component -> component != null).forEach(component -> component.getCompositesDependencies().remove(generic));
+		generic.getComponents().forEach(component -> component.getCompositesDependencies().remove(generic));
 	}
 
 }
