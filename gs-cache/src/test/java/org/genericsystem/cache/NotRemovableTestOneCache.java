@@ -25,7 +25,7 @@ public class NotRemovableTestOneCache extends AbstractTest {
 		Generic color = car.addAttribute("Color");
 		Generic myBmw = car.addInstance("myBmw");
 		Generic myBmwRed = myBmw.addHolder(color, "red");
-		cache.tryFlush();
+		cache.flush();
 		myBmwRed.remove();
 		catchAndCheckCause(() -> myBmwRed.remove(), AliveConstraintViolationException.class);
 	}
@@ -34,7 +34,7 @@ public class NotRemovableTestOneCache extends AbstractTest {
 		Engine engine = new Engine();
 		Cache cache = engine.getCurrentCache();
 		Generic car = engine.addInstance("Car");
-		cache.tryFlush();
+		cache.flush();
 		Generic color = car.addAttribute("Color");
 		Generic myBmw = car.addInstance("myBmw");
 		catchAndCheckCause(() -> car.remove(), ReferentialIntegrityConstraintViolationException.class);
@@ -47,7 +47,7 @@ public class NotRemovableTestOneCache extends AbstractTest {
 		Generic color = car.addAttribute("Color");
 		Generic myBmw = car.addInstance("myBmw");
 		Generic myBmwRed = myBmw.addHolder(color, "red");
-		cache.tryFlush();
+		cache.flush();
 		catchAndCheckCause(() -> color.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 }

@@ -1,5 +1,6 @@
 package org.genericsystem.kernel;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import org.genericsystem.api.core.ApiStatics;
@@ -94,7 +95,7 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test001_AdjustMeta_MetaLevel_metaAttribut_NoComposite() {
 		Root engine = new Root();
-		assert engine == engine.adjustMeta("Power");
+		assert engine == engine.adjustMeta("Power", Collections.emptyList());
 	}
 
 	public void test002_AdjustMeta_MetaLevel_metaAttribut_OneComposite() {
@@ -132,7 +133,7 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex color = engine.addInstance("Color");
 		engine.addInstance("CarColor", car, color);
 		Vertex finition = engine.addInstance("Finition");
-		Vertex adjustMeta = engine.adjustMeta("CarColorFinition", car, color, finition);
+		Vertex adjustMeta = engine.adjustMeta("CarColorFinition", Arrays.asList(car, color, finition));
 		assert metaRelation == adjustMeta : adjustMeta.info();
 	}
 
@@ -143,7 +144,7 @@ public class AdjustMetaTest extends AbstractTest {
 		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Vertex car = vehicle.addInstance("Car");
 		Vertex red = color.addInstance("Red");
-		assert vehicleColor == vehicleColor.adjustMeta("CarRed", car, red) : engine.adjustMeta("CarRed", car, red);
+		assert vehicleColor == vehicleColor.adjustMeta("CarRed", Arrays.asList(car, red)) : engine.adjustMeta("CarRed", Arrays.asList(car, red));
 	}
 
 	public void test007_AdjustMeta_TypeLevel_Relation_TwoComposites_oneCompositeSpecializedByInheritance() {

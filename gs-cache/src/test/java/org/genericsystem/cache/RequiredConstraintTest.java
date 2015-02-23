@@ -87,9 +87,9 @@ public class RequiredConstraintTest extends AbstractTest {
 		assert power.isRequiredConstraintEnabled(ApiStatics.BASE_POSITION);
 		Cache cache = engine.getCurrentCache();
 		assert myBmw.getHolders(power).contains(v236);
-		cache.tryFlush();
+		cache.flush();
 		v236.remove();
-		catchAndCheckCause(() -> cache.tryFlush(), RequiredConstraintViolationException.class);
+		catchAndCheckCause(() -> cache.flush(), RequiredConstraintViolationException.class);
 
 	}
 
@@ -105,9 +105,9 @@ public class RequiredConstraintTest extends AbstractTest {
 		assert power.isRequiredConstraintEnabled(ApiStatics.BASE_POSITION);
 		Cache cache = engine.getCurrentCache();
 		// power.getComponents().stream().forEach(x -> System.out.println(x.detailedInfo()));
-		cache.tryFlush();
+		cache.flush();
 		v236.remove();
-		catchAndCheckCause(() -> cache.tryFlush(), RequiredConstraintViolationException.class);
+		catchAndCheckCause(() -> cache.flush(), RequiredConstraintViolationException.class);
 	}
 	//
 	// public void test004_removeAttr() {

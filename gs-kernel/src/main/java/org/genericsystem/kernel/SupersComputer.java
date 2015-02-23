@@ -53,20 +53,30 @@ public class SupersComputer<T extends DefaultVertex<T>> extends LinkedHashSet<T>
 		boolean isMeta = meta.isSpecializationOf(candidate);
 		boolean isSuper = !isMeta && candidate.isSuperOf(meta, overrides, value, components);
 		if (!isMeta && !isSuper) {
-			alreadyComputed.put(candidate, Boolean.FALSE);
-			return true;
+			// boolean selected = false;
+			// boolean[] selectableSelected = new boolean[] { true, false };
+			alreadyComputed.put(candidate, false);
+			return false;
 		}
 		boolean selectable = true;
-		for (T inheriting : candidate.getInheritings())
-			selectable = visit(inheriting);
-		if (isMeta)
-			for (T instance : candidate.getInstances())
-				selectable = visit(instance);
-		alreadyComputed.put(candidate, Boolean.TRUE);
+		for (T inheriting : candidate.getInheritings()) {
+			boolean selected = visit(inheriting);
+			if (selected)
+				selectable = false;
+		}
+		if (isMeta) {
+			for (T instance : candidate.getInstances()) {
+				boolean selected = visit(instance);
+				if (selected)
+					selectable = false;
+			}
+		}
+		result = alreadyComputed.put(candidate, !selectable);
+		assert result == null : candidate.info();
 		if (selectable && (candidate.getLevel() == reachLevel) && !candidate.inheritsFrom(meta, overrides, value, components)) {
 			add(candidate);
-			alreadyComputed.put(candidate, Boolean.FALSE);
+			return true;
 		}
-		return alreadyComputed.get(candidate);
+		return !selectable;
 	}
 }

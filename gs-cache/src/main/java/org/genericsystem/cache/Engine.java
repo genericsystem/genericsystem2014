@@ -38,7 +38,7 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 		Cache<Generic> cache = start(newCache());
 		systemCache = new SystemCache<>(this, Root.class);
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
-		cache.tryFlush();
+		cache.flush();
 		archiver = new Archiver<Generic>(this, persistentDirectoryPath);
 		cache.pickNewTs();
 		initialized = true;

@@ -8,6 +8,7 @@ import java.util.Objects;
 
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.ISignature;
+import org.genericsystem.api.exception.AmbiguousSelectionException;
 
 public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncestors<T>, DefaultDependencies<T>, DefaultDisplay<T>, DefaultSystemProperties<T>, DefaultCompositesInheritance<T>, DefaultWritable<T>, DefaultTree<T> {
 
@@ -104,7 +105,25 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 		return result;
 	}
 
-	T adjustMeta(Serializable value, T... components);
+	@SuppressWarnings("unchecked")
+	default T adjustMeta(Serializable value, T... components) {
+		return adjustMeta(value, Arrays.asList(components));
+	}
+
+	@SuppressWarnings("unchecked")
+	default T adjustMeta(Serializable value, List<T> components) {
+		T result = null;
+		if (!components.equals(getComponents()))
+			for (T directInheriting : getInheritings()) {
+				if (componentsDepends(components, directInheriting.getComponents())) {
+					if (result == null) {
+						result = directInheriting;
+					} else
+						getCurrentCache().discardWithException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
+				}
+			}
+		return result == null ? (T) this : result.adjustMeta(value, components);
+	}
 
 	@SuppressWarnings("unchecked")
 	default T getDirectInstance(List<T> overrides, Serializable value, List<T> components) {

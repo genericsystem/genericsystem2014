@@ -1,156 +1,59 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.NavigableSet;
-import java.util.function.Supplier;
 
-import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.defaults.DefaultVertex;
-import org.genericsystem.api.exception.AmbiguousSelectionException;
-import org.genericsystem.api.exception.UnreachableOverridesException;
 
 public class GenericHandler<T extends DefaultVertex<T>> {
-	protected final Builder<T> builder;
-
+	private final Builder<T> builder;
 	private final Class<?> clazz;
 	private final T meta;
 	private T adjustedMeta;
-	private final List<T> overrides;
+	private List<T> overrides;
 	private List<T> supers;
 	private final Serializable value;
 	private final List<T> components;
 	private T gettable;
 
-	public static class GenericHandlerFactory {
-		public static <T extends DefaultVertex<T>> GenericHandler<T> newHandlerWithComputeSupers(Builder<T> builder, Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
-			return new GenericHandler<>(builder, clazz, meta, overrides, value, components).check().adjustMeta().computeSupers();
-		}
-
-		public static <T extends DefaultVertex<T>> GenericHandler<T> newHandler(Builder<T> builder, Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
-			return new GenericHandler<>(builder, clazz, meta, overrides, value, components).adjustMeta().affectSupers();
-		}
-
-		@SuppressWarnings("unchecked")
-		public static <T extends DefaultVertex<T>> GenericHandler<T> newMetaHandler(Builder<T> builder, int dim) {
-			T root = (T) builder.getContext().getRoot();
-			List<T> components = new ArrayList<>(dim);
-			for (int i = 0; i < dim; i++)
-				components.add(root);
-			return new GenericHandler<>(builder, null, null, null, root.getValue(), components).adjustMeta(dim);
-		}
-
-		@SuppressWarnings("unchecked")
-		public static <T extends DefaultVertex<T>> GenericHandler<T> newMetaHandler(Builder<T> builder, T meta, Serializable value, T... components) {
-			List<T> componentsList = Arrays.asList(components);
-			return new GenericHandler<>(builder, null, meta, null, value, componentsList).adjustMeta(meta, value, componentsList);
-		}
-
-		public static <T extends DefaultVertex<T>> RebuildHandler<T> newRebuildHandler(Builder<T> builder, T toRebuild, Supplier<T> rebuilder, NavigableSet<T> dependenciesToRebuild) {
-			return new RebuildHandler<>(builder, toRebuild, rebuilder, dependenciesToRebuild);
-		}
-	}
-
-	protected GenericHandler(Builder<T> builder) {
-		// assert overrides != null;
-		this.builder = builder;
-		this.clazz = null;
-		this.meta = null;
-		this.overrides = null;
-		this.value = null;
-		this.components = null;
-	}
-
-	private GenericHandler(Builder<T> builder, Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
-		// assert overrides != null;
+	public GenericHandler(Builder<T> builder, Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
+		assert overrides != null;
 		this.builder = builder;
 		this.clazz = clazz;
 		this.meta = meta;
 		this.overrides = overrides;
 		this.value = value;
 		this.components = components;
+		check();
+		adjustMeta();
+		reComputeSupers();
 	}
 
-	public GenericHandler<T> check() {
+	public GenericHandler(Builder<T> builder, T gettable) {
+		this.builder = builder;
+		this.clazz = gettable.getClass();
+		this.meta = gettable.getMeta();
+		this.supers = gettable.getSupers();
+		this.value = gettable.getValue();
+		this.components = gettable.getComponents();
+		this.gettable = gettable;
+	}
+
+	public void check() {
 		builder.getContext().getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
-		return this;
 	}
 
-	public GenericHandler<T> adjustMeta() {
-		if (meta == null) {
-			assert overrides.size() == 1;
-			adjustedMeta = meta;
-		} else {
-			if (meta.isMeta())
-				adjustedMeta = GenericHandlerFactory.newMetaHandler(builder, components.size()).setMeta();
-			else
-				adjustedMeta = getAdjustMeta(meta, value, components);
-		}
-		return this;
+	public void adjustMeta() {
+		adjustedMeta = meta.isMeta() ? builder.setMeta(components.size()) : meta.adjustMeta(value, components);
 	}
 
-	private GenericHandler<T> adjustMeta(T meta, Serializable value, List<T> components) {
-		gettable = getAdjustMeta(meta, value, components);
-		return this;
-	}
-
-	private T getAdjustMeta(T meta, Serializable value, List<T> components) {
-		T result = null;
-		if (!components.equals(meta.getComponents()))
-			for (T directInheriting : meta.getInheritings()) {
-				if (meta.componentsDepends(components, directInheriting.getComponents())) {
-					if (result == null)
-						result = directInheriting;
-					else
-						builder.getContext().discardWithException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
-				}
-			}
-		return result == null ? meta : getAdjustMeta(result, value, components);
-	}
-
-	@SuppressWarnings("unchecked")
-	private GenericHandler<T> adjustMeta(int dim) {
-		adjustedMeta = adjustMeta((T) builder.getContext().getRoot(), dim);
-		if (adjustedMeta.getComponents().size() == dim)
-			gettable = adjustedMeta;
-		return this;
-	}
-
-	private T adjustMeta(T meta, int dim) {
-		assert meta.isMeta();
-		int size = meta.getComponents().size();
-		if (size > dim)
-			return null;
-		if (size == dim)
-			return meta;
-		T directInheriting = meta.getInheritings().first();
-		return directInheriting != null && directInheriting.getComponents().size() <= dim ? adjustMeta(directInheriting, dim) : meta;
-	}
-
-	public GenericHandler<T> computeSupers() {
+	public void reComputeSupers() {
 		assert supers == null;
-		supers = computeAndCheckOverridesAreReached(adjustedMeta, overrides, value, components);
-		return this;
-	}
-
-	List<T> computeAndCheckOverridesAreReached(T adjustedMeta, List<T> overrides, Serializable value, List<T> components) {
-		List<T> supers = new ArrayList<>(new SupersComputer<>(adjustedMeta, overrides, value, components));
-		if (!ApiStatics.areOverridesReached(supers, overrides))
-			builder.getContext().discardWithException(new UnreachableOverridesException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
-		return supers;
-	}
-
-	public GenericHandler<T> affectSupers() {
-		assert supers == null;
-		supers = overrides;
-		return this;
+		supers = builder.computeAndCheckOverridesAreReached(adjustedMeta, overrides, value, components);
 	}
 
 	public T get() {
-		// assert supers != null;
+		assert supers != null;
 		if (gettable == null)
 			gettable = adjustedMeta.getDirectInstance(supers, value, components);
 		return gettable;
@@ -161,39 +64,22 @@ public class GenericHandler<T extends DefaultVertex<T>> {
 		return adjustedMeta.getDirectEquivInstance(value, components);
 	}
 
-	T setMeta() {
-		T meta = get();
-		if (meta != null)
-			return meta;
-		return GenericHandlerFactory.newRebuildHandler(builder, null, () -> builder.buildAndPlug(clazz, null, Collections.singletonList(adjustedMeta), value, components),
-				builder.getContext().computePotentialDependencies(adjustedMeta, Collections.singletonList(adjustedMeta), value, components)).rebuildAll();
-	}
-
 	public T add() {
 		assert supers != null;
-		return GenericHandlerFactory.newRebuildHandler(builder, null, () -> buildAndPlug(), builder.getContext().computePotentialDependencies(adjustedMeta, supers, value, components)).rebuildAll();
+		return builder.rebuildAll(null, () -> builder.buildAndPlug(clazz, adjustedMeta, supers, value, components), builder.getContext().computePotentialDependencies(adjustedMeta, supers, value, components));
 	}
 
 	public T set(T update) {
 		assert update != null;
 		assert supers != null;
-		return GenericHandlerFactory.newRebuildHandler(builder, update, () -> buildAndPlug(), builder.getContext().computeDependencies(update)).rebuildAll();
+		return builder.rebuildAll(update, () -> builder.buildAndPlug(clazz, adjustedMeta, supers, value, components), builder.getContext().computeDependencies(update));
 	}
 
 	public T update(T update) {
 		assert update != null;
 		assert supers != null;
 		// assert !supers.contains(update);
-		return GenericHandlerFactory.newRebuildHandler(builder, update, () -> getOrBuild(), builder.getContext().computeDependencies(update)).rebuildAll();
-	}
-
-	protected T getOrBuild() {
-		T instance = meta.getDirectInstance(supers, value, components);
-		return instance == null ? buildAndPlug() : instance;
-	}
-
-	T buildAndPlug() {
-		return builder.buildAndPlug(clazz, adjustedMeta, supers, value, components);
+		return builder.rebuildAll(update, () -> builder.getOrBuild(clazz, adjustedMeta, supers, value, components), builder.getContext().computeDependencies(update));
 	}
 
 }
