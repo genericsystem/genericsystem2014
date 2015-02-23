@@ -1,96 +1,162 @@
 package org.genericsystem.mutability;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
-import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.IVertex.Visitor;
+import org.genericsystem.api.exception.ExistsException;
 import org.testng.annotations.Test;
 
 @Test
-public class TreeTest {
-	public void testSimpleTree() {
-		Engine engine = new Engine();
+public class TreeTest extends AbstractTest {
 
-		Generic html5Tags = engine.addTree("Html5Tags");
-
-		Generic html = html5Tags.addRoot("html");
-
-		Generic header = html.addChild("header");
-		Generic body = html.addChild("body");
-		Generic footer = html.addChild("footer");
-
-		Generic p = body.addChild("p");
-		Generic table = body.addChild("table");
-
-		assert html5Tags.getInstances().containsAll(Arrays.asList(html, header, body, footer, p, table)) : html5Tags.getInstances();
-		assert html.getChildren().containsAll(Arrays.asList(header, body, footer)) : html.getChildren();
-		assert header.getChildren().isEmpty() : header.getChildren();
-		assert body.getChildren().containsAll(Arrays.asList(p, table)) : body.getChildren();
-		assert footer.getChildren().isEmpty() : footer.getChildren();
-		assert p.getChildren().isEmpty() : p.getChildren();
-		assert table.getChildren().isEmpty() : table.getChildren();
+	public void test001() {
+		Engine root = new Engine();
+		Generic tree = root.addInstance("Tree");
+		assert tree.getSupers().isEmpty();
 	}
 
-	public void testInheritingNodes() {
-		Engine engine = new Engine();
+	public void test002() {
+		Engine root = new Engine();
+		Generic tree = root.addInstance("Tree");
+		Generic rootNode = tree.addInstance("rootNode");
 
-		Generic html5Tags = engine.addTree("Html5Tags");
+		assert tree.equals(rootNode.getMeta()) : rootNode.detailedInfo();
+		assert rootNode.getSupers().isEmpty();
 
-		Generic html = html5Tags.addRoot("html");
+		assert tree.getInstances().contains(rootNode);
+		assert tree.getInstances().size() == 1;
+		assert tree.getAllInstances().contains(rootNode) : tree.getAllInstances().get().collect(Collectors.toList());
+		assert tree.getAllInstances().size() == 1;
+		assert rootNode.getSupers().isEmpty();
+	}
 
-		Generic header = html.addInheritingChild("header");
-		Generic body = html.addInheritingChild("body");
-		Generic footer = html.addInheritingChild("footer");
+	public void test003() {
+		Engine root = new Engine();
+		Generic tree = root.addInstance("tree");
+		Generic html = tree.addInstance("html");
+		assert html.getMeta().equals(tree);
+		assert html.getSupers().isEmpty();
+	}
 
-		Generic p = body.addInheritingChild("p");
-		Generic table = body.addInheritingChild("table");
+	public void test004() {
+		Engine root = new Engine();
+		Generic tree = root.addInstance("tree");
+		Generic html = tree.addInstance("html");
+		Generic head = tree.addInstance(html, "head");
+		Generic body = tree.addInstance(html, "body");
+		Generic div = tree.addInstance(body, "div");
 
-		assert html5Tags.getInstances().containsAll(Arrays.asList(html, header, body, footer, p, table)) : html5Tags.getInstances();
-		assert html.getChildren().containsAll(Arrays.asList(header, body, footer)) : html.getChildren();
-		assert header.getChildren().isEmpty() : header.getChildren();
-		assert body.getChildren().containsAll(Arrays.asList(p, table)) : body.getChildren();
-		assert footer.getChildren().isEmpty() : footer.getChildren();
-		assert p.getChildren().isEmpty() : p.getChildren();
-		assert table.getChildren().isEmpty() : table.getChildren();
+		assert !html.getInheritings().contains(html);
+		assert html.getInheritings().containsAll(Arrays.asList(head, body)) : html.getInheritings().info();
+		assert html.getInheritings().size() == 2;
+		assert html.getAllInheritings().containsAll(Arrays.asList(html, head, body, div));
+		assert html.getAllInheritings().size() == 4;
 
-		assert header.inheritsFrom(html) : header.getSupers();
-		assert body.inheritsFrom(html) : body.getSupers();
-		assert footer.inheritsFrom(html) : footer.getSupers();
-		assert p.inheritsFrom(body) && p.inheritsFrom(html) : p.getSupers();
-		assert table.inheritsFrom(body) && p.inheritsFrom(html) : p.getSupers();
+		assert head.getInheritings().isEmpty();
+		assert head.getAllInheritings().contains(head);
+		assert head.getAllInheritings().size() == 1;
 
-		Generic color = engine.addInstance("Color");
-		Generic red = color.addInstance("red");
+		assert body.getInheritings().contains(div);
+		assert body.getInheritings().size() == 1;
+		assert body.getAllInheritings().containsAll(Arrays.asList(body, div));
+		assert body.getAllInheritings().size() == 2;
+
+		assert div.getInheritings().isEmpty();
+		assert div.getAllInheritings().contains(div);
+		assert div.getAllInheritings().size() == 1;
+
+	}
+
+	public void test005() {
+		Engine root = new Engine();
+		Generic tree = root.addInstance("tree");
+		Generic rootNode = tree.addInstance("rootNode");
+		Generic htmlNode = tree.addInstance(rootNode, "htmlNode");
+		Generic bodyNode = tree.addInstance(htmlNode, "bodyNode");
+		Generic divNode = tree.addInstance(bodyNode, "divNode");
+		Generic formNode = tree.addInstance(divNode, "formNode");
+
+		assert tree.getAllInstances().contains(rootNode);
+		assert tree.getAllInstances().contains(bodyNode);
+		assert tree.getAllInstances().contains(divNode);
+		assert tree.getAllInstances().contains(formNode);
+		assert tree.getAllInstances().size() == 5;
+	}
+
+	public void test006() {
+		Engine root = new Engine();
+		root.addInstance("Tree");
+		catchAndCheckCause(() -> root.addInstance("Tree"), ExistsException.class);
+	}
+
+	public void test007() {
+		Engine root = new Engine();
+
+		Generic tree = root.addInstance("Tree");
+		Generic color = root.addInstance("Color");
+		Generic treeColor = tree.addAttribute("TreeColor", color);
+
 		Generic blue = color.addInstance("blue");
-		Generic yellow = color.addInstance("yellow");
+		Generic red = color.addInstance("red");
+		Generic green = color.addInstance("green");
 
-		Generic htmlTagsColor = html5Tags.addRelation("HtmlTagsColor", color);
-		htmlTagsColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
+		tree.setHolder(treeColor, "treeIsBlueByDefault", blue);
 
-		html.addLink(htmlTagsColor, "htmlRed", red);
-		header.addLink(htmlTagsColor, "headerBlue", blue);
-		footer.addLink(htmlTagsColor, "footerYellow", yellow);
-		// No explicitly associated Color to the htmlTags body
+		Generic html = tree.addInstance("html");
+		html.setHolder(treeColor, "htmlIsRed", red);
+		Generic head = tree.addInstance(html, "head");
+		Generic body = tree.addInstance(html, "body");
+		Generic div = tree.addInstance(body, "div");
+		div.setHolder(treeColor, "divIsGreen", green);
 
-		assert html.getLink(htmlTagsColor, "htmlRed").getTargetComponent().equals(red) : html.getLink(htmlTagsColor, "htmlRed").getTargetComponent();
-		assert header.getLink(htmlTagsColor, "headerBlue").getTargetComponent().equals(blue) : header.getLink(htmlTagsColor, "headerBlue").getTargetComponent();
-		assert footer.getLink(htmlTagsColor, "footerYellow").getTargetComponent().equals(yellow) : footer.getLink(htmlTagsColor, "footerYellow").getTargetComponent();
-		assert body.getLink(htmlTagsColor, "htmlRed").getTargetComponent().equals(red) : body.getLink(htmlTagsColor, "htmlRed").getTargetComponent();
+		assert tree.getHolders(treeColor).first().getTargetComponent().equals(blue);
+		assert html.getHolders(treeColor).first().getTargetComponent().equals(red);
+		assert head.getHolders(treeColor).first().getTargetComponent().equals(red);
+		assert body.getHolders(treeColor).first().getTargetComponent().equals(red);
+		assert div.getHolders(treeColor).first().getTargetComponent().equals(green);
+	}
+
+	public void test008() {
+		Engine root = new Engine();
+
+		Generic tree = root.addInstance("Tree");
+		Generic color = root.addInstance("Color");
+		Generic treeColor = tree.addAttribute("TreeColor", color);
+
+		Generic blue = color.addInstance("blue");
+		Generic red = color.addInstance("red");
+		Generic green = color.addInstance("green");
+
+		tree.setHolder(treeColor, "treeIsBlueByDefault", blue);
+
+		Generic html = tree.addInstance("html");
+		html.setHolder(treeColor, "htmlIsRed", red);
+		Generic head = tree.addInstance(html, "head");
+		Generic body = tree.addInstance(html, "body");
+		Generic div = tree.addInstance(body, "div");
+		div.setHolder(treeColor, "divIsGreen", green);
+
+		assert tree.getHolders(treeColor).first().getTargetComponent().equals(blue);
+		assert html.getHolders(treeColor).first().getTargetComponent().equals(red);
+		assert head.getHolders(treeColor).first().getTargetComponent().equals(red);
+		assert body.getHolders(treeColor).first().getTargetComponent().equals(red);
+		assert div.getHolders(treeColor).first().getTargetComponent().equals(green);
 	}
 
 	public void testTraverseTree() {
 		Engine engine = new Engine();
 
-		Generic html5Tags = engine.addTree("Html5Tags");
+		Generic html5Tags = engine.addInstance("Html5Tags");
 
-		Generic html = html5Tags.addRoot("html");
+		Generic html = html5Tags.addInstance("html");
 
-		html.addChild("header");
-		Generic body = html.addChild("body");
-		html.addChild("footer");
+		html5Tags.addInstance(html, "header");
+		Generic body = html5Tags.addInstance(html, "body");
+		html5Tags.addInstance(html, "footer");
 
-		body.addChild("p");
-		body.addChild("table");
+		html5Tags.addInstance(body, "p");
+		html5Tags.addInstance(body, "table");
 
 		int[] result = { 0 };
 
@@ -121,21 +187,32 @@ public class TreeTest {
 		assert result[0] == 0;
 	}
 
-	public void testBinaryTree() {
-		Engine engine = new Engine();
-
-		Generic genealogicTree = engine.addTree("GenealogicTree", 2);
-
-		Generic father = genealogicTree.addRoot("father");
-		Generic mother = genealogicTree.addRoot("mother");
-
-		Generic son = father.addChild("son", mother);
-		Generic daughter = father.addChild("daughter", mother);
-
-		assert genealogicTree.getInstances().containsAll(Arrays.asList(father, mother, son, daughter)) : genealogicTree.getInstances();
-		assert father.getChildren().containsAll(Arrays.asList(son, daughter)) : father.getChildren();
-		assert mother.getChildren().containsAll(Arrays.asList(son, daughter)) : mother.getChildren();
-		assert son.getChildren().isEmpty() : son.getChildren();
-		assert daughter.getChildren().isEmpty() : daughter.getChildren();
+	public void testTree1() {
+		Engine root = new Engine();
+		Generic a1 = root.addInstance("A");
+		Generic b = root.addInstance(a1, "B");
+		Generic a2 = root.addInstance(b, "A");
+		assert root.getInstance("A").equals(a1);
+		assert root.getInstance(Arrays.asList(b), "A").equals(a2);
 	}
+
+	public void testTree2() {
+		Engine root = new Engine();
+		Generic a1 = root.addInstance("A");
+		Generic b = root.addInstance("B");
+		Generic a2 = root.addInstance(b, "A");
+		assert root.getInstance("A").equals(a1);
+		assert root.getInstance(Arrays.asList(b), "A").equals(a2);
+	}
+
+	public void testTree3() {
+		Engine root = new Engine();
+		Generic b = root.addInstance("B");
+		Generic c = root.addInstance("C");
+		Generic a1 = root.addInstance(b, "A");
+		Generic a2 = root.addInstance(c, "A");
+		assert root.getInstance("A") == null : root.getInstance("A").info();
+		assert root.getInstance(Arrays.asList(b), "A").equals(a1);
+	}
+
 }

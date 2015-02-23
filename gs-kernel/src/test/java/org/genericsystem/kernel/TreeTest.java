@@ -3,7 +3,6 @@ package org.genericsystem.kernel;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.IVertex.Visitor;
 import org.genericsystem.api.exception.ExistsException;
 import org.testng.annotations.Test;
@@ -13,23 +12,16 @@ public class TreeTest extends AbstractTest {
 
 	public void test001() {
 		Root root = new Root();
-		Vertex tree = root.addTree("Tree");
-		assert root.getMetaAttribute().equals(tree.getMeta());
-		assert tree.getComponents().contains(null) : tree.getComponents();
-		assert tree.getComponents().size() == 1;
+		Vertex tree = root.addInstance("Tree");
 		assert tree.getSupers().isEmpty();
-
-		// TODO: Ajouter un atrribut sur une instance
 	}
 
 	public void test002() {
 		Root root = new Root();
-		Vertex tree = root.addTree("Tree");
-		Vertex rootNode = tree.addRoot("rootNode");
+		Vertex tree = root.addInstance("Tree");
+		Vertex rootNode = tree.addInstance("rootNode");
 
 		assert tree.equals(rootNode.getMeta()) : rootNode.detailedInfo();
-		assert rootNode.getComponents().contains(null);
-		assert rootNode.getComponents().size() == 1;
 		assert rootNode.getSupers().isEmpty();
 
 		assert tree.getInstances().contains(rootNode);
@@ -41,54 +33,51 @@ public class TreeTest extends AbstractTest {
 
 	public void test003() {
 		Root root = new Root();
-		Vertex tree = root.addTree("tree");
-		Vertex html = tree.addRoot("html");
+		Vertex tree = root.addInstance("tree");
+		Vertex html = tree.addInstance("html");
 		assert html.getMeta().equals(tree);
-		assert html.getComponents().contains(null);
-		assert html.getComponents().size() == 1;
 		assert html.getSupers().isEmpty();
 	}
 
 	public void test004() {
 		Root root = new Root();
-		Vertex tree = root.addTree("tree");
-		Vertex html = tree.addRoot("html");
-		Vertex head = html.addChild("head");
-		Vertex body = html.addChild("body");
-		Vertex div = body.addChild("div");
+		Vertex tree = root.addInstance("tree");
+		Vertex html = tree.addInstance("html");
+		Vertex head = tree.addInstance(html, "head");
+		Vertex body = tree.addInstance(html, "body");
+		Vertex div = tree.addInstance(body, "div");
 
-		assert !html.getChildren().contains(html);
-		assert html.getChildren().containsAll(Arrays.asList(head, body)) : html.getChildren().info();
-		assert html.getChildren().size() == 2;
-		assert html.getAllChildren().containsAll(Arrays.asList(html, head, body, div));
-		assert html.getAllChildren().size() == 4;
+		assert !html.getInheritings().contains(html);
+		assert html.getInheritings().containsAll(Arrays.asList(head, body)) : html.getInheritings().info();
+		assert html.getInheritings().size() == 2;
+		assert html.getAllInheritings().containsAll(Arrays.asList(html, head, body, div));
+		assert html.getAllInheritings().size() == 4;
 
-		assert head.getChildren().isEmpty();
-		assert head.getAllChildren().contains(head);
-		assert head.getAllChildren().size() == 1;
+		assert head.getInheritings().isEmpty();
+		assert head.getAllInheritings().contains(head);
+		assert head.getAllInheritings().size() == 1;
 
-		assert body.getChildren().contains(div);
-		assert body.getChildren().size() == 1;
-		assert body.getAllChildren().containsAll(Arrays.asList(body, div));
-		assert body.getAllChildren().size() == 2;
+		assert body.getInheritings().contains(div);
+		assert body.getInheritings().size() == 1;
+		assert body.getAllInheritings().containsAll(Arrays.asList(body, div));
+		assert body.getAllInheritings().size() == 2;
 
-		assert div.getChildren().isEmpty();
-		assert div.getAllChildren().contains(div);
-		assert div.getAllChildren().size() == 1;
+		assert div.getInheritings().isEmpty();
+		assert div.getAllInheritings().contains(div);
+		assert div.getAllInheritings().size() == 1;
 
 	}
 
 	public void test005() {
 		Root root = new Root();
-		Vertex tree = root.addTree("tree");
-		Vertex rootNode = tree.addRoot("rootNode");
-		Vertex htmlNode = rootNode.addChild("htmlNode");
-		Vertex bodyNode = htmlNode.addChild("bodyNode");
-		Vertex divNode = bodyNode.addChild("divNode");
-		Vertex formNode = divNode.addChild("formNode");
+		Vertex tree = root.addInstance("tree");
+		Vertex rootNode = tree.addInstance("rootNode");
+		Vertex htmlNode = tree.addInstance(rootNode, "htmlNode");
+		Vertex bodyNode = tree.addInstance(htmlNode, "bodyNode");
+		Vertex divNode = tree.addInstance(bodyNode, "divNode");
+		Vertex formNode = tree.addInstance(divNode, "formNode");
 
 		assert tree.getAllInstances().contains(rootNode);
-		assert tree.getAllInstances().contains(htmlNode);
 		assert tree.getAllInstances().contains(bodyNode);
 		assert tree.getAllInstances().contains(divNode);
 		assert tree.getAllInstances().contains(formNode);
@@ -97,14 +86,14 @@ public class TreeTest extends AbstractTest {
 
 	public void test006() {
 		Root root = new Root();
-		root.addTree("Tree");
-		catchAndCheckCause(() -> root.addTree("Tree"), ExistsException.class);
+		root.addInstance("Tree");
+		catchAndCheckCause(() -> root.addInstance("Tree"), ExistsException.class);
 	}
 
 	public void test007() {
 		Root root = new Root();
 
-		Vertex tree = root.addTree("Tree");
+		Vertex tree = root.addInstance("Tree");
 		Vertex color = root.addInstance("Color");
 		Vertex treeColor = tree.addAttribute("TreeColor", color);
 
@@ -114,38 +103,11 @@ public class TreeTest extends AbstractTest {
 
 		tree.setHolder(treeColor, "treeIsBlueByDefault", blue);
 
-		Vertex html = tree.addRoot("html");
+		Vertex html = tree.addInstance("html");
 		html.setHolder(treeColor, "htmlIsRed", red);
-		Vertex head = html.addChild("head");
-		Vertex body = html.addChild("body");
-		Vertex div = body.addChild("div");
-		div.setHolder(treeColor, "divIsGreen", green);
-
-		assert tree.getHolders(treeColor).first().getTargetComponent().equals(blue);
-		assert html.getHolders(treeColor).first().getTargetComponent().equals(red);
-		assert head.getHolders(treeColor).first().getTargetComponent().equals(blue);
-		assert body.getHolders(treeColor).first().getTargetComponent().equals(blue);
-		assert div.getHolders(treeColor).first().getTargetComponent().equals(green);
-	}
-
-	public void test008() {
-		Root root = new Root();
-
-		Vertex tree = root.addTree("Tree");
-		Vertex color = root.addInstance("Color");
-		Vertex treeColor = tree.addAttribute("TreeColor", color);
-
-		Vertex blue = color.addInstance("blue");
-		Vertex red = color.addInstance("red");
-		Vertex green = color.addInstance("green");
-
-		tree.setHolder(treeColor, "treeIsBlueByDefault", blue);
-
-		Vertex html = tree.addRoot("html");
-		html.setHolder(treeColor, "htmlIsRed", red);
-		Vertex head = html.addInheritingChild("head");
-		Vertex body = html.addInheritingChild("body");
-		Vertex div = body.addInheritingChild("div");
+		Vertex head = tree.addInstance(html, "head");
+		Vertex body = tree.addInstance(html, "body");
+		Vertex div = tree.addInstance(body, "div");
 		div.setHolder(treeColor, "divIsGreen", green);
 
 		assert tree.getHolders(treeColor).first().getTargetComponent().equals(blue);
@@ -155,84 +117,46 @@ public class TreeTest extends AbstractTest {
 		assert div.getHolders(treeColor).first().getTargetComponent().equals(green);
 	}
 
-	public void testInheritanceTree() {
-		Root root = new Root(Statics.ENGINE_VALUE);
-		Vertex tree = root.addTree("Tree");
-		Vertex rootTree = tree.addRoot("Root");
-		Vertex child = rootTree.addInheritingChild("Child");
-		rootTree.addInheritingChild("Child2");
-		child.addInheritingChild("Child3");
-	}
+	public void test008() {
+		Root root = new Root();
 
-	public void testSetInheritanceTree() {
-		Root root = new Root(Statics.ENGINE_VALUE);
-		Vertex tree = root.addTree("Tree");
-		Vertex rootTree = tree.addRoot("Root");
-		Vertex child = rootTree.setInheritingChild("Child");
-		rootTree.setInheritingChild("Child2");
-		child.setInheritingChild("Child3");
-	}
+		Vertex tree = root.addInstance("Tree");
+		Vertex color = root.addInstance("Color");
+		Vertex treeColor = tree.addAttribute("TreeColor", color);
 
-	public void testInheritingNodes() {
-		Root engine = new Root();
-
-		Vertex html5Tags = engine.addTree("Html5Tags");
-
-		Vertex html = html5Tags.addRoot("html");
-
-		Vertex header = html.addInheritingChild("header");
-		Vertex body = html.addInheritingChild("body");
-		Vertex footer = html.addInheritingChild("footer");
-
-		Vertex p = body.addInheritingChild("p");
-		Vertex table = body.addInheritingChild("table");
-
-		assert html5Tags.getInstances().containsAll(Arrays.asList(html, header, body, footer, p, table)) : html5Tags.getInstances();
-		assert html.getChildren().containsAll(Arrays.asList(header, body, footer)) : html.getChildren();
-		assert header.getChildren().isEmpty() : header.getChildren();
-		assert body.getChildren().containsAll(Arrays.asList(p, table)) : body.getChildren();
-		assert footer.getChildren().isEmpty() : footer.getChildren();
-		assert p.getChildren().isEmpty() : p.getChildren();
-		assert table.getChildren().isEmpty() : table.getChildren();
-
-		assert header.inheritsFrom(html) : header.getSupers();
-		assert body.inheritsFrom(html) : body.getSupers();
-		assert footer.inheritsFrom(html) : footer.getSupers();
-		assert p.inheritsFrom(body) && p.inheritsFrom(html) : p.getSupers();
-		assert table.inheritsFrom(body) && p.inheritsFrom(html) : p.getSupers();
-
-		Vertex color = engine.addInstance("Color");
-		Vertex red = color.addInstance("red");
 		Vertex blue = color.addInstance("blue");
-		Vertex yellow = color.addInstance("yellow");
+		Vertex red = color.addInstance("red");
+		Vertex green = color.addInstance("green");
 
-		Vertex htmlTagsColor = html5Tags.addRelation("htmlTagsColor", color);
-		htmlTagsColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
+		tree.setHolder(treeColor, "treeIsBlueByDefault", blue);
 
-		html.addLink(htmlTagsColor, "htmlRed", red);
-		header.addLink(htmlTagsColor, "headerBlue", blue);
-		footer.addLink(htmlTagsColor, "footerYellow", yellow);
-		// No explicitly associated Color to the htmlTags body
+		Vertex html = tree.addInstance("html");
+		html.setHolder(treeColor, "htmlIsRed", red);
+		Vertex head = tree.addInstance(html, "head");
+		Vertex body = tree.addInstance(html, "body");
+		Vertex div = tree.addInstance(body, "div");
+		div.setHolder(treeColor, "divIsGreen", green);
 
-		assert html.getLink(htmlTagsColor, "htmlRed").getTargetComponent().equals(red) : html.getLink(htmlTagsColor, "htmlRed").getTargetComponent();
-		assert header.getLink(htmlTagsColor, "headerBlue").getTargetComponent().equals(blue) : header.getLink(htmlTagsColor, "headerBlue").getTargetComponent();
-		assert footer.getLink(htmlTagsColor, "footerYellow").getTargetComponent().equals(yellow) : footer.getLink(htmlTagsColor, "footerYellow").getTargetComponent();
-		assert body.getLink(htmlTagsColor, "htmlRed").getTargetComponent().equals(red) : body.getLink(htmlTagsColor, "htmlRed").getTargetComponent();
+		assert tree.getHolders(treeColor).first().getTargetComponent().equals(blue);
+		assert html.getHolders(treeColor).first().getTargetComponent().equals(red);
+		assert head.getHolders(treeColor).first().getTargetComponent().equals(red);
+		assert body.getHolders(treeColor).first().getTargetComponent().equals(red);
+		assert div.getHolders(treeColor).first().getTargetComponent().equals(green);
 	}
 
 	public void testTraverseTree() {
 		Root engine = new Root();
 
-		Vertex html5Tags = engine.addTree("Html5Tags");
+		Vertex html5Tags = engine.addInstance("Html5Tags");
 
-		Vertex html = html5Tags.addRoot("html");
+		Vertex html = html5Tags.addInstance("html");
 
-		html.addChild("header");
-		Vertex body = html.addChild("body");
-		html.addChild("footer");
+		html5Tags.addInstance(html, "header");
+		Vertex body = html5Tags.addInstance(html, "body");
+		html5Tags.addInstance(html, "footer");
 
-		body.addChild("p");
-		body.addChild("table");
+		html5Tags.addInstance(body, "p");
+		html5Tags.addInstance(body, "table");
 
 		int[] result = { 0 };
 

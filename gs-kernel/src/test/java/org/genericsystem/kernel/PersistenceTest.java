@@ -119,23 +119,11 @@ public class PersistenceTest extends AbstractTest {
 	public void testTree() {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
 		Root root = new Root(Statics.ENGINE_VALUE, snapshot);
-		Vertex tree = root.addTree("Tree");
-		Vertex rootTree = tree.addRoot("Root");
-		Vertex child = rootTree.setChild("Child");
-		rootTree.setChild("Child2");
-		child.setChild("Child3");
-		root.close();
-		compareGraph(root, new Root(Statics.ENGINE_VALUE, snapshot));
-	}
-
-	public void testInheritanceTree() {
-		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
-		Root root = new Root(Statics.ENGINE_VALUE, snapshot);
-		Vertex tree = root.addTree("Tree");
-		Vertex rootTree = tree.addRoot("Root");
-		Vertex child = rootTree.setInheritingChild("Child");
-		rootTree.setInheritingChild("Child2");
-		child.setInheritingChild("Child3");
+		Vertex tree = root.addInstance("Tree");
+		Vertex rootTree = tree.addInstance("Root");
+		Vertex child = tree.addInstance(rootTree, "Child");
+		tree.addInstance(rootTree, "Child2");
+		tree.addInstance(child, "Child3");
 		root.close();
 		compareGraph(root, new Root(Statics.ENGINE_VALUE, snapshot));
 	}

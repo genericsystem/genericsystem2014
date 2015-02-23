@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+
 import org.genericsystem.kernel.LifeManager;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.annotations.SystemGeneric;
@@ -60,7 +61,8 @@ public class PersistenceTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	public static class Vehicle extends Generic {}
+	public static class Vehicle extends Generic {
+	}
 
 	public void testType() {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
@@ -145,29 +147,14 @@ public class PersistenceTest extends AbstractTest {
 	public void testTree() {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
 		Engine root = new Engine(Statics.ENGINE_VALUE, snapshot);
-		Generic tree = root.addTree("Tree");
-		Generic rootTree = tree.addRoot("Engine");
-		Generic child = rootTree.setChild("Child");
-		rootTree.setChild("Child2");
-		child.setChild("Child3");
+		Generic tree = root.addInstance("Tree");
+		Generic rootTree = tree.addInstance("Root");
+		Generic child = tree.addInstance(rootTree, "Child");
+		tree.addInstance(rootTree, "Child2");
+		tree.addInstance(child, "Child3");
 		root.getCurrentCache().flush();
 		root.close();
-		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
-		compareGraph(root, engine);
-	}
-
-	public void testInheritanceTree() {
-		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
-		Engine root = new Engine(Statics.ENGINE_VALUE, snapshot);
-		Generic tree = root.addTree("Tree");
-		Generic rootTree = tree.addRoot("Engine");
-		Generic child = rootTree.setInheritingChild("Child");
-		rootTree.setInheritingChild("Child2");
-		child.setInheritingChild("Child3");
-		root.getCurrentCache().flush();
-		root.close();
-		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
-		compareGraph(root, engine);
+		compareGraph(root, new Engine(Statics.ENGINE_VALUE, snapshot));
 	}
 
 	private static String cleanDirectory(String directoryPath) {

@@ -1,9 +1,7 @@
 package org.genericsystem.cache;
 
-
 import java.util.Optional;
 
-import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.cache.FileSystem.Directory;
 import org.genericsystem.cache.FileSystem.FileType;
@@ -18,7 +16,7 @@ import org.slf4j.LoggerFactory;
 
 @SystemGeneric
 @InstanceValueClassConstraint(String.class)
-@Components(FileSystem.class)
+// @Components(FileSystem.class)
 @Dependencies(FileType.class)
 @InstanceClass(Directory.class)
 public class FileSystem extends Generic {
@@ -57,22 +55,22 @@ public class FileSystem extends Generic {
 		}
 
 		public Snapshot<Directory> getDirectories() {
-			return (Snapshot) getChildren();
+			return (Snapshot) getInheritings();
 		}
 
 		public Directory getDirectory(String name) {
-			Optional<Generic> optional = getChildren().get().filter(x -> x.getValue().equals(name)).findFirst();
+			Optional<Generic> optional = getInheritings().get().filter(x -> x.getValue().equals(name)).findFirst();
 			return optional.isPresent() ? (Directory) optional.get() : null;
 
 		}
 
 		public Directory addDirectory(String name) {
-			return (Directory) addChild(name);
+			return (Directory) getMeta().addInstance(this, name);
 
 		}
 
 		public Directory setDirectory(String name) {
-			return (Directory) setChild(name);
+			return (Directory) getMeta().setInstance(this, name);
 		}
 
 		public String getShortPath() {
@@ -111,10 +109,7 @@ public class FileSystem extends Generic {
 	}
 
 	public Snapshot<Generic> getRootDirectories() {
-		return () -> getAllInstances().get().filter(x -> {
-			Generic g = x.getComponents().get(ApiStatics.BASE_POSITION);
-			return g == null ? true : g.equals(x);
-		});
+		return getInstances();
 	}
 
 	public Directory getRootDirectory(String name) {
@@ -125,11 +120,11 @@ public class FileSystem extends Generic {
 	public Directory addRootDirectory(String name) {
 		if (getRootDirectory(name) != null)
 			throw new IllegalStateException("Root directory : " + name + " already exists");
-		return (Directory) addRoot(name);
+		return (Directory) addInstance(name);
 	}
 
 	public Directory setRootDirectory(String name) {
-		return (Directory) setRoot(name);
+		return (Directory) setInstance(name);
 	}
 
 	public byte[] getFileContent(String resource) {

@@ -5,11 +5,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
 
-public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncestors<T>, DefaultDependencies<T>, DefaultDisplay<T>, DefaultSystemProperties<T>, DefaultCompositesInheritance<T>, DefaultWritable<T>, DefaultTree<T> {
+public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncestors<T>, DefaultDependencies<T>, DefaultDisplay<T>, DefaultSystemProperties<T>, DefaultCompositesInheritance<T>, DefaultWritable<T> {
 
 	@Override
 	default DefaultContext<T> getCurrentCache() {
@@ -220,5 +221,11 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 		if (!getMeta().isPropertyConstraintEnabled())
 			return Objects.equals(getValue(), value);
 		return true;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default void traverse(Visitor<T> visitor) {
+		visitor.traverse((T) this);
 	}
 }

@@ -1,6 +1,5 @@
 package org.genericsystem.api.core;
 
-import java.io.Serializable;
 
 /**
  * Represents the root of Generic System.
@@ -36,46 +35,6 @@ public interface IRoot<T extends IVertex<T>> extends IVertex<T> {
 	 * 
 	 * T setType(List<T> overrides, Serializable value);
 	 */
-
-	/**
-	 * Return a new tree with the specified value.
-	 *
-	 * @param value
-	 *            the expected value.
-	 * @return a new tree.
-	 */
-	T addTree(Serializable value);
-
-	/**
-	 * Return a new tree with the specified value and number of parents.
-	 *
-	 * @param value
-	 *            the expected value.
-	 * @param parentsNumber
-	 *            the number of parents.
-	 * @return a new tree.
-	 */
-	T addTree(Serializable value, int parentsNumber);
-
-	/**
-	 * Return a new or the existing tree with the specified value.
-	 *
-	 * @param value
-	 *            the expected value.
-	 * @return a new tree.
-	 */
-	T setTree(Serializable value);
-
-	/**
-	 * Return a new or the existing tree with the specified value and number of parents.
-	 *
-	 * @param value
-	 *            the expected value.
-	 * @param parentsNumber
-	 *            the number of parents.
-	 * @return a new or the existing tree.
-	 */
-	T setTree(Serializable value, int parentsNumber);
 
 	/**
 	 * Return the meta attribute. The meta attribute is the super of all attributes.
