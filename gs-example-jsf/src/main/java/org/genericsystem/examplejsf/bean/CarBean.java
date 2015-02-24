@@ -68,7 +68,7 @@ public class CarBean {
 	}
 
 	public String flush() {
-		engine.getCurrentCache().flushLater();
+		engine.getCurrentCache().flush();
 		return "#";
 	}
 
