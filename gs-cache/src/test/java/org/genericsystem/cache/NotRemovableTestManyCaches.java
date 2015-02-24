@@ -89,8 +89,8 @@ public class NotRemovableTestManyCaches extends AbstractTest {
 
 		cache.start();
 		myCar.remove();
-		cache.flushLater();
+		cache.flush();
 		cache2.start();
-		catchAndCheckCause(() -> cache2.flush(), OptimisticLockConstraintViolationException.class);
+		catchAndCheckCause(() -> cache2.tryFlush(), OptimisticLockConstraintViolationException.class);
 	}
 }

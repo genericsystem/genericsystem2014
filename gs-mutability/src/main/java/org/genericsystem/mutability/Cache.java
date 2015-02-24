@@ -175,12 +175,12 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 		cache.pickNewTs();// triggers refresh automatically
 	}
 
-	public void flush() {
-		cache.flush(); // triggers flush automatically
+	public void tryFlush() {
+		cache.tryFlush(); // triggers flush automatically
 	}
 
-	public void flushLater() {
-		cache.flushLater();
+	public void flush() {
+		cache.flush();
 	}
 
 	public long getTs() {
