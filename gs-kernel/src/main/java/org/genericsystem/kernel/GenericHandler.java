@@ -36,12 +36,15 @@ abstract class GenericHandler<T extends DefaultVertex<T>> {
 
 	void adjust() {
 		adjustedMeta = (meta == null ? ((T) context.getRoot()) : meta).adjustMeta(value, components);
-		if (adjustedMeta.getComponents().size() != components.size())
+		if (adjustedMeta.getComponents().size() != components.size()) {
 			if (meta == null) {
 				supers = Collections.singletonList(adjustedMeta);
+				adjustedMeta = add();
 				return;
-			} else if (meta.isMeta())
+			} else if (meta.isMeta()) {
 				adjustedMeta = new MetaHandler<>(context, components.size()).resolve();
+			}
+		}
 		supers = context.computeAndCheckOverridesAreReached(adjustedMeta, overrides, value, components);
 	}
 
