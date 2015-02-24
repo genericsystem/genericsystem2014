@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.defaults.DefaultContext;
 import org.genericsystem.api.defaults.DefaultRoot;
@@ -76,34 +75,14 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 		return supers;
 	}
 
-	T adjustMeta(T meta, int dim) {
-		assert meta.isMeta();
-		return meta.adjustMeta(root.getValue(), rootComponents(dim));
-		// assert meta.isMeta();
-		// int size = meta.getComponents().size();
-		// if (size > dim)
-		// return null;
-		// if (size == dim)
-		// return meta;
-		// T directInheriting = meta.getInheritings().first();
-		// return directInheriting != null && directInheriting.getComponents().size() <= dim ? adjustMeta(directInheriting, dim) : meta;
-	}
-
 	@SuppressWarnings("unchecked")
 	protected T getMeta(int dim) {
-		T adjustedMeta = adjustMeta((T) getRoot(), dim);
+		T adjustedMeta = ((T) root).adjustMeta(root.getValue(), rootComponents(dim));
 		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
 	}
 
 	T setMeta(int dim) {
 		return new MetaHandler<>(this, dim).resolve();
-		// T root = (T) getRoot();
-		// T adjustedMeta = adjustMeta(root, dim);
-		// if (adjustedMeta.getComponents().size() == dim)
-		// return adjustedMeta;
-		// T[] components = rootComponents(dim);
-		// return getRestructurator().rebuildAll(null, () -> getBuilder().buildAndPlug(null, null, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)),
-		// computePotentialDependencies(adjustedMeta, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)));
 	}
 
 	@Override
@@ -141,7 +120,6 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 
 	protected abstract void unplug(T generic);
 
-	protected void triggersMutation(T oldDependency, T newDependency) {
-	}
+	protected void triggersMutation(T oldDependency, T newDependency) {}
 
 }
