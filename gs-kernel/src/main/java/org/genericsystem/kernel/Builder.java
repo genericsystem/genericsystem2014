@@ -57,11 +57,6 @@ public abstract class Builder<T extends DefaultVertex<T>> {
 		return vertex.getClass();
 	}
 
-	protected T getOrBuild(Class<?> clazz, T adjustedMeta, List<T> supers, Serializable value, List<T> components) {
-		T instance = adjustedMeta.getDirectInstance(supers, value, components);
-		return instance == null ? buildAndPlug(clazz, adjustedMeta, supers, value, components) : instance;
-	}
-
 	T buildAndPlug(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
 		return context.plug(build(clazz, meta, supers, value, components, context.getRoot().isInitialized() ? Statics.USER_TS : Statics.SYSTEM_TS));
 	}

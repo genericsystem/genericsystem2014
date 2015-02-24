@@ -1,6 +1,8 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.genericsystem.api.defaults.DefaultVertex;
@@ -66,7 +68,8 @@ abstract class GenericHandler<T extends DefaultVertex<T>> {
 	}
 
 	public T getOrBuild() {
-		return context.getBuilder().getOrBuild(clazz, adjustedMeta, supers, value, components);
+		T instance = get();
+		return instance == null ? build() : instance;
 	}
 
 	public T build() {
@@ -134,11 +137,11 @@ abstract class GenericHandler<T extends DefaultVertex<T>> {
 		}
 
 		T resolve() {
-			T generic = super.get();
+			T generic = get();
 			if (generic != null)
 				return generic;
-			generic = super.getEquiv();
-			return generic == null ? super.add() : super.set(generic);
+			generic = getEquiv();
+			return generic == null ? add() : set(generic);
 		}
 	}
 
@@ -152,7 +155,7 @@ abstract class GenericHandler<T extends DefaultVertex<T>> {
 		}
 
 		T resolve() {
-			return super.update(update);
+			return update(update);
 		}
 	}
 
@@ -163,7 +166,55 @@ abstract class GenericHandler<T extends DefaultVertex<T>> {
 		}
 
 		T resolve() {
-			return context.getBuilder().getOrBuild(clazz, adjustedMeta, supers, value, components);
+			return getOrBuild();
+		}
+	}
+
+	static class MetaHandler<T extends DefaultVertex<T>> extends GenericHandler<T> {
+
+		MetaHandler(Context<T> context, int dim) {
+			super(context, null, null, Collections.emptyList(), context.getRoot().getValue(), Arrays.asList(context.rootComponents(dim)));
+		}
+
+		T resolve() {
+			T generic = get();
+			return generic != null ? generic : add();
+		}
+
+		@Override
+		public T add() {
+			assert supers != null;
+			T root = (T) context.getRoot();
+			T adjustedMeta = root.adjustMeta(root.getValue(), components);
+			if (adjustedMeta.getComponents().size() == components.size())
+				gettable = adjustedMeta;
+			return context.getRestructurator().rebuildAll(null, () -> build(), context.computePotentialDependencies(adjustedMeta, supers, value, components));
+		}
+
+		@Override
+		public T get() {
+			assert supers != null;
+			if (gettable == null) {
+				T root = (T) context.getRoot();
+				T adjustedMeta = root.adjustMeta(root.getValue(), components);
+				if (adjustedMeta.getComponents().size() == components.size())
+					gettable = adjustedMeta;
+			}
+			return gettable;
+		}
+
+		@Override
+		public void adjustMeta() {
+			assert meta == null;
+			// adjustedMeta = meta.isMeta() ? context.setMeta(components.size()) : meta.adjustMeta(value, components);
+		}
+
+		@Override
+		public void reComputeSupers() {
+			assert supers == null;
+			T root = (T) context.getRoot();
+			supers = Collections.singletonList(root.adjustMeta(root.getValue(), components));
+			// supers = context.computeAndCheckOverridesAreReached(adjustedMeta, overrides, value, components);
 		}
 	}
 

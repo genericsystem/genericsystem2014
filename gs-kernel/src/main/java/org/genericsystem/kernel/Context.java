@@ -3,7 +3,6 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.genericsystem.api.core.ApiStatics;
@@ -12,6 +11,7 @@ import org.genericsystem.api.defaults.DefaultRoot;
 import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.api.exception.UnreachableOverridesException;
 import org.genericsystem.kernel.GenericHandler.AddHandler;
+import org.genericsystem.kernel.GenericHandler.MetaHandler;
 import org.genericsystem.kernel.GenericHandler.SetHandler;
 import org.genericsystem.kernel.GenericHandler.UpdateHandler;
 
@@ -63,7 +63,7 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 		return builder.newTArray(dim);
 	}
 
-	private T[] rootComponents(int dim) {
+	T[] rootComponents(int dim) {
 		T[] components = newTArray(dim);
 		Arrays.fill(components, root);
 		return components;
@@ -76,7 +76,7 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 		return supers;
 	}
 
-	private T adjustMeta(T meta, int dim) {
+	T adjustMeta(T meta, int dim) {
 		assert meta.isMeta();
 		return meta.adjustMeta(root.getValue(), rootComponents(dim));
 		// assert meta.isMeta();
@@ -95,15 +95,15 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
 	}
 
-	@SuppressWarnings("unchecked")
 	T setMeta(int dim) {
-		T root = (T) getRoot();
-		T adjustedMeta = adjustMeta(root, dim);
-		if (adjustedMeta.getComponents().size() == dim)
-			return adjustedMeta;
-		T[] components = rootComponents(dim);
-		return getRestructurator().rebuildAll(null, () -> getBuilder().buildAndPlug(null, null, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)),
-				computePotentialDependencies(adjustedMeta, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)));
+		return new MetaHandler<>(this, dim).resolve();
+		// T root = (T) getRoot();
+		// T adjustedMeta = adjustMeta(root, dim);
+		// if (adjustedMeta.getComponents().size() == dim)
+		// return adjustedMeta;
+		// T[] components = rootComponents(dim);
+		// return getRestructurator().rebuildAll(null, () -> getBuilder().buildAndPlug(null, null, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)),
+		// computePotentialDependencies(adjustedMeta, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)));
 	}
 
 	@Override
