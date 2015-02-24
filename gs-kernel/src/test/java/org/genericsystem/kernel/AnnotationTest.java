@@ -317,7 +317,7 @@ public class AnnotationTest extends AbstractTest {
 		assert transformerChildrenGames.getInstances().contains(myTransformerChildrenGames);
 		assert myTransformerChildrenGames.isInstanceOf(transformerChildrenGames);
 
-		assert transformerChildrenGames.getSupers().size() == 2;
+		assert transformerChildrenGames.getSupers().size() == 2 : transformerChildrenGames.getSupers();
 		assert transformerChildrenGames.getSupers().contains(transformer);
 		assert transformerChildrenGames.getSupers().contains(childrenGames);
 
