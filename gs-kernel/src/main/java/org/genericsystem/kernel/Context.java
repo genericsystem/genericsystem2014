@@ -3,6 +3,7 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.defaults.DefaultContext;
@@ -10,7 +11,6 @@ import org.genericsystem.api.defaults.DefaultRoot;
 import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.api.exception.UnreachableOverridesException;
 import org.genericsystem.kernel.GenericHandler.AddHandler;
-import org.genericsystem.kernel.GenericHandler.MetaHandler;
 import org.genericsystem.kernel.GenericHandler.SetHandler;
 import org.genericsystem.kernel.GenericHandler.UpdateHandler;
 
@@ -81,8 +81,9 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
 	}
 
+	@SuppressWarnings("unchecked")
 	T setMeta(int dim) {
-		return new MetaHandler<>(this, dim).resolve();
+		return new SetHandler<>(this, null, (T) getRoot(), Collections.emptyList(), getRoot().getValue(), Arrays.asList(rootComponents(dim))).resolve();
 	}
 
 	@Override

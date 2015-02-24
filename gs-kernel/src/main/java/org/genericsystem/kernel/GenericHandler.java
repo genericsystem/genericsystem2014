@@ -1,9 +1,9 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.api.exception.ExistsException;
 
@@ -35,17 +35,16 @@ abstract class GenericHandler<T extends DefaultVertex<T>> {
 	}
 
 	void adjust() {
-		adjustedMeta = (meta == null ? ((T) context.getRoot()) : meta).adjustMeta(value, components);
-		if (adjustedMeta.getComponents().size() != components.size()) {
-			if (meta == null) {
+		adjustedMeta = meta.adjustMeta(value, components);
+		if (meta.isMeta() && adjustedMeta.getComponents().size() != components.size()) {
+			if (Objects.equals(context.getRoot().getValue(), value) && components.stream().allMatch(context.getRoot()::equals)) {
 				supers = Collections.singletonList(adjustedMeta);
-				adjustedMeta = add();
 				return;
-			} else if (meta.isMeta()) {
-				adjustedMeta = new MetaHandler<>(context, components.size()).resolve();
 			}
+			adjustedMeta = context.setMeta(components.size());
 		}
 		supers = context.computeAndCheckOverridesAreReached(adjustedMeta, overrides, value, components);
+
 	}
 
 	T get() {
@@ -153,17 +152,4 @@ abstract class GenericHandler<T extends DefaultVertex<T>> {
 			return getOrBuild();
 		}
 	}
-
-	static class MetaHandler<T extends DefaultVertex<T>> extends GenericHandler<T> {
-
-		MetaHandler(Context<T> context, int dim) {
-			super(context, null, null, Collections.emptyList(), context.getRoot().getValue(), Arrays.asList(context.rootComponents(dim)));
-		}
-
-		T resolve() {
-			T generic = get();
-			return generic != null ? generic : add();
-		}
-	}
-
 }
