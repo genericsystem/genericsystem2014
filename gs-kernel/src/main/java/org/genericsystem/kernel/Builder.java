@@ -2,11 +2,9 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.List;
-import org.genericsystem.api.core.ApiStatics;
+
 import org.genericsystem.api.defaults.DefaultVertex;
-import org.genericsystem.api.exception.UnreachableOverridesException;
 import org.genericsystem.kernel.annotations.InstanceClass;
 
 public abstract class Builder<T extends DefaultVertex<T>> {
@@ -59,23 +57,10 @@ public abstract class Builder<T extends DefaultVertex<T>> {
 		return vertex.getClass();
 	}
 
-	protected T getOrBuild(Class<?> clazz, T adjustedMeta, List<T> supers, Serializable value, List<T> components) {
-		T instance = adjustedMeta.getDirectInstance(supers, value, components);
-		return instance == null ? buildAndPlug(clazz, adjustedMeta, supers, value, components) : instance;
-	}
-
 	T buildAndPlug(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
 		return context.plug(build(clazz, meta, supers, value, components, context.getRoot().isInitialized() ? Statics.USER_TS : Statics.SYSTEM_TS));
 	}
 
 	public abstract T build(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs);
-
-	// remove from builder ?
-	List<T> computeAndCheckOverridesAreReached(T adjustedMeta, List<T> overrides, Serializable value, List<T> components) {
-		List<T> supers = new ArrayList<>(new SupersComputer<>(adjustedMeta, overrides, value, components));
-		if (!ApiStatics.areOverridesReached(supers, overrides))
-			getContext().discardWithException(new UnreachableOverridesException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
-		return supers;
-	}
 
 }

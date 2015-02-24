@@ -1,13 +1,19 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+
+import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.defaults.DefaultContext;
 import org.genericsystem.api.defaults.DefaultRoot;
 import org.genericsystem.api.defaults.DefaultVertex;
-import org.genericsystem.api.exception.ExistsException;
+import org.genericsystem.api.exception.UnreachableOverridesException;
+import org.genericsystem.kernel.GenericHandler.AddHandler;
+import org.genericsystem.kernel.GenericHandler.MetaHandler;
+import org.genericsystem.kernel.GenericHandler.SetHandler;
+import org.genericsystem.kernel.GenericHandler.UpdateHandler;
 
 public abstract class Context<T extends DefaultVertex<T>> implements DefaultContext<T> {
 
@@ -57,13 +63,20 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 		return builder.newTArray(dim);
 	}
 
-	private T[] rootComponents(int dim) {
+	T[] rootComponents(int dim) {
 		T[] components = newTArray(dim);
 		Arrays.fill(components, root);
 		return components;
 	}
 
-	private T adjustMeta(T meta, int dim) {
+	List<T> computeAndCheckOverridesAreReached(T adjustedMeta, List<T> overrides, Serializable value, List<T> components) {
+		List<T> supers = new ArrayList<>(new SupersComputer<>(adjustedMeta, overrides, value, components));
+		if (!ApiStatics.areOverridesReached(supers, overrides))
+			discardWithException(new UnreachableOverridesException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
+		return supers;
+	}
+
+	T adjustMeta(T meta, int dim) {
 		assert meta.isMeta();
 		return meta.adjustMeta(root.getValue(), rootComponents(dim));
 		// assert meta.isMeta();
@@ -82,39 +95,31 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
 	}
 
-	@SuppressWarnings("unchecked")
 	T setMeta(int dim) {
-		T root = (T) getRoot();
-		T adjustedMeta = adjustMeta(root, dim);
-		if (adjustedMeta.getComponents().size() == dim)
-			return adjustedMeta;
-		T[] components = rootComponents(dim);
-		return getRestructurator().rebuildAll(null, () -> getBuilder().buildAndPlug(null, null, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)),
-				computePotentialDependencies(adjustedMeta, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)));
+		return new MetaHandler<>(this, dim).resolve();
+		// T root = (T) getRoot();
+		// T adjustedMeta = adjustMeta(root, dim);
+		// if (adjustedMeta.getComponents().size() == dim)
+		// return adjustedMeta;
+		// T[] components = rootComponents(dim);
+		// return getRestructurator().rebuildAll(null, () -> getBuilder().buildAndPlug(null, null, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)),
+		// computePotentialDependencies(adjustedMeta, Collections.singletonList(adjustedMeta), root.getValue(), Arrays.asList(components)));
 	}
 
 	@Override
 	public T addInstance(T meta, List<T> overrides, Serializable value, List<T> components) {
-		GenericHandler<T> genericBuilder = new GenericHandler<>(this, null, meta, overrides, value, components);
-		T generic = genericBuilder.get();
-		if (generic != null)
-			discardWithException(new ExistsException("An equivalent instance already exists : " + generic.info()));
-		return genericBuilder.add();
+		return new AddHandler<>(this, null, meta, overrides, value, components).resolve();
 	}
 
 	@Override
 	public T setInstance(T meta, List<T> overrides, Serializable value, List<T> components) {
-		GenericHandler<T> genericBuilder = new GenericHandler<>(this, null, meta, overrides, value, components);
-		T generic = genericBuilder.get();
-		if (generic != null)
-			return generic;
-		generic = genericBuilder.getEquiv();
-		return generic == null ? genericBuilder.add() : genericBuilder.set(generic);
+		return new SetHandler<>(this, null, meta, overrides, value, components).resolve();
+
 	}
 
 	@Override
 	public T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents) {
-		return new GenericHandler<>(this, update.getClass(), update.getMeta(), overrides, newValue, newComponents).update(update);
+		return new UpdateHandler<>(this, update.getClass(), update, update.getMeta(), overrides, newValue, newComponents).resolve();
 	}
 
 	@Override
@@ -136,6 +141,7 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 
 	protected abstract void unplug(T generic);
 
-	protected void triggersMutation(T oldDependency, T newDependency) {}
+	protected void triggersMutation(T oldDependency, T newDependency) {
+	}
 
 }

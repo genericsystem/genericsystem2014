@@ -13,4 +13,7 @@ public interface DefaultRoot<T extends DefaultVertex<T>> extends IRoot<T> {
 
 	IContext<T> buildTransaction();
 
+	@Override
+	DefaultContext<T> getCurrentCache();
+
 }
