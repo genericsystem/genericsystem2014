@@ -85,26 +85,6 @@ public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 	}
 
 	@Override
-	public Generic addTree(Serializable value) {
-		return getCurrentCache().wrap(cacheEngine.addTree(value));
-	}
-
-	@Override
-	public Generic addTree(Serializable value, int parentsNumber) {
-		return getCurrentCache().wrap(cacheEngine.addTree(value, parentsNumber));
-	}
-
-	@Override
-	public Generic setTree(Serializable value) {
-		return getCurrentCache().wrap(cacheEngine.setTree(value));
-	}
-
-	@Override
-	public Generic setTree(Serializable value, int parentsNumber) {
-		return getCurrentCache().wrap(cacheEngine.setTree(value, parentsNumber));
-	}
-
-	@Override
 	public Generic getMetaAttribute() {
 		return getCurrentCache().wrap(cacheEngine.getMetaAttribute());
 	}

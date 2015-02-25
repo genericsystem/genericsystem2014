@@ -1,7 +1,6 @@
 package org.genericsystem.cache;
 
 import java.util.Arrays;
-
 import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.InstanceValueClassConstraintViolationException;
 import org.genericsystem.cache.FileSystem.Directory;
@@ -78,15 +77,12 @@ public class FileSystemTest extends AbstractTest {
 
 		catchAndCheckCause(() -> directory2.addDirectory("directory1"), ExistsException.class); // Exception
 
-		// assert false : fileSystem.getRootDirectories().toList();
 		directory1.addFile("fileName", new byte[] { Byte.MAX_VALUE });
 		assert Arrays.equals(directory1.getFile("fileName").getContent(), new byte[] { Byte.MAX_VALUE });
-		// assert false : rootDirectory.getDirectories();
 		directory1.getFile("fileName").remove();
 	}
 
 	public void testFileNameNotUniqueInDifferentDirectories() {
-		// final Cache cache = GenericSystem.newCacheOnANewInMemoryEngine(FileSystem.class).start();
 		Engine engine = new Engine(FileSystem.class);
 
 		FileSystem fileSystem = engine.find(FileSystem.class);
@@ -111,7 +107,9 @@ public class FileSystemTest extends AbstractTest {
 	public void testGetRootDirectories() {
 		Engine engine = new Engine(FileSystem.class);
 		FileSystem fileSystem = engine.find(FileSystem.class);
+		System.out.println("fileSystem " + fileSystem.info());
 		Directory root = fileSystem.addRootDirectory("root");
+		System.out.println("root " + root.info());
 		assert root.equals(fileSystem.getRootDirectory("root")) : fileSystem.getRootDirectories().info();
 		assert fileSystem.getRootDirectories().get().findFirst().get().equals(root);
 	}

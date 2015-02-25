@@ -67,7 +67,7 @@ public class IteratorAndRemoveCacheTest extends AbstractTest {
 		myCar.remove();
 		cache.flush();
 		cache2.start();
-		catchAndCheckCause(() -> cache2.flush(), OptimisticLockConstraintViolationException.class);
+		catchAndCheckCause(() -> cache2.tryFlush(), OptimisticLockConstraintViolationException.class);
 	}
 
 	public void test003_IterateAndRemove() {
