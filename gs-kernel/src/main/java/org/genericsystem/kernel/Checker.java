@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.defaults.DefaultRoot;
 import org.genericsystem.api.defaults.DefaultVertex;
@@ -35,8 +34,8 @@ public class Checker<T extends DefaultVertex<T>> {
 		return context;
 	}
 
-	public void checkBeforeBuild(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) throws RollbackException {
-		checkSystemConstraintsBeforeBuild(clazz, meta, overrides, value, components);
+	public void checkBeforeBuild(T meta, List<T> overrides, Serializable value, List<T> components) throws RollbackException {
+		checkSystemConstraintsBeforeBuild(meta, overrides, value, components);
 	}
 
 	public void checkAfterBuild(boolean isOnAdd, boolean isFlushTime, T vertex) throws RollbackException {
@@ -47,7 +46,7 @@ public class Checker<T extends DefaultVertex<T>> {
 
 	// checkBeforeBuild
 
-	private void checkSystemConstraintsBeforeBuild(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
+	private void checkSystemConstraintsBeforeBuild(T meta, List<T> overrides, Serializable value, List<T> components) {
 		checkSameEngine(meta, overrides, components);
 		checkIsAlive(meta, overrides, components);
 		checkSerializableType(value);

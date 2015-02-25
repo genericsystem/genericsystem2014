@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConcurrencyControlException;
@@ -26,8 +25,7 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 	}
 
 	protected Cache(Transaction<T> subContext) {
-		this(subContext, new ContextEventListener<T>() {
-		});
+		this(subContext, new ContextEventListener<T>() {});
 	}
 
 	protected Cache(Transaction<T> subContext, ContextEventListener<T> listener) {
@@ -164,8 +162,8 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 			}
 
 			@Override
-			public T build(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
-				return newT(clazz, meta).init(getContext().getRoot().pickNewTs(), meta, supers, value, components, otherTs);
+			public T build(long ts, Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
+				return newT(clazz, meta).init(ts, meta, supers, value, components, otherTs);
 			}
 		};
 	}
@@ -264,17 +262,13 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 
 	public static interface ContextEventListener<X> {
 
-		default void triggersMutationEvent(X oldDependency, X newDependency) {
-		}
+		default void triggersMutationEvent(X oldDependency, X newDependency) {}
 
-		default void triggersRefreshEvent() {
-		}
+		default void triggersRefreshEvent() {}
 
-		default void triggersClearEvent() {
-		}
+		default void triggersClearEvent() {}
 
-		default void triggersFlushEvent() {
-		}
+		default void triggersFlushEvent() {}
 	}
 
 }

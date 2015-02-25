@@ -81,25 +81,24 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
 	}
 
-	@SuppressWarnings("unchecked")
 	T setMeta(int dim) {
-		return new SetHandler<>(this, null, (T) getRoot(), Collections.emptyList(), getRoot().getValue(), Arrays.asList(rootComponents(dim))).resolve();
+		return new SetHandler<>(this, null, Collections.emptyList(), getRoot().getValue(), Arrays.asList(rootComponents(dim))).resolve();
 	}
 
 	@Override
 	public T addInstance(T meta, List<T> overrides, Serializable value, List<T> components) {
-		return new AddHandler<>(this, null, meta, overrides, value, components).resolve();
+		return new AddHandler<>(this, meta, overrides, value, components).resolve();
 	}
 
 	@Override
 	public T setInstance(T meta, List<T> overrides, Serializable value, List<T> components) {
-		return new SetHandler<>(this, null, meta, overrides, value, components).resolve();
+		return new SetHandler<>(this, meta, overrides, value, components).resolve();
 
 	}
 
 	@Override
 	public T update(T update, List<T> overrides, Serializable newValue, List<T> newComponents) {
-		return new UpdateHandler<>(this, update.getClass(), update, update.getMeta(), overrides, newValue, newComponents).resolve();
+		return new UpdateHandler<>(this,  update, update.getMeta(), overrides, newValue, newComponents).resolve();
 	}
 
 	@Override

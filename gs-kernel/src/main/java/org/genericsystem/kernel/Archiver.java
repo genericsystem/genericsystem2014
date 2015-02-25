@@ -29,8 +29,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-
 import org.genericsystem.api.defaults.DefaultRoot;
+import org.genericsystem.kernel.GenericHandler.SetArchiverHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -237,7 +237,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 			writeAncestorId(dependency, dependency.getMeta());
 			writeAncestorsId(dependency, dependency.getSupers());
 			writeAncestorsId(dependency, dependency.getComponents());
-			log.info("write dependency : " + dependency.info() + " " + dependency.getTs() + " birthTs : " + dependency.getLifeManager().getBirthTs());
+			// log.info("write dependency : " + dependency.info() + " " + dependency.getTs() + " birthTs : " + dependency.getLifeManager().getBirthTs());
 		}
 
 		protected void writeOtherTs(T dependency) throws IOException {
@@ -276,8 +276,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 				Map<Long, T> vertexMap = new HashMap<>();
 				for (;;)
 					loadDependency(vertexMap);
-			} catch (EOFException ignore) {
-			}
+			} catch (EOFException ignore) {}
 		}
 
 		protected long loadTs() throws IOException {
@@ -291,24 +290,15 @@ public class Archiver<T extends AbstractVertex<T>> {
 		protected void loadDependency(Map<Long, T> vertexMap) throws IOException, ClassNotFoundException {
 			long ts = loadTs();
 			long[] otherTs = loadOtherTs();
+			if (otherTs[0] == Statics.TS_SYSTEM)
+				otherTs[0] = Statics.TS_OLD_SYSTEM;
 			Serializable value = (Serializable) objectInputStream.readObject();
 			T meta = loadAncestor(ts, vertexMap);
 			List<T> supers = loadAncestors(ts, vertexMap);
 			List<T> components = loadAncestors(ts, vertexMap);
-			vertexMap.put(ts, getOrBuild(ts, null, meta, supers, value, components, otherTs));
-			log.info("load dependency : " + vertexMap.get(ts).info() + " " + ts + " " + vertexMap.get(ts).getTs() + " birthTs : " + vertexMap.get(ts).getLifeManager().getBirthTs());
-
+			vertexMap.put(ts, new SetArchiverHandler<>(ts, transaction, meta, supers, value, components, otherTs).resolve());
+			// log.info("load dependency : " + vertexMap.get(ts).info() + " " + ts + " " + vertexMap.get(ts).getTs() + " birthTs : " + vertexMap.get(ts).getLifeManager().getBirthTs());
 			assert getTransaction().isAlive(vertexMap.get(ts)) : vertexMap.get(ts).info();
-		}
-
-		protected T getOrBuild(long ts, Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
-			T instance = meta == null ? transaction.getMeta(components.size()) : meta.getDirectInstance(supers, value, components);
-			if (instance != null)
-				return instance;
-
-			if (otherTs[0] == Statics.TS_SYSTEM)
-				otherTs[0] = Statics.TS_OLD_SYSTEM;
-			return transaction.plug(transaction.getBuilder().build(clazz, meta, supers, value, components, otherTs));
 		}
 
 		protected List<T> loadAncestors(long ts, Map<Long, T> vertexMap) throws IOException {

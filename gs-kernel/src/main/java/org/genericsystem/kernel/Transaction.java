@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Supplier;
-
 import org.genericsystem.api.core.IteratorSnapshot;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.defaults.DefaultRoot;
@@ -26,10 +25,9 @@ public class Transaction<T extends AbstractVertex<T>> extends Context<T> {
 	@Override
 	protected Builder<T> buildBuilder() {
 		return new Builder<T>(this) {
-
 			@Override
-			public T build(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
-				return newT(clazz, meta).init(getContext().getRoot().pickNewTs(), meta, supers, value, components, otherTs);
+			protected T build(long ts, Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
+				return newT(clazz, meta).init(ts, meta, supers, value, components, otherTs);
 			}
 		};
 	}
