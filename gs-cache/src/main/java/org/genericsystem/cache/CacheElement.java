@@ -52,8 +52,9 @@ public class CacheElement<T extends AbstractGeneric<T>> extends AbstractCacheEle
 			@Override
 			public T get(Object o) {
 				T result = adds.get(o);
-				result = result != null ? result : !removes.contains(o) ? subCache.getDependencies(generic).get(o) : result;
-				return result != null && generic.isDirectAncestorOf(result) ? result : null;
+				if (result != null)
+					return generic.isDirectAncestorOf(result) ? result : null;
+				return !removes.contains(o) ? subCache.getDependencies(generic).get(o) : null;
 			}
 
 			@Override
