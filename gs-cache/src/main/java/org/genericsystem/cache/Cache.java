@@ -41,18 +41,18 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 	}
 
 	@Override
-	public Snapshot<T> getInstances(T generic) {
-		return cacheElement.getInstances(generic);
+	public Snapshot<T> getInstances(T vertex) {
+		return () -> cacheElement.getDependencies(vertex).get().filter(x -> vertex.equals(x.getMeta()));
 	}
 
 	@Override
-	public Snapshot<T> getInheritings(T generic) {
-		return cacheElement.getInheritings(generic);
+	public Snapshot<T> getInheritings(T vertex) {
+		return () -> cacheElement.getDependencies(vertex).get().filter(x -> x.getSupers().contains(vertex));
 	}
 
 	@Override
-	public Snapshot<T> getComposites(T generic) {
-		return cacheElement.getComposites(generic);
+	public Snapshot<T> getComposites(T vertex) {
+		return () -> cacheElement.getDependencies(vertex).get().filter(x -> x.getComponents().contains(vertex));
 	}
 
 	protected void initialize() {
@@ -245,19 +245,24 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 		}
 
 		@Override
-		Snapshot<T> getInheritings(T generic) {
-			return transaction.getInheritings(generic);
+		Snapshot<T> getDependencies(T vertex) {
+			return transaction.getDependencies(vertex);
 		}
 
-		@Override
-		Snapshot<T> getInstances(T generic) {
-			return transaction.getInstances(generic);
-		}
-
-		@Override
-		Snapshot<T> getComposites(T generic) {
-			return transaction.getComposites(generic);
-		}
+		// @Override
+		// Snapshot<T> getInheritings(T generic) {
+		// return transaction.getInheritings(generic);
+		// }
+		//
+		// @Override
+		// Snapshot<T> getInstances(T generic) {
+		// return transaction.getInstances(generic);
+		// }
+		//
+		// @Override
+		// Snapshot<T> getComposites(T generic) {
+		// return transaction.getComposites(generic);
+		// }
 	}
 
 	public static interface ContextEventListener<X> {

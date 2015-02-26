@@ -69,7 +69,7 @@ public class Transaction<T extends AbstractVertex<T>> extends Context<T> {
 
 	@Override
 	public Snapshot<T> getInstances(T vertex) {
-		return new AbstractIteratorSnapshot(() -> vertex.getDependencies(), x -> !x.isMeta() && x.getMeta().equals(vertex));
+		return new AbstractIteratorSnapshot(() -> vertex.getDependencies(), x -> vertex.equals(x.getMeta()));
 	}
 
 	@Override
