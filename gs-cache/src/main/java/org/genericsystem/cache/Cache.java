@@ -40,19 +40,23 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 		return transaction.getTs();
 	}
 
+	public Snapshot<T> getDependencies(T vertex) {
+		return cacheElement.getDependencies(vertex);
+	}
+
 	@Override
 	public Snapshot<T> getInstances(T vertex) {
-		return () -> cacheElement.getDependencies(vertex).get().filter(x -> vertex.equals(x.getMeta()));
+		return () -> getDependencies(vertex).get().filter(x -> vertex.equals(x.getMeta()));
 	}
 
 	@Override
 	public Snapshot<T> getInheritings(T vertex) {
-		return () -> cacheElement.getDependencies(vertex).get().filter(x -> x.getSupers().contains(vertex));
+		return () -> getDependencies(vertex).get().filter(x -> x.getSupers().contains(vertex));
 	}
 
 	@Override
 	public Snapshot<T> getComposites(T vertex) {
-		return () -> cacheElement.getDependencies(vertex).get().filter(x -> x.getComponents().contains(vertex));
+		return () -> getDependencies(vertex).get().filter(x -> x.getComponents().contains(vertex));
 	}
 
 	protected void initialize() {

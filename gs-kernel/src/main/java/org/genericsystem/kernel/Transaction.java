@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.defaults.DefaultRoot;
@@ -45,41 +44,41 @@ public class Transaction<T extends AbstractVertex<T>> extends Context<T> {
 			plug(generic);
 	}
 
-	private class AbstractIteratorSnapshot implements Snapshot<T> {
+	private class SnapshotDependenciesAdapter implements Snapshot<T> {
 
-		private final Supplier<Dependencies<T>> dependenciesSupplier;
+		private final Dependencies<T> dependencies;
 		private final Predicate<T> predicate;
 
-		private AbstractIteratorSnapshot(Supplier<Dependencies<T>> dependenciesSupplier, Predicate<T> predicate) {
-			this.dependenciesSupplier = dependenciesSupplier;
+		private SnapshotDependenciesAdapter(Dependencies<T> dependencies, Predicate<T> predicate) {
+			this.dependencies = dependencies;
 			this.predicate = predicate;
 		}
 
 		@Override
 		public Stream<T> get() {
-			return dependenciesSupplier.get().stream(getTs()).filter(predicate);
+			return dependencies.stream(getTs()).filter(predicate);
 		}
 
 		@Override
 		public T get(Object o) {
-			T result = dependenciesSupplier.get().get(o, getTs());
+			T result = dependencies.get(o, getTs());
 			return result != null && predicate.test(result) ? result : null;
 		}
 	}
 
 	@Override
 	public Snapshot<T> getInstances(T vertex) {
-		return new AbstractIteratorSnapshot(() -> vertex.getDependencies(), x -> vertex.equals(x.getMeta()));
+		return new SnapshotDependenciesAdapter(vertex.getDependencies(), x -> vertex.equals(x.getMeta()));
 	}
 
 	@Override
 	public Snapshot<T> getInheritings(T vertex) {
-		return new AbstractIteratorSnapshot(() -> vertex.getDependencies(), x -> x.getSupers().contains(vertex));
+		return new SnapshotDependenciesAdapter(vertex.getDependencies(), x -> x.getSupers().contains(vertex));
 	}
 
 	@Override
 	public Snapshot<T> getComposites(T vertex) {
-		return new AbstractIteratorSnapshot(() -> vertex.getDependencies(), x -> x.getComponents().contains(vertex));
+		return new SnapshotDependenciesAdapter(vertex.getDependencies(), x -> x.getComponents().contains(vertex));
 	}
 
 	public Snapshot<T> getDependencies(T vertex) {

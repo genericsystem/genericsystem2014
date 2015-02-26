@@ -8,12 +8,6 @@ public abstract class AbstractCacheElement<T extends AbstractGeneric<T>> {
 
 	abstract boolean isAlive(T vertex);
 
-	// abstract Snapshot<T> getInheritings(T vertex);
-
-	// abstract Snapshot<T> getInstances(T vertex);
-
-	// abstract Snapshot<T> getComposites(T vertex);
-
 	abstract Snapshot<T> getDependencies(T vertex);
 
 	protected abstract void apply(Iterable<T> removes, Iterable<T> adds) throws ConcurrencyControlException, OptimisticLockConstraintViolationException;

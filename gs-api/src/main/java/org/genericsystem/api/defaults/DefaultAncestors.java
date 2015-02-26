@@ -37,7 +37,7 @@ public interface DefaultAncestors<T extends DefaultVertex<T>> extends IVertex<T>
 	}
 
 	default boolean isDirectAncestorOf(T vertex) {
-		return equals(vertex.getMeta()) || vertex.getSupers().contains(this) || vertex.getComponents().contains(this);
+		return !equals(vertex) && (equals(vertex.getMeta()) || vertex.getSupers().contains(this) || vertex.getComponents().contains(this));
 	}
 
 	@Override
