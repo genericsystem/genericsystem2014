@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
 import org.genericsystem.api.defaults.DefaultVertex;
 
 public abstract class AbstractVertex<T extends AbstractVertex<T>> implements DefaultVertex<T>, Comparable<T> {
@@ -15,9 +14,10 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	private Serializable value;
 	private List<T> supers;
 	private LifeManager lifeManager;
+	private final Dependencies<T> dependencies = buildDependencies();
 
 	@SuppressWarnings("unchecked")
-	public T init(long ts, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
+	protected T init(long ts, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
 		this.ts = ts;
 		this.meta = meta != null ? meta : (T) this;
 		this.value = value;
@@ -79,16 +79,9 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return supers;
 	}
 
-	@Override
-	public String toString() {
-		return Objects.toString(getValue());
+	protected Dependencies<T> getDependencies() {
+		return dependencies;
 	}
-
-	protected abstract Dependencies<T> getInstancesDependencies();
-
-	protected abstract Dependencies<T> getInheritingsDependencies();
-
-	protected abstract Dependencies<T> getCompositesDependencies();
 
 	protected Dependencies<T> buildDependencies() {
 		return new AbstractTsDependencies<T>() {
@@ -103,6 +96,11 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	@Override
 	public Context<T> getCurrentCache() {
 		return (Context<T>) getRoot().getCurrentCache();
+	}
+
+	@Override
+	public String toString() {
+		return Objects.toString(getValue());
 	}
 
 }

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
-
 import org.genericsystem.api.core.IContext;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
@@ -17,6 +16,7 @@ public interface DefaultContext<T extends DefaultVertex<T>> extends IContext<T> 
 
 	DefaultRoot<T> getRoot();
 
+	// TODO KK remove internal class
 	default boolean isAlive(T vertex) {
 		class AliveFinder {
 			T find(T vertex) {
