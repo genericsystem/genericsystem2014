@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+
 import org.genericsystem.api.defaults.DefaultRoot;
 import org.genericsystem.kernel.GenericHandler.SetArchiverHandler;
 import org.slf4j.Logger;
@@ -122,11 +123,10 @@ public class Archiver<T extends AbstractVertex<T>> {
 
 	private void doSnapshot() throws IOException {
 		long ts = root.pickNewTs();
-		String fileName = getFilename(ts);
-		String partFileName = directory.getAbsolutePath() + File.separator + fileName + getFileExtension() + PART_EXTENSION;
-		ObjectOutputStream outputStream = zipFileManager.getObjectOutputStream(partFileName);
-		getSaver(outputStream, ts).saveSnapshot(directory);
-		new File(partFileName).renameTo(new File(directory.getAbsolutePath() + File.separator + fileName + getFileExtension()));
+		String fileName = directory.getAbsolutePath() + File.separator + getFilename(ts) + getFileExtension();
+		String partFileName = fileName + PART_EXTENSION;
+		getSaver(zipFileManager.getObjectOutputStream(partFileName, getFilename(ts) + GS_EXTENSION), ts).saveSnapshot();
+		new File(partFileName).renameTo(new File(fileName));
 		manageOldSnapshots(directory);
 	}
 
@@ -218,7 +218,7 @@ public class Archiver<T extends AbstractVertex<T>> {
 		}
 
 		@SuppressWarnings("unchecked")
-		private void saveSnapshot(File directory) throws IOException {
+		private void saveSnapshot() throws IOException {
 			writeDependencies(transaction.computeDependencies((T) root), new HashSet<>());
 			objectOutputStream.flush();
 			objectOutputStream.close();
@@ -276,7 +276,8 @@ public class Archiver<T extends AbstractVertex<T>> {
 				Map<Long, T> vertexMap = new HashMap<>();
 				for (;;)
 					loadDependency(vertexMap);
-			} catch (EOFException ignore) {}
+			} catch (EOFException ignore) {
+			}
 		}
 
 		protected long loadTs() throws IOException {
@@ -325,8 +326,8 @@ public class Archiver<T extends AbstractVertex<T>> {
 			this.fileManager = fileManager;
 		}
 
-		protected ObjectOutputStream getObjectOutputStream(String fileName) throws IOException {
-			ZipOutputStream zipOutput = new ZipOutputStream(fileManager.getFileOutputStream(fileName));
+		protected ObjectOutputStream getObjectOutputStream(String zipFileName, String fileName) throws IOException {
+			ZipOutputStream zipOutput = new ZipOutputStream(fileManager.getFileOutputStream(zipFileName));
 			zipOutput.putNextEntry(new ZipEntry(fileName));
 			return new ObjectOutputStream(zipOutput);
 		}

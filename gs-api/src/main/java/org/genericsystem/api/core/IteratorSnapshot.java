@@ -40,10 +40,7 @@ public interface IteratorSnapshot<T> extends Snapshot<T> {
 
 	@Override
 	default boolean containsAll(Collection<?> c) {
-		for (Object e : c)
-			if (!contains(e))
-				return false;
-		return true;
+		return c.stream().allMatch(this::contains);
 	}
 
 	@Override

@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.defaults.DefaultRoot;
@@ -44,45 +43,20 @@ public class Transaction<T extends AbstractVertex<T>> extends Context<T> {
 			plug(generic);
 	}
 
-	private class DependenciesAdapter implements Snapshot<T> {
-
-		private final Dependencies<T> dependencies;
-		private final Predicate<T> predicate;
-
-		private DependenciesAdapter(Dependencies<T> dependencies, Predicate<T> predicate) {
-			this.dependencies = dependencies;
-			this.predicate = predicate;
-		}
-
-		@Override
-		public Stream<T> get() {
-			return dependencies.stream(getTs()).filter(predicate);
-		}
-
-		@Override
-		public T get(Object o) {
-			T result = dependencies.get(o, getTs());
-			return result != null && predicate.test(result) ? result : null;
-		}
-	}
-
 	@Override
-	public Snapshot<T> getInstances(T vertex) {
-		return new DependenciesAdapter(vertex.getDependencies(), x -> vertex.equals(x.getMeta()));
-	}
-
-	@Override
-	public Snapshot<T> getInheritings(T vertex) {
-		return new DependenciesAdapter(vertex.getDependencies(), x -> x.getSupers().contains(vertex));
-	}
-
-	@Override
-	public Snapshot<T> getComposites(T vertex) {
-		return new DependenciesAdapter(vertex.getDependencies(), x -> x.getComponents().contains(vertex));
-	}
-
 	public Snapshot<T> getDependencies(T vertex) {
-		return () -> vertex.getDependencies().stream(getTs());
+		return new Snapshot<T>() {
+
+			@Override
+			public Stream<T> get() {
+				return vertex.getDependencies().stream(getTs());
+			}
+
+			@Override
+			public T get(Object o) {
+				return vertex.getDependencies().get(o, getTs());
+			}
+		};
 	}
 
 	@Override
