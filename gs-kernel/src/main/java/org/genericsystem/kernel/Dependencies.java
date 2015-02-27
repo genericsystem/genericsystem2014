@@ -1,6 +1,9 @@
 package org.genericsystem.kernel;
 
 import java.util.Iterator;
+import java.util.Spliterators;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public interface Dependencies<T> {
 
@@ -8,8 +11,12 @@ public interface Dependencies<T> {
 
 	boolean remove(T vertex);
 
-	abstract Iterator<T> iterator(long ts);
+	default Stream<T> stream(long ts) {
+		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator(ts), 0), false);
+	}
 
-	abstract T get(Object o, long ts);
+	Iterator<T> iterator(long ts);
+
+	T get(Object o, long ts);
 
 }

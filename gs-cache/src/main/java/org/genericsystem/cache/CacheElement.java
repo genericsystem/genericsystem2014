@@ -48,49 +48,19 @@ public class CacheElement<T extends AbstractGeneric<T>> extends AbstractCacheEle
 	}
 
 	@Override
-	Snapshot<T> getInstances(T generic) {
+	Snapshot<T> getDependencies(T generic) {
 		return new Snapshot<T>() {
 			@Override
 			public T get(Object o) {
 				T result = adds.get(o);
-				return result != null ? result : !removes.contains(o) ? subCache.getInstances(generic).get(o) : result;
+				if (result != null)
+					return generic.isDirectAncestorOf(result) ? result : null;
+				return !removes.contains(o) ? subCache.getDependencies(generic).get(o) : null;
 			}
 
 			@Override
 			public Stream<T> get() {
-				return Stream.concat(subCache.getInstances(generic).get().filter(x -> !removes.contains(x)), adds.get().filter((x -> !x.isMeta() && x.getMeta().equals(generic))));
-			}
-		};
-	}
-
-	@Override
-	Snapshot<T> getInheritings(T generic) {
-		return new Snapshot<T>() {
-			@Override
-			public T get(Object o) {
-				T result = adds.get(o);
-				return result != null ? result : !removes.contains(o) ? subCache.getInheritings(generic).get(o) : result;
-			}
-
-			@Override
-			public Stream<T> get() {
-				return Stream.concat(subCache.getInheritings(generic).get().filter(x -> !removes.contains(x)), adds.get().filter(x -> x.getSupers().contains(generic)));
-			}
-		};
-	}
-
-	@Override
-	Snapshot<T> getComposites(T generic) {
-		return new Snapshot<T>() {
-			@Override
-			public T get(Object o) {
-				T result = adds.get(o);
-				return result != null ? result : !removes.contains(o) ? subCache.getComposites(generic).get(o) : result;
-			}
-
-			@Override
-			public Stream<T> get() {
-				return Stream.concat(subCache.getComposites(generic).get().filter(x -> !removes.contains(x)), adds.get().filter(x -> x.getComponents().contains(generic)));
+				return Stream.concat(subCache.getDependencies(generic).get().filter(x -> !removes.contains(x)), adds.get().filter(x -> generic.isDirectAncestorOf(x)));
 			}
 		};
 	}

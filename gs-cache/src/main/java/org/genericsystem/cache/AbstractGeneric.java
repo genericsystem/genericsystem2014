@@ -2,9 +2,7 @@ package org.genericsystem.cache;
 
 import java.io.Serializable;
 import java.util.List;
-
 import org.genericsystem.kernel.AbstractVertex;
-import org.genericsystem.kernel.Dependencies;
 
 public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends AbstractVertex<T> implements DefaultGeneric<T> {
 
@@ -19,7 +17,7 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 	}
 
 	@Override
-	public T init(long ts, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
+	protected T init(long ts, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
 		return super.init(ts, meta, supers, value, components, otherTs);
 	}
 
@@ -38,14 +36,5 @@ public abstract class AbstractGeneric<T extends AbstractGeneric<T>> extends Abst
 	// // TODO introduce : meta and composites length
 	// return Objects.hashCode(getValue());
 	// }
-
-	@Override
-	protected abstract Dependencies<T> getInheritingsDependencies();
-
-	@Override
-	protected abstract Dependencies<T> getInstancesDependencies();
-
-	@Override
-	protected abstract Dependencies<T> getCompositesDependencies();
 
 }
