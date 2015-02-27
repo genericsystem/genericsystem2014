@@ -79,8 +79,8 @@ public interface DefaultContext<T extends DefaultVertex<T>> extends IContext<T> 
 
 			OrderedDependencies visit(T node) {
 				if (!contains(node)) {
-					getDependencies(node).forEach(this::visit);
 					add(node);
+					getDependencies(node).forEach(this::visit);
 				}
 				return this;
 			}
@@ -99,9 +99,7 @@ public interface DefaultContext<T extends DefaultVertex<T>> extends IContext<T> 
 						super.addAll(computeDependencies(node));
 					else {
 						alreadyVisited.add(node);
-						node.getComposites().forEach(this::visit);
-						node.getInheritings().forEach(this::visit);
-						node.getInstances().forEach(this::visit);
+						getDependencies(node).forEach(this::visit);
 					}
 				return this;
 			}
