@@ -23,10 +23,6 @@
 					<f:ajax event="blur" execute="@this" render="@this"/>
 				</h:inputText>
 			</h:column>
-<!-- 			<h:column> -->
-<!-- 				<f:facet name="header">Actual priority</f:facet> -->
-<!-- 				<h:outputText value="#{issueBean.getPriority(issue).value}"/> -->
-<!-- 			</h:column> -->
 			<h:column>
 				<f:facet name="Priority"></f:facet>
 				<h:selectOneMenu value="#{issueBean.getPriority(issue).value}" converter="#{priorityConverter}">

@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -22,15 +21,6 @@ public class PriorityBean implements Serializable {
 
 	@Inject
 	private transient Engine engine;
-
-	@PostConstruct
-	public void init() {
-		Generic priority = engine.find(Priority.class);
-		priority.setInstance("Low");
-		priority.setInstance("Normal");
-		priority.setInstance("Hight");
-		engine.getCurrentCache().flush();
-	}
 
 	public List<Generic> getPriorities() {
 		return engine.find(Priority.class).getAllInstances().get().collect(Collectors.toList());
