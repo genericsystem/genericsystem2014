@@ -1,77 +1,121 @@
 package org.genericsystem.issuetracker.bean;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.genericsystem.issuetracker.IssueDTO;
-import org.genericsystem.issuetracker.crud.IssueCRUD;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.genericsystem.cdi.Engine;
+import org.genericsystem.issuetracker.model.Description;
+import org.genericsystem.issuetracker.model.Issue;
+import org.genericsystem.issuetracker.model.IssuePriority;
+import org.genericsystem.mutability.Generic;
 
 @Named
 @RequestScoped
 public class IssueBean {
-
-	protected static Logger log = LoggerFactory.getLogger(IssueBean.class);
-
-	private String id;
-
-	private String descriptif;
-
-	private String priority;
-
-	private String type;
+	// private static final Logger log = Logger.getAnonymousLogger();
 
 	@Inject
-	private IssueCRUD issueCrud;
+	private Engine engine;
+	private Generic issue;
+	private Generic description;
+	private Generic issuePriority;
+	private String newIssueName;
+	private String newIssueDescription;
 
-	public List<IssueDTO> getIssues() {
-		return issueCrud.getIssues();
+	@PostConstruct
+	public void init() {
+		issue = engine.find(Issue.class);
+		description = engine.find(Description.class);
+		issuePriority = engine.find(IssuePriority.class);
 	}
 
-	public String createIssue() {
-		IssueDTO issueDTO = new IssueDTO();
-		issueDTO.setId(id);
-		issueDTO.setDescriptif(descriptif);
-		issueDTO.setPriority(priority);
-		issueDTO.setType(type);
-		issueCrud.createIssue(issueDTO);
+	public List<Generic> getIssues() {
+		return issue.getAllInstances().get().collect(Collectors.toList());
+	}
+
+	public String addIssue() {
+		issue.setInstance(newIssueName).setHolder(description, newIssueDescription);
 		return "#";
 	}
 
-	public String getId() {
-		return id;
+	public String deleteIssue(Generic issue) {
+		issue.remove();
+		return "#";
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public String flush() {
+		engine.getCurrentCache().flush();
+		return "#";
 	}
 
-	public String getDescriptif() {
-		return descriptif;
+	public String clear() {
+		engine.getCurrentCache().clear();
+		return "#";
 	}
 
-	public void setDescriptif(String descriptif) {
-		this.descriptif = descriptif;
+	public ElStringWrapper getDescription(Generic instance) {
+		return new ElStringWrapper() {
+
+			@Override
+			public void setValue(String value) {
+				instance.setHolder(description, value);
+			}
+
+			@Override
+			public String getValue() {
+				return Objects.toString(instance.getValues(description).first());
+			}
+		};
 	}
 
-	public String getPriority() {
-		return priority;
+	public ElGenericWrapper getPriority(Generic instance) {
+		return new ElGenericWrapper() {
+
+			@Override
+			public void setValue(Generic priority) {
+				instance.setLink(issuePriority, "link", priority);
+			}
+
+			@Override
+			public Generic getValue() {
+				Generic link = instance.getLinks(issuePriority).first();
+				return (link != null) ? link.getTargetComponent() : null;
+			}
+		};
 	}
 
-	public void setPriority(String priority) {
-		this.priority = priority;
+	public interface ElStringWrapper {
+		public String getValue();
+
+		public void setValue(String value);
 	}
 
-	public String getType() {
-		return type;
+	public interface ElGenericWrapper {
+		public Generic getValue();
+
+		public void setValue(Generic priority);
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public String getNewIssueName() {
+		return newIssueName;
+	}
+
+	public void setNewIssueName(String newIssueName) {
+		this.newIssueName = newIssueName;
+	}
+
+	public String getNewIssueDescription() {
+		return newIssueDescription;
+	}
+
+	public void setNewIssueDescription(String newIssueDescription) {
+		this.newIssueDescription = newIssueDescription;
 	}
 
 }

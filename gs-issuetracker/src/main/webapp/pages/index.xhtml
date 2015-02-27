@@ -1,44 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-<ui:composition template="/pages/template.xhtml"
-	xmlns="http://www.w3.org/1999/xhtml"
+<html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:c="http://java.sun.com/jsp/jstl/core"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:a4j="http://richfaces.org/a4j"
-	xmlns:rich="http://richfaces.org/rich">
+	xmlns:f="http://java.sun.com/jsf/core">
 
-	<ui:define name="bodySection">
-		<h:outputText value="Create Issue" />
-		<h:panelGrid columns="2">
-			<h:outputText value="id" />
-			<h:inputText value="#{issueBean.id}" />
-			<h:outputText value="descriptif" />
-			<h:inputText value="#{issueBean.descriptif}" />
-			<h:outputText value="priority" />
-			<h:inputText value="#{issueBean.priority}" />
-			<h:outputText value="type" />
-			<h:inputText value="#{issueBean.type}" />
-			<h:commandButton value="create" action="#{issueBean.createIssue}" />
-		</h:panelGrid>
+<h:head>
+	<title>Issue Tracker</title>
+</h:head>
 
-		<h:outputText value="List Issues" />
-		<h:dataTable value="#{issueBean.getIssues()}" var="issue">
+<h:body>
+	<h:messages id="message"/>
+	<h:form>
+		<h:dataTable value="#{issueBean.issues}" var ="issue">
 			<h:column>
-				<h:outputText value="#{issue.id}" />
+				<f:facet name="header">Issue</f:facet>
+				<h:outputText value="#{issue.getValue()}"/>
 			</h:column>
 			<h:column>
-				<h:outputText value="#{issue.descriptif}" />
+				<f:facet name="header">Description</f:facet>
+				<h:inputText size="10" value="#{issueBean.getDescription(issue).value}">
+					<f:ajax event="blur" execute="@this" render="@this"/>
+				</h:inputText>
+			</h:column>
+<!-- 			<h:column> -->
+<!-- 				<f:facet name="header">Actual priority</f:facet> -->
+<!-- 				<h:outputText value="#{issueBean.getPriority(issue).value}"/> -->
+<!-- 			</h:column> -->
+			<h:column>
+				<f:facet name="Priority"></f:facet>
+				<h:selectOneMenu value="#{issueBean.getPriority(issue).value}" converter="#{priorityConverter}">
+					<f:selectItems value="#{priorityBean.priorities}" var="priority"
+						itemLabel="#{priority.getValue()}" itemValue="#{priority}">
+					</f:selectItems>
+					<f:ajax event="blur" execute="@this" render="@this"/>
+				</h:selectOneMenu>
 			</h:column>
 			<h:column>
-				<h:outputText value="#{issue.priority}" />
+				<h:commandButton value="X" action="#{issueBean.deleteIssue(issue)}">
+					<f:ajax execute="deleteIssue" render="@form"/>
+				</h:commandButton>
 			</h:column>
-			<h:column>
-				<h:outputText value="#{issue.type}" />
-			</h:column>
+			<f:facet name="footer">
+				<h:panelGroup id="addIssue" layout="block">
+					<h:inputText size="10" value="#{issueBean.newIssueName}"/>
+					<h:inputText size="10" value="#{issueBean.newIssueDescription}"/>
+					<h:commandButton value="Add" action="#{issueBean.addIssue}">
+						<f:ajax execute="addIssue" render="@form"/>
+					</h:commandButton>
+				</h:panelGroup>
+			</f:facet>
 		</h:dataTable>
-	</ui:define>
+		<h:commandButton value="Save" action="#{issueBean.flush}">
+			<f:ajax execute="@this" render="@form"/>
+		</h:commandButton>
+		<h:commandButton value="Cancel" action="#{issueBean.clear}">
+			<f:ajax execute="@this" render="@form"/>
+		</h:commandButton>
+	</h:form>
+</h:body>
 
-</ui:composition>
+</html>
