@@ -12,11 +12,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
-
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.defaults.DefaultContext;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
@@ -229,19 +227,24 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 	}
 
 	@Override
-	public Snapshot<Generic> getInheritings(Generic generic) {
-		return () -> unwrap(generic).getInheritings().get().map(this::wrap);
+	public Snapshot<Generic> getDependencies(Generic generic) {
+		return () -> cache.getDependencies(unwrap(generic)).get().map(this::wrap);
 	}
 
-	@Override
-	public Snapshot<Generic> getInstances(Generic generic) {
-		return () -> unwrap(generic).getInstances().get().map(this::wrap);
-	}
-
-	@Override
-	public Snapshot<Generic> getComposites(Generic generic) {
-		return () -> unwrap(generic).getComposites().get().map(this::wrap);
-	}
+	// @Override
+	// public Snapshot<Generic> getInheritings(Generic generic) {
+	// return () -> unwrap(generic).getInheritings().get().map(this::wrap);
+	// }
+	//
+	// @Override
+	// public Snapshot<Generic> getInstances(Generic generic) {
+	// return () -> unwrap(generic).getInstances().get().map(this::wrap);
+	// }
+	//
+	// @Override
+	// public Snapshot<Generic> getComposites(Generic generic) {
+	// return () -> unwrap(generic).getComposites().get().map(this::wrap);
+	// }
 
 	@Override
 	public void discardWithException(Throwable exception) throws RollbackException {
