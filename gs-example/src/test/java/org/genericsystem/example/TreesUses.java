@@ -32,6 +32,37 @@ public class TreesUses {
 		engine.getCurrentCache().flush();
 	}
 
+	public void treeWithRelation() {
+		Engine engine = new Engine();
+
+		Generic html5Tags = engine.addInstance("Html5Tags");
+		Generic html = html5Tags.addInstance("html");
+		Generic head = html5Tags.addInstance(html, "header");
+		Generic body = html5Tags.addInstance(html, "body");
+		html5Tags.addInstance(html, "footer");
+		Generic p = html5Tags.addInstance(body, "p");
+		html5Tags.addInstance(body, "table");
+
+		Generic color = engine.addInstance("Color");
+		Generic blue = color.addInstance("blue");
+		Generic red = color.addInstance("red");
+		Generic green = color.addInstance("green");
+
+		Generic html5TagsColor = html5Tags.addRelation("html5TagsColor", color);
+		html5Tags.setHolder(html5TagsColor, "html5TagsIsBlueByDefault", blue);
+
+		html.setHolder(html5TagsColor, "htmlIsRed", red);
+		body.setHolder(html5TagsColor, "bodyIsGreen", green);
+
+		assert html5Tags.getHolders(html5TagsColor).first().getTargetComponent().equals(blue);
+		assert html.getHolders(html5TagsColor).first().getTargetComponent().equals(red);
+		assert head.getHolders(html5TagsColor).first().getTargetComponent().equals(red);
+		assert body.getHolders(html5TagsColor).first().getTargetComponent().equals(green);
+		assert p.getHolders(html5TagsColor).first().getTargetComponent().equals(green);
+
+		engine.getCurrentCache().flush();
+	}
+
 	public void traverseTree() {
 		Engine engine = new Engine();
 
