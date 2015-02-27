@@ -145,7 +145,7 @@ public class Checker<T extends DefaultVertex<T>> {
 	}
 
 	private void checkDependenciesAreEmpty(T vertex) {
-		if (!context.getInstances(vertex).isEmpty() || !context.getInheritings(vertex).isEmpty() || !context.getComposites(vertex).isEmpty())
+		if (!context.getDependencies(vertex).isEmpty())
 			context.discardWithException(new ReferentialIntegrityConstraintViolationException("Unable to remove : " + vertex.info() + " cause it has dependencies"));
 	}
 
