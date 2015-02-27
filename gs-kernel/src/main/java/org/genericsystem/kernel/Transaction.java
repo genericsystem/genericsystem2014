@@ -44,12 +44,12 @@ public class Transaction<T extends AbstractVertex<T>> extends Context<T> {
 			plug(generic);
 	}
 
-	private class SnapshotDependenciesAdapter implements Snapshot<T> {
+	private class DependenciesAdapter implements Snapshot<T> {
 
 		private final Dependencies<T> dependencies;
 		private final Predicate<T> predicate;
 
-		private SnapshotDependenciesAdapter(Dependencies<T> dependencies, Predicate<T> predicate) {
+		private DependenciesAdapter(Dependencies<T> dependencies, Predicate<T> predicate) {
 			this.dependencies = dependencies;
 			this.predicate = predicate;
 		}
@@ -68,17 +68,17 @@ public class Transaction<T extends AbstractVertex<T>> extends Context<T> {
 
 	@Override
 	public Snapshot<T> getInstances(T vertex) {
-		return new SnapshotDependenciesAdapter(vertex.getDependencies(), x -> vertex.equals(x.getMeta()));
+		return new DependenciesAdapter(vertex.getDependencies(), x -> vertex.equals(x.getMeta()));
 	}
 
 	@Override
 	public Snapshot<T> getInheritings(T vertex) {
-		return new SnapshotDependenciesAdapter(vertex.getDependencies(), x -> x.getSupers().contains(vertex));
+		return new DependenciesAdapter(vertex.getDependencies(), x -> x.getSupers().contains(vertex));
 	}
 
 	@Override
 	public Snapshot<T> getComposites(T vertex) {
-		return new SnapshotDependenciesAdapter(vertex.getDependencies(), x -> x.getComponents().contains(vertex));
+		return new DependenciesAdapter(vertex.getDependencies(), x -> x.getComponents().contains(vertex));
 	}
 
 	public Snapshot<T> getDependencies(T vertex) {

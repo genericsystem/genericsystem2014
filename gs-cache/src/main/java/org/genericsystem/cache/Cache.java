@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConcurrencyControlException;
@@ -25,7 +28,8 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 	}
 
 	protected Cache(Transaction<T> subContext) {
-		this(subContext, new ContextEventListener<T>() {});
+		this(subContext, new ContextEventListener<T>() {
+		});
 	}
 
 	protected Cache(Transaction<T> subContext, ContextEventListener<T> listener) {
@@ -44,19 +48,41 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 		return cacheElement.getDependencies(vertex);
 	}
 
+	private class FilteredSnapshotAdapter implements Snapshot<T> {
+
+		private final Snapshot<T> snapshot;
+		private final Predicate<T> predicate;
+
+		private FilteredSnapshotAdapter(Snapshot<T> snapshot, Predicate<T> predicate) {
+			this.snapshot = snapshot;
+			this.predicate = predicate;
+		}
+
+		@Override
+		public Stream<T> get() {
+			return snapshot.get().filter(predicate);
+		}
+
+		@Override
+		public T get(Object o) {
+			T result = snapshot.get(o);
+			return result != null && predicate.test(result) ? result : null;
+		}
+	}
+
 	@Override
 	public Snapshot<T> getInstances(T vertex) {
-		return () -> getDependencies(vertex).get().filter(x -> vertex.equals(x.getMeta()));
+		return new FilteredSnapshotAdapter(getDependencies(vertex), x -> vertex.equals(x.getMeta()));
 	}
 
 	@Override
 	public Snapshot<T> getInheritings(T vertex) {
-		return () -> getDependencies(vertex).get().filter(x -> x.getSupers().contains(vertex));
+		return new FilteredSnapshotAdapter(getDependencies(vertex), x -> x.getSupers().contains(vertex));
 	}
 
 	@Override
 	public Snapshot<T> getComposites(T vertex) {
-		return () -> getDependencies(vertex).get().filter(x -> x.getComponents().contains(vertex));
+		return new FilteredSnapshotAdapter(getDependencies(vertex), x -> x.getComponents().contains(vertex));
 	}
 
 	protected void initialize() {
@@ -271,13 +297,17 @@ public class Cache<T extends AbstractGeneric<T>> extends Context<T> {
 
 	public static interface ContextEventListener<X> {
 
-		default void triggersMutationEvent(X oldDependency, X newDependency) {}
+		default void triggersMutationEvent(X oldDependency, X newDependency) {
+		}
 
-		default void triggersRefreshEvent() {}
+		default void triggersRefreshEvent() {
+		}
 
-		default void triggersClearEvent() {}
+		default void triggersClearEvent() {
+		}
 
-		default void triggersFlushEvent() {}
+		default void triggersFlushEvent() {
+		}
 	}
 
 }

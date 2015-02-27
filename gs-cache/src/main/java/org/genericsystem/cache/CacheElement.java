@@ -1,6 +1,7 @@
 package org.genericsystem.cache;
 
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
@@ -49,13 +50,13 @@ public class CacheElement<T extends AbstractGeneric<T>> extends AbstractCacheEle
 	@Override
 	Snapshot<T> getDependencies(T generic) {
 		return new Snapshot<T>() {
-			// @Override
-			// public T get(Object o) {
-			// T result = adds.get(o);
-			// if (result != null)
-			// return generic.isDirectAncestorOf(result) ? result : null;
-			// return !removes.contains(o) ? subCache.getDependencies(generic).get(o) : null;
-			// }
+			@Override
+			public T get(Object o) {
+				T result = adds.get(o);
+				if (result != null)
+					return generic.isDirectAncestorOf(result) ? result : null;
+				return !removes.contains(o) ? subCache.getDependencies(generic).get(o) : null;
+			}
 
 			@Override
 			public Stream<T> get() {
