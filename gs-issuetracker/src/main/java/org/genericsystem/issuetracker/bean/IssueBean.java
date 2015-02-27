@@ -2,7 +2,6 @@ package org.genericsystem.issuetracker.bean;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
@@ -13,13 +12,13 @@ import org.genericsystem.cdi.Engine;
 import org.genericsystem.issuetracker.model.Description;
 import org.genericsystem.issuetracker.model.Issue;
 import org.genericsystem.issuetracker.model.IssuePriority;
+import org.genericsystem.issuetracker.model.Priority;
 import org.genericsystem.issuetracker.qualifier.Provide;
 import org.genericsystem.mutability.Generic;
 
 @Named
 @RequestScoped
 public class IssueBean {
-	private static final Logger log = Logger.getAnonymousLogger();
 
 	@Inject
 	private Engine engine;
@@ -35,6 +34,10 @@ public class IssueBean {
 	@Inject
 	@Provide
 	private IssuePriority issuePriority;
+
+	@Inject
+	@Provide
+	private Priority priority;
 
 	private String newIssueName;
 	private String newIssueDescription;
@@ -78,18 +81,19 @@ public class IssueBean {
 		};
 	}
 
-	public ElGenericWrapper getPriority(Generic instance) {
-		return new ElGenericWrapper() {
+	public ElStringWrapper getPriority(Generic instance) {
+		return new ElStringWrapper() {
 
 			@Override
-			public void setValue(Generic priority) {
-				instance.setLink(issuePriority, "link", priority);
+			public void setValue(String value) {
+				Generic searchedPriority = priority.getInstance(value);
+				instance.setLink(issuePriority, "link", searchedPriority);
 			}
 
 			@Override
-			public Generic getValue() {
+			public String getValue() {
 				Generic link = instance.getLinks(issuePriority).first();
-				return (link != null) ? link.getTargetComponent() : null;
+				return (link != null) ? (String) link.getTargetComponent().getValue() : null;
 			}
 		};
 	}
@@ -98,12 +102,6 @@ public class IssueBean {
 		public String getValue();
 
 		public void setValue(String value);
-	}
-
-	public interface ElGenericWrapper {
-		public Generic getValue();
-
-		public void setValue(Generic priority);
 	}
 
 	public String getNewIssueName() {
