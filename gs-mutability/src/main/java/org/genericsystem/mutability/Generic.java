@@ -2,7 +2,6 @@ package org.genericsystem.mutability;
 
 import java.io.Serializable;
 import java.util.List;
-
 import org.genericsystem.api.defaults.DefaultVertex;
 
 public interface Generic extends DefaultVertex<Generic> {
@@ -39,6 +38,11 @@ public interface Generic extends DefaultVertex<Generic> {
 	@Override
 	default String info() {
 		return getCurrentCache().unwrap(this).info();
+	}
+
+	@Override
+	default boolean isSystem() {
+		return getCurrentCache().unwrap(this).isSystem();
 	}
 
 }
