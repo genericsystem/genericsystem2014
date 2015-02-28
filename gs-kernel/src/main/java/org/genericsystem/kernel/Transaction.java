@@ -5,27 +5,28 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.defaults.DefaultRoot;
 
-public class Transaction<T extends AbstractVertex<T>> extends Context<T> {
+public class Transaction extends Context<Generic> {
 
 	private final long ts;
 
-	protected Transaction(DefaultRoot<T> root, long ts) {
+	protected Transaction(DefaultRoot<Generic> root, long ts) {
 		super(root);
 		this.ts = ts;
 	}
 
-	protected Transaction(DefaultRoot<T> root) {
+	protected Transaction(DefaultRoot<Generic> root) {
 		this(root, root.pickNewTs());
 	}
 
 	@Override
-	protected Builder<T> buildBuilder() {
-		return new Builder<T>(this) {
+	protected Builder<Generic> buildBuilder() {
+		return new Builder<Generic>(this) {
 			@Override
-			protected T build(long ts, Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
+			protected Generic build(long ts, Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
 				return newT(clazz, meta).init(ts, meta, supers, value, components, otherTs);
 			}
 		};
@@ -36,34 +37,34 @@ public class Transaction<T extends AbstractVertex<T>> extends Context<T> {
 		return ts;
 	}
 
-	public void apply(Iterable<T> removes, Iterable<T> adds) {
-		for (T generic : removes)
+	public void apply(Iterable<Generic> removes, Iterable<Generic> adds) {
+		for (Generic generic : removes)
 			unplug(generic);
-		for (T generic : adds)
+		for (Generic generic : adds)
 			plug(generic);
 	}
 
 	@Override
-	public Snapshot<T> getDependencies(T vertex) {
-		return new Snapshot<T>() {
+	public Snapshot<Generic> getDependencies(Generic vertex) {
+		return new Snapshot<Generic>() {
 
 			@Override
-			public Stream<T> get() {
+			public Stream<Generic> get() {
 				return vertex.getDependencies().stream(getTs());
 			}
 
 			@Override
-			public T get(Object o) {
+			public Generic get(Object o) {
 				return vertex.getDependencies().get(o, getTs());
 			}
 		};
 	}
 
 	@Override
-	protected T plug(T generic) {
+	protected Generic plug(Generic generic) {
 		if (getRoot().isInitialized())
 			generic.getLifeManager().beginLife(getTs());
-		Set<T> set = new HashSet<>();
+		Set<Generic> set = new HashSet<>();
 		if (!generic.isMeta())
 			set.add(generic.getMeta());
 		set.addAll(generic.getSupers());
@@ -74,12 +75,12 @@ public class Transaction<T extends AbstractVertex<T>> extends Context<T> {
 	}
 
 	@Override
-	protected void unplug(T generic) {
+	protected void unplug(Generic generic) {
 		getChecker().checkAfterBuild(false, false, generic);
 		generic.getLifeManager().kill(getTs());
 		// if (!result)
 		// discardWithException(new NotFoundException(generic.info()));
-		Set<T> set = new HashSet<>();
+		Set<Generic> set = new HashSet<>();
 		if (!generic.isMeta())
 			set.add(generic.getMeta());
 		set.addAll(generic.getSupers());

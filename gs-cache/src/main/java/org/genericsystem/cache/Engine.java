@@ -10,11 +10,11 @@ import org.genericsystem.kernel.Config.MetaAttribute;
 import org.genericsystem.kernel.Config.MetaRelation;
 import org.genericsystem.kernel.Config.SystemMap;
 import org.genericsystem.kernel.GarbageCollector;
+import org.genericsystem.kernel.Generic;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Root.TsGenerator;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.SystemCache;
-import org.genericsystem.kernel.Generic;
 
 public class Engine extends Generic implements DefaultEngine {
 
@@ -22,7 +22,7 @@ public class Engine extends Generic implements DefaultEngine {
 	private final ThreadLocal<Cache> cacheLocal = new ThreadLocal<>();
 	private final SystemCache<Generic> systemCache;
 	private final GarbageCollector<Generic> garbageCollector = new GarbageCollector<>(this);
-	private final Archiver<Generic> archiver;
+	private final Archiver archiver;
 
 	private boolean initialized = false;
 
@@ -40,7 +40,7 @@ public class Engine extends Generic implements DefaultEngine {
 		systemCache = new SystemCache<>(this, Root.class);
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
 		cache.flush();
-		archiver = new Archiver<Generic>(this, persistentDirectoryPath);
+		archiver = new Archiver(this, persistentDirectoryPath);
 		cache.pickNewTs();
 		initialized = true;
 	}

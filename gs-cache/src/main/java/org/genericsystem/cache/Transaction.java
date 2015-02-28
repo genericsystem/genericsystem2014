@@ -4,7 +4,7 @@ import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.Checker;
 import org.genericsystem.kernel.Generic;
 
-public class Transaction extends org.genericsystem.kernel.Transaction<Generic> {
+public class Transaction extends org.genericsystem.kernel.Transaction {
 
 	protected Transaction(DefaultEngine engine, long ts) {
 		super(engine, ts);

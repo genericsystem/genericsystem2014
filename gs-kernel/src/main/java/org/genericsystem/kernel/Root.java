@@ -15,7 +15,7 @@ public class Root extends Generic implements DefaultRoot<Generic> {
 	private final TsGenerator generator = new TsGenerator();
 	private final Context<Generic> context;
 	private final SystemCache<Generic> systemCache;
-	private final Archiver<Generic> archiver;
+	private final Archiver archiver;
 
 	private boolean initialized = false;
 
@@ -29,10 +29,10 @@ public class Root extends Generic implements DefaultRoot<Generic> {
 
 	public Root(Serializable value, String persistentDirectoryPath, Class<?>... userClasses) {
 		init(Statics.TS_SYSTEM, null, Collections.emptyList(), value, Collections.emptyList(), Statics.SYSTEM_TS);
-		context = new Transaction<>(this, pickNewTs());
+		context = new Transaction(this, pickNewTs());
 		systemCache = new SystemCache<>(this, getClass());
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
-		archiver = new Archiver<>(this, persistentDirectoryPath);
+		archiver = new Archiver(this, persistentDirectoryPath);
 		initialized = true;
 	}
 
@@ -96,7 +96,7 @@ public class Root extends Generic implements DefaultRoot<Generic> {
 
 	@Override
 	public Context<Generic> buildTransaction() {
-		return new Transaction<Generic>(this, pickNewTs());
+		return new Transaction(this, pickNewTs());
 	}
 
 	@Override
