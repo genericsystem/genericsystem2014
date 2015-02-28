@@ -1,10 +1,6 @@
 package org.genericsystem.cache;
 
-import java.io.Serializable;
-import java.util.List;
-
 import org.genericsystem.api.exception.RollbackException;
-import org.genericsystem.kernel.Builder;
 import org.genericsystem.kernel.Checker;
 import org.genericsystem.kernel.Generic;
 
@@ -30,17 +26,6 @@ public class Transaction extends org.genericsystem.kernel.Transaction<Generic> {
 			@Override
 			public void checkAfterBuild(boolean isOnAdd, boolean isFlushTime, Generic vertex) throws RollbackException {
 				checkSystemConstraintsAfterBuild(isOnAdd, isFlushTime, vertex);// Check only system constraints on transactions
-			}
-		};
-	}
-
-	@Override
-	protected Builder<Generic> buildBuilder() {
-		return new Builder<Generic>(this) {
-
-			@Override
-			protected Generic build(long ts, Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
-				return newT(clazz, meta).init(ts, meta, supers, value, components, otherTs);
 			}
 		};
 	}
