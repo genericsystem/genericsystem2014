@@ -7,8 +7,8 @@ public class SystemPropertiesTest extends AbstractTest {
 
 	public void test001_enableConstraint() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex power = root.addInstance("Power", vehicle);
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic power = root.addInstance("Power", vehicle);
 		power.enablePropertyConstraint();
 		power.enablePropertyConstraint();
 		power.enableReferentialIntegrity(0);
@@ -28,10 +28,10 @@ public class SystemPropertiesTest extends AbstractTest {
 
 	public void test002_inheritedConstraint() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(vehicle, "Car");
-		Vertex power = root.addInstance("Power", vehicle);
-		Vertex carPower = root.addInstance("Power", car);
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic power = root.addInstance("Power", vehicle);
+		Generic carPower = root.addInstance("Power", car);
 		power.enableSingularConstraint(0);
 		power.enablePropertyConstraint();
 		power.enableReferentialIntegrity(0);
@@ -52,10 +52,10 @@ public class SystemPropertiesTest extends AbstractTest {
 
 	public void test003_inheritedModifiedConstraint() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(vehicle, "Car");
-		Vertex power = root.addInstance("Power", vehicle);
-		Vertex carPower = root.addInstance("Power", car);
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic power = root.addInstance("Power", vehicle);
+		Generic carPower = root.addInstance("Power", car);
 		power.enablePropertyConstraint();
 		assert power.isPropertyConstraintEnabled();
 		assert carPower.isPropertyConstraintEnabled();

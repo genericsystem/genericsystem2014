@@ -3,6 +3,7 @@ package org.genericsystem.cache;
 import java.util.stream.Collectors;
 
 import org.genericsystem.api.exception.CacheNoStartedException;
+import org.genericsystem.kernel.Generic;
 import org.testng.annotations.Test;
 
 @Test
@@ -125,7 +126,7 @@ public class CacheTest extends AbstractTest {
 
 	public void test001_mountNewCache_nostarted() {
 		Engine engine = new Engine();
-		Cache<Generic> currentCache = engine.getCurrentCache();
+		Cache currentCache = engine.getCurrentCache();
 		currentCache.mount();
 		engine.newCache().start();
 		catchAndCheckCause(() -> currentCache.flush(), CacheNoStartedException.class);
@@ -133,8 +134,8 @@ public class CacheTest extends AbstractTest {
 
 	public void test002_mountNewCache() {
 		Engine engine = new Engine();
-		Cache<Generic> cache = engine.newCache().start();
-		Cache<Generic> currentCache = engine.getCurrentCache();
+		Cache cache = engine.newCache().start();
+		Cache currentCache = engine.getCurrentCache();
 		assert cache == currentCache;
 		currentCache.mount();
 		engine.addInstance("Vehicle");
@@ -143,7 +144,7 @@ public class CacheTest extends AbstractTest {
 
 	public void test005_TwoComponentsWithSameMetaInDifferentCaches_remove() {
 		Engine engine = new Engine();
-		Cache<Generic> currentCache = engine.getCurrentCache();
+		Cache currentCache = engine.getCurrentCache();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic vehiclePower = engine.addInstance("vehiclePower", vehicle);
 		assert currentCache.getCacheLevel() == 0;

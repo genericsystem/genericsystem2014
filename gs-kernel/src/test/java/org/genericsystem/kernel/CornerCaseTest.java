@@ -8,32 +8,32 @@ public class CornerCaseTest extends AbstractTest {
 
 	public void test000() {
 		Root engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = engine.addInstance(vehicle, "Car");
-		Vertex power = vehicle.addAttribute("Power");
-		Vertex carPower = car.addAttribute(power, "CarPower");
-		Vertex carPower2 = car.addAttribute(power, "CarPower2");
-		Vertex myCar = car.addInstance("myCar");
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = engine.addInstance(vehicle, "Car");
+		Generic power = vehicle.addAttribute("Power");
+		Generic carPower = car.addAttribute(power, "CarPower");
+		Generic carPower2 = car.addAttribute(power, "CarPower2");
+		Generic myCar = car.addInstance("myCar");
 		catchAndCheckCause(() -> myCar.addHolder(power, 233), AmbiguousSelectionException.class);
 	}
 
 	public void test001() {
 		Root engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = engine.addInstance(vehicle, "Car");
-		Vertex power = vehicle.addAttribute("Power");
-		Vertex carPower = car.addAttribute(power, "CarPower");
-		Vertex myCar = car.addInstance("myCar");
-		Vertex v233 = myCar.addHolder(power, 233);
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = engine.addInstance(vehicle, "Car");
+		Generic power = vehicle.addAttribute("Power");
+		Generic carPower = car.addAttribute(power, "CarPower");
+		Generic myCar = car.addInstance("myCar");
+		Generic v233 = myCar.addHolder(power, 233);
 		assert v233.isInstanceOf(carPower) : v233.info();
-		Vertex v233_2 = myCar.setHolder(power, 233);
+		Generic v233_2 = myCar.setHolder(power, 233);
 		assert v233 == v233_2;
 	}
 
 	public void test002() {
 		Root engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex power = vehicle.addAttribute("Power");
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic power = vehicle.addAttribute("Power");
 		assert engine.getInstance("Power", vehicle).equals(power);
 		// catchAndCheckCause(() -> vehicle.setAttribute(power, "Power"), CollisionException.class);
 	}

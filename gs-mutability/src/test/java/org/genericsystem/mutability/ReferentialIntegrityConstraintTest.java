@@ -3,8 +3,6 @@ package org.genericsystem.mutability;
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.kernel.Config.MetaRelation;
-import org.genericsystem.kernel.Root;
-import org.genericsystem.kernel.Vertex;
 import org.testng.annotations.Test;
 
 @Test
@@ -50,21 +48,21 @@ public class ReferentialIntegrityConstraintTest extends AbstractTest {
 	}
 
 	public void test005_enableReferentialIntegrity_remove2() {
-		Root engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex myVehicle = vehicle.addInstance("myVechile");
-		Vertex color = engine.addInstance("Color");
-		Vertex red = color.addInstance("red");
-		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVechile");
+		Generic color = engine.addInstance("Color");
+		Generic red = color.addInstance("red");
+		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
 		myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
 		vehicleColor.enableReferentialIntegrity(ApiStatics.BASE_POSITION);
 		catchAndCheckCause(() -> myVehicle.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
 	public void test005_enableReferentialIntegrity_remove3() {
-		Root engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex color = engine.addInstance("Color");
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic color = engine.addInstance("Color");
 		vehicle.addAttribute("vehicleColor", color);
 		engine.find(MetaRelation.class).enableReferentialIntegrity(ApiStatics.BASE_POSITION);
 		catchAndCheckCause(() -> vehicle.remove(), ReferentialIntegrityConstraintViolationException.class);

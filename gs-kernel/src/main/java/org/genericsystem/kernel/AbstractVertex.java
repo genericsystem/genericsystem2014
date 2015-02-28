@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
 import org.genericsystem.api.defaults.DefaultVertex;
 
 public abstract class AbstractVertex<T extends AbstractVertex<T>> implements DefaultVertex<T>, Comparable<T> {
@@ -17,7 +18,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	private final Dependencies<T> dependencies = buildDependencies();
 
 	@SuppressWarnings("unchecked")
-	protected T init(long ts, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
+	public T init(long ts, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
 		this.ts = ts;
 		this.meta = meta != null ? meta : (T) this;
 		this.value = value;

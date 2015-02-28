@@ -10,12 +10,12 @@ import org.genericsystem.kernel.Config.MetaAttribute;
 import org.genericsystem.kernel.Config.MetaRelation;
 import org.genericsystem.kernel.Config.SystemMap;
 
-public class Root extends Vertex implements DefaultRoot<Vertex> {
+public class Root extends Generic implements DefaultRoot<Generic> {
 
 	private final TsGenerator generator = new TsGenerator();
-	private final Context<Vertex> context;
-	private final SystemCache<Vertex> systemCache;
-	private final Archiver<Vertex> archiver;
+	private final Context<Generic> context;
+	private final SystemCache<Generic> systemCache;
+	private final Archiver<Generic> archiver;
 
 	private boolean initialized = false;
 
@@ -47,28 +47,28 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 	}
 
 	@Override
-	public final Vertex getMetaAttribute() {
+	public final Generic getMetaAttribute() {
 		return find(MetaAttribute.class);
 	}
 
 	@Override
-	public final Vertex getMetaRelation() {
+	public final Generic getMetaRelation() {
 		return find(MetaRelation.class);
 	}
 
 	@Override
-	public Context<Vertex> getCurrentCache() {
+	public Context<Generic> getCurrentCache() {
 		return context;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <Custom extends Vertex> Custom find(Class<?> clazz) {
+	public <Custom extends Generic> Custom find(Class<?> clazz) {
 		return (Custom) systemCache.get(clazz);
 	}
 
 	@Override
-	public Class<?> findAnnotedClass(Vertex vertex) {
+	public Class<?> findAnnotedClass(Generic vertex) {
 		return systemCache.getByVertex(vertex);
 	}
 
@@ -95,12 +95,12 @@ public class Root extends Vertex implements DefaultRoot<Vertex> {
 	}
 
 	@Override
-	public Context<Vertex> buildTransaction() {
-		return new Transaction<Vertex>(this, pickNewTs());
+	public Context<Generic> buildTransaction() {
+		return new Transaction<Generic>(this, pickNewTs());
 	}
 
 	@Override
-	public Vertex getMap() {
+	public Generic getMap() {
 		return find(SystemMap.class);
 	}
 }

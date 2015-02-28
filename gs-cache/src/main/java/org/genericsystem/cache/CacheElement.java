@@ -8,58 +8,59 @@ import org.genericsystem.api.exception.OptimisticLockConstraintViolationExceptio
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.Checker;
 import org.genericsystem.kernel.DependenciesImpl;
+import org.genericsystem.kernel.Generic;
 
-public class CacheElement<T extends AbstractGeneric<T>> extends AbstractCacheElement<T> {
+public class CacheElement extends AbstractCacheElement {
 
-	private final AbstractCacheElement<T> subCache;
-	private final DependenciesImpl<T> adds = new DependenciesImpl<>();
-	private final DependenciesImpl<T> removes = new DependenciesImpl<>();
+	private final AbstractCacheElement subCache;
+	private final DependenciesImpl<Generic> adds = new DependenciesImpl<>();
+	private final DependenciesImpl<Generic> removes = new DependenciesImpl<>();
 
-	public CacheElement(AbstractCacheElement<T> subCache) {
+	public CacheElement(AbstractCacheElement subCache) {
 		this.subCache = subCache;
 	}
 
-	public AbstractCacheElement<T> getSubCache() {
+	public AbstractCacheElement getSubCache() {
 		return subCache;
 	}
 
 	public int getCacheLevel() {
-		return subCache instanceof CacheElement ? ((CacheElement<T>) subCache).getCacheLevel() + 1 : 0;
+		return subCache instanceof CacheElement ? ((CacheElement) subCache).getCacheLevel() + 1 : 0;
 	}
 
 	@Override
-	boolean isAlive(T generic) {
+	boolean isAlive(Generic generic) {
 		return adds.contains(generic) || (!removes.contains(generic) && subCache.isAlive(generic));
 	}
 
-	void checkConstraints(Checker<T> checker) throws RollbackException {
+	void checkConstraints(Checker<Generic> checker) throws RollbackException {
 		adds.forEach(x -> checker.checkAfterBuild(true, true, x));
 		removes.forEach(x -> checker.checkAfterBuild(false, true, x));
 	}
 
-	protected T plug(T generic) {
+	protected Generic plug(Generic generic) {
 		adds.add(generic);
 		return generic;
 	}
 
-	protected void unplug(T generic) {
+	protected void unplug(Generic generic) {
 		if (!adds.remove(generic))
 			removes.add(generic);
 	}
 
 	@Override
-	Snapshot<T> getDependencies(T generic) {
-		return new Snapshot<T>() {
+	Snapshot<Generic> getDependencies(Generic generic) {
+		return new Snapshot<Generic>() {
 			@Override
-			public T get(Object o) {
-				T result = adds.get(o);
+			public Generic get(Object o) {
+				Generic result = adds.get(o);
 				if (result != null)
 					return generic.isDirectAncestorOf(result) ? result : null;
 				return !removes.contains(o) ? subCache.getDependencies(generic).get(o) : null;
 			}
 
 			@Override
-			public Stream<T> get() {
+			public Stream<Generic> get() {
 				return Stream.concat(subCache.getDependencies(generic).get().filter(x -> !removes.contains(x)), adds.get().filter(x -> generic.isDirectAncestorOf(x)));
 			}
 		};
@@ -70,10 +71,10 @@ public class CacheElement<T extends AbstractGeneric<T>> extends AbstractCacheEle
 	}
 
 	@Override
-	protected void apply(Iterable<T> removes, Iterable<T> adds) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
-		for (T generic : removes)
+	protected void apply(Iterable<Generic> removes, Iterable<Generic> adds) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
+		for (Generic generic : removes)
 			unplug(generic);
-		for (T generic : adds)
+		for (Generic generic : adds)
 			plug(generic);
 	}
 }

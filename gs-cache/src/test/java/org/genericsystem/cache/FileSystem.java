@@ -3,6 +3,7 @@ package org.genericsystem.cache;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.cache.FileSystem.Directory;
 import org.genericsystem.cache.FileSystem.FileType;
+import org.genericsystem.kernel.Generic;
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Dependencies;
 import org.genericsystem.kernel.annotations.InstanceClass;
@@ -96,7 +97,8 @@ public class FileSystem extends Generic {
 	@SingularConstraint
 	@Components(FileType.class)
 	@InstanceValueClassConstraint(byte[].class)
-	public static class FileContent extends Generic {}
+	public static class FileContent extends Generic {
+	}
 
 	public Snapshot<Generic> getRootDirectories() {
 		return getInstances();

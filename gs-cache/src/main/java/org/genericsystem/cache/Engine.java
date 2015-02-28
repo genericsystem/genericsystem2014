@@ -14,11 +14,12 @@ import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Root.TsGenerator;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.SystemCache;
+import org.genericsystem.kernel.Generic;
 
-public class Engine extends Generic implements DefaultEngine<Generic> {
+public class Engine extends Generic implements DefaultEngine {
 
 	private final TsGenerator generator = new TsGenerator();
-	private final ThreadLocal<Cache<Generic>> cacheLocal = new ThreadLocal<>();
+	private final ThreadLocal<Cache> cacheLocal = new ThreadLocal<>();
 	private final SystemCache<Generic> systemCache;
 	private final GarbageCollector<Generic> garbageCollector = new GarbageCollector<>(this);
 	private final Archiver<Generic> archiver;
@@ -35,7 +36,7 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 
 	public Engine(Serializable engineValue, String persistentDirectoryPath, Class<?>... userClasses) {
 		super.init(0L, null, Collections.emptyList(), engineValue, Collections.emptyList(), Statics.SYSTEM_TS);
-		Cache<Generic> cache = start(newCache());
+		Cache cache = start(newCache());
 		systemCache = new SystemCache<>(this, Root.class);
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
 		cache.flush();
@@ -44,13 +45,13 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 		initialized = true;
 	}
 
-	public Cache<Generic> newCache(ContextEventListener<Generic> listener) {
-		return new Cache<Generic>(new Transaction<Generic>(getRoot()), listener);
+	public Cache newCache(ContextEventListener<Generic> listener) {
+		return new Cache(new Transaction(this), listener);
 	}
 
 	@Override
-	public Transaction<Generic> buildTransaction() {
-		return new Transaction<Generic>(Engine.this);
+	public Transaction buildTransaction() {
+		return new Transaction(Engine.this);
 	}
 
 	@Override
@@ -69,7 +70,7 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	}
 
 	@Override
-	public Cache<Generic> start(Cache<Generic> cacheManager) {
+	public Cache start(Cache cacheManager) {
 		if (!equals(cacheManager.getRoot()))
 			throw new IllegalStateException();
 		cacheLocal.set(cacheManager);
@@ -77,14 +78,14 @@ public class Engine extends Generic implements DefaultEngine<Generic> {
 	}
 
 	@Override
-	public void stop(Cache<Generic> cacheManager) {
+	public void stop(Cache cacheManager) {
 		assert cacheLocal.get() == cacheManager;
 		cacheLocal.set(null);
 	}
 
 	@Override
-	public Cache<Generic> getCurrentCache() {
-		Cache<Generic> currentCache = cacheLocal.get();
+	public Cache getCurrentCache() {
+		Cache currentCache = cacheLocal.get();
 		if (currentCache == null)
 			throw new IllegalStateException("Unable to find the current cache. Did you miss to call start() method on it ?");
 		return currentCache;

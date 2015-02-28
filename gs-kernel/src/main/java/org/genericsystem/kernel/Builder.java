@@ -20,7 +20,7 @@ public abstract class Builder<T extends DefaultVertex<T>> {
 
 	@SuppressWarnings("unchecked")
 	protected Class<T> getTClass() {
-		return (Class<T>) Vertex.class;
+		return (Class<T>) Generic.class;
 	}
 
 	@SuppressWarnings("unchecked")

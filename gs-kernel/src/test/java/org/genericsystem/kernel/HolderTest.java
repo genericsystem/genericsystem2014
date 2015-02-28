@@ -9,10 +9,10 @@ public class HolderTest extends AbstractTest {
 
 	public void testHolder1Attribut() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex power = root.addInstance("Power", vehicle);
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic power = root.addInstance("Power", vehicle);
 		int powerValue = 1;
-		Vertex holder = power.addInstance(powerValue, vehicle);
+		Generic holder = power.addInstance(powerValue, vehicle);
 		assert holder.isInstanceOf(power);
 		assert vehicle.getHolders(power) != null;
 		assert vehicle.getHolders(power).size() == 1 : vehicle.getHolders(power);
@@ -29,11 +29,11 @@ public class HolderTest extends AbstractTest {
 
 	public void testHolder1AttributWith2LevelsInheritance1AttributOnParent() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex power = root.addInstance("Power", vehicle);
-		Vertex car = root.addInstance(Arrays.asList(vehicle), "Car");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic power = root.addInstance("Power", vehicle);
+		Generic car = root.addInstance(Arrays.asList(vehicle), "Car");
 		int powerValue = 1;
-		Vertex v1 = power.addInstance(powerValue, vehicle);
+		Generic v1 = power.addInstance(powerValue, vehicle);
 		assert v1.isInstanceOf(power);
 		assert vehicle.getHolders(power) != null;
 		assert vehicle.getHolders(power).size() == 1 : vehicle.getHolders(power);
@@ -51,13 +51,13 @@ public class HolderTest extends AbstractTest {
 
 	public void testHolderOverrideWithDifferentValue1AttributWith2LevelsInheritance1AttributOnParent() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex power = root.addInstance("Power", vehicle);
-		Vertex car = root.addInstance(Arrays.asList(vehicle), "Car");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic power = root.addInstance("Power", vehicle);
+		Generic car = root.addInstance(Arrays.asList(vehicle), "Car");
 		int powerValue1 = 1;
 		int powerValue2 = 2;
-		Vertex v1 = power.addInstance(powerValue1, vehicle);
-		Vertex v2 = power.addInstance(Arrays.asList(v1), powerValue2, car);
+		Generic v1 = power.addInstance(powerValue1, vehicle);
+		Generic v2 = power.addInstance(Arrays.asList(v1), powerValue2, car);
 		assert v1.isInstanceOf(power);
 		assert vehicle.getHolders(power) != null;
 		assert vehicle.getHolders(power).size() == 1 : vehicle.getHolders(power);
@@ -78,13 +78,13 @@ public class HolderTest extends AbstractTest {
 
 	public void testHolderOverrideWithSameValue1AttributWith2LevelsInheritance1AttributOnParent() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex power = root.addInstance("Power", vehicle);
-		Vertex car = root.addInstance(Arrays.asList(vehicle), "Car");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic power = root.addInstance("Power", vehicle);
+		Generic car = root.addInstance(Arrays.asList(vehicle), "Car");
 		int powerValue1 = 1;
 		int powerValue2 = 1;
-		Vertex v1 = power.addInstance(powerValue1, vehicle);
-		Vertex v2 = power.addInstance(Arrays.asList(v1), powerValue2, car);
+		Generic v1 = power.addInstance(powerValue1, vehicle);
+		Generic v2 = power.addInstance(Arrays.asList(v1), powerValue2, car);
 		assert v1.isInstanceOf(power);
 		assert vehicle.getHolders(power) != null;
 		assert vehicle.getHolders(power).size() == 1 : vehicle.getHolders(power);
@@ -105,11 +105,11 @@ public class HolderTest extends AbstractTest {
 
 	public void testHolder1AttributWith2LevelsInheritance1AttributOnFirstChild() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(Arrays.asList(vehicle), "Car");
-		Vertex power = root.addInstance("Power", car);
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(Arrays.asList(vehicle), "Car");
+		Generic power = root.addInstance("Power", car);
 		int powerValue = 1;
-		Vertex v1 = power.addInstance(powerValue, car);
+		Generic v1 = power.addInstance(powerValue, car);
 		assert v1.isInstanceOf(power);
 		assert car.getHolders(power) != null;
 		assert car.getHolders(power).size() == 1 : car.getHolders(power);
@@ -122,12 +122,12 @@ public class HolderTest extends AbstractTest {
 
 	public void testHolder1AttributWith2LevelsInheritance2children1AttributOnParent() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(Arrays.asList(vehicle), "Car");
-		Vertex bike = root.addInstance(Arrays.asList(vehicle), "bike");
-		Vertex power = root.addInstance("Power", vehicle);
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(Arrays.asList(vehicle), "Car");
+		Generic bike = root.addInstance(Arrays.asList(vehicle), "bike");
+		Generic power = root.addInstance("Power", vehicle);
 		int powerValue = 1;
-		Vertex v1 = power.addInstance(powerValue, vehicle);
+		Generic v1 = power.addInstance(powerValue, vehicle);
 		assert v1.isInstanceOf(power);
 		assert vehicle.getHolders(power) != null;
 		assert vehicle.getHolders(power).size() == 1 : vehicle.getHolders(power);
@@ -146,12 +146,12 @@ public class HolderTest extends AbstractTest {
 
 	public void testHolderOverrideWithDifferentValue1AttributWith3LevelsInheritance1AttributOnParentOverrideOnFirstChild() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex power = root.addInstance("Power", vehicle);
-		Vertex car = root.addInstance(Arrays.asList(vehicle), "Car");
-		Vertex microcar = root.addInstance(Arrays.asList(car), "Microcar");
-		Vertex v1 = power.addInstance(233, vehicle);
-		Vertex v2 = power.addInstance(v1, 233, car);
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic power = root.addInstance("Power", vehicle);
+		Generic car = root.addInstance(Arrays.asList(vehicle), "Car");
+		Generic microcar = root.addInstance(Arrays.asList(car), "Microcar");
+		Generic v1 = power.addInstance(233, vehicle);
+		Generic v2 = power.addInstance(v1, 233, car);
 		assert v1.isInstanceOf(power);
 		assert vehicle.getHolders(power) != null;
 		assert vehicle.getHolders(power).size() == 1 : vehicle.getHolders(power);
@@ -178,14 +178,14 @@ public class HolderTest extends AbstractTest {
 
 	public void testHolderOverrideWithDifferentValue1AttributWith3LevelsInheritance1AttributOnParentOverrideOnSecondChild() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex power = root.addInstance("Power", vehicle);
-		Vertex car = root.addInstance(Arrays.asList(vehicle), "Car");
-		Vertex microcar = root.addInstance(Arrays.asList(car), "Microcar");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic power = root.addInstance("Power", vehicle);
+		Generic car = root.addInstance(Arrays.asList(vehicle), "Car");
+		Generic microcar = root.addInstance(Arrays.asList(car), "Microcar");
 		int powerValue1 = 1;
 		int powerValue2 = 1;
-		Vertex v1 = power.addInstance(powerValue1, vehicle);
-		Vertex v2 = power.addInstance(Arrays.asList(v1), powerValue2, microcar);
+		Generic v1 = power.addInstance(powerValue1, vehicle);
+		Generic v2 = power.addInstance(Arrays.asList(v1), powerValue2, microcar);
 		assert v1.isInstanceOf(power);
 		assert vehicle.getHolders(power) != null;
 		assert vehicle.getHolders(power).size() == 1 : vehicle.getHolders(power);
@@ -212,13 +212,13 @@ public class HolderTest extends AbstractTest {
 
 	public void test2ChainedAttributs() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex power = root.addInstance("Power", vehicle);
-		Vertex unit = root.addInstance("Unit", power);
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic power = root.addInstance("Power", vehicle);
+		Generic unit = root.addInstance("Unit", power);
 		int powerValue = 1;
 		String unitValue = "Watt";
-		Vertex v1 = power.addInstance(powerValue, vehicle);
-		Vertex vUnit = unit.addInstance(unitValue, power);
+		Generic v1 = power.addInstance(powerValue, vehicle);
+		Generic vUnit = unit.addInstance(unitValue, power);
 		assert v1.isInstanceOf(power);
 		assert vehicle.getHolders(power) != null;
 		assert vehicle.getHolders(power).size() == 1 : vehicle.getHolders(power);
@@ -244,16 +244,16 @@ public class HolderTest extends AbstractTest {
 
 	public void testHolderOverrideWithDifferentValue2ChainedAttributWith2LevelsInheritance2AttributsOnParent() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex power = root.addInstance("Power", vehicle);
-		Vertex unit = root.addInstance("Unit", power);
-		Vertex car = root.addInstance(Arrays.asList(vehicle), "Car");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic power = root.addInstance("Power", vehicle);
+		Generic unit = root.addInstance("Unit", power);
+		Generic car = root.addInstance(Arrays.asList(vehicle), "Car");
 		int powerValue1 = 1;
 		int powerValue2 = 2;
 		String unitValue = "Watt";
-		Vertex v1 = power.addInstance(powerValue1, vehicle);
-		Vertex v2 = power.addInstance(Arrays.asList(v1), powerValue2, car);
-		Vertex vUnit = unit.addInstance(unitValue, power);
+		Generic v1 = power.addInstance(powerValue1, vehicle);
+		Generic v2 = power.addInstance(Arrays.asList(v1), powerValue2, car);
+		Generic vUnit = unit.addInstance(unitValue, power);
 		assert v1.isInstanceOf(power);
 		assert v2.isInstanceOf(power);
 		assert vehicle.getHolders(power) != null;
@@ -285,19 +285,19 @@ public class HolderTest extends AbstractTest {
 
 	public void testHolderOverrideWithDifferentValue2ChainedAttributsWith3LevelsInheritance1AttributOnParentOverrideOnFirstChild() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex power1 = root.addInstance("Power", vehicle);
-		Vertex unit = root.addInstance("Unit", power1);
-		Vertex car = root.addInstance(Arrays.asList(vehicle), "Car");
-		Vertex power2 = root.addInstance("Power", car);
-		Vertex microcar = root.addInstance(Arrays.asList(car), "Microcar");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic power1 = root.addInstance("Power", vehicle);
+		Generic unit = root.addInstance("Unit", power1);
+		Generic car = root.addInstance(Arrays.asList(vehicle), "Car");
+		Generic power2 = root.addInstance("Power", car);
+		Generic microcar = root.addInstance(Arrays.asList(car), "Microcar");
 		int powerValue = 1;
 		String unitValue1 = "Watt";
 		String unitValue2 = "KWatt";
-		Vertex v1 = power1.addInstance(powerValue, vehicle);
-		Vertex v2 = power2.addInstance(Arrays.asList(v1), powerValue, car);
-		Vertex vUnit1 = unit.addInstance(unitValue1, power1);
-		Vertex vUnit2 = unit.addInstance(Arrays.asList(vUnit1), unitValue2, power2);
+		Generic v1 = power1.addInstance(powerValue, vehicle);
+		Generic v2 = power2.addInstance(Arrays.asList(v1), powerValue, car);
+		Generic vUnit1 = unit.addInstance(unitValue1, power1);
+		Generic vUnit2 = unit.addInstance(Arrays.asList(vUnit1), unitValue2, power2);
 		assert !power1.equals(power2);
 		assert v1.isInstanceOf(power1);
 		assert v2.isInstanceOf(power1);

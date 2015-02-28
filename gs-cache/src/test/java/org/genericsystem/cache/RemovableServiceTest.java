@@ -3,6 +3,7 @@ package org.genericsystem.cache;
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
+import org.genericsystem.kernel.Generic;
 import org.testng.annotations.Test;
 
 @Test
@@ -342,7 +343,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Generic myVehicleGreen = vehicleColor.addInstance("myCarRed", myVehicle, green);
 
 		// when
-		((AbstractGeneric) vehicle).forceRemove();
+		vehicle.forceRemove();
 
 		// then
 		assert engine.isAlive();

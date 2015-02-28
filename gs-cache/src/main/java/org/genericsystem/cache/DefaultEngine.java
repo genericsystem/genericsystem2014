@@ -1,22 +1,23 @@
 package org.genericsystem.cache;
 
 import org.genericsystem.kernel.GarbageCollector;
+import org.genericsystem.kernel.Generic;
 
-public interface DefaultEngine<T extends AbstractGeneric<T>> extends org.genericsystem.api.defaults.DefaultRoot<T>, DefaultGeneric<T> {
+public interface DefaultEngine extends org.genericsystem.api.defaults.DefaultRoot<Generic> {
 
-	default Cache<T> newCache() {
-		return new Cache<>(new Transaction<>(getRoot()));
+	default Cache newCache() {
+		return new Cache(new Transaction(this));
 	}
 
-	Cache<T> start(Cache<T> cache);
+	Cache start(Cache cache);
 
-	void stop(Cache<T> cache);
+	void stop(Cache cache);
 
 	@Override
-	default Cache<T> getCurrentCache() {
-		return getRoot().getCurrentCache();
+	default Cache getCurrentCache() {
+		return (Cache) getRoot().getCurrentCache();
 	}
 
-	GarbageCollector<T> getGarbageCollector();
+	GarbageCollector<Generic> getGarbageCollector();
 
 }
