@@ -18,7 +18,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 	private final Dependencies<T> dependencies = buildDependencies();
 
 	@SuppressWarnings("unchecked")
-	public T init(long ts, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
+	protected T init(long ts, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
 		this.ts = ts;
 		this.meta = meta != null ? meta : (T) this;
 		this.value = value;
@@ -38,13 +38,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return lifeManager;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public final boolean isAlive() {
-		return getCurrentCache().isAlive((T) this);
-	}
-
-	protected boolean isAlive(long ts) {
+	boolean isAlive(long ts) {
 		return getLifeManager().isAlive(ts);
 	}
 

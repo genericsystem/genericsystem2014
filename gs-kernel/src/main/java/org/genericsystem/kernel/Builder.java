@@ -3,6 +3,7 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.List;
+
 import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.kernel.annotations.InstanceClass;
 
@@ -61,5 +62,17 @@ public abstract class Builder<T extends DefaultVertex<T>> {
 	}
 
 	protected abstract T build(long ts, Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs);
+
+	public static class GenericBuilder extends Builder<Generic> {
+
+		public GenericBuilder(Context<Generic> context) {
+			super(context);
+		}
+
+		@Override
+		public Generic build(long ts, Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
+			return newT(clazz, meta).init(ts, meta, supers, value, components, otherTs);
+		}
+	}
 
 }

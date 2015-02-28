@@ -1,13 +1,12 @@
 package org.genericsystem.kernel;
 
-import java.io.Serializable;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.defaults.DefaultRoot;
+import org.genericsystem.kernel.Builder.GenericBuilder;
 
 public class Transaction extends Context<Generic> {
 
@@ -24,12 +23,7 @@ public class Transaction extends Context<Generic> {
 
 	@Override
 	protected Builder<Generic> buildBuilder() {
-		return new Builder<Generic>(this) {
-			@Override
-			protected Generic build(long ts, Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
-				return newT(clazz, meta).init(ts, meta, supers, value, components, otherTs);
-			}
-		};
+		return new GenericBuilder(this);
 	}
 
 	@Override

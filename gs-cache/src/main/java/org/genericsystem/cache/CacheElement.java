@@ -7,14 +7,14 @@ import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.Checker;
-import org.genericsystem.kernel.DependenciesImpl;
 import org.genericsystem.kernel.Generic;
+import org.genericsystem.kernel.PseudoConcurrentCollection;
 
 public class CacheElement extends AbstractCacheElement {
 
 	private final AbstractCacheElement subCache;
-	private final DependenciesImpl<Generic> adds = new DependenciesImpl<>();
-	private final DependenciesImpl<Generic> removes = new DependenciesImpl<>();
+	private final PseudoConcurrentCollection<Generic> adds = new PseudoConcurrentCollection<>();
+	private final PseudoConcurrentCollection<Generic> removes = new PseudoConcurrentCollection<>();
 
 	public CacheElement(AbstractCacheElement subCache) {
 		this.subCache = subCache;

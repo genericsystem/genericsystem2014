@@ -1,8 +1,6 @@
 package org.genericsystem.cache;
 
-import java.io.Serializable;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.genericsystem.api.core.Snapshot;
@@ -11,10 +9,11 @@ import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.Builder;
+import org.genericsystem.kernel.Builder.GenericBuilder;
 import org.genericsystem.kernel.Context;
+import org.genericsystem.kernel.Generic;
 import org.genericsystem.kernel.LifeManager;
 import org.genericsystem.kernel.Statics;
-import org.genericsystem.kernel.Generic;
 
 public class Cache extends Context<Generic> {
 
@@ -147,13 +146,7 @@ public class Cache extends Context<Generic> {
 
 	@Override
 	protected Builder<Generic> buildBuilder() {
-		return new Builder<Generic>(this) {
-
-			@Override
-			public Generic build(long ts, Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
-				return newT(clazz, meta).init(ts, meta, supers, value, components, otherTs);
-			}
-		};
+		return new GenericBuilder(this);
 	}
 
 	@Override

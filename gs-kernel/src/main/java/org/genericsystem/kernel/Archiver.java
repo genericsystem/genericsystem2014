@@ -217,7 +217,6 @@ public class Archiver {
 			return transaction;
 		}
 
-		@SuppressWarnings("unchecked")
 		private void saveSnapshot() throws IOException {
 			writeDependencies(transaction.computeDependencies((Generic) root), new HashSet<>());
 			objectOutputStream.flush();
