@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results skipped="0" failed="0" total="2" passed="2">
+  <reporter-output>
+  </reporter-output>
+  <suite name="Default suite" duration-ms="1028" started-at="2015-02-28T09:36:48Z" finished-at="2015-02-28T09:36:49Z">
+    <groups>
+    </groups>
+    <test name="Default test" duration-ms="1028" started-at="2015-02-28T09:36:48Z" finished-at="2015-02-28T09:36:49Z">
+      <class name="org.genericsystem.example.MyConstraint">
+        <test-method status="PASS" signature="arquillianBeforeClass()[pri:0, instance:org.genericsystem.example.MyConstraint@54a097cc]" name="arquillianBeforeClass" is-config="true" duration-ms="854" started-at="2015-02-28T10:36:48Z" finished-at="2015-02-28T10:36:49Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- arquillianBeforeClass -->
+        <test-method status="PASS" signature="arquillianBeforeTest(java.lang.reflect.Method)[pri:0, instance:org.genericsystem.example.MyConstraint@54a097cc]" name="arquillianBeforeTest" is-config="true" duration-ms="14" started-at="2015-02-28T10:36:49Z" finished-at="2015-02-28T10:36:49Z">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[public void org.genericsystem.example.MyConstraint.createByApi()]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- arquillianBeforeTest -->
+        <test-method status="PASS" signature="createByApi()[pri:0, instance:org.genericsystem.example.MyConstraint@54a097cc]" name="createByApi" duration-ms="126" started-at="2015-02-28T10:36:49Z" finished-at="2015-02-28T10:36:49Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- createByApi -->
+        <test-method status="PASS" signature="arquillianAfterTest(java.lang.reflect.Method)[pri:0, instance:org.genericsystem.example.MyConstraint@54a097cc]" name="arquillianAfterTest" is-config="true" duration-ms="1" started-at="2015-02-28T10:36:49Z" finished-at="2015-02-28T10:36:49Z">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[public void org.genericsystem.example.MyConstraint.createByApi()]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- arquillianAfterTest -->
+        <test-method status="PASS" signature="arquillianBeforeTest(java.lang.reflect.Method)[pri:0, instance:org.genericsystem.example.MyConstraint@54a097cc]" name="arquillianBeforeTest" is-config="true" duration-ms="2" started-at="2015-02-28T10:36:49Z" finished-at="2015-02-28T10:36:49Z">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[public void org.genericsystem.example.MyConstraint.createByFullAnnot()]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- arquillianBeforeTest -->
+        <test-method status="PASS" signature="createByFullAnnot()[pri:0, instance:org.genericsystem.example.MyConstraint@54a097cc]" name="createByFullAnnot" duration-ms="16" started-at="2015-02-28T10:36:49Z" finished-at="2015-02-28T10:36:49Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- createByFullAnnot -->
+        <test-method status="PASS" signature="arquillianAfterTest(java.lang.reflect.Method)[pri:0, instance:org.genericsystem.example.MyConstraint@54a097cc]" name="arquillianAfterTest" is-config="true" duration-ms="1" started-at="2015-02-28T10:36:49Z" finished-at="2015-02-28T10:36:49Z">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[public void org.genericsystem.example.MyConstraint.createByFullAnnot()]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- arquillianAfterTest -->
+        <test-method status="PASS" signature="arquillianAfterClass()[pri:0, instance:org.genericsystem.example.MyConstraint@54a097cc]" name="arquillianAfterClass" is-config="true" duration-ms="8" started-at="2015-02-28T10:36:49Z" finished-at="2015-02-28T10:36:49Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- arquillianAfterClass -->
+      </class> <!-- org.genericsystem.example.MyConstraint -->
+      <class name="org.genericsystem.example.CDIUses">
+        <test-method status="PASS" signature="arquillianBeforeSuite()[pri:0, instance:org.genericsystem.example.CDIUses@67b6d4ae]" name="arquillianBeforeSuite" is-config="true" duration-ms="283" started-at="2015-02-28T10:36:47Z" finished-at="2015-02-28T10:36:48Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- arquillianBeforeSuite -->
+        <test-method status="PASS" signature="arquillianAfterSuite()[pri:0, instance:org.genericsystem.example.CDIUses@67b6d4ae]" name="arquillianAfterSuite" is-config="true" duration-ms="3" started-at="2015-02-28T10:36:49Z" finished-at="2015-02-28T10:36:49Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- arquillianAfterSuite -->
+      </class> <!-- org.genericsystem.example.CDIUses -->
+    </test> <!-- Default test -->
+  </suite> <!-- Default suite -->
+</testng-results>
