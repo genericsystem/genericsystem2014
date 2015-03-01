@@ -8,8 +8,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
-import org.genericsystem.cache.Engine;
-import org.genericsystem.cdi.event.EventLauncher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +25,7 @@ public class EngineProvider {
 	private PersistentDirectoryProvider persistentDirectoryProvider;
 
 	@Inject
-	private EventLauncher eventLauncher;
+	private CacheRequestProvider cacheRequestProvider;
 
 	@PostConstruct
 	public void init() {
@@ -52,7 +50,8 @@ public class EngineProvider {
 		log.info("-  directory path : " + persistentDirectoryProvider.getDirectoryPath());
 		log.info("-  userClasses : " + Arrays.toString(userClassesProvider.getUserClassesArray()));
 		log.info("-----------------------------------------------------------------------------------------------");
-		engine = GenericSystem.newPersistentEngine(persistentDirectoryProvider.getDirectoryPath(), userClassesProvider.getUserClassesArray());
+
+		engine = new Engine(() -> cacheRequestProvider.getCurrentCache(), persistentDirectoryProvider.getEngineValue(), persistentDirectoryProvider.getDirectoryPath(), userClassesProvider.getUserClassesArray());
 	}
 
 	@Produces
@@ -62,9 +61,8 @@ public class EngineProvider {
 
 	@PreDestroy
 	public void destroy() {
-		eventLauncher.launchStopEvent();
 		log.info("$$$$$$$$$$$$$$ STOP GS ENGINE $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-		// engine.close();
+		engine.close();
 		engine = null;
 	}
 }

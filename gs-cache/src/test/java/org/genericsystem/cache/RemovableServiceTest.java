@@ -1,7 +1,9 @@
 package org.genericsystem.cache;
 
-import org.genericsystem.api.exception.NotAliveException;
+import org.genericsystem.api.core.ApiStatics;
+import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
+import org.genericsystem.kernel.Generic;
 import org.testng.annotations.Test;
 
 @Test
@@ -20,10 +22,10 @@ public class RemovableServiceTest extends AbstractTest {
 		assert vehicle.isAlive();
 		assert !myVehicule.isAlive();
 		// assert engine.computeAllDependencies().stream().count() == 2;
-		assert engine.computeDependencies().contains(engine);
-		assert engine.computeDependencies().contains(vehicle);
-		assert vehicle.computeDependencies().stream().count() == 1;
-		assert vehicle.computeDependencies().contains(vehicle);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(engine);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(vehicle);
+		assert vehicle.getCurrentCache().computeDependencies(vehicle).stream().count() == 1;
+		assert vehicle.getCurrentCache().computeDependencies(vehicle).contains(vehicle);
 	}
 
 	public void test101_remove_instance_NormalStrategy() {
@@ -44,13 +46,13 @@ public class RemovableServiceTest extends AbstractTest {
 		assert !myVehicule2.isAlive();
 		assert myVehicule3.isAlive();
 		// assert engine.computeAllDependencies().stream().count() == 3;
-		assert engine.computeDependencies().contains(engine);
-		assert engine.computeDependencies().contains(vehicle);
-		assert vehicle.computeDependencies().stream().count() == 2;
-		assert vehicle.computeDependencies().contains(vehicle);
-		assert vehicle.computeDependencies().contains(myVehicule3);
-		assert myVehicule3.computeDependencies().stream().count() == 1;
-		assert myVehicule3.computeDependencies().contains(myVehicule3);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(engine);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(vehicle);
+		assert vehicle.getCurrentCache().computeDependencies(vehicle).stream().count() == 2;
+		assert vehicle.getCurrentCache().computeDependencies(vehicle).contains(vehicle);
+		assert vehicle.getCurrentCache().computeDependencies(vehicle).contains(myVehicule3);
+		assert myVehicule3.getCurrentCache().computeDependencies(myVehicule3).stream().count() == 1;
+		assert myVehicule3.getCurrentCache().computeDependencies(myVehicule3).contains(myVehicule3);
 	}
 
 	public void test102_remove_typeWithInstance() {
@@ -59,15 +61,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Generic vehicle = engine.addInstance("Vehicle");
 		vehicle.addInstance("MyVehicule");
 
-		// when
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				// when
-				vehicle.remove();
-			}
-			// then
-		}.assertIsCausedBy(ReferentialIntegrityConstraintViolationException.class);
+		catchAndCheckCause(() -> vehicle.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
 	public void test103_remove_SubType() {
@@ -83,17 +77,18 @@ public class RemovableServiceTest extends AbstractTest {
 		assert vehicle.isAlive();
 		assert !car.isAlive();
 		// assert engine.computeAllDependencies().stream().count() == 2;
-		assert engine.computeDependencies().contains(engine);
-		assert engine.computeDependencies().contains(vehicle);
-		assert vehicle.computeDependencies().stream().count() == 1;
-		assert vehicle.computeDependencies().contains(vehicle);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(engine);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(vehicle);
+		assert vehicle.getCurrentCache().computeDependencies(vehicle).stream().count() == 1;
+		assert vehicle.getCurrentCache().computeDependencies(vehicle).contains(vehicle);
 	}
 
 	public void test104_remove_attribute() {
 		// given
 		Generic engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
-		Generic power = engine.addInstance("Power", vehicle);
+		Generic power = vehicle.addAttribute("Power");
+		assert !engine.getRoot().getMetaAttribute().isReferentialIntegrityEnabled(ApiStatics.BASE_POSITION);
 
 		// when
 		vehicle.remove();
@@ -109,16 +104,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Generic vehicle = engine.addInstance("Vehicle");
 		engine.addInstance("Power", vehicle);
 		vehicle.addInstance("Car");
-
-		// when
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				// when
-				vehicle.remove();
-			}
-			// then
-		}.assertIsCausedBy(ReferentialIntegrityConstraintViolationException.class);
+		catchAndCheckCause(() -> vehicle.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
 	public void test105_remove_attribute_attribute_KO() {
@@ -143,14 +129,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Generic vehicle = engine.addInstance("Vehicle");
 		engine.addInstance(vehicle, "Car");
 
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				// when
-				vehicle.remove();
-			}
-			// then
-		}.assertIsCausedBy(ReferentialIntegrityConstraintViolationException.class);
+		catchAndCheckCause(() -> vehicle.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
 	public void test107_remove_relation_KO() {
@@ -163,14 +142,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		vehicleColor.addInstance("CarRed", car, red);
 
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				// when
-				vehicleColor.remove();
-			}
-			// then
-		}.assertIsCausedBy(ReferentialIntegrityConstraintViolationException.class);
+		catchAndCheckCause(() -> vehicleColor.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
 	public void test108_remove_relationFromTarget() {
@@ -182,6 +154,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Generic red = color.addInstance("red");
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Generic carRed = vehicleColor.addInstance("CarRed", car, red);
+		engine.getRoot().getMetaRelation().disableReferentialIntegrity(ApiStatics.TARGET_POSITION);
 
 		// when
 		red.remove();
@@ -230,7 +203,7 @@ public class RemovableServiceTest extends AbstractTest {
 		// then
 		assert !vehicle.isAlive();
 		// assert engine.computeAllDependencies().stream().count() == 1;
-		assert engine.computeDependencies().contains(engine);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(engine);
 	}
 
 	public void test121_remove_typeWithInstance_ForceStrategy() {
@@ -245,7 +218,7 @@ public class RemovableServiceTest extends AbstractTest {
 		assert !vehicle.isAlive();
 		assert !myVehicle.isAlive();
 		// assert engine.computeAllDependencies().stream().count() == 1;
-		assert engine.computeDependencies().contains(engine);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(engine);
 	}
 
 	public void test122_remove_TypeWithSubType_ForceStrategy() {
@@ -261,7 +234,7 @@ public class RemovableServiceTest extends AbstractTest {
 		assert !vehicle.isAlive();
 		assert !car.isAlive();
 		// assert engine.computeAllDependencies().stream().count() == 1;
-		assert engine.computeDependencies().contains(engine);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(engine);
 	}
 
 	public void test123_remove_attribute_ForceStrategy() {
@@ -278,9 +251,9 @@ public class RemovableServiceTest extends AbstractTest {
 		assert !vehicle.isAlive();
 		assert !power.isAlive();
 		// assert engine.computeAllDependencies().stream().count() == 1;
-		assert engine.computeDependencies().contains(engine);
-		assert !engine.computeDependencies().contains(vehicle);
-		assert !engine.computeDependencies().contains(power);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(engine);
+		assert !engine.getCurrentCache().computeDependencies(engine).contains(vehicle);
+		assert !engine.getCurrentCache().computeDependencies(engine).contains(power);
 	}
 
 	public void test124_remove_relation_ForceStrategy() {
@@ -370,7 +343,7 @@ public class RemovableServiceTest extends AbstractTest {
 		Generic myVehicleGreen = vehicleColor.addInstance("myCarRed", myVehicle, green);
 
 		// when
-		((AbstractGeneric) vehicle).forceRemove();
+		vehicle.forceRemove();
 
 		// then
 		assert engine.isAlive();
@@ -527,11 +500,6 @@ public class RemovableServiceTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		vehicle.remove();
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				engine.addInstance(vehicle, "Car");
-			}
-		}.assertIsCausedBy(NotAliveException.class);
+		catchAndCheckCause(() -> engine.addInstance(vehicle, "Car"), AliveConstraintViolationException.class);
 	}
 }

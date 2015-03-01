@@ -1,117 +1,119 @@
 package org.genericsystem.api.core;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
+/**
+ * Represents a <code>Set</code> of results <em>aware</em> of its context.
+ * <p>
+ * This is a functional interface whose functional method is {@link #get}.
+ * </p>
+ *
+ * @author Nicolas Feybesse
+ *
+ * @param <T>
+ *            the type of element contained by the <code>Snapshot</code>.
+ */
+@FunctionalInterface
 public interface Snapshot<T> extends Iterable<T> {
 
+	@Override
+	default Iterator<T> iterator() {
+		return get().iterator();
+	}
+
+	/**
+	 * Returns a <code>Stream</code> of this <code>Snapshot</code>.
+	 *
+	 * @return a <code>Stream</code> of this <code>Snapshot</code>.
+	 */
+	abstract Stream<T> get();
+
+	/**
+	 * Returns the number of elements in this snapshot.
+	 *
+	 * @return the number of elements in this snapshot.
+	 */
 	default int size() {
-		Iterator<T> iterator = iterator();
-		int size = 0;
-		while (iterator.hasNext()) {
-			iterator.next();
-			size++;
-		}
-		return size;
+		return (int) get().count();
 	}
 
+	/**
+	 * Returns <code>true</code> if this snapshot contains no elements.
+	 *
+	 * @return <code>true</code> if this snapshot contains no elements.
+	 */
 	default boolean isEmpty() {
-		return !iterator().hasNext();
+		return get().count() == 0;
 	}
 
+	/**
+	 * Returns <code>true</code> if this snapshot contains the specified element.
+	 *
+	 * @param o
+	 *            element whose presence in this snapshot is to be tested.
+	 * @return <code>true</code> if this snapshot contains the specified element.
+	 */
 	default boolean contains(Object o) {
-		Iterator<T> it = iterator();
-		while (it.hasNext())
-			if (o.equals(it.next()))
-				return true;
-		return false;
+		return o.equals(get(o));
 	}
 
+	/**
+	 * Returns <code>true</code> if this snapshot contains all of the elements in the specified snapshot.
+	 *
+	 * @param c
+	 *            collection to be checked for containment in this snapshot.
+	 * @return <code>true</code> if this snapshot contains all of the elements in the specified snapshot.
+	 */
 	default boolean containsAll(Collection<?> c) {
-		for (Object e : c)
-			if (!contains(e))
-				return false;
-		return true;
+		return c.stream().allMatch(this::contains);
 	}
 
-	default T get(T o) {
-		Iterator<T> it = iterator();
-		while (it.hasNext()) {
-			T next = it.next();
-			if (o.equals(next))
-				return next;
-		}
-		return null;
+	/**
+	 * Returns the first element in this snapshot equals to the specified object or <code>null</code> if no element in this snapshot is equal to the specified object.
+	 *
+	 * @param o
+	 *            object to be tested for equality.
+	 * @return the first element in this snapshot equals to the specified object or <code>null</code> if no element in this snapshot is equal to the specified object.
+	 */
+	default T get(Object o) {
+		return get().filter(o::equals).findFirst().orElse(null);
 	}
 
-	default Stream<T> stream() {
-		return StreamSupport.stream(spliterator(), false);
-	}
-
+	/**
+	 * Returns a <code>String</code> representation of all vertices contained in this snapshot.
+	 *
+	 * @return a <code>String</code> representation of all vertices contained in this snapshot.
+	 */
 	default String info() {
-		return stream().collect(Collectors.toList()).toString();
+		return get().collect(Collectors.toList()).toString();
 	}
 
-	public static abstract class AbstractSnapshot<T> implements Snapshot<T> {
-
-		public static <T> Snapshot<T> emptySnapshot() {
-			return new AbstractSnapshot<T>() {
-				@Override
-				public Iterator<T> iterator() {
-					return Collections.emptyIterator();
-				}
-
-			};
-		}
-
-		@Override
-		public String toString() {
-			Iterator<T> it = iterator();
-			if (!it.hasNext())
-				return "[]";
-			StringBuilder sb = new StringBuilder();
-			sb.append('[');
-			for (;;) {
-				T e = it.next();
-				sb.append(e == this ? "(this Collection)" : e);
-				if (!it.hasNext())
-					return sb.append(']').toString();
-				sb.append(',').append(' ');
-			}
-		}
-
-		@Override
-		@SuppressWarnings("rawtypes")
-		public boolean equals(Object o) {
-			if (o == this)
-				return true;
-			if (!(o instanceof Snapshot))
-				return false;
-			Snapshot s = (Snapshot) o;
-			Iterator<T> e1 = iterator();
-			Iterator e2 = s.iterator();
-			while (e1.hasNext() && e2.hasNext()) {
-				T o1 = e1.next();
-				Object o2 = e2.next();
-				if (!(Objects.equals(o1, o2)))
-					return false;
-			}
-			return !(e1.hasNext() || e2.hasNext());
-		}
-
-		@Override
-		public int hashCode() {
-			int hashCode = 1;
-			for (T e : this)
-				hashCode = 31 * hashCode + (e == null ? 0 : e.hashCode());
-			return hashCode;
-		}
-
+	/**
+	 * Returns the first element of this snapshot or <code>null</code> if this snapshot is empty.
+	 *
+	 * @return the first element of this snapshot or <code>null</code> if this snapshot is empty.
+	 */
+	default T first() {
+		return get().findFirst().orElse(null);
 	}
 
+	default Snapshot<T> filter(Predicate<T> predicate) {
+		return new Snapshot<T>() {
+
+			@Override
+			public Stream<T> get() {
+				return Snapshot.this.get().filter(predicate);
+			}
+
+			@Override
+			public T get(Object o) {
+				T result = Snapshot.this.get(o);
+				return result != null && predicate.test(result) ? result : null;
+			}
+		};
+	}
 }

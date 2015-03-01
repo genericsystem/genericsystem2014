@@ -12,8 +12,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.util.AnnotationLiteral;
 
-import org.genericsystem.cdi.annotation.SystemGeneric;
-import org.genericsystem.cdi.event.EventLauncher;
+import org.genericsystem.kernel.annotations.SystemGeneric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,8 +37,10 @@ public class StartupBean implements Extension {
 				}
 			}
 		}
-		EventLauncher eventLauncher = getBean(EventLauncher.class, beanManager);
-		eventLauncher.launchStartEvent();
+		// Start Engine after deployment
+		getBean(Engine.class, beanManager);
+		// EventLauncher eventLauncher = getBean(EventLauncher.class, beanManager);
+		// eventLauncher.launchStartEvent();
 		log.info("-------------------end initialization------------------------");
 	}
 

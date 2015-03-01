@@ -5,6 +5,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.genericsystem.api.exception.ExistsException;
+import org.genericsystem.kernel.Generic;
 import org.genericsystem.kernel.Statics;
 import org.testng.annotations.Test;
 
@@ -15,7 +16,7 @@ public class InstanciationTest extends AbstractTest {
 		Engine engine = new Engine();
 		assert engine.getMeta().equals(engine);
 		assert engine.getSupers().isEmpty();
-		assert engine.getComposites().isEmpty();
+		assert engine.getComponents().isEmpty();
 		assert Statics.ENGINE_VALUE.equals(engine.getValue());
 		assert engine.isAlive();
 		assert engine.isMeta();
@@ -27,7 +28,7 @@ public class InstanciationTest extends AbstractTest {
 
 		assert car.getMeta().equals(engine);
 		assert car.getSupers().isEmpty();
-		assert car.getComposites().isEmpty();
+		assert car.getComponents().isEmpty();
 		assert "Car".equals(car.getValue());
 		assert car.isAlive();
 		assert car.isStructural();
@@ -42,7 +43,7 @@ public class InstanciationTest extends AbstractTest {
 
 		assert car.getMeta().equals(engine);
 		assert car.getSupers().isEmpty();
-		assert car.getComposites().isEmpty();
+		assert car.getComponents().isEmpty();
 		assert "Car".equals(car.getValue());
 		assert car.isAlive();
 		assert car.isStructural();
@@ -51,7 +52,7 @@ public class InstanciationTest extends AbstractTest {
 
 		assert robot.getMeta().equals(engine);
 		assert robot.getSupers().isEmpty();
-		assert robot.getComponents().isEmpty();
+		assert robot.getComposites().isEmpty();
 		assert "Robot".equals(robot.getValue());
 		assert robot.isAlive();
 		assert robot.isStructural();
@@ -62,14 +63,7 @@ public class InstanciationTest extends AbstractTest {
 	public void testTwoTypeInstanciationSameNamesAddInstance() {
 		Engine engine = new Engine();
 		engine.addInstance("Car");
-
-		new RollbackCatcher() {
-
-			@Override
-			public void intercept() {
-				engine.addInstance("Car");
-			}
-		}.assertIsCausedBy(ExistsException.class);
+		catchAndCheckCause(() -> engine.addInstance("Car"), ExistsException.class);
 	}
 
 	public void testTwoTypeInstanciationSameNamesSetInstance() {
@@ -84,7 +78,7 @@ public class InstanciationTest extends AbstractTest {
 		assert car.equals(car2);
 		assert car.getMeta().equals(engine);
 		assert car.getSupers().isEmpty();
-		assert car.getComposites().isEmpty();
+		assert car.getComponents().isEmpty();
 		assert "Car".equals(car.getValue());
 		assert car.isAlive();
 		assert car.isStructural();
@@ -125,15 +119,7 @@ public class InstanciationTest extends AbstractTest {
 	public void testTypeInstanciationWithSelfInheritance() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
-		// log.info(vehicle.info());
-		new RollbackCatcher() {
-
-			@Override
-			public void intercept() {
-				engine.addInstance(Arrays.asList(vehicle), "Vehicle");
-
-			}
-		}.assertIsCausedBy(ExistsException.class);
+		assert !engine.addInstance(Arrays.asList(vehicle), "Vehicle").equals(vehicle);
 	}
 
 	public void test3TypeInstanciationWithMultipleInheritence() {
@@ -158,9 +144,9 @@ public class InstanciationTest extends AbstractTest {
 		assert transformer.getSupers().stream().anyMatch(car::equals); // isAlive test
 		assert transformer.getSupers().stream().anyMatch(robot::equals);
 		//
-		assert car.getComposites().isEmpty();
-		assert robot.getComposites().isEmpty();
-		assert transformer.getComposites().isEmpty();
+		assert car.getComponents().isEmpty();
+		assert robot.getComponents().isEmpty();
+		assert transformer.getComponents().isEmpty();
 		//
 		assert engine.isAlive();
 		assert car.isAlive();
@@ -201,9 +187,8 @@ public class InstanciationTest extends AbstractTest {
 
 		assert car.getSupers().stream().anyMatch(vehicle::equals);
 		assert robot.getSupers().stream().anyMatch(device::equals);
-		Statics.concat(transformer.getSupers().stream(), superGeneric -> Stream.concat(Stream.of(superGeneric), superGeneric.getSupers().stream()));
 
-		final Predicate<Generic> condition = x -> Statics.concat(transformer.getSupers().stream(), superGeneric -> Stream.concat(Stream.of(superGeneric), superGeneric.getSupers().stream())).anyMatch(x::equals);
+		final Predicate<Generic> condition = x -> transformer.getSupers().stream().flatMap(superGeneric -> Stream.concat(Stream.of(superGeneric), superGeneric.getSupers().stream())).anyMatch(x::equals);
 
 		assert condition.test(vehicle);
 		assert condition.test(car);
@@ -252,9 +237,8 @@ public class InstanciationTest extends AbstractTest {
 
 		assert car.getSupers().stream().anyMatch(vehicle::equals);
 		assert robot.getSupers().stream().anyMatch(device::equals);
-		Statics.concat(transformer.getSupers().stream(), superGeneric -> Stream.concat(Stream.of(superGeneric), superGeneric.getSupers().stream()));
 
-		final Predicate<Generic> condition = x -> Statics.concat(transformer.getSupers().stream(), superGeneric -> Stream.concat(Stream.of(superGeneric), superGeneric.getSupers().stream())).anyMatch(x::equals);
+		final Predicate<Generic> condition = x -> transformer.getSupers().stream().flatMap(superGeneric -> Stream.concat(Stream.of(superGeneric), superGeneric.getSupers().stream())).anyMatch(x::equals);
 
 		assert condition.test(vehicle);
 		assert condition.test(car);

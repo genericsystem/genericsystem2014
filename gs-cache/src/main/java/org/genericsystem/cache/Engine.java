@@ -1,104 +1,125 @@
 package org.genericsystem.cache;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
-import org.genericsystem.api.exception.RollbackException;
-import org.genericsystem.impl.SystemCache;
+import org.genericsystem.cache.Cache.ContextEventListener;
+import org.genericsystem.kernel.Archiver;
+import org.genericsystem.kernel.Config.MetaAttribute;
+import org.genericsystem.kernel.Config.MetaRelation;
+import org.genericsystem.kernel.Config.SystemMap;
+import org.genericsystem.kernel.GarbageCollector;
+import org.genericsystem.kernel.Generic;
+import org.genericsystem.kernel.Root;
+import org.genericsystem.kernel.Root.TsGenerator;
 import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.SystemCache;
 
-public class Engine extends Generic implements IEngine<Generic, Engine, Vertex, Root> {
+public class Engine extends Generic implements DefaultEngine {
 
-	private final ThreadLocal<Cache<Generic, Engine, Vertex, Root>> cacheLocal = new ThreadLocal<>();
-	private final SystemCache<Generic> systemCache = new SystemCache<>(this);
-	private final Root root;
+	private final TsGenerator generator = new TsGenerator();
+	private final ThreadLocal<Cache> cacheLocal = new ThreadLocal<>();
+	private final SystemCache systemCache;
+	private final GarbageCollector<Generic> garbageCollector = new GarbageCollector<>(this);
+	private final Archiver archiver;
+
+	private boolean initialized = false;
 
 	public Engine(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
 	}
 
 	public Engine(Serializable engineValue, Class<?>... userClasses) {
-		init(false, null, Collections.emptyList(), engineValue, Collections.emptyList());
-		root = buildRoot(engineValue);
-
-		Cache<Generic, Engine, Vertex, Root> cache = newCache().start();
-		Generic metaAttribute = setInstance(this, getValue(), coerceToTArray(this));
-		Generic map = setInstance(SystemMap.class, coerceToTArray(this));
-		map.enablePropertyConstraint();
-		for (Class<?> clazz : userClasses)
-			systemCache.set(clazz);
-
-		assert getMetaAttribute().isAlive();
-		assert map.isAlive();
-		cache.flushAndUnmount();
-		assert metaAttribute.isAlive();
-
-		assert getMetaAttribute().isAlive();
+		this(engineValue, null, userClasses);
 	}
 
-	private final GenericsCache<Generic> genericsCache = new GenericsCache<>();
-
-	@Override
-	public Generic getOrBuildT(Class<?> clazz, boolean throwExistException, Generic meta, List<Generic> supers, Serializable value, List<Generic> components) {
-		return genericsCache.getOrBuildT(clazz, throwExistException, meta, supers, value, components);
+	public Engine(Serializable engineValue, String persistentDirectoryPath, Class<?>... userClasses) {
+		super.init(0L, null, Collections.emptyList(), engineValue, Collections.emptyList(), Statics.SYSTEM_TS);
+		Cache cache = start(newCache());
+		systemCache = new SystemCache(this, Root.class);
+		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
+		cache.flush();
+		archiver = new Archiver(this, persistentDirectoryPath);
+		cache.pickNewTs();
+		initialized = true;
 	}
 
-	public Root buildRoot(Serializable value) {
-		return new Root(this, value);
+	public Cache newCache(ContextEventListener<Generic> listener) {
+		return new Cache(new Transaction(this), listener);
 	}
 
 	@Override
-	public Root unwrap() {
-		return root;
+	public Transaction buildTransaction() {
+		return new Transaction(Engine.this);
 	}
 
 	@Override
-	public Cache<Generic, Engine, Vertex, Root> start(Cache<Generic, Engine, Vertex, Root> cache) {
-		if (!equals(cache.getEngine()))
+	public Generic getMetaAttribute() {
+		return find(MetaAttribute.class);
+	}
+
+	@Override
+	public Generic getMetaRelation() {
+		return find(MetaRelation.class);
+	}
+
+	@Override
+	public boolean isInitialized() {
+		return initialized;
+	}
+
+	@Override
+	public Cache start(Cache cacheManager) {
+		if (!equals(cacheManager.getRoot()))
 			throw new IllegalStateException();
-		cacheLocal.set(cache);
-		return cache;
+		cacheLocal.set(cacheManager);
+		return cacheManager;
 	}
 
 	@Override
-	public void stop(Cache<Generic, Engine, Vertex, Root> cache) {
-		assert cacheLocal.get() == cache;
+	public void stop(Cache cacheManager) {
+		assert cacheLocal.get() == cacheManager;
 		cacheLocal.set(null);
 	}
 
 	@Override
-	public Cache<Generic, Engine, Vertex, Root> getCurrentCache() {
-		Cache<Generic, Engine, Vertex, Root> currentCache = cacheLocal.get();
+	public Cache getCurrentCache() {
+		Cache currentCache = cacheLocal.get();
 		if (currentCache == null)
-			throw new IllegalStateException();
+			throw new IllegalStateException("Unable to find the current cache. Did you miss to call start() method on it ?");
 		return currentCache;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <subT extends Generic> subT find(Class<subT> clazz) {
-		return (subT) systemCache.get(clazz);
+	public <Custom extends Generic> Custom find(Class<?> clazz) {
+		return (Custom) systemCache.get(clazz);
 	}
 
 	@Override
-	public Engine getRoot() {
-		return this;
+	public Class<?> findAnnotedClass(Generic generic) {
+		return systemCache.getByVertex(generic);
 	}
 
 	@Override
-	public Engine getAlive() {
-		return this;
+	public void close() {
+		archiver.close();
 	}
 
 	@Override
-	public boolean isRoot() {
-		return true;
+	public long pickNewTs() {
+		return generator.pickNewTs();
 	}
 
 	@Override
-	public void discardWithException(Throwable exception) throws RollbackException {
-		IEngine.super.discardWithException(exception);
+	public GarbageCollector<Generic> getGarbageCollector() {
+		return garbageCollector;
+	}
+
+	@Override
+	public Generic getMap() {
+		return find(SystemMap.class);
 	}
 
 }
