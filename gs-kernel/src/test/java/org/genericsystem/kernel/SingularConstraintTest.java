@@ -2,13 +2,25 @@ package org.genericsystem.kernel;
 
 import java.util.Arrays;
 import java.util.Collections;
-
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.exception.SingularConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test
 public class SingularConstraintTest extends AbstractTest {
+
+	public void test000_enableSingularConstraint() {
+		Root engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic color = engine.addInstance("Color");
+		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
+		vehicleColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
+		Generic color2 = engine.addInstance("Color2");
+		Generic vehicleColor2 = vehicle.addAttribute("vehicleColor2", color2);
+		vehicleColor2.enableSingularConstraint(ApiStatics.BASE_POSITION);
+		assert vehicleColor.isSingularConstraintEnabled(0);
+		assert vehicleColor2.isSingularConstraintEnabled(0);
+	}
 
 	public void test001_enableSingularConstraint_addInstance() {
 		Root engine = new Root();
