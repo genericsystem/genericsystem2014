@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 
+import org.genericsystem.api.defaults.DefaultLifeManager;
 import org.genericsystem.cache.Cache.ContextEventListener;
 import org.genericsystem.kernel.Archiver;
 import org.genericsystem.kernel.Config.MetaAttribute;
@@ -35,7 +36,7 @@ public class Engine extends Generic implements DefaultEngine {
 	}
 
 	public Engine(Serializable engineValue, String persistentDirectoryPath, Class<?>... userClasses) {
-		super.init(0L, null, Collections.emptyList(), engineValue, Collections.emptyList(), Statics.SYSTEM_TS);
+		super.init(0L, null, Collections.emptyList(), engineValue, Collections.emptyList(), DefaultLifeManager.SYSTEM_TS);
 		Cache cache = start(newCache());
 		systemCache = new SystemCache(this, Root.class);
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);

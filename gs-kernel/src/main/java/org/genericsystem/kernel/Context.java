@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.genericsystem.api.core.ApiStatics;
+import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.defaults.DefaultContext;
 import org.genericsystem.api.defaults.DefaultRoot;
 import org.genericsystem.api.defaults.DefaultVertex;
@@ -123,5 +124,20 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 
 	protected void triggersMutation(T oldDependency, T newDependency) {
 	}
+
+	abstract long getTs(T generic);
+
+	abstract T getMeta(T generic);
+
+	abstract LifeManager getLifeManager(T generic);
+
+	abstract List<T> getComponents(T generic);
+
+	abstract Serializable getValue(T generic);
+
+	abstract List<T> getSupers(T generic);
+
+	@Override
+	abstract public Snapshot<T> getDependencies(T generic);
 
 }

@@ -30,7 +30,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import org.genericsystem.api.defaults.DefaultRoot;
+import org.genericsystem.api.defaults.DefaultLifeManager;
 import org.genericsystem.kernel.GenericHandler.SetArchiverHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +58,7 @@ public class Archiver {
 
 	private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
-	protected final DefaultRoot<Generic> root;
+	protected final Root root;
 	private final File directory;
 	private FileLock lockFile;
 
@@ -68,7 +68,7 @@ public class Archiver {
 		return GS_EXTENSION + ZIP_EXTENSION;
 	}
 
-	public Archiver(DefaultRoot<Generic> root, String directoryPath) {
+	public Archiver(Root root, String directoryPath) {
 		this.root = root;
 		directory = prepareAndLockDirectory(directoryPath);
 		if (directory != null) {
@@ -218,7 +218,7 @@ public class Archiver {
 		}
 
 		private void saveSnapshot() throws IOException {
-			writeDependencies(transaction.computeDependencies((Generic) root), new HashSet<>());
+			writeDependencies(transaction.computeDependencies(root), new HashSet<>());
 			objectOutputStream.flush();
 			objectOutputStream.close();
 		}
@@ -290,8 +290,8 @@ public class Archiver {
 		protected void loadDependency(Map<Long, Generic> vertexMap) throws IOException, ClassNotFoundException {
 			long ts = loadTs();
 			long[] otherTs = loadOtherTs();
-			if (otherTs[0] == Statics.TS_SYSTEM)
-				otherTs[0] = Statics.TS_OLD_SYSTEM;
+			if (otherTs[0] == DefaultLifeManager.TS_SYSTEM)
+				otherTs[0] = DefaultLifeManager.TS_OLD_SYSTEM;
 			Serializable value = (Serializable) objectInputStream.readObject();
 			Generic meta = loadAncestor(ts, vertexMap);
 			List<Generic> supers = loadAncestors(ts, vertexMap);

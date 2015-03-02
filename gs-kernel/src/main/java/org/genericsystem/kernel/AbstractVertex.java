@@ -1,91 +1,60 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import org.genericsystem.api.core.Snapshot;
+import org.genericsystem.api.defaults.DefaultRoot;
 import org.genericsystem.api.defaults.DefaultVertex;
 
 public abstract class AbstractVertex<T extends AbstractVertex<T>> implements DefaultVertex<T>, Comparable<T> {
-	private long ts;
-	private T meta;
-	private List<T> components;
-	private Serializable value;
-	private List<T> supers;
-	private LifeManager lifeManager;
-	private final Dependencies<T> dependencies = buildDependencies();
+
+	private DefaultRoot<T> root;
 
 	@SuppressWarnings("unchecked")
-	protected T init(long ts, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
-		this.ts = ts;
-		this.meta = meta != null ? meta : (T) this;
-		this.value = value;
-		for (T component : components)
-			assert component != null && !equals(component);
-		this.components = Collections.unmodifiableList(new ArrayList<>(components));
-		this.supers = Collections.unmodifiableList(new ArrayList<>(supers));
-		lifeManager = new LifeManager(otherTs);
+	T init(DefaultRoot<T> root) {
+		this.root = root;
 		return (T) this;
 	}
 
+	@Override
+	public DefaultRoot<T> getRoot() {
+		return root;
+	}
+
+	@Override
 	public long getTs() {
-		return ts;
+		return getCurrentCache().getTs((T) this);
 	}
 
+	@Override
 	public LifeManager getLifeManager() {
-		return lifeManager;
-	}
-
-	boolean isAlive(long ts) {
-		return getLifeManager().isAlive(ts);
-	}
-
-	@Override
-	public boolean isSystem() {
-		return getLifeManager().getBirthTs() == Statics.TS_SYSTEM;
-	}
-
-	@Override
-	public int compareTo(T vertex) {
-		long birthTs = lifeManager.getBirthTs();
-		long compareBirthTs = vertex.getLifeManager().getBirthTs();
-		return birthTs == compareBirthTs ? Long.compare(getTs(), vertex.getTs()) : Long.compare(birthTs, compareBirthTs);
+		return getCurrentCache().getLifeManager((T) this);
 	}
 
 	@Override
 	public T getMeta() {
-		return meta;
+		return getCurrentCache().getMeta((T) this);
 	}
 
 	@Override
 	public List<T> getComponents() {
-		return components;
+		return getCurrentCache().getComponents((T) this);
 	}
 
 	@Override
 	public Serializable getValue() {
-		return value;
+		return getCurrentCache().getValue((T) this);
 	}
 
 	@Override
 	public List<T> getSupers() {
-		return supers;
+		return getCurrentCache().getSupers((T) this);
 	}
 
-	protected Dependencies<T> getDependencies() {
-		return dependencies;
-	}
-
-	protected Dependencies<T> buildDependencies() {
-		return new AbstractTsDependencies<T>() {
-
-			@Override
-			public LifeManager getLifeManager() {
-				return AbstractVertex.this.getLifeManager();
-			}
-		};
+	protected Snapshot<T> getDependencies() {
+		return getCurrentCache().getDependencies((T) this);
 	}
 
 	@Override

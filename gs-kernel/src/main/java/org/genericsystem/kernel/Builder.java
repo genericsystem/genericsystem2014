@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.List;
 
+import org.genericsystem.api.defaults.DefaultLifeManager;
 import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.kernel.annotations.InstanceClass;
 
@@ -58,7 +59,7 @@ public abstract class Builder<T extends DefaultVertex<T>> {
 	}
 
 	T buildAndPlug(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
-		return context.plug(build(context.getRoot().pickNewTs(), clazz, meta, supers, value, components, context.getRoot().isInitialized() ? Statics.USER_TS : Statics.SYSTEM_TS));
+		return context.plug(build(context.getRoot().pickNewTs(), clazz, meta, supers, value, components, context.getRoot().isInitialized() ? DefaultLifeManager.USER_TS : DefaultLifeManager.SYSTEM_TS));
 	}
 
 	protected abstract T build(long ts, Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs);
@@ -71,7 +72,7 @@ public abstract class Builder<T extends DefaultVertex<T>> {
 
 		@Override
 		public Generic build(long ts, Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
-			return newT(clazz, meta).init(ts, meta, supers, value, components, otherTs);
+			return ((Root) getContext().getRoot()).getProvider().init(newT(clazz, meta), ts, meta, supers, value, components, otherTs);
 		}
 	}
 

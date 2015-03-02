@@ -3,8 +3,12 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.genericsystem.api.defaults.DefaultLifeManager;
 import org.genericsystem.api.defaults.DefaultRoot;
 import org.genericsystem.kernel.Config.MetaAttribute;
 import org.genericsystem.kernel.Config.MetaRelation;
@@ -16,6 +20,7 @@ public class Root extends Generic implements DefaultRoot<Generic> {
 	private final Context<Generic> context;
 	private final SystemCache systemCache;
 	private final Archiver archiver;
+	private final Provider provider = new Provider();
 
 	private boolean initialized = false;
 
@@ -27,8 +32,13 @@ public class Root extends Generic implements DefaultRoot<Generic> {
 		this(value, null, userClasses);
 	}
 
+	@Override
+	public Root getRoot() {
+		return this;
+	}
+
 	public Root(Serializable value, String persistentDirectoryPath, Class<?>... userClasses) {
-		init(Statics.TS_SYSTEM, null, Collections.emptyList(), value, Collections.emptyList(), Statics.SYSTEM_TS);
+		getProvider().init(this, DefaultLifeManager.TS_SYSTEM, null, Collections.emptyList(), value, Collections.emptyList(), DefaultLifeManager.SYSTEM_TS);
 		context = new Transaction(this, pickNewTs());
 		systemCache = new SystemCache(this, getClass());
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
@@ -102,5 +112,53 @@ public class Root extends Generic implements DefaultRoot<Generic> {
 	@Override
 	public Generic getMap() {
 		return find(SystemMap.class);
+	}
+
+	Provider getProvider() {
+		return provider;
+	}
+
+	class Provider {
+
+		private Map<Generic, Vertex> map = new ConcurrentHashMap<Generic, Vertex>();
+
+		public long getTs(Generic generic) {
+			return map.get(generic).getTs();
+		}
+
+		Vertex getVertex(Generic generic) {
+			return map.get(generic);
+		}
+
+		public Generic getMeta(Generic generic) {
+			return getVertex(generic).getMeta();
+		}
+
+		public List<Generic> getSupers(Generic generic) {
+			return getVertex(generic).getSupers();
+		}
+
+		public Serializable getValue(Generic generic) {
+			return getVertex(generic).getValue();
+		}
+
+		public List<Generic> getComponents(Generic generic) {
+			return getVertex(generic).getComponents();
+		}
+
+		public Dependencies<Generic> getDependencies(Generic generic) {
+			return getVertex(generic).getDependencies();
+		}
+
+		public LifeManager getLifeManager(Generic generic) {
+			return getVertex(generic).getLifeManager();
+		}
+
+		public Generic init(Generic generic, long ts, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
+			Vertex result = map.putIfAbsent(generic, new Vertex(generic, ts, meta, supers, value, components, otherTs));
+			assert result == null;
+			return generic.init(Root.this);
+		}
+
 	}
 }

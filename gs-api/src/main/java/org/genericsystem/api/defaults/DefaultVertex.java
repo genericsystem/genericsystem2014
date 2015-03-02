@@ -10,7 +10,7 @@ import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
 
-public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncestors<T>, DefaultDependencies<T>, DefaultDisplay<T>, DefaultSystemProperties<T>, DefaultCompositesInheritance<T>, DefaultWritable<T> {
+public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncestors<T>, DefaultDependencies<T>, DefaultDisplay<T>, DefaultSystemProperties<T>, DefaultCompositesInheritance<T>, DefaultWritable<T>, Comparable<T> {
 
 	@Override
 	default DefaultContext<T> getCurrentCache() {
@@ -231,4 +231,20 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 	default void traverse(Visitor<T> visitor) {
 		visitor.traverse((T) this);
 	}
+
+	@Override
+	default boolean isSystem() {
+		return getLifeManager().isSystem();
+	}
+
+	@Override
+	default int compareTo(T vertex) {
+		long birthTs = getLifeManager().getBirthTs();
+		long compareBirthTs = vertex.getLifeManager().getBirthTs();
+		return birthTs == compareBirthTs ? Long.compare(getTs(), vertex.getTs()) : Long.compare(birthTs, compareBirthTs);
+	}
+
+	long getTs();
+
+	DefaultLifeManager getLifeManager();
 }
