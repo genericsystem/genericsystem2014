@@ -33,7 +33,7 @@ public class PersistenceTest extends AbstractTest {
 	public void testTypeAnnoted() {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
 		Root engine = new Root(Statics.ENGINE_VALUE, snapshot, Vehicle.class);
-		Vertex vehicle = engine.find(Vehicle.class);
+		Generic vehicle = engine.find(Vehicle.class);
 		vehicle.addInstance("myVehicle");
 		assert vehicle.getLifeManager().getBirthTs() == Statics.TS_SYSTEM;
 		assert vehicle.getInstance("myVehicle").getLifeManager().getBirthTs() > vehicle.getLifeManager().getBirthTs();
@@ -41,13 +41,13 @@ public class PersistenceTest extends AbstractTest {
 		engine.close();
 
 		Root engine2 = new Root(Statics.ENGINE_VALUE, snapshot);
-		Vertex vehicle2 = engine2.getInstance(Vehicle.class);
+		Generic vehicle2 = engine2.getInstance(Vehicle.class);
 		assert vehicle2.getInstance("myVehicle").getLifeManager().getBirthTs() > vehicle2.getLifeManager().getBirthTs();
 		assert !vehicle2.isSystem();
 		engine2.close();
 
 		Root engine3 = new Root(Statics.ENGINE_VALUE, snapshot, Vehicle.class);
-		Vertex vehicle3 = engine3.find(Vehicle.class);
+		Generic vehicle3 = engine3.find(Vehicle.class);
 		assert vehicle3.getLifeManager().getBirthTs() == Statics.TS_SYSTEM;
 		assert vehicle3.getInstance("myVehicle").getLifeManager().getBirthTs() > vehicle3.getLifeManager().getBirthTs();
 		assert vehicle3.isSystem();
@@ -62,9 +62,9 @@ public class PersistenceTest extends AbstractTest {
 	public void testHolder() {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
 		Root root = new Root(Statics.ENGINE_VALUE, snapshot);
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex vehiclePower = vehicle.setAttribute("power");
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic vehiclePower = vehicle.setAttribute("power");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
 		myVehicle.setHolder(vehiclePower, "123");
 		root.close();
 		compareGraph(root, new Root(Statics.ENGINE_VALUE, snapshot));
@@ -73,8 +73,8 @@ public class PersistenceTest extends AbstractTest {
 	public void testAddAndRemove() {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
 		Root root = new Root(Statics.ENGINE_VALUE, snapshot);
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(vehicle, "Car");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
 		root.addInstance(vehicle, "Truck");
 		car.remove();
 		root.close();
@@ -85,11 +85,11 @@ public class PersistenceTest extends AbstractTest {
 	public void testLink() {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
 		Root root = new Root(Statics.ENGINE_VALUE, snapshot);
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex color = root.addInstance("Color");
-		Vertex vehicleColor = vehicle.setAttribute("VehicleColor", color);
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		Vertex red = color.addInstance("red");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic color = root.addInstance("Color");
+		Generic vehicleColor = vehicle.setAttribute("VehicleColor", color);
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic red = color.addInstance("red");
 		myVehicle.setHolder(vehicleColor, "myVehicleRed", red);
 		root.close();
 		compareGraph(root, new Root(Statics.ENGINE_VALUE, snapshot));
@@ -98,8 +98,8 @@ public class PersistenceTest extends AbstractTest {
 	public void testHeritageMultiple() {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
 		Root root = new Root(Statics.ENGINE_VALUE, snapshot);
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex robot = root.addInstance("Robot");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic robot = root.addInstance("Robot");
 		root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
 		root.close();
 		compareGraph(root, new Root(Statics.ENGINE_VALUE, snapshot));
@@ -108,9 +108,9 @@ public class PersistenceTest extends AbstractTest {
 	public void testHeritageMultipleDiamond() {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
 		Root root = new Root(Statics.ENGINE_VALUE, snapshot);
-		Vertex nommable = root.addInstance("Nommable");
-		Vertex vehicle = root.addInstance(nommable, "Vehicle");
-		Vertex robot = root.addInstance(nommable, "Robot");
+		Generic nommable = root.addInstance("Nommable");
+		Generic vehicle = root.addInstance(nommable, "Vehicle");
+		Generic robot = root.addInstance(nommable, "Robot");
 		root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
 		root.close();
 		compareGraph(root, new Root(Statics.ENGINE_VALUE, snapshot));
@@ -119,9 +119,9 @@ public class PersistenceTest extends AbstractTest {
 	public void testTree() {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
 		Root root = new Root(Statics.ENGINE_VALUE, snapshot);
-		Vertex tree = root.addInstance("Tree");
-		Vertex rootTree = tree.addInstance("Root");
-		Vertex child = tree.addInstance(rootTree, "Child");
+		Generic tree = root.addInstance("Tree");
+		Generic rootTree = tree.addInstance("Root");
+		Generic child = tree.addInstance(rootTree, "Child");
 		tree.addInstance(rootTree, "Child2");
 		tree.addInstance(child, "Child3");
 		root.close();
@@ -152,17 +152,17 @@ public class PersistenceTest extends AbstractTest {
 	// }
 	// }
 
-	private void compareGraph(Vertex persistedNode, Vertex readNode) {
-		Collection<Vertex> persistVisit = persistedNode.getCurrentCache().computeDependencies(persistedNode);
-		Collection<Vertex> readVisit = readNode.getCurrentCache().computeDependencies(readNode);
+	private void compareGraph(Generic persistedNode, Generic readNode) {
+		Collection<Generic> persistVisit = persistedNode.getCurrentCache().computeDependencies(persistedNode);
+		Collection<Generic> readVisit = readNode.getCurrentCache().computeDependencies(readNode);
 		assert persistVisit.size() == readVisit.size() : persistVisit + " \n " + readVisit;
-		for (Vertex persist : persistVisit) {
-			for (Vertex read : readVisit)
+		for (Generic persist : persistVisit) {
+			for (Generic read : readVisit)
 				if (persist == read)
 					assert false : persistVisit + " \n " + readVisit;
 		}
-		LOOP: for (Vertex persist : persistVisit) {
-			for (Vertex read : readVisit)
+		LOOP: for (Generic persist : persistVisit) {
+			for (Generic read : readVisit)
 				if (persist.genericEquals(read))
 					continue LOOP;
 			assert false : persistVisit + " \n " + readVisit;

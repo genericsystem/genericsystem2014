@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -13,34 +12,42 @@ import org.genericsystem.cdi.Engine;
 import org.genericsystem.issuetracker.model.Description;
 import org.genericsystem.issuetracker.model.Issue;
 import org.genericsystem.issuetracker.model.IssuePriority;
+import org.genericsystem.issuetracker.model.Priority;
+import org.genericsystem.issuetracker.qualifier.Provide;
 import org.genericsystem.mutability.Generic;
 
 @Named
 @RequestScoped
 public class IssueBean {
-	// private static final Logger log = Logger.getAnonymousLogger();
 
 	@Inject
 	private Engine engine;
-	private Generic issue;
-	private Generic description;
-	private Generic issuePriority;
+
+	@Inject
+	@Provide
+	private Issue issue;
+
+	@Inject
+	@Provide
+	private Description description;
+
+	@Inject
+	@Provide
+	private IssuePriority issuePriority;
+
+	@Inject
+	@Provide
+	private Priority priority;
+
 	private String newIssueName;
 	private String newIssueDescription;
 
-	@PostConstruct
-	public void init() {
-		issue = engine.find(Issue.class);
-		description = engine.find(Description.class);
-		issuePriority = engine.find(IssuePriority.class);
-	}
-
 	public List<Generic> getIssues() {
-		return issue.getAllInstances().get().collect(Collectors.toList());
+		return ((Generic) issue).getAllInstances().get().collect(Collectors.toList());
 	}
 
 	public String addIssue() {
-		issue.setInstance(newIssueName).setHolder(description, newIssueDescription);
+		((Generic) issue).setInstance(newIssueName).setHolder(description, newIssueDescription);
 		return "#";
 	}
 
@@ -74,18 +81,19 @@ public class IssueBean {
 		};
 	}
 
-	public ElGenericWrapper getPriority(Generic instance) {
-		return new ElGenericWrapper() {
+	public ElStringWrapper getPriority(Generic instance) {
+		return new ElStringWrapper() {
 
 			@Override
-			public void setValue(Generic priority) {
-				instance.setLink(issuePriority, "link", priority);
+			public void setValue(String value) {
+				Generic searchedPriority = priority.getInstance(value);
+				instance.setLink(issuePriority, "link", searchedPriority);
 			}
 
 			@Override
-			public Generic getValue() {
+			public String getValue() {
 				Generic link = instance.getLinks(issuePriority).first();
-				return (link != null) ? link.getTargetComponent() : null;
+				return (link != null) ? (String) link.getTargetComponent().getValue() : null;
 			}
 		};
 	}
@@ -94,12 +102,6 @@ public class IssueBean {
 		public String getValue();
 
 		public void setValue(String value);
-	}
-
-	public interface ElGenericWrapper {
-		public Generic getValue();
-
-		public void setValue(Generic priority);
 	}
 
 	public String getNewIssueName() {

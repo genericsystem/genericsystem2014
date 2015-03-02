@@ -12,15 +12,15 @@ public class PhaseListenerImpl implements PhaseListener {
 	private static final Logger log = Logger.getAnonymousLogger();
 
 	@Override
-	public void afterPhase(PhaseEvent e) {
+	public void beforePhase(PhaseEvent e) {
 		log.info("\n\n\n---------------------------------" + e.getPhaseId().toString() + "-----------------------------------------\n");
-		
+
 	}
 
 	@Override
-	public void beforePhase(PhaseEvent e) {
+	public void afterPhase(PhaseEvent e) {
 		log.info("\n----------------------------------------------------------------------------------------------------------------\n\n\n");
-		
+
 	}
 
 	@Override

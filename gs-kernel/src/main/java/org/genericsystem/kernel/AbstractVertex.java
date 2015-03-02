@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
 import org.genericsystem.api.defaults.DefaultVertex;
 
 public abstract class AbstractVertex<T extends AbstractVertex<T>> implements DefaultVertex<T>, Comparable<T> {
@@ -37,13 +38,7 @@ public abstract class AbstractVertex<T extends AbstractVertex<T>> implements Def
 		return lifeManager;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public final boolean isAlive() {
-		return getCurrentCache().isAlive((T) this);
-	}
-
-	protected boolean isAlive(long ts) {
+	boolean isAlive(long ts) {
 		return getLifeManager().isAlive(ts);
 	}
 

@@ -1,49 +1,31 @@
 package org.genericsystem.cache;
 
-import java.io.Serializable;
-import java.util.List;
 import org.genericsystem.api.exception.RollbackException;
-import org.genericsystem.kernel.Builder;
 import org.genericsystem.kernel.Checker;
+import org.genericsystem.kernel.Generic;
 
-public class Transaction<T extends AbstractGeneric<T>> extends org.genericsystem.kernel.Transaction<T> {
+public class Transaction extends org.genericsystem.kernel.Transaction {
 
-	protected Transaction(DefaultEngine<T> engine, long ts) {
+	protected Transaction(DefaultEngine engine, long ts) {
 		super(engine, ts);
 	}
 
-	protected Transaction(DefaultEngine<T> engine) {
+	protected Transaction(DefaultEngine engine) {
 		super(engine);
 	}
 
 	@Override
-	protected void unplug(T generic) {
+	protected void unplug(Generic generic) {
 		generic.getLifeManager().kill(getTs());
-		((DefaultEngine<T>) getRoot()).getGarbageCollector().add(generic);
+		((DefaultEngine) getRoot()).getGarbageCollector().add(generic);
 	}
 
 	@Override
-	protected Checker<T> buildChecker() {
-		return new Checker<T>(Transaction.this) {
+	protected Checker<Generic> buildChecker() {
+		return new Checker<Generic>(Transaction.this) {
 			@Override
-			public void checkAfterBuild(boolean isOnAdd, boolean isFlushTime, T vertex) throws RollbackException {
+			public void checkAfterBuild(boolean isOnAdd, boolean isFlushTime, Generic vertex) throws RollbackException {
 				checkSystemConstraintsAfterBuild(isOnAdd, isFlushTime, vertex);// Check only system constraints on transactions
-			}
-		};
-	}
-
-	@Override
-	protected Builder<T> buildBuilder() {
-		return new Builder<T>(this) {
-			@Override
-			@SuppressWarnings("unchecked")
-			protected Class<T> getTClass() {
-				return (Class<T>) Generic.class;
-			}
-
-			@Override
-			protected T build(long ts, Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
-				return newT(clazz, meta).init(ts, meta, supers, value, components, otherTs);
 			}
 		};
 	}

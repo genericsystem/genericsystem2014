@@ -12,17 +12,17 @@ import org.testng.annotations.Test;
 public class RemoveTest extends AbstractTest {
 
 	public void test001_conserveRemove() {
-		Vertex engine = new Root();
-		Vertex car = engine.addInstance("Car");
-		Vertex color = engine.addInstance("Color");
-		Vertex myBmw = car.addInstance("myBmw");
-		Vertex red = color.addInstance("red");
-		Vertex carColor = car.addRelation("CarColor", color);
-		Vertex carRed = car.addLink(carColor, "carRed", red);
+		Generic engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic color = engine.addInstance("Color");
+		Generic myBmw = car.addInstance("myBmw");
+		Generic red = color.addInstance("red");
+		Generic carColor = car.addRelation("CarColor", color);
+		Generic carRed = car.addLink(carColor, "carRed", red);
 		myBmw.addLink(carColor, carRed, "myBmwRed", red);
 
 		carRed.conserveRemove();
-		Vertex myBmwRed = myBmw.getLink(carColor, "myBmwRed", red);
+		Generic myBmwRed = myBmw.getLink(carColor, "myBmwRed", red);
 		assert myBmwRed != null;
 		assert myBmwRed.isAlive();
 		assert myBmwRed.getSupers().size() == 0;
@@ -30,25 +30,25 @@ public class RemoveTest extends AbstractTest {
 	}
 
 	public void test002_conserveRemove() {
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("vehicle");
-		Vertex color = engine.addInstance("Color");
-		Vertex outsideColor = engine.addInstance(color, "OutsideColor");
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("vehicle");
+		Generic color = engine.addInstance("Color");
+		Generic outsideColor = engine.addInstance(color, "OutsideColor");
 
-		Vertex myBmw = vehicle.addInstance("myBmw");
-		Vertex red = color.addInstance("red");
-		Vertex outsideRed = outsideColor.addInstance("OutsideRed");
+		Generic myBmw = vehicle.addInstance("myBmw");
+		Generic red = color.addInstance("red");
+		Generic outsideRed = outsideColor.addInstance("OutsideRed");
 
-		Vertex vehicleColor = vehicle.addRelation("vehicleColor", color);
-		Vertex vehicleRed = vehicle.addLink(vehicleColor, "vehicleRed", red);
+		Generic vehicleColor = vehicle.addRelation("vehicleColor", color);
+		Generic vehicleRed = vehicle.addLink(vehicleColor, "vehicleRed", red);
 
-		Vertex vehicleOutsideColor = vehicle.addRelation(vehicleColor, "vehicleOutsideColor", outsideColor);
-		Vertex vehicleOutsideRed = vehicle.addLink(vehicleOutsideColor, "vehicleOutsideRed", outsideRed);
+		Generic vehicleOutsideColor = vehicle.addRelation(vehicleColor, "vehicleOutsideColor", outsideColor);
+		Generic vehicleOutsideRed = vehicle.addLink(vehicleOutsideColor, "vehicleOutsideRed", outsideRed);
 
 		myBmw.addLink(vehicleOutsideColor, vehicleOutsideRed, "myBmwOutsideRed", outsideRed);
 
 		vehicleRed.conserveRemove();
-		Vertex myBmwRed = myBmw.getLink(vehicleOutsideColor, "myBmwOutsideRed", outsideRed);
+		Generic myBmwRed = myBmw.getLink(vehicleOutsideColor, "myBmwOutsideRed", outsideRed);
 		assert myBmwRed != null;
 		assert myBmwRed.isAlive();
 		assert myBmwRed.getSupers().size() == 1;
@@ -57,14 +57,14 @@ public class RemoveTest extends AbstractTest {
 	}
 
 	public void test003_conserveRemove() {
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("vehicle");
-		Vertex color = engine.addInstance("Color");
-		Vertex vehicleColor = vehicle.addRelation("vehicleColor", color);
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("vehicle");
+		Generic color = engine.addInstance("Color");
+		Generic vehicleColor = vehicle.addRelation("vehicleColor", color);
 		vehicleColor.getMeta().disableReferentialIntegrity(ApiStatics.TARGET_POSITION);
 		color.conserveRemove();
 
-		Vertex newVehicleColor = vehicle.getAttribute("vehicleColor");
+		Generic newVehicleColor = vehicle.getAttribute("vehicleColor");
 		assert !vehicleColor.isAlive();
 		assert newVehicleColor.isAlive();
 		assert newVehicleColor.getComponents().size() == 1 : newVehicleColor.info();
@@ -72,21 +72,21 @@ public class RemoveTest extends AbstractTest {
 	}
 
 	public void test001_removeTypeWithHolder() {
-		Vertex engine = new Root();
-		Vertex car = engine.addInstance("Car");
-		Vertex power = car.addAttribute("Power");
-		Vertex myBmw = car.addInstance("myBmw");
+		Generic engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic power = car.addAttribute("Power");
+		Generic myBmw = car.addInstance("myBmw");
 		myBmw.addHolder(power, 123);
 
 		catchAndCheckCause(() -> car.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
 	public void test001_simpleHolder() {
-		Vertex engine = new Root();
-		Vertex car = engine.addInstance("Car");
-		Vertex color = car.addAttribute("Color");
-		Vertex myBmw = car.addInstance("myBmw");
-		Vertex myBmwRed = myBmw.addHolder(color, "red");
+		Generic engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic color = car.addAttribute("Color");
+		Generic myBmw = car.addInstance("myBmw");
+		Generic myBmwRed = myBmw.addHolder(color, "red");
 
 		assert myBmw.getHolders(color).contains(myBmwRed) : myBmw.getHolders(color).info();
 		assert myBmw.getHolders(color).size() == 1;
@@ -97,18 +97,18 @@ public class RemoveTest extends AbstractTest {
 	}
 
 	public void test002_multipleHolders() {
-		Vertex engine = new Root();
-		Vertex car = engine.addInstance("Car");
-		Vertex color = car.addAttribute("Color");
-		Vertex myBmw = car.addInstance("myBmw");
-		Vertex myBmwRed = myBmw.addHolder(color, "red");
-		Vertex myBmwBlue = myBmw.addHolder(color, "blue");
+		Generic engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic color = car.addAttribute("Color");
+		Generic myBmw = car.addInstance("myBmw");
+		Generic myBmwRed = myBmw.addHolder(color, "red");
+		Generic myBmwBlue = myBmw.addHolder(color, "blue");
 
 		myBmwRed.remove();
 		assert myBmw.getHolders(color).contains(myBmwBlue);
 		assert myBmw.getHolders(color).size() == 1;
 
-		Vertex myBmwGreen = myBmw.addHolder(color, "green");
+		Generic myBmwGreen = myBmw.addHolder(color, "green");
 
 		myBmwBlue.remove();
 		assert myBmw.getHolders(color).contains(myBmwGreen);
@@ -116,12 +116,12 @@ public class RemoveTest extends AbstractTest {
 	}
 
 	public void test003_removeAndAdd() {
-		Vertex engine = new Root();
-		Vertex car = engine.addInstance("Car");
-		Vertex color = car.addAttribute("Color");
-		Vertex myBmw = car.addInstance("myBmw");
-		Vertex myBmwRed = myBmw.addHolder(color, "red");
-		Vertex myBmwBlue = myBmw.addHolder(color, "blue");
+		Generic engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic color = car.addAttribute("Color");
+		Generic myBmw = car.addInstance("myBmw");
+		Generic myBmwRed = myBmw.addHolder(color, "red");
+		Generic myBmwBlue = myBmw.addHolder(color, "blue");
 
 		myBmwRed.remove();
 		myBmwRed = myBmw.addHolder(color, "red");
@@ -132,12 +132,12 @@ public class RemoveTest extends AbstractTest {
 	}
 
 	public void test004_removeAndAddAndRemove() {
-		Vertex engine = new Root();
-		Vertex car = engine.addInstance("Car");
-		Vertex color = car.addAttribute("Color");
-		Vertex myBmw = car.addInstance("myBmw");
-		Vertex myBmwRed = myBmw.addHolder(color, "red");
-		Vertex myBmwBlue = myBmw.addHolder(color, "blue");
+		Generic engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic color = car.addAttribute("Color");
+		Generic myBmw = car.addInstance("myBmw");
+		Generic myBmwRed = myBmw.addHolder(color, "red");
+		Generic myBmwBlue = myBmw.addHolder(color, "blue");
 
 		myBmwRed.remove();
 		myBmwRed = myBmw.addHolder(color, "red");
@@ -148,11 +148,11 @@ public class RemoveTest extends AbstractTest {
 	}
 
 	public void test005_removeConcret_withHolder() {
-		Vertex engine = new Root();
-		Vertex car = engine.addInstance("Car");
-		Vertex color = car.addAttribute("Color");
-		Vertex myBmw = car.addInstance("myBmw");
-		Vertex myBmwRed = myBmw.addHolder(color, "red");
+		Generic engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic color = car.addAttribute("Color");
+		Generic myBmw = car.addInstance("myBmw");
+		Generic myBmwRed = myBmw.addHolder(color, "red");
 
 		assert color.getInstances().contains(myBmwRed);
 		assert color.getInstances().size() == 1;
@@ -163,11 +163,11 @@ public class RemoveTest extends AbstractTest {
 	}
 
 	public void test006_removeStructural_withHolder() {
-		Vertex engine = new Root();
-		Vertex car = engine.addInstance("Car");
-		Vertex color = car.addAttribute("Color");
-		Vertex myBmw = car.addInstance("myBmw");
-		Vertex myBmwRed = myBmw.addHolder(color, "red");
+		Generic engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic color = car.addAttribute("Color");
+		Generic myBmw = car.addInstance("myBmw");
+		Generic myBmwRed = myBmw.addHolder(color, "red");
 		myBmw.remove();
 		car.remove();
 
@@ -176,11 +176,11 @@ public class RemoveTest extends AbstractTest {
 	}
 
 	public void test007_removeConcretAndAttribut() {
-		Vertex engine = new Root();
-		Vertex car = engine.addInstance("Car");
-		Vertex color = car.addAttribute("Color");
-		Vertex myBmw = car.addInstance("myBmw");
-		Vertex myBmwRed = myBmw.addHolder(color, "red");
+		Generic engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic color = car.addAttribute("Color");
+		Generic myBmw = car.addInstance("myBmw");
+		Generic myBmwRed = myBmw.addHolder(color, "red");
 		myBmw.remove();
 		color.remove();
 
@@ -191,11 +191,11 @@ public class RemoveTest extends AbstractTest {
 	}
 
 	public void test008_removeInstanceAndAttribute() {
-		Vertex engine = new Root();
-		Vertex car = engine.addInstance("Car");
-		Vertex color = car.addAttribute("Color");
-		Vertex myBmw = car.addInstance("myBmw");
-		Vertex myBmwRed = myBmw.addHolder(color, "red");
+		Generic engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic color = car.addAttribute("Color");
+		Generic myBmw = car.addInstance("myBmw");
+		Generic myBmwRed = myBmw.addHolder(color, "red");
 		myBmwRed.remove();
 		color.remove();
 
@@ -206,11 +206,11 @@ public class RemoveTest extends AbstractTest {
 	}
 
 	public void test009_removeConcret() {
-		Vertex engine = new Root();
-		Vertex car = engine.addInstance("Car");
-		Vertex color = car.addAttribute("Color");
-		Vertex myBmw = car.addInstance("myBmw");
-		Vertex myBmwRed = myBmw.addHolder(color, "red");
+		Generic engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic color = car.addAttribute("Color");
+		Generic myBmw = car.addInstance("myBmw");
+		Generic myBmwRed = myBmw.addHolder(color, "red");
 		myBmwRed.remove();
 
 		assert color.getInstances().size() == 0;
@@ -220,9 +220,9 @@ public class RemoveTest extends AbstractTest {
 	public void test010_cascadeRemove() {
 		Root engine = new Root();
 
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex color = engine.addInstance("Color");
-		Vertex vehicleColor = vehicle.addRelation("VehicleColor", color);
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic color = engine.addInstance("Color");
+		Generic vehicleColor = vehicle.addRelation("VehicleColor", color);
 
 		// Disable default referential integrity for vehicle in vehicleColor for the first target : color
 		engine.find(MetaRelation.class).disableReferentialIntegrity(ApiStatics.TARGET_POSITION);

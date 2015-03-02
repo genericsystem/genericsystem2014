@@ -9,12 +9,12 @@ public class AncestorsServiceTest extends AbstractTest {
 
 	public void isAncestorOfByInheritence() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(vehicle, "Car");
-		Vertex device = root.addInstance("Device");
-		Vertex robot = root.addInstance(device, "Robot");
-		Vertex transformer = root.addInstance(Arrays.asList(car, robot), "Transformer");
-		Vertex transformer2 = root.addInstance(transformer, "Transformer2");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic device = root.addInstance("Device");
+		Generic robot = root.addInstance(device, "Robot");
+		Generic transformer = root.addInstance(Arrays.asList(car, robot), "Transformer");
+		Generic transformer2 = root.addInstance(transformer, "Transformer2");
 		assert transformer.isAncestorOf(transformer2);
 		assert robot.isAncestorOf(transformer);
 		assert robot.isAncestorOf(transformer2);
@@ -58,9 +58,9 @@ public class AncestorsServiceTest extends AbstractTest {
 	public void isAncestorOfByInheritenceSimpleConfiguration() {
 
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(vehicle, "Car");
-		Vertex microcar = root.addInstance(car, "Microcar");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic microcar = root.addInstance(car, "Microcar");
 		assert vehicle.isAncestorOf(car);
 		assert vehicle.isAncestorOf(microcar);
 		assert car.isAncestorOf(microcar);
@@ -72,12 +72,12 @@ public class AncestorsServiceTest extends AbstractTest {
 
 	public void isAncestorOfViaComposite() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex power = root.addInstance("Power", vehicle);
-		Vertex car = root.addInstance(vehicle, "Car");
-		Vertex airConditioner = root.addInstance("AirConditioner", car);
-		Vertex microcar = root.addInstance(car, "microcar");
-		Vertex radio = root.addInstance("Radio", microcar);
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic power = root.addInstance("Power", vehicle);
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic airConditioner = root.addInstance("AirConditioner", car);
+		Generic microcar = root.addInstance(car, "microcar");
+		Generic radio = root.addInstance("Radio", microcar);
 		assert vehicle.isAncestorOf(radio);
 		assert vehicle.isAncestorOf(airConditioner);
 		assert vehicle.isAncestorOf(power);
@@ -94,13 +94,13 @@ public class AncestorsServiceTest extends AbstractTest {
 
 	public void isAncestorOfViaComponent() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex power = root.addInstance("Power", vehicle);
-		Vertex car = root.addInstance(vehicle, "Car");
-		Vertex airConditioner = root.addInstance("AirConditioner", car);
-		Vertex button = root.addInstance("button", airConditioner);
-		Vertex microcar = root.addInstance(car, "microcar");
-		Vertex radio = root.addInstance("Radio", microcar);
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic power = root.addInstance("Power", vehicle);
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic airConditioner = root.addInstance("AirConditioner", car);
+		Generic button = root.addInstance("button", airConditioner);
+		Generic microcar = root.addInstance(car, "microcar");
+		Generic radio = root.addInstance("Radio", microcar);
 		assert vehicle.isAncestorOf(button);
 		assert !microcar.isAncestorOf(button);
 		assert root.isAncestorOf(button);

@@ -12,12 +12,12 @@ public class ConsitencyConstraintTest extends AbstractTest {
 
 	public void test001_enableSingularConstraint() {
 		Root engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		Vertex color = engine.addInstance("Color");
-		Vertex red = color.addInstance("red");
-		Vertex yellow = color.addInstance("yellow");
-		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic color = engine.addInstance("Color");
+		Generic red = color.addInstance("red");
+		Generic yellow = color.addInstance("yellow");
+		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
 
 		myVehicle.addHolder(vehicleColor, "vehicleRed", red);
 		myVehicle.addHolder(vehicleColor, "vehicleYellow", yellow);
@@ -26,10 +26,10 @@ public class ConsitencyConstraintTest extends AbstractTest {
 
 	public void test002_enableUniqueValueConstraint() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		Vertex myVehicle2 = vehicle.addInstance("myVehicle2");
-		Vertex power = root.addInstance("Power");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic myVehicle2 = vehicle.addInstance("myVehicle2");
+		Generic power = root.addInstance("Power");
 		vehicle.addAttribute(power, "Power");
 		myVehicle.addHolder(power, 125);
 		myVehicle2.addHolder(power, 125);
@@ -38,9 +38,9 @@ public class ConsitencyConstraintTest extends AbstractTest {
 
 	public void test003_enablePropertyConstraint() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex power = root.addInstance("Power", vehicle);
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic power = root.addInstance("Power", vehicle);
+		Generic myVehicle = vehicle.addInstance("myVehicle");
 		myVehicle.addHolder(power, "126");
 		myVehicle.addHolder(power, "123");
 		catchAndCheckCause(() -> power.enablePropertyConstraint(), PropertyConstraintViolationException.class);
@@ -48,9 +48,9 @@ public class ConsitencyConstraintTest extends AbstractTest {
 
 	public void test03_InstanceValueClassConstraint() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		Vertex power = root.addInstance("Power");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic power = root.addInstance("Power");
 		vehicle.addAttribute(power, "Power");
 		myVehicle.addHolder(power, "125");
 

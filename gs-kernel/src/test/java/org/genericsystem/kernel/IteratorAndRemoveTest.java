@@ -9,16 +9,16 @@ import org.testng.annotations.Test;
 public class IteratorAndRemoveTest extends AbstractTest {
 
 	public void test002_IterateAndRemove() {
-		Vertex engine = new Root();
-		Vertex car = engine.addInstance("Car");
+		Generic engine = new Root();
+		Generic car = engine.addInstance("Car");
 		car.addInstance("myCar1");
 		car.addInstance("myCar2");
-		Vertex myCar3 = car.addInstance("myCar3");
+		Generic myCar3 = car.addInstance("myCar3");
 		car.addInstance("myCar4");
 
-		Snapshot<Vertex> myCars = car.getInstances();
+		Snapshot<Generic> myCars = car.getInstances();
 
-		Iterator<Vertex> iterator = myCars.iterator();
+		Iterator<Generic> iterator = myCars.iterator();
 		int cpt = 0;
 		myCar3.remove();
 		while (iterator.hasNext()) {
@@ -29,30 +29,30 @@ public class IteratorAndRemoveTest extends AbstractTest {
 	}
 
 	public void test004_IterateAndRemoveInLoop_beforeFindIt() {
-		Vertex engine = new Root();
-		Vertex car = engine.addInstance("Car");
-		Vertex myCar1 = car.addInstance("myCar1");
+		Generic engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic myCar1 = car.addInstance("myCar1");
 		car.addInstance("myCar2");
 		car.addInstance("myCar3");
 		car.addInstance("myCar4");
 
-		for (Vertex v : car.getInstances())
+		for (Generic v : car.getInstances())
 			if (v.equals(myCar1))
 				v.remove();
 		assert car.getInstances().size() == 3;
 	}
 
 	public void test005_IterateAndRemoveInLoop_beforeFindIt() {
-		Vertex engine = new Root();
-		Vertex car = engine.addInstance("Car");
+		Generic engine = new Root();
+		Generic car = engine.addInstance("Car");
 		car.addInstance("myCar1");
 		car.addInstance("myCar2");
-		Vertex myCar3 = car.addInstance("myCar3");
+		Generic myCar3 = car.addInstance("myCar3");
 		car.addInstance("myCar4");
 
-		Snapshot<Vertex> myCars = car.getInstances();
+		Snapshot<Generic> myCars = car.getInstances();
 
-		Iterator<Vertex> iterator = myCars.iterator();
+		Iterator<Generic> iterator = myCars.iterator();
 		int cpt = 0;
 		while (iterator.hasNext()) {
 			if (cpt == 0)
@@ -66,25 +66,25 @@ public class IteratorAndRemoveTest extends AbstractTest {
 	}
 
 	public void test006_IterateAndRemoveInLoop_attributes() {
-		Vertex engine = new Root();
-		Vertex car = engine.addInstance("Car");
-		Vertex color = car.addAttribute("Color");
-		Vertex power = car.addAttribute("Power");
-		Vertex doors = car.addAttribute("Doors");
+		Generic engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic color = car.addAttribute("Color");
+		Generic power = car.addAttribute("Power");
+		Generic doors = car.addAttribute("Doors");
 
-		for (Vertex v : car.getComponents())
+		for (Generic v : car.getComponents())
 			v.remove();
 		assert car.getComponents().size() == 0;
 	}
 
 	public void test007_IterateAndRemoveInLoop_attributes() {
-		Vertex engine = new Root();
-		Vertex car = engine.addInstance("Car");
-		Vertex color = car.addAttribute("Color");
-		Vertex power = car.addAttribute("Power");
-		Vertex doors = car.addAttribute("Doors");
+		Generic engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic color = car.addAttribute("Color");
+		Generic power = car.addAttribute("Power");
+		Generic doors = car.addAttribute("Doors");
 
-		for (Vertex v : car.getComponents()) {
+		for (Generic v : car.getComponents()) {
 			color.remove();
 			power.remove();
 			doors.remove();

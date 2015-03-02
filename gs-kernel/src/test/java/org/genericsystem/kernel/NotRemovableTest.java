@@ -11,11 +11,11 @@ import org.testng.annotations.Test;
 public class NotRemovableTest extends AbstractTest {
 
 	public void test001_aliveEx() {
-		Vertex engine = new Root();
-		Vertex car = engine.addInstance("Car");
-		Vertex color = car.addAttribute("Color");
-		Vertex myBmw = car.addInstance("myBmw");
-		Vertex myBmwRed = myBmw.addHolder(color, "red");
+		Generic engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic color = car.addAttribute("Color");
+		Generic myBmw = car.addInstance("myBmw");
+		Generic myBmwRed = myBmw.addHolder(color, "red");
 
 		myBmwRed.remove();
 		catchAndCheckCause(() -> myBmwRed.remove(), AliveConstraintViolationException.class);
@@ -23,27 +23,27 @@ public class NotRemovableTest extends AbstractTest {
 	}
 
 	public void test002_referenceEx() {
-		Vertex engine = new Root();
-		Vertex car = engine.addInstance("Car");
-		Vertex color = car.addAttribute("Color");
-		Vertex myBmw = car.addInstance("myBmw");
+		Generic engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic color = car.addAttribute("Color");
+		Generic myBmw = car.addInstance("myBmw");
 
 		catchAndCheckCause(() -> car.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
 	public void test003_referenceEx() {
-		Vertex engine = new Root();
-		Vertex car = engine.addInstance("Car");
-		Vertex color = car.addAttribute("Color");
-		Vertex myBmw = car.addInstance("myBmw");
-		Vertex myBmwRed = myBmw.addHolder(color, "red");
+		Generic engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic color = car.addAttribute("Color");
+		Generic myBmw = car.addInstance("myBmw");
+		Generic myBmwRed = myBmw.addHolder(color, "red");
 
 		catchAndCheckCause(() -> color.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
 	public void test004_notRemoveAnnotedClass() {
 		Root engine = new Root(Power.class);
-		Vertex power = engine.find(Power.class);
+		Generic power = engine.find(Power.class);
 		assert power.isPropertyConstraintEnabled();
 		catchAndCheckCause(() -> power.disablePropertyConstraint(), IllegalAccessException.class);
 	}

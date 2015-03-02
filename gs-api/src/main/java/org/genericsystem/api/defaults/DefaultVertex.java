@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
@@ -14,6 +15,11 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 	@Override
 	default DefaultContext<T> getCurrentCache() {
 		return getRoot().getCurrentCache();
+	}
+
+	@Override
+	default boolean isAlive() {
+		return getCurrentCache().isAlive((T) this);
 	}
 
 	@Override

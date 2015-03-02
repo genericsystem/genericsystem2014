@@ -12,14 +12,14 @@ public class TreeTest extends AbstractTest {
 
 	public void test001() {
 		Root root = new Root();
-		Vertex tree = root.addInstance("Tree");
+		Generic tree = root.addInstance("Tree");
 		assert tree.getSupers().isEmpty();
 	}
 
 	public void test002() {
 		Root root = new Root();
-		Vertex tree = root.addInstance("Tree");
-		Vertex rootNode = tree.addInstance("rootNode");
+		Generic tree = root.addInstance("Tree");
+		Generic rootNode = tree.addInstance("rootNode");
 
 		assert tree.equals(rootNode.getMeta()) : rootNode.detailedInfo();
 		assert rootNode.getSupers().isEmpty();
@@ -33,19 +33,19 @@ public class TreeTest extends AbstractTest {
 
 	public void test003() {
 		Root root = new Root();
-		Vertex tree = root.addInstance("tree");
-		Vertex html = tree.addInstance("html");
+		Generic tree = root.addInstance("tree");
+		Generic html = tree.addInstance("html");
 		assert html.getMeta().equals(tree);
 		assert html.getSupers().isEmpty();
 	}
 
 	public void test004() {
 		Root root = new Root();
-		Vertex tree = root.addInstance("tree");
-		Vertex html = tree.addInstance("html");
-		Vertex head = tree.addInstance(html, "head");
-		Vertex body = tree.addInstance(html, "body");
-		Vertex div = tree.addInstance(body, "div");
+		Generic tree = root.addInstance("tree");
+		Generic html = tree.addInstance("html");
+		Generic head = tree.addInstance(html, "head");
+		Generic body = tree.addInstance(html, "body");
+		Generic div = tree.addInstance(body, "div");
 
 		assert !html.getInheritings().contains(html);
 		assert html.getInheritings().containsAll(Arrays.asList(head, body)) : html.getInheritings().info();
@@ -70,12 +70,12 @@ public class TreeTest extends AbstractTest {
 
 	public void test005() {
 		Root root = new Root();
-		Vertex tree = root.addInstance("tree");
-		Vertex rootNode = tree.addInstance("rootNode");
-		Vertex htmlNode = tree.addInstance(rootNode, "htmlNode");
-		Vertex bodyNode = tree.addInstance(htmlNode, "bodyNode");
-		Vertex divNode = tree.addInstance(bodyNode, "divNode");
-		Vertex formNode = tree.addInstance(divNode, "formNode");
+		Generic tree = root.addInstance("tree");
+		Generic rootNode = tree.addInstance("rootNode");
+		Generic htmlNode = tree.addInstance(rootNode, "htmlNode");
+		Generic bodyNode = tree.addInstance(htmlNode, "bodyNode");
+		Generic divNode = tree.addInstance(bodyNode, "divNode");
+		Generic formNode = tree.addInstance(divNode, "formNode");
 
 		assert tree.getAllInstances().contains(rootNode);
 		assert tree.getAllInstances().contains(bodyNode);
@@ -93,21 +93,21 @@ public class TreeTest extends AbstractTest {
 	public void test007() {
 		Root root = new Root();
 
-		Vertex tree = root.addInstance("Tree");
-		Vertex color = root.addInstance("Color");
-		Vertex treeColor = tree.addAttribute("TreeColor", color);
+		Generic tree = root.addInstance("Tree");
+		Generic color = root.addInstance("Color");
+		Generic treeColor = tree.addAttribute("TreeColor", color);
 
-		Vertex blue = color.addInstance("blue");
-		Vertex red = color.addInstance("red");
-		Vertex green = color.addInstance("green");
+		Generic blue = color.addInstance("blue");
+		Generic red = color.addInstance("red");
+		Generic green = color.addInstance("green");
 
 		tree.setHolder(treeColor, "treeIsBlueByDefault", blue);
 
-		Vertex html = tree.addInstance("html");
+		Generic html = tree.addInstance("html");
 		html.setHolder(treeColor, "htmlIsRed", red);
-		Vertex head = tree.addInstance(html, "head");
-		Vertex body = tree.addInstance(html, "body");
-		Vertex div = tree.addInstance(body, "div");
+		Generic head = tree.addInstance(html, "head");
+		Generic body = tree.addInstance(html, "body");
+		Generic div = tree.addInstance(body, "div");
 		div.setHolder(treeColor, "divIsGreen", green);
 
 		assert tree.getHolders(treeColor).first().getTargetComponent().equals(blue);
@@ -120,21 +120,21 @@ public class TreeTest extends AbstractTest {
 	public void test008() {
 		Root root = new Root();
 
-		Vertex tree = root.addInstance("Tree");
-		Vertex color = root.addInstance("Color");
-		Vertex treeColor = tree.addAttribute("TreeColor", color);
+		Generic tree = root.addInstance("Tree");
+		Generic color = root.addInstance("Color");
+		Generic treeColor = tree.addAttribute("TreeColor", color);
 
-		Vertex blue = color.addInstance("blue");
-		Vertex red = color.addInstance("red");
-		Vertex green = color.addInstance("green");
+		Generic blue = color.addInstance("blue");
+		Generic red = color.addInstance("red");
+		Generic green = color.addInstance("green");
 
 		tree.setHolder(treeColor, "treeIsBlueByDefault", blue);
 
-		Vertex html = tree.addInstance("html");
+		Generic html = tree.addInstance("html");
 		html.setHolder(treeColor, "htmlIsRed", red);
-		Vertex head = tree.addInstance(html, "head");
-		Vertex body = tree.addInstance(html, "body");
-		Vertex div = tree.addInstance(body, "div");
+		Generic head = tree.addInstance(html, "head");
+		Generic body = tree.addInstance(html, "body");
+		Generic div = tree.addInstance(body, "div");
 		div.setHolder(treeColor, "divIsGreen", green);
 
 		assert tree.getHolders(treeColor).first().getTargetComponent().equals(blue);
@@ -147,12 +147,12 @@ public class TreeTest extends AbstractTest {
 	public void testTraverseTree() {
 		Root engine = new Root();
 
-		Vertex html5Tags = engine.addInstance("Html5Tags");
+		Generic html5Tags = engine.addInstance("Html5Tags");
 
-		Vertex html = html5Tags.addInstance("html");
+		Generic html = html5Tags.addInstance("html");
 
 		html5Tags.addInstance(html, "header");
-		Vertex body = html5Tags.addInstance(html, "body");
+		Generic body = html5Tags.addInstance(html, "body");
 		html5Tags.addInstance(html, "footer");
 
 		html5Tags.addInstance(body, "p");
@@ -160,9 +160,9 @@ public class TreeTest extends AbstractTest {
 
 		int[] result = { 0 };
 
-		html5Tags.traverse(new Visitor<Vertex>() {
+		html5Tags.traverse(new Visitor<Generic>() {
 			@Override
-			public void before(Vertex node) {
+			public void before(Generic node) {
 				if (node.getValue().equals("html")) {
 					result[0] += 1;
 				} else if (node.getValue().equals("header") || node.getValue().equals("body") || node.getValue().equals("footer")) {
@@ -173,7 +173,7 @@ public class TreeTest extends AbstractTest {
 			}
 
 			@Override
-			public void after(Vertex node) {
+			public void after(Generic node) {
 				if (node.getValue().equals("html")) {
 					result[0] -= 1;
 				} else if (node.getValue().equals("header") || node.getValue().equals("body") || node.getValue().equals("footer")) {
@@ -189,28 +189,28 @@ public class TreeTest extends AbstractTest {
 
 	public void testTree1() {
 		Root root = new Root();
-		Vertex a1 = root.addInstance("A");
-		Vertex b = root.addInstance(a1, "B");
-		Vertex a2 = root.addInstance(b, "A");
+		Generic a1 = root.addInstance("A");
+		Generic b = root.addInstance(a1, "B");
+		Generic a2 = root.addInstance(b, "A");
 		assert root.getInstance("A").equals(a1);
 		assert root.getInstance(Arrays.asList(b), "A").equals(a2);
 	}
 
 	public void testTree2() {
 		Root root = new Root();
-		Vertex a1 = root.addInstance("A");
-		Vertex b = root.addInstance("B");
-		Vertex a2 = root.addInstance(b, "A");
+		Generic a1 = root.addInstance("A");
+		Generic b = root.addInstance("B");
+		Generic a2 = root.addInstance(b, "A");
 		assert root.getInstance("A").equals(a1);
 		assert root.getInstance(Arrays.asList(b), "A").equals(a2);
 	}
 
 	public void testTree3() {
 		Root root = new Root();
-		Vertex b = root.addInstance("B");
-		Vertex c = root.addInstance("C");
-		Vertex a1 = root.addInstance(b, "A");
-		Vertex a2 = root.addInstance(c, "A");
+		Generic b = root.addInstance("B");
+		Generic c = root.addInstance("C");
+		Generic a1 = root.addInstance(b, "A");
+		Generic a2 = root.addInstance(c, "A");
 		assert root.getInstance("A") == null : root.getInstance("A").info();
 		assert root.getInstance(Arrays.asList(b), "A").equals(a1);
 	}

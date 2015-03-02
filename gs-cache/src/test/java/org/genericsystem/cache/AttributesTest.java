@@ -2,6 +2,7 @@ package org.genericsystem.cache;
 
 import java.util.Arrays;
 
+import org.genericsystem.kernel.Generic;
 import org.testng.annotations.Test;
 
 @Test

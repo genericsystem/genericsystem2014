@@ -10,91 +10,91 @@ public class AttributesTest extends AbstractTest {
 
 	public void test001_getAttribute() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex powerVehicle = vehicle.addAttribute("power");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic powerVehicle = vehicle.addAttribute("power");
 		assert powerVehicle == vehicle.getAttribute("power", vehicle);
 	}
 
 	public void test001b_getAttribute() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex powerVehicle = vehicle.addAttribute("power");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic powerVehicle = vehicle.addAttribute("power");
 		assert powerVehicle == vehicle.getAttribute("power");
 	}
 
 	public void test002_getAttribute() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		Vertex powerVehicle = vehicle.addAttribute("power");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic powerVehicle = vehicle.addAttribute("power");
 		assert powerVehicle == myVehicle.getAttribute("power", vehicle);
 	}
 
 	public void test003_getAttribute() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(vehicle, "Car");
-		Vertex powerVehicle = vehicle.addAttribute("power");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic powerVehicle = vehicle.addAttribute("power");
 		assert powerVehicle == car.getAttribute("power", vehicle);
 	}
 
 	public void test004_getAttribute() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(vehicle, "Car");
-		Vertex myCar = car.addInstance("myCar");
-		Vertex powerVehicle = vehicle.addAttribute("power");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic myCar = car.addInstance("myCar");
+		Generic powerVehicle = vehicle.addAttribute("power");
 		assert powerVehicle == myCar.getAttribute("power", vehicle);
 	}
 
 	public void test005_getAttribute() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex color = root.addInstance("Color");
-		Vertex colorVehicle = vehicle.addAttribute("colorVehicle", color);
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic color = root.addInstance("Color");
+		Generic colorVehicle = vehicle.addAttribute("colorVehicle", color);
 		assert colorVehicle == vehicle.getAttribute("colorVehicle", vehicle, color);
 	}
 
 	public void test006_getAttribute() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex color = root.addInstance("Color");
-		Vertex ultraColor = root.addInstance(color, "UltraColor");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic color = root.addInstance("Color");
+		Generic ultraColor = root.addInstance(color, "UltraColor");
 		vehicle.addAttribute("colorVehicle", color);
-		Vertex ultraColorVehicle = vehicle.addAttribute("colorVehicle", ultraColor);
+		Generic ultraColorVehicle = vehicle.addAttribute("colorVehicle", ultraColor);
 		assert ultraColorVehicle == vehicle.getAttribute("colorVehicle", vehicle, color);
 		assert ultraColorVehicle == vehicle.getAttribute("colorVehicle", vehicle, ultraColor);
 	}
 
 	public void test007_getAttribute() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		Vertex color = root.addInstance("Color");
-		Vertex ultraColor = root.addInstance(color, "UltraColor");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic color = root.addInstance("Color");
+		Generic ultraColor = root.addInstance(color, "UltraColor");
 		vehicle.addAttribute("colorVehicle", color);
-		Vertex ultraColorVehicle = vehicle.addAttribute("colorVehicle", ultraColor);
+		Generic ultraColorVehicle = vehicle.addAttribute("colorVehicle", ultraColor);
 		assert ultraColorVehicle == myVehicle.getAttribute("colorVehicle", vehicle, color);
 		assert ultraColorVehicle == myVehicle.getAttribute("colorVehicle", vehicle, ultraColor);
 	}
 
 	public void test007b_getAttribute() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		Vertex color = root.addInstance("Color");
-		Vertex ultraColor = root.addInstance(color, "UltraColor");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic color = root.addInstance("Color");
+		Generic ultraColor = root.addInstance(color, "UltraColor");
 		vehicle.addAttribute("colorVehicle", color);
-		Vertex ultraColorVehicle = vehicle.addAttribute("colorVehicle", ultraColor);
+		Generic ultraColorVehicle = vehicle.addAttribute("colorVehicle", ultraColor);
 		assert ultraColorVehicle == myVehicle.getAttribute("colorVehicle", color);
 		assert ultraColorVehicle == myVehicle.getAttribute("colorVehicle", ultraColor);
 	}
 
 	public void test001_getInstance() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
+		Generic vehicle = root.addInstance("Vehicle");
 		assert vehicle.getLevel() == 1 : vehicle.getLevel();
-		Vertex power = root.addInstance("Power", vehicle);
+		Generic power = root.addInstance("Power", vehicle);
 		assert root.getInstance("Power", vehicle) == power;
 		// assert root.selectInstances("Power").count() == 1;
 		// assert root.selectInstances("Power").anyMatch(x -> x.equals(power));
@@ -105,10 +105,10 @@ public class AttributesTest extends AbstractTest {
 
 	public void test002_getInstance() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
+		Generic vehicle = root.addInstance("Vehicle");
 		assert vehicle.getLevel() == 1 : vehicle.getLevel();
-		Vertex powerType = root.addInstance("Power");
-		Vertex power = root.addInstance("Power", vehicle);
+		Generic powerType = root.addInstance("Power");
+		Generic power = root.addInstance("Power", vehicle);
 		assert root.getInstance("Power", vehicle) == power;
 		// assert root.selectInstances("Power").count() == 2;
 		// assert root.selectInstances("Power").anyMatch(x -> x.equals(powerType));
@@ -120,25 +120,25 @@ public class AttributesTest extends AbstractTest {
 
 	public void test003_isDependencyOf_ByComponent() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(vehicle, "Car");
-		Vertex carPower = root.addInstance("Power", car);
-		Vertex carPowerUnit = root.addInstance("Unit", carPower);
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic carPower = root.addInstance("Power", car);
+		Generic carPowerUnit = root.addInstance("Unit", carPower);
 		assert carPower.isDependencyOf(root, Collections.emptyList(), "Power", Collections.singletonList(vehicle));
 		assert carPowerUnit.isDependencyOf(root, Collections.emptyList(), "Power", Collections.singletonList(vehicle));
 		assert !carPowerUnit.inheritsFrom(root, "Power", Collections.singletonList(vehicle));
-		Vertex vehiclePower = root.addInstance("Power", vehicle);
+		Generic vehiclePower = root.addInstance("Power", vehicle);
 		assert root.getInstance("Power", car).getSupers().stream().anyMatch(x -> x.equals(vehiclePower));
 	}
 
 	public void test003_isDependencyOf_ByMeta() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex power = vehicle.addAttribute("Power");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic power = vehicle.addAttribute("Power");
 		assert !power.getMeta().equals(root);
 		assert power.getMeta().equals(root.getMetaAttribute());
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		Vertex myVehicle123 = myVehicle.addHolder(power, "myVehicle123");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic myVehicle123 = myVehicle.addHolder(power, "myVehicle123");
 
 		assert myVehicle123.isDependencyOf(root, Collections.emptyList(), "Power", Collections.singletonList(vehicle));
 		assert !myVehicle123.inheritsFrom(root, "Power", Collections.singletonList(vehicle));
@@ -146,16 +146,16 @@ public class AttributesTest extends AbstractTest {
 
 	public void test004() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
 		catchAndCheckCause(() -> myVehicle.addAttribute("Power", vehicle), MetaRuleConstraintViolationException.class);
 	}
 
 	public void test1AttributWith2LevelsInheritance1AttributOnParent() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex power = root.addInstance("Power", vehicle);
-		Vertex car = root.addInstance(vehicle, "Car");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic power = root.addInstance("Power", vehicle);
+		Generic car = root.addInstance(vehicle, "Car");
 		// assert vehicle.getAttributes(root).size() == 1 : vehicle.getAttributes(root);
 		assert vehicle.getAttributes(root).contains(power);
 		// assert car.getAttributes(root).size() == 1;
@@ -165,9 +165,9 @@ public class AttributesTest extends AbstractTest {
 	public void test1AttributWith2LevelsInheritance1AttributOnFistChild() {
 
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(vehicle, "Car");
-		Vertex power = root.addInstance("Power", car);
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic power = root.addInstance("Power", car);
 		assert root.getLevel() == 0;
 		assert vehicle.getLevel() == 1;
 		assert car.getLevel() == 1;
@@ -177,10 +177,10 @@ public class AttributesTest extends AbstractTest {
 
 	public void test1AttributWith3LevelsInheritance1AttributOnParent() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex power = root.addInstance("Power", vehicle);
-		Vertex car = root.addInstance(vehicle, "Car");
-		Vertex microcar = root.addInstance(car, "Microcar");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic power = root.addInstance("Power", vehicle);
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic microcar = root.addInstance(car, "Microcar");
 		// assert vehicle.getAttributes(root).size() == 1;
 		assert vehicle.getAttributes(root).contains(power);
 		// assert car.getAttributes(root).size() == 1;
@@ -191,10 +191,10 @@ public class AttributesTest extends AbstractTest {
 
 	public void test1AttributWith3LevelsInheritance1AttributOnFirstChild() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(vehicle, "Car");
-		Vertex power = root.addInstance("Power", car);
-		Vertex microcar = root.addInstance(car, "Microcar");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic power = root.addInstance("Power", car);
+		Generic microcar = root.addInstance(car, "Microcar");
 		// assert vehicle.getAttributes(root).size() == 0;
 		// assert car.getAttributes(root).size() == 1;
 		assert car.getAttributes(root).contains(power);
@@ -204,10 +204,10 @@ public class AttributesTest extends AbstractTest {
 
 	public void test1AttributWith3LevelsInheritance1AttributOnSecondChild() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(vehicle, "Car");
-		Vertex microcar = root.addInstance(car, "Microcar");
-		Vertex power = root.addInstance("Power", microcar);
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic microcar = root.addInstance(car, "Microcar");
+		Generic power = root.addInstance("Power", microcar);
 		// assert vehicle.getAttributes(root).size() == 0;
 		// assert car.getAttributes(root).size() == 0;
 		// assert microcar.getAttributes(root).size() == 1;
@@ -216,9 +216,9 @@ public class AttributesTest extends AbstractTest {
 
 	public void test2Attributs() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex power = root.addInstance("Power", vehicle);
-		Vertex airconditioner = root.addInstance("AirConditioner", vehicle);
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic power = root.addInstance("Power", vehicle);
+		Generic airconditioner = root.addInstance("AirConditioner", vehicle);
 		// assert vehicle.getAttributes(root).size() == 2;
 		assert vehicle.getAttributes(root).contains(power);
 		assert vehicle.getAttributes(root).contains(airconditioner);
@@ -229,10 +229,10 @@ public class AttributesTest extends AbstractTest {
 	public void test2AttributsWith2LevelsInheritance2AttributsOnParent() {
 
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex power = root.addInstance("Power", vehicle);
-		Vertex airconditioner = root.addInstance("AirConditioner", vehicle);
-		Vertex car = root.addInstance(vehicle, "Car");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic power = root.addInstance("Power", vehicle);
+		Generic airconditioner = root.addInstance("AirConditioner", vehicle);
+		Generic car = root.addInstance(vehicle, "Car");
 		// assert vehicle.getAttributes(root).size() == 2;
 		assert vehicle.getAttributes(root).contains(power);
 		assert vehicle.getAttributes(root).contains(airconditioner);
@@ -244,10 +244,10 @@ public class AttributesTest extends AbstractTest {
 	public void test2AttributsWith2LevelsInheritance2AttributsOnFistChild() {
 
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(vehicle, "Car");
-		Vertex power = root.addInstance("Power", car);
-		Vertex airconditioner = root.addInstance("AirConditioner", car);
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic power = root.addInstance("Power", car);
+		Generic airconditioner = root.addInstance("AirConditioner", car);
 		// assert vehicle.getAttributes(root).size() == 0;
 		// assert car.getAttributes(root).size() == 2;
 		assert car.getAttributes(root).contains(power);
@@ -256,10 +256,10 @@ public class AttributesTest extends AbstractTest {
 
 	public void test2AttributsWith2LevelsInheritance1AttributOnParentAnd1AttributOnFistChild() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex power = root.addInstance("Power", vehicle);
-		Vertex car = root.addInstance(vehicle, "Car");
-		Vertex airconditioner = root.addInstance("AirConditioner", car);
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic power = root.addInstance("Power", vehicle);
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic airconditioner = root.addInstance("AirConditioner", car);
 		// assert vehicle.getAttributes(root).size() == 1;
 		assert vehicle.getAttributes(root).contains(power);
 		// assert car.getAttributes(root).size() == 2;
@@ -269,11 +269,11 @@ public class AttributesTest extends AbstractTest {
 
 	public void test1AttributWith3LevelsInheritance2AttributOnParent() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex power = root.addInstance("Power", vehicle);
-		Vertex airconditioner = root.addInstance("AirConditioner", vehicle);
-		Vertex car = root.addInstance(vehicle, "Car");
-		Vertex microcar = root.addInstance(car, "Microcar");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic power = root.addInstance("Power", vehicle);
+		Generic airconditioner = root.addInstance("AirConditioner", vehicle);
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic microcar = root.addInstance(car, "Microcar");
 		// assert vehicle.getAttributes(root).size() == 2;
 		assert vehicle.getAttributes(root).contains(power);
 		assert vehicle.getAttributes(root).contains(airconditioner);
@@ -287,11 +287,11 @@ public class AttributesTest extends AbstractTest {
 
 	public void test1AttributWith3LevelsInheritance2AttributFirstChild() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(vehicle, "Car");
-		Vertex power = root.addInstance("Power", car);
-		Vertex airconditioner = root.addInstance("AirConditioner", car);
-		Vertex microcar = root.addInstance(car, "Microcar");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic power = root.addInstance("Power", car);
+		Generic airconditioner = root.addInstance("AirConditioner", car);
+		Generic microcar = root.addInstance(car, "Microcar");
 		// assert vehicle.getAttributes(root).size() == 0;
 		// assert car.getAttributes(root).size() == 2;
 		assert car.getAttributes(root).contains(power);
@@ -303,11 +303,11 @@ public class AttributesTest extends AbstractTest {
 
 	public void test1AttributWith3LevelsInheritance2AttributOnSecondChild() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(vehicle, "Car");
-		Vertex microcar = root.addInstance(car, "Microcar");
-		Vertex power = root.addInstance("Power", microcar);
-		Vertex airconditioner = root.addInstance("AirConditioner", microcar);
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic microcar = root.addInstance(car, "Microcar");
+		Generic power = root.addInstance("Power", microcar);
+		Generic airconditioner = root.addInstance("AirConditioner", microcar);
 		// assert vehicle.getAttributes(root).size() == 0;
 		// assert car.getAttributes(root).size() == 0;
 		// assert microcar.getAttributes(root).size() == 2;
@@ -317,11 +317,11 @@ public class AttributesTest extends AbstractTest {
 
 	public void test1AttributWith3LevelsInheritance1AttributOnParent1AttributOnFirstChild() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex power = root.addInstance("Power", vehicle);
-		Vertex car = root.addInstance(vehicle, "Car");
-		Vertex airconditioner = root.addInstance("AirConditioner", car);
-		Vertex microcar = root.addInstance(car, "Microcar");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic power = root.addInstance("Power", vehicle);
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic airconditioner = root.addInstance("AirConditioner", car);
+		Generic microcar = root.addInstance(car, "Microcar");
 		// assert vehicle.getAttributes(root).size() == 1;
 		assert vehicle.getAttributes(root).contains(power);
 		// assert car.getAttributes(root).size() == 2;
@@ -334,11 +334,11 @@ public class AttributesTest extends AbstractTest {
 
 	public void test1AttributWith3LevelsInheritance1AttributOnParent1AttributOnSecondChild() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex power = root.addInstance("Power", vehicle);
-		Vertex car = root.addInstance(vehicle, "Car");
-		Vertex microcar = root.addInstance(car, "Microcar");
-		Vertex airconditioner = root.addInstance("AirConditioner", microcar);
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic power = root.addInstance("Power", vehicle);
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic microcar = root.addInstance(car, "Microcar");
+		Generic airconditioner = root.addInstance("AirConditioner", microcar);
 		// assert vehicle.getAttributes(root).size() == 1;
 		assert vehicle.getAttributes(root).contains(power);
 		// assert car.getAttributes(root).size() == 1;
@@ -350,11 +350,11 @@ public class AttributesTest extends AbstractTest {
 
 	public void test1AttributWith3LevelsInheritance1AttributFirstChild1AttributOnSecondChild() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(vehicle, "Car");
-		Vertex power = root.addInstance("Power", car);
-		Vertex microcar = root.addInstance(car, "Microcar");
-		Vertex airconditioner = root.addInstance("AirConditioner", microcar);
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic power = root.addInstance("Power", car);
+		Generic microcar = root.addInstance(car, "Microcar");
+		Generic airconditioner = root.addInstance("AirConditioner", microcar);
 		// assert vehicle.getAttributes(root).size() == 0;
 		// assert car.getAttributes(root).size() == 1;
 		assert car.getAttributes(root).contains(power);
@@ -365,10 +365,10 @@ public class AttributesTest extends AbstractTest {
 
 	public void test1AttributWith2LevelsInheritance2ChildrenAt2ndLevel1AttributOnParent() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex power = root.addInstance("Power", vehicle);
-		Vertex car = root.addInstance(vehicle, "Car");
-		Vertex caravan = root.addInstance(vehicle, "Caravan");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic power = root.addInstance("Power", vehicle);
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic caravan = root.addInstance(vehicle, "Caravan");
 		// assert vehicle.getAttributes(root).size() == 1;
 		assert vehicle.getAttributes(root).contains(power);
 		// assert car.getAttributes(root).size() == 1;
@@ -379,10 +379,10 @@ public class AttributesTest extends AbstractTest {
 
 	public void test1AttributWith2LevelsInheritance2ChildrenAt2ndLevel1AttributOnLevel1FirstChild() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(vehicle, "Car");
-		Vertex power = root.addInstance("Power", car);
-		Vertex caravan = root.addInstance(vehicle, "Caravan");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic power = root.addInstance("Power", car);
+		Generic caravan = root.addInstance(vehicle, "Caravan");
 		// assert vehicle.getAttributes(root).size() == 0;
 		// assert car.getAttributes(root).size() == 1;
 		assert car.getAttributes(root).contains(power);
@@ -391,10 +391,10 @@ public class AttributesTest extends AbstractTest {
 
 	public void test1AttributWith2LevelsInheritance2ChildrenAt2ndLevel1AttributOnLevel1SecondChild() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(vehicle, "Car");
-		Vertex caravan = root.addInstance(vehicle, "Caravan");
-		Vertex power = root.addInstance("Power", caravan);
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic caravan = root.addInstance(vehicle, "Caravan");
+		Generic power = root.addInstance("Power", caravan);
 		// assert vehicle.getAttributes(root).size() == 0;
 		// assert car.getAttributes(root).size() == 0;
 		// assert caravan.getAttributes(root).size() == 1;
@@ -402,12 +402,12 @@ public class AttributesTest extends AbstractTest {
 	}
 
 	public void test1AttributWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel1AttributOnParent() {
-		Vertex root = new Root();
-		Vertex object = root.addInstance("Object");
-		Vertex power = root.addInstance("Power", object);
-		Vertex vehicle = root.addInstance(object, "Vehicle");
-		Vertex robot = root.addInstance(object, "Robot");
-		Vertex transformer = root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
+		Generic root = new Root();
+		Generic object = root.addInstance("Object");
+		Generic power = root.addInstance("Power", object);
+		Generic vehicle = root.addInstance(object, "Vehicle");
+		Generic robot = root.addInstance(object, "Robot");
+		Generic transformer = root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
 		// assert object.getAttributes(root).size() == 1;
 		assert object.getAttributes(root).contains(power);
 		// assert vehicle.getAttributes(root).size() == 1;
@@ -419,12 +419,12 @@ public class AttributesTest extends AbstractTest {
 	}
 
 	public void test1AttributWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel1AttributLevel1FistChild() {
-		Vertex root = new Root();
-		Vertex object = root.addInstance("Object");
-		Vertex vehicle = root.addInstance(object, "Vehicle");
-		Vertex power = root.addInstance("Power", vehicle);
-		Vertex robot = root.addInstance(object, "Robot");
-		Vertex transformer = root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
+		Generic root = new Root();
+		Generic object = root.addInstance("Object");
+		Generic vehicle = root.addInstance(object, "Vehicle");
+		Generic power = root.addInstance("Power", vehicle);
+		Generic robot = root.addInstance(object, "Robot");
+		Generic transformer = root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
 		// assert object.getAttributes(root).size() == 0;
 		// assert vehicle.getAttributes(root).size() == 1;
 		assert vehicle.getAttributes(root).contains(power);
@@ -434,12 +434,12 @@ public class AttributesTest extends AbstractTest {
 	}
 
 	public void test1AttributWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel1AttributLevel1SecondChild() {
-		Vertex root = new Root();
-		Vertex object = root.addInstance("Object");
-		Vertex vehicle = root.addInstance(object, "Vehicle");
-		Vertex robot = root.addInstance(object, "Robot");
-		Vertex power = root.addInstance("Power", vehicle);
-		Vertex transformer = root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
+		Generic root = new Root();
+		Generic object = root.addInstance("Object");
+		Generic vehicle = root.addInstance(object, "Vehicle");
+		Generic robot = root.addInstance(object, "Robot");
+		Generic power = root.addInstance("Power", vehicle);
+		Generic transformer = root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
 		// assert object.getAttributes(root).size() == 0;
 		// assert vehicle.getAttributes(root).size() == 1;
 		assert vehicle.getAttributes(root).contains(power);
@@ -449,12 +449,12 @@ public class AttributesTest extends AbstractTest {
 	}
 
 	public void test1AttributWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel1AttributLevel2Child1() {
-		Vertex root = new Root();
-		Vertex object = root.addInstance("Object");
-		Vertex vehicle = root.addInstance(object, "Vehicle");
-		Vertex robot = root.addInstance(object, "Robot");
-		Vertex transformer = root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
-		Vertex power = root.addInstance("Power", transformer);
+		Generic root = new Root();
+		Generic object = root.addInstance("Object");
+		Generic vehicle = root.addInstance(object, "Vehicle");
+		Generic robot = root.addInstance(object, "Robot");
+		Generic transformer = root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
+		Generic power = root.addInstance("Power", transformer);
 		// assert object.getAttributes(root).size() == 0;
 		// assert vehicle.getAttributes(root).size() == 0;
 		// assert robot.getAttributes(root).size() == 0;
@@ -463,13 +463,13 @@ public class AttributesTest extends AbstractTest {
 	}
 
 	public void test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsOnParent() {
-		Vertex root = new Root();
-		Vertex object = root.addInstance("Object");
-		Vertex power = root.addInstance("Power", object);
-		Vertex airconditioner = root.addInstance("AirConditioner", object);
-		Vertex vehicle = root.addInstance(object, "Vehicle");
-		Vertex robot = root.addInstance(object, "Robot");
-		Vertex transformer = root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
+		Generic root = new Root();
+		Generic object = root.addInstance("Object");
+		Generic power = root.addInstance("Power", object);
+		Generic airconditioner = root.addInstance("AirConditioner", object);
+		Generic vehicle = root.addInstance(object, "Vehicle");
+		Generic robot = root.addInstance(object, "Robot");
+		Generic transformer = root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
 		// assert object.getAttributes(root).size() == 2 : object.getAttributes(root);
 		assert object.getAttributes(root).contains(power);
 		assert object.getAttributes(root).contains(airconditioner);
@@ -485,13 +485,13 @@ public class AttributesTest extends AbstractTest {
 	}
 
 	public void test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsLevel1FirstChild() {
-		Vertex root = new Root();
-		Vertex object = root.addInstance("Object");
-		Vertex vehicle = root.addInstance(object, "Vehicle");
-		Vertex power = root.addInstance("Power", vehicle);
-		Vertex airconditioner = root.addInstance("AirConditioner", vehicle);
-		Vertex robot = root.addInstance(object, "Robot");
-		Vertex transformer = root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
+		Generic root = new Root();
+		Generic object = root.addInstance("Object");
+		Generic vehicle = root.addInstance(object, "Vehicle");
+		Generic power = root.addInstance("Power", vehicle);
+		Generic airconditioner = root.addInstance("AirConditioner", vehicle);
+		Generic robot = root.addInstance(object, "Robot");
+		Generic transformer = root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
 		// assert object.getAttributes(root).size() == 0;
 		// assert vehicle.getAttributes(root).size() == 2;
 		assert vehicle.getAttributes(root).contains(power);
@@ -503,13 +503,13 @@ public class AttributesTest extends AbstractTest {
 	}
 
 	public void test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsLevel1SecondChild() {
-		Vertex root = new Root();
-		Vertex object = root.addInstance("Object");
-		Vertex vehicle = root.addInstance(object, "Vehicle");
-		Vertex robot = root.addInstance(object, "Robot");
-		Vertex power = root.addInstance("Power", robot);
-		Vertex airconditioner = root.addInstance("AirConditioner", robot);
-		Vertex transformer = root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
+		Generic root = new Root();
+		Generic object = root.addInstance("Object");
+		Generic vehicle = root.addInstance(object, "Vehicle");
+		Generic robot = root.addInstance(object, "Robot");
+		Generic power = root.addInstance("Power", robot);
+		Generic airconditioner = root.addInstance("AirConditioner", robot);
+		Generic transformer = root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
 		// assert object.getAttributes(root).size() == 0;
 		// assert vehicle.getAttributes(root).size() == 0;
 		// assert robot.getAttributes(root).size() == 2;
@@ -521,13 +521,13 @@ public class AttributesTest extends AbstractTest {
 	}
 
 	public void test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsLevel2() {
-		Vertex root = new Root();
-		Vertex object = root.addInstance("Object");
-		Vertex vehicle = root.addInstance(object, "Vehicle");
-		Vertex robot = root.addInstance(object, "Robot");
-		Vertex transformer = root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
-		Vertex power = root.addInstance("Power", transformer);
-		Vertex airconditioner = root.addInstance("AirConditioner", transformer);
+		Generic root = new Root();
+		Generic object = root.addInstance("Object");
+		Generic vehicle = root.addInstance(object, "Vehicle");
+		Generic robot = root.addInstance(object, "Robot");
+		Generic transformer = root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
+		Generic power = root.addInstance("Power", transformer);
+		Generic airconditioner = root.addInstance("AirConditioner", transformer);
 		// assert object.getAttributes(root).size() == 0;
 		// assert vehicle.getAttributes(root).size() == 0;
 		// assert robot.getAttributes(root).size() == 0;
