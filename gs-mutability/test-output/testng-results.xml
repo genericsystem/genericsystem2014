@@ -1,0 +1,1047 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results skipped="0" failed="0" total="245" passed="245">
+  <reporter-output>
+  </reporter-output>
+  <suite name="Default suite" duration-ms="3469" started-at="2015-02-28T09:35:52Z" finished-at="2015-02-28T09:35:56Z">
+    <groups>
+    </groups>
+    <test name="Default test" duration-ms="3469" started-at="2015-02-28T09:35:52Z" finished-at="2015-02-28T09:35:56Z">
+      <class name="org.genericsystem.mutability.RequiredConstraintTest">
+        <test-method status="PASS" signature="test000_Inheritance()[pri:0, instance:org.genericsystem.mutability.RequiredConstraintTest@2d6e8792]" name="test000_Inheritance" duration-ms="22" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test000_Inheritance -->
+        <test-method status="PASS" signature="test001_Inheritance()[pri:0, instance:org.genericsystem.mutability.RequiredConstraintTest@2d6e8792]" name="test001_Inheritance" duration-ms="25" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_Inheritance -->
+        <test-method status="PASS" signature="test001_enableRequired()[pri:0, instance:org.genericsystem.mutability.RequiredConstraintTest@2d6e8792]" name="test001_enableRequired" duration-ms="29" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_enableRequired -->
+        <test-method status="PASS" signature="test00_Inheritance()[pri:0, instance:org.genericsystem.mutability.RequiredConstraintTest@2d6e8792]" name="test00_Inheritance" duration-ms="11" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test00_Inheritance -->
+        <test-method status="PASS" signature="test01_Inheritance()[pri:0, instance:org.genericsystem.mutability.RequiredConstraintTest@2d6e8792]" name="test01_Inheritance" duration-ms="8" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test01_Inheritance -->
+      </class> <!-- org.genericsystem.mutability.RequiredConstraintTest -->
+      <class name="org.genericsystem.mutability.MutabilityTest">
+        <test-method status="PASS" signature="test001()[pri:0, instance:org.genericsystem.mutability.MutabilityTest@96532d6]" name="test001" duration-ms="2" started-at="2015-02-28T10:35:56Z" finished-at="2015-02-28T10:35:56Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001 -->
+        <test-method status="PASS" signature="test002()[pri:0, instance:org.genericsystem.mutability.MutabilityTest@96532d6]" name="test002" duration-ms="5" started-at="2015-02-28T10:35:56Z" finished-at="2015-02-28T10:35:56Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test002 -->
+        <test-method status="PASS" signature="test003()[pri:0, instance:org.genericsystem.mutability.MutabilityTest@96532d6]" name="test003" duration-ms="4" started-at="2015-02-28T10:35:56Z" finished-at="2015-02-28T10:35:56Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test003 -->
+        <test-method status="PASS" signature="test004()[pri:0, instance:org.genericsystem.mutability.MutabilityTest@96532d6]" name="test004" duration-ms="4" started-at="2015-02-28T10:35:56Z" finished-at="2015-02-28T10:35:56Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test004 -->
+      </class> <!-- org.genericsystem.mutability.MutabilityTest -->
+      <class name="org.genericsystem.mutability.HolderTest">
+        <test-method status="PASS" signature="test2ChainedAttributs()[pri:0, instance:org.genericsystem.mutability.HolderTest@4411d970]" name="test2ChainedAttributs" duration-ms="12" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test2ChainedAttributs -->
+        <test-method status="PASS" signature="testHolder1Attribut()[pri:0, instance:org.genericsystem.mutability.HolderTest@4411d970]" name="testHolder1Attribut" duration-ms="8" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testHolder1Attribut -->
+        <test-method status="PASS" signature="testHolder1AttributWith2LevelsInheritance1AttributOnFirstChild()[pri:0, instance:org.genericsystem.mutability.HolderTest@4411d970]" name="testHolder1AttributWith2LevelsInheritance1AttributOnFirstChild" duration-ms="11" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testHolder1AttributWith2LevelsInheritance1AttributOnFirstChild -->
+        <test-method status="PASS" signature="testHolder1AttributWith2LevelsInheritance1AttributOnParent()[pri:0, instance:org.genericsystem.mutability.HolderTest@4411d970]" name="testHolder1AttributWith2LevelsInheritance1AttributOnParent" duration-ms="10" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testHolder1AttributWith2LevelsInheritance1AttributOnParent -->
+        <test-method status="PASS" signature="testHolder1AttributWith2LevelsInheritance2children1AttributOnParent()[pri:0, instance:org.genericsystem.mutability.HolderTest@4411d970]" name="testHolder1AttributWith2LevelsInheritance2children1AttributOnParent" duration-ms="12" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testHolder1AttributWith2LevelsInheritance2children1AttributOnParent -->
+        <test-method status="PASS" signature="testHolderOverrideWithDifferentValue1AttributWith2LevelsInheritance1AttributOnParent()[pri:0, instance:org.genericsystem.mutability.HolderTest@4411d970]" name="testHolderOverrideWithDifferentValue1AttributWith2LevelsInheritance1AttributOnParent" duration-ms="12" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testHolderOverrideWithDifferentValue1AttributWith2LevelsInheritance1AttributOnParent -->
+        <test-method status="PASS" signature="testHolderOverrideWithDifferentValue1AttributWith3LevelsInheritance1AttributOnParentOverrideOnFirstChild()[pri:0, instance:org.genericsystem.mutability.HolderTest@4411d970]" name="testHolderOverrideWithDifferentValue1AttributWith3LevelsInheritance1AttributOnParentOverrideOnFirstChild" duration-ms="13" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testHolderOverrideWithDifferentValue1AttributWith3LevelsInheritance1AttributOnParentOverrideOnFirstChild -->
+        <test-method status="PASS" signature="testHolderOverrideWithDifferentValue1AttributWith3LevelsInheritance1AttributOnParentOverrideOnSecondChild()[pri:0, instance:org.genericsystem.mutability.HolderTest@4411d970]" name="testHolderOverrideWithDifferentValue1AttributWith3LevelsInheritance1AttributOnParentOverrideOnSecondChild" duration-ms="13" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testHolderOverrideWithDifferentValue1AttributWith3LevelsInheritance1AttributOnParentOverrideOnSecondChild -->
+        <test-method status="PASS" signature="testHolderOverrideWithDifferentValue2ChainedAttributWith2LevelsInheritance2AttributsOnParent()[pri:0, instance:org.genericsystem.mutability.HolderTest@4411d970]" name="testHolderOverrideWithDifferentValue2ChainedAttributWith2LevelsInheritance2AttributsOnParent" duration-ms="14" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testHolderOverrideWithDifferentValue2ChainedAttributWith2LevelsInheritance2AttributsOnParent -->
+        <test-method status="PASS" signature="testHolderOverrideWithDifferentValue2ChainedAttributsWith3LevelsInheritance1AttributOnParentOverrideOnFirstChild()[pri:0, instance:org.genericsystem.mutability.HolderTest@4411d970]" name="testHolderOverrideWithDifferentValue2ChainedAttributsWith3LevelsInheritance1AttributOnParentOverrideOnFirstChild" duration-ms="19" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testHolderOverrideWithDifferentValue2ChainedAttributsWith3LevelsInheritance1AttributOnParentOverrideOnFirstChild -->
+        <test-method status="PASS" signature="testHolderOverrideWithSameValue1AttributWith2LevelsInheritance1AttributOnParent()[pri:0, instance:org.genericsystem.mutability.HolderTest@4411d970]" name="testHolderOverrideWithSameValue1AttributWith2LevelsInheritance1AttributOnParent" duration-ms="10" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testHolderOverrideWithSameValue1AttributWith2LevelsInheritance1AttributOnParent -->
+      </class> <!-- org.genericsystem.mutability.HolderTest -->
+      <class name="org.genericsystem.mutability.ReferentialIntegrityConstraintTest">
+        <test-method status="PASS" signature="test001_enableReferentialIntegrity_remove()[pri:0, instance:org.genericsystem.mutability.ReferentialIntegrityConstraintTest@2133c8f8]" name="test001_enableReferentialIntegrity_remove" duration-ms="32" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_enableReferentialIntegrity_remove -->
+        <test-method status="PASS" signature="test002_enableReferentialIntegrity_remove()[pri:0, instance:org.genericsystem.mutability.ReferentialIntegrityConstraintTest@2133c8f8]" name="test002_enableReferentialIntegrity_remove" duration-ms="18" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test002_enableReferentialIntegrity_remove -->
+        <test-method status="PASS" signature="test004_enableReferentialIntegrity_remove()[pri:0, instance:org.genericsystem.mutability.ReferentialIntegrityConstraintTest@2133c8f8]" name="test004_enableReferentialIntegrity_remove" duration-ms="23" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test004_enableReferentialIntegrity_remove -->
+        <test-method status="PASS" signature="test005_enableReferentialIntegrity_remove()[pri:0, instance:org.genericsystem.mutability.ReferentialIntegrityConstraintTest@2133c8f8]" name="test005_enableReferentialIntegrity_remove" duration-ms="33" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test005_enableReferentialIntegrity_remove -->
+        <test-method status="PASS" signature="test005_enableReferentialIntegrity_remove2()[pri:0, instance:org.genericsystem.mutability.ReferentialIntegrityConstraintTest@2133c8f8]" name="test005_enableReferentialIntegrity_remove2" duration-ms="19" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test005_enableReferentialIntegrity_remove2 -->
+        <test-method status="PASS" signature="test005_enableReferentialIntegrity_remove3()[pri:0, instance:org.genericsystem.mutability.ReferentialIntegrityConstraintTest@2133c8f8]" name="test005_enableReferentialIntegrity_remove3" duration-ms="20" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test005_enableReferentialIntegrity_remove3 -->
+        <test-method status="PASS" signature="test006_enableReferentialIntegrity_remove()[pri:0, instance:org.genericsystem.mutability.ReferentialIntegrityConstraintTest@2133c8f8]" name="test006_enableReferentialIntegrity_remove" duration-ms="14" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test006_enableReferentialIntegrity_remove -->
+        <test-method status="PASS" signature="test007_enableReferentialIntegrity_remove()[pri:0, instance:org.genericsystem.mutability.ReferentialIntegrityConstraintTest@2133c8f8]" name="test007_enableReferentialIntegrity_remove" duration-ms="14" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test007_enableReferentialIntegrity_remove -->
+        <test-method status="PASS" signature="test008_enableReferentialIntegrity_remove()[pri:0, instance:org.genericsystem.mutability.ReferentialIntegrityConstraintTest@2133c8f8]" name="test008_enableReferentialIntegrity_remove" duration-ms="17" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test008_enableReferentialIntegrity_remove -->
+      </class> <!-- org.genericsystem.mutability.ReferentialIntegrityConstraintTest -->
+      <class name="org.genericsystem.mutability.GenericTest">
+        <test-method status="PASS" signature="testAddAttribute()[pri:0, instance:org.genericsystem.mutability.GenericTest@17f6480]" name="testAddAttribute" duration-ms="19" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testAddAttribute -->
+        <test-method status="PASS" signature="testAddAttributeWithOverride()[pri:0, instance:org.genericsystem.mutability.GenericTest@17f6480]" name="testAddAttributeWithOverride" duration-ms="21" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testAddAttributeWithOverride -->
+        <test-method status="PASS" signature="testAddAttributeWithOverride2()[pri:0, instance:org.genericsystem.mutability.GenericTest@17f6480]" name="testAddAttributeWithOverride2" duration-ms="22" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testAddAttributeWithOverride2 -->
+        <test-method status="PASS" signature="testAddAttributeWithOverride3()[pri:0, instance:org.genericsystem.mutability.GenericTest@17f6480]" name="testAddAttributeWithOverride3" duration-ms="24" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testAddAttributeWithOverride3 -->
+        <test-method status="PASS" signature="testAddInheriting()[pri:0, instance:org.genericsystem.mutability.GenericTest@17f6480]" name="testAddInheriting" duration-ms="8" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testAddInheriting -->
+        <test-method status="PASS" signature="testAddInstance()[pri:0, instance:org.genericsystem.mutability.GenericTest@17f6480]" name="testAddInstance" duration-ms="12" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testAddInstance -->
+        <test-method status="PASS" signature="testEngine()[pri:0, instance:org.genericsystem.mutability.GenericTest@17f6480]" name="testEngine" duration-ms="5" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testEngine -->
+        <test-method status="PASS" signature="testGetInstances()[pri:0, instance:org.genericsystem.mutability.GenericTest@17f6480]" name="testGetInstances" duration-ms="23" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testGetInstances -->
+        <test-method status="PASS" signature="testMultiInheritance()[pri:0, instance:org.genericsystem.mutability.GenericTest@17f6480]" name="testMultiInheritance" duration-ms="15" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testMultiInheritance -->
+        <test-method status="PASS" signature="testMultiInheritance2()[pri:0, instance:org.genericsystem.mutability.GenericTest@17f6480]" name="testMultiInheritance2" duration-ms="15" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testMultiInheritance2 -->
+        <test-method status="PASS" signature="testMultiInheritance3()[pri:0, instance:org.genericsystem.mutability.GenericTest@17f6480]" name="testMultiInheritance3" duration-ms="15" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testMultiInheritance3 -->
+        <test-method status="PASS" signature="testSetInstance()[pri:0, instance:org.genericsystem.mutability.GenericTest@17f6480]" name="testSetInstance" duration-ms="7" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testSetInstance -->
+      </class> <!-- org.genericsystem.mutability.GenericTest -->
+      <class name="org.genericsystem.mutability.AnnotationTest">
+        <test-method status="PASS" signature="test000_Generic()[pri:0, instance:org.genericsystem.mutability.AnnotationTest@3796751b]" name="test000_Generic" duration-ms="8" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test000_Generic -->
+        <test-method status="PASS" signature="test001_Generic()[pri:0, instance:org.genericsystem.mutability.AnnotationTest@3796751b]" name="test001_Generic" duration-ms="9" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_Generic -->
+        <test-method status="PASS" signature="test001_instanceof()[pri:0, instance:org.genericsystem.mutability.AnnotationTest@3796751b]" name="test001_instanceof" duration-ms="3" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_instanceof -->
+        <test-method status="PASS" signature="test001_remove()[pri:0, instance:org.genericsystem.mutability.AnnotationTest@3796751b]" name="test001_remove" duration-ms="3" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_remove -->
+        <test-method status="PASS" signature="test002_SuperGeneric()[pri:0, instance:org.genericsystem.mutability.AnnotationTest@3796751b]" name="test002_SuperGeneric" duration-ms="7" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test002_SuperGeneric -->
+        <test-method status="PASS" signature="test002_instanceof()[pri:0, instance:org.genericsystem.mutability.AnnotationTest@3796751b]" name="test002_instanceof" duration-ms="7" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test002_instanceof -->
+        <test-method status="PASS" signature="test002_instanceof_getInstances()[pri:0, instance:org.genericsystem.mutability.AnnotationTest@3796751b]" name="test002_instanceof_getInstances" duration-ms="4" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test002_instanceof_getInstances -->
+        <test-method status="PASS" signature="test003_Attribute()[pri:0, instance:org.genericsystem.mutability.AnnotationTest@3796751b]" name="test003_Attribute" duration-ms="8" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test003_Attribute -->
+        <test-method status="PASS" signature="test003_instanceof()[pri:0, instance:org.genericsystem.mutability.AnnotationTest@3796751b]" name="test003_instanceof" duration-ms="5" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test003_instanceof -->
+        <test-method status="PASS" signature="test004_AttributeValue()[pri:0, instance:org.genericsystem.mutability.AnnotationTest@3796751b]" name="test004_AttributeValue" duration-ms="11" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test004_AttributeValue -->
+        <test-method status="PASS" signature="test004_instanceof()[pri:0, instance:org.genericsystem.mutability.AnnotationTest@3796751b]" name="test004_instanceof" duration-ms="2" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test004_instanceof -->
+        <test-method status="PASS" signature="test005_SuperAttribute()[pri:0, instance:org.genericsystem.mutability.AnnotationTest@3796751b]" name="test005_SuperAttribute" duration-ms="11" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test005_SuperAttribute -->
+        <test-method status="PASS" signature="test006_AttributeOnAttribute()[pri:0, instance:org.genericsystem.mutability.AnnotationTest@3796751b]" name="test006_AttributeOnAttribute" duration-ms="20" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test006_AttributeOnAttribute -->
+        <test-method status="PASS" signature="test007_Relation()[pri:0, instance:org.genericsystem.mutability.AnnotationTest@3796751b]" name="test007_Relation" duration-ms="14" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test007_Relation -->
+        <test-method status="PASS" signature="test008_SubRelation()[pri:0, instance:org.genericsystem.mutability.AnnotationTest@3796751b]" name="test008_SubRelation" duration-ms="18" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test008_SubRelation -->
+        <test-method status="PASS" signature="test009_SymetricSuperRelation()[pri:0, instance:org.genericsystem.mutability.AnnotationTest@3796751b]" name="test009_SymetricSuperRelation" duration-ms="23" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test009_SymetricSuperRelation -->
+        <test-method status="PASS" signature="test010_TernaryRelation()[pri:0, instance:org.genericsystem.mutability.AnnotationTest@3796751b]" name="test010_TernaryRelation" duration-ms="21" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test010_TernaryRelation -->
+        <test-method status="PASS" signature="test011_getDirectSubGenericsWithDiamondProblem()[pri:0, instance:org.genericsystem.mutability.AnnotationTest@3796751b]" name="test011_getDirectSubGenericsWithDiamondProblem" duration-ms="15" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test011_getDirectSubGenericsWithDiamondProblem -->
+        <test-method status="PASS" signature="test012_Value()[pri:0, instance:org.genericsystem.mutability.AnnotationTest@3796751b]" name="test012_Value" duration-ms="26" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test012_Value -->
+        <test-method status="PASS" signature="test013_MultiInheritanceComplexStructural()[pri:0, instance:org.genericsystem.mutability.AnnotationTest@3796751b]" name="test013_MultiInheritanceComplexStructural" duration-ms="28" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test013_MultiInheritanceComplexStructural -->
+        <test-method status="PASS" signature="test014_MultiInheritanceComplexValue()[pri:0, instance:org.genericsystem.mutability.AnnotationTest@3796751b]" name="test014_MultiInheritanceComplexValue" duration-ms="47" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test014_MultiInheritanceComplexValue -->
+      </class> <!-- org.genericsystem.mutability.AnnotationTest -->
+      <class name="org.genericsystem.mutability.RelationTest">
+        <test-method status="PASS" signature="test001_addInstance_NotAliveException()[pri:0, instance:org.genericsystem.mutability.RelationTest@3f3afe78]" name="test001_addInstance_NotAliveException" duration-ms="19" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_addInstance_NotAliveException -->
+        <test-method status="PASS" signature="test001_addInstance_NotAliveException_withMetaRelation()[pri:0, instance:org.genericsystem.mutability.RelationTest@3f3afe78]" name="test001_addInstance_NotAliveException_withMetaRelation" duration-ms="23" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_addInstance_NotAliveException_withMetaRelation -->
+        <test-method status="PASS" signature="test002_addInstance_2composites()[pri:0, instance:org.genericsystem.mutability.RelationTest@3f3afe78]" name="test002_addInstance_2composites" duration-ms="22" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test002_addInstance_2composites -->
+        <test-method status="PASS" signature="test002_addInstance_2composites_MetaRelation()[pri:0, instance:org.genericsystem.mutability.RelationTest@3f3afe78]" name="test002_addInstance_2composites_MetaRelation" duration-ms="20" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test002_addInstance_2composites_MetaRelation -->
+        <test-method status="PASS" signature="test003_addInstance_reflexiveRelation()[pri:0, instance:org.genericsystem.mutability.RelationTest@3f3afe78]" name="test003_addInstance_reflexiveRelation" duration-ms="15" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test003_addInstance_reflexiveRelation -->
+        <test-method status="PASS" signature="test003_addInstance_reflexiveRelation_MetaRelation()[pri:0, instance:org.genericsystem.mutability.RelationTest@3f3afe78]" name="test003_addInstance_reflexiveRelation_MetaRelation" duration-ms="22" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test003_addInstance_reflexiveRelation_MetaRelation -->
+        <test-method status="PASS" signature="test004_addInheritsRelation()[pri:0, instance:org.genericsystem.mutability.RelationTest@3f3afe78]" name="test004_addInheritsRelation" duration-ms="27" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test004_addInheritsRelation -->
+        <test-method status="PASS" signature="test005_addInheritsRelations_OnSameStructural()[pri:0, instance:org.genericsystem.mutability.RelationTest@3f3afe78]" name="test005_addInheritsRelations_OnSameStructural" duration-ms="17" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test005_addInheritsRelations_OnSameStructural -->
+        <test-method status="PASS" signature="test006_inherits_different_than_instance()[pri:0, instance:org.genericsystem.mutability.RelationTest@3f3afe78]" name="test006_inherits_different_than_instance" duration-ms="30" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test006_inherits_different_than_instance -->
+        <test-method status="PASS" signature="test007_addInstance_ofSubRelation()[pri:0, instance:org.genericsystem.mutability.RelationTest@3f3afe78]" name="test007_addInstance_ofSubRelation" duration-ms="23" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test007_addInstance_ofSubRelation -->
+        <test-method status="PASS" signature="test008()[pri:0, instance:org.genericsystem.mutability.RelationTest@3f3afe78]" name="test008" duration-ms="45" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test008 -->
+        <test-method status="PASS" signature="test009()[pri:0, instance:org.genericsystem.mutability.RelationTest@3f3afe78]" name="test009" duration-ms="49" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test009 -->
+        <test-method status="PASS" signature="test010()[pri:0, instance:org.genericsystem.mutability.RelationTest@3f3afe78]" name="test010" duration-ms="48" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test010 -->
+      </class> <!-- org.genericsystem.mutability.RelationTest -->
+      <class name="org.genericsystem.mutability.NotRemovableTest">
+        <test-method status="PASS" signature="test001_aliveEx()[pri:0, instance:org.genericsystem.mutability.NotRemovableTest@34ce8af7]" name="test001_aliveEx" duration-ms="5" started-at="2015-02-28T10:35:56Z" finished-at="2015-02-28T10:35:56Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_aliveEx -->
+        <test-method status="PASS" signature="test002_referenceEx()[pri:0, instance:org.genericsystem.mutability.NotRemovableTest@34ce8af7]" name="test002_referenceEx" duration-ms="4" started-at="2015-02-28T10:35:56Z" finished-at="2015-02-28T10:35:56Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test002_referenceEx -->
+        <test-method status="PASS" signature="test003_referenceEx()[pri:0, instance:org.genericsystem.mutability.NotRemovableTest@34ce8af7]" name="test003_referenceEx" duration-ms="6" started-at="2015-02-28T10:35:56Z" finished-at="2015-02-28T10:35:56Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test003_referenceEx -->
+      </class> <!-- org.genericsystem.mutability.NotRemovableTest -->
+      <class name="org.genericsystem.mutability.TreeTest">
+        <test-method status="PASS" signature="test001()[pri:0, instance:org.genericsystem.mutability.TreeTest@35f983a6]" name="test001" duration-ms="6" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001 -->
+        <test-method status="PASS" signature="test002()[pri:0, instance:org.genericsystem.mutability.TreeTest@35f983a6]" name="test002" duration-ms="9" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test002 -->
+        <test-method status="PASS" signature="test003()[pri:0, instance:org.genericsystem.mutability.TreeTest@35f983a6]" name="test003" duration-ms="10" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test003 -->
+        <test-method status="PASS" signature="test004()[pri:0, instance:org.genericsystem.mutability.TreeTest@35f983a6]" name="test004" duration-ms="17" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test004 -->
+        <test-method status="PASS" signature="test005()[pri:0, instance:org.genericsystem.mutability.TreeTest@35f983a6]" name="test005" duration-ms="16" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test005 -->
+        <test-method status="PASS" signature="test006()[pri:0, instance:org.genericsystem.mutability.TreeTest@35f983a6]" name="test006" duration-ms="5" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test006 -->
+        <test-method status="PASS" signature="test007()[pri:0, instance:org.genericsystem.mutability.TreeTest@35f983a6]" name="test007" duration-ms="19" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test007 -->
+        <test-method status="PASS" signature="test008()[pri:0, instance:org.genericsystem.mutability.TreeTest@35f983a6]" name="test008" duration-ms="12" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test008 -->
+        <test-method status="PASS" signature="testTraverseTree()[pri:0, instance:org.genericsystem.mutability.TreeTest@35f983a6]" name="testTraverseTree" duration-ms="6" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testTraverseTree -->
+        <test-method status="PASS" signature="testTree1()[pri:0, instance:org.genericsystem.mutability.TreeTest@35f983a6]" name="testTree1" duration-ms="4" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testTree1 -->
+        <test-method status="PASS" signature="testTree2()[pri:0, instance:org.genericsystem.mutability.TreeTest@35f983a6]" name="testTree2" duration-ms="5" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testTree2 -->
+        <test-method status="PASS" signature="testTree3()[pri:0, instance:org.genericsystem.mutability.TreeTest@35f983a6]" name="testTree3" duration-ms="5" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testTree3 -->
+      </class> <!-- org.genericsystem.mutability.TreeTest -->
+      <class name="org.genericsystem.mutability.InstanciationTest">
+        <test-method status="PASS" signature="test3TypeInstanciationWithMultipleInheritence()[pri:0, instance:org.genericsystem.mutability.InstanciationTest@17c68925]" name="test3TypeInstanciationWithMultipleInheritence" duration-ms="8" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test3TypeInstanciationWithMultipleInheritence -->
+        <test-method status="PASS" signature="test5TypeInstanciationWithMultipleInheritence()[pri:0, instance:org.genericsystem.mutability.InstanciationTest@17c68925]" name="test5TypeInstanciationWithMultipleInheritence" duration-ms="12" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test5TypeInstanciationWithMultipleInheritence -->
+        <test-method status="PASS" signature="test6TypeInstanciationWithMultipleInheritence()[pri:0, instance:org.genericsystem.mutability.InstanciationTest@17c68925]" name="test6TypeInstanciationWithMultipleInheritence" duration-ms="16" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test6TypeInstanciationWithMultipleInheritence -->
+        <test-method status="PASS" signature="testEngineInstanciation()[pri:0, instance:org.genericsystem.mutability.InstanciationTest@17c68925]" name="testEngineInstanciation" duration-ms="5" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testEngineInstanciation -->
+        <test-method status="PASS" signature="testTwoTypeInstanciationDifferentNames()[pri:0, instance:org.genericsystem.mutability.InstanciationTest@17c68925]" name="testTwoTypeInstanciationDifferentNames" duration-ms="6" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testTwoTypeInstanciationDifferentNames -->
+        <test-method status="PASS" signature="testTwoTypeInstanciationSameNamesAddInstance()[pri:0, instance:org.genericsystem.mutability.InstanciationTest@17c68925]" name="testTwoTypeInstanciationSameNamesAddInstance" duration-ms="8" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testTwoTypeInstanciationSameNamesAddInstance -->
+        <test-method status="PASS" signature="testTwoTypeInstanciationSameNamesSetInstance()[pri:0, instance:org.genericsystem.mutability.InstanciationTest@17c68925]" name="testTwoTypeInstanciationSameNamesSetInstance" duration-ms="7" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testTwoTypeInstanciationSameNamesSetInstance -->
+        <test-method status="PASS" signature="testTwoTypeInstanciationWithInheritance()[pri:0, instance:org.genericsystem.mutability.InstanciationTest@17c68925]" name="testTwoTypeInstanciationWithInheritance" duration-ms="14" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testTwoTypeInstanciationWithInheritance -->
+        <test-method status="PASS" signature="testTypeInstanciation()[pri:0, instance:org.genericsystem.mutability.InstanciationTest@17c68925]" name="testTypeInstanciation" duration-ms="6" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testTypeInstanciation -->
+        <test-method status="PASS" signature="testTypeInstanciationWithSelfInheritance()[pri:0, instance:org.genericsystem.mutability.InstanciationTest@17c68925]" name="testTypeInstanciationWithSelfInheritance" duration-ms="12" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- testTypeInstanciationWithSelfInheritance -->
+      </class> <!-- org.genericsystem.mutability.InstanciationTest -->
+      <class name="org.genericsystem.mutability.RemoveTest">
+        <test-method status="PASS" signature="test001_simpleHolder()[pri:0, instance:org.genericsystem.mutability.RemoveTest@7f690630]" name="test001_simpleHolder" duration-ms="164" started-at="2015-02-28T10:35:52Z" finished-at="2015-02-28T10:35:52Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_simpleHolder -->
+        <test-method status="PASS" signature="test002_multipleHolders()[pri:0, instance:org.genericsystem.mutability.RemoveTest@7f690630]" name="test002_multipleHolders" duration-ms="96" started-at="2015-02-28T10:35:52Z" finished-at="2015-02-28T10:35:52Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test002_multipleHolders -->
+        <test-method status="PASS" signature="test003_removeAndAdd()[pri:0, instance:org.genericsystem.mutability.RemoveTest@7f690630]" name="test003_removeAndAdd" duration-ms="36" started-at="2015-02-28T10:35:52Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test003_removeAndAdd -->
+        <test-method status="PASS" signature="test004_removeAndAddAndRemove()[pri:0, instance:org.genericsystem.mutability.RemoveTest@7f690630]" name="test004_removeAndAddAndRemove" duration-ms="22" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test004_removeAndAddAndRemove -->
+        <test-method status="PASS" signature="test005_removeConcret_withHolder()[pri:0, instance:org.genericsystem.mutability.RemoveTest@7f690630]" name="test005_removeConcret_withHolder" duration-ms="24" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test005_removeConcret_withHolder -->
+        <test-method status="PASS" signature="test006_removeStructural_withHolder()[pri:0, instance:org.genericsystem.mutability.RemoveTest@7f690630]" name="test006_removeStructural_withHolder" duration-ms="20" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test006_removeStructural_withHolder -->
+        <test-method status="PASS" signature="test007_removeConcretAndAttribut()[pri:0, instance:org.genericsystem.mutability.RemoveTest@7f690630]" name="test007_removeConcretAndAttribut" duration-ms="20" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test007_removeConcretAndAttribut -->
+        <test-method status="PASS" signature="test008_removeInstanceAndAttribute()[pri:0, instance:org.genericsystem.mutability.RemoveTest@7f690630]" name="test008_removeInstanceAndAttribute" duration-ms="15" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test008_removeInstanceAndAttribute -->
+        <test-method status="PASS" signature="test009_removeConcret()[pri:0, instance:org.genericsystem.mutability.RemoveTest@7f690630]" name="test009_removeConcret" duration-ms="16" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test009_removeConcret -->
+      </class> <!-- org.genericsystem.mutability.RemoveTest -->
+      <class name="org.genericsystem.mutability.WeakEquivTest">
+        <test-method status="PASS" signature="test004_weakEquiv_Relation_SingularConstraintAndReferencialIntegrity_supers()[pri:0, instance:org.genericsystem.mutability.WeakEquivTest@506e6d5e]" name="test004_weakEquiv_Relation_SingularConstraintAndReferencialIntegrity_supers" duration-ms="14" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test004_weakEquiv_Relation_SingularConstraintAndReferencialIntegrity_supers -->
+        <test-method status="PASS" signature="test005_weakEquiv_Relation_SingularConstraintAndReferencialIntegrity_setInstance()[pri:0, instance:org.genericsystem.mutability.WeakEquivTest@506e6d5e]" name="test005_weakEquiv_Relation_SingularConstraintAndReferencialIntegrity_setInstance" duration-ms="17" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test005_weakEquiv_Relation_SingularConstraintAndReferencialIntegrity_setInstance -->
+      </class> <!-- org.genericsystem.mutability.WeakEquivTest -->
+      <class name="org.genericsystem.mutability.MultiInheritanceTest">
+        <test-method status="PASS" signature="multiInheritance()[pri:0, instance:org.genericsystem.mutability.MultiInheritanceTest@2812cbfa]" name="multiInheritance" duration-ms="10" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- multiInheritance -->
+        <test-method status="PASS" signature="multiInheritanceWithDiamond()[pri:0, instance:org.genericsystem.mutability.MultiInheritanceTest@2812cbfa]" name="multiInheritanceWithDiamond" duration-ms="12" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- multiInheritanceWithDiamond -->
+      </class> <!-- org.genericsystem.mutability.MultiInheritanceTest -->
+      <class name="org.genericsystem.mutability.AutomaticMetaAttributeCreationTest">
+        <test-method status="PASS" signature="test001_addInstance_metaAttribute()[pri:0, instance:org.genericsystem.mutability.AutomaticMetaAttributeCreationTest@71be98f5]" name="test001_addInstance_metaAttribute" duration-ms="6" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_addInstance_metaAttribute -->
+        <test-method status="PASS" signature="test002_addInstance_metaAttribute()[pri:0, instance:org.genericsystem.mutability.AutomaticMetaAttributeCreationTest@71be98f5]" name="test002_addInstance_metaAttribute" duration-ms="12" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test002_addInstance_metaAttribute -->
+        <test-method status="PASS" signature="test003_addInstance_metaAttribute_override()[pri:0, instance:org.genericsystem.mutability.AutomaticMetaAttributeCreationTest@71be98f5]" name="test003_addInstance_metaAttribute_override" duration-ms="15" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test003_addInstance_metaAttribute_override -->
+        <test-method status="PASS" signature="test004_addInstance_metaAttribute_override()[pri:0, instance:org.genericsystem.mutability.AutomaticMetaAttributeCreationTest@71be98f5]" name="test004_addInstance_metaAttribute_override" duration-ms="53" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test004_addInstance_metaAttribute_override -->
+        <test-method status="PASS" signature="test005_setInstance_metaAttribute_engine()[pri:0, instance:org.genericsystem.mutability.AutomaticMetaAttributeCreationTest@71be98f5]" name="test005_setInstance_metaAttribute_engine" duration-ms="6" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test005_setInstance_metaAttribute_engine -->
+        <test-method status="PASS" signature="test006_setInstance_metaAttribute_attribute()[pri:0, instance:org.genericsystem.mutability.AutomaticMetaAttributeCreationTest@71be98f5]" name="test006_setInstance_metaAttribute_attribute" duration-ms="27" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test006_setInstance_metaAttribute_attribute -->
+        <test-method status="PASS" signature="test007_setInstance_metaAttribute_override()[pri:0, instance:org.genericsystem.mutability.AutomaticMetaAttributeCreationTest@71be98f5]" name="test007_setInstance_metaAttribute_override" duration-ms="25" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test007_setInstance_metaAttribute_override -->
+        <test-method status="PASS" signature="test008_setInstance_metaAttribute_override()[pri:0, instance:org.genericsystem.mutability.AutomaticMetaAttributeCreationTest@71be98f5]" name="test008_setInstance_metaAttribute_override" duration-ms="25" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test008_setInstance_metaAttribute_override -->
+      </class> <!-- org.genericsystem.mutability.AutomaticMetaAttributeCreationTest -->
+      <class name="org.genericsystem.mutability.AncestorsServiceTest">
+        <test-method status="PASS" signature="isAncestorOfByInheritence()[pri:0, instance:org.genericsystem.mutability.AncestorsServiceTest@7a0ac6e3]" name="isAncestorOfByInheritence" duration-ms="18" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- isAncestorOfByInheritence -->
+        <test-method status="PASS" signature="isAncestorOfByInheritenceSimpleConfiguration()[pri:0, instance:org.genericsystem.mutability.AncestorsServiceTest@7a0ac6e3]" name="isAncestorOfByInheritenceSimpleConfiguration" duration-ms="9" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- isAncestorOfByInheritenceSimpleConfiguration -->
+        <test-method status="PASS" signature="isAncestorOfViaComponent()[pri:0, instance:org.genericsystem.mutability.AncestorsServiceTest@7a0ac6e3]" name="isAncestorOfViaComponent" duration-ms="21" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- isAncestorOfViaComponent -->
+        <test-method status="PASS" signature="isAncestorOfViaComposite()[pri:0, instance:org.genericsystem.mutability.AncestorsServiceTest@7a0ac6e3]" name="isAncestorOfViaComposite" duration-ms="13" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- isAncestorOfViaComposite -->
+      </class> <!-- org.genericsystem.mutability.AncestorsServiceTest -->
+      <class name="org.genericsystem.mutability.NotRemovableTestManyCaches">
+        <test-method status="PASS" signature="test001_aliveEx()[pri:0, instance:org.genericsystem.mutability.NotRemovableTestManyCaches@880ec60]" name="test001_aliveEx" duration-ms="5" started-at="2015-02-28T10:35:56Z" finished-at="2015-02-28T10:35:56Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_aliveEx -->
+      </class> <!-- org.genericsystem.mutability.NotRemovableTestManyCaches -->
+      <class name="org.genericsystem.mutability.AttributesTest">
+        <test-method status="PASS" signature="test1Attribut()[pri:0, instance:org.genericsystem.mutability.AttributesTest@67b64c45]" name="test1Attribut" duration-ms="5" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test1Attribut -->
+        <test-method status="PASS" signature="test1AttributWith2LevelsInheritance1AttributOnFistChild()[pri:0, instance:org.genericsystem.mutability.AttributesTest@67b64c45]" name="test1AttributWith2LevelsInheritance1AttributOnFistChild" duration-ms="9" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test1AttributWith2LevelsInheritance1AttributOnFistChild -->
+        <test-method status="PASS" signature="test1AttributWith2LevelsInheritance1AttributOnParent()[pri:0, instance:org.genericsystem.mutability.AttributesTest@67b64c45]" name="test1AttributWith2LevelsInheritance1AttributOnParent" duration-ms="10" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test1AttributWith2LevelsInheritance1AttributOnParent -->
+        <test-method status="PASS" signature="test1AttributWith2LevelsInheritance2ChildrenAt2ndLevel1AttributOnLevel1FirstChild()[pri:0, instance:org.genericsystem.mutability.AttributesTest@67b64c45]" name="test1AttributWith2LevelsInheritance2ChildrenAt2ndLevel1AttributOnLevel1FirstChild" duration-ms="12" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test1AttributWith2LevelsInheritance2ChildrenAt2ndLevel1AttributOnLevel1FirstChild -->
+        <test-method status="PASS" signature="test1AttributWith2LevelsInheritance2ChildrenAt2ndLevel1AttributOnLevel1SecondChild()[pri:0, instance:org.genericsystem.mutability.AttributesTest@67b64c45]" name="test1AttributWith2LevelsInheritance2ChildrenAt2ndLevel1AttributOnLevel1SecondChild" duration-ms="12" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test1AttributWith2LevelsInheritance2ChildrenAt2ndLevel1AttributOnLevel1SecondChild -->
+        <test-method status="PASS" signature="test1AttributWith2LevelsInheritance2ChildrenAt2ndLevel1AttributOnParent()[pri:0, instance:org.genericsystem.mutability.AttributesTest@67b64c45]" name="test1AttributWith2LevelsInheritance2ChildrenAt2ndLevel1AttributOnParent" duration-ms="12" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test1AttributWith2LevelsInheritance2ChildrenAt2ndLevel1AttributOnParent -->
+        <test-method status="PASS" signature="test1AttributWith3LevelsInheritance1AttributFirstChild1AttributOnSecondChild()[pri:0, instance:org.genericsystem.mutability.AttributesTest@67b64c45]" name="test1AttributWith3LevelsInheritance1AttributFirstChild1AttributOnSecondChild" duration-ms="14" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test1AttributWith3LevelsInheritance1AttributFirstChild1AttributOnSecondChild -->
+        <test-method status="PASS" signature="test1AttributWith3LevelsInheritance1AttributOnFirstChild()[pri:0, instance:org.genericsystem.mutability.AttributesTest@67b64c45]" name="test1AttributWith3LevelsInheritance1AttributOnFirstChild" duration-ms="12" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test1AttributWith3LevelsInheritance1AttributOnFirstChild -->
+        <test-method status="PASS" signature="test1AttributWith3LevelsInheritance1AttributOnParent()[pri:0, instance:org.genericsystem.mutability.AttributesTest@67b64c45]" name="test1AttributWith3LevelsInheritance1AttributOnParent" duration-ms="12" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test1AttributWith3LevelsInheritance1AttributOnParent -->
+        <test-method status="PASS" signature="test1AttributWith3LevelsInheritance1AttributOnParent1AttributOnFirstChild()[pri:0, instance:org.genericsystem.mutability.AttributesTest@67b64c45]" name="test1AttributWith3LevelsInheritance1AttributOnParent1AttributOnFirstChild" duration-ms="14" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test1AttributWith3LevelsInheritance1AttributOnParent1AttributOnFirstChild -->
+        <test-method status="PASS" signature="test1AttributWith3LevelsInheritance1AttributOnParent1AttributOnSecondChild()[pri:0, instance:org.genericsystem.mutability.AttributesTest@67b64c45]" name="test1AttributWith3LevelsInheritance1AttributOnParent1AttributOnSecondChild" duration-ms="13" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test1AttributWith3LevelsInheritance1AttributOnParent1AttributOnSecondChild -->
+        <test-method status="PASS" signature="test1AttributWith3LevelsInheritance1AttributOnSecondChild()[pri:0, instance:org.genericsystem.mutability.AttributesTest@67b64c45]" name="test1AttributWith3LevelsInheritance1AttributOnSecondChild" duration-ms="12" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test1AttributWith3LevelsInheritance1AttributOnSecondChild -->
+        <test-method status="PASS" signature="test1AttributWith3LevelsInheritance2AttributFirstChild()[pri:0, instance:org.genericsystem.mutability.AttributesTest@67b64c45]" name="test1AttributWith3LevelsInheritance2AttributFirstChild" duration-ms="13" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test1AttributWith3LevelsInheritance2AttributFirstChild -->
+        <test-method status="PASS" signature="test1AttributWith3LevelsInheritance2AttributOnParent()[pri:0, instance:org.genericsystem.mutability.AttributesTest@67b64c45]" name="test1AttributWith3LevelsInheritance2AttributOnParent" duration-ms="25" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test1AttributWith3LevelsInheritance2AttributOnParent -->
+        <test-method status="PASS" signature="test1AttributWith3LevelsInheritance2AttributOnSecondChild()[pri:0, instance:org.genericsystem.mutability.AttributesTest@67b64c45]" name="test1AttributWith3LevelsInheritance2AttributOnSecondChild" duration-ms="15" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test1AttributWith3LevelsInheritance2AttributOnSecondChild -->
+        <test-method status="PASS" signature="test1AttributWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel1AttributLevel1FistChild()[pri:0, instance:org.genericsystem.mutability.AttributesTest@67b64c45]" name="test1AttributWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel1AttributLevel1FistChild" duration-ms="14" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test1AttributWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel1AttributLevel1FistChild -->
+        <test-method status="PASS" signature="test1AttributWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel1AttributLevel1SecondChild()[pri:0, instance:org.genericsystem.mutability.AttributesTest@67b64c45]" name="test1AttributWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel1AttributLevel1SecondChild" duration-ms="13" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test1AttributWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel1AttributLevel1SecondChild -->
+        <test-method status="PASS" signature="test1AttributWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel1AttributLevel2Child1()[pri:0, instance:org.genericsystem.mutability.AttributesTest@67b64c45]" name="test1AttributWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel1AttributLevel2Child1" duration-ms="13" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test1AttributWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel1AttributLevel2Child1 -->
+        <test-method status="PASS" signature="test1AttributWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel1AttributOnParent()[pri:0, instance:org.genericsystem.mutability.AttributesTest@67b64c45]" name="test1AttributWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel1AttributOnParent" duration-ms="14" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test1AttributWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel1AttributOnParent -->
+        <test-method status="PASS" signature="test2Attributs()[pri:0, instance:org.genericsystem.mutability.AttributesTest@67b64c45]" name="test2Attributs" duration-ms="9" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test2Attributs -->
+        <test-method status="PASS" signature="test2AttributsWith2LevelsInheritance1AttributOnParentAnd1AttributOnFistChild()[pri:0, instance:org.genericsystem.mutability.AttributesTest@67b64c45]" name="test2AttributsWith2LevelsInheritance1AttributOnParentAnd1AttributOnFistChild" duration-ms="11" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test2AttributsWith2LevelsInheritance1AttributOnParentAnd1AttributOnFistChild -->
+        <test-method status="PASS" signature="test2AttributsWith2LevelsInheritance2AttributsOnFistChild()[pri:0, instance:org.genericsystem.mutability.AttributesTest@67b64c45]" name="test2AttributsWith2LevelsInheritance2AttributsOnFistChild" duration-ms="11" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test2AttributsWith2LevelsInheritance2AttributsOnFistChild -->
+        <test-method status="PASS" signature="test2AttributsWith2LevelsInheritance2AttributsOnParent()[pri:0, instance:org.genericsystem.mutability.AttributesTest@67b64c45]" name="test2AttributsWith2LevelsInheritance2AttributsOnParent" duration-ms="11" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test2AttributsWith2LevelsInheritance2AttributsOnParent -->
+        <test-method status="PASS" signature="test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsLevel1FirstChild()[pri:0, instance:org.genericsystem.mutability.AttributesTest@67b64c45]" name="test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsLevel1FirstChild" duration-ms="16" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsLevel1FirstChild -->
+        <test-method status="PASS" signature="test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsLevel1SecondChild()[pri:0, instance:org.genericsystem.mutability.AttributesTest@67b64c45]" name="test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsLevel1SecondChild" duration-ms="17" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsLevel1SecondChild -->
+        <test-method status="PASS" signature="test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsLevel2()[pri:0, instance:org.genericsystem.mutability.AttributesTest@67b64c45]" name="test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsLevel2" duration-ms="15" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsLevel2 -->
+        <test-method status="PASS" signature="test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsOnParent()[pri:0, instance:org.genericsystem.mutability.AttributesTest@67b64c45]" name="test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsOnParent" duration-ms="18" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsOnParent -->
+      </class> <!-- org.genericsystem.mutability.AttributesTest -->
+      <class name="org.genericsystem.mutability.VertexTest">
+        <test-method status="PASS" signature="test001_getInheritings()[pri:0, instance:org.genericsystem.mutability.VertexTest@2acf57e3]" name="test001_getInheritings" duration-ms="6" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_getInheritings -->
+        <test-method status="PASS" signature="test001_getInstances()[pri:0, instance:org.genericsystem.mutability.VertexTest@2acf57e3]" name="test001_getInstances" duration-ms="9" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_getInstances -->
+        <test-method status="PASS" signature="test001_getMetaComponents()[pri:0, instance:org.genericsystem.mutability.VertexTest@2acf57e3]" name="test001_getMetaComponents" duration-ms="7" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_getMetaComponents -->
+        <test-method status="PASS" signature="test001_getSuperComponents()[pri:0, instance:org.genericsystem.mutability.VertexTest@2acf57e3]" name="test001_getSuperComponents" duration-ms="6" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_getSuperComponents -->
+        <test-method status="PASS" signature="test002_getSuperComponents()[pri:0, instance:org.genericsystem.mutability.VertexTest@2acf57e3]" name="test002_getSuperComponents" duration-ms="10" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test002_getSuperComponents -->
+        <test-method status="PASS" signature="test10()[pri:0, instance:org.genericsystem.mutability.VertexTest@2acf57e3]" name="test10" duration-ms="4" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test10 -->
+        <test-method status="PASS" signature="test11()[pri:0, instance:org.genericsystem.mutability.VertexTest@2acf57e3]" name="test11" duration-ms="5" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test11 -->
+        <test-method status="PASS" signature="test3()[pri:0, instance:org.genericsystem.mutability.VertexTest@2acf57e3]" name="test3" duration-ms="10" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test3 -->
+        <test-method status="PASS" signature="test4()[pri:0, instance:org.genericsystem.mutability.VertexTest@2acf57e3]" name="test4" duration-ms="10" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test4 -->
+        <test-method status="PASS" signature="test5()[pri:0, instance:org.genericsystem.mutability.VertexTest@2acf57e3]" name="test5" duration-ms="10" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test5 -->
+        <test-method status="PASS" signature="test6()[pri:0, instance:org.genericsystem.mutability.VertexTest@2acf57e3]" name="test6" duration-ms="12" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test6 -->
+        <test-method status="PASS" signature="test7()[pri:0, instance:org.genericsystem.mutability.VertexTest@2acf57e3]" name="test7" duration-ms="11" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test7 -->
+        <test-method status="PASS" signature="test8()[pri:0, instance:org.genericsystem.mutability.VertexTest@2acf57e3]" name="test8" duration-ms="15" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test8 -->
+        <test-method status="PASS" signature="test9()[pri:0, instance:org.genericsystem.mutability.VertexTest@2acf57e3]" name="test9" duration-ms="13" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test9 -->
+      </class> <!-- org.genericsystem.mutability.VertexTest -->
+      <class name="org.genericsystem.mutability.NotRemovableTestOneCache">
+        <test-method status="PASS" signature="test001_aliveEx()[pri:0, instance:org.genericsystem.mutability.NotRemovableTestOneCache@6fadae5d]" name="test001_aliveEx" duration-ms="7" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_aliveEx -->
+        <test-method status="PASS" signature="test002_aliveEx()[pri:0, instance:org.genericsystem.mutability.NotRemovableTestOneCache@6fadae5d]" name="test002_aliveEx" duration-ms="8" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test002_aliveEx -->
+        <test-method status="PASS" signature="test002_referenceEx()[pri:0, instance:org.genericsystem.mutability.NotRemovableTestOneCache@6fadae5d]" name="test002_referenceEx" duration-ms="6" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test002_referenceEx -->
+        <test-method status="PASS" signature="test003_referenceEx()[pri:0, instance:org.genericsystem.mutability.NotRemovableTestOneCache@6fadae5d]" name="test003_referenceEx" duration-ms="7" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test003_referenceEx -->
+      </class> <!-- org.genericsystem.mutability.NotRemovableTestOneCache -->
+      <class name="org.genericsystem.mutability.IteratorAndRemoveTest">
+        <test-method status="PASS" signature="test002_IterateAndRemove()[pri:0, instance:org.genericsystem.mutability.IteratorAndRemoveTest@b684286]" name="test002_IterateAndRemove" duration-ms="5" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test002_IterateAndRemove -->
+        <test-method status="PASS" signature="test004_IterateAndRemoveInLoop_beforeFindIt()[pri:0, instance:org.genericsystem.mutability.IteratorAndRemoveTest@b684286]" name="test004_IterateAndRemoveInLoop_beforeFindIt" duration-ms="5" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test004_IterateAndRemoveInLoop_beforeFindIt -->
+        <test-method status="PASS" signature="test005_IterateAndRemoveInLoop_beforeFindIt()[pri:0, instance:org.genericsystem.mutability.IteratorAndRemoveTest@b684286]" name="test005_IterateAndRemoveInLoop_beforeFindIt" duration-ms="4" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test005_IterateAndRemoveInLoop_beforeFindIt -->
+        <test-method status="PASS" signature="test006_IterateAndRemoveInLoop_attributes()[pri:0, instance:org.genericsystem.mutability.IteratorAndRemoveTest@b684286]" name="test006_IterateAndRemoveInLoop_attributes" duration-ms="4" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test006_IterateAndRemoveInLoop_attributes -->
+        <test-method status="PASS" signature="test007_IterateAndRemoveInLoop_attributes()[pri:0, instance:org.genericsystem.mutability.IteratorAndRemoveTest@b684286]" name="test007_IterateAndRemoveInLoop_attributes" duration-ms="4" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test007_IterateAndRemoveInLoop_attributes -->
+      </class> <!-- org.genericsystem.mutability.IteratorAndRemoveTest -->
+      <class name="org.genericsystem.mutability.ClassFinderTest">
+        <test-method status="PASS" signature="test1()[pri:0, instance:org.genericsystem.mutability.ClassFinderTest@7e0ea639]" name="test1" duration-ms="16" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test1 -->
+        <test-method status="PASS" signature="test10()[pri:0, instance:org.genericsystem.mutability.ClassFinderTest@7e0ea639]" name="test10" duration-ms="7" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test10 -->
+        <test-method status="PASS" signature="test11()[pri:0, instance:org.genericsystem.mutability.ClassFinderTest@7e0ea639]" name="test11" duration-ms="5" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test11 -->
+        <test-method status="PASS" signature="test2()[pri:0, instance:org.genericsystem.mutability.ClassFinderTest@7e0ea639]" name="test2" duration-ms="12" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test2 -->
+        <test-method status="PASS" signature="test5()[pri:0, instance:org.genericsystem.mutability.ClassFinderTest@7e0ea639]" name="test5" duration-ms="11" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test5 -->
+        <test-method status="PASS" signature="test6()[pri:0, instance:org.genericsystem.mutability.ClassFinderTest@7e0ea639]" name="test6" duration-ms="31" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test6 -->
+        <test-method status="PASS" signature="test7()[pri:0, instance:org.genericsystem.mutability.ClassFinderTest@7e0ea639]" name="test7" duration-ms="21" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test7 -->
+        <test-method status="PASS" signature="test8()[pri:0, instance:org.genericsystem.mutability.ClassFinderTest@7e0ea639]" name="test8" duration-ms="21" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test8 -->
+        <test-method status="PASS" signature="test9()[pri:0, instance:org.genericsystem.mutability.ClassFinderTest@7e0ea639]" name="test9" duration-ms="19" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test9 -->
+      </class> <!-- org.genericsystem.mutability.ClassFinderTest -->
+      <class name="org.genericsystem.mutability.SystemPropertiesTest">
+        <test-method status="PASS" signature="test001_enableConstraint()[pri:0, instance:org.genericsystem.mutability.SystemPropertiesTest@36d64342]" name="test001_enableConstraint" duration-ms="16" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:55Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_enableConstraint -->
+        <test-method status="PASS" signature="test002_inheritedConstraint()[pri:0, instance:org.genericsystem.mutability.SystemPropertiesTest@36d64342]" name="test002_inheritedConstraint" duration-ms="24" started-at="2015-02-28T10:35:55Z" finished-at="2015-02-28T10:35:56Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test002_inheritedConstraint -->
+        <test-method status="PASS" signature="test003_inheritedModifiedConstraint()[pri:0, instance:org.genericsystem.mutability.SystemPropertiesTest@36d64342]" name="test003_inheritedModifiedConstraint" duration-ms="15" started-at="2015-02-28T10:35:56Z" finished-at="2015-02-28T10:35:56Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test003_inheritedModifiedConstraint -->
+      </class> <!-- org.genericsystem.mutability.SystemPropertiesTest -->
+      <class name="org.genericsystem.mutability.UpdatableServiceTest">
+        <test-method status="PASS" signature="test001_setValue_Type()[pri:0, instance:org.genericsystem.mutability.UpdatableServiceTest@60f82f98]" name="test001_setValue_Type" duration-ms="4" started-at="2015-02-28T10:35:56Z" finished-at="2015-02-28T10:35:56Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_setValue_Type -->
+        <test-method status="PASS" signature="test003_setValue_InstanceOfType()[pri:0, instance:org.genericsystem.mutability.UpdatableServiceTest@60f82f98]" name="test003_setValue_InstanceOfType" duration-ms="4" started-at="2015-02-28T10:35:56Z" finished-at="2015-02-28T10:35:56Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test003_setValue_InstanceOfType -->
+        <test-method status="PASS" signature="test004_setValue_noCollateralDommage()[pri:0, instance:org.genericsystem.mutability.UpdatableServiceTest@60f82f98]" name="test004_setValue_noCollateralDommage" duration-ms="4" started-at="2015-02-28T10:35:56Z" finished-at="2015-02-28T10:35:56Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test004_setValue_noCollateralDommage -->
+        <test-method status="PASS" signature="test007_setValue_Type()[pri:0, instance:org.genericsystem.mutability.UpdatableServiceTest@60f82f98]" name="test007_setValue_Type" duration-ms="3" started-at="2015-02-28T10:35:56Z" finished-at="2015-02-28T10:35:56Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test007_setValue_Type -->
+        <test-method status="PASS" signature="test020_setValue_Inheritance()[pri:0, instance:org.genericsystem.mutability.UpdatableServiceTest@60f82f98]" name="test020_setValue_Inheritance" duration-ms="4" started-at="2015-02-28T10:35:56Z" finished-at="2015-02-28T10:35:56Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test020_setValue_Inheritance -->
+        <test-method status="PASS" signature="test040_setValue_Composite()[pri:0, instance:org.genericsystem.mutability.UpdatableServiceTest@60f82f98]" name="test040_setValue_Composite" duration-ms="4" started-at="2015-02-28T10:35:56Z" finished-at="2015-02-28T10:35:56Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test040_setValue_Composite -->
+        <test-method status="PASS" signature="test060_setValue_Type_Inheritance_Composite()[pri:0, instance:org.genericsystem.mutability.UpdatableServiceTest@60f82f98]" name="test060_setValue_Type_Inheritance_Composite" duration-ms="5" started-at="2015-02-28T10:35:56Z" finished-at="2015-02-28T10:35:56Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test060_setValue_Type_Inheritance_Composite -->
+        <test-method status="PASS" signature="test100_addSuper_Type()[pri:0, instance:org.genericsystem.mutability.UpdatableServiceTest@60f82f98]" name="test100_addSuper_Type" duration-ms="3" started-at="2015-02-28T10:35:56Z" finished-at="2015-02-28T10:35:56Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test100_addSuper_Type -->
+        <test-method status="PASS" signature="test101_addSuper_TypeBetweenTwoTypes()[pri:0, instance:org.genericsystem.mutability.UpdatableServiceTest@60f82f98]" name="test101_addSuper_TypeBetweenTwoTypes" duration-ms="5" started-at="2015-02-28T10:35:56Z" finished-at="2015-02-28T10:35:56Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test101_addSuper_TypeBetweenTwoTypes -->
+        <test-method status="PASS" signature="test102_addSuper_AlreadySuper()[pri:0, instance:org.genericsystem.mutability.UpdatableServiceTest@60f82f98]" name="test102_addSuper_AlreadySuper" duration-ms="4" started-at="2015-02-28T10:35:56Z" finished-at="2015-02-28T10:35:56Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test102_addSuper_AlreadySuper -->
+        <test-method status="PASS" signature="test103_addSuper_NoRegressionOnDataModel()[pri:0, instance:org.genericsystem.mutability.UpdatableServiceTest@60f82f98]" name="test103_addSuper_NoRegressionOnDataModel" duration-ms="13" started-at="2015-02-28T10:35:56Z" finished-at="2015-02-28T10:35:56Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test103_addSuper_NoRegressionOnDataModel -->
+        <test-method status="PASS" signature="test200_replaceComposite()[pri:0, instance:org.genericsystem.mutability.UpdatableServiceTest@60f82f98]" name="test200_replaceComposite" duration-ms="9" started-at="2015-02-28T10:35:56Z" finished-at="2015-02-28T10:35:56Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test200_replaceComposite -->
+        <test-method status="PASS" signature="test201_replaceComposite_KO()[pri:0, instance:org.genericsystem.mutability.UpdatableServiceTest@60f82f98]" name="test201_replaceComposite_KO" duration-ms="8" started-at="2015-02-28T10:35:56Z" finished-at="2015-02-28T10:35:56Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test201_replaceComposite_KO -->
+        <test-method status="PASS" signature="test300_replaceCompositeWithValueModification()[pri:0, instance:org.genericsystem.mutability.UpdatableServiceTest@60f82f98]" name="test300_replaceCompositeWithValueModification" duration-ms="7" started-at="2015-02-28T10:35:56Z" finished-at="2015-02-28T10:35:56Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test300_replaceCompositeWithValueModification -->
+        <test-method status="PASS" signature="test301_replaceCompositeWithValueModification()[pri:0, instance:org.genericsystem.mutability.UpdatableServiceTest@60f82f98]" name="test301_replaceCompositeWithValueModification" duration-ms="7" started-at="2015-02-28T10:35:56Z" finished-at="2015-02-28T10:35:56Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test301_replaceCompositeWithValueModification -->
+      </class> <!-- org.genericsystem.mutability.UpdatableServiceTest -->
+      <class name="org.genericsystem.mutability.RemoveOneCacheTest">
+        <test-method status="PASS" signature="test001_simpleHolder()[pri:0, instance:org.genericsystem.mutability.RemoveOneCacheTest@3d24753a]" name="test001_simpleHolder" duration-ms="11" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_simpleHolder -->
+        <test-method status="PASS" signature="test002_multipleHolders()[pri:0, instance:org.genericsystem.mutability.RemoveOneCacheTest@3d24753a]" name="test002_multipleHolders" duration-ms="13" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test002_multipleHolders -->
+        <test-method status="PASS" signature="test002_simpleHolder()[pri:0, instance:org.genericsystem.mutability.RemoveOneCacheTest@3d24753a]" name="test002_simpleHolder" duration-ms="11" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test002_simpleHolder -->
+        <test-method status="PASS" signature="test003_multipleHolders()[pri:0, instance:org.genericsystem.mutability.RemoveOneCacheTest@3d24753a]" name="test003_multipleHolders" duration-ms="12" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test003_multipleHolders -->
+        <test-method status="PASS" signature="test003_removeAndAdd()[pri:0, instance:org.genericsystem.mutability.RemoveOneCacheTest@3d24753a]" name="test003_removeAndAdd" duration-ms="12" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test003_removeAndAdd -->
+        <test-method status="PASS" signature="test004_removeAndAddAndRemove()[pri:0, instance:org.genericsystem.mutability.RemoveOneCacheTest@3d24753a]" name="test004_removeAndAddAndRemove" duration-ms="12" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test004_removeAndAddAndRemove -->
+        <test-method status="PASS" signature="test005_removeAndAddAndRemove()[pri:0, instance:org.genericsystem.mutability.RemoveOneCacheTest@3d24753a]" name="test005_removeAndAddAndRemove" duration-ms="11" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test005_removeAndAddAndRemove -->
+        <test-method status="PASS" signature="test005_removeConcret_withHolder()[pri:0, instance:org.genericsystem.mutability.RemoveOneCacheTest@3d24753a]" name="test005_removeConcret_withHolder" duration-ms="7" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test005_removeConcret_withHolder -->
+        <test-method status="PASS" signature="test006_removeStructural_withHolder()[pri:0, instance:org.genericsystem.mutability.RemoveOneCacheTest@3d24753a]" name="test006_removeStructural_withHolder" duration-ms="7" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test006_removeStructural_withHolder -->
+      </class> <!-- org.genericsystem.mutability.RemoveOneCacheTest -->
+      <class name="org.genericsystem.mutability.UpdateTest">
+        <test-method status="PASS" signature="test001_dependencies()[pri:0, instance:org.genericsystem.mutability.UpdateTest@59a6e353]" name="test001_dependencies" duration-ms="13" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_dependencies -->
+        <test-method status="PASS" signature="test001_fusion()[pri:0, instance:org.genericsystem.mutability.UpdateTest@59a6e353]" name="test001_fusion" duration-ms="8" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_fusion -->
+        <test-method status="PASS" signature="test001_pickNewTs()[pri:0, instance:org.genericsystem.mutability.UpdateTest@59a6e353]" name="test001_pickNewTs" duration-ms="10" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_pickNewTs -->
+        <test-method status="PASS" signature="test001_removeAndAdd()[pri:0, instance:org.genericsystem.mutability.UpdateTest@59a6e353]" name="test001_removeAndAdd" duration-ms="7" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_removeAndAdd -->
+        <test-method status="PASS" signature="test001_updateValue()[pri:0, instance:org.genericsystem.mutability.UpdateTest@59a6e353]" name="test001_updateValue" duration-ms="5" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_updateValue -->
+        <test-method status="PASS" signature="test002_clear()[pri:0, instance:org.genericsystem.mutability.UpdateTest@59a6e353]" name="test002_clear" duration-ms="6" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test002_clear -->
+        <test-method status="PASS" signature="test002_update()[pri:0, instance:org.genericsystem.mutability.UpdateTest@59a6e353]" name="test002_update" duration-ms="10" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test002_update -->
+        <test-method status="PASS" signature="test003_update()[pri:0, instance:org.genericsystem.mutability.UpdateTest@59a6e353]" name="test003_update" duration-ms="5" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test003_update -->
+      </class> <!-- org.genericsystem.mutability.UpdateTest -->
+      <class name="org.genericsystem.mutability.CacheTest">
+        <test-method status="PASS" signature="test000()[pri:0, instance:org.genericsystem.mutability.CacheTest@7f63425a]" name="test000" duration-ms="4" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test000 -->
+        <test-method status="PASS" signature="test001()[pri:0, instance:org.genericsystem.mutability.CacheTest@7f63425a]" name="test001" duration-ms="3" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001 -->
+        <test-method status="PASS" signature="test001_getInheritings()[pri:0, instance:org.genericsystem.mutability.CacheTest@7f63425a]" name="test001_getInheritings" duration-ms="17" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_getInheritings -->
+        <test-method status="PASS" signature="test001_getInstances()[pri:0, instance:org.genericsystem.mutability.CacheTest@7f63425a]" name="test001_getInstances" duration-ms="7" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_getInstances -->
+        <test-method status="PASS" signature="test001_getMetaComponents()[pri:0, instance:org.genericsystem.mutability.CacheTest@7f63425a]" name="test001_getMetaComponents" duration-ms="6" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_getMetaComponents -->
+        <test-method status="PASS" signature="test001_getSuperComponents()[pri:0, instance:org.genericsystem.mutability.CacheTest@7f63425a]" name="test001_getSuperComponents" duration-ms="7" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_getSuperComponents -->
+        <test-method status="PASS" signature="test002()[pri:0, instance:org.genericsystem.mutability.CacheTest@7f63425a]" name="test002" duration-ms="3" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test002 -->
+        <test-method status="PASS" signature="test0021()[pri:0, instance:org.genericsystem.mutability.CacheTest@7f63425a]" name="test0021" duration-ms="3" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test0021 -->
+        <test-method status="PASS" signature="test002_clear()[pri:0, instance:org.genericsystem.mutability.CacheTest@7f63425a]" name="test002_clear" duration-ms="5" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test002_clear -->
+        <test-method status="PASS" signature="test002_flush()[pri:0, instance:org.genericsystem.mutability.CacheTest@7f63425a]" name="test002_flush" duration-ms="4" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test002_flush -->
+        <test-method status="PASS" signature="test002_getSuperComponents()[pri:0, instance:org.genericsystem.mutability.CacheTest@7f63425a]" name="test002_getSuperComponents" duration-ms="11" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test002_getSuperComponents -->
+        <test-method status="PASS" signature="test002_mountNewCache()[pri:0, instance:org.genericsystem.mutability.CacheTest@7f63425a]" name="test002_mountNewCache" duration-ms="3" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test002_mountNewCache -->
+        <test-method status="PASS" signature="test003()[pri:0, instance:org.genericsystem.mutability.CacheTest@7f63425a]" name="test003" duration-ms="3" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test003 -->
+        <test-method status="PASS" signature="test0031()[pri:0, instance:org.genericsystem.mutability.CacheTest@7f63425a]" name="test0031" duration-ms="3" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test0031 -->
+        <test-method status="PASS" signature="test004()[pri:0, instance:org.genericsystem.mutability.CacheTest@7f63425a]" name="test004" duration-ms="3" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test004 -->
+        <test-method status="PASS" signature="test0041()[pri:0, instance:org.genericsystem.mutability.CacheTest@7f63425a]" name="test0041" duration-ms="3" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test0041 -->
+        <test-method status="PASS" signature="test005()[pri:0, instance:org.genericsystem.mutability.CacheTest@7f63425a]" name="test005" duration-ms="3" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test005 -->
+        <test-method status="PASS" signature="test005_TwoComponentsWithSameMetaInDifferentCaches_remove()[pri:0, instance:org.genericsystem.mutability.CacheTest@7f63425a]" name="test005_TwoComponentsWithSameMetaInDifferentCaches_remove" duration-ms="4" started-at="2015-02-28T10:35:54Z" finished-at="2015-02-28T10:35:54Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test005_TwoComponentsWithSameMetaInDifferentCaches_remove -->
+      </class> <!-- org.genericsystem.mutability.CacheTest -->
+      <class name="org.genericsystem.mutability.UpdateWithCacheTest">
+        <test-method status="PASS" signature="test004_updateHolder()[pri:0, instance:org.genericsystem.mutability.UpdateWithCacheTest@6442b0a6]" name="test004_updateHolder" duration-ms="19" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test004_updateHolder -->
+        <test-method status="PASS" signature="test005_updateSuper()[pri:0, instance:org.genericsystem.mutability.UpdateWithCacheTest@6442b0a6]" name="test005_updateSuper" duration-ms="10" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test005_updateSuper -->
+        <test-method status="PASS" signature="test006_attributeToRelation()[pri:0, instance:org.genericsystem.mutability.UpdateWithCacheTest@6442b0a6]" name="test006_attributeToRelation" duration-ms="39" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test006_attributeToRelation -->
+        <test-method status="PASS" signature="test007_simulateRollback()[pri:0, instance:org.genericsystem.mutability.UpdateWithCacheTest@6442b0a6]" name="test007_simulateRollback" duration-ms="10" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test007_simulateRollback -->
+        <test-method status="PASS" signature="test007_structurel_WithInheritings_AndInstances()[pri:0, instance:org.genericsystem.mutability.UpdateWithCacheTest@6442b0a6]" name="test007_structurel_WithInheritings_AndInstances" duration-ms="19" started-at="2015-02-28T10:35:53Z" finished-at="2015-02-28T10:35:53Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test007_structurel_WithInheritings_AndInstances -->
+      </class> <!-- org.genericsystem.mutability.UpdateWithCacheTest -->
+      <class name="org.genericsystem.mutability.BindingServiceTest">
+        <test-method status="PASS" signature="test001_addInstance()[pri:0, instance:org.genericsystem.mutability.BindingServiceTest@edf4efb]" name="test001_addInstance" duration-ms="2" started-at="2015-02-28T10:35:56Z" finished-at="2015-02-28T10:35:56Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test001_addInstance -->
+        <test-method status="PASS" signature="test002_addSameValueKO()[pri:0, instance:org.genericsystem.mutability.BindingServiceTest@edf4efb]" name="test002_addSameValueKO" duration-ms="3" started-at="2015-02-28T10:35:56Z" finished-at="2015-02-28T10:35:56Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- test002_addSameValueKO -->
+      </class> <!-- org.genericsystem.mutability.BindingServiceTest -->
+    </test> <!-- Default test -->
+  </suite> <!-- Default suite -->
+</testng-results>

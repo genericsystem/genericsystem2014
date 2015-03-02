@@ -1,0 +1,1279 @@
+<html>
+<head>
+<title>TestNG:  Command line test</title>
+<link href="../testng.css" rel="stylesheet" type="text/css" />
+<link href="../my-testng.css" rel="stylesheet" type="text/css" />
+
+<style type="text/css">
+.log { display: none;} 
+.stack-trace { display: none;} 
+</style>
+<script type="text/javascript">
+<!--
+function flip(e) {
+  current = e.style.display;
+  if (current == 'block') {
+    e.style.display = 'none';
+    return 0;
+  }
+  else {
+    e.style.display = 'block';
+    return 1;
+  }
+}
+
+function toggleBox(szDivId, elem, msg1, msg2)
+{
+  var res = -1;  if (document.getElementById) {
+    res = flip(document.getElementById(szDivId));
+  }
+  else if (document.all) {
+    // this is the way old msie versions work
+    res = flip(document.all[szDivId]);
+  }
+  if(elem) {
+    if(res == 0) elem.innerHTML = msg1; else elem.innerHTML = msg2;
+  }
+
+}
+
+function toggleAllBoxes() {
+  if (document.getElementsByTagName) {
+    d = document.getElementsByTagName('div');
+    for (i = 0; i < d.length; i++) {
+      if (d[i].className == 'log') {
+        flip(d[i]);
+      }
+    }
+  }
+}
+
+// -->
+</script>
+
+</head>
+<body>
+<h2 align='center'>Command line test</h2><table border='1' align="center">
+<tr>
+<td>Tests passed/Failed/Skipped:</td><td>240/0/0</td>
+</tr><tr>
+<td>Started on:</td><td>Mon Mar 02 11:19:20 CET 2015</td>
+</tr>
+<tr><td>Total time:</td><td>2 seconds (2604 ms)</td>
+</tr><tr>
+<td>Included groups:</td><td></td>
+</tr><tr>
+<td>Excluded groups:</td><td></td>
+</tr>
+</table><p/>
+<small><i>(Hover the method name to see the test class name)</i></small><p/>
+<table width='100%' border='1' class='invocation-passed'>
+<tr><td colspan='4' align='center'><b>PASSED TESTS</b></td></tr>
+<tr><td><b>Test method</b></td>
+<td width="30%"><b>Exception</b></td>
+<td width="10%"><b>Time (seconds)</b></td>
+<td><b>Instance</b></td>
+</tr>
+<tr>
+<td title='org.genericsystem.mutability.AncestorsServiceTest.isAncestorOfByInheritence()'><b>isAncestorOfByInheritence</b><br>Test class: org.genericsystem.mutability.AncestorsServiceTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AncestorsServiceTest@7921b0a2</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AncestorsServiceTest.isAncestorOfByInheritenceSimpleConfiguration()'><b>isAncestorOfByInheritenceSimpleConfiguration</b><br>Test class: org.genericsystem.mutability.AncestorsServiceTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AncestorsServiceTest@7921b0a2</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AncestorsServiceTest.isAncestorOfViaComponent()'><b>isAncestorOfViaComponent</b><br>Test class: org.genericsystem.mutability.AncestorsServiceTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AncestorsServiceTest@7921b0a2</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AncestorsServiceTest.isAncestorOfViaComposite()'><b>isAncestorOfViaComposite</b><br>Test class: org.genericsystem.mutability.AncestorsServiceTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AncestorsServiceTest@7921b0a2</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.MultiInheritanceTest.multiInheritance()'><b>multiInheritance</b><br>Test class: org.genericsystem.mutability.MultiInheritanceTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.MultiInheritanceTest@5f375618</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.MultiInheritanceTest.multiInheritanceWithDiamond()'><b>multiInheritanceWithDiamond</b><br>Test class: org.genericsystem.mutability.MultiInheritanceTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.MultiInheritanceTest@5f375618</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.CacheTest.test000()'><b>test000</b><br>Test class: org.genericsystem.mutability.CacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.CacheTest@50c87b21</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AnnotationTest.test000_Generic()'><b>test000_Generic</b><br>Test class: org.genericsystem.mutability.AnnotationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AnnotationTest@6a2bcfcb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RequiredConstraintTest.test000_Inheritance()'><b>test000_Inheritance</b><br>Test class: org.genericsystem.mutability.RequiredConstraintTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RequiredConstraintTest@1efbd816</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.CacheTest.test001()'><b>test001</b><br>Test class: org.genericsystem.mutability.CacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.CacheTest@50c87b21</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.MutabilityTest.test001()'><b>test001</b><br>Test class: org.genericsystem.mutability.MutabilityTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.MutabilityTest@23ceabc1</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.TreeTest.test001()'><b>test001</b><br>Test class: org.genericsystem.mutability.TreeTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.TreeTest@3c756e4d</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AnnotationTest.test001_Generic()'><b>test001_Generic</b><br>Test class: org.genericsystem.mutability.AnnotationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AnnotationTest@6a2bcfcb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RequiredConstraintTest.test001_Inheritance()'><b>test001_Inheritance</b><br>Test class: org.genericsystem.mutability.RequiredConstraintTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RequiredConstraintTest@1efbd816</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.BindingServiceTest.test001_addInstance()'><b>test001_addInstance</b><br>Test class: org.genericsystem.mutability.BindingServiceTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.BindingServiceTest@6d8a00e3</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RelationTest.test001_addInstance_NotAliveException()'><b>test001_addInstance_NotAliveException</b><br>Test class: org.genericsystem.mutability.RelationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RelationTest@6a024a67</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RelationTest.test001_addInstance_NotAliveException_withMetaRelation()'><b>test001_addInstance_NotAliveException_withMetaRelation</b><br>Test class: org.genericsystem.mutability.RelationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RelationTest@6a024a67</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AutomaticMetaAttributeCreationTest.test001_addInstance_metaAttribute()'><b>test001_addInstance_metaAttribute</b><br>Test class: org.genericsystem.mutability.AutomaticMetaAttributeCreationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AutomaticMetaAttributeCreationTest@7c0e2abd</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.NotRemovableTest.test001_aliveEx()'><b>test001_aliveEx</b><br>Test class: org.genericsystem.mutability.NotRemovableTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.NotRemovableTest@6d78f375</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.UpdateTest.test001_dependencies()'><b>test001_dependencies</b><br>Test class: org.genericsystem.mutability.UpdateTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.UpdateTest@32d992b2</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.SystemPropertiesTest.test001_enableConstraint()'><b>test001_enableConstraint</b><br>Test class: org.genericsystem.mutability.SystemPropertiesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.SystemPropertiesTest@402f32ff</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.ReferentialIntegrityConstraintTest.test001_enableReferentialIntegrity_remove()'><b>test001_enableReferentialIntegrity_remove</b><br>Test class: org.genericsystem.mutability.ReferentialIntegrityConstraintTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.ReferentialIntegrityConstraintTest@5ae9a829</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RequiredConstraintTest.test001_enableRequired()'><b>test001_enableRequired</b><br>Test class: org.genericsystem.mutability.RequiredConstraintTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RequiredConstraintTest@1efbd816</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.UpdateTest.test001_fusion()'><b>test001_fusion</b><br>Test class: org.genericsystem.mutability.UpdateTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.UpdateTest@32d992b2</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.CacheTest.test001_getInheritings()'><b>test001_getInheritings</b><br>Test class: org.genericsystem.mutability.CacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.CacheTest@50c87b21</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.VertexTest.test001_getInheritings()'><b>test001_getInheritings</b><br>Test class: org.genericsystem.mutability.VertexTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.VertexTest@66d2e7d9</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.CacheTest.test001_getInstances()'><b>test001_getInstances</b><br>Test class: org.genericsystem.mutability.CacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.CacheTest@50c87b21</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.VertexTest.test001_getInstances()'><b>test001_getInstances</b><br>Test class: org.genericsystem.mutability.VertexTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.VertexTest@66d2e7d9</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.CacheTest.test001_getMetaComponents()'><b>test001_getMetaComponents</b><br>Test class: org.genericsystem.mutability.CacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.CacheTest@50c87b21</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.VertexTest.test001_getMetaComponents()'><b>test001_getMetaComponents</b><br>Test class: org.genericsystem.mutability.VertexTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.VertexTest@66d2e7d9</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.CacheTest.test001_getSuperComponents()'><b>test001_getSuperComponents</b><br>Test class: org.genericsystem.mutability.CacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.CacheTest@50c87b21</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.VertexTest.test001_getSuperComponents()'><b>test001_getSuperComponents</b><br>Test class: org.genericsystem.mutability.VertexTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.VertexTest@66d2e7d9</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AnnotationTest.test001_instanceof()'><b>test001_instanceof</b><br>Test class: org.genericsystem.mutability.AnnotationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AnnotationTest@6a2bcfcb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.UpdateTest.test001_pickNewTs()'><b>test001_pickNewTs</b><br>Test class: org.genericsystem.mutability.UpdateTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.UpdateTest@32d992b2</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AnnotationTest.test001_remove()'><b>test001_remove</b><br>Test class: org.genericsystem.mutability.AnnotationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AnnotationTest@6a2bcfcb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.UpdateTest.test001_removeAndAdd()'><b>test001_removeAndAdd</b><br>Test class: org.genericsystem.mutability.UpdateTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.UpdateTest@32d992b2</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.UpdatableServiceTest.test001_setValue_Type()'><b>test001_setValue_Type</b><br>Test class: org.genericsystem.mutability.UpdatableServiceTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.UpdatableServiceTest@215be6bb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RemoveOneCacheTest.test001_simpleHolder()'><b>test001_simpleHolder</b><br>Test class: org.genericsystem.mutability.RemoveOneCacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RemoveOneCacheTest@4439f31e</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RemoveTest.test001_simpleHolder()'><b>test001_simpleHolder</b><br>Test class: org.genericsystem.mutability.RemoveTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RemoveTest@1810399e</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.UpdateTest.test001_updateValue()'><b>test001_updateValue</b><br>Test class: org.genericsystem.mutability.UpdateTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.UpdateTest@32d992b2</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.CacheTest.test002()'><b>test002</b><br>Test class: org.genericsystem.mutability.CacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.CacheTest@50c87b21</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.MutabilityTest.test002()'><b>test002</b><br>Test class: org.genericsystem.mutability.MutabilityTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.MutabilityTest@23ceabc1</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.TreeTest.test002()'><b>test002</b><br>Test class: org.genericsystem.mutability.TreeTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.TreeTest@3c756e4d</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.CacheTest.test0021()'><b>test0021</b><br>Test class: org.genericsystem.mutability.CacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.CacheTest@50c87b21</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.IteratorAndRemoveTest.test002_IterateAndRemove()'><b>test002_IterateAndRemove</b><br>Test class: org.genericsystem.mutability.IteratorAndRemoveTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.IteratorAndRemoveTest@5dfcfece</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AnnotationTest.test002_SuperGeneric()'><b>test002_SuperGeneric</b><br>Test class: org.genericsystem.mutability.AnnotationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AnnotationTest@6a2bcfcb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RelationTest.test002_addInstance_2composites()'><b>test002_addInstance_2composites</b><br>Test class: org.genericsystem.mutability.RelationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RelationTest@6a024a67</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RelationTest.test002_addInstance_2composites_MetaRelation()'><b>test002_addInstance_2composites_MetaRelation</b><br>Test class: org.genericsystem.mutability.RelationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RelationTest@6a024a67</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AutomaticMetaAttributeCreationTest.test002_addInstance_metaAttribute()'><b>test002_addInstance_metaAttribute</b><br>Test class: org.genericsystem.mutability.AutomaticMetaAttributeCreationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AutomaticMetaAttributeCreationTest@7c0e2abd</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.BindingServiceTest.test002_addSameValueKO()'><b>test002_addSameValueKO</b><br>Test class: org.genericsystem.mutability.BindingServiceTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.BindingServiceTest@6d8a00e3</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.CacheTest.test002_clear()'><b>test002_clear</b><br>Test class: org.genericsystem.mutability.CacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.CacheTest@50c87b21</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.UpdateTest.test002_clear()'><b>test002_clear</b><br>Test class: org.genericsystem.mutability.UpdateTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.UpdateTest@32d992b2</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.ReferentialIntegrityConstraintTest.test002_enableReferentialIntegrity_remove()'><b>test002_enableReferentialIntegrity_remove</b><br>Test class: org.genericsystem.mutability.ReferentialIntegrityConstraintTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.ReferentialIntegrityConstraintTest@5ae9a829</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.CacheTest.test002_flush()'><b>test002_flush</b><br>Test class: org.genericsystem.mutability.CacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.CacheTest@50c87b21</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.CacheTest.test002_getSuperComponents()'><b>test002_getSuperComponents</b><br>Test class: org.genericsystem.mutability.CacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.CacheTest@50c87b21</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.VertexTest.test002_getSuperComponents()'><b>test002_getSuperComponents</b><br>Test class: org.genericsystem.mutability.VertexTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.VertexTest@66d2e7d9</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.SystemPropertiesTest.test002_inheritedConstraint()'><b>test002_inheritedConstraint</b><br>Test class: org.genericsystem.mutability.SystemPropertiesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.SystemPropertiesTest@402f32ff</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AnnotationTest.test002_instanceof()'><b>test002_instanceof</b><br>Test class: org.genericsystem.mutability.AnnotationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AnnotationTest@6a2bcfcb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AnnotationTest.test002_instanceof_getInstances()'><b>test002_instanceof_getInstances</b><br>Test class: org.genericsystem.mutability.AnnotationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AnnotationTest@6a2bcfcb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.CacheTest.test002_mountNewCache()'><b>test002_mountNewCache</b><br>Test class: org.genericsystem.mutability.CacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.CacheTest@50c87b21</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RemoveOneCacheTest.test002_multipleHolders()'><b>test002_multipleHolders</b><br>Test class: org.genericsystem.mutability.RemoveOneCacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RemoveOneCacheTest@4439f31e</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RemoveTest.test002_multipleHolders()'><b>test002_multipleHolders</b><br>Test class: org.genericsystem.mutability.RemoveTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RemoveTest@1810399e</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.NotRemovableTest.test002_referenceEx()'><b>test002_referenceEx</b><br>Test class: org.genericsystem.mutability.NotRemovableTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.NotRemovableTest@6d78f375</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RemoveOneCacheTest.test002_simpleHolder()'><b>test002_simpleHolder</b><br>Test class: org.genericsystem.mutability.RemoveOneCacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RemoveOneCacheTest@4439f31e</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.UpdateTest.test002_update()'><b>test002_update</b><br>Test class: org.genericsystem.mutability.UpdateTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.UpdateTest@32d992b2</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.CacheTest.test003()'><b>test003</b><br>Test class: org.genericsystem.mutability.CacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.CacheTest@50c87b21</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.MutabilityTest.test003()'><b>test003</b><br>Test class: org.genericsystem.mutability.MutabilityTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.MutabilityTest@23ceabc1</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.TreeTest.test003()'><b>test003</b><br>Test class: org.genericsystem.mutability.TreeTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.TreeTest@3c756e4d</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.CacheTest.test0031()'><b>test0031</b><br>Test class: org.genericsystem.mutability.CacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.CacheTest@50c87b21</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AnnotationTest.test003_Attribute()'><b>test003_Attribute</b><br>Test class: org.genericsystem.mutability.AnnotationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AnnotationTest@6a2bcfcb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AutomaticMetaAttributeCreationTest.test003_addInstance_metaAttribute_override()'><b>test003_addInstance_metaAttribute_override</b><br>Test class: org.genericsystem.mutability.AutomaticMetaAttributeCreationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AutomaticMetaAttributeCreationTest@7c0e2abd</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RelationTest.test003_addInstance_reflexiveRelation()'><b>test003_addInstance_reflexiveRelation</b><br>Test class: org.genericsystem.mutability.RelationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RelationTest@6a024a67</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RelationTest.test003_addInstance_reflexiveRelation_MetaRelation()'><b>test003_addInstance_reflexiveRelation_MetaRelation</b><br>Test class: org.genericsystem.mutability.RelationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RelationTest@6a024a67</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.SystemPropertiesTest.test003_inheritedModifiedConstraint()'><b>test003_inheritedModifiedConstraint</b><br>Test class: org.genericsystem.mutability.SystemPropertiesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.SystemPropertiesTest@402f32ff</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AnnotationTest.test003_instanceof()'><b>test003_instanceof</b><br>Test class: org.genericsystem.mutability.AnnotationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AnnotationTest@6a2bcfcb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RemoveOneCacheTest.test003_multipleHolders()'><b>test003_multipleHolders</b><br>Test class: org.genericsystem.mutability.RemoveOneCacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RemoveOneCacheTest@4439f31e</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.NotRemovableTest.test003_referenceEx()'><b>test003_referenceEx</b><br>Test class: org.genericsystem.mutability.NotRemovableTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.NotRemovableTest@6d78f375</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RemoveOneCacheTest.test003_removeAndAdd()'><b>test003_removeAndAdd</b><br>Test class: org.genericsystem.mutability.RemoveOneCacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RemoveOneCacheTest@4439f31e</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RemoveTest.test003_removeAndAdd()'><b>test003_removeAndAdd</b><br>Test class: org.genericsystem.mutability.RemoveTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RemoveTest@1810399e</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.UpdatableServiceTest.test003_setValue_InstanceOfType()'><b>test003_setValue_InstanceOfType</b><br>Test class: org.genericsystem.mutability.UpdatableServiceTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.UpdatableServiceTest@215be6bb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.UpdateTest.test003_update()'><b>test003_update</b><br>Test class: org.genericsystem.mutability.UpdateTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.UpdateTest@32d992b2</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.CacheTest.test004()'><b>test004</b><br>Test class: org.genericsystem.mutability.CacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.CacheTest@50c87b21</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.MutabilityTest.test004()'><b>test004</b><br>Test class: org.genericsystem.mutability.MutabilityTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.MutabilityTest@23ceabc1</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.TreeTest.test004()'><b>test004</b><br>Test class: org.genericsystem.mutability.TreeTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.TreeTest@3c756e4d</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.CacheTest.test0041()'><b>test0041</b><br>Test class: org.genericsystem.mutability.CacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.CacheTest@50c87b21</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AnnotationTest.test004_AttributeValue()'><b>test004_AttributeValue</b><br>Test class: org.genericsystem.mutability.AnnotationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AnnotationTest@6a2bcfcb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.IteratorAndRemoveTest.test004_IterateAndRemoveInLoop_beforeFindIt()'><b>test004_IterateAndRemoveInLoop_beforeFindIt</b><br>Test class: org.genericsystem.mutability.IteratorAndRemoveTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.IteratorAndRemoveTest@5dfcfece</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RelationTest.test004_addInheritsRelation()'><b>test004_addInheritsRelation</b><br>Test class: org.genericsystem.mutability.RelationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RelationTest@6a024a67</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AutomaticMetaAttributeCreationTest.test004_addInstance_metaAttribute_override()'><b>test004_addInstance_metaAttribute_override</b><br>Test class: org.genericsystem.mutability.AutomaticMetaAttributeCreationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AutomaticMetaAttributeCreationTest@7c0e2abd</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.ReferentialIntegrityConstraintTest.test004_enableReferentialIntegrity_remove()'><b>test004_enableReferentialIntegrity_remove</b><br>Test class: org.genericsystem.mutability.ReferentialIntegrityConstraintTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.ReferentialIntegrityConstraintTest@5ae9a829</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AnnotationTest.test004_instanceof()'><b>test004_instanceof</b><br>Test class: org.genericsystem.mutability.AnnotationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AnnotationTest@6a2bcfcb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RemoveOneCacheTest.test004_removeAndAddAndRemove()'><b>test004_removeAndAddAndRemove</b><br>Test class: org.genericsystem.mutability.RemoveOneCacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RemoveOneCacheTest@4439f31e</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RemoveTest.test004_removeAndAddAndRemove()'><b>test004_removeAndAddAndRemove</b><br>Test class: org.genericsystem.mutability.RemoveTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RemoveTest@1810399e</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.UpdatableServiceTest.test004_setValue_noCollateralDommage()'><b>test004_setValue_noCollateralDommage</b><br>Test class: org.genericsystem.mutability.UpdatableServiceTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.UpdatableServiceTest@215be6bb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.UpdateWithCacheTest.test004_updateHolder()'><b>test004_updateHolder</b><br>Test class: org.genericsystem.mutability.UpdateWithCacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.UpdateWithCacheTest@573f2bb1</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.WeakEquivTest.test004_weakEquiv_Relation_SingularConstraintAndReferencialIntegrity_supers()'><b>test004_weakEquiv_Relation_SingularConstraintAndReferencialIntegrity_supers</b><br>Test class: org.genericsystem.mutability.WeakEquivTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.WeakEquivTest@4de8b406</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.CacheTest.test005()'><b>test005</b><br>Test class: org.genericsystem.mutability.CacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.CacheTest@50c87b21</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.TreeTest.test005()'><b>test005</b><br>Test class: org.genericsystem.mutability.TreeTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.TreeTest@3c756e4d</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.IteratorAndRemoveTest.test005_IterateAndRemoveInLoop_beforeFindIt()'><b>test005_IterateAndRemoveInLoop_beforeFindIt</b><br>Test class: org.genericsystem.mutability.IteratorAndRemoveTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.IteratorAndRemoveTest@5dfcfece</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AnnotationTest.test005_SuperAttribute()'><b>test005_SuperAttribute</b><br>Test class: org.genericsystem.mutability.AnnotationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AnnotationTest@6a2bcfcb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.CacheTest.test005_TwoComponentsWithSameMetaInDifferentCaches_remove()'><b>test005_TwoComponentsWithSameMetaInDifferentCaches_remove</b><br>Test class: org.genericsystem.mutability.CacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.CacheTest@50c87b21</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RelationTest.test005_addInheritsRelations_OnSameStructural()'><b>test005_addInheritsRelations_OnSameStructural</b><br>Test class: org.genericsystem.mutability.RelationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RelationTest@6a024a67</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.ReferentialIntegrityConstraintTest.test005_enableReferentialIntegrity_remove()'><b>test005_enableReferentialIntegrity_remove</b><br>Test class: org.genericsystem.mutability.ReferentialIntegrityConstraintTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.ReferentialIntegrityConstraintTest@5ae9a829</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.ReferentialIntegrityConstraintTest.test005_enableReferentialIntegrity_remove2()'><b>test005_enableReferentialIntegrity_remove2</b><br>Test class: org.genericsystem.mutability.ReferentialIntegrityConstraintTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.ReferentialIntegrityConstraintTest@5ae9a829</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.ReferentialIntegrityConstraintTest.test005_enableReferentialIntegrity_remove3()'><b>test005_enableReferentialIntegrity_remove3</b><br>Test class: org.genericsystem.mutability.ReferentialIntegrityConstraintTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.ReferentialIntegrityConstraintTest@5ae9a829</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RemoveOneCacheTest.test005_removeAndAddAndRemove()'><b>test005_removeAndAddAndRemove</b><br>Test class: org.genericsystem.mutability.RemoveOneCacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RemoveOneCacheTest@4439f31e</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RemoveOneCacheTest.test005_removeConcret_withHolder()'><b>test005_removeConcret_withHolder</b><br>Test class: org.genericsystem.mutability.RemoveOneCacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RemoveOneCacheTest@4439f31e</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RemoveTest.test005_removeConcret_withHolder()'><b>test005_removeConcret_withHolder</b><br>Test class: org.genericsystem.mutability.RemoveTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RemoveTest@1810399e</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AutomaticMetaAttributeCreationTest.test005_setInstance_metaAttribute_engine()'><b>test005_setInstance_metaAttribute_engine</b><br>Test class: org.genericsystem.mutability.AutomaticMetaAttributeCreationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AutomaticMetaAttributeCreationTest@7c0e2abd</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.UpdateWithCacheTest.test005_updateSuper()'><b>test005_updateSuper</b><br>Test class: org.genericsystem.mutability.UpdateWithCacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.UpdateWithCacheTest@573f2bb1</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.WeakEquivTest.test005_weakEquiv_Relation_SingularConstraintAndReferencialIntegrity_setInstance()'><b>test005_weakEquiv_Relation_SingularConstraintAndReferencialIntegrity_setInstance</b><br>Test class: org.genericsystem.mutability.WeakEquivTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.WeakEquivTest@4de8b406</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.TreeTest.test006()'><b>test006</b><br>Test class: org.genericsystem.mutability.TreeTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.TreeTest@3c756e4d</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AnnotationTest.test006_AttributeOnAttribute()'><b>test006_AttributeOnAttribute</b><br>Test class: org.genericsystem.mutability.AnnotationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AnnotationTest@6a2bcfcb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.IteratorAndRemoveTest.test006_IterateAndRemoveInLoop_attributes()'><b>test006_IterateAndRemoveInLoop_attributes</b><br>Test class: org.genericsystem.mutability.IteratorAndRemoveTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.IteratorAndRemoveTest@5dfcfece</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.UpdateWithCacheTest.test006_attributeToRelation()'><b>test006_attributeToRelation</b><br>Test class: org.genericsystem.mutability.UpdateWithCacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.UpdateWithCacheTest@573f2bb1</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.ReferentialIntegrityConstraintTest.test006_enableReferentialIntegrity_remove()'><b>test006_enableReferentialIntegrity_remove</b><br>Test class: org.genericsystem.mutability.ReferentialIntegrityConstraintTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.ReferentialIntegrityConstraintTest@5ae9a829</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RelationTest.test006_inherits_different_than_instance()'><b>test006_inherits_different_than_instance</b><br>Test class: org.genericsystem.mutability.RelationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RelationTest@6a024a67</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RemoveOneCacheTest.test006_removeStructural_withHolder()'><b>test006_removeStructural_withHolder</b><br>Test class: org.genericsystem.mutability.RemoveOneCacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RemoveOneCacheTest@4439f31e</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RemoveTest.test006_removeStructural_withHolder()'><b>test006_removeStructural_withHolder</b><br>Test class: org.genericsystem.mutability.RemoveTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RemoveTest@1810399e</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AutomaticMetaAttributeCreationTest.test006_setInstance_metaAttribute_attribute()'><b>test006_setInstance_metaAttribute_attribute</b><br>Test class: org.genericsystem.mutability.AutomaticMetaAttributeCreationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AutomaticMetaAttributeCreationTest@7c0e2abd</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.TreeTest.test007()'><b>test007</b><br>Test class: org.genericsystem.mutability.TreeTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.TreeTest@3c756e4d</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.IteratorAndRemoveTest.test007_IterateAndRemoveInLoop_attributes()'><b>test007_IterateAndRemoveInLoop_attributes</b><br>Test class: org.genericsystem.mutability.IteratorAndRemoveTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.IteratorAndRemoveTest@5dfcfece</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AnnotationTest.test007_Relation()'><b>test007_Relation</b><br>Test class: org.genericsystem.mutability.AnnotationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AnnotationTest@6a2bcfcb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RelationTest.test007_addInstance_ofSubRelation()'><b>test007_addInstance_ofSubRelation</b><br>Test class: org.genericsystem.mutability.RelationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RelationTest@6a024a67</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.ReferentialIntegrityConstraintTest.test007_enableReferentialIntegrity_remove()'><b>test007_enableReferentialIntegrity_remove</b><br>Test class: org.genericsystem.mutability.ReferentialIntegrityConstraintTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.ReferentialIntegrityConstraintTest@5ae9a829</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RemoveTest.test007_removeConcretAndAttribut()'><b>test007_removeConcretAndAttribut</b><br>Test class: org.genericsystem.mutability.RemoveTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RemoveTest@1810399e</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AutomaticMetaAttributeCreationTest.test007_setInstance_metaAttribute_override()'><b>test007_setInstance_metaAttribute_override</b><br>Test class: org.genericsystem.mutability.AutomaticMetaAttributeCreationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AutomaticMetaAttributeCreationTest@7c0e2abd</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.UpdatableServiceTest.test007_setValue_Type()'><b>test007_setValue_Type</b><br>Test class: org.genericsystem.mutability.UpdatableServiceTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.UpdatableServiceTest@215be6bb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.UpdateWithCacheTest.test007_simulateRollback()'><b>test007_simulateRollback</b><br>Test class: org.genericsystem.mutability.UpdateWithCacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.UpdateWithCacheTest@573f2bb1</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.UpdateWithCacheTest.test007_structurel_WithInheritings_AndInstances()'><b>test007_structurel_WithInheritings_AndInstances</b><br>Test class: org.genericsystem.mutability.UpdateWithCacheTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.UpdateWithCacheTest@573f2bb1</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RelationTest.test008()'><b>test008</b><br>Test class: org.genericsystem.mutability.RelationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RelationTest@6a024a67</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.TreeTest.test008()'><b>test008</b><br>Test class: org.genericsystem.mutability.TreeTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.TreeTest@3c756e4d</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AnnotationTest.test008_SubRelation()'><b>test008_SubRelation</b><br>Test class: org.genericsystem.mutability.AnnotationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AnnotationTest@6a2bcfcb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.ReferentialIntegrityConstraintTest.test008_enableReferentialIntegrity_remove()'><b>test008_enableReferentialIntegrity_remove</b><br>Test class: org.genericsystem.mutability.ReferentialIntegrityConstraintTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.ReferentialIntegrityConstraintTest@5ae9a829</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RemoveTest.test008_removeInstanceAndAttribute()'><b>test008_removeInstanceAndAttribute</b><br>Test class: org.genericsystem.mutability.RemoveTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RemoveTest@1810399e</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AutomaticMetaAttributeCreationTest.test008_setInstance_metaAttribute_override()'><b>test008_setInstance_metaAttribute_override</b><br>Test class: org.genericsystem.mutability.AutomaticMetaAttributeCreationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AutomaticMetaAttributeCreationTest@7c0e2abd</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RelationTest.test009()'><b>test009</b><br>Test class: org.genericsystem.mutability.RelationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RelationTest@6a024a67</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AnnotationTest.test009_SymetricSuperRelation()'><b>test009_SymetricSuperRelation</b><br>Test class: org.genericsystem.mutability.AnnotationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AnnotationTest@6a2bcfcb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RemoveTest.test009_removeConcret()'><b>test009_removeConcret</b><br>Test class: org.genericsystem.mutability.RemoveTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RemoveTest@1810399e</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RequiredConstraintTest.test00_Inheritance()'><b>test00_Inheritance</b><br>Test class: org.genericsystem.mutability.RequiredConstraintTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RequiredConstraintTest@1efbd816</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RelationTest.test010()'><b>test010</b><br>Test class: org.genericsystem.mutability.RelationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RelationTest@6a024a67</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AnnotationTest.test010_TernaryRelation()'><b>test010_TernaryRelation</b><br>Test class: org.genericsystem.mutability.AnnotationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AnnotationTest@6a2bcfcb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AnnotationTest.test011_getDirectSubGenericsWithDiamondProblem()'><b>test011_getDirectSubGenericsWithDiamondProblem</b><br>Test class: org.genericsystem.mutability.AnnotationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AnnotationTest@6a2bcfcb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AnnotationTest.test012_Value()'><b>test012_Value</b><br>Test class: org.genericsystem.mutability.AnnotationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AnnotationTest@6a2bcfcb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AnnotationTest.test013_MultiInheritanceComplexStructural()'><b>test013_MultiInheritanceComplexStructural</b><br>Test class: org.genericsystem.mutability.AnnotationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AnnotationTest@6a2bcfcb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AnnotationTest.test014_MultiInheritanceComplexValue()'><b>test014_MultiInheritanceComplexValue</b><br>Test class: org.genericsystem.mutability.AnnotationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AnnotationTest@6a2bcfcb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.RequiredConstraintTest.test01_Inheritance()'><b>test01_Inheritance</b><br>Test class: org.genericsystem.mutability.RequiredConstraintTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.RequiredConstraintTest@1efbd816</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.UpdatableServiceTest.test020_setValue_Inheritance()'><b>test020_setValue_Inheritance</b><br>Test class: org.genericsystem.mutability.UpdatableServiceTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.UpdatableServiceTest@215be6bb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.UpdatableServiceTest.test040_setValue_Composite()'><b>test040_setValue_Composite</b><br>Test class: org.genericsystem.mutability.UpdatableServiceTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.UpdatableServiceTest@215be6bb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.UpdatableServiceTest.test060_setValue_Type_Inheritance_Composite()'><b>test060_setValue_Type_Inheritance_Composite</b><br>Test class: org.genericsystem.mutability.UpdatableServiceTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.UpdatableServiceTest@215be6bb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.ClassFinderTest.test1()'><b>test1</b><br>Test class: org.genericsystem.mutability.ClassFinderTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.ClassFinderTest@548b7f67</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.ClassFinderTest.test10()'><b>test10</b><br>Test class: org.genericsystem.mutability.ClassFinderTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.ClassFinderTest@548b7f67</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.VertexTest.test10()'><b>test10</b><br>Test class: org.genericsystem.mutability.VertexTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.VertexTest@66d2e7d9</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.UpdatableServiceTest.test100_addSuper_Type()'><b>test100_addSuper_Type</b><br>Test class: org.genericsystem.mutability.UpdatableServiceTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.UpdatableServiceTest@215be6bb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.UpdatableServiceTest.test101_addSuper_TypeBetweenTwoTypes()'><b>test101_addSuper_TypeBetweenTwoTypes</b><br>Test class: org.genericsystem.mutability.UpdatableServiceTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.UpdatableServiceTest@215be6bb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.UpdatableServiceTest.test102_addSuper_AlreadySuper()'><b>test102_addSuper_AlreadySuper</b><br>Test class: org.genericsystem.mutability.UpdatableServiceTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.UpdatableServiceTest@215be6bb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.UpdatableServiceTest.test103_addSuper_NoRegressionOnDataModel()'><b>test103_addSuper_NoRegressionOnDataModel</b><br>Test class: org.genericsystem.mutability.UpdatableServiceTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.UpdatableServiceTest@215be6bb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.ClassFinderTest.test11()'><b>test11</b><br>Test class: org.genericsystem.mutability.ClassFinderTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.ClassFinderTest@548b7f67</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.VertexTest.test11()'><b>test11</b><br>Test class: org.genericsystem.mutability.VertexTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.VertexTest@66d2e7d9</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AttributesTest.test1Attribut()'><b>test1Attribut</b><br>Test class: org.genericsystem.mutability.AttributesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AttributesTest@48eff760</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AttributesTest.test1AttributWith2LevelsInheritance1AttributOnFistChild()'><b>test1AttributWith2LevelsInheritance1AttributOnFistChild</b><br>Test class: org.genericsystem.mutability.AttributesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AttributesTest@48eff760</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AttributesTest.test1AttributWith2LevelsInheritance1AttributOnParent()'><b>test1AttributWith2LevelsInheritance1AttributOnParent</b><br>Test class: org.genericsystem.mutability.AttributesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AttributesTest@48eff760</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AttributesTest.test1AttributWith2LevelsInheritance2ChildrenAt2ndLevel1AttributOnLevel1FirstChild()'><b>test1AttributWith2LevelsInheritance2ChildrenAt2ndLevel1AttributOnLevel1FirstChild</b><br>Test class: org.genericsystem.mutability.AttributesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AttributesTest@48eff760</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AttributesTest.test1AttributWith2LevelsInheritance2ChildrenAt2ndLevel1AttributOnLevel1SecondChild()'><b>test1AttributWith2LevelsInheritance2ChildrenAt2ndLevel1AttributOnLevel1SecondChild</b><br>Test class: org.genericsystem.mutability.AttributesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AttributesTest@48eff760</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AttributesTest.test1AttributWith2LevelsInheritance2ChildrenAt2ndLevel1AttributOnParent()'><b>test1AttributWith2LevelsInheritance2ChildrenAt2ndLevel1AttributOnParent</b><br>Test class: org.genericsystem.mutability.AttributesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AttributesTest@48eff760</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AttributesTest.test1AttributWith3LevelsInheritance1AttributFirstChild1AttributOnSecondChild()'><b>test1AttributWith3LevelsInheritance1AttributFirstChild1AttributOnSecondChild</b><br>Test class: org.genericsystem.mutability.AttributesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AttributesTest@48eff760</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AttributesTest.test1AttributWith3LevelsInheritance1AttributOnFirstChild()'><b>test1AttributWith3LevelsInheritance1AttributOnFirstChild</b><br>Test class: org.genericsystem.mutability.AttributesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AttributesTest@48eff760</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AttributesTest.test1AttributWith3LevelsInheritance1AttributOnParent()'><b>test1AttributWith3LevelsInheritance1AttributOnParent</b><br>Test class: org.genericsystem.mutability.AttributesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AttributesTest@48eff760</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AttributesTest.test1AttributWith3LevelsInheritance1AttributOnParent1AttributOnFirstChild()'><b>test1AttributWith3LevelsInheritance1AttributOnParent1AttributOnFirstChild</b><br>Test class: org.genericsystem.mutability.AttributesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AttributesTest@48eff760</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AttributesTest.test1AttributWith3LevelsInheritance1AttributOnParent1AttributOnSecondChild()'><b>test1AttributWith3LevelsInheritance1AttributOnParent1AttributOnSecondChild</b><br>Test class: org.genericsystem.mutability.AttributesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AttributesTest@48eff760</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AttributesTest.test1AttributWith3LevelsInheritance1AttributOnSecondChild()'><b>test1AttributWith3LevelsInheritance1AttributOnSecondChild</b><br>Test class: org.genericsystem.mutability.AttributesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AttributesTest@48eff760</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AttributesTest.test1AttributWith3LevelsInheritance2AttributFirstChild()'><b>test1AttributWith3LevelsInheritance2AttributFirstChild</b><br>Test class: org.genericsystem.mutability.AttributesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AttributesTest@48eff760</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AttributesTest.test1AttributWith3LevelsInheritance2AttributOnParent()'><b>test1AttributWith3LevelsInheritance2AttributOnParent</b><br>Test class: org.genericsystem.mutability.AttributesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AttributesTest@48eff760</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AttributesTest.test1AttributWith3LevelsInheritance2AttributOnSecondChild()'><b>test1AttributWith3LevelsInheritance2AttributOnSecondChild</b><br>Test class: org.genericsystem.mutability.AttributesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AttributesTest@48eff760</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AttributesTest.test1AttributWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel1AttributLevel1FistChild()'><b>test1AttributWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel1AttributLevel1FistChild</b><br>Test class: org.genericsystem.mutability.AttributesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AttributesTest@48eff760</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AttributesTest.test1AttributWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel1AttributLevel1SecondChild()'><b>test1AttributWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel1AttributLevel1SecondChild</b><br>Test class: org.genericsystem.mutability.AttributesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AttributesTest@48eff760</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AttributesTest.test1AttributWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel1AttributLevel2Child1()'><b>test1AttributWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel1AttributLevel2Child1</b><br>Test class: org.genericsystem.mutability.AttributesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AttributesTest@48eff760</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AttributesTest.test1AttributWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel1AttributOnParent()'><b>test1AttributWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel1AttributOnParent</b><br>Test class: org.genericsystem.mutability.AttributesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AttributesTest@48eff760</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.ClassFinderTest.test2()'><b>test2</b><br>Test class: org.genericsystem.mutability.ClassFinderTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.ClassFinderTest@548b7f67</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.UpdatableServiceTest.test200_replaceComposite()'><b>test200_replaceComposite</b><br>Test class: org.genericsystem.mutability.UpdatableServiceTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.UpdatableServiceTest@215be6bb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.UpdatableServiceTest.test201_replaceComposite_KO()'><b>test201_replaceComposite_KO</b><br>Test class: org.genericsystem.mutability.UpdatableServiceTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.UpdatableServiceTest@215be6bb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AttributesTest.test2Attributs()'><b>test2Attributs</b><br>Test class: org.genericsystem.mutability.AttributesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AttributesTest@48eff760</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AttributesTest.test2AttributsWith2LevelsInheritance1AttributOnParentAnd1AttributOnFistChild()'><b>test2AttributsWith2LevelsInheritance1AttributOnParentAnd1AttributOnFistChild</b><br>Test class: org.genericsystem.mutability.AttributesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AttributesTest@48eff760</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AttributesTest.test2AttributsWith2LevelsInheritance2AttributsOnFistChild()'><b>test2AttributsWith2LevelsInheritance2AttributsOnFistChild</b><br>Test class: org.genericsystem.mutability.AttributesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AttributesTest@48eff760</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AttributesTest.test2AttributsWith2LevelsInheritance2AttributsOnParent()'><b>test2AttributsWith2LevelsInheritance2AttributsOnParent</b><br>Test class: org.genericsystem.mutability.AttributesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AttributesTest@48eff760</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AttributesTest.test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsLevel1FirstChild()'><b>test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsLevel1FirstChild</b><br>Test class: org.genericsystem.mutability.AttributesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AttributesTest@48eff760</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AttributesTest.test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsLevel1SecondChild()'><b>test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsLevel1SecondChild</b><br>Test class: org.genericsystem.mutability.AttributesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AttributesTest@48eff760</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AttributesTest.test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsLevel2()'><b>test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsLevel2</b><br>Test class: org.genericsystem.mutability.AttributesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AttributesTest@48eff760</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.AttributesTest.test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsOnParent()'><b>test2AttributsWith3LevelsInheritance2ChildrenAt2ndLevel1ChildAtThirdLevel2AttributsOnParent</b><br>Test class: org.genericsystem.mutability.AttributesTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.AttributesTest@48eff760</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.HolderTest.test2ChainedAttributs()'><b>test2ChainedAttributs</b><br>Test class: org.genericsystem.mutability.HolderTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.HolderTest@174d20a</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.VertexTest.test3()'><b>test3</b><br>Test class: org.genericsystem.mutability.VertexTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.VertexTest@66d2e7d9</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.UpdatableServiceTest.test300_replaceCompositeWithValueModification()'><b>test300_replaceCompositeWithValueModification</b><br>Test class: org.genericsystem.mutability.UpdatableServiceTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.UpdatableServiceTest@215be6bb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.UpdatableServiceTest.test301_replaceCompositeWithValueModification()'><b>test301_replaceCompositeWithValueModification</b><br>Test class: org.genericsystem.mutability.UpdatableServiceTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.UpdatableServiceTest@215be6bb</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.InstanciationTest.test3TypeInstanciationWithMultipleInheritence()'><b>test3TypeInstanciationWithMultipleInheritence</b><br>Test class: org.genericsystem.mutability.InstanciationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.InstanciationTest@4590c9c3</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.VertexTest.test4()'><b>test4</b><br>Test class: org.genericsystem.mutability.VertexTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.VertexTest@66d2e7d9</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.ClassFinderTest.test5()'><b>test5</b><br>Test class: org.genericsystem.mutability.ClassFinderTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.ClassFinderTest@548b7f67</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.VertexTest.test5()'><b>test5</b><br>Test class: org.genericsystem.mutability.VertexTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.VertexTest@66d2e7d9</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.InstanciationTest.test5TypeInstanciationWithMultipleInheritence()'><b>test5TypeInstanciationWithMultipleInheritence</b><br>Test class: org.genericsystem.mutability.InstanciationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.InstanciationTest@4590c9c3</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.ClassFinderTest.test6()'><b>test6</b><br>Test class: org.genericsystem.mutability.ClassFinderTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.ClassFinderTest@548b7f67</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.VertexTest.test6()'><b>test6</b><br>Test class: org.genericsystem.mutability.VertexTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.VertexTest@66d2e7d9</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.InstanciationTest.test6TypeInstanciationWithMultipleInheritence()'><b>test6TypeInstanciationWithMultipleInheritence</b><br>Test class: org.genericsystem.mutability.InstanciationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.InstanciationTest@4590c9c3</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.ClassFinderTest.test7()'><b>test7</b><br>Test class: org.genericsystem.mutability.ClassFinderTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.ClassFinderTest@548b7f67</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.VertexTest.test7()'><b>test7</b><br>Test class: org.genericsystem.mutability.VertexTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.VertexTest@66d2e7d9</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.ClassFinderTest.test8()'><b>test8</b><br>Test class: org.genericsystem.mutability.ClassFinderTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.ClassFinderTest@548b7f67</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.VertexTest.test8()'><b>test8</b><br>Test class: org.genericsystem.mutability.VertexTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.VertexTest@66d2e7d9</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.ClassFinderTest.test9()'><b>test9</b><br>Test class: org.genericsystem.mutability.ClassFinderTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.ClassFinderTest@548b7f67</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.VertexTest.test9()'><b>test9</b><br>Test class: org.genericsystem.mutability.VertexTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.VertexTest@66d2e7d9</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.GenericTest.testAddAttribute()'><b>testAddAttribute</b><br>Test class: org.genericsystem.mutability.GenericTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.GenericTest@7ac7a4e4</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.GenericTest.testAddAttributeWithOverride()'><b>testAddAttributeWithOverride</b><br>Test class: org.genericsystem.mutability.GenericTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.GenericTest@7ac7a4e4</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.GenericTest.testAddAttributeWithOverride2()'><b>testAddAttributeWithOverride2</b><br>Test class: org.genericsystem.mutability.GenericTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.GenericTest@7ac7a4e4</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.GenericTest.testAddAttributeWithOverride3()'><b>testAddAttributeWithOverride3</b><br>Test class: org.genericsystem.mutability.GenericTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.GenericTest@7ac7a4e4</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.GenericTest.testAddInheriting()'><b>testAddInheriting</b><br>Test class: org.genericsystem.mutability.GenericTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.GenericTest@7ac7a4e4</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.GenericTest.testAddInstance()'><b>testAddInstance</b><br>Test class: org.genericsystem.mutability.GenericTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.GenericTest@7ac7a4e4</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.GenericTest.testEngine()'><b>testEngine</b><br>Test class: org.genericsystem.mutability.GenericTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.GenericTest@7ac7a4e4</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.InstanciationTest.testEngineInstanciation()'><b>testEngineInstanciation</b><br>Test class: org.genericsystem.mutability.InstanciationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.InstanciationTest@4590c9c3</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.GenericTest.testGetInstances()'><b>testGetInstances</b><br>Test class: org.genericsystem.mutability.GenericTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.GenericTest@7ac7a4e4</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.HolderTest.testHolder1Attribut()'><b>testHolder1Attribut</b><br>Test class: org.genericsystem.mutability.HolderTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.HolderTest@174d20a</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.HolderTest.testHolder1AttributWith2LevelsInheritance1AttributOnFirstChild()'><b>testHolder1AttributWith2LevelsInheritance1AttributOnFirstChild</b><br>Test class: org.genericsystem.mutability.HolderTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.HolderTest@174d20a</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.HolderTest.testHolder1AttributWith2LevelsInheritance1AttributOnParent()'><b>testHolder1AttributWith2LevelsInheritance1AttributOnParent</b><br>Test class: org.genericsystem.mutability.HolderTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.HolderTest@174d20a</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.HolderTest.testHolder1AttributWith2LevelsInheritance2children1AttributOnParent()'><b>testHolder1AttributWith2LevelsInheritance2children1AttributOnParent</b><br>Test class: org.genericsystem.mutability.HolderTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.HolderTest@174d20a</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.HolderTest.testHolderOverrideWithDifferentValue1AttributWith2LevelsInheritance1AttributOnParent()'><b>testHolderOverrideWithDifferentValue1AttributWith2LevelsInheritance1AttributOnParent</b><br>Test class: org.genericsystem.mutability.HolderTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.HolderTest@174d20a</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.HolderTest.testHolderOverrideWithDifferentValue1AttributWith3LevelsInheritance1AttributOnParentOverrideOnFirstChild()'><b>testHolderOverrideWithDifferentValue1AttributWith3LevelsInheritance1AttributOnParentOverrideOnFirstChild</b><br>Test class: org.genericsystem.mutability.HolderTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.HolderTest@174d20a</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.HolderTest.testHolderOverrideWithDifferentValue1AttributWith3LevelsInheritance1AttributOnParentOverrideOnSecondChild()'><b>testHolderOverrideWithDifferentValue1AttributWith3LevelsInheritance1AttributOnParentOverrideOnSecondChild</b><br>Test class: org.genericsystem.mutability.HolderTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.HolderTest@174d20a</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.HolderTest.testHolderOverrideWithDifferentValue2ChainedAttributWith2LevelsInheritance2AttributsOnParent()'><b>testHolderOverrideWithDifferentValue2ChainedAttributWith2LevelsInheritance2AttributsOnParent</b><br>Test class: org.genericsystem.mutability.HolderTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.HolderTest@174d20a</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.HolderTest.testHolderOverrideWithDifferentValue2ChainedAttributsWith3LevelsInheritance1AttributOnParentOverrideOnFirstChild()'><b>testHolderOverrideWithDifferentValue2ChainedAttributsWith3LevelsInheritance1AttributOnParentOverrideOnFirstChild</b><br>Test class: org.genericsystem.mutability.HolderTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.HolderTest@174d20a</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.HolderTest.testHolderOverrideWithSameValue1AttributWith2LevelsInheritance1AttributOnParent()'><b>testHolderOverrideWithSameValue1AttributWith2LevelsInheritance1AttributOnParent</b><br>Test class: org.genericsystem.mutability.HolderTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.HolderTest@174d20a</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.GenericTest.testMultiInheritance()'><b>testMultiInheritance</b><br>Test class: org.genericsystem.mutability.GenericTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.GenericTest@7ac7a4e4</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.GenericTest.testMultiInheritance2()'><b>testMultiInheritance2</b><br>Test class: org.genericsystem.mutability.GenericTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.GenericTest@7ac7a4e4</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.GenericTest.testMultiInheritance3()'><b>testMultiInheritance3</b><br>Test class: org.genericsystem.mutability.GenericTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.GenericTest@7ac7a4e4</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.GenericTest.testSetInstance()'><b>testSetInstance</b><br>Test class: org.genericsystem.mutability.GenericTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.GenericTest@7ac7a4e4</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.TreeTest.testTraverseTree()'><b>testTraverseTree</b><br>Test class: org.genericsystem.mutability.TreeTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.TreeTest@3c756e4d</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.TreeTest.testTree1()'><b>testTree1</b><br>Test class: org.genericsystem.mutability.TreeTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.TreeTest@3c756e4d</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.TreeTest.testTree2()'><b>testTree2</b><br>Test class: org.genericsystem.mutability.TreeTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.TreeTest@3c756e4d</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.TreeTest.testTree3()'><b>testTree3</b><br>Test class: org.genericsystem.mutability.TreeTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.TreeTest@3c756e4d</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.InstanciationTest.testTwoTypeInstanciationDifferentNames()'><b>testTwoTypeInstanciationDifferentNames</b><br>Test class: org.genericsystem.mutability.InstanciationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.InstanciationTest@4590c9c3</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.InstanciationTest.testTwoTypeInstanciationSameNamesAddInstance()'><b>testTwoTypeInstanciationSameNamesAddInstance</b><br>Test class: org.genericsystem.mutability.InstanciationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.InstanciationTest@4590c9c3</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.InstanciationTest.testTwoTypeInstanciationSameNamesSetInstance()'><b>testTwoTypeInstanciationSameNamesSetInstance</b><br>Test class: org.genericsystem.mutability.InstanciationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.InstanciationTest@4590c9c3</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.InstanciationTest.testTwoTypeInstanciationWithInheritance()'><b>testTwoTypeInstanciationWithInheritance</b><br>Test class: org.genericsystem.mutability.InstanciationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.InstanciationTest@4590c9c3</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.InstanciationTest.testTypeInstanciation()'><b>testTypeInstanciation</b><br>Test class: org.genericsystem.mutability.InstanciationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.InstanciationTest@4590c9c3</td></tr>
+<tr>
+<td title='org.genericsystem.mutability.InstanciationTest.testTypeInstanciationWithSelfInheritance()'><b>testTypeInstanciationWithSelfInheritance</b><br>Test class: org.genericsystem.mutability.InstanciationTest</td>
+<td></td>
+<td>0</td>
+<td>org.genericsystem.mutability.InstanciationTest@4590c9c3</td></tr>
+</table><p>
+</body>
+</html>
