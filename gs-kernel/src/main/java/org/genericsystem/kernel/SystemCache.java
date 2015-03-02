@@ -7,7 +7,6 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.defaults.DefaultRoot;
 import org.genericsystem.api.exception.CyclicException;
 import org.genericsystem.kernel.GenericHandler.SetSystemHandler;
@@ -51,7 +50,6 @@ public class SystemCache {
 			set(clazz);
 	}
 
-	@SuppressWarnings("unchecked")
 	private Generic set(Class<?> clazz) {
 		if (root.isInitialized())
 			throw new IllegalStateException("Class : " + clazz + " has not been built at startup");
@@ -93,8 +91,10 @@ public class SystemCache {
 		if (clazz.getAnnotation(InstanceValueClassConstraint.class) != null)
 			result.setClassConstraint(clazz.getAnnotation(InstanceValueClassConstraint.class).value());
 
-		if (clazz.getAnnotation(RequiredConstraint.class) != null)
-			result.enableRequiredConstraint(ApiStatics.NO_POSITION);
+		RequiredConstraint requiredConstraint = clazz.getAnnotation(RequiredConstraint.class);
+		if (requiredConstraint != null)
+			for (int axe : requiredConstraint.value())
+				result.enableRequiredConstraint(axe);
 
 		NoReferentialIntegrityProperty referentialIntegrity = clazz.getAnnotation(NoReferentialIntegrityProperty.class);
 		if (referentialIntegrity != null)
@@ -114,7 +114,6 @@ public class SystemCache {
 				set(dependencyClass);
 	}
 
-	@SuppressWarnings("unchecked")
 	private Generic setMeta(Class<?> clazz) {
 		Meta meta = clazz.getAnnotation(Meta.class);
 		if (meta == null)
