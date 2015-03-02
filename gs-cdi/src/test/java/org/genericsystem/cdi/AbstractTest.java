@@ -1,13 +1,14 @@
 package org.genericsystem.cdi;
 
-import javax.enterprise.inject.spi.Extension;
+import java.util.function.Supplier;
+
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import org.genericsystem.cache.Engine;
-import org.genericsystem.cdi.event.EventLauncher;
-import org.genericsystem.kernel.exceptions.RollbackException;
+import org.genericsystem.api.exception.RollbackException;
+import org.genericsystem.cdi.PersistenceTest.Count;
+import org.genericsystem.mutability.Cache;
 import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.testenricher.cdi.container.CDIExtension;
 import org.jboss.arquillian.testng.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
@@ -22,12 +23,13 @@ public abstract class AbstractTest extends Arquillian {
 	@Inject
 	Engine engine;
 
+	@Inject
+	Instance<Cache> cacheProvider;
+
 	@Deployment
 	public static JavaArchive createDeployment() {
 		JavaArchive javaArchive = ShrinkWrap.create(JavaArchive.class);
-		// javaArchive.addClasses(SerializableCache.class, GenericProvider.class, EngineProvider.class, CdiFactory.class);
-		javaArchive.addClasses(UserClassesProvider.class, PersistentDirectoryProvider.class, MockPersistentDirectoryProvider.class, EventLauncher.class, CacheProvider.class, EngineProvider.class);
-		javaArchive.addAsServiceProvider(Extension.class, CDIExtension.class);
+		javaArchive.addClasses(UserClassesProvider.class, PersistentDirectoryProvider.class, MockPersistentDirectoryProvider.class, /* EventLauncher.class, */CacheSessionProvider.class, CacheRequestProvider.class, EngineProvider.class, Count.class);
 		createBeansXml(javaArchive);
 		return javaArchive;
 	}
@@ -35,33 +37,41 @@ public abstract class AbstractTest extends Arquillian {
 	private static void createBeansXml(JavaArchive javaArchive) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("<beans xmlns=\"http://java.sun.com/xml/ns/javaee\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\" http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/beans_1_0.xsd\">");
-		// stringBuilder.append("<specializes> ");
-		// stringBuilder.append("<class>org.genericsystem.cdi.MockPersistentDirectoryProvider</class>");
-		// stringBuilder.append("</alternatives>");
+		stringBuilder.append("<alternatives> ");
+		stringBuilder.append("<class>org.genericsystem.cdi.MockPersistentDirectoryProvider</class>");
+		stringBuilder.append("</alternatives>");
 		stringBuilder.append("</beans>");
 		javaArchive.addAsManifestResource(new StringAsset(stringBuilder.toString()), "beans.xml");
 	}
 
-	public abstract static class RollbackCatcher {
-		public void assertIsCausedBy(Class<? extends Throwable> clazz) {
-			try {
-				intercept();
-			} catch (RollbackException ex) {
-				if (ex.getCause() == null)
-					throw new IllegalStateException("Rollback Exception has not any cause", ex);
-				if (!clazz.isAssignableFrom(ex.getCause().getClass()))
-					throw new IllegalStateException("Cause of rollback exception is not of type : " + clazz.getSimpleName(), ex);
+	@FunctionalInterface
+	public static interface VoidSupplier {
+		public void getNothing();
+	}
 
-				log.info("Caught exception : " + ex.getCause());
-				return;
-			} catch (Exception ex) {
-				if (!clazz.isAssignableFrom(ex.getClass()))
-					throw new IllegalStateException("Cause of exception is not of type : " + clazz.getSimpleName(), ex);
-				return;
-			}
-			assert false : "Unable to catch any rollback exception!";
+	public void catchAndCheckCause(VoidSupplier supplier, Class<? extends Throwable> clazz) {
+		try {
+			supplier.getNothing();
+		} catch (RollbackException ex) {
+			if (ex.getCause() == null)
+				throw new IllegalStateException("Rollback Exception has not any cause", ex);
+			if (!clazz.isAssignableFrom(ex.getCause().getClass()))
+				throw new IllegalStateException("Cause of rollback exception is not of type : " + clazz.getSimpleName() + ", but is " + ex.getCause(), ex);
+			return;
 		}
+		assert false : "Unable to catch any rollback exception!";
+	}
 
-		public abstract void intercept();
+	public void catchAndCheckCause(Supplier<?> supplier, Class<? extends Throwable> clazz) {
+		try {
+			supplier.get();
+		} catch (RollbackException ex) {
+			if (ex.getCause() == null)
+				throw new IllegalStateException("Rollback Exception has not any cause", ex);
+			if (!clazz.isAssignableFrom(ex.getCause().getClass()))
+				throw new IllegalStateException("Cause of rollback exception is not of type : " + clazz.getSimpleName() + ", but is " + ex.getCause(), ex);
+			return;
+		}
+		assert false : "Unable to catch any rollback exception!";
 	}
 }

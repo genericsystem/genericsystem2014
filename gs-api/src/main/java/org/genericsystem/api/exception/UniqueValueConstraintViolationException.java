@@ -1,18 +1,20 @@
 package org.genericsystem.api.exception;
 
-import org.genericsystem.api.annotation.constraint.UniqueValueConstraint;
-
 /**
- * <p>
- * Thrown when a value already affected is instantiated in the same context.
- * </p>
+ * Thrown when a user operation violates the <code>UniqueValueConstraint</code>. The user tries to add a second instance on a type.
  * 
- * @see UniqueValueConstraint
+ * @author Nicolas Feybesse
+ * @see org.genericsystem.kernel.systemproperty.constraints.UniqueValueConstraint
  */
 public class UniqueValueConstraintViolationException extends ConstraintViolationException {
+	private static final long serialVersionUID = -5523312075306575631L;
 
-	private static final long serialVersionUID = 4845817633427387248L;
-
+	/**
+	 * Constructs a <code>UniqueValueConstraintViolationException</code> with the specified detail message.
+	 *
+	 * @param message
+	 *            the detail message.
+	 */
 	public UniqueValueConstraintViolationException(String message) {
 		super(message);
 	}

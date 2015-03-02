@@ -1,18 +1,19 @@
 package org.genericsystem.api.exception;
 
 /**
- * <p>
- * Default runtime exception in GenericSystem. Has a rollback mechanism to ensure data integrity.
- * </p>
+ * The base exception when an operation on Generic System causes a rollback.
+ * 
+ * @author Nicolas Feybesse
  */
 public class RollbackException extends RuntimeException {
+	private static final long serialVersionUID = 4600650372617391568L;
 
-	private static final long serialVersionUID = -990309756790246334L;
-
-	public RollbackException(String message) {
-		super(message);
-	}
-
+	/**
+	 * Constructs a <code>RollbackException</code> with the specified cause.
+	 * 
+	 * @param cause
+	 *            the cause of he exception.
+	 */
 	public RollbackException(Throwable cause) {
 		super(cause);
 	}

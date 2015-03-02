@@ -8,7 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class UserClassesProvider {
 
-	private Set<Class<?>> userClasses = new HashSet<>();
+	Set<Class<?>> userClasses = new HashSet<>();
 
 	public void addUserClasse(Class<?> userClasse) {
 		userClasses.add(userClasse);

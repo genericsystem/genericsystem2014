@@ -1,19 +1,21 @@
 package org.genericsystem.api.exception;
 
 /**
- * <p>
- * The exception is thrown if the user attempts to flush with a timestamp outdated.
- * </p>
- * <p>
- * ConcurrencyControl can not be disabled.
- * </p>
+ * Thrown when the user attempts to describe with a timestamp lower than the timestamp of the last read.
+ * 
+ * @author Nicolas Feybesse
  */
 public class ConcurrencyControlException extends RuntimeException {
 
-	private static final long serialVersionUID = -6063194991040749969L;
+	private static final long serialVersionUID = 7631483467570784262L;
 
-	public ConcurrencyControlException(String string) {
-		super(string);
+	/**
+	 * Constructs a <code>ConcurrencyControlException</code> with the specified detail message.
+	 *
+	 * @param message
+	 *            the detail message.
+	 */
+	public ConcurrencyControlException(String message) {
+		super(message);
 	}
-
 }

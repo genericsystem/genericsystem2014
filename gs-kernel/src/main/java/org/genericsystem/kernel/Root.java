@@ -1,28 +1,164 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
-import org.genericsystem.kernel.services.RootService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.genericsystem.api.defaults.DefaultLifeManager;
+import org.genericsystem.api.defaults.DefaultRoot;
+import org.genericsystem.kernel.Config.MetaAttribute;
+import org.genericsystem.kernel.Config.MetaRelation;
+import org.genericsystem.kernel.Config.SystemMap;
 
-public class Root extends Vertex implements RootService<Vertex, Root> {
+public class Root extends Generic implements DefaultRoot<Generic> {
 
-	protected final static Logger log = LoggerFactory.getLogger(Root.class);
+	private final TsGenerator generator = new TsGenerator();
+	private final Context<Generic> context;
+	private final SystemCache systemCache;
+	private final Archiver archiver;
+	private final Provider provider = new Provider();
+
+	private boolean initialized = false;
 
 	public Root(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
 	}
 
 	public Root(Serializable value, Class<?>... userClasses) {
-		init(false, null, Collections.emptyList(), value, Collections.emptyList());
-		setInstance(this, getValue(), coerceToArray(this));
-		Vertex map = setInstance(SystemMap.class, coerceToArray(this)).enablePropertyConstraint();
-		assert map.isAlive();
+		this(value, null, userClasses);
 	}
 
-	public static class MetaAttribute {
+	@Override
+	public Root getRoot() {
+		return this;
 	}
 
+	public Root(Serializable value, String persistentDirectoryPath, Class<?>... userClasses) {
+		getProvider().init(this, DefaultLifeManager.TS_SYSTEM, null, Collections.emptyList(), value, Collections.emptyList(), DefaultLifeManager.SYSTEM_TS);
+		context = new Transaction(this, pickNewTs());
+		systemCache = new SystemCache(this, getClass());
+		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
+		archiver = new Archiver(this, persistentDirectoryPath);
+		initialized = true;
+	}
+
+	@Override
+	public long pickNewTs() {
+		return generator.pickNewTs();
+	}
+
+	@Override
+	public boolean isInitialized() {
+		return initialized;
+	}
+
+	@Override
+	public final Generic getMetaAttribute() {
+		return find(MetaAttribute.class);
+	}
+
+	@Override
+	public final Generic getMetaRelation() {
+		return find(MetaRelation.class);
+	}
+
+	@Override
+	public Context<Generic> getCurrentCache() {
+		return context;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <Custom extends Generic> Custom find(Class<?> clazz) {
+		return (Custom) systemCache.get(clazz);
+	}
+
+	@Override
+	public Class<?> findAnnotedClass(Generic vertex) {
+		return systemCache.getByVertex(vertex);
+	}
+
+	@Override
+	public void close() {
+		archiver.close();
+	}
+
+	public static class TsGenerator {
+		private final long startTime = System.currentTimeMillis() * Statics.MILLI_TO_NANOSECONDS - System.nanoTime();
+		private final AtomicLong lastTime = new AtomicLong(0L);
+
+		public long pickNewTs() {
+			long nanoTs;
+			long current;
+			for (;;) {
+				nanoTs = startTime + System.nanoTime();
+				current = lastTime.get();
+				if (nanoTs - current > 0)
+					if (lastTime.compareAndSet(current, nanoTs))
+						return nanoTs;
+			}
+		}
+	}
+
+	@Override
+	public Context<Generic> buildTransaction() {
+		return new Transaction(this, pickNewTs());
+	}
+
+	@Override
+	public Generic getMap() {
+		return find(SystemMap.class);
+	}
+
+	Provider getProvider() {
+		return provider;
+	}
+
+	class Provider {
+
+		private Map<Generic, Vertex> map = new ConcurrentHashMap<Generic, Vertex>();
+
+		public long getTs(Generic generic) {
+			return map.get(generic).getTs();
+		}
+
+		Vertex getVertex(Generic generic) {
+			return map.get(generic);
+		}
+
+		public Generic getMeta(Generic generic) {
+			return getVertex(generic).getMeta();
+		}
+
+		public List<Generic> getSupers(Generic generic) {
+			return getVertex(generic).getSupers();
+		}
+
+		public Serializable getValue(Generic generic) {
+			return getVertex(generic).getValue();
+		}
+
+		public List<Generic> getComponents(Generic generic) {
+			return getVertex(generic).getComponents();
+		}
+
+		public Dependencies<Generic> getDependencies(Generic generic) {
+			return getVertex(generic).getDependencies();
+		}
+
+		public LifeManager getLifeManager(Generic generic) {
+			return getVertex(generic).getLifeManager();
+		}
+
+		public Generic init(Generic generic, long ts, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
+			Vertex result = map.putIfAbsent(generic, new Vertex(generic, ts, meta, supers, value, components, otherTs));
+			assert result == null;
+			return generic.init(Root.this);
+		}
+
+	}
 }

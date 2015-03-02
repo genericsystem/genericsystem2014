@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
-import org.genericsystem.kernel.exceptions.ReferentialIntegrityConstraintViolationException;
+import org.genericsystem.api.core.ApiStatics;
+import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test
@@ -8,9 +9,9 @@ public class RemovableServiceTest extends AbstractTest {
 
 	public void test100_remove_instance_NormalStrategy() {
 		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex myVehicule = engine.addInstance("MyVehicule");
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic myVehicule = engine.addInstance("MyVehicule");
 
 		// when
 		myVehicule.remove();
@@ -19,19 +20,19 @@ public class RemovableServiceTest extends AbstractTest {
 		assert vehicle.isAlive();
 		assert !myVehicule.isAlive();
 		// assert engine.computeAllDependencies().stream().count() == 2;
-		assert engine.computeDependencies().contains(engine);
-		assert engine.computeDependencies().contains(vehicle);
-		assert vehicle.computeDependencies().stream().count() == 1;
-		assert vehicle.computeDependencies().contains(vehicle);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(engine);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(vehicle);
+		assert vehicle.getCurrentCache().computeDependencies(vehicle).stream().count() == 1;
+		assert vehicle.getCurrentCache().computeDependencies(vehicle).contains(vehicle);
 	}
 
 	public void test101_remove_instance_NormalStrategy() {
 		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex myVehicule1 = vehicle.addInstance("MyVehicule1");
-		Vertex myVehicule2 = vehicle.addInstance("MyVehicule2");
-		Vertex myVehicule3 = vehicle.addInstance("MyVehicule3");
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic myVehicule1 = vehicle.addInstance("MyVehicule1");
+		Generic myVehicule2 = vehicle.addInstance("MyVehicule2");
+		Generic myVehicule3 = vehicle.addInstance("MyVehicule3");
 
 		// when
 		myVehicule2.remove();
@@ -43,37 +44,28 @@ public class RemovableServiceTest extends AbstractTest {
 		assert !myVehicule2.isAlive();
 		assert myVehicule3.isAlive();
 		// assert engine.computeAllDependencies().stream().count() == 3;
-		assert engine.computeDependencies().contains(engine);
-		assert engine.computeDependencies().contains(vehicle);
-		assert vehicle.computeDependencies().stream().count() == 2;
-		assert vehicle.computeDependencies().contains(vehicle);
-		assert vehicle.computeDependencies().contains(myVehicule3);
-		assert myVehicule3.computeDependencies().stream().count() == 1;
-		assert myVehicule3.computeDependencies().contains(myVehicule3);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(engine);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(vehicle);
+		assert vehicle.getCurrentCache().computeDependencies(vehicle).stream().count() == 2;
+		assert vehicle.getCurrentCache().computeDependencies(vehicle).contains(vehicle);
+		assert vehicle.getCurrentCache().computeDependencies(vehicle).contains(myVehicule3);
+		assert myVehicule3.getCurrentCache().computeDependencies(myVehicule3).stream().count() == 1;
+		assert myVehicule3.getCurrentCache().computeDependencies(myVehicule3).contains(myVehicule3);
 	}
 
 	public void test102_remove_typeWithInstance() {
 		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		vehicle.addInstance("MyVehicule");
-
-		// when
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				// when
-				vehicle.remove();
-			}
-			// then
-		}.assertIsCausedBy(ReferentialIntegrityConstraintViolationException.class);
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		vehicle.addInstance("myVehicule");
+		catchAndCheckCause(() -> vehicle.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
 	public void test103_remove_SubType() {
 		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = engine.addInstance(vehicle, "Car");
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = engine.addInstance(vehicle, "Car");
 
 		// when
 		car.remove();
@@ -82,17 +74,17 @@ public class RemovableServiceTest extends AbstractTest {
 		assert vehicle.isAlive();
 		assert !car.isAlive();
 		// assert engine.computeAllDependencies().stream().count() == 2;
-		assert engine.computeDependencies().contains(engine);
-		assert engine.computeDependencies().contains(vehicle);
-		assert vehicle.computeDependencies().stream().count() == 1;
-		assert vehicle.computeDependencies().contains(vehicle);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(engine);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(vehicle);
+		assert vehicle.getCurrentCache().computeDependencies(vehicle).stream().count() == 1;
+		assert vehicle.getCurrentCache().computeDependencies(vehicle).contains(vehicle);
 	}
 
 	public void test104_remove_attribute() {
 		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex power = engine.addInstance("Power", vehicle);
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic power = engine.addInstance("Power", vehicle);
 
 		// when
 		vehicle.remove();
@@ -104,28 +96,19 @@ public class RemovableServiceTest extends AbstractTest {
 
 	public void test105_remove_attribute_withInstance_KO() {
 		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
 		engine.addInstance("Power", vehicle);
 		vehicle.addInstance("Car");
-
-		// when
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				// when
-				vehicle.remove();
-			}
-			// then
-		}.assertIsCausedBy(ReferentialIntegrityConstraintViolationException.class);
+		catchAndCheckCause(() -> vehicle.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
 	public void test105_remove_attribute_attribute_KO() {
 		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex power = engine.addInstance("Power", vehicle);
-		Vertex unit = engine.addInstance("Unit", power);
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic power = engine.addInstance("Power", vehicle);
+		Generic unit = engine.addInstance("Unit", power);
 
 		assert vehicle.isAlive();
 		assert power.isAlive();
@@ -138,54 +121,39 @@ public class RemovableServiceTest extends AbstractTest {
 
 	public void test106_remove_TypeWithSubType_KO() {
 		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
 		engine.addInstance(vehicle, "Car");
 
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				// when
-				vehicle.remove();
-			}
-			// then
-		}.assertIsCausedBy(ReferentialIntegrityConstraintViolationException.class);
+		catchAndCheckCause(() -> vehicle.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
 	public void test107_remove_relation_KO() {
 		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = engine.addInstance(vehicle, "Car");
-		Vertex color = engine.addInstance("Color");
-		Vertex red = color.addInstance("red");
-		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = engine.addInstance(vehicle, "Car");
+		Generic color = engine.addInstance("Color");
+		Generic red = color.addInstance("red");
+		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		vehicleColor.addInstance("CarRed", car, red);
 
-		new RollbackCatcher() {
-			@Override
-			public void intercept() {
-				// when
-				vehicleColor.remove();
-			}
-			// then
-		}.assertIsCausedBy(ReferentialIntegrityConstraintViolationException.class);
+		catchAndCheckCause(() -> vehicleColor.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
 	public void test108_remove_relationFromTarget() {
 		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = engine.addInstance(vehicle, "Car");
-		Vertex color = engine.addInstance("Color");
-		Vertex red = color.addInstance("red");
-		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		Vertex carRed = vehicleColor.addInstance("CarRed", car, red);
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = engine.addInstance(vehicle, "Car");
+		Generic color = engine.addInstance("Color");
+		Generic red = color.addInstance("red");
+		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Generic carRed = vehicleColor.addInstance("CarRed", car, red);
 
-		// when
+		vehicleColor.disableReferentialIntegrity(ApiStatics.TARGET_POSITION);
 		red.remove();
 
-		// then
 		assert engine.isAlive();
 		assert vehicle.isAlive();
 		assert car.isAlive();
@@ -197,13 +165,13 @@ public class RemovableServiceTest extends AbstractTest {
 
 	public void test109_remove_link() {
 		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = engine.addInstance(vehicle, "Car");
-		Vertex color = engine.addInstance("Color");
-		Vertex red = color.addInstance("red");
-		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		Vertex carRed = vehicleColor.addInstance("CarRed", car, red);
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = engine.addInstance(vehicle, "Car");
+		Generic color = engine.addInstance("Color");
+		Generic red = color.addInstance("red");
+		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Generic carRed = vehicleColor.addInstance("CarRed", car, red);
 
 		// when
 		carRed.remove();
@@ -220,8 +188,8 @@ public class RemovableServiceTest extends AbstractTest {
 
 	public void test120_remove_Type_ForceStrategy() {
 		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
 
 		// when
 		vehicle.forceRemove();
@@ -229,14 +197,14 @@ public class RemovableServiceTest extends AbstractTest {
 		// then
 		assert !vehicle.isAlive();
 		// assert engine.computeAllDependencies().stream().count() == 1;
-		assert engine.computeDependencies().contains(engine);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(engine);
 	}
 
 	public void test121_remove_typeWithInstance_ForceStrategy() {
 		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex myVehicle = vehicle.addInstance("MyVehicule");
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("MyVehicule");
 
 		// when
 		vehicle.forceRemove();
@@ -244,14 +212,14 @@ public class RemovableServiceTest extends AbstractTest {
 		assert !vehicle.isAlive();
 		assert !myVehicle.isAlive();
 		// assert engine.computeAllDependencies().stream().count() == 1;
-		assert engine.computeDependencies().contains(engine);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(engine);
 	}
 
 	public void test122_remove_TypeWithSubType_ForceStrategy() {
 		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = engine.addInstance(vehicle, "Car");
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = engine.addInstance(vehicle, "Car");
 
 		// when
 		vehicle.forceRemove();
@@ -260,14 +228,14 @@ public class RemovableServiceTest extends AbstractTest {
 		assert !vehicle.isAlive();
 		assert !car.isAlive();
 		// assert engine.computeAllDependencies().stream().count() == 1;
-		assert engine.computeDependencies().contains(engine);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(engine);
 	}
 
 	public void test123_remove_attribute_ForceStrategy() {
 		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex power = engine.addInstance("Power", vehicle);
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic power = engine.addInstance("Power", vehicle);
 
 		// when
 		vehicle.forceRemove();
@@ -277,20 +245,20 @@ public class RemovableServiceTest extends AbstractTest {
 		assert !vehicle.isAlive();
 		assert !power.isAlive();
 		// assert engine.computeAllDependencies().stream().count() == 1;
-		assert engine.computeDependencies().contains(engine);
-		assert !engine.computeDependencies().contains(vehicle);
-		assert !engine.computeDependencies().contains(power);
+		assert engine.getCurrentCache().computeDependencies(engine).contains(engine);
+		assert !engine.getCurrentCache().computeDependencies(engine).contains(vehicle);
+		assert !engine.getCurrentCache().computeDependencies(engine).contains(power);
 	}
 
 	public void test124_remove_relation_ForceStrategy() {
 		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = engine.addInstance(vehicle, "Car");
-		Vertex color = engine.addInstance("Color");
-		Vertex red = color.addInstance("red");
-		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		Vertex carRed = vehicleColor.addInstance("CarRed", car, red);
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = engine.addInstance(vehicle, "Car");
+		Generic color = engine.addInstance("Color");
+		Generic red = color.addInstance("red");
+		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Generic carRed = vehicleColor.addInstance("CarRed", car, red);
 
 		// when
 		vehicleColor.forceRemove();
@@ -307,13 +275,13 @@ public class RemovableServiceTest extends AbstractTest {
 
 	public void test125_remove_instanceBaseOfRelation_ForceStrategy() {
 		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = engine.addInstance(vehicle, "Car");
-		Vertex color = engine.addInstance("Color");
-		Vertex red = color.addInstance("red");
-		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		Vertex carRed = vehicleColor.addInstance("CarRed", car, red);
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = engine.addInstance(vehicle, "Car");
+		Generic color = engine.addInstance("Color");
+		Generic red = color.addInstance("red");
+		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Generic carRed = vehicleColor.addInstance("CarRed", car, red);
 
 		// when
 		car.forceRemove();
@@ -330,13 +298,13 @@ public class RemovableServiceTest extends AbstractTest {
 
 	public void test126_remove_instanceBaseOfRelation_ForceStrategy() {
 		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = engine.addInstance(vehicle, "Car");
-		Vertex color = engine.addInstance("Color");
-		Vertex red = color.addInstance("red");
-		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		Vertex carRed = vehicleColor.addInstance("CarRed", car, red);
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = engine.addInstance(vehicle, "Car");
+		Generic color = engine.addInstance("Color");
+		Generic red = color.addInstance("red");
+		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Generic carRed = vehicleColor.addInstance("CarRed", car, red);
 
 		// when
 		red.forceRemove();
@@ -353,20 +321,20 @@ public class RemovableServiceTest extends AbstractTest {
 
 	public void test127_remove_typeWithlinks_ForceStrategy() {
 		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex animals = engine.addInstance("Animals");
-		Vertex myVehicle = vehicle.addInstance("MyVehicle");
-		Vertex car = engine.addInstance(vehicle, "Car");
-		Vertex power = engine.addInstance("Power", car);
-		Vertex myCar = car.addInstance("MyCar");
-		Vertex color = engine.addInstance("Color");
-		Vertex red = color.addInstance("Red");
-		Vertex green = color.addInstance("Green");
-		Vertex blue = color.addInstance("Blue");
-		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		Vertex myCarRed = vehicleColor.addInstance("myCarRed", myCar, red);
-		Vertex myVehicleGreen = vehicleColor.addInstance("myCarRed", myVehicle, green);
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic animals = engine.addInstance("Animals");
+		Generic myVehicle = vehicle.addInstance("MyVehicle");
+		Generic car = engine.addInstance(vehicle, "Car");
+		Generic power = engine.addInstance("Power", car);
+		Generic myCar = car.addInstance("MyCar");
+		Generic color = engine.addInstance("Color");
+		Generic red = color.addInstance("Red");
+		Generic green = color.addInstance("Green");
+		Generic blue = color.addInstance("Blue");
+		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Generic myCarRed = vehicleColor.addInstance("myCarRed", myCar, red);
+		Generic myVehicleGreen = vehicleColor.addInstance("myCarRed", myVehicle, green);
 
 		// when
 		vehicle.forceRemove();

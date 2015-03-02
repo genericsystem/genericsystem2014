@@ -1,22 +1,21 @@
 package org.genericsystem.api.exception;
 
 /**
- * <p>
- * Thrown when doing forbidden operations on a dead element. A dead element is an element which has been removed. These include :
- * </p>
- * <ul>
- * <li>Adding a dead element as a component.
- * <li>Modifying a dead element.
- * </ul>
- * <p>
- * AliveConstraint can not be disabled.
- * </p>
+ * Thrown when an operation of the engine violates the constraint of a Generic to be alive.<br>
+ * For example, adding an attribute to a type that has been removed will throw an AliveConstraintViolationException.
+ * 
+ * @author Nicolas Feybesse
  */
 public class AliveConstraintViolationException extends ConstraintViolationException {
+	private static final long serialVersionUID = -4066409595001566155L;
 
-	private static final long serialVersionUID = 1838361171620854149L;
-
-	public AliveConstraintViolationException(String msg) {
-		super(msg);
+	/**
+	 * Constructs an <code>AliveConstraintViolationException</code> with the specified detail message.
+	 *
+	 * @param message
+	 *            the detail message.
+	 */
+	public AliveConstraintViolationException(String message) {
+		super(message);
 	}
 }

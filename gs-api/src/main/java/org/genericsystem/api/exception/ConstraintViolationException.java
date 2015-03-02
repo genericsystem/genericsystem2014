@@ -1,18 +1,26 @@
 package org.genericsystem.api.exception;
 
 /**
- * <p>
- * Constraints can be implicitly or explicitly positioned. Restricts the use of the elements on which there are positioned during runtime.
- * </p>
+ * The base exception for all constraint violation exceptions.
+ * 
+ * @author Nicolas Feybesse
  */
-public abstract class ConstraintViolationException extends RuntimeException {
+public abstract class ConstraintViolationException extends Exception {
+	private static final long serialVersionUID = 4647517844227534027L;
 
-	private static final long serialVersionUID = 3329692268513553709L;
-
+	/**
+	 * Constructs a <code>ConstraintViolationException</code> with no detail message.
+	 */
 	public ConstraintViolationException() {
-	};
+	}
 
-	public ConstraintViolationException(String msg) {
-		super(msg);
+	/**
+	 * Constructs a <code>ConstraintViolationException</code> with the specified detail message.
+	 *
+	 * @param message
+	 *            the detail message.
+	 */
+	public ConstraintViolationException(String message) {
+		super(message);
 	}
 }

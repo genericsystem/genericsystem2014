@@ -1,96 +1,90 @@
 package org.genericsystem.cache;
 
-import java.util.Arrays;
-import java.util.Collections;
-
+import org.genericsystem.kernel.Generic;
 import org.testng.annotations.Test;
 
 @Test
 public class AdjustMetaTest extends AbstractTest {
 
-	public void test001_AdjustMeta_MetaLevel_metaAttribut_NoComponent() {
+	public void test001_AdjustMeta_MetaLevel_metaAttribut_NoComposite() {
 		Engine engine = new Engine();
-
-		engine.setInstance(engine.getValue(), engine);
-		assert engine == engine.adjustMeta(Collections.emptyList(), "Power", Collections.emptyList());
+		assert engine == engine.adjustMeta("Power");
 	}
 
-	public void test002_AdjustMeta_MetaLevel_metaAttribut_OneComponent() {
-		Engine engine = new Engine();
-		Generic metaAttribute = engine.setInstance(engine.getValue(), engine);
-		Generic car = engine.addInstance("Car");
-		assert metaAttribute.equals(engine.adjustMeta(Collections.emptyList(), "Power", Collections.singletonList(car)));
-	}
-
-	public void test003_AdjustMeta_MetaLevel_metaAttribut_TwoComponents() {
-		Engine engine = new Engine();
-		Generic metaAttribute = engine.setInstance(engine.getValue(), engine);
-		Generic car = engine.addInstance("Car");
-		Generic color = engine.addInstance("Color");
-		assert metaAttribute.equals(engine.adjustMeta(Collections.emptyList(), "CarColor", Arrays.asList(car, color)));
-	}
-
-	public void test004_AdjustMeta_MetaLevel_metaAttribut() {
-		Engine engine = new Engine();
-		Generic metaAttribute = engine.setInstance(engine.getValue(), engine);
-		Generic robot = engine.addInstance("Robot");
-		Generic car = engine.addInstance("Car");
-		Generic color = engine.addInstance("Color");
-		assert metaAttribute.equals(engine.adjustMeta(Collections.emptyList(), "CarColor", Arrays.asList(car, color)));
-		Generic carColor = engine.addInstance("CarColor", car, color);
-		assert metaAttribute.equals(engine.adjustMeta(Collections.emptyList(), "Radio", Arrays.asList(car)));
-	}
-
-	public void test005_AdjustMeta_MetaLevel_metaRelation_ThreeComponents() {
+	public void test002_AdjustMeta_MetaLevel_metaAttribut_OneComposite() {
 		Engine engine = new Engine();
 		Generic metaAttribute = engine.getMetaAttribute();
-		assert metaAttribute.equals(engine.adjustMeta(Collections.emptyList(), engine.getValue(), Arrays.asList(engine, engine)));
-		Generic metaRelation = engine.addInstance(engine.getValue(), engine, engine);
 		Generic car = engine.addInstance("Car");
-		Generic color = engine.addInstance("Color");
-		Generic carColor = engine.addInstance("CarColor", car, color);
-		Generic finition = engine.addInstance("Finition");
-		assert metaRelation.equals(engine.adjustMeta(Collections.emptyList(), "CarColorFinition", Arrays.asList(car, color, finition)));
+		assert engine.adjustMeta("Power", car).getValue().equals(metaAttribute.getValue());
+
+		// assert engine.adjustMeta("Power", car).getMeta().equals(metaAttribute.getMeta());
+		// assert false : engine.adjustMeta("Power", car).getMeta().isRoot();
+		assert metaAttribute.equals(engine.adjustMeta("Power", car));
 	}
 
-	public void test006_AdjustMeta_TypeLevel_Relation_TwoComponents() {
+	public void test003_AdjustMeta_MetaLevel_metaAttribut_TwoComposites() {
 		Engine engine = new Engine();
+		Generic metaRelation = engine.getMetaRelation();
+		Generic car = engine.addInstance("Car");
+		Generic color = engine.addInstance("Color");
+		assert metaRelation.equals(engine.adjustMeta("CarColor", car, color));
+	}
 
+	public void test004_AdjustMeta_MetaLevel_metaAttribute() {
+		Engine engine = new Engine();
+		engine.addInstance("Robot");
+		Generic car = engine.addInstance("Car");
+		Generic color = engine.addInstance("Color");
+		assert engine.getMetaRelation().equals(engine.adjustMeta("CarColor", car, color));
+		engine.addInstance("CarColor", car, color);
+		assert engine.getMetaAttribute().equals(engine.adjustMeta("Radio", car));
+	}
+
+	public void test005_AdjustMeta_MetaLevel_metaRelation_ThreeComposites() {
+		Engine engine = new Engine();
+		Generic metaRelation = engine.getMetaRelation();
+		assert metaRelation.equals(engine.adjustMeta(engine.getValue(), engine, engine));
+		assert metaRelation.equals(engine.setInstance(engine.getValue(), engine, engine));
+		Generic car = engine.addInstance("Car");
+		Generic color = engine.addInstance("Color");
+		engine.addInstance("CarColor", car, color);
+		Generic finition = engine.addInstance("Finition");
+		assert metaRelation.equals(engine.adjustMeta("CarColor", car, color));
+	}
+
+	public void test006_AdjustMeta_TypeLevel_Relation_TwoComposites() {
+		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Generic car = vehicle.addInstance("Car");
 		Generic red = color.addInstance("Red");
-		assert vehicleColor == vehicleColor.adjustMeta(Collections.emptyList(), "CarRed", Arrays.asList(car, red)) : engine.adjustMeta(Collections.emptyList(), "CarRed", Arrays.asList(car, red));
+		assert vehicleColor == vehicleColor.adjustMeta("CarRed", car, red);
 	}
 
-	public void test007_AdjustMeta_TypeLevel_Relation_TwoComponents_oneComponentSpecializedByInheritance() {
+	public void test007_AdjustMeta_TypeLevel_Relation_TwoComposites_oneCompositeSpecializedByInheritance() {
 		Engine engine = new Engine();
-
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Generic color2 = engine.addInstance(color, "Color2");
 		Generic car = vehicle.addInstance("Car");
 		Generic red = color2.addInstance("Red");
-		assert vehicleColor.equals(vehicleColor.adjustMeta(Collections.emptyList(), "CarRed", Arrays.asList(car, red))) : engine.adjustMeta(Collections.emptyList(), "CarRed", Arrays.asList(car, red));
+		assert vehicleColor.equals(vehicleColor.adjustMeta("CarRed", car, red));
 	}
 
-	public void test008_AdjustMeta_TypeLevel_Relation_TwoComponents_oneComponentSpecializedByInstanciation() {
+	public void test008_AdjustMeta_TypeLevel_Relation_TwoComposites_oneCompositeSpecializedByInstanciation() {
 		Engine engine = new Engine();
-
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
-		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		Generic color2 = color.addInstance("Color2");
-		Generic car = vehicle.addInstance("Car");
-		Generic red = color2.addInstance("Red");
-		assert vehicleColor.equals(vehicleColor.adjustMeta(Collections.emptyList(), "CarRed", Arrays.asList(car, red))) : engine.adjustMeta(Collections.emptyList(), "CarRed", Arrays.asList(car, red));
+		Generic vehicleColor = vehicle.addAttribute("VehicleColor", color);
+		Generic red = color.addInstance("red");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		assert vehicleColor.equals(vehicleColor.adjustMeta("CarRed", myVehicle, red));
 	}
 
-	public void test009_AdjustMeta_TypeLevel_Relation_TwoComponents_TwoComponentSpecializedByInheritance() {
+	public void test009_AdjustMeta_TypeLevel_Relation_TwoComposites_TwoCompositeSpecializedByInheritance() {
 		Engine engine = new Engine();
-
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
@@ -98,151 +92,81 @@ public class AdjustMetaTest extends AbstractTest {
 		Generic color2 = engine.addInstance(color, "Color2");
 		Generic car = vehicle2.addInstance("Car");
 		Generic red = color2.addInstance("Red");
-		assert vehicleColor.equals(vehicleColor.adjustMeta(Collections.emptyList(), "CarRed", Arrays.asList(car, red))) : engine.adjustMeta(Collections.emptyList(), "CarRed", Arrays.asList(car, red));
+		assert vehicleColor.equals(vehicleColor.adjustMeta("CarRed", car, red));
 	}
 
-	public void test010_AdjustMeta_TypeLevel_Relation_TwoComponents_TwoComponentSpecializedByInstanciation() {
+	public void test010_AdjustMeta_TypeLevel_Relation_TwoComposites_TwoCompositeSpecializedByInstanciation() {
 		Engine engine = new Engine();
-
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Generic vehicle2 = engine.addInstance("Vehicle2");
-		Generic color2 = color.addInstance("Color2");
-		Generic car = vehicle2.addInstance("Car");
-		Generic red = color2.addInstance("Red");
-		assert vehicleColor.equals(vehicleColor.adjustMeta(Collections.emptyList(), "CarRed", Arrays.asList(car, red))) : engine.adjustMeta(Collections.emptyList(), "CarRed", Arrays.asList(car, red));
+		Generic red = color.addInstance("red");
+		Generic myVehicle2 = vehicle2.addInstance("myVehicle2");
+		assert vehicleColor.equals(vehicleColor.adjustMeta("CarRed", myVehicle2, red));
 	}
 
-	public void test011_AdjustMeta_TypeLevel_Relation_TwoComponents_TwoComponentSpecialized() {
+	public void test011_AdjustMeta_TypeLevel_Relation_TwoComposites_TwoCompositeSpecialized() {
 		Engine engine = new Engine();
-
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Generic vehicle2 = engine.addInstance(vehicle, "Vehicle2");
-		Generic color2 = color.addInstance("Color2");
+		Generic red = color.addInstance("red");
 		Generic car = vehicle2.addInstance("Car");
-		Generic red = color2.addInstance("Red");
-		assert vehicleColor.equals(vehicleColor.adjustMeta(Collections.emptyList(), "CarRed", Arrays.asList(car, red))) : engine.adjustMeta(Collections.emptyList(), "CarRed", Arrays.asList(car, red));
+		assert vehicleColor.equals(vehicleColor.adjustMeta("CarRed", car, red));
 	}
 
-	public void test012_AdjustMeta_TypeLevel_Relation_ThreeComponents() {
+	public void test012_AdjustMeta_TypeLevel_Relation_ThreeComposites() {
 		Engine engine = new Engine();
-
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Generic vehicle2 = engine.addInstance(vehicle, "Vehicle2");
-		Generic color2 = color.addInstance("Color2");
+		Generic red = color.addInstance("red");
 		Generic finition = engine.addInstance("Finition");
-		Generic car = vehicle2.addInstance("Car");
-		Generic red = color2.addInstance("Red");
+		Generic myVehicle2 = vehicle2.addInstance("myVehicle2");
 
-		assert vehicleColor.equals(vehicleColor.adjustMeta(Collections.emptyList(), "CarRed", Arrays.asList(car, red, finition))) : engine.adjustMeta(Collections.emptyList(), "CarRed", Arrays.asList(car, red, finition));
+		assert vehicleColor.equals(vehicleColor.adjustMeta("CarRed", myVehicle2, red, finition));
 	}
 
-	public void test013_AdjustMeta_TypeLevel_Relation_ThreeComponents() {
+	public void test013_AdjustMeta_TypeLevel_Relation_ThreeComposites() {
 		Engine engine = new Engine();
-
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		Generic vehicle2 = engine.addInstance(vehicle, "Vehicle2");
 		Generic vehicleColor2 = engine.addInstance(vehicleColor, "VehicleColor2", vehicle2, color);
-		Generic color2 = color.addInstance("Color2");
+		Generic red = color.addInstance("red");
 		Generic finition = engine.addInstance("Finition");
-		Generic car = vehicle2.addInstance("Car");
-		Generic red = color2.addInstance("Red");
-
-		assert vehicleColor2.equals(vehicleColor.adjustMeta(Collections.emptyList(), "CarRed", Arrays.asList(car, red, finition))) : engine.adjustMeta(Collections.emptyList(), "CarRed", Arrays.asList(car, red, finition));
+		Generic myVehicle2 = vehicle2.addInstance("myVehicle2");
+		assert vehicleColor2.equals(vehicleColor.adjustMeta("CarRed", myVehicle2, red, finition));
 	}
 
-	public void test014_AdjustMeta_TypeLevel_Relation_ThreeComponents() {
+	public void test014_AdjustMeta_TypeLevel_Relation_ThreeComposites() {
 		Engine engine = new Engine();
-
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
-		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Generic vehicleColor = vehicle.addAttribute("VehicleColor", color);
 		Generic vehicle2 = engine.addInstance(vehicle, "Vehicle2");
-		Generic color2 = color.addInstance("Color2");
-		Generic vehicleColor2 = engine.addInstance(vehicleColor, "VehicleColor2", vehicle2, color2);
+		Generic red = color.addInstance("red");
+		Generic vehicleColor2 = vehicle2.addAttribute(vehicleColor, "VehicleColor2", color);
 		Generic finition = engine.addInstance("Finition");
-		Generic car = vehicle2.addInstance("Car");
-		Generic red = color2.addInstance("Red");
-		assert vehicleColor2.equals(vehicleColor.adjustMeta(Collections.emptyList(), "CarRed", Arrays.asList(car, red, finition))) : engine.adjustMeta(Collections.emptyList(), "CarRed", Arrays.asList(car, red, finition));
+		Generic myVehicle2 = vehicle2.addInstance("myVehicle2");
+		assert vehicleColor2.equals(vehicleColor.adjustMeta("CarRed", myVehicle2, red, finition));
 	}
 
-	public void test015_AdjustMeta_TypeLevel_Relation_ThreeComponents() {
+	public void test015_AdjustMeta_TypeLevel_Relation_ThreeComposites() {
 		Engine engine = new Engine();
-
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
-		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Generic vehicleColor = vehicle.addAttribute("VehicleColor", color);
 		Generic vehicle2 = engine.addInstance(vehicle, "Vehicle2");
-		Generic color2 = color.addInstance("Color2");
+		Generic red = color.addInstance("red");
 		Generic finition = engine.addInstance("Finition");
-		Generic car = vehicle2.addInstance("Car");
-		Generic vehicleColor2 = engine.addInstance(vehicleColor, "VehicleColor2", car, color2);
-		Generic red = color2.addInstance("Red");
-		assert vehicleColor2.equals(vehicleColor.adjustMeta(Collections.emptyList(), "CarRed", Arrays.asList(car, red, finition))) : engine.adjustMeta(Collections.emptyList(), "CarRed", Arrays.asList(car, red, finition));
-	}
-
-	public void test016_AdjustMeta_TypeLevel_Relation_ThreeComponents() {
-		Engine engine = new Engine();
-
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic color = engine.addInstance("Color");
-		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		Generic vehicle2 = engine.addInstance(vehicle, "Vehicle2");
-		Generic vehicleColor2 = engine.addInstance(vehicleColor, "VehicleColor2", vehicle2, color);
-		Generic color2 = color.addInstance("Color2");
-		Generic finition = engine.addInstance("Finition");
-		Generic car = vehicle2.addInstance("Car");
-		Generic vehicleColor3 = engine.addInstance(vehicleColor2, "VehicleColor3", car, color2);
-		Generic red = color2.addInstance("Red");
-		assert vehicleColor3.equals(vehicleColor.adjustMeta(Collections.emptyList(), "CarRed", Arrays.asList(car, red, finition))) : engine.adjustMeta(Collections.emptyList(), "CarRed", Arrays.asList(car, red, finition));
-	}
-
-	public void test017_AdjustMeta_TypeLevel_Relation_ThreeComponents() {
-		Engine engine = new Engine();
-
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic vehicle2 = engine.addInstance(vehicle, "Vehicle2");
-		Generic vehicleVehicle2 = engine.addInstance("VehicleVehicle2", vehicle, vehicle2);
-		Generic power = engine.addInstance("Power", vehicle);
-		Generic intensity = engine.addInstance(power, "Intensity", vehicle2);
-		Generic unit = engine.addInstance("Unit", power);
-		Generic intensityUnit = engine.addInstance(unit, "Unit", intensity);
-		Generic car = vehicle.addInstance("Car");
-		Generic bus = vehicle2.addInstance("Bus");
-		power.addInstance(100, car);
-		intensity.addInstance(110, bus);
-		unit.addInstance("Watt", power);
-		intensityUnit.addInstance("KWatt", intensity);
-		Generic vehicleBus = engine.addInstance(vehicleVehicle2, "VehicleBus", vehicle, bus);
-		assert vehicleBus.equals(vehicleVehicle2.adjustMeta(Collections.emptyList(), "carBus", Arrays.asList(car, bus)));
-	}
-
-	public void test018_AdjustMeta_TypeLevel_Relation() {
-		Engine engine = new Engine();
-
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic vehicle2 = engine.addInstance(vehicle, "Vehicle2");
-		Generic vehicleVehicle2 = engine.addInstance("VehicleVehicle2", vehicle, vehicle2);
-		Generic power = engine.addInstance("Power", vehicle);
-		Generic intensity = engine.addInstance(power, "Intensity", vehicle2);
-		Generic unit = engine.addInstance("Unit", power);
-		Generic intensityUnit = engine.addInstance(unit, "Unit", intensity);
-		Generic car = vehicle.addInstance("Car");
-		Generic bus = vehicle2.addInstance("Bus");
-		power.addInstance(100, car);
-		Generic v110 = intensity.addInstance(110, bus);
-		Generic watt = unit.addInstance("Watt", power);
-		Generic kWatt = intensityUnit.addInstance(watt, "KWatt", intensity);
-
-		Generic vehicleVehicle2IntensityUnitWatt = engine.addInstance(vehicleVehicle2, "VehicleVehicle2IntensityUnitWatt", vehicle, vehicle2, intensity, unit, watt);
-		assert vehicleVehicle2IntensityUnitWatt.equals(vehicleVehicle2.adjustMeta(Collections.emptyList(), "carBus", Arrays.asList(car, bus, v110, intensityUnit, kWatt)));
+		Generic myVehicle2 = vehicle2.addInstance("myVehicle2");
+		Generic vehicleColor2 = vehicle2.addAttribute(vehicleColor, "VehicleColor2", color);
+		assert vehicleColor2.equals(vehicleColor.adjustMeta("CarRed", myVehicle2, red, finition));
 	}
 
 	public void test020_AdjustMeta_TypeLevel_Attribute() {
@@ -250,6 +174,6 @@ public class AdjustMetaTest extends AbstractTest {
 		Generic power = engine.addInstance("Power", engine);
 		Generic car = engine.addInstance("Car", engine);
 		Generic carPower = engine.addInstance(power, "carPower", engine);
-		assert carPower.equals(power.adjustMeta(Collections.emptyList(), 235, Collections.singletonList(car)));
+		assert carPower.equals(power.adjustMeta(235, car));
 	}
 }

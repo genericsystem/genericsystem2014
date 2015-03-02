@@ -1,20 +1,21 @@
 package org.genericsystem.api.exception;
 
-import org.genericsystem.api.annotation.constraint.PropertyConstraint;
-
 /**
- * <p>
- * Thrown when an element is instantiated with a value already affected on another component.
- * </p>
+ * Thrown when a user operation violates the <code>PropertyConstraint</code>. The user tries to add a second value for an attribute.
  * 
- * @see PropertyConstraint
+ * @author Nicolas Feybesse
+ * @see org.genericsystem.kernel.systemproperty.constraints.PropertyConstraint
  */
 public class PropertyConstraintViolationException extends ConstraintViolationException {
-
 	private static final long serialVersionUID = 2865134783470066396L;
 
-	public PropertyConstraintViolationException(String msg) {
-		super(msg);
+	/**
+	 * Constructs a <code>PropertyConstraintViolationException</code> with the specified detail message.
+	 *
+	 * @param message
+	 *            the detail message.
+	 */
+	public PropertyConstraintViolationException(String message) {
+		super(message);
 	}
-
 }

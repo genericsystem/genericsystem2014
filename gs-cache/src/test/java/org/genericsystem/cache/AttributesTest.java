@@ -2,6 +2,7 @@ package org.genericsystem.cache;
 
 import java.util.Arrays;
 
+import org.genericsystem.kernel.Generic;
 import org.testng.annotations.Test;
 
 @Test
@@ -12,7 +13,7 @@ public class AttributesTest extends AbstractTest {
 		Generic vehicle = engine.addInstance("Vehicle");
 		assert vehicle.getLevel() == 1 : vehicle.getLevel();
 		Generic power = engine.addInstance("Power", vehicle);
-		assert power.getComponentsStream().count() == 1;
+		assert power.getComponents().size() == 1;
 		assert vehicle.equals(power.getComponents().get(0));
 		assert power.isAlive();
 	}
@@ -94,8 +95,8 @@ public class AttributesTest extends AbstractTest {
 	}
 
 	/*
-	 * public void testSimple1MetaAttribut() { Engine engine = new Engine(); Generic car = engine.addInstance("Car"); Generic power = engine.addInstance("Power", car); assert power.getComponentsStream().count() == 1; assert
-	 * car.equals(power.getComponents()[0]); assert power.isAlive(); }
+	 * public void testSimple1MetaAttribut() { Engine engine = new Engine(); Generic car = engine.addInstance("Car"); Generic power = engine.addInstance("Power", car); assert power.getCompositesStream().count() == 1; assert
+	 * car.equals(power.getComposites()[0]); assert power.isAlive(); }
 	 */
 	public void test2Attributs() {
 
