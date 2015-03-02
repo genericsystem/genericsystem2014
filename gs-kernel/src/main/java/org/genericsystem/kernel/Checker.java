@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.defaults.DefaultRoot;
 import org.genericsystem.api.defaults.DefaultVertex;
@@ -131,7 +132,7 @@ public class Checker<T extends DefaultVertex<T>> {
 
 	private void checkRemoveGenericAnnoted(boolean isOnAdd, T vertex) {
 		if (!isOnAdd && vertex.isSystem())
-			getContext().discardWithException(new IllegalAccessException("System node can't be removed"));
+			getContext().discardWithException(new IllegalAccessException("System node can't be removed " + vertex.info()));
 	}
 
 	private void checkIsAlive(T vertex) {
