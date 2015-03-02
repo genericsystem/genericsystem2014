@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
@@ -216,7 +215,7 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 		if (componentsList.size() != components.size())
 			return false;
 		for (int i = 0; i < componentsList.size(); i++)
-			if (!isReferentialIntegrityEnabled(i) && isSingularConstraintEnabled(i))
+			if (!getMeta().isReferentialIntegrityEnabled(i) && getMeta().isSingularConstraintEnabled(i))
 				return equiv(componentsList.get(i), components.get(i));
 		for (int i = 0; i < componentsList.size(); i++)
 			if (!equiv(componentsList.get(i), components.get(i)))
