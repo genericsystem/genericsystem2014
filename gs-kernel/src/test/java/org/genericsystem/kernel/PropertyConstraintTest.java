@@ -10,14 +10,14 @@ public class PropertyConstraintTest extends AbstractTest {
 
 	public void test001_enablePropertyConstraint_addInstance() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex power = root.addInstance("Power", vehicle);
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic power = root.addInstance("Power", vehicle);
+		Generic myVehicle = vehicle.addInstance("myVehicle");
 
 		power.enablePropertyConstraint();
 		assert power.isPropertyConstraintEnabled();
 
-		Vertex v123 = myVehicle.addHolder(power, "123");
+		Generic v123 = myVehicle.addHolder(power, "123");
 		assert !v123.inheritsFrom(power, "126", Arrays.asList(myVehicle));
 
 		catchAndCheckCause(() -> myVehicle.addHolder(power, "126"), PropertyConstraintViolationException.class);
@@ -25,12 +25,12 @@ public class PropertyConstraintTest extends AbstractTest {
 
 	public void test001_enablePropertyConstraint_addInstance_link() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex color = root.addInstance("Color");
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		Vertex red = color.addInstance("red");
-		Vertex blue = color.addInstance("blue");
-		Vertex vehicleColorOutside = vehicle.addAttribute("outside", color);
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic color = root.addInstance("Color");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic red = color.addInstance("red");
+		Generic blue = color.addInstance("blue");
+		Generic vehicleColorOutside = vehicle.addAttribute("outside", color);
 
 		vehicleColorOutside.enablePropertyConstraint();
 		assert vehicleColorOutside.isPropertyConstraintEnabled();
@@ -41,9 +41,9 @@ public class PropertyConstraintTest extends AbstractTest {
 
 	public void test002_enablePropertyConstraint_addInstance() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex power = root.addInstance("Power", vehicle);
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic power = root.addInstance("Power", vehicle);
+		Generic myVehicle = vehicle.addInstance("myVehicle");
 
 		power.enablePropertyConstraint();
 		assert power.isPropertyConstraintEnabled();
@@ -53,8 +53,8 @@ public class PropertyConstraintTest extends AbstractTest {
 
 	public void test001_enablePropertyConstraint_setInstance() {
 		Root Root = new Root();
-		Vertex vehicle = Root.addInstance("Vehicle");
-		Vertex power = Root.addInstance("Power", vehicle);
+		Generic vehicle = Root.addInstance("Vehicle");
+		Generic power = Root.addInstance("Power", vehicle);
 		power.enablePropertyConstraint();
 		assert power.isPropertyConstraintEnabled();
 		power.setInstance("123", vehicle);
@@ -65,8 +65,8 @@ public class PropertyConstraintTest extends AbstractTest {
 
 	public void test001_disablePropertyConstraint_setInstance() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex power = root.addInstance("Power", vehicle);
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic power = root.addInstance("Power", vehicle);
 		power.enablePropertyConstraint();
 		assert power.isPropertyConstraintEnabled();
 		power.setInstance("123", vehicle);

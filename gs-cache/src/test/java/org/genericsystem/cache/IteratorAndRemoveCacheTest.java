@@ -5,6 +5,7 @@ import java.util.Iterator;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
+import org.genericsystem.kernel.Generic;
 import org.testng.annotations.Test;
 
 @Test
@@ -67,7 +68,7 @@ public class IteratorAndRemoveCacheTest extends AbstractTest {
 		myCar.remove();
 		cache.flush();
 		cache2.start();
-		catchAndCheckCause(() -> cache2.flush(), OptimisticLockConstraintViolationException.class);
+		catchAndCheckCause(() -> cache2.tryFlush(), OptimisticLockConstraintViolationException.class);
 	}
 
 	public void test003_IterateAndRemove() {

@@ -3,16 +3,16 @@ package org.genericsystem.kernel;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 import org.genericsystem.api.core.IteratorSnapshot;
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
-public class DependenciesImpl<T> implements Dependencies<T>, IteratorSnapshot<T> {
+public class PseudoConcurrentCollection<T> implements IteratorSnapshot<T> {
 
 	private Node<T> head = null;
 	private Node<T> tail = null;
 	final Map<T, T> map = new HashMap<>();
 
-	@Override
 	public void add(T element) {
 		assert element != null;
 		Node<T> newNode = new Node<>(element);
@@ -24,9 +24,8 @@ public class DependenciesImpl<T> implements Dependencies<T>, IteratorSnapshot<T>
 		map.put(element, element);
 	}
 
-	@Override
 	public boolean remove(T element) {
-		Iterator<T> iterator = iterator(0);
+		Iterator<T> iterator = iterator();
 		while (iterator.hasNext())
 			if (element.equals(iterator.next())) {
 				iterator.remove();
@@ -34,16 +33,6 @@ public class DependenciesImpl<T> implements Dependencies<T>, IteratorSnapshot<T>
 				return true;
 			}
 		return false;
-	}
-
-	@Override
-	public T get(Object o, long ts) {
-		return map.get(o);
-	}
-
-	@Override
-	public Iterator<T> iterator(long ts) {
-		return new InternalIterator();
 	}
 
 	public class InternalIterator extends AbstractGeneralAwareIterator<Node<T>, T> implements Iterator<T> {
@@ -86,11 +75,11 @@ public class DependenciesImpl<T> implements Dependencies<T>, IteratorSnapshot<T>
 
 	@Override
 	public Iterator<T> iterator() {
-		return iterator(0);
+		return new InternalIterator();
 	}
 
 	@Override
 	public T get(Object o) {
-		return get(o, 0);
+		return map.get(o);
 	}
 }

@@ -11,8 +11,8 @@ public class InstanceValueClassConstraintTest extends AbstractTest {
 	public void test01_setAndGet() {
 		Stream.empty().count();
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
 
 		assert myVehicle.getClassConstraint() == null;
 		vehicle.setClassConstraint(String.class);
@@ -26,9 +26,9 @@ public class InstanceValueClassConstraintTest extends AbstractTest {
 
 	public void test02_noException() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		Vertex power = root.addInstance("Power");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic power = root.addInstance("Power");
 		vehicle.addAttribute(power, "Power");
 		power.setClassConstraint(Integer.class);
 
@@ -37,9 +37,9 @@ public class InstanceValueClassConstraintTest extends AbstractTest {
 
 	public void test03_exception() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		Vertex power = root.addInstance("Power");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic power = root.addInstance("Power");
 		vehicle.addAttribute(power, "Power");
 		power.setClassConstraint(Integer.class);
 
@@ -49,9 +49,9 @@ public class InstanceValueClassConstraintTest extends AbstractTest {
 
 	public void test04_DisableConstraint() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		Vertex power = root.addInstance("Power");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic power = root.addInstance("Power");
 		vehicle.addAttribute(power, "Power");
 		power.setClassConstraint(Integer.class);
 
@@ -62,9 +62,9 @@ public class InstanceValueClassConstraintTest extends AbstractTest {
 
 	public void test05_DisableConstraint() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		Vertex power = root.addInstance("Power");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic power = root.addInstance("Power");
 		vehicle.addAttribute(power, "Power");
 		power.enableClassConstraint(Integer.class);
 

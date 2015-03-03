@@ -9,32 +9,32 @@ public class UpdateTest extends AbstractTest {
 
 	public void test001_updateValue() {
 		Root root = new Root();
-		Vertex car = root.addInstance("Car");
+		Generic car = root.addInstance("Car");
 		assert "Car".equals(car.getValue());
-		Vertex carRename = car.update("CarRename");
+		Generic carRename = car.update("CarRename");
 		assert !car.isAlive();
 		assert "CarRename".equals(carRename.getValue());
 	}
 
 	public void test002_updateValue() {
 		Root root = new Root();
-		Vertex car = root.addInstance("Car");
+		Generic car = root.addInstance("Car");
 		assert "Car".equals(car.getValue());
-		Vertex carRename = car.updateValue("CarRename");
+		Generic carRename = car.updateValue("CarRename");
 		assert !car.isAlive();
 		assert "CarRename".equals(carRename.getValue());
 	}
 
 	public void test002_updateMeta() {
 		Root root = new Root();
-		Vertex car = root.addInstance("Car");
-		Vertex power = car.addAttribute("Power");
-		Vertex myCar = car.addInstance("MyCar");
+		Generic car = root.addInstance("Car");
+		Generic power = car.addAttribute("Power");
+		Generic myCar = car.addInstance("MyCar");
 
-		Vertex myCarV233 = myCar.addHolder(power, "myCarV233");
+		Generic myCarV233 = myCar.addHolder(power, "myCarV233");
 
 		assert myCar.getMeta().equals(car);
-		Vertex carUpdate = car.updateValue("CarUpdate");
+		Generic carUpdate = car.updateValue("CarUpdate");
 		assert carUpdate.getInstances().get().allMatch(x -> "MyCar".equals(x.getValue()));
 		assert carUpdate.getInstances().get().allMatch(x -> x.getHolders(power).get().allMatch(y -> "myCarV233".equals(y.getValue())));
 		assert !myCar.isAlive();
@@ -46,16 +46,16 @@ public class UpdateTest extends AbstractTest {
 
 	public void test004_updateHolder() {
 		Root root = new Root();
-		Vertex car = root.addInstance("Car");
-		Vertex power = car.addAttribute("Power");
-		Vertex myCar = car.addInstance("MyCar");
-		Vertex v233 = myCar.addHolder(power, 233);
+		Generic car = root.addInstance("Car");
+		Generic power = car.addAttribute("Power");
+		Generic myCar = car.addInstance("MyCar");
+		Generic v233 = myCar.addHolder(power, 233);
 
 		assert myCar.getComposites().contains(v233);
 		assert myCar.getComposites().size() == 1;
 		assert v233.getValue().equals(233);
 
-		Vertex v455 = v233.updateValue(455);
+		Generic v455 = v233.updateValue(455);
 
 		assert !v233.isAlive();
 		assert myCar.getComposites().contains(v455);
@@ -65,12 +65,12 @@ public class UpdateTest extends AbstractTest {
 
 	public void test005_updateSuper() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(vehicle, "Car");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
 
 		assert car.getSupers().contains(vehicle);
-		Vertex vehicleBis = root.addInstance("VehicleBis");
-		Vertex carBis = car.updateSupers(vehicleBis);
+		Generic vehicleBis = root.addInstance("VehicleBis");
+		Generic carBis = car.updateSupers(vehicleBis);
 
 		assert !car.isAlive();
 		assert vehicle.isAlive();
@@ -88,23 +88,23 @@ public class UpdateTest extends AbstractTest {
 
 	public void test006_attributeToRelation() {
 		Root root = new Root();
-		Vertex car = root.addInstance("Car");
-		Vertex power = car.addAttribute("Power");
-		Vertex myCar = car.addInstance("MyCar");
-		Vertex v233 = myCar.addHolder(power, 233);
-		Vertex powerType = root.addInstance("PowerType");
+		Generic car = root.addInstance("Car");
+		Generic power = car.addAttribute("Power");
+		Generic myCar = car.addInstance("MyCar");
+		Generic v233 = myCar.addHolder(power, 233);
+		Generic powerType = root.addInstance("PowerType");
 		catchAndCheckCause(() -> power.update("carPower", powerType), MetaRuleConstraintViolationException.class);
 	}
 
 	public void test007_structurel_WithInheritings_AndInstances() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(vehicle, "Car");
-		Vertex power = car.addAttribute("Power");
-		Vertex myCar = car.addInstance("myCar");
-		Vertex v233 = myCar.addHolder(power, 233);
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic power = car.addAttribute("Power");
+		Generic myCar = car.addInstance("myCar");
+		Generic v233 = myCar.addHolder(power, 233);
 
-		Vertex vehicleUpdate = vehicle.update("VehicleUpdate");
+		Generic vehicleUpdate = vehicle.update("VehicleUpdate");
 
 		assert vehicleUpdate.isAlive();
 		assert !vehicle.isAlive();
@@ -121,14 +121,14 @@ public class UpdateTest extends AbstractTest {
 
 	public void test008_updateToAlreadyExists() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		Vertex car = root.addInstance("Car");
-		Vertex power = car.addAttribute("Power");
-		Vertex myCar = car.addInstance("myCar");
-		Vertex v233 = myCar.addHolder(power, 233);
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic car = root.addInstance("Car");
+		Generic power = car.addAttribute("Power");
+		Generic myCar = car.addInstance("myCar");
+		Generic v233 = myCar.addHolder(power, 233);
 
-		Vertex carUpdate = car.update("Vehicle");
+		Generic carUpdate = car.update("Vehicle");
 
 		assert carUpdate.equals(vehicle) : carUpdate.info();
 		assert !car.isAlive();
@@ -141,18 +141,18 @@ public class UpdateTest extends AbstractTest {
 
 	public void test009_updateToAlreadyExists() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex power = vehicle.addAttribute("Power");
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		Vertex v233 = myVehicle.addHolder(power, 233);
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic power = vehicle.addAttribute("Power");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic v233 = myVehicle.addHolder(power, 233);
 
-		Vertex car = root.addInstance("Car");
+		Generic car = root.addInstance("Car");
 		assert !root.getCurrentCache().computeDependencies(car).contains(power);
-		Vertex powerBis = car.addAttribute("Power");
-		Vertex myCar = car.addInstance("myCar");
-		Vertex v233Bis = myCar.addHolder(powerBis, 233);
+		Generic powerBis = car.addAttribute("Power");
+		Generic myCar = car.addInstance("myCar");
+		Generic v233Bis = myCar.addHolder(powerBis, 233);
 
-		Vertex carUpdate = car.update("Vehicle");
+		Generic carUpdate = car.update("Vehicle");
 		assert power.isAlive();
 
 		assert carUpdate.equals(vehicle);
@@ -184,31 +184,31 @@ public class UpdateTest extends AbstractTest {
 
 	public void test010_propertyConstraint() {
 		Root engine = new Root();
-		Vertex car = engine.addInstance("Car");
-		Vertex myCar = car.addInstance("myCar");
+		Generic car = engine.addInstance("Car");
+		Generic myCar = car.addInstance("myCar");
 
-		Vertex color = engine.addInstance("Color");
-		Vertex red = color.addInstance("red");
-		Vertex yellow = color.addInstance("yellow");
+		Generic color = engine.addInstance("Color");
+		Generic red = color.addInstance("red");
+		Generic yellow = color.addInstance("yellow");
 
-		Vertex carColor = car.addAttribute("carColor", color);
+		Generic carColor = car.addAttribute("carColor", color);
 		carColor.enablePropertyConstraint();
 
-		Vertex myCarRed = carColor.addInstance("myCarRed", myCar, red);
+		Generic myCarRed = carColor.addInstance("myCarRed", myCar, red);
 		carColor.addInstance("myCarYellow", myCar, yellow);
 		catchAndCheckCause(() -> myCarRed.update("myCarRed", myCar, yellow), PropertyConstraintViolationException.class);
 	}
 
 	public void test011_propertyConstraint() {
 		Root engine = new Root();
-		Vertex car = engine.addInstance("Car");
-		Vertex myCar = car.addInstance("myCar");
+		Generic car = engine.addInstance("Car");
+		Generic myCar = car.addInstance("myCar");
 
-		Vertex color = engine.addInstance("Color");
+		Generic color = engine.addInstance("Color");
 		color.addInstance("red");
-		Vertex yellow = color.addInstance("yellow");
+		Generic yellow = color.addInstance("yellow");
 
-		Vertex carColor = car.addAttribute("carColor", color);
+		Generic carColor = car.addAttribute("carColor", color);
 		carColor.enablePropertyConstraint();
 
 		carColor.addInstance("myCarYellow", myCar, yellow);

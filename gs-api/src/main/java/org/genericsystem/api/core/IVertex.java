@@ -822,89 +822,6 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	T setInstance(List<T> overrides, Serializable value, T... components);
 
 	/**
-	 * Returns a new root that satisfies the specified <code>value</code>.
-	 * 
-	 * @param value
-	 *            the expected value.
-	 * @return the new root.
-	 */
-	T addRoot(Serializable value);
-
-	/**
-	 * Returns an existing or a new root that satisfies the specified <code>value</code>.
-	 * 
-	 * @param value
-	 *            the expected value.
-	 * @return a new root or the existing root that satisfies the specified <code>value</code>.
-	 */
-	T setRoot(Serializable value);
-
-	/**
-	 * Returns a new child that satisfies the specified <code>value</code> and <code>targets</code>.
-	 * 
-	 * @param value
-	 *            the expected value.
-	 * @param targets
-	 *            the expected target references.
-	 * @return the new child.
-	 */
-	@SuppressWarnings("unchecked")
-	T addChild(Serializable value, T... targets);
-
-	/**
-	 * Returns an existing or a new child that satisfies the specified <code>value</code> and <code>targets</code>.
-	 * 
-	 * @param value
-	 *            the expected value.
-	 * @param targets
-	 *            the expected target references.
-	 * @return a new child or the existing child that satisfies the specified <code>value</code> and <code>targets</code>.
-	 */
-	@SuppressWarnings("unchecked")
-	T setChild(Serializable value, T... targets);
-
-	/**
-	 * Returns a new inheriting child that satisfies the specified <code>value</code> and <code>targets</code>.
-	 * 
-	 * @param value
-	 *            the expected value.
-	 * @param targets
-	 *            the expected target references.
-	 * @return the new inheriting child.
-	 */
-	@SuppressWarnings("unchecked")
-	T addInheritingChild(Serializable value, T... targets);
-
-	/**
-	 * Returns an existing or a new inheriting child that satisfies the specified <code>value</code> and <code>targets</code>.
-	 * 
-	 * @param value
-	 *            the expected value.
-	 * @param targets
-	 *            the expected target references.
-	 * @return a new inheriting child or the existing inheriting child that satisfies the specified <code>value</code> and <code>targets</code>.
-	 */
-	@SuppressWarnings("unchecked")
-	T setInheritingChild(Serializable value, T... targets);
-
-	/**
-	 * Returns all children of this node. The children of the children are also returned and so on.
-	 * 
-	 * @return all children of this node.
-	 */
-	Snapshot<T> getAllChildren();
-
-	/**
-	 * Returns the direct children of this node.
-	 * <p>
-	 * To get all children that are children of this node, consider <code>getAllChildren()</code>.
-	 * </p>
-	 * 
-	 * @return the direct children of this node.
-	 */
-	Snapshot<T> getChildren();
-
-	/**
 	 * Traverse the Tree.
 	 *
 	 * @param visitor
@@ -933,7 +850,7 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 		public void traverse(T node) {
 			if (alreadyVisited.add(node)) {
 				before(node);
-				for (T child : node.getChildren())
+				for (T child : node.getInheritings())
 					traverse(child);
 				after(node);
 			}

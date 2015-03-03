@@ -1,37 +1,29 @@
 package org.genericsystem.kernel;
 
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.function.Supplier;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Stream;
 
-import org.genericsystem.api.core.IteratorSnapshot;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.defaults.DefaultRoot;
-import org.genericsystem.api.exception.NotFoundException;
+import org.genericsystem.kernel.Builder.GenericBuilder;
 
-public class Transaction<T extends AbstractVertex<T>> extends Context<T> {
+public class Transaction extends Context<Generic> {
 
 	private final long ts;
 
-	protected Transaction(DefaultRoot<T> root, long ts) {
+	protected Transaction(DefaultRoot<Generic> root, long ts) {
 		super(root);
 		this.ts = ts;
 	}
 
-	protected Transaction(DefaultRoot<T> root) {
+	protected Transaction(DefaultRoot<Generic> root) {
 		this(root, root.pickNewTs());
 	}
 
 	@Override
-	protected Builder<T> buildBuilder() {
-		return new Builder<T>(this) {
-
-			@Override
-			public T build(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs) {
-				return newT(clazz, meta).init(getContext().getRoot().pickNewTs(), meta, supers, value, components, otherTs);
-			}
-		};
+	protected Builder<Generic> buildBuilder() {
+		return new GenericBuilder(this);
 	}
 
 	@Override
@@ -39,68 +31,55 @@ public class Transaction<T extends AbstractVertex<T>> extends Context<T> {
 		return ts;
 	}
 
-	public void apply(Iterable<T> removes, Iterable<T> adds) {
-		for (T generic : removes)
+	public void apply(Iterable<Generic> removes, Iterable<Generic> adds) {
+		for (Generic generic : removes)
 			unplug(generic);
-		for (T generic : adds)
+		for (Generic generic : adds)
 			plug(generic);
 	}
 
-	private class AbstractIteratorSnapshot implements IteratorSnapshot<T> {
+	@Override
+	public Snapshot<Generic> getDependencies(Generic vertex) {
+		return new Snapshot<Generic>() {
 
-		private final Supplier<Dependencies<T>> dependenciesSupplier;
+			@Override
+			public Stream<Generic> get() {
+				return vertex.getDependencies().stream(getTs());
+			}
 
-		private AbstractIteratorSnapshot(Supplier<Dependencies<T>> dependenciesSupplier) {
-			this.dependenciesSupplier = dependenciesSupplier;
-		}
-
-		@Override
-		public Iterator<T> iterator() {
-			return dependenciesSupplier.get().iterator(getTs());
-		}
-
-		@Override
-		public T get(Object o) {
-			return dependenciesSupplier.get().get(o, getTs());
-		}
+			@Override
+			public Generic get(Object o) {
+				return vertex.getDependencies().get(o, getTs());
+			}
+		};
 	}
 
 	@Override
-	public Snapshot<T> getInstances(T vertex) {
-		return new AbstractIteratorSnapshot(() -> vertex.getInstancesDependencies());
-	}
-
-	@Override
-	public Snapshot<T> getInheritings(T vertex) {
-		return new AbstractIteratorSnapshot(() -> vertex.getInheritingsDependencies());
-	}
-
-	@Override
-	public Snapshot<T> getComposites(T vertex) {
-		return new AbstractIteratorSnapshot(() -> vertex.getCompositesDependencies());
-	}
-
-	@Override
-	protected T plug(T generic) {
+	protected Generic plug(Generic generic) {
 		if (getRoot().isInitialized())
 			generic.getLifeManager().beginLife(getTs());
+		Set<Generic> set = new HashSet<>();
 		if (!generic.isMeta())
-			generic.getMeta().getInstancesDependencies().add(generic);
-		generic.getSupers().forEach(superGeneric -> superGeneric.getInheritingsDependencies().add(generic));
-		generic.getComponents().stream().filter(component -> component != null).distinct().forEach(component -> component.getCompositesDependencies().add(generic));
+			set.add(generic.getMeta());
+		set.addAll(generic.getSupers());
+		set.addAll(generic.getComponents());
+		set.stream().forEach(ancestor -> ancestor.getDependencies().add(generic));
 		getChecker().checkAfterBuild(true, false, generic);
 		return generic;
 	}
 
 	@Override
-	protected void unplug(T generic) {
+	protected void unplug(Generic generic) {
 		getChecker().checkAfterBuild(false, false, generic);
 		generic.getLifeManager().kill(getTs());
-		boolean result = generic != generic.getMeta() ? generic.getMeta().getInstancesDependencies().remove(generic) : true;
-		if (!result)
-			discardWithException(new NotFoundException(generic.info()));
-		generic.getSupers().forEach(superGeneric -> superGeneric.getInheritingsDependencies().remove(generic));
-		generic.getComponents().stream().filter(component -> component != null).forEach(component -> component.getCompositesDependencies().remove(generic));
+		// if (!result)
+		// discardWithException(new NotFoundException(generic.info()));
+		Set<Generic> set = new HashSet<>();
+		if (!generic.isMeta())
+			set.add(generic.getMeta());
+		set.addAll(generic.getSupers());
+		set.addAll(generic.getComponents());
+		set.stream().forEach(ancestor -> ancestor.getDependencies().remove(generic));
 	}
 
 }

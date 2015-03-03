@@ -27,15 +27,15 @@ public class MultipleRootsTest extends AbstractTest {
 	public void test002_addInstance_attribute() {
 		Root engine1 = new Root();
 		Root engine2 = new Root("SecondEngine");
-		Vertex car = engine1.addInstance("Car");
-		Vertex car2 = engine2.addInstance("Car");
+		Generic car = engine1.addInstance("Car");
+		Generic car2 = engine2.addInstance("Car");
 		catchAndCheckCause(() -> engine1.addInstance("Power", car, car2), CrossEnginesAssignementsException.class);
 	}
 
 	public void test003_addInstance_attribute() {
 		Root engine1 = new Root();
 		Root engine2 = new Root("SecondEngine");
-		Vertex car = engine1.addInstance("Car");
+		Generic car = engine1.addInstance("Car");
 		engine2.addInstance("Car");
 		catchAndCheckCause(() -> engine2.addInstance("Power", car), CrossEnginesAssignementsException.class);
 	}
@@ -43,7 +43,7 @@ public class MultipleRootsTest extends AbstractTest {
 	public void test004_addInstance_attribute() {
 		Root engine1 = new Root("FirstEngine");
 		Root engine2 = new Root("SecondEngine");
-		Vertex car = engine1.addInstance("Car1");
+		Generic car = engine1.addInstance("Car1");
 		engine2.addInstance("Car2");
 		catchAndCheckCause(() -> engine2.addInstance("Power", car), CrossEnginesAssignementsException.class);
 	}
@@ -51,8 +51,8 @@ public class MultipleRootsTest extends AbstractTest {
 	public void test005_addInstance_overrides() {
 		Root engine1 = new Root();
 		Root engine2 = new Root("SecondEngine");
-		Vertex car = engine2.addInstance("Car");
-		Vertex robot = engine2.addInstance("Robot");
+		Generic car = engine2.addInstance("Car");
+		Generic robot = engine2.addInstance("Robot");
 		catchAndCheckCause(() -> engine1.addInstance(Arrays.asList(car, robot), "Transformer"), CrossEnginesAssignementsException.class);
 	}
 }

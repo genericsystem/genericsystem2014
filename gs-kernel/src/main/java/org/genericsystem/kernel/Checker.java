@@ -35,8 +35,8 @@ public class Checker<T extends DefaultVertex<T>> {
 		return context;
 	}
 
-	public void checkBeforeBuild(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) throws RollbackException {
-		checkSystemConstraintsBeforeBuild(clazz, meta, overrides, value, components);
+	public void checkBeforeBuild(T meta, List<T> overrides, Serializable value, List<T> components) throws RollbackException {
+		checkSystemConstraintsBeforeBuild(meta, overrides, value, components);
 	}
 
 	public void checkAfterBuild(boolean isOnAdd, boolean isFlushTime, T vertex) throws RollbackException {
@@ -47,7 +47,7 @@ public class Checker<T extends DefaultVertex<T>> {
 
 	// checkBeforeBuild
 
-	private void checkSystemConstraintsBeforeBuild(Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
+	private void checkSystemConstraintsBeforeBuild(T meta, List<T> overrides, Serializable value, List<T> components) {
 		checkSameEngine(meta, overrides, components);
 		checkIsAlive(meta, overrides, components);
 		checkSerializableType(value);
@@ -59,7 +59,7 @@ public class Checker<T extends DefaultVertex<T>> {
 			return;
 		DefaultRoot<T> root = meta.getRoot();
 		for (T component : components)
-			if (component != null && !root.equals(component.getRoot()))
+			if (!root.equals(component.getRoot()))
 				context.discardWithException(new CrossEnginesAssignementsException("Unable to associate meta " + meta + " with his component " + component + " because they are from differents engines"));
 		for (T directSuper : overrides)
 			if (directSuper != null && !root.equals(directSuper.getRoot()))
@@ -70,7 +70,7 @@ public class Checker<T extends DefaultVertex<T>> {
 		if (meta != null)
 			checkIsAlive(meta);
 		overrides.forEach(x -> checkIsAlive(x));
-		components.stream().filter(component -> component != null).forEach(x -> checkIsAlive(x));
+		components.forEach(x -> checkIsAlive(x));
 	}
 
 	private void checkSerializableType(Serializable value) {
@@ -132,7 +132,7 @@ public class Checker<T extends DefaultVertex<T>> {
 
 	private void checkRemoveGenericAnnoted(boolean isOnAdd, T vertex) {
 		if (!isOnAdd && vertex.isSystem())
-			getContext().discardWithException(new IllegalAccessException("System node can't be removed"));
+			getContext().discardWithException(new IllegalAccessException("System node can't be removed " + vertex.info()));
 	}
 
 	private void checkIsAlive(T vertex) {
@@ -146,14 +146,14 @@ public class Checker<T extends DefaultVertex<T>> {
 	}
 
 	private void checkDependenciesAreEmpty(T vertex) {
-		if (!context.getInstances(vertex).isEmpty() || !context.getInheritings(vertex).isEmpty() || !context.getComposites(vertex).isEmpty())
+		if (!context.getDependencies(vertex).isEmpty())
 			context.discardWithException(new ReferentialIntegrityConstraintViolationException("Unable to remove : " + vertex.info() + " cause it has dependencies"));
 	}
 
 	private void checkSameEngine(T vertex) {
 		DefaultRoot<T> root = vertex.getRoot();
 		for (T component : vertex.getComponents())
-			if (component != null && !root.equals(component.getRoot()))
+			if (!root.equals(component.getRoot()))
 				context.discardWithException(new CrossEnginesAssignementsException("Unable to associate his " + vertex + " with his component " + component + " because they are from differents engines"));
 		for (T directSuper : vertex.getSupers())
 			if (directSuper != null && !root.equals(directSuper.getRoot()))
@@ -204,7 +204,7 @@ public class Checker<T extends DefaultVertex<T>> {
 
 	private void checkLevelComponents(T vertex) {
 		for (T component : vertex.getComponents())
-			if ((component == null ? vertex.getLevel() : component.getLevel()) > vertex.getLevel())
+			if (component.getLevel() > vertex.getLevel())
 				context.discardWithException(new LevelConstraintViolationException("Inappropriate component meta level : " + component.getLevel() + " for component : " + component + ". Component meta level for added node is : " + vertex.getLevel()));
 	}
 

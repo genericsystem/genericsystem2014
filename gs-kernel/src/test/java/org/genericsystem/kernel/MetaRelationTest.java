@@ -7,7 +7,7 @@ public class MetaRelationTest extends AbstractTest {
 
 	public void test001_metaRelation() {
 		Root engine = new Root();
-		Vertex metaRelation = engine.getMetaRelation();
+		Generic metaRelation = engine.getMetaRelation();
 		assert metaRelation.getLevel() == 0;
 		assert metaRelation.isMeta();
 		assert metaRelation.getMeta() == metaRelation;
@@ -20,10 +20,10 @@ public class MetaRelationTest extends AbstractTest {
 
 	public void test002_addInstance_metaRelation() {
 		Root engine = new Root();
-		Vertex metaRelation = engine.getMetaRelation();
-		Vertex car = engine.addInstance("Car");
-		Vertex color = engine.addInstance("Color");
-		Vertex carColor = engine.addInstance("carColor", new Vertex[] { car, color });
+		Generic metaRelation = engine.getMetaRelation();
+		Generic car = engine.addInstance("Car");
+		Generic color = engine.addInstance("Color");
+		Generic carColor = engine.addInstance("carColor", new Generic[] { car, color });
 		assert carColor.getMeta() == metaRelation;
 		assert carColor.isInstanceOf(metaRelation);
 	}

@@ -3,17 +3,14 @@ package org.genericsystem.cache;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
+import org.genericsystem.kernel.Generic;
 
-public abstract class AbstractCacheElement<T extends AbstractGeneric<T>> {
+public abstract class AbstractCacheElement {
 
-	abstract boolean isAlive(T vertex);
+	abstract boolean isAlive(Generic vertex);
 
-	abstract Snapshot<T> getInheritings(T vertex);
+	abstract Snapshot<Generic> getDependencies(Generic vertex);
 
-	abstract Snapshot<T> getInstances(T vertex);
-
-	abstract Snapshot<T> getComposites(T vertex);
-
-	protected abstract void apply(Iterable<T> removes, Iterable<T> adds) throws ConcurrencyControlException, OptimisticLockConstraintViolationException;
+	protected abstract void apply(Iterable<Generic> removes, Iterable<Generic> adds) throws ConcurrencyControlException, OptimisticLockConstraintViolationException;
 
 }

@@ -12,34 +12,34 @@ import org.testng.annotations.Test;
 public class UpdatableServiceTest extends AbstractTest {
 
 	public void test001_setValue_Type() {
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex vehicle2 = vehicle.updateValue("Vehicle2");
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic vehicle2 = vehicle.updateValue("Vehicle2");
 		assert "Vehicle2".equals(vehicle2.getValue());
 		assert vehicle2.isAlive();
 	}
 
 	public void test003_setValue_InstanceOfType() {
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
 		String valueCar = "Car";
-		Vertex car = vehicle.addInstance(valueCar);
+		Generic car = vehicle.addInstance(valueCar);
 		String newValue = "elciheV";
-		Vertex newVehicle = vehicle.updateValue(newValue);
+		Generic newVehicle = vehicle.updateValue(newValue);
 		assert newValue.equals(newVehicle.getValue());
 		assert valueCar.equals(car.getValue());
 		assert engine == newVehicle.getMeta();
 		assert engine.getCurrentCache().computeDependencies(engine).contains(newVehicle);
-		Vertex newCar = newVehicle.getInstances().iterator().next();
+		Generic newCar = newVehicle.getInstances().iterator().next();
 		assert newValue.equals(newCar.getMeta().getValue());
 	}
 
 	public void test004_setValue_noCollateralDommage() {
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
 		vehicle.addInstance("Car");
 		String caveValue = "Cave";
-		Vertex cave = engine.addInstance(caveValue);
+		Generic cave = engine.addInstance(caveValue);
 		vehicle.updateValue("elciheV");
 		assert caveValue.equals(cave.getValue());
 		assert engine == cave.getMeta();
@@ -48,54 +48,54 @@ public class UpdatableServiceTest extends AbstractTest {
 	}
 
 	public void test007_setValue_Type() {
-		Vertex engine = new Root();
-		Vertex bike = engine.addInstance("Bike");
-		Vertex car = engine.addInstance("Car");
-		Vertex myBmwBike = bike.addInstance("myBmwBike");
+		Generic engine = new Root();
+		Generic bike = engine.addInstance("Bike");
+		Generic car = engine.addInstance("Car");
+		Generic myBmwBike = bike.addInstance("myBmwBike");
 
-		Vertex newBike = bike.updateValue("newBike");
+		Generic newBike = bike.updateValue("newBike");
 
-		Collection<Vertex> engineAliveDependencies = newBike.getCurrentCache().computeDependencies(newBike);
+		Collection<Generic> engineAliveDependencies = newBike.getCurrentCache().computeDependencies(newBike);
 		assert engineAliveDependencies.size() == 2 : engineAliveDependencies.size();
 		assert !engineAliveDependencies.contains(car);
 		assert !engineAliveDependencies.contains(myBmwBike);
 
-		Vertex getNewBike = engine.getInstance("newBike");
+		Generic getNewBike = engine.getInstance("newBike");
 		assert getNewBike != null;
 		assert engine.equals(getNewBike.getMeta());
 
-		Vertex getMyBmwBike = getNewBike.getInstance("myBmwBike");
+		Generic getMyBmwBike = getNewBike.getInstance("myBmwBike");
 		assert getMyBmwBike != null;
 		assert getNewBike.equals(getMyBmwBike.getMeta());
 	}
 
 	public void test008_setValue_Type() {
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = engine.addInstance("Car");
-		Vertex newBeetle = car.addInstance("NewBeetle");
-		Vertex newCar = car.updateValue("raC");
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = engine.addInstance("Car");
+		Generic newBeetle = car.addInstance("NewBeetle");
+		Generic newCar = car.updateValue("raC");
 
-		Collection<Vertex> engineAliveDependencies = newCar.getCurrentCache().computeDependencies(newCar);
+		Collection<Generic> engineAliveDependencies = newCar.getCurrentCache().computeDependencies(newCar);
 		assert engineAliveDependencies.size() == 2;
 		assert !engineAliveDependencies.contains(car);
 		assert !engineAliveDependencies.contains(newBeetle);
 
-		Vertex vertex1asNewCar = engine.getInstance("raC");
+		Generic vertex1asNewCar = engine.getInstance("raC");
 		assert vertex1asNewCar != null;
 		assert engine.equals(vertex1asNewCar.getMeta());
 
-		Vertex vertex2asNewNewBeetle = vertex1asNewCar.getInstance("NewBeetle");
+		Generic vertex2asNewNewBeetle = vertex1asNewCar.getInstance("NewBeetle");
 		assert vertex2asNewNewBeetle != null;
 		assert vertex1asNewCar.equals(vertex2asNewNewBeetle.getMeta());
 	}
 
 	public void test020_setValue_Inheritance() {
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex options = engine.addInstance(vehicle, "Options");
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic options = engine.addInstance(vehicle, "Options");
 
-		Vertex newVehicle = vehicle.updateValue("elciheV");
+		Generic newVehicle = vehicle.updateValue("elciheV");
 
 		assert newVehicle.isAlive();
 		assert !vehicle.isAlive();
@@ -106,48 +106,48 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert engine.getCurrentCache().computeDependencies(engine).contains(newVehicle);
 		assert newVehicle.getCurrentCache().computeDependencies(newVehicle).size() == 2;
 		assert newVehicle.getCurrentCache().computeDependencies(newVehicle).contains(newVehicle);
-		Vertex newOptions = newVehicle.getCurrentCache().computeDependencies(newVehicle).stream().collect(Collectors.toList()).get(0);
+		Generic newOptions = newVehicle.getCurrentCache().computeDependencies(newVehicle).stream().collect(Collectors.toList()).get(0);
 		assert newOptions.isAlive();
 		if ("elciheV".equals(newOptions.getValue()))
 			newOptions = newVehicle.getCurrentCache().computeDependencies(newVehicle).stream().collect(Collectors.toList()).get(1);
 		assert engine.equals(newOptions.getMeta());
 		assert options.getValue().equals(newOptions.getValue());
-		List<Vertex> newOptionsSupers = newOptions.getSupers();
+		List<Generic> newOptionsSupers = newOptions.getSupers();
 		assert newOptionsSupers.size() == 1;
-		Vertex newVehicleFromNewOptions = newOptionsSupers.get(0);
+		Generic newVehicleFromNewOptions = newOptionsSupers.get(0);
 		assert "elciheV".equals(newVehicleFromNewOptions.getValue());
 	}
 
 	public void test040_setValue_Composite() {
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
 		String valuePower = "Power";
-		Vertex power = engine.addInstance(valuePower, vehicle);
+		Generic power = engine.addInstance(valuePower, vehicle);
 		String newValue = "elciheV";
 
-		Vertex newVehicle = vehicle.updateValue(newValue);
+		Generic newVehicle = vehicle.updateValue(newValue);
 
 		assert newValue.equals(newVehicle.getValue());
 		assert !power.isAlive();
 		assert engine.equals(newVehicle.getMeta());
 		assert engine.getCurrentCache().computeDependencies(engine).contains(newVehicle);
-		Vertex newPower = engine.getInstance("Power", newVehicle);
+		Generic newPower = engine.getInstance("Power", newVehicle);
 		assert newPower.getComponents().size() == 1;
-		Vertex compositeOfPower = newPower.getComponents().get(0);
+		Generic compositeOfPower = newPower.getComponents().get(0);
 		assert newVehicle.getValue().equals(compositeOfPower.getValue());
 		assert engine.equals(compositeOfPower.getMeta());
 	}
 
 	public void test060_setValue_Type_Inheritance_Composite() {
-		Vertex engine = new Root();
-		Vertex machine = engine.addInstance("Machine");
-		Vertex vehicle = engine.addInstance(machine, "Vehicle");
+		Generic engine = new Root();
+		Generic machine = engine.addInstance("Machine");
+		Generic vehicle = engine.addInstance(machine, "Vehicle");
 		String valuePower = "Power";
-		Vertex power = engine.addInstance(valuePower, vehicle);
-		Vertex car = vehicle.addInstance("Car");
+		Generic power = engine.addInstance(valuePower, vehicle);
+		Generic car = vehicle.addInstance("Car");
 		String newValue = "enihcaM";
 
-		Vertex newMachine = machine.updateValue(newValue);
+		Generic newMachine = machine.updateValue(newValue);
 
 		assert engine.isAlive();
 		assert !machine.isAlive();
@@ -167,21 +167,21 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert newMachine.getInstances().size() == 0;
 		assert newMachine.getInheritings().size() == 1;
 
-		Vertex newVehicle = engine.getInstance(newMachine, "Vehicle");
+		Generic newVehicle = engine.getInstance(newMachine, "Vehicle");
 		assert newVehicle != null;
 		assert newVehicle.getComponents().size() == 0;
 		assert newVehicle.getSupers().size() == 1;
 		assert newVehicle.getInstances().size() == 1;
 		assert newVehicle.getInheritings().size() == 0;
 
-		Vertex newPower = engine.getInstance("Power", newVehicle);
+		Generic newPower = engine.getInstance("Power", newVehicle);
 		assert newPower != null;
 		assert newPower.getComponents().size() == 1;
 		assert newPower.getSupers().size() == 0;
 		assert newPower.getInstances().size() == 0;
 		assert newPower.getInheritings().size() == 0;
 
-		Vertex newCar = newVehicle.getInstance("Car");
+		Generic newCar = newVehicle.getInstance("Car");
 		assert newCar != null;
 		assert newCar.getComponents().size() == 0;
 		assert newCar.getSupers().size() == 0;
@@ -191,9 +191,9 @@ public class UpdatableServiceTest extends AbstractTest {
 
 	public void test100_addSuper_Type() {
 		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = engine.addInstance("Car");
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = engine.addInstance("Car");
 
 		assert !car.isSuperOf(car.getMeta(), Collections.singletonList(vehicle), car.getValue(), car.getComponents());
 		// when
@@ -206,17 +206,17 @@ public class UpdatableServiceTest extends AbstractTest {
 
 		// assert engine.getAllInstances().count() == 2;
 
-		Vertex newVehicle = engine.getInstance("Vehicle");
+		Generic newVehicle = engine.getInstance("Vehicle");
 		assert newVehicle.getInheritings().size() == 1 : newVehicle.getInheritings().info();
 		assert engine.getInstance(newVehicle, "Car").getSupers().size() == 1;
 	}
 
 	public void test101_addSuper_TypeBetweenTwoTypes() {
 		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = engine.addInstance(vehicle, "Car");
-		Vertex fourWheels = engine.addInstance(vehicle, "FourWheels");
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = engine.addInstance(vehicle, "Car");
+		Generic fourWheels = engine.addInstance(vehicle, "FourWheels");
 
 		// when
 		car.updateSupers(fourWheels);
@@ -226,31 +226,31 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert vehicle.isAlive();
 		assert !car.isAlive();
 
-		Collection<Vertex> engineDependencies = engine.getCurrentCache().computeDependencies(engine);
+		Collection<Generic> engineDependencies = engine.getCurrentCache().computeDependencies(engine);
 		// assert engineDependencies.size() == 4;
 		// assert engine.getAllInstances().count() == 3;
 
-		Vertex newVehicle = engine.getInstance("Vehicle");
-		Collection<Vertex> newVehicleDependencies = newVehicle.getCurrentCache().computeDependencies(newVehicle);
+		Generic newVehicle = engine.getInstance("Vehicle");
+		Collection<Generic> newVehicleDependencies = newVehicle.getCurrentCache().computeDependencies(newVehicle);
 		assert newVehicleDependencies.size() == 3;
 		assert newVehicle.getInheritings().size() == 1;
 
-		Vertex newFourWheels = engine.getInstance(newVehicle, "FourWheels");
-		Collection<Vertex> newFourWheelsDependencies = newFourWheels.getCurrentCache().computeDependencies(newFourWheels);
+		Generic newFourWheels = engine.getInstance(newVehicle, "FourWheels");
+		Collection<Generic> newFourWheelsDependencies = newFourWheels.getCurrentCache().computeDependencies(newFourWheels);
 		assert newFourWheelsDependencies.size() == 2;
 		assert newFourWheels.getInheritings().size() == 1;
 		assert newFourWheels.getSupers().size() == 1;
 
-		Vertex newCar = engine.getInstance(newFourWheels, "Car");
+		Generic newCar = engine.getInstance(newFourWheels, "Car");
 		assert newCar.getCurrentCache().computeDependencies(newCar).size() == 1;
 		assert newCar.getSupers().size() == 1;
 	}
 
 	public void test102_addSuper_AlreadySuper() {
 		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = engine.addInstance(vehicle, "Car");
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = engine.addInstance(vehicle, "Car");
 
 		// when
 		car.updateSupers(vehicle);
@@ -260,39 +260,39 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert vehicle.isAlive();
 		assert !car.isAlive();
 
-		Collection<Vertex> engineDependencies = engine.getCurrentCache().computeDependencies(engine);
+		Collection<Generic> engineDependencies = engine.getCurrentCache().computeDependencies(engine);
 		// assert engineDependencies.size() == 3 : engineDependencies.size();
 		// assert engine.getAllInstances().size() == 2 : engine.getAllInstances().info();
 
-		Vertex newVehicle = engine.getInstance("Vehicle");
-		Collection<Vertex> newVehicleDependencies = engine.getCurrentCache().computeDependencies(newVehicle);
+		Generic newVehicle = engine.getInstance("Vehicle");
+		Collection<Generic> newVehicleDependencies = engine.getCurrentCache().computeDependencies(newVehicle);
 		assert newVehicleDependencies.size() == 2 : newVehicleDependencies;
 		assert newVehicle.getInheritings().size() == 1;
 
-		Vertex newCar = engine.getInstance(newVehicle, "Car");
+		Generic newCar = engine.getInstance(newVehicle, "Car");
 		assert newCar.getCurrentCache().computeDependencies(newCar).size() == 1;
 		assert newCar.getSupers().size() == 1;
 	}
 
 	public void test103_addSuper_NoRegressionOnDataModel() {
 		// given
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex animals = engine.addInstance("Animals");
-		Vertex myVehicle = vehicle.addInstance("MyVehicle");
-		Vertex car = engine.addInstance(vehicle, "Car");
-		Vertex power = engine.addInstance("Power", car);
-		Vertex myCar = car.addInstance("MyCar");
-		Vertex color = engine.addInstance("Color");
-		Vertex red = color.addInstance("Red");
-		Vertex green = color.addInstance("Green");
-		Vertex blue = color.addInstance("Blue");
-		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		Vertex myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
-		Vertex myVehicleGreen = vehicleColor.addInstance("MyVehicleGreen", myVehicle, green);
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic animals = engine.addInstance("Animals");
+		Generic myVehicle = vehicle.addInstance("MyVehicle");
+		Generic car = engine.addInstance(vehicle, "Car");
+		Generic power = engine.addInstance("Power", car);
+		Generic myCar = car.addInstance("MyCar");
+		Generic color = engine.addInstance("Color");
+		Generic red = color.addInstance("Red");
+		Generic green = color.addInstance("Green");
+		Generic blue = color.addInstance("Blue");
+		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Generic myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
+		Generic myVehicleGreen = vehicleColor.addInstance("MyVehicleGreen", myVehicle, green);
 
 		// when
-		Vertex fourWheels = engine.addInstance(vehicle, "FourWheels");
+		Generic fourWheels = engine.addInstance(vehicle, "FourWheels");
 		car.updateSupers(fourWheels);
 
 		// then
@@ -312,35 +312,35 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert myVehicleGreen.isAlive();
 		assert fourWheels.isAlive();
 
-		Vertex newVehicle = engine.getInstance("Vehicle");
-		Collection<Vertex> newVehicleDependencies = newVehicle.getCurrentCache().computeDependencies(newVehicle);
+		Generic newVehicle = engine.getInstance("Vehicle");
+		Collection<Generic> newVehicleDependencies = newVehicle.getCurrentCache().computeDependencies(newVehicle);
 		assert newVehicleDependencies.size() == 9;
 		assert newVehicle.getInheritings().size() == 1;
 
-		Vertex newFourWheels = engine.getInstance(newVehicle, "FourWheels");
+		Generic newFourWheels = engine.getInstance(newVehicle, "FourWheels");
 		assert newFourWheels.getCurrentCache().computeDependencies(newFourWheels).size() == 5;
 		assert newFourWheels.getInheritings().size() == 1;
 		assert newFourWheels.getSupers().size() == 1;
 
-		Vertex newCar = engine.getInstance(newFourWheels, "Car");
+		Generic newCar = engine.getInstance(newFourWheels, "Car");
 		assert newCar.getCurrentCache().computeDependencies(newCar).size() == 4;
 		assert newCar.getSupers().size() == 1;
 	}
 
 	public void test200_replaceComposite() {
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex myVehicle = vehicle.addInstance("MyVehicle");
-		Vertex car = engine.addInstance(vehicle, "Car");
-		Vertex power = engine.addInstance("Power", car);
-		Vertex myCar = car.addInstance("MyCar");
-		Vertex color = engine.addInstance("Color");
-		Vertex red = color.addInstance("Red");
-		Vertex green = color.addInstance("Green");
-		Vertex blue = color.addInstance("Blue");
-		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		Vertex myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
-		Vertex myVehicleGreen = vehicleColor.addInstance("MyVehicleGreen", myVehicle, green);
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("MyVehicle");
+		Generic car = engine.addInstance(vehicle, "Car");
+		Generic power = engine.addInstance("Power", car);
+		Generic myCar = car.addInstance("MyCar");
+		Generic color = engine.addInstance("Color");
+		Generic red = color.addInstance("Red");
+		Generic green = color.addInstance("Green");
+		Generic blue = color.addInstance("Blue");
+		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Generic myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
+		Generic myVehicleGreen = vehicleColor.addInstance("MyVehicleGreen", myVehicle, green);
 
 		// when
 		myCarRed.updateComponents(myCar, blue);
@@ -360,49 +360,49 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert !myCarRed.isAlive();
 		assert myVehicleGreen.isAlive();
 
-		Vertex newCarBlue = vehicleColor.getInstance("MyCarRed", myCar, blue);
-		List<Vertex> newCarBlueComposites = newCarBlue.getComponents();
+		Generic newCarBlue = vehicleColor.getInstance("MyCarRed", myCar, blue);
+		List<Generic> newCarBlueComposites = newCarBlue.getComponents();
 		assert newCarBlueComposites.size() == 2;
 	}
 
 	public void test201_replaceComposite_KO() {
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = engine.addInstance(vehicle, "Car");
-		Vertex myCar = car.addInstance("MyCar");
-		Vertex color = engine.addInstance("Color");
-		Vertex red = color.addInstance("Red");
-		Vertex blue = color.addInstance("Blue");
-		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		Vertex myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = engine.addInstance(vehicle, "Car");
+		Generic myCar = car.addInstance("MyCar");
+		Generic color = engine.addInstance("Color");
+		Generic red = color.addInstance("Red");
+		Generic blue = color.addInstance("Blue");
+		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Generic myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
 		catchAndCheckCause(() -> myCarRed.updateComponents(blue), MetaRuleConstraintViolationException.class);
 
 	}
 
 	public void test202_replaceComposite_OK() {
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = engine.addInstance(vehicle, "Car");
-		Vertex myCar = car.addInstance("MyCar");
-		Vertex color = engine.addInstance("Color");
-		Vertex date = engine.addInstance("Date");
-		Vertex red = color.addInstance("Red");
-		Vertex blue = color.addInstance("Blue");
-		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = engine.addInstance(vehicle, "Car");
+		Generic myCar = car.addInstance("MyCar");
+		Generic color = engine.addInstance("Color");
+		Generic date = engine.addInstance("Date");
+		Generic red = color.addInstance("Red");
+		Generic blue = color.addInstance("Blue");
+		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
 		vehicleColor.updateComponents(vehicle, color, date);
 
 	}
 
 	public void test300_replaceCompositeWithValueModification() {
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = engine.addInstance(vehicle, "Car");
-		Vertex myCar = car.addInstance("MyCar");
-		Vertex color = engine.addInstance("Color");
-		Vertex red = color.addInstance("Red");
-		Vertex blue = color.addInstance("Blue");
-		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		Vertex myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = engine.addInstance(vehicle, "Car");
+		Generic myCar = car.addInstance("MyCar");
+		Generic color = engine.addInstance("Color");
+		Generic red = color.addInstance("Red");
+		Generic blue = color.addInstance("Blue");
+		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Generic myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
 
 		// when
 		myCarRed.update("MyCarBlue", myCar, blue);
@@ -412,23 +412,23 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert vehicleColor.getInstance("MyCarRed", myCar, red) == null;
 		assert vehicleColor.getInstance("MyCarBlue", myCar, red) == null;
 
-		Vertex newCarBlue = vehicleColor.getInstance("MyCarBlue", myCar, blue);
+		Generic newCarBlue = vehicleColor.getInstance("MyCarBlue", myCar, blue);
 		assert newCarBlue.getCurrentCache().computeDependencies(newCarBlue).size() == 1;
-		List<Vertex> newCarBlueComposites = newCarBlue.getComponents();
+		List<Generic> newCarBlueComposites = newCarBlue.getComponents();
 		assert newCarBlueComposites.size() == 2;
 	}
 
 	public void test301_replaceCompositeWithValueModification_InsistentExceptionOK() {
-		Vertex engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = engine.addInstance(vehicle, "Car");
-		Vertex myCar = car.addInstance("MyCar");
-		Vertex color = engine.addInstance("Color");
-		Vertex red = color.addInstance("Red");
-		Vertex blue = color.addInstance("Blue");
-		Vertex vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		Vertex myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
-		Vertex myCarBlue = myCarRed.update("MyCarBlue", myCar, blue);
+		Generic engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = engine.addInstance(vehicle, "Car");
+		Generic myCar = car.addInstance("MyCar");
+		Generic color = engine.addInstance("Color");
+		Generic red = color.addInstance("Red");
+		Generic blue = color.addInstance("Blue");
+		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Generic myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
+		Generic myCarBlue = myCarRed.update("MyCarBlue", myCar, blue);
 		assert !myCarRed.isAlive();
 		assert myCarBlue.isAlive();
 		assert myCarBlue.getMeta().equals(vehicleColor);
@@ -437,9 +437,9 @@ public class UpdatableServiceTest extends AbstractTest {
 
 	public void test021_AddInstance_AttributeWithSameNameAlreadyExisting() {
 		Root engine = new Root();
-		Vertex car = engine.addInstance("Car");
-		Vertex carPower = engine.setInstance("Power", car);
-		Vertex power = engine.addInstance("Power");
+		Generic car = engine.addInstance("Car");
+		Generic carPower = engine.setInstance("Power", car);
+		Generic power = engine.addInstance("Power");
 
 		assert !carPower.isAlive();
 		assert power.isAlive();

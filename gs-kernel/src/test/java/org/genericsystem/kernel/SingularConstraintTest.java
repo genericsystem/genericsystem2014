@@ -2,7 +2,6 @@ package org.genericsystem.kernel;
 
 import java.util.Arrays;
 import java.util.Collections;
-
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.exception.SingularConstraintViolationException;
 import org.testng.annotations.Test;
@@ -10,14 +9,27 @@ import org.testng.annotations.Test;
 @Test
 public class SingularConstraintTest extends AbstractTest {
 
+	public void test000_enableSingularConstraint() {
+		Root engine = new Root();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic color = engine.addInstance("Color");
+		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
+		vehicleColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
+		Generic color2 = engine.addInstance("Color2");
+		Generic vehicleColor2 = vehicle.addAttribute("vehicleColor2", color2);
+		vehicleColor2.enableSingularConstraint(ApiStatics.BASE_POSITION);
+		assert vehicleColor.isSingularConstraintEnabled(0);
+		assert vehicleColor2.isSingularConstraintEnabled(0);
+	}
+
 	public void test001_enableSingularConstraint_addInstance() {
 		Root engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		Vertex color = engine.addInstance("Color");
-		Vertex red = color.addInstance("red");
-		Vertex yellow = color.addInstance("yellow");
-		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic color = engine.addInstance("Color");
+		Generic red = color.addInstance("red");
+		Generic yellow = color.addInstance("yellow");
+		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
 		vehicleColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
 		assert vehicleColor.isSingularConstraintEnabled(ApiStatics.BASE_POSITION);
 		assert !vehicleColor.isReferentialIntegrityEnabled(ApiStatics.BASE_POSITION);
@@ -27,12 +39,12 @@ public class SingularConstraintTest extends AbstractTest {
 
 	public void test002_enableSingularConstraint_addInstance() {
 		Root engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		Vertex yourVehicle = vehicle.addInstance("yourVehicle");
-		Vertex color = engine.addInstance("Color");
-		Vertex red = color.addInstance("red");
-		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic yourVehicle = vehicle.addInstance("yourVehicle");
+		Generic color = engine.addInstance("Color");
+		Generic red = color.addInstance("red");
+		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
 		vehicleColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
 		assert vehicleColor.isSingularConstraintEnabled(ApiStatics.BASE_POSITION);
 		myVehicle.addHolder(vehicleColor, "vehicleRed", red);
@@ -41,11 +53,11 @@ public class SingularConstraintTest extends AbstractTest {
 
 	public void test003_enableSingularConstraint_addDefaultInstance() {
 		Root engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex color = engine.addInstance("Color");
-		Vertex red = color.addInstance("red");
-		Vertex yellow = color.addInstance("yellow");
-		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic color = engine.addInstance("Color");
+		Generic red = color.addInstance("red");
+		Generic yellow = color.addInstance("yellow");
+		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
 		vehicleColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
 		assert vehicleColor.isSingularConstraintEnabled(ApiStatics.BASE_POSITION);
 		vehicle.addHolder(vehicleColor, "vehicleRed", red);
@@ -54,15 +66,15 @@ public class SingularConstraintTest extends AbstractTest {
 
 	public void test001_enableSingularConstraint_ternaryRelation() {
 		Root engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		Vertex color = engine.addInstance("Color");
-		Vertex time = engine.addInstance("Time");
-		Vertex red = color.addInstance("red");
-		Vertex today = time.addInstance("today");
-		Vertex yesterday = time.addInstance("yesterday");
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic color = engine.addInstance("Color");
+		Generic time = engine.addInstance("Time");
+		Generic red = color.addInstance("red");
+		Generic today = time.addInstance("today");
+		Generic yesterday = time.addInstance("yesterday");
 
-		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color, time);
+		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color, time);
 		vehicleColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
 		assert vehicleColor.isSingularConstraintEnabled(ApiStatics.BASE_POSITION);
 		myVehicle.addHolder(vehicleColor, "vehicleRedToday", red, today);
@@ -72,12 +84,12 @@ public class SingularConstraintTest extends AbstractTest {
 
 	public void test005_enableSingularConstraint_targetPosition() {
 		Root engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		Vertex myVehicle2 = vehicle.addInstance("myVehicle2");
-		Vertex color = engine.addInstance("Color");
-		Vertex red = color.addInstance("red");
-		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic myVehicle2 = vehicle.addInstance("myVehicle2");
+		Generic color = engine.addInstance("Color");
+		Generic red = color.addInstance("red");
+		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
 		vehicleColor.enableSingularConstraint(ApiStatics.TARGET_POSITION);
 		assert vehicleColor.isSingularConstraintEnabled(ApiStatics.TARGET_POSITION);
 		myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
@@ -87,16 +99,16 @@ public class SingularConstraintTest extends AbstractTest {
 
 	public void test006_enableSingularConstraint_targetPosition() {
 		Root engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		Vertex color = engine.addInstance("Color");
-		Vertex red = color.addInstance("red");
-		Vertex yellow = color.addInstance("yellow");
-		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic color = engine.addInstance("Color");
+		Generic red = color.addInstance("red");
+		Generic yellow = color.addInstance("yellow");
+		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
 		vehicleColor.enableSingularConstraint(ApiStatics.TARGET_POSITION);
 
-		Vertex myVehicleRed = myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
-		Vertex myVehicleYellow = myVehicle.addHolder(vehicleColor, "myVehicleYellow", yellow);
+		Generic myVehicleRed = myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
+		Generic myVehicleYellow = myVehicle.addHolder(vehicleColor, "myVehicleYellow", yellow);
 
 		assert myVehicle.getHolders(vehicleColor).contains(myVehicleRed);
 		assert myVehicle.getHolders(vehicleColor).contains(myVehicleYellow);
@@ -105,17 +117,17 @@ public class SingularConstraintTest extends AbstractTest {
 
 	public void test007_enableSingularConstraint_targetPosition() {
 		Root engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		Vertex myVehicle2 = vehicle.addInstance("myVehicle2");
-		Vertex color = engine.addInstance("Color");
-		Vertex red = color.addInstance("red");
-		Vertex yellow = color.addInstance("yellow");
-		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic myVehicle2 = vehicle.addInstance("myVehicle2");
+		Generic color = engine.addInstance("Color");
+		Generic red = color.addInstance("red");
+		Generic yellow = color.addInstance("yellow");
+		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
 		vehicleColor.enableSingularConstraint(ApiStatics.TARGET_POSITION);
 
-		Vertex myVehicleRed = myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
-		Vertex myVehicle2Yellow = myVehicle2.addHolder(vehicleColor, "myVehicle2Yellow", yellow);
+		Generic myVehicleRed = myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
+		Generic myVehicle2Yellow = myVehicle2.addHolder(vehicleColor, "myVehicle2Yellow", yellow);
 
 		assert myVehicle.getHolders(vehicleColor).contains(myVehicleRed);
 		assert myVehicle.getHolders(vehicleColor).size() == 1;
@@ -125,50 +137,50 @@ public class SingularConstraintTest extends AbstractTest {
 
 	public void test008_enableSingularConstraint_targetPosition() {
 		Root engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		Vertex myVehicle2 = vehicle.addInstance("myVehicle2");
-		Vertex color = engine.addInstance("Color");
-		Vertex red = color.addInstance("red");
-		Vertex yellow = color.addInstance("yellow");
-		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic myVehicle2 = vehicle.addInstance("myVehicle2");
+		Generic color = engine.addInstance("Color");
+		Generic red = color.addInstance("red");
+		Generic yellow = color.addInstance("yellow");
+		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
 		vehicleColor.enableSingularConstraint(ApiStatics.TARGET_POSITION);
 
-		Vertex myVehicleRed = myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
-		Vertex myVehicle2Yellow = myVehicle2.addHolder(vehicleColor, "myVehicle2Yellow", yellow);
+		Generic myVehicleRed = myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
+		Generic myVehicle2Yellow = myVehicle2.addHolder(vehicleColor, "myVehicle2Yellow", yellow);
 
 		catchAndCheckCause(() -> myVehicle.addHolder(vehicleColor, "myVehicleYellow", yellow), SingularConstraintViolationException.class);
 	}
 
 	public void test009_enableSingularConstraint_ternaryPosition() {
 		Root engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		Vertex myVehicle2 = vehicle.addInstance("myVehicle2");
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic myVehicle2 = vehicle.addInstance("myVehicle2");
 
-		Vertex color = engine.addInstance("Color");
-		Vertex red = color.addInstance("red");
+		Generic color = engine.addInstance("Color");
+		Generic red = color.addInstance("red");
 
-		Vertex location = engine.addInstance("Location");
-		Vertex outside = location.addInstance("outside");
+		Generic location = engine.addInstance("Location");
+		Generic outside = location.addInstance("outside");
 
-		Vertex vehicleColorLocation = vehicle.addAttribute("vehicleColor", color, location);
+		Generic vehicleColorLocation = vehicle.addAttribute("vehicleColor", color, location);
 		vehicleColorLocation.enableSingularConstraint(ApiStatics.TERNARY_POSITION);
 
-		Vertex myVehicleRedOutside = myVehicle.addHolder(vehicleColorLocation, "myVehicleRedOutside", red, outside);
+		Generic myVehicleRedOutside = myVehicle.addHolder(vehicleColorLocation, "myVehicleRedOutside", red, outside);
 		catchAndCheckCause(() -> myVehicle2.addHolder(vehicleColorLocation, "myVehicle2RedOutside", red, outside), SingularConstraintViolationException.class);
 	}
 
 	public void test010_enableSingularConstraint_inherintings() {
 
 		Root engine = new Root();
-		Vertex vehicle = engine.addInstance("Vehicle");
-		Vertex car = engine.addInstance(vehicle, "Car");
-		Vertex myCar = car.addInstance("myCar");
-		Vertex color = engine.addInstance("Color");
-		Vertex red = color.addInstance("red");
-		Vertex yellow = color.addInstance("yellow");
-		Vertex vehicleColor = vehicle.addAttribute("vehicleColor", color);
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = engine.addInstance(vehicle, "Car");
+		Generic myCar = car.addInstance("myCar");
+		Generic color = engine.addInstance("Color");
+		Generic red = color.addInstance("red");
+		Generic yellow = color.addInstance("yellow");
+		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
 		vehicleColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
 		myCar.addHolder(vehicleColor, "myCarRed", red);
 		catchAndCheckCause(() -> myCar.addHolder(vehicleColor, "myCarYellow", yellow), SingularConstraintViolationException.class);
@@ -177,16 +189,16 @@ public class SingularConstraintTest extends AbstractTest {
 
 	public void test011_enablePropertyConstraint_inherintings() {
 		Root engine = new Root();
-		Vertex car = engine.addInstance("Car");
-		Vertex myCar = car.addInstance("myCar");
-		Vertex color = engine.addInstance("Color");
-		Vertex red = color.addInstance("red");
-		Vertex yellow = color.addInstance("yellow");
-		Vertex carColor = car.addAttribute("vehicleColor", color);
+		Generic car = engine.addInstance("Car");
+		Generic myCar = car.addInstance("myCar");
+		Generic color = engine.addInstance("Color");
+		Generic red = color.addInstance("red");
+		Generic yellow = color.addInstance("yellow");
+		Generic carColor = car.addAttribute("vehicleColor", color);
 		carColor.enablePropertyConstraint();
-		Vertex carRed = car.addHolder(carColor, "CarRed", red);
+		Generic carRed = car.addHolder(carColor, "CarRed", red);
 		assert carRed.isSuperOf(carColor, Collections.emptyList(), "myCarRed", Arrays.asList(myCar, red));
-		Vertex myCarRed = myCar.addHolder(carColor, "myCarRed", red);
+		Generic myCarRed = myCar.addHolder(carColor, "myCarRed", red);
 		assert myCar.getHolders(carColor).contains(myCarRed);
 		assert myCar.getHolders(carColor).size() == 1;
 		assert red.getHolders(carColor).contains(myCarRed);
@@ -195,16 +207,16 @@ public class SingularConstraintTest extends AbstractTest {
 
 	public void test0112_enableSingularConstraint_inherintings() {
 		Root engine = new Root();
-		Vertex car = engine.addInstance("Car");
-		Vertex myCar = car.addInstance("myCar");
-		Vertex color = engine.addInstance("Color");
-		Vertex red = color.addInstance("red");
-		Vertex yellow = color.addInstance("yellow");
-		Vertex carColor = car.addAttribute("vehicleColor", color);
+		Generic car = engine.addInstance("Car");
+		Generic myCar = car.addInstance("myCar");
+		Generic color = engine.addInstance("Color");
+		Generic red = color.addInstance("red");
+		Generic yellow = color.addInstance("yellow");
+		Generic carColor = car.addAttribute("vehicleColor", color);
 		carColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
-		Vertex carRed = car.addHolder(carColor, "CarRed", red);
+		Generic carRed = car.addHolder(carColor, "CarRed", red);
 		assert carRed.isSuperOf(carColor, Collections.emptyList(), "myCarYellow", Arrays.asList(myCar, yellow));
-		Vertex myCarYellow = myCar.addHolder(carColor, "myCarYellow", yellow);
+		Generic myCarYellow = myCar.addHolder(carColor, "myCarYellow", yellow);
 		assert myCar.getHolders(carColor).contains(myCarYellow);
 		assert myCar.getHolders(carColor).size() == 1;
 		assert yellow.getHolders(carColor).contains(myCarYellow);

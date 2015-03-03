@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
-
 import org.genericsystem.api.core.IContext;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
@@ -17,6 +16,7 @@ public interface DefaultContext<T extends DefaultVertex<T>> extends IContext<T> 
 
 	DefaultRoot<T> getRoot();
 
+	// TODO KK remove internal class
 	default boolean isAlive(T vertex) {
 		class AliveFinder {
 			T find(T vertex) {
@@ -41,11 +41,19 @@ public interface DefaultContext<T extends DefaultVertex<T>> extends IContext<T> 
 		return adjustMeta.getDirectInstance(overrides, value, componentsList);
 	}
 
-	Snapshot<T> getInheritings(T vertex);
+	default Snapshot<T> getInstances(T vertex) {
+		return getDependencies(vertex).filter(x -> vertex.equals(x.getMeta()));
+	}
 
-	Snapshot<T> getInstances(T vertex);
+	default Snapshot<T> getInheritings(T vertex) {
+		return getDependencies(vertex).filter(x -> x.getSupers().contains(vertex));
+	}
 
-	Snapshot<T> getComposites(T vertex);
+	default Snapshot<T> getComposites(T vertex) {
+		return getDependencies(vertex).filter(x -> x.getComponents().contains(vertex));
+	}
+
+	Snapshot<T> getDependencies(T vertex);
 
 	default void discardWithException(Throwable exception) throws RollbackException {
 		throw new RollbackException(exception);
@@ -71,10 +79,8 @@ public interface DefaultContext<T extends DefaultVertex<T>> extends IContext<T> 
 
 			OrderedDependencies visit(T node) {
 				if (!contains(node)) {
-					getInheritings(node).forEach(this::visit);
-					getInstances(node).forEach(this::visit);
-					getComposites(node).forEach(this::visit);
 					add(node);
+					getDependencies(node).forEach(this::visit);
 				}
 				return this;
 			}
@@ -93,9 +99,7 @@ public interface DefaultContext<T extends DefaultVertex<T>> extends IContext<T> 
 						super.addAll(computeDependencies(node));
 					else {
 						alreadyVisited.add(node);
-						node.getComposites().forEach(this::visit);
-						node.getInheritings().forEach(this::visit);
-						node.getInstances().forEach(this::visit);
+						getDependencies(node).forEach(this::visit);
 					}
 				return this;
 			}

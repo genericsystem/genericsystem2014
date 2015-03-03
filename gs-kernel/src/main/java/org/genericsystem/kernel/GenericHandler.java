@@ -1,85 +1,189 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
-
+import java.util.Objects;
 import org.genericsystem.api.defaults.DefaultVertex;
+import org.genericsystem.api.exception.ExistsException;
 
-public class GenericHandler<T extends DefaultVertex<T>> {
-	private final Builder<T> builder;
-	private final Class<?> clazz;
-	private final T meta;
-	private T adjustedMeta;
-	private List<T> overrides;
-	private List<T> supers;
-	private final Serializable value;
-	private final List<T> components;
-	private T gettable;
+abstract class GenericHandler<T extends DefaultVertex<T>> {
+	final Context<T> context;
+	final T meta;
+	T adjustedMeta;
+	final List<T> overrides;
+	List<T> supers;
+	final Serializable value;
+	final List<T> components;
+	T gettable;
 
-	public GenericHandler(Builder<T> builder, Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
+	@SuppressWarnings("unchecked")
+	GenericHandler(Context<T> context, T meta, List<T> overrides, Serializable value, List<T> components) {
 		assert overrides != null;
-		this.builder = builder;
-		this.clazz = clazz;
-		this.meta = meta;
+		this.context = context;
+		this.meta = meta != null ? meta : (T) context.getRoot();
 		this.overrides = overrides;
 		this.value = value;
 		this.components = components;
 		check();
-		adjustMeta();
-		reComputeSupers();
+		adjust();
 	}
 
-	public GenericHandler(Builder<T> builder, T gettable) {
-		this.builder = builder;
-		this.clazz = gettable.getClass();
-		this.meta = gettable.getMeta();
-		this.supers = gettable.getSupers();
-		this.value = gettable.getValue();
-		this.components = gettable.getComponents();
-		this.gettable = gettable;
+	private void check() {
+		context.getChecker().checkBeforeBuild(meta, overrides, value, components);
 	}
 
-	public void check() {
-		builder.getContext().getChecker().checkBeforeBuild(clazz, meta, overrides, value, components);
+	boolean isMeta() {
+		return Objects.equals(context.getRoot().getValue(), value) && components.stream().allMatch(context.getRoot()::equals);
 	}
 
-	public void adjustMeta() {
-		adjustedMeta = meta.isMeta() ? builder.setMeta(components.size()) : meta.adjustMeta(value, components);
+	void adjust() {
+		adjustedMeta = meta.adjustMeta(value, components);
+		if (meta.isMeta() && adjustedMeta.getComponents().size() != components.size()) {
+			if (isMeta()) {
+				supers = Collections.singletonList(adjustedMeta);
+				return;
+			}
+			adjustedMeta = context.setMeta(components.size());
+		}
+		supers = context.computeAndCheckOverridesAreReached(adjustedMeta, overrides, value, components);
+
 	}
 
-	public void reComputeSupers() {
-		assert supers == null;
-		supers = builder.computeAndCheckOverridesAreReached(adjustedMeta, overrides, value, components);
-	}
-
-	public T get() {
-		assert supers != null;
+	T get() {
 		if (gettable == null)
 			gettable = adjustedMeta.getDirectInstance(supers, value, components);
 		return gettable;
 	}
 
-	public T getEquiv() {
-		assert adjustedMeta != null;
+	T getEquiv() {
 		return adjustedMeta.getDirectEquivInstance(value, components);
 	}
 
-	public T add() {
-		assert supers != null;
-		return builder.rebuildAll(null, () -> builder.buildAndPlug(clazz, adjustedMeta, supers, value, components), builder.getContext().computePotentialDependencies(adjustedMeta, supers, value, components));
+	public T getOrBuild() {
+		T instance = get();
+		return instance == null ? build() : instance;
 	}
 
-	public T set(T update) {
+	T build() {
+		return gettable = context.getBuilder().buildAndPlug(null, isMeta() ? null : adjustedMeta, supers, value, components);
+	}
+
+	T add() {
+		return context.getRestructurator().rebuildAll(null, () -> build(), context.computePotentialDependencies(adjustedMeta, supers, value, components));
+	}
+
+	T set(T update) {
 		assert update != null;
-		assert supers != null;
-		return builder.rebuildAll(update, () -> builder.buildAndPlug(clazz, adjustedMeta, supers, value, components), builder.getContext().computeDependencies(update));
+		return context.getRestructurator().rebuildAll(update, () -> build(), context.computeDependencies(update));
 	}
 
-	public T update(T update) {
+	T update(T update) {
 		assert update != null;
-		assert supers != null;
-		// assert !supers.contains(update);
-		return builder.rebuildAll(update, () -> builder.getOrBuild(clazz, adjustedMeta, supers, value, components), builder.getContext().computeDependencies(update));
+		return context.getRestructurator().rebuildAll(update, () -> getOrBuild(), context.computeDependencies(update));
 	}
 
+	static class GetHandler<T extends DefaultVertex<T>> extends GenericHandler<T> {
+
+		GetHandler(Context<T> context, T gettable) {
+			super(context, gettable.getMeta(), gettable.getSupers(), gettable.getValue(), gettable.getComponents());
+			this.gettable = gettable;
+			this.adjustedMeta = gettable.getMeta();
+			this.supers = gettable.getSupers();
+		}
+
+		GetHandler(Context<T> context, T meta, List<T> overrides, Serializable value, List<T> components) {
+			super(context, meta, overrides, value, components);
+		}
+
+		T resolve() {
+			return get();
+		}
+	}
+
+	static class AddHandler<T extends DefaultVertex<T>> extends GenericHandler<T> {
+
+		AddHandler(Context<T> context, T meta, List<T> overrides, Serializable value, List<T> components) {
+			super(context, meta, overrides, value, components);
+		}
+
+		T resolve() {
+			T generic = get();
+			if (generic != null)
+				context.discardWithException(new ExistsException("An equivalent instance already exists : " + generic.info()));
+			return add();
+		}
+	}
+
+	static class SetHandler<T extends DefaultVertex<T>> extends GenericHandler<T> {
+
+		SetHandler(Context<T> context, T meta, List<T> overrides, Serializable value, List<T> components) {
+			super(context, meta, overrides, value, components);
+		}
+
+		T resolve() {
+			T generic = get();
+			if (generic != null)
+				return generic;
+			generic = getEquiv();
+			return generic == null ? add() : set(generic);
+		}
+	}
+
+	static class UpdateHandler<T extends DefaultVertex<T>> extends GenericHandler<T> {
+
+		private final T update;
+
+		UpdateHandler(Context<T> context, T update, T meta, List<T> overrides, Serializable value, List<T> components) {
+			super(context, meta, overrides, value, components);
+			this.update = update;
+		}
+
+		T resolve() {
+			return update(update);
+		}
+	}
+
+	static class AtomicHandler<T extends DefaultVertex<T>> extends GenericHandler<T> {
+
+		AtomicHandler(Context<T> context, T meta, List<T> overrides, Serializable value, List<T> components) {
+			super(context, meta, overrides, value, components);
+		}
+
+		final T resolve() {
+			return getOrBuild();
+		}
+	}
+
+	static class SetSystemHandler<T extends DefaultVertex<T>> extends AtomicHandler<T> {
+
+		private final Class<?> clazz;
+
+		SetSystemHandler(Context<T> context, Class<?> clazz, T meta, List<T> overrides, Serializable value, List<T> components) {
+			super(context, meta, overrides, value, components);
+			this.clazz = clazz;
+		}
+
+		@Override
+		T build() {
+			return gettable = context.getBuilder().buildAndPlug(clazz, isMeta() ? null : adjustedMeta, supers, value, components);
+		}
+	}
+
+	static class SetArchiverHandler<T extends DefaultVertex<T>> extends AtomicHandler<T> {
+
+		private final long ts;
+		private final long[] otherTs;
+
+		SetArchiverHandler(long ts, Context<T> context, T meta, List<T> overrides, Serializable value, List<T> components, long[] otherTs) {
+			super(context, meta, overrides, value, components);
+			this.ts = ts;
+			this.otherTs = otherTs;
+		}
+
+		@Override
+		T build() {
+			return gettable = context.plug(context.getBuilder().build(ts, null, isMeta() ? null : adjustedMeta, supers, value, components, otherTs));
+		}
+	}
 }

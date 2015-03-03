@@ -21,7 +21,7 @@ public class InstanciationTest extends AbstractTest {
 
 	public void test002_addInstance_root() {
 		Root root = new Root();
-		Vertex car = root.addInstance("Car");
+		Generic car = root.addInstance("Car");
 		assert root.getInstance("Car") == car;
 		assert car.getMeta().equals(root);
 		assert car.getSupers().isEmpty();
@@ -35,7 +35,7 @@ public class InstanciationTest extends AbstractTest {
 
 	public void test002_setInstance_root() {
 		Root root = new Root();
-		Vertex car = root.setInstance("Car");
+		Generic car = root.setInstance("Car");
 		assert root.getInstance("Car") == car;
 		assert car.getMeta().equals(root);
 		assert car.getSupers().isEmpty();
@@ -49,8 +49,8 @@ public class InstanciationTest extends AbstractTest {
 
 	public void test003_addInstance_2instances() {
 		Root root = new Root();
-		Vertex car = root.addInstance("Car");
-		Vertex robot = root.addInstance("Robot");
+		Generic car = root.addInstance("Car");
+		Generic robot = root.addInstance("Robot");
 		assert car.getMeta().equals(root);
 		assert car.getSupers().isEmpty();
 		assert car.getComponents().isEmpty();
@@ -71,7 +71,7 @@ public class InstanciationTest extends AbstractTest {
 
 	public void test004_addInstance_sameValueParameter() {
 		Root root = new Root();
-		Vertex car = root.addInstance("Car");
+		Generic car = root.addInstance("Car");
 		// Vertex car2 = root.addInstance("Car");
 		// assert false : root.getInstances().info();
 		catchAndCheckCause(() -> root.addInstance("Car"), ExistsException.class);
@@ -79,8 +79,8 @@ public class InstanciationTest extends AbstractTest {
 
 	public void test005_setInstance_exisitingInstance() {
 		Root root = new Root();
-		Vertex car = root.addInstance("Car");
-		Vertex car2 = root.setInstance("Car");
+		Generic car = root.addInstance("Car");
+		Generic car2 = root.setInstance("Car");
 		assert car == car2;
 		assert car.getMeta().equals(root);
 		assert car.getSupers().isEmpty();
@@ -94,8 +94,8 @@ public class InstanciationTest extends AbstractTest {
 
 	public void test006_addInstance_override() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(Arrays.asList(vehicle), "Car");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(Arrays.asList(vehicle), "Car");
 		assert vehicle.getMeta().equals(root);
 		assert car.getMeta().equals(root);
 		assert root.getSupers().isEmpty();
@@ -113,8 +113,8 @@ public class InstanciationTest extends AbstractTest {
 
 	public void test007_addInstance_selfInheriting() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex vehicle2 = root.addInstance(vehicle, "Vehicle");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic vehicle2 = root.addInstance(vehicle, "Vehicle");
 		assert vehicle.isAlive();
 		assert root.getInstance("Vehicle").equals(vehicle);
 		assert root.getInstance(vehicle, "Vehicle").equals(vehicle2);
@@ -123,9 +123,9 @@ public class InstanciationTest extends AbstractTest {
 
 	public void test008_addInstance_multipleOverrides() {
 		Root root = new Root();
-		Vertex car = root.addInstance("Car");
-		Vertex robot = root.addInstance("Robot");
-		Vertex transformer = root.addInstance(Arrays.asList(car, robot), "Transformer");
+		Generic car = root.addInstance("Car");
+		Generic robot = root.addInstance("Robot");
+		Generic transformer = root.addInstance(Arrays.asList(car, robot), "Transformer");
 		assert car.getMeta().equals(root);
 		assert robot.getMeta().equals(root);
 		assert transformer.getMeta().equals(root);
@@ -146,9 +146,9 @@ public class InstanciationTest extends AbstractTest {
 
 	public void test008_setInstance_multipleOverrides() {
 		Root root = new Root();
-		Vertex car = root.addInstance("Car");
-		Vertex robot = root.addInstance("Robot");
-		Vertex transformer = root.setInstance(Arrays.asList(car, robot), "Transformer");
+		Generic car = root.addInstance("Car");
+		Generic robot = root.addInstance("Robot");
+		Generic transformer = root.setInstance(Arrays.asList(car, robot), "Transformer");
 		assert car.getMeta().equals(root);
 		assert robot.getMeta().equals(root);
 		assert transformer.getMeta().equals(root);
@@ -169,11 +169,11 @@ public class InstanciationTest extends AbstractTest {
 
 	public void test009_addInstance_multipleOverrides() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(Arrays.asList(vehicle), "Car");
-		Vertex device = root.addInstance("Device");
-		Vertex robot = root.addInstance(Arrays.asList(device), "Robot");
-		Vertex transformer = root.addInstance(Arrays.asList(car, robot), "Transformer");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(Arrays.asList(vehicle), "Car");
+		Generic device = root.addInstance("Device");
+		Generic robot = root.addInstance(Arrays.asList(device), "Robot");
+		Generic transformer = root.addInstance(Arrays.asList(car, robot), "Transformer");
 		assert car.getMeta().equals(root);
 		assert vehicle.getMeta().equals(root);
 		assert device.getMeta().equals(root);
@@ -189,7 +189,7 @@ public class InstanciationTest extends AbstractTest {
 		assert transformer.getSupers().stream().anyMatch(robot::equals);
 		car.getSupers().stream().anyMatch(vehicle::equals);
 		robot.getSupers().stream().anyMatch(device::equals);
-		Predicate<Vertex> condition = x -> transformer.getSupers().stream().flatMap(superVertex -> Stream.concat(Stream.of(superVertex), superVertex.getSupers().stream())).anyMatch(x::equals);
+		Predicate<Generic> condition = x -> transformer.getSupers().stream().flatMap(superVertex -> Stream.concat(Stream.of(superVertex), superVertex.getSupers().stream())).anyMatch(x::equals);
 		assert condition.test(vehicle);
 		assert condition.test(car);
 		assert condition.test(robot);
@@ -204,12 +204,12 @@ public class InstanciationTest extends AbstractTest {
 
 	public void test010_addInstance_multipleOverrides() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = root.addInstance(Arrays.asList(vehicle), "Car");
-		Vertex device = root.addInstance("Device");
-		Vertex robot = root.addInstance(Arrays.asList(device), "Robot");
-		Vertex transformer = root.addInstance(Arrays.asList(car, robot), "Transformer");
-		Vertex transformer2 = root.addInstance(Arrays.asList(transformer), "Transformer2");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(Arrays.asList(vehicle), "Car");
+		Generic device = root.addInstance("Device");
+		Generic robot = root.addInstance(Arrays.asList(device), "Robot");
+		Generic transformer = root.addInstance(Arrays.asList(car, robot), "Transformer");
+		Generic transformer2 = root.addInstance(Arrays.asList(transformer), "Transformer2");
 		assert car.getMeta().equals(root);
 		assert vehicle.getMeta().equals(root);
 		assert device.getMeta().equals(root);
@@ -226,7 +226,7 @@ public class InstanciationTest extends AbstractTest {
 		assert transformer.getSupers().stream().anyMatch(robot::equals);
 		car.getSupers().stream().anyMatch(vehicle::equals);
 		robot.getSupers().stream().anyMatch(device::equals);
-		Predicate<Vertex> condition = x -> transformer.getSupers().stream().flatMap(superVertex -> Stream.concat(Stream.of(superVertex), superVertex.getSupers().stream())).anyMatch(x::equals);
+		Predicate<Generic> condition = x -> transformer.getSupers().stream().flatMap(superVertex -> Stream.concat(Stream.of(superVertex), superVertex.getSupers().stream())).anyMatch(x::equals);
 		assert condition.test(vehicle);
 		assert condition.test(car);
 		assert condition.test(robot);

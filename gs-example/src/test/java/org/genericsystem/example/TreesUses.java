@@ -2,7 +2,6 @@ package org.genericsystem.example;
 
 import java.util.Arrays;
 
-import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.IVertex.Visitor;
 import org.genericsystem.mutability.Engine;
 import org.genericsystem.mutability.Generic;
@@ -12,94 +11,70 @@ public class TreesUses {
 		Engine engine = new Engine();
 
 		// Create a tree called Html5Tags
-		Generic html5Tags = engine.addTree("Html5Tags");
+		Generic html5Tags = engine.addInstance("Html5Tags");
 
 		// Create the root html
-		Generic html = html5Tags.addRoot("html");
+		Generic html = html5Tags.addInstance("html");
 
 		// Create the child header
-		html.addChild("header");
+		html5Tags.addInstance(html, "header");
 		// Create the child body
-		Generic body = html.addChild("body");
+		Generic body = html5Tags.addInstance(html, "body");
 		// Create the child footer
-		html.addChild("footer");
+		html5Tags.addInstance(html, "footer");
 
 		// Create the child p
-		body.addChild("p");
+		html5Tags.addInstance(body, "p");
 		// Create the child table
-		body.addChild("table");
+		html5Tags.addInstance(body, "table");
 
 		// Persist changes
 		engine.getCurrentCache().flush();
 	}
 
-	public void inheritingNodes() {
+	public void treeWithRelation() {
 		Engine engine = new Engine();
 
-		// Create a tree called Html5Tags
-		Generic html5Tags = engine.addTree("Html5Tags");
+		Generic html5Tags = engine.addInstance("Html5Tags");
+		Generic html = html5Tags.addInstance("html");
+		Generic head = html5Tags.addInstance(html, "header");
+		Generic body = html5Tags.addInstance(html, "body");
+		html5Tags.addInstance(html, "footer");
+		Generic p = html5Tags.addInstance(body, "p");
+		html5Tags.addInstance(body, "table");
 
-		// Create the root html
-		Generic html = html5Tags.addRoot("html");
-
-		// Create the child header
-		Generic header = html.addInheritingChild("header");
-		// Create the child body
-		Generic body = html.addInheritingChild("body");
-		// Create the child footer
-		Generic footer = html.addInheritingChild("footer");
-
-		// Create the child p
-		body.addInheritingChild("p");
-		// Create the child table
-		body.addInheritingChild("table");
-
-		// Create a type Color
 		Generic color = engine.addInstance("Color");
-		// Create some instances of Color
-		Generic red = color.addInstance("red");
 		Generic blue = color.addInstance("blue");
-		Generic yellow = color.addInstance("yellow");
+		Generic red = color.addInstance("red");
+		Generic green = color.addInstance("green");
 
-		// Create the relation HtmlTagsColor between Html5Tags and Color
-		Generic htmlTagsColor = html5Tags.addRelation("HtmlTagsColor", color);
-		// Enable singular constraint on the base
-		htmlTagsColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
+		Generic html5TagsColor = html5Tags.addRelation("html5TagsColor", color);
+		html5Tags.setHolder(html5TagsColor, "html5TagsIsBlueByDefault", blue);
 
-		// Associate the Color red to the htmlTags html
-		html.addLink(htmlTagsColor, "htmlRed", red);
-		// Associate the Color blue to the htmlTags header
-		header.addLink(htmlTagsColor, "headerBlue", blue);
-		// Associate the Color yellow to the htmlTags footer
-		footer.addLink(htmlTagsColor, "footerYellow", yellow);
-		// No explicitly associated Color to the htmlTags body
+		html.setHolder(html5TagsColor, "htmlIsRed", red);
+		body.setHolder(html5TagsColor, "bodyIsGreen", green);
 
-		// Get color of the htmlTags html
-		assert html.getLink(htmlTagsColor, "htmlRed").getTargetComponent().equals(red);
-		// Get color of the htmlTags header
-		assert header.getLink(htmlTagsColor, "headerBlue").getTargetComponent().equals(blue);
-		// Get color of the htmlTags footer
-		assert footer.getLink(htmlTagsColor, "footerYellow").getTargetComponent().equals(yellow);
-		// Get color of the htmlTags body
-		assert body.getLink(htmlTagsColor, "htmlRed").getTargetComponent().equals(red);
+		assert html5Tags.getHolders(html5TagsColor).first().getTargetComponent().equals(blue);
+		assert html.getHolders(html5TagsColor).first().getTargetComponent().equals(red);
+		assert head.getHolders(html5TagsColor).first().getTargetComponent().equals(red);
+		assert body.getHolders(html5TagsColor).first().getTargetComponent().equals(green);
+		assert p.getHolders(html5TagsColor).first().getTargetComponent().equals(green);
 
-		// Persist changes
 		engine.getCurrentCache().flush();
 	}
 
 	public void traverseTree() {
 		Engine engine = new Engine();
 
-		Generic html5Tags = engine.addTree("Html5Tags");
+		Generic html5Tags = engine.addInstance("Html5Tags");
 
-		Generic html = html5Tags.addRoot("html");
+		Generic html = html5Tags.addInstance("html");
 
-		html.addChild("header");
-		Generic body = html.addChild("body");
-		html.addChild("footer");
+		html5Tags.addInstance(html, "header");
+		Generic body = html5Tags.addInstance(html, "body");
 
-		body.addChild("p");
-		body.addChild("table");
+		html5Tags.addInstance(body, "p");
+		html5Tags.addInstance(body, "table");
 
 		// Pass through the tree from html
 		html.traverse(new Visitor<Generic>() {
@@ -122,23 +97,23 @@ public class TreesUses {
 		Engine engine = new Engine();
 
 		// Create a binary tree called GenealogicTree
-		Generic genealogicTree = engine.addTree("GenealogicTree", 2);
+		Generic genealogicTree = engine.addInstance("GenealogicTree");
 
 		// Create the root father
-		Generic father = genealogicTree.addRoot("father");
+		Generic father = genealogicTree.addInstance("father");
 		// Create the root mother
-		Generic mother = genealogicTree.addRoot("mother");
+		Generic mother = genealogicTree.addInstance("mother");
 
 		// Create the child son
-		Generic son = father.addChild("son", mother);
+		Generic son = genealogicTree.addInstance(Arrays.asList(father, mother), "son");
 		// Create the child daughter
-		Generic daughter = father.addChild("daughter", mother);
+		Generic daughter = genealogicTree.addInstance(Arrays.asList(father, mother), "daughter");
 
 		// Get children of father
-		assert father.getChildren().containsAll(Arrays.asList(son, daughter));
+		assert father.getInheritings().containsAll(Arrays.asList(son, daughter));
 
 		// Get children of mother
-		assert mother.getChildren().containsAll(Arrays.asList(son, daughter));
+		assert mother.getInheritings().containsAll(Arrays.asList(son, daughter));
 
 		// Persist changes
 		engine.getCurrentCache().flush();

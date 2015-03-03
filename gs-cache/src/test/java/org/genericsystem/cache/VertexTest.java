@@ -3,6 +3,7 @@ package org.genericsystem.cache;
 import java.util.Arrays;
 
 import org.genericsystem.api.exception.AliveConstraintViolationException;
+import org.genericsystem.kernel.Generic;
 import org.testng.annotations.Test;
 
 @Test

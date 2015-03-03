@@ -1,7 +1,7 @@
 package org.genericsystem.api.defaults;
 
-import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.ApiStatics;
+import org.genericsystem.api.core.IVertex;
 
 public interface DefaultAncestors<T extends DefaultVertex<T>> extends IVertex<T> {
 
@@ -34,6 +34,10 @@ public interface DefaultAncestors<T extends DefaultVertex<T>> extends IVertex<T>
 	@Override
 	default boolean isConcrete() {
 		return getLevel() == ApiStatics.CONCRETE;
+	}
+
+	default boolean isDirectAncestorOf(T vertex) {
+		return !equals(vertex) && (equals(vertex.getMeta()) || vertex.getSupers().contains(this) || vertex.getComponents().contains(this));
 	}
 
 	@Override

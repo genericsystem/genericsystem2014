@@ -7,8 +7,9 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.defaults.DefaultRoot;
+import org.genericsystem.api.exception.CyclicException;
+import org.genericsystem.kernel.GenericHandler.SetSystemHandler;
 import org.genericsystem.kernel.annotations.Components;
 import org.genericsystem.kernel.annotations.Dependencies;
 import org.genericsystem.kernel.annotations.Meta;
@@ -29,18 +30,17 @@ import org.genericsystem.kernel.annotations.value.LongValue;
 import org.genericsystem.kernel.annotations.value.ShortValue;
 import org.genericsystem.kernel.annotations.value.StringValue;
 
-public class SystemCache<T extends AbstractVertex<T>> {
+public class SystemCache {
 
-	private final Map<Class<?>, T> systemCache = new HashMap<>();
+	private final Map<Class<?>, Generic> systemCache = new HashMap<>();
 
-	private final Map<T, Class<?>> reverseSystemCache = new IdentityHashMap<>();
+	private final Map<Generic, Class<?>> reverseSystemCache = new IdentityHashMap<>();
 
-	protected final DefaultRoot<T> root;
+	protected final DefaultRoot<Generic> root;
 
-	@SuppressWarnings("unchecked")
-	public SystemCache(DefaultRoot<T> root, Class<?> rootClass) {
+	public SystemCache(DefaultRoot<Generic> root, Class<?> rootClass) {
 		this.root = root;
-		put(rootClass, (T) root);
+		put(rootClass, (Generic) root);
 	}
 
 	public void mount(List<Class<?>> systemClasses, Class<?>... userClasses) {
@@ -50,47 +50,38 @@ public class SystemCache<T extends AbstractVertex<T>> {
 			set(clazz);
 	}
 
-	@SuppressWarnings("unchecked")
-	private T set(Class<?> clazz) {
+	private Generic set(Class<?> clazz) {
 		if (root.isInitialized())
 			throw new IllegalStateException("Class : " + clazz + " has not been built at startup");
-		T systemProperty = systemCache.get(clazz);
+		Generic systemProperty = systemCache.get(clazz);
 		if (systemProperty != null) {
 			assert systemProperty.isAlive();
 			return systemProperty;
 		}
-		T meta = setMeta(clazz);
-		List<T> overrides = setOverrides(clazz);
-		List<T> components = setComponents(clazz);
-		T result;
-		Builder<T> builder = ((T) root).getCurrentCache().getBuilder();
-		if (meta == null) {
-			assert overrides.size() == 1;
-		} else {
-			if (meta.isMeta())
-				meta = builder.setMeta(components.size());
-		}
-		result = builder.buildAndPlug(clazz, meta, overrides, findValue(clazz), components);
+		Generic meta = setMeta(clazz);
+		List<Generic> overrides = setOverrides(clazz);
+		List<Generic> components = setComponents(clazz);
+		Generic result = new SetSystemHandler<>(((Generic) root).getCurrentCache(), clazz, meta, overrides, findValue(clazz), components).resolve();
 		put(clazz, result);
 		mountConstraints(clazz, result);
 		triggersDependencies(clazz);
 		return result;
 	}
 
-	private void put(Class<?> clazz, T vertex) {
+	private void put(Class<?> clazz, Generic vertex) {
 		systemCache.put(clazz, vertex);
 		reverseSystemCache.put(vertex, clazz);
 	}
 
-	public T get(Class<?> clazz) {
+	public Generic get(Class<?> clazz) {
 		return systemCache.get(clazz);
 	}
 
-	public Class<?> getByVertex(T vertex) {
+	public Class<?> getByVertex(Generic vertex) {
 		return reverseSystemCache.get(vertex);
 	}
 
-	void mountConstraints(Class<?> clazz, T result) {
+	void mountConstraints(Class<?> clazz, Generic result) {
 		if (clazz.getAnnotation(PropertyConstraint.class) != null)
 			result.enablePropertyConstraint();
 
@@ -100,8 +91,10 @@ public class SystemCache<T extends AbstractVertex<T>> {
 		if (clazz.getAnnotation(InstanceValueClassConstraint.class) != null)
 			result.setClassConstraint(clazz.getAnnotation(InstanceValueClassConstraint.class).value());
 
-		if (clazz.getAnnotation(RequiredConstraint.class) != null)
-			result.enableRequiredConstraint(ApiStatics.NO_POSITION);
+		RequiredConstraint requiredConstraint = clazz.getAnnotation(RequiredConstraint.class);
+		if (requiredConstraint != null)
+			for (int axe : requiredConstraint.value())
+				result.enableRequiredConstraint(axe);
 
 		NoReferentialIntegrityProperty referentialIntegrity = clazz.getAnnotation(NoReferentialIntegrityProperty.class);
 		if (referentialIntegrity != null)
@@ -121,18 +114,17 @@ public class SystemCache<T extends AbstractVertex<T>> {
 				set(dependencyClass);
 	}
 
-	@SuppressWarnings("unchecked")
-	private T setMeta(Class<?> clazz) {
+	private Generic setMeta(Class<?> clazz) {
 		Meta meta = clazz.getAnnotation(Meta.class);
 		if (meta == null)
-			return (T) root;
+			return (Generic) root;
 		if (meta.value() == clazz)
 			return null;
 		return set(meta.value());
 	}
 
-	private List<T> setOverrides(Class<?> clazz) {
-		List<T> overridesVertices = new ArrayList<>();
+	private List<Generic> setOverrides(Class<?> clazz) {
+		List<Generic> overridesVertices = new ArrayList<>();
 		org.genericsystem.kernel.annotations.Supers supersAnnotation = clazz.getAnnotation(org.genericsystem.kernel.annotations.Supers.class);
 		if (supersAnnotation != null)
 			for (Class<?> overrideClass : supersAnnotation.value())
@@ -184,13 +176,13 @@ public class SystemCache<T extends AbstractVertex<T>> {
 		return clazz;
 	}
 
-	private List<T> setComponents(Class<?> clazz) {
-		List<T> components = new ArrayList<>();
+	private List<Generic> setComponents(Class<?> clazz) {
+		List<Generic> components = new ArrayList<>();
 		Components componentsAnnotation = clazz.getAnnotation(Components.class);
 		if (componentsAnnotation != null)
 			for (Class<?> compositeClass : componentsAnnotation.value())
 				if (compositeClass.equals(clazz))
-					components.add(null);
+					root.getCurrentCache().discardWithException(new CyclicException("The annoted class " + clazz + " has a component with same name"));
 				else
 					components.add(set(compositeClass));
 		return components;

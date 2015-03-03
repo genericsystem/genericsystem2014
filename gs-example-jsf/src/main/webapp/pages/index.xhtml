@@ -6,14 +6,9 @@
 	xmlns:f="http://java.sun.com/jsf/core">
 
 <h:head />
-<style>
-.error {
-	color: red;
-}
-</style>
 
 <h:body>
-	<h:messages errorClass="error" id="message" />
+	<h:messages id="message" />
 	<h:form>
 		<h:dataTable value="#{carBean.cars}" var="car">
 			<h:column>

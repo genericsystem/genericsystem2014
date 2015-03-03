@@ -8,9 +8,9 @@ public class UniqueValueConstraintTest extends AbstractTest {
 
 	public void test01_enableConstraint() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		Vertex power = root.addInstance("Power", vehicle);
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic power = root.addInstance("Power", vehicle);
 		myVehicle.addHolder(power, "125");
 
 		assert !vehicle.isUniqueValueEnabled();
@@ -23,10 +23,10 @@ public class UniqueValueConstraintTest extends AbstractTest {
 
 	public void test02_erorrCase() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		Vertex myVehicle2 = vehicle.addInstance("myVehicle2");
-		Vertex power = root.addInstance("Power");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic myVehicle2 = vehicle.addInstance("myVehicle2");
+		Generic power = root.addInstance("Power");
 		vehicle.addAttribute(power, "Power");
 		power.enableUniqueValueConstraint();
 		myVehicle.addHolder(power, 125);
@@ -35,10 +35,10 @@ public class UniqueValueConstraintTest extends AbstractTest {
 
 	public void test03_sameValue_differentType() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		Vertex myVehicle2 = vehicle.addInstance("myVehicle2");
-		Vertex power = root.addInstance("Power");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic myVehicle2 = vehicle.addInstance("myVehicle2");
+		Generic power = root.addInstance("Power");
 		vehicle.addAttribute(power, "Power");
 		power.enableUniqueValueConstraint();
 		myVehicle.addHolder(power, 125);
@@ -47,10 +47,10 @@ public class UniqueValueConstraintTest extends AbstractTest {
 
 	public void test04_disableConstraint() {
 		Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex myVehicle = vehicle.addInstance("myVehicle");
-		Vertex myVehicle2 = vehicle.addInstance("myVehicle2");
-		Vertex power = root.addInstance("Power");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic myVehicle2 = vehicle.addInstance("myVehicle2");
+		Generic power = root.addInstance("Power");
 		vehicle.addAttribute(power, "Power");
 		power.enableUniqueValueConstraint();
 		myVehicle.addHolder(power, 125);

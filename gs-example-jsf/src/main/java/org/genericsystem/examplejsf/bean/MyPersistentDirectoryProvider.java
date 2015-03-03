@@ -6,7 +6,7 @@ import org.genericsystem.cdi.PersistentDirectoryProvider;
 import org.genericsystem.kernel.Statics;
 
 @Specializes
-public class MockPersistentDirectoryProvider extends PersistentDirectoryProvider {
+public class MyPersistentDirectoryProvider extends PersistentDirectoryProvider {
 	@Override
 	public String getEngineValue() {
 		return Statics.ENGINE_VALUE;

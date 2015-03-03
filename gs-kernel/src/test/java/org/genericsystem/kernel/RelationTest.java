@@ -9,11 +9,11 @@ public class RelationTest extends AbstractTest {
 
 	public void test001_addInstance_NotAliveException() {
 		final Root cache = new Root();
-		Vertex car = cache.addInstance("Car");
-		Vertex color = cache.addInstance("Color");
-		final Vertex carColor = cache.addInstance("CarColor", car, color);
-		final Vertex myCar = car.addInstance("myCar");
-		final Vertex green = color.addInstance("green");
+		Generic car = cache.addInstance("Car");
+		Generic color = cache.addInstance("Color");
+		final Generic carColor = cache.addInstance("CarColor", car, color);
+		final Generic myCar = car.addInstance("myCar");
+		final Generic green = color.addInstance("green");
 		myCar.remove();
 		assert !myCar.isAlive();
 		catchAndCheckCause(() -> carColor.addInstance("myCarColor", myCar, green), AliveConstraintViolationException.class);
@@ -22,12 +22,12 @@ public class RelationTest extends AbstractTest {
 
 	public void test001_addInstance_NotAliveException_withMetaRelation() {
 		final Root root = new Root();
-		Vertex car = root.addInstance("Car");
-		Vertex color = root.addInstance("Color");
-		final Vertex carColor = root.addInstance("CarColor", car, color);
+		Generic car = root.addInstance("Car");
+		Generic color = root.addInstance("Color");
+		final Generic carColor = root.addInstance("CarColor", car, color);
 		assert carColor.isInstanceOf(root.getMetaRelation());
-		final Vertex myCar = car.addInstance("myCar");
-		final Vertex green = color.addInstance("green");
+		final Generic myCar = car.addInstance("myCar");
+		final Generic green = color.addInstance("green");
 		myCar.remove();
 		assert !myCar.isAlive();
 		catchAndCheckCause(() -> carColor.addInstance("myCarColor", myCar, green), AliveConstraintViolationException.class);
@@ -35,35 +35,35 @@ public class RelationTest extends AbstractTest {
 
 	public void test002_addInstance_2composites() {
 		final Root cache = new Root();
-		Vertex car = cache.addInstance("Car");
-		Vertex color = cache.addInstance("Color");
-		final Vertex carColor = cache.addInstance("CarColor", car, color);
-		final Vertex myCar = car.addInstance("myCar");
-		final Vertex green = color.addInstance("green");
+		Generic car = cache.addInstance("Car");
+		Generic color = cache.addInstance("Color");
+		final Generic carColor = cache.addInstance("CarColor", car, color);
+		final Generic myCar = car.addInstance("myCar");
+		final Generic green = color.addInstance("green");
 		assert myCar.isAlive();
 		carColor.addInstance("myCarColor", myCar, green);
 	}
 
 	public void test002_addInstance_2composites_MetaRelation() {
 		final Root root = new Root();
-		Vertex car = root.addInstance("Car");
-		Vertex color = root.addInstance("Color");
-		final Vertex carColor = root.addInstance("CarColor", car, color);
+		Generic car = root.addInstance("Car");
+		Generic color = root.addInstance("Color");
+		final Generic carColor = root.addInstance("CarColor", car, color);
 		assert carColor.isInstanceOf(root.getMetaRelation());
-		final Vertex myCar = car.addInstance("myCar");
-		final Vertex green = color.addInstance("green");
+		final Generic myCar = car.addInstance("myCar");
+		final Generic green = color.addInstance("green");
 		assert myCar.isAlive();
 		carColor.addInstance("myCarColor", myCar, green);
 	}
 
 	public void test003_addInstance_reflexiveRelation() {
 		final Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = vehicle.addInstance("Car");
-		Vertex caravane = vehicle.addInstance("Caravane");
-		Vertex vehicleHaveSameOwnerAsVehicle = root.addInstance("VehicleHaveSameOwnerAsVehicle", vehicle, vehicle);
-		Vertex myVehicleHaveSameOwnerAsVehicle = vehicleHaveSameOwnerAsVehicle.addInstance("myVehicleHaveSameOwnerAsVehicle", car, caravane);
-		List<Vertex> composites = myVehicleHaveSameOwnerAsVehicle.getComponents();
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = vehicle.addInstance("Car");
+		Generic caravane = vehicle.addInstance("Caravane");
+		Generic vehicleHaveSameOwnerAsVehicle = root.addInstance("VehicleHaveSameOwnerAsVehicle", vehicle, vehicle);
+		Generic myVehicleHaveSameOwnerAsVehicle = vehicleHaveSameOwnerAsVehicle.addInstance("myVehicleHaveSameOwnerAsVehicle", car, caravane);
+		List<Generic> composites = myVehicleHaveSameOwnerAsVehicle.getComponents();
 		assert composites.size() == 2 : composites.size();
 		assert composites.contains(caravane) : composites;
 		assert composites.contains(car) : composites;
@@ -71,13 +71,13 @@ public class RelationTest extends AbstractTest {
 
 	public void test003_addInstance_reflexiveRelation_MetaRelation() {
 		final Root root = new Root();
-		Vertex vehicle = root.addInstance("Vehicle");
-		Vertex car = vehicle.addInstance("Car");
-		Vertex caravane = vehicle.addInstance("Caravane");
-		Vertex vehicleHaveSameOwnerAsVehicle = root.addInstance("VehicleHaveSameOwnerAsVehicle", vehicle, vehicle);
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = vehicle.addInstance("Car");
+		Generic caravane = vehicle.addInstance("Caravane");
+		Generic vehicleHaveSameOwnerAsVehicle = root.addInstance("VehicleHaveSameOwnerAsVehicle", vehicle, vehicle);
 		assert vehicleHaveSameOwnerAsVehicle.isInstanceOf(root.getMetaRelation());
-		Vertex myVehicleHaveSameOwnerAsVehicle = vehicleHaveSameOwnerAsVehicle.addInstance("myVehicleHaveSameOwnerAsVehicle", car, caravane);
-		List<Vertex> composites = myVehicleHaveSameOwnerAsVehicle.getComponents();
+		Generic myVehicleHaveSameOwnerAsVehicle = vehicleHaveSameOwnerAsVehicle.addInstance("myVehicleHaveSameOwnerAsVehicle", car, caravane);
+		List<Generic> composites = myVehicleHaveSameOwnerAsVehicle.getComponents();
 		assert composites.size() == 2 : composites.size();
 		assert composites.contains(caravane) : composites;
 		assert composites.contains(car) : composites;
