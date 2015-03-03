@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
-
 import org.genericsystem.api.defaults.DefaultLifeManager;
 import org.genericsystem.api.defaults.DefaultRoot;
 import org.genericsystem.kernel.Config.MetaAttribute;
@@ -17,7 +16,7 @@ import org.genericsystem.kernel.Config.SystemMap;
 public class Root extends Generic implements DefaultRoot<Generic> {
 
 	private final TsGenerator generator = new TsGenerator();
-	private final Context<Generic> context;
+	private Context<Generic> context;
 	private final SystemCache systemCache;
 	private final Archiver archiver;
 	private final Provider provider = new Provider();
@@ -39,11 +38,25 @@ public class Root extends Generic implements DefaultRoot<Generic> {
 
 	public Root(Serializable value, String persistentDirectoryPath, Class<?>... userClasses) {
 		getProvider().init(this, DefaultLifeManager.TS_SYSTEM, null, Collections.emptyList(), value, Collections.emptyList(), DefaultLifeManager.SYSTEM_TS);
-		context = new Transaction(this, pickNewTs());
+		startContext();
 		systemCache = new SystemCache(this, getClass());
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
+		flushContext();
 		archiver = new Archiver(this, persistentDirectoryPath);
 		initialized = true;
+		shiftContext();
+	}
+
+	protected void startContext() {
+		context = new Transaction(this, pickNewTs());
+	}
+
+	protected void flushContext() {
+		// //Autoflush
+	}
+
+	protected void shiftContext() {
+		context = new Transaction(this, pickNewTs());
 	}
 
 	@Override
@@ -112,6 +125,36 @@ public class Root extends Generic implements DefaultRoot<Generic> {
 	@Override
 	public Generic getMap() {
 		return find(SystemMap.class);
+	}
+
+	@Override
+	public long getTs(Generic generic) {
+		return getProvider().getTs(generic);
+	}
+
+	@Override
+	public Generic getMeta(Generic generic) {
+		return getProvider().getMeta(generic);
+	}
+
+	@Override
+	public LifeManager getLifeManager(Generic generic) {
+		return getProvider().getLifeManager(generic);
+	}
+
+	@Override
+	public List<Generic> getSupers(Generic generic) {
+		return getProvider().getSupers(generic);
+	}
+
+	@Override
+	public Serializable getValue(Generic generic) {
+		return getProvider().getValue(generic);
+	}
+
+	@Override
+	public List<Generic> getComponents(Generic generic) {
+		return getProvider().getComponents(generic);
 	}
 
 	Provider getProvider() {

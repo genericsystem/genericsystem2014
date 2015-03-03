@@ -243,7 +243,31 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 		return birthTs == compareBirthTs ? Long.compare(getTs(), vertex.getTs()) : Long.compare(birthTs, compareBirthTs);
 	}
 
-	long getTs();
+	default long getTs() {
+		return getRoot().getTs((T) this);
+	}
 
-	DefaultLifeManager getLifeManager();
+	default DefaultLifeManager getLifeManager() {
+		return getRoot().getLifeManager((T) this);
+	}
+
+	@Override
+	default T getMeta() {
+		return getRoot().getMeta((T) this);
+	}
+
+	@Override
+	default List<T> getComponents() {
+		return getRoot().getComponents((T) this);
+	}
+
+	@Override
+	default Serializable getValue() {
+		return getRoot().getValue((T) this);
+	}
+
+	@Override
+	default List<T> getSupers() {
+		return getRoot().getSupers((T) this);
+	}
 }

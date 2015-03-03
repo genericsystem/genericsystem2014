@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.defaults.DefaultContext;
@@ -122,20 +121,7 @@ public abstract class Context<T extends DefaultVertex<T>> implements DefaultCont
 
 	protected abstract void unplug(T generic);
 
-	protected void triggersMutation(T oldDependency, T newDependency) {
-	}
-
-	abstract long getTs(T generic);
-
-	abstract T getMeta(T generic);
-
-	abstract LifeManager getLifeManager(T generic);
-
-	abstract List<T> getComponents(T generic);
-
-	abstract Serializable getValue(T generic);
-
-	abstract List<T> getSupers(T generic);
+	protected void triggersMutation(T oldDependency, T newDependency) {}
 
 	@Override
 	abstract public Snapshot<T> getDependencies(T generic);

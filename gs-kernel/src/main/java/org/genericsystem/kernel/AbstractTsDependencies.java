@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
-public abstract class AbstractTsDependencies<T extends AbstractVertex<T>> implements Dependencies<T> {
+public abstract class AbstractTsDependencies<T extends DefaultGeneric<T>> implements Dependencies<T> {
 
 	private Node<T> head = null;
 	private Node<T> tail = null;

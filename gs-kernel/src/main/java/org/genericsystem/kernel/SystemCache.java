@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.defaults.DefaultRoot;
 import org.genericsystem.api.exception.CyclicException;
@@ -41,6 +40,7 @@ public class SystemCache {
 
 	public SystemCache(DefaultRoot<Generic> root, Class<?> rootClass) {
 		this.root = root;
+		put(Root.class, (Generic) root);
 		put(rootClass, (Generic) root);
 	}
 
@@ -51,7 +51,6 @@ public class SystemCache {
 			set(clazz);
 	}
 
-	@SuppressWarnings("unchecked")
 	private Generic set(Class<?> clazz) {
 		if (root.isInitialized())
 			throw new IllegalStateException("Class : " + clazz + " has not been built at startup");
