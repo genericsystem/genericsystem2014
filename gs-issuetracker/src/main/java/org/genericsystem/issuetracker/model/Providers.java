@@ -1,5 +1,7 @@
 package org.genericsystem.issuetracker.model;
 
+import java.util.logging.Logger;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
@@ -9,6 +11,7 @@ import org.genericsystem.issuetracker.qualifier.Provide;
 
 @ApplicationScoped
 public class Providers {
+	private static final Logger log = Logger.getAnonymousLogger();
 
 	@Inject
 	private transient Engine engine;
@@ -16,7 +19,8 @@ public class Providers {
 	@Produces
 	@Provide
 	public Issue getIssue() {
-		return engine.find(Issue.class);
+		Issue issue = engine.find(Issue.class);
+		return issue;
 	}
 
 	@Produces
@@ -35,6 +39,18 @@ public class Providers {
 	@Provide
 	public Priority getPriority() {
 		return engine.find(Priority.class);
+	}
+
+	@Produces
+	@Provide
+	public IssueStatut getIssueStatut() {
+		return engine.find(IssueStatut.class);
+	}
+
+	@Produces
+	@Provide
+	public Statut getStatut() {
+		return engine.find(Statut.class);
 	}
 
 }

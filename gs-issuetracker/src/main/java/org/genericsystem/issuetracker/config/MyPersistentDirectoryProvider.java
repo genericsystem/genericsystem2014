@@ -9,10 +9,11 @@ import org.genericsystem.kernel.Statics;
 public class MyPersistentDirectoryProvider extends PersistentDirectoryProvider {
 	@Override
 	public String getEngineValue() {
-		return Statics.ENGINE_VALUE; //Engine name
+		return Statics.ENGINE_VALUE; // Engine name
 	}
+
 	@Override
 	public String getDirectoryPath() {
-		return DIRECTORY_PATH; //your directory path
+		return System.getenv("HOME") + "/issuetracker"; // your directory path
 	}
 }
