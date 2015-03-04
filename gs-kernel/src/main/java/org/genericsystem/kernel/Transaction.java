@@ -50,7 +50,7 @@ public class Transaction extends Context<Generic> {
 			set.add(generic.getMeta());
 		set.addAll(generic.getSupers());
 		set.addAll(generic.getComponents());
-		set.stream().forEach(ancestor -> getRoot().getProvider().getDependencies(ancestor).add(generic));
+		set.stream().forEach(ancestor -> getRoot().getDependencies(ancestor).add(generic));
 		getChecker().checkAfterBuild(true, false, generic);
 		return generic;
 	}
@@ -66,7 +66,7 @@ public class Transaction extends Context<Generic> {
 			set.add(generic.getMeta());
 		set.addAll(generic.getSupers());
 		set.addAll(generic.getComponents());
-		set.stream().forEach(ancestor -> getRoot().getProvider().getDependencies(ancestor).remove(generic));
+		set.stream().forEach(ancestor -> getRoot().getDependencies(ancestor).remove(generic));
 	}
 
 	@Override
@@ -75,12 +75,12 @@ public class Transaction extends Context<Generic> {
 
 			@Override
 			public Stream<Generic> get() {
-				return getRoot().getProvider().getDependencies(generic).stream(getTs());
+				return getRoot().getDependencies(generic).stream(getTs());
 			}
 
 			@Override
 			public Generic get(Object o) {
-				return getRoot().getProvider().getDependencies(generic).get(o, getTs());
+				return getRoot().getDependencies(generic).get(o, getTs());
 			}
 		};
 	}

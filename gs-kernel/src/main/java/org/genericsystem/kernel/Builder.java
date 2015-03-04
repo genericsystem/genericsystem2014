@@ -62,7 +62,7 @@ public abstract class Builder<T extends DefaultVertex<T>> {
 
 		@Override
 		Generic build(long ts, Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
-			return ((Root) getContext().getRoot()).getProvider().init(newT(clazz, meta), ts, meta, supers, value, components, otherTs);
+			return ((Root) getContext().getRoot()).init(newT(clazz, meta), ts, meta, supers, value, components, otherTs);
 		}
 
 		@Override

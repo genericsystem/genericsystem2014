@@ -35,9 +35,9 @@ public class SystemCache {
 
 	private final Map<Generic, Class<?>> reverseSystemCache = new IdentityHashMap<>();
 
-	protected final DefaultRoot root;
+	protected final Root root;
 
-	public SystemCache(DefaultRoot root, Class<?> rootClass) {
+	public SystemCache(Root root, Class<?> rootClass) {
 		this.root = root;
 		put(Root.class, (Generic) root);
 		put(rootClass, (Generic) root);
@@ -116,7 +116,7 @@ public class SystemCache {
 	private Generic setMeta(Class<?> clazz) {
 		Meta meta = clazz.getAnnotation(Meta.class);
 		if (meta == null)
-			return (Generic) root;
+			return root;
 		if (meta.value() == clazz)
 			return null;
 		return set(meta.value());
