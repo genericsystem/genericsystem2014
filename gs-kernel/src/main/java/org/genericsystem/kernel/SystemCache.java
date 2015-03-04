@@ -7,7 +7,6 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import org.genericsystem.api.core.ApiStatics;
-import org.genericsystem.api.defaults.DefaultRoot;
 import org.genericsystem.api.exception.CyclicException;
 import org.genericsystem.kernel.GenericHandler.SetSystemHandler;
 import org.genericsystem.kernel.annotations.Components;
@@ -36,9 +35,9 @@ public class SystemCache {
 
 	private final Map<Generic, Class<?>> reverseSystemCache = new IdentityHashMap<>();
 
-	protected final DefaultRoot<Generic> root;
+	protected final DefaultRoot root;
 
-	public SystemCache(DefaultRoot<Generic> root, Class<?> rootClass) {
+	public SystemCache(DefaultRoot root, Class<?> rootClass) {
 		this.root = root;
 		put(Root.class, (Generic) root);
 		put(rootClass, (Generic) root);

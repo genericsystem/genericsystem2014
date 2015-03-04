@@ -2,7 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.Objects;
 
-public class Generic implements DefaultGeneric<Generic> {
+public class Generic implements DefaultGeneric {
 
 	private Root root;
 

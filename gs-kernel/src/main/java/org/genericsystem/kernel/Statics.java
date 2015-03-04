@@ -3,7 +3,7 @@ package org.genericsystem.kernel;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
+import org.genericsystem.api.defaults.DefaultVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +41,7 @@ public class Statics {
 			log.info(message + " : " + (System.currentTimeMillis() - threadDebugged.get()));
 	}
 
-	public static class Supers<T extends DefaultGeneric<T>> extends ArrayList<T> {
+	public static class Supers<T extends DefaultVertex<T>> extends ArrayList<T> {
 		private static final long serialVersionUID = 6163099887384346235L;
 
 		public Supers(List<T> adds) {

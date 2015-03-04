@@ -13,6 +13,6 @@ public interface DefaultEngine extends org.genericsystem.api.defaults.DefaultRoo
 		return (Cache) getRoot().getCurrentCache();
 	}
 
-	GarbageCollector<Generic> getGarbageCollector();
+	GarbageCollector getGarbageCollector();
 
 }

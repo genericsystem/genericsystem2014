@@ -8,12 +8,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import org.genericsystem.api.defaults.DefaultLifeManager;
-import org.genericsystem.api.defaults.DefaultRoot;
 import org.genericsystem.kernel.Config.MetaAttribute;
 import org.genericsystem.kernel.Config.MetaRelation;
 import org.genericsystem.kernel.Config.SystemMap;
 
-public class Root extends Generic implements DefaultRoot<Generic> {
+public class Root extends Generic implements DefaultRoot {
 
 	private final TsGenerator generator = new TsGenerator();
 	private Context<Generic> context;
@@ -128,36 +127,7 @@ public class Root extends Generic implements DefaultRoot<Generic> {
 	}
 
 	@Override
-	public long getTs(Generic generic) {
-		return getProvider().getTs(generic);
-	}
-
-	@Override
-	public Generic getMeta(Generic generic) {
-		return getProvider().getMeta(generic);
-	}
-
-	@Override
-	public LifeManager getLifeManager(Generic generic) {
-		return getProvider().getLifeManager(generic);
-	}
-
-	@Override
-	public List<Generic> getSupers(Generic generic) {
-		return getProvider().getSupers(generic);
-	}
-
-	@Override
-	public Serializable getValue(Generic generic) {
-		return getProvider().getValue(generic);
-	}
-
-	@Override
-	public List<Generic> getComponents(Generic generic) {
-		return getProvider().getComponents(generic);
-	}
-
-	Provider getProvider() {
+	public Provider getProvider() {
 		return provider;
 	}
 

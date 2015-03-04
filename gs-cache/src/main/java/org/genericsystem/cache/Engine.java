@@ -16,7 +16,7 @@ public class Engine extends Root implements DefaultEngine {
 		this(engineValue, null, userClasses);
 	}
 
-	private final GarbageCollector<Generic> garbageCollector = new GarbageCollector<>(this);
+	private final GarbageCollector garbageCollector = new GarbageCollector(this);
 
 	private ThreadLocal<Cache> cacheLocal;
 
@@ -46,7 +46,7 @@ public class Engine extends Root implements DefaultEngine {
 	}
 
 	@Override
-	public GarbageCollector<Generic> getGarbageCollector() {
+	public GarbageCollector getGarbageCollector() {
 		return garbageCollector;
 	}
 
