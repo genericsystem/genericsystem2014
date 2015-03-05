@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -21,9 +22,15 @@ public class PriorityBean implements Serializable {
 	@Inject
 	@Provide
 	private transient Priority priority;
+	private List<String> priorities;
+
+	@PostConstruct
+	public void initPriorities() {
+		priorities = priority.getAllInstances().get().map(generic -> Objects.toString(generic.getValue())).collect(Collectors.toList());
+	}
 
 	public List<String> getPriorities() {
-		return priority.getAllInstances().get().map(generic -> Objects.toString(generic.getValue())).collect(Collectors.toList());
+		return priorities;
 	}
 
 }
