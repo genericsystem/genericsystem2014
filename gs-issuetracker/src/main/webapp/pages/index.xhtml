@@ -39,7 +39,7 @@
 					<f:selectItems value="#{statutBean.statuts}" var="statut"
 						itemLabel="#{statut}" itemValue="#{statut}">
 					</f:selectItems>
-					<f:ajax event="blur" execute="@this" render="@this" />
+					<f:ajax event="blur" execute="@this" render="@form message" />
 				</h:selectOneMenu>
 			</h:column>
 			<h:column>
@@ -48,8 +48,7 @@
 				</h:commandButton>
 			</h:column>
 			<f:facet name="footer">
-				<h:panelGroup id="addIssue" layout="block">
-					<h:inputText size="10" value="#{issueBean.newIssueName}" />
+				<h:panelGroup id="addIssue" layout="block"> 					
 					<h:inputText id="coucou" size="10"
 						value="#{issueBean.newIssueDescription}" />
 
