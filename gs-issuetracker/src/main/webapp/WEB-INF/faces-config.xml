@@ -7,5 +7,9 @@
 	<lifecycle>
 		<phase-listener>org.genericsystem.issuetracker.config.PhaseListenerImpl</phase-listener>
 	</lifecycle>
-
+	<factory>
+		<exception-handler-factory>
+			org.genericsystem.issuetracker.config.MyExceptionHandlerFactory
+		</exception-handler-factory>
+	</factory>
 </faces-config>

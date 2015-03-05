@@ -1,16 +1,17 @@
 package org.genericsystem.api.defaults;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
+import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
 
-public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncestors<T>, DefaultDependencies<T>, DefaultDisplay<T>, DefaultSystemProperties<T>, DefaultCompositesInheritance<T>, DefaultWritable<T>, Comparable<T> {
+public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncestors<T>, DefaultDependencies<T>, DefaultDisplay<T>, DefaultSystemProperties<T>, DefaultCompositesInheritance<T>, DefaultWritable<T> {
 
 	@Override
 	default DefaultContext<T> getCurrentCache() {
@@ -25,13 +26,29 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 	@Override
 	@SuppressWarnings("unchecked")
 	default T addInstance(List<T> overrides, Serializable value, T... components) {
-		return getCurrentCache().addInstance((T) this, overrides, value, Arrays.asList(components));
+		return getCurrentCache().addInstance((T) this, overrides, value, reorder(Arrays.asList(components)));
+	}
+
+	default List<T> reorder(List<T> components) {
+		List<T> previousOrderComp = new ArrayList<>(components);
+		List<T> result = new ArrayList<>();
+		for (T type : getComponents()) {
+			T matchedComponent = previousOrderComp.stream().filter(component -> component.isSpecializationOf(type)).findFirst().orElse(null);
+			if (matchedComponent != null) {
+				result.add(matchedComponent);
+				previousOrderComp.remove(matchedComponent);
+			} else
+				getCurrentCache().discardWithException(new MetaRuleConstraintViolationException("Unable to order components : " + components + " with this meta : " + info()));
+
+		}
+		result.addAll(previousOrderComp);
+		return result;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	default T setInstance(List<T> overrides, Serializable value, T... components) {
-		return getCurrentCache().setInstance((T) this, overrides, value, Arrays.asList(components));
+		return getCurrentCache().setInstance((T) this, overrides, value, reorder(Arrays.asList(components)));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -216,7 +233,7 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 		if (componentsList.size() != components.size())
 			return false;
 		for (int i = 0; i < componentsList.size(); i++)
-			if (!isReferentialIntegrityEnabled(i) && isSingularConstraintEnabled(i))
+			if (!getMeta().isReferentialIntegrityEnabled(i) && getMeta().isSingularConstraintEnabled(i))
 				return equiv(componentsList.get(i), components.get(i));
 		for (int i = 0; i < componentsList.size(); i++)
 			if (!equiv(componentsList.get(i), components.get(i)))
@@ -232,19 +249,4 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 		visitor.traverse((T) this);
 	}
 
-	@Override
-	default boolean isSystem() {
-		return getLifeManager().isSystem();
-	}
-
-	@Override
-	default int compareTo(T vertex) {
-		long birthTs = getLifeManager().getBirthTs();
-		long compareBirthTs = vertex.getLifeManager().getBirthTs();
-		return birthTs == compareBirthTs ? Long.compare(getTs(), vertex.getTs()) : Long.compare(birthTs, compareBirthTs);
-	}
-
-	long getTs();
-
-	DefaultLifeManager getLifeManager();
 }

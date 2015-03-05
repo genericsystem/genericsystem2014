@@ -1,11 +1,8 @@
 package org.genericsystem.kernel;
 
-import java.io.Serializable;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.kernel.Builder.GenericBuilder;
 
@@ -53,7 +50,7 @@ public class Transaction extends Context<Generic> {
 			set.add(generic.getMeta());
 		set.addAll(generic.getSupers());
 		set.addAll(generic.getComponents());
-		set.stream().forEach(ancestor -> getRoot().getProvider().getDependencies(ancestor).add(generic));
+		set.stream().forEach(ancestor -> getRoot().getDependencies(ancestor).add(generic));
 		getChecker().checkAfterBuild(true, false, generic);
 		return generic;
 	}
@@ -69,37 +66,7 @@ public class Transaction extends Context<Generic> {
 			set.add(generic.getMeta());
 		set.addAll(generic.getSupers());
 		set.addAll(generic.getComponents());
-		set.stream().forEach(ancestor -> getRoot().getProvider().getDependencies(ancestor).remove(generic));
-	}
-
-	@Override
-	long getTs(Generic generic) {
-		return getRoot().getProvider().getTs(generic);
-	}
-
-	@Override
-	Generic getMeta(Generic generic) {
-		return getRoot().getProvider().getMeta(generic);
-	}
-
-	@Override
-	LifeManager getLifeManager(Generic generic) {
-		return getRoot().getProvider().getLifeManager(generic);
-	}
-
-	@Override
-	List<Generic> getSupers(Generic generic) {
-		return getRoot().getProvider().getSupers(generic);
-	}
-
-	@Override
-	Serializable getValue(Generic generic) {
-		return getRoot().getProvider().getValue(generic);
-	}
-
-	@Override
-	List<Generic> getComponents(Generic generic) {
-		return getRoot().getProvider().getComponents(generic);
+		set.stream().forEach(ancestor -> getRoot().getDependencies(ancestor).remove(generic));
 	}
 
 	@Override
@@ -108,12 +75,12 @@ public class Transaction extends Context<Generic> {
 
 			@Override
 			public Stream<Generic> get() {
-				return getRoot().getProvider().getDependencies(generic).stream(getTs());
+				return getRoot().getDependencies(generic).stream(getTs());
 			}
 
 			@Override
 			public Generic get(Object o) {
-				return getRoot().getProvider().getDependencies(generic).get(o, getTs());
+				return getRoot().getDependencies(generic).get(o, getTs());
 			}
 		};
 	}

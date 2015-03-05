@@ -6,9 +6,6 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.genericsystem.api.core.ApiStatics;
-import org.genericsystem.api.defaults.DefaultRoot;
 import org.genericsystem.api.exception.CyclicException;
 import org.genericsystem.kernel.GenericHandler.SetSystemHandler;
 import org.genericsystem.kernel.annotations.Components;
@@ -37,11 +34,12 @@ public class SystemCache {
 
 	private final Map<Generic, Class<?>> reverseSystemCache = new IdentityHashMap<>();
 
-	protected final DefaultRoot<Generic> root;
+	protected final Root root;
 
-	public SystemCache(DefaultRoot<Generic> root, Class<?> rootClass) {
+	public SystemCache(Root root, Class<?> rootClass) {
 		this.root = root;
-		put(rootClass, (Generic) root);
+		put(Root.class, root);
+		put(rootClass, root);
 	}
 
 	public void mount(List<Class<?>> systemClasses, Class<?>... userClasses) {
@@ -51,7 +49,6 @@ public class SystemCache {
 			set(clazz);
 	}
 
-	@SuppressWarnings("unchecked")
 	private Generic set(Class<?> clazz) {
 		if (root.isInitialized())
 			throw new IllegalStateException("Class : " + clazz + " has not been built at startup");
@@ -93,8 +90,10 @@ public class SystemCache {
 		if (clazz.getAnnotation(InstanceValueClassConstraint.class) != null)
 			result.setClassConstraint(clazz.getAnnotation(InstanceValueClassConstraint.class).value());
 
-		if (clazz.getAnnotation(RequiredConstraint.class) != null)
-			result.enableRequiredConstraint(ApiStatics.NO_POSITION);
+		RequiredConstraint requiredConstraint = clazz.getAnnotation(RequiredConstraint.class);
+		if (requiredConstraint != null)
+			for (int axe : requiredConstraint.value())
+				result.enableRequiredConstraint(axe);
 
 		NoReferentialIntegrityProperty referentialIntegrity = clazz.getAnnotation(NoReferentialIntegrityProperty.class);
 		if (referentialIntegrity != null)
@@ -114,11 +113,10 @@ public class SystemCache {
 				set(dependencyClass);
 	}
 
-	@SuppressWarnings("unchecked")
 	private Generic setMeta(Class<?> clazz) {
 		Meta meta = clazz.getAnnotation(Meta.class);
 		if (meta == null)
-			return (Generic) root;
+			return root;
 		if (meta.value() == clazz)
 			return null;
 		return set(meta.value());

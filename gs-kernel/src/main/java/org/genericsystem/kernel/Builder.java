@@ -3,7 +3,6 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.List;
-
 import org.genericsystem.api.defaults.DefaultLifeManager;
 import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.kernel.annotations.InstanceClass;
@@ -49,20 +48,11 @@ public abstract class Builder<T extends DefaultVertex<T>> {
 		return null; // Not reached
 	}
 
-	private Class<?> getAnnotedClass(T vertex) {
-		if (vertex.isSystem()) {
-			Class<?> annotedClass = context.getRoot().findAnnotedClass(vertex);
-			if (annotedClass != null)
-				return annotedClass;
-		}
-		return vertex.getClass();
-	}
+	abstract Class<?> getAnnotedClass(T vertex);
 
-	T buildAndPlug(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components) {
-		return context.plug(build(context.getRoot().pickNewTs(), clazz, meta, supers, value, components, context.getRoot().isInitialized() ? DefaultLifeManager.USER_TS : DefaultLifeManager.SYSTEM_TS));
-	}
+	abstract T buildAndPlug(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components);
 
-	protected abstract T build(long ts, Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs);
+	abstract T build(long ts, Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs);
 
 	public static class GenericBuilder extends Builder<Generic> {
 
@@ -71,9 +61,24 @@ public abstract class Builder<T extends DefaultVertex<T>> {
 		}
 
 		@Override
-		public Generic build(long ts, Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
-			return ((Root) getContext().getRoot()).getProvider().init(newT(clazz, meta), ts, meta, supers, value, components, otherTs);
+		Generic build(long ts, Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
+			return ((Root) getContext().getRoot()).init(newT(clazz, meta), ts, meta, supers, value, components, otherTs);
 		}
-	}
 
+		@Override
+		Generic buildAndPlug(Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components) {
+			return getContext().plug(build(((Root) getContext().getRoot()).pickNewTs(), clazz, meta, supers, value, components, ((Root) getContext().getRoot()).isInitialized() ? DefaultLifeManager.USER_TS : DefaultLifeManager.SYSTEM_TS));
+		}
+
+		@Override
+		Class<?> getAnnotedClass(Generic vertex) {
+			if (vertex.isSystem()) {
+				Class<?> annotedClass = ((Root) getContext().getRoot()).findAnnotedClass(vertex);
+				if (annotedClass != null)
+					return annotedClass;
+			}
+			return vertex.getClass();
+		}
+
+	}
 }

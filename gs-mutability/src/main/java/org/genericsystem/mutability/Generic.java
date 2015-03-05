@@ -6,13 +6,14 @@ import org.genericsystem.api.defaults.DefaultVertex;
 
 public interface Generic extends DefaultVertex<Generic> {
 
-	default Engine getEngine() {
+	@Override
+	default Engine getRoot() {
 		throw new IllegalStateException();
 	}
 
 	@Override
 	default Cache getCurrentCache() {
-		return getEngine().getCurrentCache();
+		return getRoot().getCurrentCache();
 	}
 
 	@Override

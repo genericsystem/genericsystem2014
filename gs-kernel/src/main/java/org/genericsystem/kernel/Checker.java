@@ -131,7 +131,7 @@ public class Checker<T extends DefaultVertex<T>> {
 
 	private void checkRemoveGenericAnnoted(boolean isOnAdd, T vertex) {
 		if (!isOnAdd && vertex.isSystem())
-			getContext().discardWithException(new IllegalAccessException("System node can't be removed"));
+			getContext().discardWithException(new IllegalAccessException("System node can't be removed " + vertex.info()));
 	}
 
 	private void checkIsAlive(T vertex) {
