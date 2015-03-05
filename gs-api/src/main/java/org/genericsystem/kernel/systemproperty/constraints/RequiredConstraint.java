@@ -19,7 +19,7 @@ public class RequiredConstraint<T extends DefaultVertex<T>> implements AxedCheck
 	@Override
 	public void check(T modified, T attribute, Serializable value, int axe, boolean isRevert) throws ConstraintViolationException {
 		T base = isRevert ? modified : modified.getComponents().get(axe);
-		if (base.getHolders(attribute).isEmpty())
+		if (base.isAlive() && base.getHolders(attribute).isEmpty())
 			throw new RequiredConstraintViolationException(attribute + " is required for : " + base);
 	}
 

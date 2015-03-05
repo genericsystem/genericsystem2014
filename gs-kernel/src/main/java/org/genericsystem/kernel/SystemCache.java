@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.exception.CyclicException;
 import org.genericsystem.kernel.GenericHandler.SetSystemHandler;
 import org.genericsystem.kernel.annotations.Components;
@@ -39,8 +38,8 @@ public class SystemCache {
 
 	public SystemCache(Root root, Class<?> rootClass) {
 		this.root = root;
-		put(Root.class, (Generic) root);
-		put(rootClass, (Generic) root);
+		put(Root.class, root);
+		put(rootClass, root);
 	}
 
 	public void mount(List<Class<?>> systemClasses, Class<?>... userClasses) {
@@ -91,8 +90,10 @@ public class SystemCache {
 		if (clazz.getAnnotation(InstanceValueClassConstraint.class) != null)
 			result.setClassConstraint(clazz.getAnnotation(InstanceValueClassConstraint.class).value());
 
-		if (clazz.getAnnotation(RequiredConstraint.class) != null)
-			result.enableRequiredConstraint(ApiStatics.NO_POSITION);
+		RequiredConstraint requiredConstraint = clazz.getAnnotation(RequiredConstraint.class);
+		if (requiredConstraint != null)
+			for (int axe : requiredConstraint.value())
+				result.enableRequiredConstraint(axe);
 
 		NoReferentialIntegrityProperty referentialIntegrity = clazz.getAnnotation(NoReferentialIntegrityProperty.class);
 		if (referentialIntegrity != null)
@@ -112,7 +113,6 @@ public class SystemCache {
 				set(dependencyClass);
 	}
 
-	@SuppressWarnings("unchecked")
 	private Generic setMeta(Class<?> clazz) {
 		Meta meta = clazz.getAnnotation(Meta.class);
 		if (meta == null)
