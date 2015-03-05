@@ -89,7 +89,7 @@ public class Root extends Generic implements DefaultRoot<Generic> {
 		return (Custom) systemCache.get(clazz);
 	}
 
-	Class<?> findAnnotedClass(Generic vertex) {
+	public Class<?> findAnnotedClass(Generic vertex) {
 		return systemCache.getByVertex(vertex);
 	}
 
