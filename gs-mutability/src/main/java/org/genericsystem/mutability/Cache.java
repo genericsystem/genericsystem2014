@@ -72,7 +72,7 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 			return resultSet.iterator().next();
 		Generic result;
 		InstanceClass instanceClassAnnotation = null;
-		Class<?> findAnnotedClass = generic.getRoot().findAnnotedClass(generic.getMeta());
+		Class<?> findAnnotedClass = cache.getRoot().findAnnotedClass(generic.getMeta());
 		if (findAnnotedClass != null)
 			instanceClassAnnotation = findAnnotedClass.getAnnotation(InstanceClass.class);
 		if (clazz != null) {
@@ -192,7 +192,7 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 	}
 
 	private final static ProxyFactory PROXY_FACTORY = new ProxyFactory();
-	private final static MethodFilter METHOD_FILTER = method -> method.getName().equals("getEngine");
+	private final static MethodFilter METHOD_FILTER = method -> method.getName().equals("getRoot");
 
 	@SuppressWarnings("unchecked")
 	<T> T newInstance(Class<?> clazz) {
@@ -232,21 +232,6 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 	public Snapshot<Generic> getDependencies(Generic generic) {
 		return () -> cache.getDependencies(unwrap(generic)).get().map(this::wrap);
 	}
-
-	// @Override
-	// public Snapshot<Generic> getInheritings(Generic generic) {
-	// return () -> unwrap(generic).getInheritings().get().map(this::wrap);
-	// }
-	//
-	// @Override
-	// public Snapshot<Generic> getInstances(Generic generic) {
-	// return () -> unwrap(generic).getInstances().get().map(this::wrap);
-	// }
-	//
-	// @Override
-	// public Snapshot<Generic> getComposites(Generic generic) {
-	// return () -> unwrap(generic).getComposites().get().map(this::wrap);
-	// }
 
 	@Override
 	public void discardWithException(Throwable exception) throws RollbackException {

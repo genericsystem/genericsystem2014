@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
@@ -249,4 +248,5 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 	default void traverse(Visitor<T> visitor) {
 		visitor.traverse((T) this);
 	}
+
 }

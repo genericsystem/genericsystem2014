@@ -2,10 +2,7 @@ package org.genericsystem.mutability;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-
 import javassist.util.proxy.MethodHandler;
-
-import org.genericsystem.api.core.IContext;
 import org.genericsystem.api.defaults.DefaultRoot;
 import org.genericsystem.kernel.Config.SystemMap;
 import org.genericsystem.kernel.Statics;
@@ -35,11 +32,6 @@ public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 	}
 
 	@Override
-	public boolean isInitialized() {
-		return cacheEngine.isInitialized();
-	}
-
-	@Override
 	public boolean isSystem() {
 		return cacheEngine.isSystem();
 	}
@@ -50,7 +42,7 @@ public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 	}
 
 	@Override
-	public Engine getEngine() {
+	public Engine getRoot() {
 		return this;
 	}
 
@@ -106,24 +98,6 @@ public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 	@Override
 	public Generic getMap() {
 		return find(SystemMap.class);
-	}
-
-	@Override
-	public IContext<Generic> buildTransaction() {
-		assert false;
-		return null;
-	}
-
-	@Override
-	public Class<?> findAnnotedClass(Generic vertex) {
-		assert false;
-		return null;
-	}
-
-	@Override
-	public long pickNewTs() {
-		assert false;
-		return 0;
 	}
 
 }

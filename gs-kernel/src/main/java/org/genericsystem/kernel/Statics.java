@@ -3,7 +3,7 @@ package org.genericsystem.kernel;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
+import org.genericsystem.api.defaults.DefaultVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,11 +14,6 @@ public class Statics {
 	private static ThreadLocal<Long> threadDebugged = new ThreadLocal<>();
 
 	public final static String ENGINE_VALUE = "Engine";
-
-	public final static long TS_OLD_SYSTEM = 1L;
-	public final static long TS_SYSTEM = 0L;
-	public final static long[] SYSTEM_TS = new long[] { TS_SYSTEM, 0L, Long.MAX_VALUE };
-	public final static long[] USER_TS = new long[] { Long.MAX_VALUE, 0L, Long.MAX_VALUE };
 
 	public static final long MILLI_TO_NANOSECONDS = 1000000L;
 
@@ -46,7 +41,7 @@ public class Statics {
 			log.info(message + " : " + (System.currentTimeMillis() - threadDebugged.get()));
 	}
 
-	public static class Supers<T extends AbstractVertex<T>> extends ArrayList<T> {
+	public static class Supers<T extends DefaultVertex<T>> extends ArrayList<T> {
 		private static final long serialVersionUID = 6163099887384346235L;
 
 		public Supers(List<T> adds) {

@@ -3,8 +3,12 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.genericsystem.api.defaults.DefaultLifeManager;
 import org.genericsystem.api.defaults.DefaultRoot;
 import org.genericsystem.kernel.Config.MetaAttribute;
 import org.genericsystem.kernel.Config.MetaRelation;
@@ -13,9 +17,10 @@ import org.genericsystem.kernel.Config.SystemMap;
 public class Root extends Generic implements DefaultRoot<Generic> {
 
 	private final TsGenerator generator = new TsGenerator();
-	private final Context<Generic> context;
+	private Context<Generic> context;
 	private final SystemCache systemCache;
 	private final Archiver archiver;
+	private final Provider provider = new Provider();
 
 	private boolean initialized = false;
 
@@ -27,22 +32,39 @@ public class Root extends Generic implements DefaultRoot<Generic> {
 		this(value, null, userClasses);
 	}
 
-	public Root(Serializable value, String persistentDirectoryPath, Class<?>... userClasses) {
-		init(Statics.TS_SYSTEM, null, Collections.emptyList(), value, Collections.emptyList(), Statics.SYSTEM_TS);
-		context = new Transaction(this, pickNewTs());
-		systemCache = new SystemCache(this, getClass());
-		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
-		archiver = new Archiver(this, persistentDirectoryPath);
-		initialized = true;
+	@Override
+	public Root getRoot() {
+		return this;
 	}
 
-	@Override
+	public Root(Serializable value, String persistentDirectoryPath, Class<?>... userClasses) {
+		provider.init(this, DefaultLifeManager.TS_SYSTEM, null, Collections.emptyList(), value, Collections.emptyList(), DefaultLifeManager.SYSTEM_TS);
+		startContext();
+		systemCache = new SystemCache(this, getClass());
+		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
+		flushContext();
+		archiver = new Archiver(this, persistentDirectoryPath);
+		initialized = true;
+		shiftContext();
+	}
+
+	protected void startContext() {
+		context = new Transaction(this, pickNewTs());
+	}
+
+	protected void flushContext() {
+		// //Autoflush
+	}
+
+	protected void shiftContext() {
+		context = new Transaction(this, pickNewTs());
+	}
+
 	public long pickNewTs() {
 		return generator.pickNewTs();
 	}
 
-	@Override
-	public boolean isInitialized() {
+	boolean isInitialized() {
 		return initialized;
 	}
 
@@ -67,7 +89,6 @@ public class Root extends Generic implements DefaultRoot<Generic> {
 		return (Custom) systemCache.get(clazz);
 	}
 
-	@Override
 	public Class<?> findAnnotedClass(Generic vertex) {
 		return systemCache.getByVertex(vertex);
 	}
@@ -94,13 +115,88 @@ public class Root extends Generic implements DefaultRoot<Generic> {
 		}
 	}
 
-	@Override
-	public Context<Generic> buildTransaction() {
+	Context<Generic> buildTransaction() {
 		return new Transaction(this, pickNewTs());
 	}
 
 	@Override
 	public Generic getMap() {
 		return find(SystemMap.class);
+	}
+
+	long getTs(Generic generic) {
+		return provider.getTs(generic);
+	}
+
+	Generic getMeta(Generic generic) {
+		return provider.getMeta(generic);
+	}
+
+	LifeManager getLifeManager(Generic generic) {
+		return provider.getLifeManager(generic);
+	}
+
+	List<Generic> getSupers(Generic generic) {
+		return provider.getSupers(generic);
+	}
+
+	Serializable getValue(Generic generic) {
+		return provider.getValue(generic);
+	}
+
+	List<Generic> getComponents(Generic generic) {
+		return provider.getComponents(generic);
+	}
+
+	Dependencies<Generic> getDependencies(Generic generic) {
+		return provider.getDependencies(generic);
+	}
+
+	Generic init(Generic generic, long ts, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
+		return provider.init(generic, ts, meta, supers, value, components, otherTs);
+	}
+
+	class Provider {
+
+		private Map<Generic, Vertex> map = new ConcurrentHashMap<>();
+
+		private Vertex getVertex(Generic generic) {
+			return map.get(generic);
+		}
+
+		long getTs(Generic generic) {
+			return getVertex(generic).getTs();
+		}
+
+		Generic getMeta(Generic generic) {
+			return getVertex(generic).getMeta();
+		}
+
+		List<Generic> getSupers(Generic generic) {
+			return getVertex(generic).getSupers();
+		}
+
+		Serializable getValue(Generic generic) {
+			return getVertex(generic).getValue();
+		}
+
+		List<Generic> getComponents(Generic generic) {
+			return getVertex(generic).getComponents();
+		}
+
+		Dependencies<Generic> getDependencies(Generic generic) {
+			return getVertex(generic).getDependencies();
+		}
+
+		LifeManager getLifeManager(Generic generic) {
+			return getVertex(generic).getLifeManager();
+		}
+
+		Generic init(Generic generic, long ts, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
+			Vertex result = map.putIfAbsent(generic, new Vertex(generic, ts, meta, supers, value, components, otherTs));
+			assert result == null;
+			return generic.init(Root.this);
+		}
+
 	}
 }
