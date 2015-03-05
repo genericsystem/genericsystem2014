@@ -7,12 +7,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+
 import org.genericsystem.api.defaults.DefaultLifeManager;
+import org.genericsystem.api.defaults.DefaultRoot;
 import org.genericsystem.kernel.Config.MetaAttribute;
 import org.genericsystem.kernel.Config.MetaRelation;
 import org.genericsystem.kernel.Config.SystemMap;
 
-public class Root extends Generic implements DefaultRoot {
+public class Root extends Generic implements DefaultRoot<Generic> {
 
 	private final TsGenerator generator = new TsGenerator();
 	private Context<Generic> context;
@@ -58,7 +60,6 @@ public class Root extends Generic implements DefaultRoot {
 		context = new Transaction(this, pickNewTs());
 	}
 
-	@Override
 	public long pickNewTs() {
 		return generator.pickNewTs();
 	}
