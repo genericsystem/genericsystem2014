@@ -116,7 +116,6 @@ public class ComponentsOrderTest extends AbstractTest {
 		final Generic myAudi = car.addInstance("myAudi");
 		final Generic myMercedes = car.addInstance("myMercedes");
 		final Generic myMercedes2 = car.addInstance("myMercedes2");
-
 		myBmw.setLink(largerThan, "myBmwLargerThanMyAudi", myAudi);
 		myMercedes.setLink(largerThan, "myMercedesLargerThanMyBmw", myBmw);
 		myBmw.setLink(largerThan, "myBmwLargerThanMymyMercedes2", myMercedes2);
@@ -125,6 +124,21 @@ public class ComponentsOrderTest extends AbstractTest {
 		assert smallerThanMyMbw.size() == 2;
 		assert smallerThanMyMbw.contains(myAudi);
 		assert smallerThanMyMbw.contains(myMercedes2);
+	}
+
+	public void ezakjh() {
+		final Root engine = new Root();
+
+		// Create the types Vehicle and Color
+		Generic vehicle = engine.addInstance("Vehicle");
+		// Create the an auto-relation largenThan on vehicle
+		Generic largerThan = vehicle.addRelation("largerThan", vehicle);
+
+		Generic myCar = vehicle.addInstance("myCar");
+		Generic myBike = vehicle.addInstance("myBike");
+
+		// Do the link between the myCar and myBike
+		myCar.addLink(largerThan, "carLargenThanBike", myBike);
 
 	}
 }
