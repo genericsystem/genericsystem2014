@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
-public abstract class AbstractTsDependencies<T extends AbstractVertex<T>> implements Dependencies<T> {
+public abstract class AbstractTsDependencies<T extends DefaultGeneric> implements Dependencies<T> {
 
 	private Node<T> head = null;
 	private Node<T> tail = null;
@@ -26,7 +26,7 @@ public abstract class AbstractTsDependencies<T extends AbstractVertex<T>> implem
 			}
 		}
 
-		if (result != null && result.isAlive(ts))
+		if (result != null && result.getLifeManager().isAlive(ts))
 			return result;
 		return null;
 	}
@@ -110,7 +110,7 @@ public abstract class AbstractTsDependencies<T extends AbstractVertex<T>> implem
 				}
 				next = nextNode;
 				T content = next.content;
-				if (content != null && content.isAlive(ts))
+				if (content != null && content.getLifeManager().isAlive(ts))
 					break;
 			}
 		}

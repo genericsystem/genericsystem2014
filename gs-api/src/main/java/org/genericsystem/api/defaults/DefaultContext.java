@@ -53,8 +53,6 @@ public interface DefaultContext<T extends DefaultVertex<T>> extends IContext<T> 
 		return getDependencies(vertex).filter(x -> x.getComponents().contains(vertex));
 	}
 
-	Snapshot<T> getDependencies(T vertex);
-
 	default void discardWithException(Throwable exception) throws RollbackException {
 		throw new RollbackException(exception);
 	}
@@ -137,4 +135,6 @@ public interface DefaultContext<T extends DefaultVertex<T>> extends IContext<T> 
 		}
 		return new OrderedRemoveDependencies().visit(node);
 	}
+
+	Snapshot<T> getDependencies(T vertex);
 }

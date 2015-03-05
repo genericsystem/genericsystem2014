@@ -15,11 +15,14 @@ public interface DefaultAncestors<T extends DefaultVertex<T>> extends IVertex<T>
 		return this == getMeta() ? 0 : getMeta().getLevel() + 1;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	default DefaultRoot<T> getRoot() {
-		return !isMeta() ? getMeta().getRoot() : getSupers().isEmpty() ? (DefaultRoot<T>) this : getSupers().get(0).getRoot();
-	}
+	DefaultRoot<T> getRoot();
+
+	// @SuppressWarnings("unchecked")
+	// @Override
+	// default DefaultRoot<T> getRoot() {
+	// return !isMeta() ? getMeta().getRoot() : getSupers().isEmpty() ? (DefaultRoot<T>) this : getSupers().get(0).getRoot();
+	// }
 
 	@Override
 	default boolean isMeta() {

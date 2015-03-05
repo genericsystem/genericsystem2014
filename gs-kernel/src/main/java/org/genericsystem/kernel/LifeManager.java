@@ -2,13 +2,13 @@ package org.genericsystem.kernel;
 
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-
+import org.genericsystem.api.defaults.DefaultLifeManager;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LifeManager {
+public class LifeManager implements DefaultLifeManager {
 	protected static Logger log = LoggerFactory.getLogger(LifeManager.class);
 
 	private long birthTs;
@@ -16,7 +16,7 @@ public class LifeManager {
 	private long deathTs;
 	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
-	public LifeManager(long[] otherTs) {
+	LifeManager(long[] otherTs) {
 		this.birthTs = otherTs[0];
 		this.lastReadTs = new AtomicLong(otherTs[1]);
 		this.deathTs = otherTs[2];
@@ -115,6 +115,7 @@ public class LifeManager {
 		return lock.isWriteLockedByCurrentThread();
 	}
 
+	@Override
 	public long getBirthTs() {
 		return birthTs;
 	}
