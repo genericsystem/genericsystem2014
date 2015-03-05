@@ -49,7 +49,7 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 	@Override
 	@SuppressWarnings("unchecked")
 	default T setInstance(List<T> overrides, Serializable value, T... components) {
-		return getCurrentCache().setInstance((T) this, overrides, value, Arrays.asList(components));
+		return getCurrentCache().setInstance((T) this, overrides, value, reorder(Arrays.asList(components)));
 	}
 
 	@SuppressWarnings("unchecked")
