@@ -7,8 +7,6 @@ import java.util.List;
 
 class Vertex {
 
-	// private final Generic generic;
-
 	private final long ts;
 	private final Generic meta;
 	private final List<Generic> supers;
