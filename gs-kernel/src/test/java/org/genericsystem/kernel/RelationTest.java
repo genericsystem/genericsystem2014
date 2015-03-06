@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.util.List;
+
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.testng.annotations.Test;
 
@@ -81,6 +82,49 @@ public class RelationTest extends AbstractTest {
 		assert composites.size() == 2 : composites.size();
 		assert composites.contains(caravane) : composites;
 		assert composites.contains(car) : composites;
+	}
+
+	public void test_getRelation() {
+		final Root engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic color = engine.addInstance("Color");
+		Generic carColor = car.addRelation("carColor", color);
+		assert carColor.equals(car.getRelation("carColor"));
+	}
+
+	public void test_getRelation2() {
+		final Root engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic color = engine.addInstance("Color");
+		Generic carColor = car.addRelation("carColor", color);
+		assert carColor.equals(car.getRelation("carColor", car));
+	}
+
+	public void test_getRelation3() {
+		final Root engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic color = engine.addInstance("Color");
+		Generic carColor = car.addRelation("carColor", color);
+		assert carColor.equals(car.getRelation("carColor", car, color));
+	}
+
+	public void test_getRelation4() {
+		final Root engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic color = engine.addInstance("Color");
+		Generic carColor = car.addRelation("carColor", color);
+		assert carColor.equals(car.getRelation("carColor", color));
+	}
+
+	public void test_getRelation5() {
+		final Root engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic color = engine.addInstance("Color");
+		Generic door = engine.addInstance("Door");
+		Generic carColor = car.addRelation("carColor", color);
+		Generic carDoor = car.addRelation("carDoor", door);
+		assert carColor.equals(car.getRelation("carColor"));
+		assert carDoor.equals(car.getRelation("carDoor"));
 	}
 
 }

@@ -82,31 +82,31 @@ public interface DefaultDependencies<T extends DefaultVertex<T>> extends IVertex
 		return attribute -> Objects.equals(attribute.getValue(), value);
 	}
 
-	@SuppressWarnings("unchecked")
-	default Predicate<T> componentsFilter(T... components) {
-		return attribute -> {
-			int subIndex = 0;
-			loop: for (T component : components) {
-				for (; subIndex < attribute.getComponents().size(); subIndex++) {
-					T subTarget = attribute.getComponents().get(subIndex);
-					if (subTarget.isSpecializationOf(component)) {
-						if (isSingularConstraintEnabled(subIndex))
-							return true;
-						subIndex++;
-						continue loop;
-					}
-				}
-				return false;
-			}
-			return true;
-		};
-	}
+	// @SuppressWarnings("unchecked")
+	// default Predicate<T> componentsFilter(T... components) {
+	// return attribute -> {
+	// int subIndex = 0;
+	// loop: for (T component : components) {
+	// for (; subIndex < attribute.getComponents().size(); subIndex++) {
+	// T subTarget = attribute.getComponents().get(subIndex);
+	// if (subTarget.isSpecializationOf(component)) {
+	// if (isSingularConstraintEnabled(subIndex)) // optimisation ? si les autres élément sont pas bon, ils sont bypassé ?
+	// return true;
+	// subIndex++;
+	// continue loop;
+	// }
+	// }
+	// return false;
+	// }
+	// return true;
+	// };
+	// }
 
-	default Predicate<T> componentsFilter2(T... components) {
+	default Predicate<T> componentsFilter(T... components) {
 		return attribute -> {
 			List<T> attributeComps = new ArrayList<>(attribute.getComponents());
 			for (T component : components) {
-				T matchedComponent = attributeComps.stream().filter(subTarget -> subTarget.isSpecializationOf(component)).findFirst().orElse(null);
+				T matchedComponent = attributeComps.stream().filter(attributeComponent -> attributeComponent.isSpecializationOf(component)).findFirst().orElse(null);
 				if (matchedComponent != null)
 					attributeComps.remove(matchedComponent);
 				else
@@ -119,46 +119,37 @@ public interface DefaultDependencies<T extends DefaultVertex<T>> extends IVertex
 	@SuppressWarnings("unchecked")
 	@Override
 	default T getAttribute(Serializable value, T... targets) {
-		return getNonAmbiguousResult(getAttributes().get().filter(valueFilter(value)).filter(componentsFilter(targets)).iterator());
+		return getNonAmbiguousResult(getAttributes().get().filter(valueFilter(value)).filter(componentsFilter(targets)));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default T getHolder(T attribute, Serializable value, T... targets) {
-		return getNonAmbiguousResult(getHolders(attribute).get().filter(valueFilter(value)).filter(componentsFilter(targets)).iterator());
+		return getNonAmbiguousResult(getHolders(attribute).get().filter(valueFilter(value)).filter(componentsFilter(targets)));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default T getRelation(Serializable value, T... targets) {
-		return getNonAmbiguousResult(getRelations().get().filter(valueFilter(value)).filter(componentsFilter(targets)).iterator());
+		return getNonAmbiguousResult(getRelations().get().filter(valueFilter(value)).filter(componentsFilter(targets)));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default T getLink(T relation, Serializable value, T... targets) {
-		return getNonAmbiguousResult(getLinks(relation).get().filter(valueFilter(value)).filter(componentsFilter(targets)).iterator());
+		return getNonAmbiguousResult(getLinks(relation).get().filter(valueFilter(value)).filter(componentsFilter(targets)));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default T getHolder(T attribute, T... targets) {
-		return getNonAmbiguousResult(getHolders(attribute).get().filter(componentsFilter(targets)).iterator());
+		return getNonAmbiguousResult(getHolders(attribute).get().filter(componentsFilter(targets)));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default T getLink(T relation, T... targets) {
-		return getNonAmbiguousResult(getLinks(relation).get().filter(componentsFilter2(addThisToTargets(targets))).iterator());
-	}
-
-	default T getNonAmbiguousResult(Iterator<T> iterator) {
-		if (!iterator.hasNext())
-			return null;
-		T result = iterator.next();
-		if (iterator.hasNext())
-			getCurrentCache().discardWithException(new AmbiguousSelectionException(result.info() + " " + iterator.next().info()));
-		return result;
+		return getNonAmbiguousResult(getLinks(relation).get().filter(componentsFilter(targets)));
 	}
 
 	default T getNonAmbiguousResult(Stream<T> stream) {
