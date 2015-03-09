@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
 
+import org.genericsystem.api.defaults.DefaultLifeManager;
 import org.genericsystem.kernel.annotations.SystemGeneric;
 import org.testng.annotations.Test;
 
@@ -35,7 +36,7 @@ public class PersistenceTest extends AbstractTest {
 		Root engine = new Root(Statics.ENGINE_VALUE, snapshot, Vehicle.class);
 		Generic vehicle = engine.find(Vehicle.class);
 		vehicle.addInstance("myVehicle");
-		assert vehicle.getLifeManager().getBirthTs() == Statics.TS_SYSTEM;
+		assert vehicle.getLifeManager().getBirthTs() == DefaultLifeManager.TS_SYSTEM;
 		assert vehicle.getInstance("myVehicle").getLifeManager().getBirthTs() > vehicle.getLifeManager().getBirthTs();
 		assert vehicle.isSystem();
 		engine.close();
@@ -48,7 +49,7 @@ public class PersistenceTest extends AbstractTest {
 
 		Root engine3 = new Root(Statics.ENGINE_VALUE, snapshot, Vehicle.class);
 		Generic vehicle3 = engine3.find(Vehicle.class);
-		assert vehicle3.getLifeManager().getBirthTs() == Statics.TS_SYSTEM;
+		assert vehicle3.getLifeManager().getBirthTs() == DefaultLifeManager.TS_SYSTEM;
 		assert vehicle3.getInstance("myVehicle").getLifeManager().getBirthTs() > vehicle3.getLifeManager().getBirthTs();
 		assert vehicle3.isSystem();
 		engine3.close();

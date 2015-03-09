@@ -1,7 +1,9 @@
 package org.genericsystem.api.defaults;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -9,6 +11,7 @@ import java.util.stream.Stream;
 
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
+import org.genericsystem.api.exception.AmbiguousSelectionException;
 
 public interface DefaultDependencies<T extends DefaultVertex<T>> extends IVertex<T> {
 
@@ -79,21 +82,35 @@ public interface DefaultDependencies<T extends DefaultVertex<T>> extends IVertex
 		return attribute -> Objects.equals(attribute.getValue(), value);
 	}
 
-	@SuppressWarnings("unchecked")
+	// @SuppressWarnings("unchecked")
+	// default Predicate<T> componentsFilter(T... components) {
+	// return attribute -> {
+	// int subIndex = 0;
+	// loop: for (T component : components) {
+	// for (; subIndex < attribute.getComponents().size(); subIndex++) {
+	// T subTarget = attribute.getComponents().get(subIndex);
+	// if (subTarget.isSpecializationOf(component)) {
+	// if (isSingularConstraintEnabled(subIndex)) // optimisation ? si les autres élément sont pas bon, ils sont bypassé ?
+	// return true;
+	// subIndex++;
+	// continue loop;
+	// }
+	// }
+	// return false;
+	// }
+	// return true;
+	// };
+	// }
+
 	default Predicate<T> componentsFilter(T... components) {
 		return attribute -> {
-			int subIndex = 0;
-			loop: for (T component : components) {
-				for (; subIndex < attribute.getComponents().size(); subIndex++) {
-					T subTarget = attribute.getComponents().get(subIndex);
-					if (subTarget.isSpecializationOf(component)) {
-						if (isSingularConstraintEnabled(subIndex))
-							return true;
-						subIndex++;
-						continue loop;
-					}
-				}
-				return false;
+			List<T> attributeComps = new ArrayList<>(attribute.getComponents());
+			for (T component : components) {
+				T matchedComponent = attributeComps.stream().filter(attributeComponent -> attributeComponent.isSpecializationOf(component)).findFirst().orElse(null);
+				if (matchedComponent != null)
+					attributeComps.remove(matchedComponent);
+				else
+					return false;
 			}
 			return true;
 		};
@@ -101,25 +118,47 @@ public interface DefaultDependencies<T extends DefaultVertex<T>> extends IVertex
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T getAttribute(Serializable value, T... components) {
-		return getAttributes().get().filter(valueFilter(value)).filter(componentsFilter(components)).findFirst().orElse(null);
+	default T getAttribute(Serializable value, T... targets) {
+		return getNonAmbiguousResult(getAttributes().get().filter(valueFilter(value)).filter(componentsFilter(targets)));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T getHolder(T attribute, Serializable value, T... components) {
-		return getHolders(attribute).get().filter(valueFilter(value)).filter(componentsFilter(components)).findFirst().orElse(null);
+	default T getHolder(T attribute, Serializable value, T... targets) {
+		return getNonAmbiguousResult(getHolders(attribute).get().filter(valueFilter(value)).filter(componentsFilter(targets)));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T getRelation(Serializable value, T... components) {
-		return getRelations().get().filter(valueFilter(value)).filter(componentsFilter(components)).findFirst().orElse(null);
+	default T getRelation(Serializable value, T... targets) {
+		return getNonAmbiguousResult(getRelations().get().filter(valueFilter(value)).filter(componentsFilter(targets)));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T getLink(T relation, Serializable value, T... components) {
-		return getLinks(relation).get().filter(valueFilter(value)).filter(componentsFilter(components)).findFirst().orElse(null);
+	default T getLink(T relation, Serializable value, T... targets) {
+		return getNonAmbiguousResult(getLinks(relation).get().filter(valueFilter(value)).filter(componentsFilter(targets)));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default T getHolder(T attribute, T... targets) {
+		return getNonAmbiguousResult(getHolders(attribute).get().filter(componentsFilter(targets)));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default T getLink(T relation, T... targets) {
+		return getNonAmbiguousResult(getLinks(relation).get().filter(componentsFilter(targets)));
+	}
+
+	default T getNonAmbiguousResult(Stream<T> stream) {
+		Iterator<T> iterator = stream.iterator();
+		if (!iterator.hasNext())
+			return null;
+		T result = iterator.next();
+		if (iterator.hasNext())
+			getCurrentCache().discardWithException(new AmbiguousSelectionException(result.info() + " " + iterator.next().info()));
+		return result;
 	}
 }

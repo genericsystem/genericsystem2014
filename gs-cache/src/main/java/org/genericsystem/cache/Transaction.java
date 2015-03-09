@@ -6,11 +6,11 @@ import org.genericsystem.kernel.Generic;
 
 public class Transaction extends org.genericsystem.kernel.Transaction {
 
-	protected Transaction(DefaultEngine engine, long ts) {
+	protected Transaction(Engine engine, long ts) {
 		super(engine, ts);
 	}
 
-	protected Transaction(DefaultEngine engine) {
+	protected Transaction(Engine engine) {
 		super(engine);
 	}
 

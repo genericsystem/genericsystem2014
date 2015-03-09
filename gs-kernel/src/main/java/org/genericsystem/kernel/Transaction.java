@@ -3,22 +3,25 @@ package org.genericsystem.kernel;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.api.defaults.DefaultRoot;
 import org.genericsystem.kernel.Builder.GenericBuilder;
 
 public class Transaction extends Context<Generic> {
 
 	private final long ts;
 
-	protected Transaction(DefaultRoot<Generic> root, long ts) {
+	protected Transaction(Root root, long ts) {
 		super(root);
 		this.ts = ts;
 	}
 
-	protected Transaction(DefaultRoot<Generic> root) {
+	protected Transaction(Root root) {
 		this(root, root.pickNewTs());
+	}
+
+	@Override
+	public Root getRoot() {
+		return (Root) super.getRoot();
 	}
 
 	@Override
@@ -39,22 +42,6 @@ public class Transaction extends Context<Generic> {
 	}
 
 	@Override
-	public Snapshot<Generic> getDependencies(Generic vertex) {
-		return new Snapshot<Generic>() {
-
-			@Override
-			public Stream<Generic> get() {
-				return vertex.getDependencies().stream(getTs());
-			}
-
-			@Override
-			public Generic get(Object o) {
-				return vertex.getDependencies().get(o, getTs());
-			}
-		};
-	}
-
-	@Override
 	protected Generic plug(Generic generic) {
 		if (getRoot().isInitialized())
 			generic.getLifeManager().beginLife(getTs());
@@ -63,7 +50,7 @@ public class Transaction extends Context<Generic> {
 			set.add(generic.getMeta());
 		set.addAll(generic.getSupers());
 		set.addAll(generic.getComponents());
-		set.stream().forEach(ancestor -> ancestor.getDependencies().add(generic));
+		set.stream().forEach(ancestor -> getRoot().getDependencies(ancestor).add(generic));
 		getChecker().checkAfterBuild(true, false, generic);
 		return generic;
 	}
@@ -79,7 +66,23 @@ public class Transaction extends Context<Generic> {
 			set.add(generic.getMeta());
 		set.addAll(generic.getSupers());
 		set.addAll(generic.getComponents());
-		set.stream().forEach(ancestor -> ancestor.getDependencies().remove(generic));
+		set.stream().forEach(ancestor -> getRoot().getDependencies(ancestor).remove(generic));
+	}
+
+	@Override
+	public Snapshot<Generic> getDependencies(Generic generic) {
+		return new Snapshot<Generic>() {
+
+			@Override
+			public Stream<Generic> get() {
+				return getRoot().getDependencies(generic).stream(getTs());
+			}
+
+			@Override
+			public Generic get(Object o) {
+				return getRoot().getDependencies(generic).get(o, getTs());
+			}
+		};
 	}
 
 }
