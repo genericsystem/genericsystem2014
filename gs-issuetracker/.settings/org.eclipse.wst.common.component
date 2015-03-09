@@ -6,12 +6,6 @@
         <dependent-module archiveName="gs-cdi-3.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/gs-cdi/gs-cdi">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="gs-cache-3.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/gs-cache/gs-cache">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="gs-kernel-3.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/gs-kernel/gs-kernel">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <dependent-module archiveName="gs-api-3.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/gs-api/gs-api">
             <dependency-type>uses</dependency-type>
         </dependent-module>

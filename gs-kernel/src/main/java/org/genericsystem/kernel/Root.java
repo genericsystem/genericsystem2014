@@ -20,7 +20,7 @@ public class Root extends Generic implements DefaultRoot<Generic> {
 	private Context<Generic> context;
 	private final SystemCache systemCache;
 	private final Archiver archiver;
-	private final Provider provider = new Provider();
+	private final Map<Generic, Vertex> map = new ConcurrentHashMap<>();
 
 	private boolean initialized = false;
 
@@ -38,7 +38,7 @@ public class Root extends Generic implements DefaultRoot<Generic> {
 	}
 
 	public Root(Serializable value, String persistentDirectoryPath, Class<?>... userClasses) {
-		provider.init(this, DefaultLifeManager.TS_SYSTEM, null, Collections.emptyList(), value, Collections.emptyList(), DefaultLifeManager.SYSTEM_TS);
+		init(this, DefaultLifeManager.TS_SYSTEM, null, Collections.emptyList(), value, Collections.emptyList(), DefaultLifeManager.SYSTEM_TS);
 		startContext();
 		systemCache = new SystemCache(this, getClass());
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
@@ -124,79 +124,49 @@ public class Root extends Generic implements DefaultRoot<Generic> {
 		return find(SystemMap.class);
 	}
 
+	private Vertex getVertex(Generic generic) {
+		return map.get(generic);
+	}
+
 	long getTs(Generic generic) {
-		return provider.getTs(generic);
+		return getVertex(generic).getTs();
 	}
 
 	Generic getMeta(Generic generic) {
-		return provider.getMeta(generic);
+		return getVertex(generic).getMeta();
+	}
+
+	Generic getNextDependency(Generic generic, Generic ancestor) {
+		return getVertex(generic).getNextDependency(ancestor);
+	}
+
+	void setNextDependency(Generic generic, Generic ancestor, Generic nextDependency) {
+		getVertex(generic).setNextDependency(ancestor,nextDependency);
 	}
 
 	LifeManager getLifeManager(Generic generic) {
-		return provider.getLifeManager(generic);
+		return getVertex(generic).getLifeManager();
 	}
 
 	List<Generic> getSupers(Generic generic) {
-		return provider.getSupers(generic);
+		return getVertex(generic).getSupers();
 	}
 
 	Serializable getValue(Generic generic) {
-		return provider.getValue(generic);
+		return getVertex(generic).getValue();
 	}
 
 	List<Generic> getComponents(Generic generic) {
-		return provider.getComponents(generic);
+		return getVertex(generic).getComponents();
 	}
 
 	Dependencies<Generic> getDependencies(Generic generic) {
-		return provider.getDependencies(generic);
+		return getVertex(generic).getDependencies();
 	}
 
 	Generic init(Generic generic, long ts, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
-		return provider.init(generic, ts, meta, supers, value, components, otherTs);
-	}
-
-	class Provider {
-
-		private Map<Generic, Vertex> map = new ConcurrentHashMap<>();
-
-		private Vertex getVertex(Generic generic) {
-			return map.get(generic);
-		}
-
-		long getTs(Generic generic) {
-			return getVertex(generic).getTs();
-		}
-
-		Generic getMeta(Generic generic) {
-			return getVertex(generic).getMeta();
-		}
-
-		List<Generic> getSupers(Generic generic) {
-			return getVertex(generic).getSupers();
-		}
-
-		Serializable getValue(Generic generic) {
-			return getVertex(generic).getValue();
-		}
-
-		List<Generic> getComponents(Generic generic) {
-			return getVertex(generic).getComponents();
-		}
-
-		Dependencies<Generic> getDependencies(Generic generic) {
-			return getVertex(generic).getDependencies();
-		}
-
-		LifeManager getLifeManager(Generic generic) {
-			return getVertex(generic).getLifeManager();
-		}
-
-		Generic init(Generic generic, long ts, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
-			Vertex result = map.putIfAbsent(generic, new Vertex(generic, ts, meta, supers, value, components, otherTs));
-			assert result == null;
-			return generic.init(Root.this);
-		}
-
+		Vertex result = map.putIfAbsent(generic, new Vertex(generic, ts, meta, supers, value, components, otherTs));
+		assert result == null;
+		return generic.init(Root.this);
 	}
 }
