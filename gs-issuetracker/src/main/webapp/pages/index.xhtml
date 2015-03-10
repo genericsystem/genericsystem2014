@@ -43,6 +43,20 @@
 				</h:selectOneMenu>
 			</h:column>
 			<h:column>
+				<f:facet name="header">Comments</f:facet>
+				<h:dataTable value="#{issueBean.getComments(issue)}" var="comment">
+					<h:column>
+						<h:outputLabel value="#{comment}"/>
+					</h:column>
+				</h:dataTable>
+			</h:column>
+			<h:column>
+				
+				<h:commandLink value="+" action="#{issueBean.addComment(issue)}">
+					<f:ajax execute="addComment" render="@form message"/>
+				</h:commandLink>
+			</h:column>
+			<h:column>
 				<h:commandButton value="X" action="#{issueBean.deleteIssue(issue)}">
 					<f:ajax execute="deleteIssue" render="@form" />
 				</h:commandButton>
@@ -56,6 +70,8 @@
 						action="#{issueBean.addIssue}">
 						<f:ajax execute="addIssue" render="@form message" />
 					</h:commandButton>
+					
+					<h:inputTextarea value="#{issueBean.newIssueComment}" />
 				</h:panelGroup>
 			</f:facet>
 		</h:dataTable>
