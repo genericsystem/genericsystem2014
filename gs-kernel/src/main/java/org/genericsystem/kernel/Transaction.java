@@ -3,6 +3,7 @@ package org.genericsystem.kernel;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.kernel.Builder.GenericBuilder;
 

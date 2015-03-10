@@ -2,7 +2,7 @@ package org.genericsystem.cache;
 
 import org.genericsystem.kernel.Generic;
 
-public interface DefaultEngine extends org.genericsystem.api.defaults.DefaultRoot<Generic> {
+public interface DefaultEngine extends org.genericsystem.defaults.DefaultRoot<Generic> {
 
 	Cache start(Cache cache);
 

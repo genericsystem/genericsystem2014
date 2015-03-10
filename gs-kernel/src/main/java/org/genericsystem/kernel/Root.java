@@ -7,8 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
-import org.genericsystem.api.defaults.DefaultLifeManager;
-import org.genericsystem.api.defaults.DefaultRoot;
+
+import org.genericsystem.defaults.DefaultLifeManager;
+import org.genericsystem.defaults.DefaultRoot;
 import org.genericsystem.kernel.Config.MetaAttribute;
 import org.genericsystem.kernel.Config.MetaRelation;
 import org.genericsystem.kernel.Config.Sequence;

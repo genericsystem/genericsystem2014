@@ -1,6 +1,6 @@
 package org.genericsystem.mutability;
 
-import org.genericsystem.api.defaults.exceptions.SingularConstraintViolationException;
+import org.genericsystem.defaults.exceptions.SingularConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test

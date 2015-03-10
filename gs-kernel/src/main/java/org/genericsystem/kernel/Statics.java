@@ -3,7 +3,8 @@ package org.genericsystem.kernel;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import org.genericsystem.api.defaults.DefaultVertex;
+
+import org.genericsystem.defaults.DefaultVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

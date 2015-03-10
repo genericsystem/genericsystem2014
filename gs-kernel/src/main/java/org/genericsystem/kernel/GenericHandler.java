@@ -5,10 +5,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+<<<<<<< HEAD
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.defaults.DefaultVertex;
+=======
+>>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 import org.genericsystem.api.exception.ExistsException;
+<<<<<<< HEAD
 import org.genericsystem.api.exception.UnreachableOverridesException;
+=======
+import org.genericsystem.defaults.DefaultVertex;
+>>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 
 abstract class GenericHandler<T extends DefaultVertex<T>> {
 	final Context<T> context;

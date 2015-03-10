@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.genericsystem.api.core.ApiStatics;
-import org.genericsystem.api.defaults.DefaultVertex;
+import org.genericsystem.defaults.DefaultVertex;
 
 public class SupersComputer<T extends DefaultVertex<T>> extends LinkedHashSet<T> {
 
