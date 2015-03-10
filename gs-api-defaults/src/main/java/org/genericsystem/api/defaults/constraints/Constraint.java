@@ -1,4 +1,4 @@
-package org.genericsystem.kernel.systemproperty.constraints;
+package org.genericsystem.api.defaults.constraints;
 
 import java.io.Serializable;
 

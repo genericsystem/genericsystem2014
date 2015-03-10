@@ -1,11 +1,11 @@
-package org.genericsystem.kernel.systemproperty.constraints;
+package org.genericsystem.api.defaults.constraints;
 
 import java.io.Serializable;
 
 import org.genericsystem.api.defaults.DefaultVertex;
+import org.genericsystem.api.defaults.constraints.Constraint.AxedCheckedConstraint;
+import org.genericsystem.api.defaults.exceptions.SingularConstraintViolationException;
 import org.genericsystem.api.exception.ConstraintViolationException;
-import org.genericsystem.api.exception.SingularConstraintViolationException;
-import org.genericsystem.kernel.systemproperty.constraints.Constraint.AxedCheckedConstraint;
 
 /**
  * Represents the constraint to allow only one value for a relation.

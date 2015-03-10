@@ -3,6 +3,7 @@ package org.genericsystem.example;
 import java.io.Serializable;
 
 import org.genericsystem.api.core.ApiStatics;
+import org.genericsystem.api.defaults.constraints.Constraint.CheckedConstraint;
 import org.genericsystem.api.exception.ConstraintViolationException;
 import org.genericsystem.kernel.Config.MetaAttribute;
 import org.genericsystem.kernel.Config.SystemMap;
@@ -14,7 +15,6 @@ import org.genericsystem.kernel.annotations.Supers;
 import org.genericsystem.kernel.annotations.SystemGeneric;
 import org.genericsystem.kernel.annotations.value.AxedPropertyClassValue;
 import org.genericsystem.kernel.annotations.value.IntValue;
-import org.genericsystem.kernel.systemproperty.constraints.Constraint.CheckedConstraint;
 import org.genericsystem.mutability.Engine;
 import org.genericsystem.mutability.Generic;
 import org.testng.annotations.Test;
