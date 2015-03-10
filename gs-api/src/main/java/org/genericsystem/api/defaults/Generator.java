@@ -16,13 +16,10 @@ public interface Generator<T extends DefaultVertex<T>> {
 
 		protected int getIncrementedValue(T type) {
 			T sequence = type.getRoot().getSequence();
-			T sequenceHolder = null;
-			if (type.getHolders(sequence).first() != null)
-				sequenceHolder = type.getHolders(sequence).first();
+			T sequenceHolder = type.getHolders(sequence).first();
 			int value = sequenceHolder != null ? (Integer) sequenceHolder.getValue() + 1 : 0;
 			type.setHolder(sequence, value);
 			return value;
-
 		}
 
 		public static class StringAutoIncrementGenerator<T extends DefaultVertex<T>> extends IntAutoIncrementGenerator<T> {
