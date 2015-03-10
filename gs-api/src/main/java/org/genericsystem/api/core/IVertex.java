@@ -754,6 +754,27 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	boolean isCascadeRemoveEnabled(int pos);
 
 	/**
+	 * Enable the inheritance on this vertex.
+	 *
+	 * @return <code>this</code>.
+	 */
+	T enableHeritable();
+
+	/**
+	 * Disable inheritance on this vertex.
+	 *
+	 * @return <code>this</code>.
+	 */
+	T disableHeritable();
+
+	/**
+	 * Indicates whether this vertex is heritable.
+	 *
+	 * @return <code>true</code> if this vertex is heritable, <code>false</code> otherwise.
+	 */
+	boolean isHeritableEnabled();
+
+	/**
 	 * Removes this vertex.
 	 *
 	 * @throws RollbackException
@@ -1397,4 +1418,16 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 * @return the current cache.
 	 */
 	IContext<T> getCurrentCache();
+
+	/**
+	 * Returns the key for the property at the position
+	 * 
+	 * @param propertyClass
+	 *            the <code>Class</code> of the property.
+	 * @param pos
+	 *            the position of the property
+	 * @return the key for the property at the position
+	 */
+	T getKey(Class<? extends SystemProperty> propertyClass, int pos);
+
 }

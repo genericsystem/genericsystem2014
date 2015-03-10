@@ -11,6 +11,7 @@ import org.genericsystem.api.exception.NotFoundException;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 import org.genericsystem.kernel.systemproperty.CascadeRemoveProperty;
 import org.genericsystem.kernel.systemproperty.NoReferentialIntegrityProperty;
+import org.genericsystem.kernel.systemproperty.NonHeritableProperty;
 import org.genericsystem.kernel.systemproperty.constraints.InstanceValueClassConstraint;
 import org.genericsystem.kernel.systemproperty.constraints.PropertyConstraint;
 import org.genericsystem.kernel.systemproperty.constraints.RequiredConstraint;
@@ -20,10 +21,15 @@ import org.genericsystem.kernel.systemproperty.constraints.UniqueValueConstraint
 public interface DefaultSystemProperties<T extends DefaultVertex<T>> extends IVertex<T> {
 
 	@Override
-	default Serializable getSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos) {
+	default T getKey(Class<? extends SystemProperty> propertyClass, int pos) {
 		T map = getRoot().getMap();
-		Stream<T> keys = map != null ? getAttributes(map).get() : Stream.empty();
-		T key = keys.filter(x -> Objects.equals(x.getValue(), new AxedPropertyClass(propertyClass, pos))).findFirst().orElse(null);
+		Stream<T> keys = map != null ? map.getInheritings().get() : Stream.empty();
+		return keys.filter(x -> Objects.equals(x.getValue(), new AxedPropertyClass(propertyClass, pos))).findFirst().orElse(null);
+	}
+
+	@Override
+	default Serializable getSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos) {
+		T key = getKey(propertyClass, pos);
 		if (key != null) {
 			T result = getHolders(key).get().filter(x -> this.isSpecializationOf(x.getBaseComponent())).findFirst().orElse(null);
 			return result != null ? result.getValue() : null;
@@ -183,6 +189,23 @@ public interface DefaultSystemProperties<T extends DefaultVertex<T>> extends IVe
 	@Override
 	default boolean isCascadeRemoveEnabled(int pos) {
 		return isSystemPropertyEnabled(CascadeRemoveProperty.class, pos);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default T enableHeritable() {
+		return disableSystemProperty(NonHeritableProperty.class, ApiStatics.NO_POSITION);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default T disableHeritable() {
+		return enableSystemProperty(NonHeritableProperty.class, ApiStatics.NO_POSITION);
+	}
+
+	@Override
+	default boolean isHeritableEnabled() {
+		return !isSystemPropertyEnabled(NonHeritableProperty.class, ApiStatics.NO_POSITION);
 	}
 
 }

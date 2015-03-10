@@ -1,9 +1,11 @@
 package org.genericsystem.api.defaults;
 
 import java.io.Serializable;
+
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
+import org.genericsystem.kernel.systemproperty.NonHeritableProperty;
 
 public interface DefaultCompositesInheritance<T extends DefaultVertex<T>> extends IVertex<T> {
 
@@ -67,12 +69,18 @@ public interface DefaultCompositesInheritance<T extends DefaultVertex<T>> extend
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getAttributes(T attribute) {
-		return () -> new InheritanceComputer<>((T) DefaultCompositesInheritance.this, attribute, ApiStatics.STRUCTURAL).inheritanceStream();
+		T nonHeritableProperty = getKey(NonHeritableProperty.class, ApiStatics.NO_POSITION);
+		if (nonHeritableProperty == null || attribute.inheritsFrom(nonHeritableProperty) || attribute.isHeritableEnabled())
+			return () -> new InheritanceComputer<>((T) DefaultCompositesInheritance.this, attribute, ApiStatics.STRUCTURAL).inheritanceStream();
+		return () -> this.getComposites().get().filter(holder -> holder.isSpecializationOf(attribute) && holder.getLevel() == ApiStatics.STRUCTURAL);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getHolders(T attribute) {
-		return () -> new InheritanceComputer<>((T) DefaultCompositesInheritance.this, attribute, ApiStatics.CONCRETE).inheritanceStream();
+		T nonHeritableProperty = getKey(NonHeritableProperty.class, ApiStatics.NO_POSITION);
+		if (nonHeritableProperty == null || attribute.inheritsFrom(nonHeritableProperty) || attribute.isHeritableEnabled())
+			return () -> new InheritanceComputer<>((T) DefaultCompositesInheritance.this, attribute, ApiStatics.CONCRETE).inheritanceStream();
+		return () -> this.getComposites().get().filter(holder -> holder.isSpecializationOf(attribute) && holder.getLevel() == ApiStatics.CONCRETE);
 	}
 }
