@@ -1,11 +1,14 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.api.exception.ExistsException;
+import org.genericsystem.api.exception.UnreachableOverridesException;
 
 abstract class GenericHandler<T extends DefaultVertex<T>> {
 	final Context<T> context;
@@ -39,15 +42,7 @@ abstract class GenericHandler<T extends DefaultVertex<T>> {
 
 	void adjust() {
 		adjustedMeta = meta.adjustMeta(value, components);
-		if (meta.isMeta() && adjustedMeta.getComponents().size() != components.size()) {
-			if (isMeta()) {
-				supers = Collections.singletonList(adjustedMeta);
-				return;
-			}
-			adjustedMeta = context.setMeta(components.size());
-		}
-		supers = context.computeAndCheckOverridesAreReached(adjustedMeta, overrides, value, components);
-
+		supers = computeAndCheckOverridesAreReached();
 	}
 
 	T get() {
@@ -81,6 +76,13 @@ abstract class GenericHandler<T extends DefaultVertex<T>> {
 	T update(T update) {
 		assert update != null;
 		return context.getRestructurator().rebuildAll(update, () -> getOrBuild(), context.computeDependencies(update));
+	}
+
+	List<T> computeAndCheckOverridesAreReached() {
+		List<T> supers = new ArrayList<>(new SupersComputer<>(adjustedMeta, overrides, value, components));
+		if (!ApiStatics.areOverridesReached(supers, overrides))
+			context.discardWithException(new UnreachableOverridesException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
+		return supers;
 	}
 
 	static class GetHandler<T extends DefaultVertex<T>> extends GenericHandler<T> {
