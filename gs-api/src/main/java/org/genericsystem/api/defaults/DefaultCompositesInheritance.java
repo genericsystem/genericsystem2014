@@ -1,7 +1,6 @@
 package org.genericsystem.api.defaults;
 
 import java.io.Serializable;
-import java.util.stream.Stream;
 
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.IVertex;
@@ -67,25 +66,21 @@ public interface DefaultCompositesInheritance<T extends DefaultVertex<T>> extend
 		return () -> getHolders(attribute, pos).get().map(T::getValue);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getAttributes(T attribute) {
-		return () -> getStream(attribute, ApiStatics.STRUCTURAL);
-	}
-
-	@Override
-	default Snapshot<T> getHolders(T attribute) {
-		return () -> getStream(attribute, ApiStatics.CONCRETE);
+		T nonHeritableProperty = getKey(NonHeritableProperty.class, ApiStatics.NO_POSITION);
+		if (nonHeritableProperty == null || attribute.inheritsFrom(nonHeritableProperty) || attribute.isHeritableEnabled())
+			return () -> new InheritanceComputer<>((T) DefaultCompositesInheritance.this, attribute, ApiStatics.STRUCTURAL).inheritanceStream();
+		return () -> this.getComposites().get().filter(holder -> holder.isSpecializationOf(attribute) && holder.getLevel() == ApiStatics.STRUCTURAL);
 	}
 
 	@SuppressWarnings("unchecked")
-	default Stream<T> getStream(T attribute, int level) {
+	@Override
+	default Snapshot<T> getHolders(T attribute) {
 		T nonHeritableProperty = getKey(NonHeritableProperty.class, ApiStatics.NO_POSITION);
 		if (nonHeritableProperty == null || attribute.inheritsFrom(nonHeritableProperty) || attribute.isHeritableEnabled())
-			return new InheritanceComputer<>((T) DefaultCompositesInheritance.this, attribute, level).inheritanceStream();
-		return getNonInheringsStream(attribute, level);
-	}
-
-	default Stream<T> getNonInheringsStream(T attribute, int level) {
-		return this.getComposites().get().filter(holder -> holder.isSpecializationOf(attribute) && holder.getLevel() == level);
+			return () -> new InheritanceComputer<>((T) DefaultCompositesInheritance.this, attribute, ApiStatics.CONCRETE).inheritanceStream();
+		return () -> this.getComposites().get().filter(holder -> holder.isSpecializationOf(attribute) && holder.getLevel() == ApiStatics.CONCRETE);
 	}
 }
