@@ -40,7 +40,7 @@
 
 	<modules>
 		<module>gs-api</module>
-		<module>gs-api-defaults</module>
+		<module>gs-defaults</module>
 		<module>gs-kernel</module>
 		<module>gs-cache</module>
 		<module>gs-mutability</module>
