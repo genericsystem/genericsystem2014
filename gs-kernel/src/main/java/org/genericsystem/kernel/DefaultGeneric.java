@@ -2,9 +2,10 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.List;
+
 import org.genericsystem.api.defaults.DefaultVertex;
 
-public interface DefaultGeneric extends DefaultVertex<Generic>, Comparable<Generic> {
+interface DefaultGeneric extends DefaultVertex<Generic>, Comparable<Generic> {
 
 	@Override
 	Root getRoot();
@@ -52,5 +53,9 @@ public interface DefaultGeneric extends DefaultVertex<Generic>, Comparable<Gener
 	@Override
 	default List<Generic> getSupers() {
 		return getRoot().getSupers((Generic) this);
+	}
+
+	default Generic getNextDependency(Generic ancestor) {
+		return getRoot().getNextDependency((Generic) this,ancestor);
 	}
 }

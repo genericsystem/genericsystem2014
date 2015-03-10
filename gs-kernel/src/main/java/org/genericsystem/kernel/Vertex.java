@@ -3,7 +3,9 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 class Vertex {
 
@@ -14,6 +16,7 @@ class Vertex {
 	private final List<Generic> components;
 	private final LifeManager lifeManager;
 	private final Dependencies<Generic> dependencies;
+	private Map<Generic, Generic> nextDependencies = new HashMap<>();
 
 	protected Vertex(Generic generic, long ts, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
 		// this.generic = generic;
@@ -25,10 +28,10 @@ class Vertex {
 		this.components = Collections.unmodifiableList(new ArrayList<>(components));
 		this.supers = Collections.unmodifiableList(new ArrayList<>(supers));
 		lifeManager = new LifeManager(otherTs);
-		this.dependencies = new AbstractTsDependencies<Generic>() {
+		this.dependencies = new AbstractTsDependencies2() {
 			@Override
-			public LifeManager getLifeManager() {
-				return lifeManager;
+			public Generic getAncestor() {
+				return generic;
 			}
 		};
 	}
@@ -63,6 +66,14 @@ class Vertex {
 
 	Dependencies<Generic> getDependencies() {
 		return dependencies;
+	}
+
+	Generic getNextDependency(Generic ancestor) {
+		return nextDependencies.get(ancestor);
+	}
+
+	void setNextDependency(Generic ancestor, Generic nextDependency) {
+		nextDependencies.put(ancestor, nextDependency);
 	}
 
 }
