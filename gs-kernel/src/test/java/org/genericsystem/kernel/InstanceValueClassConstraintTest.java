@@ -2,7 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.stream.Stream;
 
-import org.genericsystem.api.exception.InstanceValueClassConstraintViolationException;
+import org.genericsystem.api.defaults.exceptions.InstanceValueClassConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test

@@ -1,4 +1,6 @@
-package org.genericsystem.api.exception;
+package org.genericsystem.api.defaults.exceptions;
+
+import org.genericsystem.api.exception.ConstraintViolationException;
 
 /**
  * Thrown when a user operation violates the <code>RequiredConstraint</code>. An attribute should have a value.

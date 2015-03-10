@@ -4,8 +4,10 @@ import static org.genericsystem.api.core.ApiStatics.CONCRETE;
 import static org.genericsystem.api.core.ApiStatics.META;
 import static org.genericsystem.api.core.ApiStatics.SENSOR;
 import static org.genericsystem.api.core.ApiStatics.STRUCTURAL;
+
 import java.io.StringWriter;
 import java.util.HashMap;
+
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
@@ -13,8 +15,9 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import javax.json.JsonWriter;
 import javax.json.stream.JsonGenerator;
-import org.genericsystem.api.core.IVertex;
+
 import org.genericsystem.api.core.ApiStatics;
+import org.genericsystem.api.core.IVertex;
 
 public interface DefaultDisplay<T extends DefaultVertex<T>> extends IVertex<T> {
 

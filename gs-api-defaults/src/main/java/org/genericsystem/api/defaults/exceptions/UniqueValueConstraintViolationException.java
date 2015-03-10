@@ -1,4 +1,6 @@
-package org.genericsystem.api.exception;
+package org.genericsystem.api.defaults.exceptions;
+
+import org.genericsystem.api.exception.ConstraintViolationException;
 
 /**
  * Thrown when a user operation violates the <code>UniqueValueConstraint</code>. The user tries to add a second instance on a type.

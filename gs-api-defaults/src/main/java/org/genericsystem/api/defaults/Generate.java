@@ -1,11 +1,10 @@
-package org.genericsystem.kernel.annotations;
+package org.genericsystem.api.defaults;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.genericsystem.api.defaults.Generator;
 import org.genericsystem.api.defaults.Generator.IntAutoIncrementGenerator.StringAutoIncrementGenerator;
 
 @Retention(RetentionPolicy.RUNTIME)

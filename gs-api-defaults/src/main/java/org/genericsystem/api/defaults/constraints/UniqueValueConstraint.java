@@ -1,12 +1,12 @@
-package org.genericsystem.kernel.systemproperty.constraints;
+package org.genericsystem.api.defaults.constraints;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 import org.genericsystem.api.defaults.DefaultVertex;
+import org.genericsystem.api.defaults.constraints.Constraint.CheckedConstraint;
+import org.genericsystem.api.defaults.exceptions.UniqueValueConstraintViolationException;
 import org.genericsystem.api.exception.ConstraintViolationException;
-import org.genericsystem.api.exception.UniqueValueConstraintViolationException;
-import org.genericsystem.kernel.systemproperty.constraints.Constraint.CheckedConstraint;
 
 /**
  * Represents the constraint to allow only one value for an instance.

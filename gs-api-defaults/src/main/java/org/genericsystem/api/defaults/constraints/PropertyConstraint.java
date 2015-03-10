@@ -1,13 +1,13 @@
-package org.genericsystem.kernel.systemproperty.constraints;
+package org.genericsystem.api.defaults.constraints;
 
 import java.io.Serializable;
 import java.util.stream.Collectors;
 
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.defaults.DefaultVertex;
+import org.genericsystem.api.defaults.constraints.Constraint.CheckableConstraint;
+import org.genericsystem.api.defaults.exceptions.PropertyConstraintViolationException;
 import org.genericsystem.api.exception.ConstraintViolationException;
-import org.genericsystem.api.exception.PropertyConstraintViolationException;
-import org.genericsystem.kernel.systemproperty.constraints.Constraint.CheckableConstraint;
 
 /**
  * Represents the constraint to allow only one value for an attribute.

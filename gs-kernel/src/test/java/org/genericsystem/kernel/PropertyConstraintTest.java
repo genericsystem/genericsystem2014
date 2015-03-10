@@ -2,7 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.Arrays;
 
-import org.genericsystem.api.exception.PropertyConstraintViolationException;
+import org.genericsystem.api.defaults.exceptions.PropertyConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test

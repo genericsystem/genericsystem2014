@@ -1,9 +1,9 @@
 package org.genericsystem.kernel;
 
+import org.genericsystem.api.defaults.Generate;
 import org.genericsystem.api.defaults.Generator.IntAutoIncrementGenerator;
 import org.genericsystem.kernel.Config.Sequence;
 import org.genericsystem.kernel.annotations.Components;
-import org.genericsystem.kernel.annotations.Generate;
 import org.genericsystem.kernel.annotations.SystemGeneric;
 import org.testng.annotations.Test;
 
