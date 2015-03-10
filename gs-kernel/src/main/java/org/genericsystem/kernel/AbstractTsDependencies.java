@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
 public abstract class AbstractTsDependencies<T extends DefaultGeneric> implements Dependencies<T> {
@@ -25,10 +26,7 @@ public abstract class AbstractTsDependencies<T extends DefaultGeneric> implement
 				lifeManager.readUnlock();
 			}
 		}
-
-		if (result != null && result.getLifeManager().isAlive(ts))
-			return result;
-		return null;
+		return result != null && result.getLifeManager().isAlive(ts) ? result : null;
 	}
 
 	@Override
@@ -64,7 +62,8 @@ public abstract class AbstractTsDependencies<T extends DefaultGeneric> implement
 			T nextGeneric = nextNode.content;
 			Node<T> nextNextNode = nextNode.next;
 			if (generic.equals(nextGeneric)) {
-				nextNode.content = null;
+				// nextNode.content = null;
+				System.out.println("remove : " + generic.info());
 				if (nextNextNode == null)
 					tail = currentNode;
 				currentNode.next = nextNextNode;
@@ -109,9 +108,7 @@ public abstract class AbstractTsDependencies<T extends DefaultGeneric> implement
 					}
 				}
 				next = nextNode;
-				T content = next.content;
-				if (content != null && content.getLifeManager().isAlive(ts))
-					break;
+				return;
 			}
 		}
 
@@ -122,8 +119,8 @@ public abstract class AbstractTsDependencies<T extends DefaultGeneric> implement
 	}
 
 	private static class Node<T> {
-		public T content;
-		public Node<T> next;
+		private final T content;
+		private Node<T> next;
 
 		private Node(T content) {
 			this.content = content;

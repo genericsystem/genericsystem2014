@@ -20,4 +20,5 @@ public class Generic implements DefaultGeneric {
 	public String toString() {
 		return Objects.toString(getValue());
 	}
+
 }

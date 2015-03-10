@@ -6,6 +6,7 @@ import org.genericsystem.kernel.annotations.Dependencies;
 import org.genericsystem.kernel.annotations.Meta;
 import org.genericsystem.kernel.annotations.Supers;
 import org.genericsystem.kernel.annotations.SystemGeneric;
+import org.genericsystem.kernel.annotations.constraints.InstanceValueClassConstraint;
 import org.genericsystem.kernel.annotations.constraints.PropertyConstraint;
 import org.genericsystem.kernel.annotations.value.AxedPropertyClassValue;
 import org.genericsystem.kernel.annotations.value.BooleanValue;
@@ -51,6 +52,14 @@ public class Config {
 	@Components(Root.class)
 	@PropertyConstraint
 	public static class SystemMap {
+
+	}
+
+	@SystemGeneric
+	@Components(Root.class)
+	@InstanceValueClassConstraint(Integer.class)
+	@PropertyConstraint
+	public static class Sequence {
 
 	}
 

@@ -1,7 +1,6 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import org.genericsystem.api.defaults.DefaultVertex;
@@ -39,13 +38,8 @@ abstract class GenericHandler<T extends DefaultVertex<T>> {
 
 	void adjust() {
 		adjustedMeta = meta.adjustMeta(value, components);
-		if (meta.isMeta() && adjustedMeta.getComponents().size() != components.size()) {
-			if (isMeta()) {
-				supers = Collections.singletonList(adjustedMeta);
-				return;
-			}
+		if (!isMeta() && adjustedMeta.getComponents().size() != components.size())
 			adjustedMeta = context.setMeta(components.size());
-		}
 		supers = context.computeAndCheckOverridesAreReached(adjustedMeta, overrides, value, components);
 
 	}
