@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.NavigableSet;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import org.genericsystem.api.defaults.DefaultVertex;
+
+import org.genericsystem.defaults.DefaultVertex;
 import org.genericsystem.kernel.GenericHandler.AtomicHandler;
 
 public class Restructurator<T extends DefaultVertex<T>> {

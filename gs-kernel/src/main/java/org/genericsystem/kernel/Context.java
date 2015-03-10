@@ -5,12 +5,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.api.defaults.DefaultContext;
-import org.genericsystem.api.defaults.DefaultRoot;
-import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.api.exception.UnreachableOverridesException;
+import org.genericsystem.defaults.DefaultContext;
+import org.genericsystem.defaults.DefaultRoot;
+import org.genericsystem.defaults.DefaultVertex;
 import org.genericsystem.kernel.GenericHandler.AddHandler;
 import org.genericsystem.kernel.GenericHandler.SetHandler;
 import org.genericsystem.kernel.GenericHandler.UpdateHandler;

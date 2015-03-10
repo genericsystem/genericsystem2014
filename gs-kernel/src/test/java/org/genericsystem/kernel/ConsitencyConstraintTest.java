@@ -1,10 +1,10 @@
 package org.genericsystem.kernel;
 
 import org.genericsystem.api.core.ApiStatics;
-import org.genericsystem.api.defaults.exceptions.InstanceValueClassConstraintViolationException;
-import org.genericsystem.api.defaults.exceptions.PropertyConstraintViolationException;
-import org.genericsystem.api.defaults.exceptions.SingularConstraintViolationException;
-import org.genericsystem.api.defaults.exceptions.UniqueValueConstraintViolationException;
+import org.genericsystem.defaults.exceptions.InstanceValueClassConstraintViolationException;
+import org.genericsystem.defaults.exceptions.PropertyConstraintViolationException;
+import org.genericsystem.defaults.exceptions.SingularConstraintViolationException;
+import org.genericsystem.defaults.exceptions.UniqueValueConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test

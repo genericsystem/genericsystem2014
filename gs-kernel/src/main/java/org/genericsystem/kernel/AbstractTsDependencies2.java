@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.genericsystem.kernel.iterator.AbstractAwareIterator;
 
 public abstract class AbstractTsDependencies2 implements Dependencies<Generic> {
