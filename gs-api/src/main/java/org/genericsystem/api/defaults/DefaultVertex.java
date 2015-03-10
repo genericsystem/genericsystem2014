@@ -6,10 +6,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
 import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
+import org.genericsystem.kernel.annotations.Generate;
 
 public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncestors<T>, DefaultDependencies<T>, DefaultDisplay<T>, DefaultSystemProperties<T>, DefaultCompositesInheritance<T>, DefaultWritable<T> {
 
@@ -249,4 +251,33 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 		visitor.traverse((T) this);
 	}
 
+	default T addInstance(T... components) {
+		Generate generate = getGenerate();
+		if (generate == null)
+			getCurrentCache().discardWithException(new IllegalStateException("Unable to find @Generate annotation on : " + info()));
+		return addInstance(newGenerator(generate.clazz()).generate(this), components);
+	}
+
+	default T addHolder(T attribute, T... targets) {
+		return attribute.addInstance(addThisToTargets(targets));
+	}
+
+	// TODO ambiguous method
+	// default T addLink(T relation, T firstTarget, T... otherTargets) {
+	// return relation.addInstance(addThisToTargets(firstTarget, otherTargets));
+	// }
+
+	@SuppressWarnings("unchecked")
+	default Generate getGenerate() {
+		return getRoot().findAnnotedClass((T) this).getAnnotation(Generate.class);
+	}
+
+	default Generator newGenerator(Class<? extends Generator> clazz) {
+		try {
+			return clazz.newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			getCurrentCache().discardWithException(e);
+		}
+		return null;// Not reached
+	}
 }

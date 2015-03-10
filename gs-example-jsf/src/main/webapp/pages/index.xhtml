@@ -27,6 +27,15 @@
 					<f:ajax event="blur" execute="@this" render="@this message" />
 				</h:inputText>
 			</h:column>
+			<h:column>
+				<f:facet name="header">Color</f:facet>
+				<h:selectOneMenu value="#{carBean.getColor(car).value}">
+					<f:selectItems value="#{colorBean.colors}" var="color"
+						itemLabel="#{color}" itemValue="#{color}">
+					</f:selectItems>
+					<f:ajax event="blur" execute="@this" render="@form message"/>
+				</h:selectOneMenu>
+			</h:column>
 			<f:facet name="footer">
 				<h:panelGroup id="addCar" layout="block">
 					<h:inputText size="10" value="#{carBean.newCarName}" />

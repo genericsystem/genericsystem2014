@@ -161,25 +161,25 @@ public interface DefaultWritable<T extends DefaultVertex<T>> extends IVertex<T> 
 	@Override
 	@SuppressWarnings("unchecked")
 	default T addAttribute(List<T> overrides, Serializable value, T... targets) {
-		return getRoot().addInstance(overrides, value, addThisToTargets(targets));
+		return getCurrentCache().setMeta(targets.length + 1).addInstance(overrides, value, addThisToTargets(targets));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	default T setAttribute(List<T> overrides, Serializable value, T... targets) {
-		return getRoot().setInstance(overrides, value, addThisToTargets(targets));
+		return getCurrentCache().setMeta(targets.length + 1).setInstance(overrides, value, addThisToTargets(targets));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	default T addRelation(List<T> overrides, Serializable value, T firstTarget, T... otherTargets) {
-		return getRoot().addInstance(overrides, value, addThisToTargets(firstTarget, otherTargets));
+		return getCurrentCache().setMeta(otherTargets.length + 2).addInstance(overrides, value, addThisToTargets(firstTarget, otherTargets));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	default T setRelation(List<T> overrides, Serializable value, T firstTarget, T... otherTargets) {
-		return getRoot().setInstance(overrides, value, addThisToTargets(firstTarget, otherTargets));
+		return getCurrentCache().setMeta(otherTargets.length + 2).setInstance(overrides, value, addThisToTargets(firstTarget, otherTargets));
 	}
 
 	@Override

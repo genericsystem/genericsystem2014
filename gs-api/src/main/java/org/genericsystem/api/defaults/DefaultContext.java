@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
+
 import org.genericsystem.api.core.IContext;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
@@ -137,4 +138,6 @@ public interface DefaultContext<T extends DefaultVertex<T>> extends IContext<T> 
 	}
 
 	Snapshot<T> getDependencies(T vertex);
+
+	T setMeta(int dim);
 }

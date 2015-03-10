@@ -7,4 +7,6 @@ public interface DefaultRoot<T extends DefaultVertex<T>> extends IRoot<T> {
 	@Override
 	DefaultContext<T> getCurrentCache();
 
+	T getSequence();
+
 }

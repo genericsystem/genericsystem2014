@@ -74,6 +74,7 @@ public class SupersComputer<T extends DefaultVertex<T>> extends LinkedHashSet<T>
 		result = alreadyComputed.put(candidate, selectableSelected);
 		assert result == null : candidate.info();
 		if (selectableSelected[0] && (candidate.getLevel() == reachLevel) && !candidate.inheritsFrom(meta, overrides, value, components)) {
+			assert !contains(candidate);
 			add(candidate);
 			selectableSelected[1] = true;
 		}
