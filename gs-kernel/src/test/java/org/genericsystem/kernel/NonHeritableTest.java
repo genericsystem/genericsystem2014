@@ -7,40 +7,29 @@ import org.testng.annotations.Test;
 @Test
 public class NonHeritableTest extends AbstractTest {
 
-	public void test001() {
+	public void test_enable() {
 		Root engine = new Root();
 		Generic tree = engine.addInstance("Tree");
-		Generic color = engine.addInstance("Color");
-		Generic treeColor = tree.addAttribute("TreeColor", color);
-
-		treeColor.enableHeritable();
-		assert treeColor.isHeritableEnabled();
+		tree.enableHeritable();
+		assert tree.isHeritableEnabled();
 	}
 
-	public void test001_a() {
+	public void test_enableByDefault() {
 		Root engine = new Root();
 		Generic tree = engine.addInstance("Tree");
-		Generic color = engine.addInstance("Color");
-		Generic treeColor = tree.addAttribute("TreeColor", color);
-		assert treeColor.isHeritableEnabled();
+		assert tree.isHeritableEnabled();
 	}
 
-	public void test001_b() {
+	public void test_disable() {
 		Root engine = new Root();
 		Generic tree = engine.addInstance("Tree");
-		Generic color = engine.addInstance("Color");
-		Generic treeColor = tree.addAttribute("TreeColor", color);
-		assert treeColor.isHeritableEnabled();
-		treeColor.disableHeritable();
-		assert !treeColor.isHeritableEnabled();
-		treeColor.enableHeritable();
-		assert treeColor.isHeritableEnabled();
+		tree.disableHeritable();
+		assert !tree.isHeritableEnabled();
 	}
 
-	public void test001_c() {
+	public void test_disable_then_enable() {
 		Root engine = new Root();
 		Generic tree = engine.addInstance("Tree");
-
 		assert tree.isHeritableEnabled();
 		tree.disableHeritable();
 		assert !tree.isHeritableEnabled();
@@ -49,26 +38,7 @@ public class NonHeritableTest extends AbstractTest {
 		tree.disableHeritable();
 	}
 
-	public void test001_e() {
-		Root engine = new Root();
-		Generic tree = engine.addInstance("Tree");
-		tree.enableUniqueValueConstraint();
-		assert tree.isUniqueValueEnabled();
-		tree.disableUniqueValueConstraint();
-		assert !tree.isUniqueValueEnabled();
-
-		// assert tree.isHeritableEnabled();
-		// tree.disableHeritable();
-		// System.out.println(tree.getComposites().info());
-		// assert !tree.isHeritableEnabled();
-		// tree.enableHeritable();
-		// System.out.println(tree.getComposites().info());
-		// assert tree.isHeritableEnabled();
-		// tree.disableHeritable();
-		// System.out.println(tree.getComposites().info());
-	}
-
-	public void test001_d() {
+	public void test_enable_then_disable() {
 		Root engine = new Root();
 		Generic tree = engine.addInstance("Tree");
 		tree.enableHeritable();
@@ -77,7 +47,7 @@ public class NonHeritableTest extends AbstractTest {
 		assert !tree.isHeritableEnabled();
 	}
 
-	public void test002() {
+	public void test_tree_color() {
 		Root engine = new Root();
 
 		Generic tree = engine.addInstance("Tree");
