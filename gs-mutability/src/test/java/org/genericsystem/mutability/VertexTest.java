@@ -1,6 +1,7 @@
 package org.genericsystem.mutability;
 
 import java.util.Arrays;
+
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.testng.annotations.Test;
 

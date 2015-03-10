@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import org.genericsystem.api.core.ApiStatics;
-import org.genericsystem.api.exception.SingularConstraintViolationException;
+import org.genericsystem.api.defaults.exceptions.SingularConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test
