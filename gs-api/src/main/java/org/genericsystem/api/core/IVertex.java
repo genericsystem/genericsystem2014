@@ -192,56 +192,80 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	// T getType(Serializable value, T... components);
 
 	/**
-	 * Returns if exists the attribute of this (meta) vertex. The returned attribute satisfies the specified <code>value</code> and <code>components</code>.
+	 * Returns if exists the attribute of this (meta) vertex. The returned attribute satisfies the specified <code>value</code> and <code>targets</code>.
 	 *
 	 * @param value
 	 *            the value of returned attribute.
-	 * @param components
-	 *            the components of returned attribute.
+	 * @param targets
+	 *            the targets of returned attribute.
 	 * @return an attribute if exists, <code>null</code> otherwise.
 	 */
 	@SuppressWarnings("unchecked")
-	T getAttribute(Serializable value, T... components);
+	T getAttribute(Serializable value, T... targets);
 
 	/**
-	 * Returns if exists the holder of this (meta) vertex. The returned holder satisfies the specified <code>attribute</code>, <code>value</code> and <code>components</code>.
+	 * Returns if exists the holder of this (meta) vertex. The returned holder satisfies the specified <code>attribute</code>, <code>value</code> and <code>targets</code>.
 	 * 
 	 * @param attribute
 	 *            the attribute from which retrieve the holder.
 	 * @param value
 	 *            the value of returned holder.
-	 * @param components
-	 *            the components of returned holder.
+	 * @param targets
+	 *            the targets of returned holder.
 	 * @return a holder if exists, <code>null</code> otherwise.
 	 */
 	@SuppressWarnings("unchecked")
-	T getHolder(T attribute, Serializable value, T... components);
+	T getHolder(T attribute, Serializable value, T... targets);
 
 	/**
-	 * Returns if exists the relation of this (meta) vertex. The returned relation satisfies the specified <code>value</code> and <code>components</code>.
+	 * Returns if exists the relation of this (meta) vertex. The returned relation satisfies the specified <code>value</code> and <code>targets</code>.
 	 *
 	 * @param value
 	 *            the value of returned relation.
-	 * @param components
-	 *            the components of returned relation.
+	 * @param targets
+	 *            the targets of returned relation.
 	 * @return a relation if exists, <code>null</code> otherwise.
 	 */
 	@SuppressWarnings("unchecked")
-	T getRelation(Serializable value, T... components);
+	T getRelation(Serializable value, T... targets);
 
 	/**
-	 * Returns if exists the link of this (meta) vertex. The returned link satisfies the specified <code>relation</code>, <code>value</code> and <code>components</code>.
+	 * Returns if exists the link of this (meta) vertex. The returned link satisfies the specified <code>relation</code>, <code>value</code> and <code>targets</code>.
 	 * 
 	 * @param relation
 	 *            the relation from which retrieve the link.
 	 * @param value
 	 *            the value of returned link.
-	 * @param components
-	 *            the components of returned link.
+	 * @param targets
+	 *            the targets of returned link.
 	 * @return a link if exists, <code>null</code> otherwise.
 	 */
 	@SuppressWarnings("unchecked")
-	T getLink(T relation, Serializable value, T... components);
+	T getLink(T relation, Serializable value, T... targets);
+
+	/**
+	 * Returns if exists the holder of this (meta) vertex. The returned holder satisfies the specified <code>attribute</code> and <code>targets</code>.
+	 * 
+	 * @param attribute
+	 *            the attribute from which retrieve the holder.
+	 * @param targets
+	 *            the targets of returned holder.
+	 * @return a holder if exists, <code>null</code> otherwise.
+	 */
+	@SuppressWarnings("unchecked")
+	T getHolder(T attribute, T... targets);
+
+	/**
+	 * Returns if exists the link of this (meta) vertex. The returned link satisfies the specified <code>relation</code> and <code>targets</code>.
+	 * 
+	 * @param relation
+	 *            the relation from which retrieve the link.
+	 * @param targets
+	 *            the targets of returned link.
+	 * @return a link if exists, <code>null</code> otherwise.
+	 */
+	@SuppressWarnings("unchecked")
+	T getLink(T relation, T... targets);
 
 	/**
 	 * Indicates whether this vertex has a component that is a specialization of <code>vertex</code>.
@@ -730,6 +754,27 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	boolean isCascadeRemoveEnabled(int pos);
 
 	/**
+	 * Enable the inheritance on this vertex.
+	 *
+	 * @return <code>this</code>.
+	 */
+	T enableHeritable();
+
+	/**
+	 * Disable inheritance on this vertex.
+	 *
+	 * @return <code>this</code>.
+	 */
+	T disableHeritable();
+
+	/**
+	 * Indicates whether this vertex is heritable.
+	 *
+	 * @return <code>true</code> if this vertex is heritable, <code>false</code> otherwise.
+	 */
+	boolean isHeritableEnabled();
+
+	/**
 	 * Removes this vertex.
 	 *
 	 * @throws RollbackException
@@ -1153,7 +1198,7 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 * @param relation
 	 *            the relation of which the result link is instance.
 	 * @param value
-	 *            the expected value.
+	 *            the expected value (can be null).
 	 * @param firstTarget
 	 *            the expected first target.
 	 * @param otherTargets
@@ -1171,7 +1216,7 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 * @param override
 	 *            a vertex reference from which the returned link shall inherit.
 	 * @param value
-	 *            the expected value.
+	 *            the expected value (can be null).
 	 * @param firstTarget
 	 *            the expected first target.
 	 * @param otherTargets
@@ -1189,7 +1234,7 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 * @param overrides
 	 *            vertex references from which the returned link shall inherit.
 	 * @param value
-	 *            the expected value.
+	 *            the expected value (can be null).
 	 * @param firstTarget
 	 *            the expected first target.
 	 * @param otherTargets
@@ -1205,7 +1250,7 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 * @param relation
 	 *            the relation of which the result link is instance.
 	 * @param value
-	 *            the expected value.
+	 *            the expected value (can be null).
 	 * @param firstTarget
 	 *            the expected first target.
 	 * @param otherTargets
@@ -1223,7 +1268,7 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 * @param override
 	 *            vertex reference from which the returned relation inherits.
 	 * @param value
-	 *            the expected value.
+	 *            the expected value (can be null).
 	 * @param firstTarget
 	 *            the expected first target.
 	 * @param otherTargets
@@ -1241,7 +1286,7 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 * @param overrides
 	 *            vertex references from which the returned relation shall inherit.
 	 * @param value
-	 *            the expected value.
+	 *            the expected value (can be null).
 	 * @param firstTarget
 	 *            the expected first target.
 	 * @param otherTargets
@@ -1373,4 +1418,16 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 * @return the current cache.
 	 */
 	IContext<T> getCurrentCache();
+
+	/**
+	 * Returns the key for the property at the position
+	 * 
+	 * @param propertyClass
+	 *            the <code>Class</code> of the property.
+	 * @param pos
+	 *            the position of the property
+	 * @return the key for the property at the position
+	 */
+	T getKey(Class<? extends SystemProperty> propertyClass, int pos);
+
 }

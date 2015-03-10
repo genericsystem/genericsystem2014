@@ -11,6 +11,8 @@ import javax.inject.Named;
 
 import org.genericsystem.cdi.Engine;
 import org.genericsystem.examplejsf.crud.Car;
+import org.genericsystem.examplejsf.crud.CarColor;
+import org.genericsystem.examplejsf.crud.Color;
 import org.genericsystem.examplejsf.crud.Power;
 import org.genericsystem.mutability.Generic;
 
@@ -23,6 +25,8 @@ public class CarBean {
 
 	private Generic car;
 	private Generic power;
+	private Generic color;
+	private Generic carColor;
 
 	private String newCarName;
 	private Integer newCarPower;
@@ -31,6 +35,8 @@ public class CarBean {
 	public void init() {
 		car = engine.find(Car.class);
 		power = engine.find(Power.class);
+		color = engine.find(Color.class);
+		carColor = engine.find(CarColor.class);
 	}
 
 	public List<Generic> getCars() {
@@ -49,6 +55,24 @@ public class CarBean {
 			public void setValue(String value) {
 				// The value power must be an integer due the InstanceValueClassConstraint
 				instance.setHolder(power, Integer.parseInt(value));
+			}
+		};
+	}
+
+	public ValueExpressionWrapper getColor(Generic instance) {
+		return new ValueExpressionWrapper() {
+
+			@Override
+			public void setValue(String value) {
+				// The value color is a string to convert in Generic
+				Generic searchedColor = color.setInstance(value);
+				instance.setLink(carColor, "link", searchedColor);
+			}
+
+			@Override
+			public String getValue() {
+				Generic link = instance.getLinks(carColor).first();
+				return (link != null) ? (String) link.getTargetComponent().getValue() : null;
 			}
 		};
 	}

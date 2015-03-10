@@ -5,6 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.genericsystem.api.core.ApiStatics;
+
 /**
  * The System Property to allow a fixed number of links for a relation.
  * 
@@ -19,5 +21,5 @@ public @interface SizeConstraint {
 	 * 
 	 * @return An array of component positions.
 	 */
-	int[] value() default { 0 };
+	int[] value() default { ApiStatics.BASE_POSITION };
 }

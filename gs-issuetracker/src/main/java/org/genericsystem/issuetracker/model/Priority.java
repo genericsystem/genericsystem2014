@@ -4,11 +4,10 @@ import org.genericsystem.kernel.annotations.Meta;
 import org.genericsystem.kernel.annotations.SystemGeneric;
 import org.genericsystem.kernel.annotations.constraints.InstanceValueClassConstraint;
 import org.genericsystem.kernel.annotations.value.StringValue;
-import org.genericsystem.mutability.Generic;
 
 @SystemGeneric
 @InstanceValueClassConstraint(String.class)
-public class Priority implements Generic {
+public class Priority {
 
 	@SystemGeneric
 	@Meta(Priority.class)
