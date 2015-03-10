@@ -12,6 +12,7 @@ import org.genericsystem.api.defaults.DefaultLifeManager;
 import org.genericsystem.api.defaults.DefaultRoot;
 import org.genericsystem.kernel.Config.MetaAttribute;
 import org.genericsystem.kernel.Config.MetaRelation;
+import org.genericsystem.kernel.Config.Sequence;
 import org.genericsystem.kernel.Config.SystemMap;
 
 public class Root extends Generic implements DefaultRoot<Generic> {
@@ -41,7 +42,7 @@ public class Root extends Generic implements DefaultRoot<Generic> {
 		provider.init(this, DefaultLifeManager.TS_SYSTEM, null, Collections.emptyList(), value, Collections.emptyList(), DefaultLifeManager.SYSTEM_TS);
 		startContext();
 		systemCache = new SystemCache(this, getClass());
-		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class), userClasses);
+		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class, Sequence.class), userClasses);
 		flushContext();
 		archiver = new Archiver(this, persistentDirectoryPath);
 		initialized = true;
@@ -89,6 +90,7 @@ public class Root extends Generic implements DefaultRoot<Generic> {
 		return (Custom) systemCache.get(clazz);
 	}
 
+	@Override
 	public Class<?> findAnnotedClass(Generic vertex) {
 		return systemCache.getByVertex(vertex);
 	}
@@ -122,6 +124,11 @@ public class Root extends Generic implements DefaultRoot<Generic> {
 	@Override
 	public Generic getMap() {
 		return find(SystemMap.class);
+	}
+
+	@Override
+	public Generic getSequence() {
+		return find(Sequence.class);
 	}
 
 	long getTs(Generic generic) {

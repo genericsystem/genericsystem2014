@@ -1,5 +1,7 @@
 package org.genericsystem.issuetracker.model;
 
+import java.util.logging.Logger;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -12,6 +14,7 @@ import org.genericsystem.mutability.Generic;
 
 @ApplicationScoped
 public class Providers {
+	private static final Logger log = Logger.getAnonymousLogger();
 
 	@Inject
 	private transient Engine engine;
@@ -20,8 +23,10 @@ public class Providers {
 	@Provide
 	public Generic getGeneric(InjectionPoint ip) {
 		InjectedClass annotation = ip.getAnnotated().getAnnotation(InjectedClass.class);
-		if (annotation != null)
+		log.info("Providers InjectedClass : " + annotation.value());
+		if (annotation != null) {
 			return engine.find(annotation.value());
+		}
 
 		// TODO ????
 		return null;

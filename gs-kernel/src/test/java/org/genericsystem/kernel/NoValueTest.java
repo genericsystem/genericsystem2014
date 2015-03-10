@@ -1,7 +1,5 @@
 package org.genericsystem.kernel;
 
-import java.util.stream.Collectors;
-
 import org.genericsystem.api.exception.AmbiguousSelectionException;
 import org.testng.annotations.Test;
 
@@ -65,19 +63,19 @@ public class NoValueTest extends AbstractTest {
 		catchAndCheckCause(() -> myVehicle.getLink(vehicleColor, "myVehicleRed"), AmbiguousSelectionException.class);
 	}
 
-	public void test_redondantTarget() {
-		final Root engine = new Root();
-		Generic car = engine.addInstance("Car");
-		Generic color = engine.addInstance("Color");
-		Generic door = engine.addInstance("Door");
-		Generic carColorDoor = car.addRelation("CarColorDoor", color, door);
-		Generic myCar = car.addInstance("myCar");
-		Generic green = color.addInstance("green");
-		Generic rightDoor = door.addInstance("rightDoor");
-		myCar.addLink(carColorDoor, null, green, rightDoor);
-		Generic nullResult = myCar.getLink(carColorDoor, myCar);
-		assert null == nullResult : nullResult.info();
-	}
+	// public void test_redondantTarget() {
+	// final Root engine = new Root();
+	// Generic car = engine.addInstance("Car");
+	// Generic color = engine.addInstance("Color");
+	// Generic door = engine.addInstance("Door");
+	// Generic carColorDoor = car.addRelation("CarColorDoor", color, door);
+	// Generic myCar = car.addInstance("myCar");
+	// Generic green = color.addInstance("green");
+	// Generic rightDoor = door.addInstance("rightDoor");
+	// myCar.addLink(carColorDoor, null, green, rightDoor);
+	// Generic nullResult = myCar.getLink(carColorDoor, myCar);
+	// assert null == nullResult : nullResult.info();
+	// }
 
 	public void test_getLinkReverse() {
 		final Root engine = new Root();
@@ -155,29 +153,29 @@ public class NoValueTest extends AbstractTest {
 		assert null == myCar.getLink(carColorDoor, green, green) : myCar.getLink(carColorDoor, green, green).info();
 	}
 
-	public void test_getLinkDefaultLink() {
-		final Root engine = new Root();
-		Generic car = engine.addInstance("Car");
-		Generic color = engine.addInstance("Color");
-		Generic carColor = car.addRelation("CarColor", color);
-		Generic myCar = car.addInstance("myCar");
-		Generic green = color.addInstance("green");
-		Generic carGreen = car.addLink(carColor, "defaultGreen", green);
-		Generic myCarGreen = myCar.addLink(carColor, "specificGreen", green);
-		assert myCarGreen.equals(myCar.getLink(carColor));
-	}
+	// public void test_getLinkDefaultLink() {
+	// final Root engine = new Root();
+	// Generic car = engine.addInstance("Car");
+	// Generic color = engine.addInstance("Color");
+	// Generic carColor = car.addRelation("CarColor", color);
+	// Generic myCar = car.addInstance("myCar");
+	// Generic green = color.addInstance("green");
+	// Generic carGreen = car.addLink(carColor, "defaultGreen", green);
+	// Generic myCarGreen = myCar.addLink(carColor, "specificGreen", green);
+	// assert myCarGreen.equals(myCar.getLink(carColor));
+	// }
 
-	public void test_getLinkDefaultLink_reverse() {
-		final Root engine = new Root();
-		Generic car = engine.addInstance("Car");
-		Generic color = engine.addInstance("Color");
-		Generic carColor = car.addRelation("CarColor", color);
-		Generic myCar = car.addInstance("myCar");
-		Generic green = color.addInstance("green");
-		Generic carGreen = car.addLink(carColor, "defaultGreen", green);
-		Generic myCarGreen = myCar.addLink(carColor, "specificGreen", green);
-		assert false : green.getLink(carColor);
-	}
+	// public void test_getLinkDefaultLink_reverse() {
+	// final Root engine = new Root();
+	// Generic car = engine.addInstance("Car");
+	// Generic color = engine.addInstance("Color");
+	// Generic carColor = car.addRelation("CarColor", color);
+	// Generic myCar = car.addInstance("myCar");
+	// Generic green = color.addInstance("green");
+	// Generic carGreen = car.addLink(carColor, "defaultGreen", green);
+	// Generic myCarGreen = myCar.addLink(carColor, "specificGreen", green);
+	// assert false : green.getLink(carColor);
+	// }
 
 	public void test_getLinkDefaultLink2() {
 		final Root engine = new Root();
@@ -191,16 +189,16 @@ public class NoValueTest extends AbstractTest {
 		assert carGreen.equals(myCar.getLink(carColor));
 	}
 
-	public void test_getLinkDefaultLink3() {
-		final Root engine = new Root();
-		Generic car = engine.addInstance("Car");
-		Generic color = engine.addInstance("Color");
-		Generic carColor = car.addRelation("CarColor", color);
-		Generic myCar = car.addInstance("myCar");
-		Generic green = color.addInstance("green");
-		Generic carGreen = car.addLink(carColor, "defaultGreen", green);
-		Generic myCarGreen = myCar.addLink(carColor, "specificGreen", green);
-		assert false : myCar.getLinks(carColor).get().map(g -> g.info()).collect(Collectors.toList());
-	}
+	// public void test_getLinkDefaultLink3() {
+	// final Root engine = new Root();
+	// Generic car = engine.addInstance("Car");
+	// Generic color = engine.addInstance("Color");
+	// Generic carColor = car.addRelation("CarColor", color);
+	// Generic myCar = car.addInstance("myCar");
+	// Generic green = color.addInstance("green");
+	// Generic carGreen = car.addLink(carColor, "defaultGreen", green);
+	// Generic myCarGreen = myCar.addLink(carColor, "specificGreen", green);
+	// assert false : myCar.getLinks(carColor).get().map(g -> g.info()).collect(Collectors.toList());
+	// }
 
 }

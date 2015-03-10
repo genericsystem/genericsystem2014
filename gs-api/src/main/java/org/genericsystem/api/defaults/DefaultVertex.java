@@ -6,10 +6,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.exception.AmbiguousSelectionException;
 import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
+import org.genericsystem.kernel.annotations.Generate;
 
 public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncestors<T>, DefaultDependencies<T>, DefaultDisplay<T>, DefaultSystemProperties<T>, DefaultCompositesInheritance<T>, DefaultWritable<T> {
 
@@ -249,4 +251,26 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 		visitor.traverse((T) this);
 	}
 
+	default T addInstance() {
+		Class<? extends Generator> clazz = getGenerator();
+		if (getGenerator() == null)
+			getCurrentCache().discardWithException(new IllegalStateException("Unable to find @Generate annotation on : " + this.info()));
+		return addInstance(getGenerator(clazz).generate(this));
+	}
+
+	@SuppressWarnings("unchecked")
+	default Class<? extends Generator> getGenerator() {
+
+		Generate generate = getRoot().findAnnotedClass((T) this).getAnnotation(Generate.class);
+		return generate != null ? generate.clazz() : null;
+	}
+
+	default Generator getGenerator(Class<? extends Generator> clazz) {
+		try {
+			return clazz.newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			getCurrentCache().discardWithException(e);
+		}
+		return null;// Not reached
+	}
 }
