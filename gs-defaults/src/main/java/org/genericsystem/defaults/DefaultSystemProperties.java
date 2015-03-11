@@ -1,4 +1,4 @@
-package org.genericsystem.api.defaults;
+package org.genericsystem.defaults;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -7,12 +7,12 @@ import java.util.stream.Stream;
 
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.IVertex;
-import org.genericsystem.api.defaults.constraints.InstanceValueClassConstraint;
-import org.genericsystem.api.defaults.constraints.PropertyConstraint;
-import org.genericsystem.api.defaults.constraints.RequiredConstraint;
-import org.genericsystem.api.defaults.constraints.SingularConstraint;
-import org.genericsystem.api.defaults.constraints.UniqueValueConstraint;
 import org.genericsystem.api.exception.NotFoundException;
+import org.genericsystem.defaults.constraints.InstanceValueClassConstraint;
+import org.genericsystem.defaults.constraints.PropertyConstraint;
+import org.genericsystem.defaults.constraints.RequiredConstraint;
+import org.genericsystem.defaults.constraints.SingularConstraint;
+import org.genericsystem.defaults.constraints.UniqueValueConstraint;
 import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 import org.genericsystem.kernel.systemproperty.CascadeRemoveProperty;
 import org.genericsystem.kernel.systemproperty.NoReferentialIntegrityProperty;

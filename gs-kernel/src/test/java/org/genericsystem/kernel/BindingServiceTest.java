@@ -3,8 +3,8 @@ package org.genericsystem.kernel;
 import java.util.Arrays;
 
 import org.genericsystem.api.core.ApiStatics;
-import org.genericsystem.api.defaults.exceptions.SingularConstraintViolationException;
 import org.genericsystem.api.exception.ExistsException;
+import org.genericsystem.defaults.exceptions.SingularConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test

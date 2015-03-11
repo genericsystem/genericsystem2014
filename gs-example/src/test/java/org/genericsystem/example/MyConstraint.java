@@ -3,8 +3,8 @@ package org.genericsystem.example;
 import java.io.Serializable;
 
 import org.genericsystem.api.core.ApiStatics;
-import org.genericsystem.api.defaults.constraints.Constraint.CheckedConstraint;
 import org.genericsystem.api.exception.ConstraintViolationException;
+import org.genericsystem.defaults.constraints.Constraint.CheckedConstraint;
 import org.genericsystem.kernel.Config.MetaAttribute;
 import org.genericsystem.kernel.Config.SystemMap;
 import org.genericsystem.kernel.Root;

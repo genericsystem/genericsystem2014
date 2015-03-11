@@ -1,4 +1,4 @@
-package org.genericsystem.api.defaults.exceptions;
+package org.genericsystem.defaults.exceptions;
 
 import org.genericsystem.api.exception.ConstraintViolationException;
 

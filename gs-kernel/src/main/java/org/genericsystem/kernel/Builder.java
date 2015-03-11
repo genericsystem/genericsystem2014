@@ -3,8 +3,9 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.List;
-import org.genericsystem.api.defaults.DefaultLifeManager;
-import org.genericsystem.api.defaults.DefaultVertex;
+
+import org.genericsystem.defaults.DefaultLifeManager;
+import org.genericsystem.defaults.DefaultVertex;
 import org.genericsystem.kernel.annotations.InstanceClass;
 
 public abstract class Builder<T extends DefaultVertex<T>> {

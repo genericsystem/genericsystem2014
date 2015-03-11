@@ -1,10 +1,10 @@
-package org.genericsystem.api.defaults.constraints;
+package org.genericsystem.defaults.constraints;
 
 import java.io.Serializable;
 
 import org.genericsystem.api.core.IVertex.SystemProperty;
-import org.genericsystem.api.defaults.DefaultVertex;
 import org.genericsystem.api.exception.ConstraintViolationException;
+import org.genericsystem.defaults.DefaultVertex;
 
 /**
  * Represents a constraint in Generic System. A constraint is special form of system property which constrains Generic System.

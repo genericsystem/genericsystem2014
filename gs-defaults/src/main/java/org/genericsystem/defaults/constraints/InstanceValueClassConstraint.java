@@ -1,11 +1,11 @@
-package org.genericsystem.api.defaults.constraints;
+package org.genericsystem.defaults.constraints;
 
 import java.io.Serializable;
 
-import org.genericsystem.api.defaults.DefaultVertex;
-import org.genericsystem.api.defaults.constraints.Constraint.CheckedConstraint;
-import org.genericsystem.api.defaults.exceptions.InstanceValueClassConstraintViolationException;
 import org.genericsystem.api.exception.ConstraintViolationException;
+import org.genericsystem.defaults.DefaultVertex;
+import org.genericsystem.defaults.constraints.Constraint.CheckedConstraint;
+import org.genericsystem.defaults.exceptions.InstanceValueClassConstraintViolationException;
 
 /**
  * Represents the constraint to precise the <code>Class</code> of the value of instances.

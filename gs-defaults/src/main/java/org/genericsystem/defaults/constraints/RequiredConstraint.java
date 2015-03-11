@@ -1,11 +1,11 @@
-package org.genericsystem.api.defaults.constraints;
+package org.genericsystem.defaults.constraints;
 
 import java.io.Serializable;
 
-import org.genericsystem.api.defaults.DefaultVertex;
-import org.genericsystem.api.defaults.constraints.Constraint.AxedCheckableConstraint;
-import org.genericsystem.api.defaults.exceptions.RequiredConstraintViolationException;
 import org.genericsystem.api.exception.ConstraintViolationException;
+import org.genericsystem.defaults.DefaultVertex;
+import org.genericsystem.defaults.constraints.Constraint.AxedCheckableConstraint;
+import org.genericsystem.defaults.exceptions.RequiredConstraintViolationException;
 
 /**
  * Represents the constraint to force an attribute to have at least one value.

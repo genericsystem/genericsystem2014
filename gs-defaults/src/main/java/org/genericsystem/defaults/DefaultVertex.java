@@ -1,4 +1,4 @@
-package org.genericsystem.api.defaults;
+package org.genericsystem.defaults;
 
 import java.io.Serializable;
 import java.util.ArrayList;

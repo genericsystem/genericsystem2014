@@ -3,8 +3,9 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
-import org.genericsystem.api.defaults.DefaultVertex;
+
 import org.genericsystem.api.exception.ExistsException;
+import org.genericsystem.defaults.DefaultVertex;
 
 abstract class GenericHandler<T extends DefaultVertex<T>> {
 	final Context<T> context;

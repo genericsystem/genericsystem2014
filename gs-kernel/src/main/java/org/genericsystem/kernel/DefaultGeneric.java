@@ -3,7 +3,7 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.List;
 
-import org.genericsystem.api.defaults.DefaultVertex;
+import org.genericsystem.defaults.DefaultVertex;
 
 interface DefaultGeneric extends DefaultVertex<Generic>, Comparable<Generic> {
 

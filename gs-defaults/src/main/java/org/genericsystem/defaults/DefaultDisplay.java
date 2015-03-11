@@ -1,4 +1,4 @@
-package org.genericsystem.api.defaults;
+package org.genericsystem.defaults;
 
 import static org.genericsystem.api.core.ApiStatics.CONCRETE;
 import static org.genericsystem.api.core.ApiStatics.META;

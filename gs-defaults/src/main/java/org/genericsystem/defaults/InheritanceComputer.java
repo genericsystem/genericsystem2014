@@ -1,4 +1,4 @@
-package org.genericsystem.api.defaults;
+package org.genericsystem.defaults;
 
 import java.util.Collection;
 import java.util.HashMap;
