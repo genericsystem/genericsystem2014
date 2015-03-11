@@ -5,6 +5,10 @@ import org.genericsystem.cdi.CacheSessionProvider;
 import org.genericsystem.cdi.EngineProvider;
 import org.genericsystem.cdi.PersistentDirectoryProvider;
 import org.genericsystem.cdi.UserClassesProvider;
+import org.genericsystem.issuetracker.IssueTrackerTest.A;
+import org.genericsystem.issuetracker.IssueTrackerTest.B;
+import org.genericsystem.issuetracker.IssueTrackerTest.ProviderA;
+import org.genericsystem.issuetracker.IssueTrackerTest.ProviderB;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.testng.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -21,7 +25,7 @@ public abstract class AbstractTest extends Arquillian {
 	public static JavaArchive createDeployment() {
 		JavaArchive javaArchive = ShrinkWrap.create(JavaArchive.class);
 		javaArchive.addPackage("org.genericsystem.issuetracker.model");
-		javaArchive.addClasses(UserClassesProvider.class, PersistentDirectoryProvider.class, /* EventLauncher.class, */CacheSessionProvider.class, CacheRequestProvider.class, EngineProvider.class);
+		javaArchive.addClasses(UserClassesProvider.class, PersistentDirectoryProvider.class, B.class, A.class, ProviderA.class, ProviderB.class, /* EventLauncher.class, */CacheSessionProvider.class, CacheRequestProvider.class, EngineProvider.class);
 		createBeansXml(javaArchive);
 		return javaArchive;
 	}

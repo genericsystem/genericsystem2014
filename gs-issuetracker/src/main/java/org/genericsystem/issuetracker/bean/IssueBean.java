@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.genericsystem.cdi.Engine;
+import org.genericsystem.issuetracker.annotation.InjectedClass;
 import org.genericsystem.issuetracker.model.Description;
 import org.genericsystem.issuetracker.model.Issue;
 import org.genericsystem.issuetracker.model.IssuePriority;
@@ -31,38 +32,48 @@ public class IssueBean {
 
 	@Inject
 	@Provide
-	private Issue issue;
+	@InjectedClass(Issue.class)
+	private Generic issue;
 
 	@Inject
 	@Provide
-	private Description description;
+	@InjectedClass(Description.class)
+	private Generic description;
 
 	@Inject
 	@Provide
-	private IssuePriority issuePriority;
+	@InjectedClass(IssuePriority.class)
+	private Generic issuePriority;
 
 	@Inject
 	@Provide
-	private Priority priority;
+	@InjectedClass(Priority.class)
+	private Generic priority;
 
 	@Inject
 	@Provide
-	private IssueStatut issueStatut;
+	@InjectedClass(IssueStatut.class)
+	private Generic issueStatut;
 
 	@Inject
 	@Provide
-	private Statut statut;
+	@InjectedClass(Statut.class)
+	private Generic statut;
 
-	private String newIssueName;
 	private String newIssueDescription;
+	private String searchedStatut;
 
 	public List<Generic> getIssues() {
-		return ((Generic) issue).getAllInstances().get().collect(Collectors.toList());
+		return issue.getAllInstances().get().collect(Collectors.toList());
+	}
+
+	public List<Generic> getIssuesByStatut() {
+		return issue.getAllInstances().get().filter(generic -> generic.getLinks(issueStatut).get().anyMatch(link -> link.getTargetComponent().getValue().equals(this.searchedStatut))).collect(Collectors.toList());
 	}
 
 	public String addIssue() {
-		((Generic) issue).setInstance(newIssueName).setHolder(description, newIssueDescription);
-		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Priority is required on " + newIssueName));
+		issue.addInstance().setHolder(description, newIssueDescription);
+		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Priority is required."));
 		return "#";
 	}
 
@@ -136,20 +147,20 @@ public class IssueBean {
 		public void setValue(String value);
 	}
 
-	public String getNewIssueName() {
-		return newIssueName;
-	}
-
-	public void setNewIssueName(String newIssueName) {
-		this.newIssueName = newIssueName;
-	}
-
 	public String getNewIssueDescription() {
 		return newIssueDescription;
 	}
 
 	public void setNewIssueDescription(String newIssueDescription) {
 		this.newIssueDescription = newIssueDescription;
+	}
+
+	public String getSearchedStatut() {
+		return searchedStatut;
+	}
+
+	public void setSearchedStatut(String searchedStatut) {
+		this.searchedStatut = searchedStatut;
 	}
 
 }

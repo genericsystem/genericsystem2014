@@ -4,10 +4,13 @@ import java.util.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 
 import org.genericsystem.cdi.Engine;
+import org.genericsystem.issuetracker.annotation.InjectedClass;
 import org.genericsystem.issuetracker.qualifier.Provide;
+import org.genericsystem.mutability.Generic;
 
 @ApplicationScoped
 public class Providers {
@@ -18,39 +21,14 @@ public class Providers {
 
 	@Produces
 	@Provide
-	public Issue getIssue() {
-		Issue issue = engine.find(Issue.class);
-		return issue;
-	}
+	public Generic getGeneric(InjectionPoint ip) {
+		InjectedClass annotation = ip.getAnnotated().getAnnotation(InjectedClass.class);
+		log.info("Providers InjectedClass : " + annotation.value());
+		if (annotation != null) {
+			return engine.find(annotation.value());
+		}
 
-	@Produces
-	@Provide
-	public Description getDescription() {
-		return engine.find(Description.class);
+		// TODO ????
+		return null;
 	}
-
-	@Produces
-	@Provide
-	public IssuePriority getIssuePriority() {
-		return engine.find(IssuePriority.class);
-	}
-
-	@Produces
-	@Provide
-	public Priority getPriority() {
-		return engine.find(Priority.class);
-	}
-
-	@Produces
-	@Provide
-	public IssueStatut getIssueStatut() {
-		return engine.find(IssueStatut.class);
-	}
-
-	@Produces
-	@Provide
-	public Statut getStatut() {
-		return engine.find(Statut.class);
-	}
-
 }

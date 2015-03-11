@@ -1,6 +1,5 @@
 package org.genericsystem.api.core;
 
-
 /**
  * Represents the root of Generic System.
  * 
@@ -21,6 +20,8 @@ public interface IRoot<T extends IVertex<T>> extends IVertex<T> {
 	 * @return a vertex.
 	 */
 	<Custom extends T> Custom find(Class<?> clazz);
+
+	Class<?> findAnnotedClass(T vertex);
 
 	/*
 	 * T addType(Serializable value);

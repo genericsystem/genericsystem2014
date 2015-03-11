@@ -2,8 +2,11 @@ package org.genericsystem.mutability;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+
 import javassist.util.proxy.MethodHandler;
+
 import org.genericsystem.api.defaults.DefaultRoot;
+import org.genericsystem.kernel.Config.Sequence;
 import org.genericsystem.kernel.Config.SystemMap;
 import org.genericsystem.kernel.Statics;
 
@@ -52,6 +55,11 @@ public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 		return (Custom) getCurrentCache().wrap(clazz, cacheEngine.find(clazz));
 	}
 
+	@Override
+	public Class<?> findAnnotedClass(Generic vertex) {
+		return cacheEngine.findAnnotedClass(getCurrentCache().unwrap(vertex));
+	}
+
 	public Cache newCache() {
 		return new Cache(this, cacheEngine);
 	}
@@ -98,6 +106,11 @@ public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 	@Override
 	public Generic getMap() {
 		return find(SystemMap.class);
+	}
+
+	@Override
+	public Generic getSequence() {
+		return find(Sequence.class);
 	}
 
 }

@@ -2,6 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.Arrays;
 
+import org.genericsystem.api.exception.AmbiguousSelectionException;
 import org.testng.annotations.Test;
 
 @Test
@@ -349,5 +350,86 @@ public class HolderTest extends AbstractTest {
 		assert power2.isAlive();
 		assert v1.isAlive();
 		assert v2.isAlive();
+	}
+
+	public void test_getHolder() {
+		final Root engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic power = car.addAttribute("Power");
+		Generic myCar = car.addInstance("myCar");
+		Generic myCarPower = myCar.setHolder(power, 256);
+		assert myCarPower.equals(myCar.getHolder(power));
+	}
+
+	public void test_getHolder2() {
+		final Root engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic power = car.addAttribute("Power");
+		Generic maxSpeed = car.addAttribute("MaxSpeed");
+		Generic mode = car.addAttribute("Mode");
+		Generic myCar = car.addInstance("myCar");
+		Generic myCarPower = myCar.setHolder(power, 256);
+		myCar.setHolder(maxSpeed, 300);
+		myCar.setHolder(mode, "manual");
+		assert myCarPower.equals(myCar.getHolder(power));
+	}
+
+	public void test_getHolder_ambiguous() {
+		final Root engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic power = car.addAttribute("Power");
+		Generic myCar = car.addInstance("myCar");
+		myCar.setHolder(power, 256);
+		myCar.setHolder(power, 257);
+		catchAndCheckCause(() -> myCar.getHolder(power), AmbiguousSelectionException.class);
+	}
+
+	public void test_getHolder_default() {
+		final Root engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic power = car.addAttribute("Power");
+		Generic carDefaultPower = car.setHolder(power, 200);
+		Generic myCar = car.addInstance("myCar");
+		assert carDefaultPower.equals(myCar.getHolder(power));
+	}
+
+	public void test_getHolder_default_property() {
+		final Root engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic power = car.addAttribute("Power").enablePropertyConstraint();
+		car.setHolder(power, 200);
+		Generic myCar = car.addInstance("myCar");
+		Generic myCarPower = myCar.setHolder(power, 256);
+		assert myCarPower.equals(myCar.getHolder(power));
+	}
+
+	public void test_getHolder_default2() {
+		final Root engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic power = car.addAttribute("Power");
+		car.setHolder(power, 200);
+		Generic myCar = car.addInstance("myCar");
+		Generic myCarPower = myCar.setHolder(power, 256);
+		assert myCarPower.equals(myCar.getHolder(power, 256));
+	}
+
+	public void test_getHolder_default3() {
+		final Root engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic power = car.addAttribute("Power");
+		Generic carDefaultPower = car.setHolder(power, 200);
+		Generic myCar = car.addInstance("myCar");
+		myCar.setHolder(power, 256);
+		assert carDefaultPower.equals(car.getHolder(power));
+	}
+
+	public void test_getHolder_default_ambiguous() {
+		final Root engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic power = car.addAttribute("Power");
+		car.setHolder(power, 200);
+		Generic myCar = car.addInstance("myCar");
+		myCar.setHolder(power, 256);
+		catchAndCheckCause(() -> myCar.getHolder(power), AmbiguousSelectionException.class);
 	}
 }
