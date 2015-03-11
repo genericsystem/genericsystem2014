@@ -8,7 +8,7 @@ import org.testng.annotations.Test;
 @Test
 public class MultiInheritanceTest extends AbstractTest {
 
-	public void multiInheritance() {
+	public void test_multiInheritance() {
 		Generic engine = new Root();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic vehicleSizable = engine.addInstance("Sizable", vehicle);
@@ -23,7 +23,7 @@ public class MultiInheritanceTest extends AbstractTest {
 		assert transformer.getAttributes(engine).contains(transformerSizable);
 	}
 
-	public void multiInheritanceWithDiamond() {
+	public void test_multiInheritanceWithDiamond() {
 		Generic engine = new Root();
 		Generic object = engine.addInstance("Object");
 		Generic objectSizable = engine.addInstance("Sizable", object);
@@ -46,7 +46,7 @@ public class MultiInheritanceTest extends AbstractTest {
 		assert transformer.getAttributes(engine).contains(transformerSizable);
 	}
 
-	public void meta() {
+	public void test_meta() {
 		Generic engine = new Root();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic vehiclePower = engine.addInstance("Power", vehicle);
