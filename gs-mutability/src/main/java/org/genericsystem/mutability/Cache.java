@@ -12,11 +12,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
-
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
@@ -273,5 +271,11 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 	public void conserveRemove(Generic generic) {
 		cache.conserveRemove(unwrap(generic));
 	}
+	
+	@Override
+	public Generic setMeta(int dim) {
+		return null;
+	}
+
 
 }
