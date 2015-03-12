@@ -2,7 +2,6 @@ package org.genericsystem.issuetracker.bean;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
@@ -12,11 +11,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.genericsystem.cdi.Engine;
-import org.genericsystem.issuetracker.annotation.InjectedClass;
-import org.genericsystem.issuetracker.model.Comment;
 import org.genericsystem.issuetracker.model.Description;
 import org.genericsystem.issuetracker.model.Issue;
-import org.genericsystem.issuetracker.model.IssueComment;
 import org.genericsystem.issuetracker.model.IssuePriority;
 import org.genericsystem.issuetracker.model.IssueStatut;
 import org.genericsystem.issuetracker.model.Priority;
@@ -27,54 +23,36 @@ import org.genericsystem.mutability.Generic;
 @Named
 @RequestScoped
 public class IssueBean {
-	private static final Logger log = Logger.getAnonymousLogger();
 
 	@Inject
 	private Engine engine;
 
 	@Inject
 	@Provide
-	@InjectedClass(Issue.class)
-	private Generic issue;
+	private Issue issue;
 
 	@Inject
 	@Provide
-	@InjectedClass(Description.class)
-	private Generic description;
+	private Description description;
 
 	@Inject
 	@Provide
-	@InjectedClass(IssuePriority.class)
-	private Generic issuePriority;
+	private IssuePriority issuePriority;
 
 	@Inject
 	@Provide
-	@InjectedClass(Priority.class)
-	private Generic priority;
+	private Priority priority;
 
 	@Inject
 	@Provide
-	@InjectedClass(IssueStatut.class)
-	private Generic issueStatut;
+	private IssueStatut issueStatut;
 
 	@Inject
 	@Provide
-	@InjectedClass(Statut.class)
-	private Generic statut;
-
-	@Inject
-	@Provide
-	@InjectedClass(IssueComment.class)
-	private Generic issueComment;
-
-	@Inject
-	@Provide
-	@InjectedClass(Comment.class)
-	private Generic comment;
+	private Statut statut;
 
 	private String newIssueDescription;
 	private String searchedStatut;
-	private String newIssueComment;
 
 	public List<Generic> getIssues() {
 		return issue.getAllInstances().get().collect(Collectors.toList());
@@ -154,20 +132,6 @@ public class IssueBean {
 		};
 	}
 
-	public String addComment(Generic instance) {
-		log.info("IssueBean ; addComment ; newIssueComment : " + newIssueComment);
-		log.info("IssueBean ; addComment ; comment : " + comment.getValue());
-		Generic newComment = comment.setInstance(newIssueComment);
-		log.info("IssueBean ; addComment ; newComment : " + newComment);
-		instance.setLink(issueComment, "link", newComment);
-		return "#";
-	}
-
-	public List<String> getComments(Generic instance) {
-		log.info("IssueBean ; addComment ; number of comments pour " + instance.getValue() + " : " + instance.getLinks(issueComment).size());
-		return instance.getLinks(issueComment).get().map(generic -> Objects.toString(generic.getValue())).collect(Collectors.toList());
-	}
-
 	public interface ElStringWrapper {
 		public String getValue();
 
@@ -188,14 +152,6 @@ public class IssueBean {
 
 	public void setSearchedStatut(String searchedStatut) {
 		this.searchedStatut = searchedStatut;
-	}
-
-	public String getNewIssueComment() {
-		return newIssueComment;
-	}
-
-	public void setNewIssueComment(String newIssueComment) {
-		this.newIssueComment = newIssueComment;
 	}
 
 }

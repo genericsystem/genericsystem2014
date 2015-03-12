@@ -3,66 +3,62 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:f="http://java.sun.com/jsf/core">
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:composites="http://java.sun.com/jsf/composite/composites">
 
 <h:head>
 	<title>Issue Tracker</title>
 </h:head>
-
 <h:body>
 	<h:messages id="message" />
 	<h:form id="form">
 		<h:dataTable value="#{issueBean.issues}" var="issue">
 			<h:column>
-				<f:facet name="header">Issue</f:facet>
-				<h:outputText value="#{issue.getValue()}" />
+				<f:facet name="header">
+					<h:outputLabel value="Issue" />
+				</f:facet>
+				<h:commandLink value="#{issue.getValue()}"
+					action="#{issueSelectionBean.setIssue(issue)}">
+					<f:ajax execute="@this" render="@form" />
+				</h:commandLink>
 			</h:column>
 			<h:column>
-				<f:facet name="header">Description</f:facet>
+				<f:facet name="header">
+					<h:outputLabel value="Description" />
+				</f:facet>
 				<h:inputText size="10"
 					value="#{issueBean.getDescription(issue).value}">
 					<f:ajax event="blur" execute="@this" render="@this" />
 				</h:inputText>
 			</h:column>
 			<h:column>
-				<f:facet name="header">Priority</f:facet>
-				<h:selectOneMenu id="box" value="#{issueBean.getPriority(issue).value}">
-					<f:selectItems value="#{priorityBean.priorities}" var="priority"
-						itemLabel="#{priority}" itemValue="#{priority}">
-					</f:selectItems>
-					<f:ajax event="blur" execute="@this" render="@form message" />
-				</h:selectOneMenu>
+				<f:facet name="header">
+					<h:outputLabel value="Priority" />
+				</f:facet>
+				<composites:columnList ListOfObjects="#{priorityBean.priorities}"
+					RenderedValue="#{issueBean.getPriority(issue).value}"
+					Render="@form message" />
 			</h:column>
 			<h:column>
-				<f:facet name="header">Statut</f:facet>
-				<h:selectOneMenu value="#{issueBean.getStatut(issue).value}">
-					<f:selectItems value="#{statutBean.statuts}" var="statut"
-						itemLabel="#{statut}" itemValue="#{statut}">
-					</f:selectItems>
-					<f:ajax event="blur" execute="@this" render="@form message" />
-				</h:selectOneMenu>
+				<f:facet name="header">
+					<h:outputLabel value="Statut" />
+				</f:facet>
+				<composites:columnList ListOfObjects="#{statutBean.statuts}"
+					RenderedValue="#{issueBean.getStatut(issue).value}"
+					Render="@form message" />
+
 			</h:column>
 			<h:column>
-				<f:facet name="header">Comments</f:facet>
-				<h:dataTable value="#{issueBean.getComments(issue)}" var="comment">
-					<h:column>
-						<h:outputLabel value="#{comment}"/>
-					</h:column>
-				</h:dataTable>
+				<composites:compositeTextArea
+					ObjectToAdd="#{commentBean.addComment(issue).value}"
+					NameOfObject="Comments" Render="@form message" />
 			</h:column>
 			<h:column>
-				
-				<h:commandLink value="+" action="#{issueBean.addComment(issue)}">
-					<f:ajax execute="addComment" render="@form message"/>
-				</h:commandLink>
-			</h:column>
-			<h:column>
-				<h:commandButton value="X" action="#{issueBean.deleteIssue(issue)}">
-					<f:ajax execute="deleteIssue" render="@form" />
-				</h:commandButton>
+				<composites:deleteButton Action="#{issueBean.deleteIssue(issue)}" />
+
 			</h:column>
 			<f:facet name="footer">
-				<h:panelGroup id="addIssue" layout="block"> 					
+				<h:panelGroup id="addIssue" layout="block">
 					<h:inputText id="coucou" size="10"
 						value="#{issueBean.newIssueDescription}" />
 
@@ -70,8 +66,7 @@
 						action="#{issueBean.addIssue}">
 						<f:ajax execute="addIssue" render="@form message" />
 					</h:commandButton>
-					
-					<h:inputTextarea value="#{issueBean.newIssueComment}" />
+
 				</h:panelGroup>
 			</f:facet>
 		</h:dataTable>
@@ -83,37 +78,42 @@
 			<f:ajax execute="@this" render="@form message" />
 		</h:commandButton>
 
-				
-		<h:selectOneMenu value="#{issueBean.searchedStatut}">
-			<f:selectItems value="#{statutBean.statuts}" var="statut"
-				itemLabel="#{statut}" itemValue="#{statut}">
-			</f:selectItems>
-			<f:ajax event="blur" execute="@this" render="@form message" />
-		</h:selectOneMenu>
-		<h:dataTable value="#{issueBean.issuesByStatut}" var="issue" rendered="#{issueBean.issuesByStatut.size() != 0}">
+		<composites:columnList
+				ListOfObjects="#{statutBean.statuts}"
+				RenderedValue="#{issueBean.searchedStatut}"
+				Render="@form message" />
+		<h:dataTable value="#{issueBean.issuesByStatut}" var="issue"
+			rendered="#{issueBean.issuesByStatut.size() != 0}">
 			<h:column>
-				<f:facet name="header">Issue</f:facet>
+				<f:facet name="header">
+					<h:outputLabel value="Issue" />
+				</f:facet>
 				<h:outputText value="#{issue.getValue()}" />
 			</h:column>
 			<h:column>
-				<f:facet name="header">Description</f:facet>
+				<f:facet name="header">
+					<h:outputLabel value="Description" />
+				</f:facet>
 				<h:inputText size="10"
 					value="#{issueBean.getDescription(issue).value}">
 					<f:ajax event="blur" execute="@this" render="@this" />
 				</h:inputText>
 			</h:column>
 			<h:column>
-				<f:facet name="header">Priority</f:facet>
-				<h:selectOneMenu id="box" value="#{issueBean.getPriority(issue).value}">
-					<f:selectItems value="#{priorityBean.priorities}" var="priority"
-						itemLabel="#{priority}" itemValue="#{priority}">
-					</f:selectItems>
-					<f:ajax event="blur" execute="@this" render="@form message" />
-				</h:selectOneMenu>
+				<f:facet name="header">
+					<h:outputLabel value="Priority" />
+				</f:facet>
+				<composites:columnList ListOfObjects="#{priorityBean.priorities}"
+					RenderedValue="#{issueBean.getPriority(issue).value}"
+					Render="@form message" />
 			</h:column>
 		</h:dataTable>
-		
-		
+
+		<h:outputLabel value="Selected issue is : " />
+		<h:outputLabel value="#{issueSelectionBean.searchedIssue}" />
+		<composites:compositeDatatable ListOfObjects="#{commentBean.comments}"
+			NameOfObject="Comments"
+			DeleteObject="#{commentBean.deleteComment(object)}" />
 	</h:form>
 </h:body>
 

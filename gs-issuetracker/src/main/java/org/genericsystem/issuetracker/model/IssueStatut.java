@@ -7,12 +7,13 @@ import org.genericsystem.kernel.annotations.SystemGeneric;
 import org.genericsystem.kernel.annotations.constraints.RequiredConstraint;
 import org.genericsystem.kernel.annotations.constraints.SingularConstraint;
 import org.genericsystem.kernel.annotations.value.StringValue;
+import org.genericsystem.mutability.Generic;
 
 @SystemGeneric
 @Components({ Issue.class, Statut.class })
 @SingularConstraint
 @RequiredConstraint
-public class IssueStatut {
+public class IssueStatut implements Generic {
 
 	@SystemGeneric
 	@Meta(IssueStatut.class)
