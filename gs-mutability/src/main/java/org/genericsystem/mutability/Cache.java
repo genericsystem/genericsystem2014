@@ -1,6 +1,7 @@
 package org.genericsystem.mutability;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,10 +19,10 @@ import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
 
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.api.defaults.DefaultContext;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.cache.Cache.ContextEventListener;
+import org.genericsystem.defaults.DefaultContext;
 import org.genericsystem.kernel.annotations.InstanceClass;
 
 public class Cache implements DefaultContext<Generic>, ContextEventListener<org.genericsystem.kernel.Generic> {
@@ -86,7 +87,7 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 	}
 
 	protected Generic wrap(org.genericsystem.kernel.Generic generic) {
-		return wrap(null, generic);
+		return generic != null ? wrap(generic.getRoot().findAnnotedClass(generic), generic) : null;
 	}
 
 	private void put(Generic mutable, org.genericsystem.kernel.Generic generic) {
@@ -240,8 +241,8 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 	}
 
 	@Override
-	public Generic[] newTArray(int i) {
-		return wrap(cache.newTArray(i));
+	public Generic[] newTArray(int dim) {
+		return (Generic[]) Array.newInstance(Generic.class, dim);
 	}
 
 	@Override

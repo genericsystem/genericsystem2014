@@ -2,7 +2,8 @@ package org.genericsystem.mutability;
 
 import java.io.Serializable;
 import java.util.List;
-import org.genericsystem.api.defaults.DefaultVertex;
+
+import org.genericsystem.defaults.DefaultVertex;
 
 public interface Generic extends DefaultVertex<Generic> {
 

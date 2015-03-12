@@ -3,8 +3,9 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.List;
-import org.genericsystem.api.defaults.DefaultLifeManager;
-import org.genericsystem.api.defaults.DefaultVertex;
+import org.genericsystem.defaults.DefaultLifeManager;
+import org.genericsystem.defaults.DefaultVertex;
+import org.genericsystem.kernel.Generic.GenericImpl;
 import org.genericsystem.kernel.annotations.InstanceClass;
 
 public abstract class Builder<T extends DefaultVertex<T>> {
@@ -20,13 +21,8 @@ public abstract class Builder<T extends DefaultVertex<T>> {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected Class<T> getTClass() {
-		return (Class<T>) Generic.class;
-	}
-
-	@SuppressWarnings("unchecked")
 	public final T[] newTArray(int dim) {
-		return (T[]) Array.newInstance(getTClass(), dim);
+		return (T[]) Array.newInstance(Generic.class, dim);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -39,8 +35,8 @@ public abstract class Builder<T extends DefaultVertex<T>> {
 				getContext().discardWithException(new InstantiationException(clazz + " must extends " + metaAnnotation.value()));
 
 		try {
-			if (clazz == null || !getTClass().isAssignableFrom(clazz))
-				return getTClass().newInstance();
+			if (clazz == null || !Generic.class.isAssignableFrom(clazz))
+				return (T) new GenericImpl();
 			return (T) clazz.newInstance();
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
 			getContext().discardWithException(e);

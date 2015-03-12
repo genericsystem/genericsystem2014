@@ -1,6 +1,6 @@
 package org.genericsystem.kernel;
 
-import org.genericsystem.api.exception.UniqueValueConstraintViolationException;
+import org.genericsystem.defaults.exceptions.UniqueValueConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test
