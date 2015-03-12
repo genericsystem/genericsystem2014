@@ -3,7 +3,6 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.List;
-
 import org.genericsystem.defaults.DefaultLifeManager;
 import org.genericsystem.defaults.DefaultVertex;
 import org.genericsystem.kernel.annotations.InstanceClass;
@@ -27,7 +26,7 @@ public abstract class Builder<T extends DefaultVertex<T>> {
 
 	@SuppressWarnings("unchecked")
 	public final T[] newTArray(int dim) {
-		return (T[]) Array.newInstance(getTClass(), dim);
+		return (T[]) Array.newInstance(DefaultVertex.class, dim);
 	}
 
 	@SuppressWarnings("unchecked")

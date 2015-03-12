@@ -1,13 +1,14 @@
 package org.genericsystem.cache;
 
 import org.genericsystem.api.exception.AliveConstraintViolationException;
+import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
 import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.kernel.Generic;
 import org.testng.annotations.Test;
 
 @Test
-public class NotRemovableTestManyCaches extends AbstractTest {
+public class NotRemovableManyCachesTest extends AbstractTest {
 
 	public void test001_aliveEx() {
 		Engine engine = new Engine();
@@ -33,7 +34,7 @@ public class NotRemovableTestManyCaches extends AbstractTest {
 		cache.start();
 		Generic car2 = engine.addInstance("Car2");
 		Generic myBmw2 = car2.addInstance("myBmw2");
-		catchAndCheckCause(() -> myBmw2.addHolder(color, "red2"), AliveConstraintViolationException.class);
+		catchAndCheckCause(() -> myBmw2.addHolder(color, "red2"), MetaRuleConstraintViolationException.class);
 	}
 
 	public void test001_referenceEx() {
