@@ -3,7 +3,8 @@ package org.genericsystem.kernel;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
+import java.util.Objects;
+import java.util.function.Predicate;
 import org.genericsystem.api.core.IteratorSnapshot;
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
@@ -33,6 +34,19 @@ public class PseudoConcurrentCollection<T> implements IteratorSnapshot<T> {
 				return true;
 			}
 		return false;
+	}
+
+	public boolean removeIf(Predicate<? super T> filter) {
+		Objects.requireNonNull(filter);
+		boolean removed = false;
+		final Iterator<T> each = iterator();
+		while (each.hasNext()) {
+			if (filter.test(each.next())) {
+				each.remove();
+				removed = true;
+			}
+		}
+		return removed;
 	}
 
 	public class InternalIterator extends AbstractGeneralAwareIterator<Node<T>, T> implements Iterator<T> {
