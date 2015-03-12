@@ -13,9 +13,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
@@ -85,7 +87,7 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 	}
 
 	protected Generic wrap(org.genericsystem.kernel.Generic generic) {
-		return wrap(generic == null ? null : generic.getRoot().findAnnotedClass(generic), generic);
+		return generic != null ? wrap(generic.getRoot().findAnnotedClass(generic), generic) : null;
 	}
 
 	private void put(Generic mutable, org.genericsystem.kernel.Generic generic) {
