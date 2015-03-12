@@ -1,6 +1,7 @@
 package org.genericsystem.mutability;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collections;
@@ -238,8 +239,8 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 	}
 
 	@Override
-	public Generic[] newTArray(int i) {
-		return wrap(cache.newTArray(i));
+	public Generic[] newTArray(int dim) {
+		return (Generic[]) Array.newInstance(Generic.class, dim);
 	}
 
 	@Override
