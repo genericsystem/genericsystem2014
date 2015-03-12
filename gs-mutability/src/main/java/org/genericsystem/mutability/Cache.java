@@ -85,7 +85,7 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 	}
 
 	protected Generic wrap(org.genericsystem.kernel.Generic generic) {
-		return wrap(null, generic);
+		return wrap(generic == null ? null : generic.getRoot().findAnnotedClass(generic), generic);
 	}
 
 	private void put(Generic mutable, org.genericsystem.kernel.Generic generic) {
