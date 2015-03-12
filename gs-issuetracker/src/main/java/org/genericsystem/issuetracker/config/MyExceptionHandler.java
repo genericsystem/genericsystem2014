@@ -1,7 +1,6 @@
 package org.genericsystem.issuetracker.config;
 
 import java.util.Iterator;
-
 import javax.faces.FacesException;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExceptionHandler;
@@ -9,6 +8,11 @@ import javax.faces.context.ExceptionHandlerWrapper;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ExceptionQueuedEvent;
 import javax.faces.event.ExceptionQueuedEventContext;
+<<<<<<< HEAD
+=======
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+>>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 
 public class MyExceptionHandler extends ExceptionHandlerWrapper {
 
