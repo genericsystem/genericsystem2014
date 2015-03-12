@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-
 import org.genericsystem.kernel.Generic;
+import org.genericsystem.kernel.Generic.GenericImpl;
 import org.genericsystem.kernel.LifeManager;
 import org.genericsystem.kernel.Statics;
 import org.genericsystem.kernel.annotations.SystemGeneric;
@@ -62,8 +62,7 @@ public class PersistenceTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	public static class Vehicle extends Generic {
-	}
+	public static class Vehicle extends GenericImpl {}
 
 	public void testType() {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());

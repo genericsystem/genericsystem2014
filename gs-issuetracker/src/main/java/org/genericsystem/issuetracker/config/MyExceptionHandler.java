@@ -1,7 +1,6 @@
 package org.genericsystem.issuetracker.config;
 
 import java.util.Iterator;
-
 import javax.faces.FacesException;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
@@ -10,7 +9,6 @@ import javax.faces.context.ExceptionHandlerWrapper;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ExceptionQueuedEvent;
 import javax.faces.event.ExceptionQueuedEventContext;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,14 +48,6 @@ public class MyExceptionHandler extends ExceptionHandlerWrapper {
 			}
 		}
 		getWrapped().handle();
-	}
-
-	public UIComponent getComponent() {
-		return component;
-	}
-
-	public void setComponent(UIComponent component) {
-		this.component = component;
 	}
 
 }

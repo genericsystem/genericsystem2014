@@ -1,6 +1,7 @@
 package org.genericsystem.mutability;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,11 +13,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
-
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
@@ -240,8 +239,8 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 	}
 
 	@Override
-	public Generic[] newTArray(int i) {
-		return wrap(cache.newTArray(i));
+	public Generic[] newTArray(int dim) {
+		return (Generic[]) Array.newInstance(Generic.class, dim);
 	}
 
 	@Override

@@ -7,15 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
-
 import org.genericsystem.defaults.DefaultLifeManager;
 import org.genericsystem.defaults.DefaultRoot;
 import org.genericsystem.kernel.Config.MetaAttribute;
 import org.genericsystem.kernel.Config.MetaRelation;
 import org.genericsystem.kernel.Config.Sequence;
 import org.genericsystem.kernel.Config.SystemMap;
+import org.genericsystem.kernel.Generic.GenericImpl;
 
-public class Root extends Generic implements DefaultRoot<Generic> {
+public class Root extends GenericImpl implements DefaultRoot<Generic> {
 
 	private final TsGenerator generator = new TsGenerator();
 	private Context<Generic> context;
@@ -175,6 +175,6 @@ public class Root extends Generic implements DefaultRoot<Generic> {
 	Generic init(Generic generic, long ts, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
 		Vertex result = map.putIfAbsent(generic, new Vertex(generic, ts, meta, supers, value, components, otherTs));
 		assert result == null;
-		return generic.init(Root.this);
+		return ((GenericImpl) generic).init(Root.this);
 	}
 }
