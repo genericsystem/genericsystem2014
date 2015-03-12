@@ -21,11 +21,6 @@ public abstract class Builder<T extends DefaultVertex<T>> {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected Class<T> getTClass() {
-		return (Class<T>) Generic.class;
-	}
-
-	@SuppressWarnings("unchecked")
 	public final T[] newTArray(int dim) {
 		return (T[]) Array.newInstance(Generic.class, dim);
 	}
@@ -40,7 +35,7 @@ public abstract class Builder<T extends DefaultVertex<T>> {
 				getContext().discardWithException(new InstantiationException(clazz + " must extends " + metaAnnotation.value()));
 
 		try {
-			if (clazz == null || !getTClass().isAssignableFrom(clazz))
+			if (clazz == null || !Generic.class.isAssignableFrom(clazz))
 				return (T) new GenericImpl();
 			return (T) clazz.newInstance();
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
