@@ -6,7 +6,7 @@ import org.genericsystem.kernel.Generic;
 import org.testng.annotations.Test;
 
 @Test
-public class NotRemovableTestOneCache extends AbstractTest {
+public class NotRemovableOneCacheTest extends AbstractTest {
 
 	public void test001_aliveEx() {
 		Engine engine = new Engine();

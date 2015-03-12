@@ -26,7 +26,7 @@ public abstract class Builder<T extends DefaultVertex<T>> {
 
 	@SuppressWarnings("unchecked")
 	public final T[] newTArray(int dim) {
-		return (T[]) Array.newInstance(DefaultVertex.class, dim);
+		return (T[]) Array.newInstance(getTClass(), dim);
 	}
 
 	@SuppressWarnings("unchecked")
