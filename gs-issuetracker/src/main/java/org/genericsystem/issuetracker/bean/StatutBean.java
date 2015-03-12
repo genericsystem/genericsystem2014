@@ -10,10 +10,8 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.genericsystem.issuetracker.annotation.InjectedClass;
 import org.genericsystem.issuetracker.model.Statut;
 import org.genericsystem.issuetracker.qualifier.Provide;
-import org.genericsystem.mutability.Generic;
 
 @Named
 @SessionScoped
@@ -23,8 +21,7 @@ public class StatutBean implements Serializable {
 
 	@Inject
 	@Provide
-	@InjectedClass(Statut.class)
-	private transient Generic statut;
+	private transient Statut statut;
 	private transient List<String> statuts;
 
 	@PostConstruct

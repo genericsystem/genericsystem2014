@@ -11,10 +11,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.genericsystem.cdi.Engine;
-import org.genericsystem.issuetracker.annotation.InjectedClass;
 import org.genericsystem.issuetracker.model.Priority;
 import org.genericsystem.issuetracker.qualifier.Provide;
-import org.genericsystem.mutability.Generic;
 
 @Named
 @SessionScoped
@@ -24,8 +22,7 @@ public class PriorityBean implements Serializable {
 
 	@Inject
 	@Provide
-	@InjectedClass(Priority.class)
-	private transient Generic priority;
+	private transient Priority priority;
 	private transient List<String> priorities;
 
 	@Inject
