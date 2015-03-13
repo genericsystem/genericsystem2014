@@ -1,7 +1,6 @@
 package org.genericsystem.cache;
 
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
@@ -33,7 +32,7 @@ public class CacheElement extends AbstractCacheElement {
 		return adds.contains(generic) || (!removes.contains(generic) && subCache.isAlive(generic));
 	}
 
-	void checkConstraints(Checker<Generic> checker) throws RollbackException {
+	void checkConstraints(Checker checker) throws RollbackException {
 		adds.forEach(x -> checker.checkAfterBuild(true, true, x));
 		removes.forEach(x -> checker.checkAfterBuild(false, true, x));
 	}

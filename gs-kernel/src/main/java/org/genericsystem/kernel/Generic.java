@@ -15,7 +15,7 @@ public interface Generic extends DefaultVertex<Generic>, Comparable<Generic> {
 	}
 
 	@Override
-	default Context<Generic> getCurrentCache() {
+	default Context getCurrentCache() {
 		return getRoot().getCurrentCache();
 	}
 

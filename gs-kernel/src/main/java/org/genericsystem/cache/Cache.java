@@ -2,7 +2,6 @@ package org.genericsystem.cache;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConcurrencyControlException;
@@ -15,7 +14,7 @@ import org.genericsystem.kernel.Generic;
 import org.genericsystem.kernel.LifeManager;
 import org.genericsystem.kernel.Statics;
 
-public class Cache extends Context<Generic> {
+public class Cache extends Context {
 
 	protected Transaction transaction;
 	protected CacheElement cacheElement;
@@ -144,7 +143,7 @@ public class Cache extends Context<Generic> {
 	}
 
 	@Override
-	protected Builder<Generic> buildBuilder() {
+	protected Builder buildBuilder() {
 		return new GenericBuilder(this);
 	}
 
