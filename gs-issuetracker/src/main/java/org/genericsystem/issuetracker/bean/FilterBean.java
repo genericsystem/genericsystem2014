@@ -1,8 +1,6 @@
 package org.genericsystem.issuetracker.bean;
 
-import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
@@ -13,7 +11,11 @@ import org.genericsystem.mutability.Generic;
 @RequestScoped
 public class FilterBean {
 
-	public List<Generic> filter(Generic issue, String searchedStatut, Predicate<? super Generic> predicate) {
-		return (searchedStatut != null) ? (issue.getAllInstances().get().filter(predicate).collect(Collectors.toList())) : issue.getAllInstances().get().collect(Collectors.toList());
+	private Predicate<? super Generic> predicate;
+
+	public Predicate<? super Generic> getPredicate(Generic relation, String searchedGeneric) {
+		predicate = generic -> generic.getLinks(relation).get().anyMatch(link -> link.getTargetComponent().getValue().equals(searchedGeneric));
+		return predicate;
 	}
+
 }

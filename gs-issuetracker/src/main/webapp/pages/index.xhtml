@@ -43,6 +43,18 @@
 
 		<h:outputLabel value="Selected issue is : " />
 		<h:outputLabel value="#{issueSelectionBean.searchedIssue}" />
+		
+		<h:panelGroup layout="block" rendered="#{issueSelectionBean.searchedIssue}">
+
+		<composites:UpdateGeneric
+			AttributeToUpdate="#{issueBean.getDescription(issueSelectionBean.selectedIssue).value}"
+			ListOfObjectsRelation1="#{priorityBean.priorities}"
+			RenderedValueRelation1="#{issueBean.getPriority(issueSelectionBean.selectedIssue).value}"
+			ListOfObjectsRelation2="#{statutBean.statuts}"
+			RenderedValueRelation2="#{issueBean.getStatut(issueSelectionBean.selectedIssue).value}"
+			Render="@form message"/>
+			
+		</h:panelGroup>
 
 		<composites:DatatableGeneric 
 			ListOfObjects="#{commentBean.comments}"

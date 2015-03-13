@@ -2,6 +2,7 @@ package org.genericsystem.issuetracker.bean;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
@@ -57,7 +58,7 @@ public class IssueBean {
 	private String searchedStatut;
 
 	public List<Generic> getIssuesByStatut() {
-		return filterBean.filter(issue, searchedStatut, generic -> generic.getLinks(issueStatut).get().anyMatch(link -> link.getTargetComponent().getValue().equals(searchedStatut)));
+		return (searchedStatut != null) ? issue.getAllInstances().get().filter(filterBean.getPredicate(issueStatut, searchedStatut)).collect(Collectors.toList()) : issue.getAllInstances().get().collect(Collectors.toList());
 	}
 
 	public String addIssue() {
