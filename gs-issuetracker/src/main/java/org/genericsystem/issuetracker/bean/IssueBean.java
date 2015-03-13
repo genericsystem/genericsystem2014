@@ -63,7 +63,7 @@ public class IssueBean {
 	}
 
 	public String addIssue() {
-		issue.addInstance().setHolder(description, newIssueDescription);
+		issue.addGenerateInstance().setHolder(description, newIssueDescription);
 		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Priority is required."));
 		return "#";
 	}

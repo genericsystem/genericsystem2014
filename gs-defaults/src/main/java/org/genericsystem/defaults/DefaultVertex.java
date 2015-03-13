@@ -250,33 +250,20 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 		visitor.traverse((T) this);
 	}
 
-	default T addInstance(T... components) {
-		Generate generate = getGenerate();
-		if (generate == null)
-			getCurrentCache().discardWithException(new IllegalStateException("Unable to find @Generate annotation on : " + info()));
-		return addInstance(newGenerator(generate.clazz()).generate(this), components);
-	}
-
-	default T addHolder(T attribute, T... targets) {
-		return attribute.addInstance(addThisToTargets(targets));
-	}
-
-	// TODO ambiguous method
-	// default T addLink(T relation, T firstTarget, T... otherTargets) {
-	// return relation.addInstance(addThisToTargets(firstTarget, otherTargets));
-	// }
-
-	@SuppressWarnings("unchecked")
-	default Generate getGenerate() {
-		return getRoot().findAnnotedClass((T) this).getAnnotation(Generate.class);
-	}
-
-	default Generator newGenerator(Class<? extends Generator> clazz) {
-		try {
-			return clazz.newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
-			getCurrentCache().discardWithException(e);
+	default T addGenerateInstance(T... components) {
+		class GeneratorBuilder {
+			Serializable newGenerateValue() {
+				Generate generate = getRoot().findAnnotedClass((T) this).getAnnotation(Generate.class);
+				if (generate == null)
+					getCurrentCache().discardWithException(new IllegalStateException("Unable to find @Generate annotation on : " + info()));
+				try {
+					return generate.clazz().newInstance().generate((T) this);
+				} catch (InstantiationException | IllegalAccessException e) {
+					getCurrentCache().discardWithException(e);
+				}
+				return null;
+			}
 		}
-		return null;// Not reached
+		return addInstance(new GeneratorBuilder().newGenerateValue(), components);
 	}
 }
