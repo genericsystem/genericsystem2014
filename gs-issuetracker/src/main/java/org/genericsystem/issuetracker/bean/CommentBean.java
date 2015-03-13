@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-
 import org.genericsystem.issuetracker.bean.IssueBean.ElStringWrapper;
 import org.genericsystem.issuetracker.model.Comment;
 import org.genericsystem.issuetracker.model.IssueComment;

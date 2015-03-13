@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.genericsystem.api.exception.CyclicException;
 import org.genericsystem.kernel.GenericHandler.SetSystemHandler;
 import org.genericsystem.kernel.annotations.Components;
@@ -61,7 +60,7 @@ public class SystemCache {
 		Generic meta = setMeta(clazz);
 		List<Generic> overrides = setOverrides(clazz);
 		List<Generic> components = setComponents(clazz);
-		Generic result = new SetSystemHandler<>(((Generic) root).getCurrentCache(), clazz, meta, overrides, findValue(clazz), components).resolve();
+		Generic result = new SetSystemHandler(((Generic) root).getCurrentCache(), clazz, meta, overrides, findValue(clazz), components).resolve();
 		put(clazz, result);
 		mountConstraints(clazz, result);
 		triggersDependencies(clazz);

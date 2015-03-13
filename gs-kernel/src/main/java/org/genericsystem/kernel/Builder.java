@@ -1,32 +1,28 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.List;
 import org.genericsystem.defaults.DefaultLifeManager;
-import org.genericsystem.defaults.DefaultVertex;
 import org.genericsystem.kernel.Generic.GenericImpl;
 import org.genericsystem.kernel.annotations.InstanceClass;
 
-public abstract class Builder<T extends DefaultVertex<T>> {
+public abstract class Builder {
 
-	private final Context<T> context;
+	private final Context context;
 
-	protected Builder(Context<T> context) {
+	protected Builder(Context context) {
 		this.context = context;
 	}
 
-	public Context<T> getContext() {
+	public Context getContext() {
 		return context;
 	}
 
-	@SuppressWarnings("unchecked")
-	public final T[] newTArray(int dim) {
-		return (T[]) Array.newInstance(Generic.class, dim);
+	public final Generic[] newTArray(int dim) {
+		return new Generic[dim];
 	}
 
-	@SuppressWarnings("unchecked")
-	protected T newT(Class<?> clazz, T meta) {
+	protected Generic newT(Class<?> clazz, Generic meta) {
 		InstanceClass metaAnnotation = meta == null ? null : getAnnotedClass(meta).getAnnotation(InstanceClass.class);
 		if (metaAnnotation != null)
 			if (clazz == null || clazz.isAssignableFrom(metaAnnotation.value()))
@@ -36,23 +32,23 @@ public abstract class Builder<T extends DefaultVertex<T>> {
 
 		try {
 			if (clazz == null || !Generic.class.isAssignableFrom(clazz))
-				return (T) new GenericImpl();
-			return (T) clazz.newInstance();
+				return new GenericImpl();
+			return (Generic) clazz.newInstance();
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
 			getContext().discardWithException(e);
 		}
 		return null; // Not reached
 	}
 
-	abstract Class<?> getAnnotedClass(T vertex);
+	abstract Class<?> getAnnotedClass(Generic vertex);
 
-	abstract T buildAndPlug(Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components);
+	abstract Generic buildAndPlug(Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components);
 
-	abstract T build(long ts, Class<?> clazz, T meta, List<T> supers, Serializable value, List<T> components, long[] otherTs);
+	abstract Generic build(long ts, Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs);
 
-	public static class GenericBuilder extends Builder<Generic> {
+	public static class GenericBuilder extends Builder {
 
-		public GenericBuilder(Context<Generic> context) {
+		public GenericBuilder(Context context) {
 			super(context);
 		}
 

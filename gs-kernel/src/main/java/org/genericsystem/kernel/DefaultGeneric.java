@@ -2,7 +2,6 @@ package org.genericsystem.kernel;
 
 import java.io.Serializable;
 import java.util.List;
-
 import org.genericsystem.defaults.DefaultVertex;
 
 interface DefaultGeneric extends DefaultVertex<Generic>, Comparable<Generic> {
@@ -15,7 +14,7 @@ interface DefaultGeneric extends DefaultVertex<Generic>, Comparable<Generic> {
 	}
 
 	@Override
-	default Context<Generic> getCurrentCache() {
+	default Context getCurrentCache() {
 		return getRoot().getCurrentCache();
 	}
 
@@ -56,6 +55,6 @@ interface DefaultGeneric extends DefaultVertex<Generic>, Comparable<Generic> {
 	}
 
 	default Generic getNextDependency(Generic ancestor) {
-		return getRoot().getNextDependency((Generic) this,ancestor);
+		return getRoot().getNextDependency((Generic) this, ancestor);
 	}
 }

@@ -6,23 +6,21 @@ import java.util.List;
 import java.util.NavigableSet;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
-import org.genericsystem.defaults.DefaultVertex;
 import org.genericsystem.kernel.GenericHandler.AtomicHandler;
 
-public class Restructurator<T extends DefaultVertex<T>> {
+public class Restructurator {
 
-	private final Context<T> context;
+	private final Context context;
 
-	Restructurator(Context<T> context) {
+	Restructurator(Context context) {
 		this.context = context;
 	}
 
-	T rebuildAll(T toRebuild, Supplier<T> rebuilder, NavigableSet<T> dependenciesToRebuild) {
+	Generic rebuildAll(Generic toRebuild, Supplier<Generic> rebuilder, NavigableSet<Generic> dependenciesToRebuild) {
 		dependenciesToRebuild.descendingSet().forEach(context::unplug);
 		if (rebuilder != null) {
 			ConvertMap convertMap = new ConvertMap();
-			T build = rebuilder.get();
+			Generic build = rebuilder.get();
 			if (toRebuild != null) {
 				dependenciesToRebuild.remove(toRebuild);
 				convertMap.put(toRebuild, build);
@@ -34,30 +32,30 @@ public class Restructurator<T extends DefaultVertex<T>> {
 		return null;
 	}
 
-	private class ConvertMap extends HashMap<T, T> {
+	private class ConvertMap extends HashMap<Generic, Generic> {
 		private static final long serialVersionUID = 5003546962293036021L;
 
-		private T convert(T oldDependency) {
+		private Generic convert(Generic oldDependency) {
 			if (oldDependency.isAlive())
 				return oldDependency;
-			T newDependency = get(oldDependency);
+			Generic newDependency = get(oldDependency);
 			if (newDependency == null) {
 				if (oldDependency.isMeta()) {
 					assert oldDependency.getSupers().size() == 1;
 					newDependency = context.setMeta(oldDependency.getComponents().size());
 				} else {
-					List<T> overrides = reasignSupers(oldDependency, new ArrayList<>());
-					List<T> components = reasignComponents(oldDependency);
-					T meta = reasignMeta(components, convert(oldDependency.getMeta()));
-					newDependency = new AtomicHandler<>(context, meta, overrides, oldDependency.getValue(), components).resolve();
+					List<Generic> overrides = reasignSupers(oldDependency, new ArrayList<>());
+					List<Generic> components = reasignComponents(oldDependency);
+					Generic meta = reasignMeta(components, convert(oldDependency.getMeta()));
+					newDependency = new AtomicHandler(context, meta, overrides, oldDependency.getValue(), components).resolve();
 				}
 				put(oldDependency, newDependency);// triggers mutation
 			}
 			return newDependency;
 		}
 
-		private List<T> reasignSupers(T oldDependency, List<T> supersReasign) {
-			for (T ancestor : oldDependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList()))
+		private List<Generic> reasignSupers(Generic oldDependency, List<Generic> supersReasign) {
+			for (Generic ancestor : oldDependency.getSupers().stream().map(x -> convert(x)).collect(Collectors.toList()))
 				if (!ancestor.isAlive())
 					reasignSupers(ancestor, supersReasign);
 				else
@@ -65,19 +63,19 @@ public class Restructurator<T extends DefaultVertex<T>> {
 			return supersReasign;
 		}
 
-		private List<T> reasignComponents(T oldDependency) {
+		private List<Generic> reasignComponents(Generic oldDependency) {
 			return oldDependency.getComponents().stream().map(x -> convert(x)).filter(x -> x.isAlive()).collect(Collectors.toList());
 		}
 
-		private T reasignMeta(List<T> components, T meta) {
+		private Generic reasignMeta(List<Generic> components, Generic meta) {
 			if (components.size() != meta.getComponents().size())
 				return reasignMeta(components, meta.getSupers().get(0));
 			return meta;
 		}
 
 		@Override
-		public T put(T oldDependency, T newDependency) {
-			T result = super.put(oldDependency, newDependency);
+		public Generic put(Generic oldDependency, Generic newDependency) {
+			Generic result = super.put(oldDependency, newDependency);
 			context.triggersMutation(oldDependency, newDependency);
 			return result;
 		}
