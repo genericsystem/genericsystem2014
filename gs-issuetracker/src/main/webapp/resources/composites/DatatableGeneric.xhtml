@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:composite="http://java.sun.com/jsf/composite"
+	xmlns:composites="http://java.sun.com/jsf/composite/composites">
+	
+	<composite:interface>
+		<composite:attribute name="ListOfObjects"></composite:attribute>
+		<composite:attribute name="Header"></composite:attribute>
+		<composite:attribute name="Render"></composite:attribute>
+		<composite:attribute name="Select" method-signature="String action()"></composite:attribute>
+		<composite:attribute name="ObjectValue"></composite:attribute>
+		<composite:attribute name="HeaderOfAttribute"></composite:attribute>
+		<composite:attribute name="ValueOfAttribute"></composite:attribute>
+		<composite:attribute name="HeaderRelation1"></composite:attribute>
+		<composite:attribute name="ListOfRelation1"></composite:attribute>
+		<composite:attribute name="RenderedValueRelation1"></composite:attribute>
+		<composite:attribute name="HeaderRelation2"></composite:attribute>
+		<composite:attribute name="ListOfRelation2"></composite:attribute>
+		<composite:attribute name="RenderedValueRelation2"></composite:attribute>
+		<composite:attribute name="DeleteObject" method-signature="String action()"></composite:attribute>
+		<composite:attribute name="Footer"></composite:attribute>
+	</composite:interface>
+	<composite:implementation>
+		
+		<h:dataTable value="#{cc.attrs.ListOfObjects}" var="object">
+			<h:column>
+				<f:facet name="header">
+					<h:outputLabel value="#{cc.attrs.Name}" />
+				</f:facet>
+				<h:commandLink value="#{cc.attrs.ObjectValue}"
+					action="#{cc.attrs.Select}">
+					<f:ajax execute="@this" render="#{cc.attrs.Render}" />
+				</h:commandLink>
+			</h:column>
+			<h:column >
+				<f:facet name="header">
+					<h:outputLabel value="#{cc.attrs.HeaderOfAttribute}"/>
+				</f:facet>
+				<h:inputText size="10"
+					value="#{cc.attrs.ValueOfAttribute}" rendered="#{cc.attrs.ValueOfAttribute != null}">
+					<f:ajax event="blur" execute="@this" render="#{cc.attrs.Render}" />
+				</h:inputText>
+			</h:column>
+			<h:column rendered="#{cc.attrs.HeaderRelation1 != null}">
+				<f:facet name="header">
+					<h:outputLabel value="#{cc.attrs.HeaderRelation1}" />
+				</f:facet>
+				<composites:columnList ListOfObjects="#{cc.attrs.ListOfRelation1}"
+					RenderedValue="#{cc.attrs.RenderedValueRelation1}"
+					Render="#{cc.attrs.Render}" />
+			</h:column>
+			<h:column rendered="#{cc.attrs.HeaderRelation2 != null}">
+				<f:facet name="header">
+					<h:outputLabel value="#{cc.attrs.HeaderRelation2}" />
+				</f:facet>
+				<composites:columnList ListOfObjects="#{cc.attrs.ListOfRelation2}"
+					RenderedValue="#{cc.attrs.RenderedValueRelation2}"
+					Render="#{cc.attrs.Render}" />
+			</h:column>
+			<h:column>
+				<composites:deleteButton Action="#{cc.attrs.DeleteObject}" />
+			</h:column>
+			<f:facet name="footer">
+				<h:panelGroup id="addIssue" layout="block" rendered="#{cc.attrs.Footer != null}">
+					<h:inputText  size="10"
+						value="#{issueBean.newIssueDescription}" />
+					<h:commandButton  value="Add"
+						action="#{issueBean.addIssue}">
+						<f:ajax execute="addIssue" render="#{cc.attrs.Render}" />
+					</h:commandButton>
+				</h:panelGroup>
+			</f:facet>
+			</h:dataTable>
+			
+		
+	</composite:implementation>
+	
+</html>

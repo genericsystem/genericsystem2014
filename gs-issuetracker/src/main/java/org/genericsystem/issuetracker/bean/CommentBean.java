@@ -2,7 +2,7 @@ package org.genericsystem.issuetracker.bean;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
@@ -11,7 +11,6 @@ import javax.inject.Named;
 
 import org.genericsystem.issuetracker.bean.IssueBean.ElStringWrapper;
 import org.genericsystem.issuetracker.model.Comment;
-import org.genericsystem.issuetracker.model.Issue;
 import org.genericsystem.issuetracker.model.IssueComment;
 import org.genericsystem.issuetracker.qualifier.Provide;
 import org.genericsystem.mutability.Generic;
@@ -19,10 +18,7 @@ import org.genericsystem.mutability.Generic;
 @Named
 @RequestScoped
 public class CommentBean {
-
-	@Inject
-	@Provide
-	private Issue issue;
+	private static final Logger log = Logger.getAnonymousLogger();
 
 	@Inject
 	@Provide
@@ -35,12 +31,14 @@ public class CommentBean {
 	@Inject
 	private IssueSelectionBean issueSelectionBean;
 
-	public List<String> getCommentsByIssue(Generic instance) {
-		return instance.getLinks(issueComment).get().map(generic -> Objects.toString(generic.getTargetComponent().getValue())).collect(Collectors.toList());
+	private String newComment;
+
+	private List<Generic> getCommentsByIssue(Generic instance) {
+		return instance.getLinks(issueComment).get().collect(Collectors.toList());
 	}
 
-	public List<String> getComments() {
-		Generic instance = issue.getInstance(issueSelectionBean.getSearchedIssue());
+	public List<Generic> getComments() {
+		Generic instance = issueSelectionBean.getSelectedIssue();
 		return (instance != null) ? getCommentsByIssue(instance) : new ArrayList<>();
 	}
 
@@ -59,10 +57,18 @@ public class CommentBean {
 		};
 	}
 
-	public String deleteComment(String commentValue) {
-		Generic commentToDelete = comment.getInstance(commentValue);
-		(commentToDelete.getLink(issueComment, commentToDelete)).remove();
-		commentToDelete.remove();
+	public String deleteComment(Generic comment) {
+		comment.remove();
 		return "#";
 	}
+
+	public String getNewComment() {
+		return newComment;
+	}
+
+	public void setNewComment(String newComment) {
+		log.info("CommentBean ; setNewComment ; commentValue : " + newComment);
+		this.newComment = newComment;
+	}
+
 }
