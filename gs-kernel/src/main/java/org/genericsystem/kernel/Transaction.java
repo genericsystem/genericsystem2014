@@ -3,11 +3,10 @@ package org.genericsystem.kernel;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.kernel.Builder.GenericBuilder;
 
-public class Transaction extends Context<Generic> {
+public class Transaction extends Context {
 
 	private final long ts;
 
@@ -26,7 +25,7 @@ public class Transaction extends Context<Generic> {
 	}
 
 	@Override
-	protected Builder<Generic> buildBuilder() {
+	protected Builder buildBuilder() {
 		return new GenericBuilder(this);
 	}
 

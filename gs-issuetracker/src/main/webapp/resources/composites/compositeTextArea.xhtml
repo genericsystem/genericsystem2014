@@ -8,12 +8,11 @@
 	
 	<composite:interface>
 		<composite:attribute name="ObjectToAdd"></composite:attribute>
-		<composite:attribute name="NameOfObject"></composite:attribute>
+		<composite:attribute name="Rendered"></composite:attribute>
 		<composite:attribute name="Render"></composite:attribute>
 	</composite:interface>
 	<composite:implementation>
-		<f:facet name="header"><h:outputLabel value="#{cc.attrs.NameOfObject}"/></f:facet>
-		<h:inputTextarea value="#{cc.attrs.ObjectToAdd}">
+		<h:inputTextarea value="#{cc.attrs.ObjectToAdd}" rendered="#{cc.attrs.Rendered}">
 			<f:ajax event="blur" execute="@this" render="#{cc.attrs.Render}"/>
 		</h:inputTextarea>
 	</composite:implementation>

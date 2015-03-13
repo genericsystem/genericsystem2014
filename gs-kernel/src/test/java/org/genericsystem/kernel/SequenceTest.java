@@ -21,7 +21,7 @@ public class SequenceTest extends AbstractTest {
 	public void testStringAutoIncrementGenerator() {
 		Root root = new Root(Issue.class);
 		Generic issue = root.find(Issue.class);
-		Generic myIssue = issue.addInstance();
+		Generic myIssue = issue.addGenerateInstance();
 		assert myIssue.getValue() instanceof String;
 		assert ((String) myIssue.getValue()).contains(Issue.class.getSimpleName());
 	}
@@ -29,7 +29,7 @@ public class SequenceTest extends AbstractTest {
 	public void testIntAutoIncrementGenerator() {
 		Root root = new Root(IssueInt.class);
 		Generic issue = root.find(IssueInt.class);
-		Generic myIssue = issue.addInstance();
+		Generic myIssue = issue.addGenerateInstance();
 		assert myIssue.getValue() instanceof Integer;
 		assert ((Integer) myIssue.getValue()) == 0;
 	}
@@ -39,10 +39,10 @@ public class SequenceTest extends AbstractTest {
 		Generic id = root.find(Id.class);
 		Generic vehicle = root.find(Vehicle.class);
 		Generic myVehicle = vehicle.addInstance("myVehicle");
-		Generic myVehicleId = id.addInstance(myVehicle);
+		Generic myVehicleId = id.addGenerateInstance(myVehicle);
 		assert myVehicleId.getValue() instanceof Integer;
 		assert ((Integer) myVehicleId.getValue()) == 0;
-		Generic myVehicleId2 = myVehicle.addHolder(id);
+		Generic myVehicleId2 = id.addGenerateInstance(myVehicle);
 		assert ((Integer) myVehicleId2.getValue()) == 1;
 	}
 
