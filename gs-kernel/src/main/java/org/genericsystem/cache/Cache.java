@@ -2,13 +2,12 @@ package org.genericsystem.cache;
 
 import java.util.HashSet;
 import java.util.Set;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
-import org.genericsystem.kernel.Builder;
-import org.genericsystem.kernel.Builder.GenericBuilder;
 import org.genericsystem.kernel.Context;
 import org.genericsystem.kernel.Generic;
 import org.genericsystem.kernel.LifeManager;
@@ -25,7 +24,8 @@ public class Cache extends Context {
 	}
 
 	protected Cache(Transaction subContext) {
-		this(subContext, new ContextEventListener<Generic>() {});
+		this(subContext, new ContextEventListener<Generic>() {
+		});
 	}
 
 	protected Cache(Transaction subContext, ContextEventListener<Generic> listener) {
@@ -143,11 +143,6 @@ public class Cache extends Context {
 	}
 
 	@Override
-	protected Builder buildBuilder() {
-		return new GenericBuilder(this);
-	}
-
-	@Override
 	protected Generic plug(Generic generic) {
 		cacheElement.plug(generic);
 		getChecker().checkAfterBuild(true, false, generic);
@@ -246,13 +241,17 @@ public class Cache extends Context {
 
 	public static interface ContextEventListener<X> {
 
-		default void triggersMutationEvent(X oldDependency, X newDependency) {}
+		default void triggersMutationEvent(X oldDependency, X newDependency) {
+		}
 
-		default void triggersRefreshEvent() {}
+		default void triggersRefreshEvent() {
+		}
 
-		default void triggersClearEvent() {}
+		default void triggersClearEvent() {
+		}
 
-		default void triggersFlushEvent() {}
+		default void triggersFlushEvent() {
+		}
 	}
 
 }

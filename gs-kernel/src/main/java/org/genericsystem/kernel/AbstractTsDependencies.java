@@ -3,19 +3,23 @@ package org.genericsystem.kernel;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
+import org.genericsystem.kernel.iterator.AbstractAwareIterator;
 
-public abstract class AbstractTsDependencies<T extends DefaultGeneric> implements Dependencies<T> {
+public abstract class AbstractTsDependencies implements Dependencies<Generic> {
 
-	private Node<T> head = null;
-	private Node<T> tail = null;
-	private final ConcurrentHashMap<T, T> map = new ConcurrentHashMap<>();
+	private Generic head = null;
+	private Generic tail = null;
+	private final ConcurrentHashMap<Generic, Generic> map = new ConcurrentHashMap<>();
 
-	public abstract LifeManager getLifeManager();
+	public abstract Generic getAncestor();
+
+	public final LifeManager getLifeManager() {
+		return getAncestor().getLifeManager();
+	}
 
 	@Override
-	public T get(Object generic, long ts) {
-		T result = map.get(generic);// this no lock read requires a concurrent hash map
+	public Generic get(Object generic, long ts) {
+		Generic result = map.get(generic);// this no lock read requires a concurrent hash map
 		if (result == null) {
 			LifeManager lifeManager = getLifeManager();
 			lifeManager.readLock();
@@ -30,43 +34,41 @@ public abstract class AbstractTsDependencies<T extends DefaultGeneric> implement
 	}
 
 	@Override
-	public void add(T element) {
-		assert element != null;
-		// assert getLifeManager().isWriteLockedByCurrentThread();
-		Node<T> newNode = new Node<>(element);
+	public void add(Generic add) {
+		assert add != null;
+		// TODO active this
+		// assert !add.getRoot().isInitialized() || getLifeManager().isWriteLockedByCurrentThread();
 		if (head == null)
-			head = newNode;
+			head = add;
 		else
-			tail.next = newNode;
-		tail = newNode;
-		T result = map.put(element, element);
+			tail.getRoot().setNextDependency(tail, getAncestor(), add);
+		tail = add;
+		Generic result = map.put(add, add);
 		assert result == null : result.info();
 	}
 
 	@Override
-	public boolean remove(T generic) {
+	public boolean remove(Generic generic) {
 		assert generic != null : "generic is null";
 		assert head != null : "head is null";
 
-		Node<T> currentNode = head;
+		Generic currentNode = head;
 
-		T currentContent = currentNode.content;
+		Generic currentContent = currentNode;
 		if (generic.equals(currentContent)) {
-			Node<T> next = currentNode.next;
+			Generic next = currentNode.getNextDependency(getAncestor());
 			head = next != null ? next : null;
 			return true;
 		}
 
-		Node<T> nextNode = currentNode.next;
+		Generic nextNode = currentNode.getNextDependency(getAncestor());
 		while (nextNode != null) {
-			T nextGeneric = nextNode.content;
-			Node<T> nextNextNode = nextNode.next;
+			Generic nextGeneric = nextNode;
+			Generic nextNextNode = nextNode.getNextDependency(getAncestor());
 			if (generic.equals(nextGeneric)) {
-				// nextNode.content = null;
-				System.out.println("remove : " + generic.info());
 				if (nextNextNode == null)
 					tail = currentNode;
-				currentNode.next = nextNextNode;
+				currentNode.getRoot().setNextDependency(currentNode, getAncestor(), nextNextNode);
 				map.remove(generic);
 				return true;
 			}
@@ -77,11 +79,11 @@ public abstract class AbstractTsDependencies<T extends DefaultGeneric> implement
 	}
 
 	@Override
-	public Iterator<T> iterator(long ts) {
+	public Iterator<Generic> iterator(long ts) {
 		return new InternalIterator(ts);
 	}
 
-	private class InternalIterator extends AbstractGeneralAwareIterator<Node<T>, T> {
+	private class InternalIterator extends AbstractAwareIterator<Generic> {
 
 		private final long ts;
 
@@ -92,13 +94,13 @@ public abstract class AbstractTsDependencies<T extends DefaultGeneric> implement
 		@Override
 		protected void advance() {
 			for (;;) {
-				Node<T> nextNode = (next == null) ? head : next.next;
-				if (nextNode == null) {
+				Generic nextDependency = (next == null) ? head : next.getNextDependency(getAncestor());
+				if (nextDependency == null) {
 					LifeManager lifeManager = getLifeManager();
 					lifeManager.readLock();
 					try {
-						nextNode = (next == null) ? head : next.next;
-						if (nextNode == null) {
+						nextDependency = (next == null) ? head : next.getNextDependency(getAncestor());
+						if (nextDependency == null) {
 							next = null;
 							lifeManager.atomicAdjustLastReadTs(ts);
 							return;
@@ -107,23 +109,10 @@ public abstract class AbstractTsDependencies<T extends DefaultGeneric> implement
 						lifeManager.readUnlock();
 					}
 				}
-				next = nextNode;
-				return;
+				next = nextDependency;
+				if (next.getLifeManager().isAlive(ts))
+					break;
 			}
-		}
-
-		@Override
-		protected T project() {
-			return next.content;
-		}
-	}
-
-	private static class Node<T> {
-		private final T content;
-		private Node<T> next;
-
-		private Node(T content) {
-			this.content = content;
 		}
 	}
 

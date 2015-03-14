@@ -253,11 +253,11 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 	default T addGenerateInstance(T... components) {
 		class GeneratorBuilder {
 			Serializable newGenerateValue() {
-				Generate generate = getRoot().findAnnotedClass((T) this).getAnnotation(Generate.class);
+				Generate generate = getRoot().findAnnotedClass((T) DefaultVertex.this).getAnnotation(Generate.class);
 				if (generate == null)
 					getCurrentCache().discardWithException(new IllegalStateException("Unable to find @Generate annotation on : " + info()));
 				try {
-					return generate.clazz().newInstance().generate((T) this);
+					return generate.clazz().newInstance().generate(DefaultVertex.this);
 				} catch (InstantiationException | IllegalAccessException e) {
 					getCurrentCache().discardWithException(e);
 				}

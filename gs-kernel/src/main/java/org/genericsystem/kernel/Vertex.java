@@ -28,7 +28,7 @@ class Vertex {
 		this.components = Collections.unmodifiableList(new ArrayList<>(components));
 		this.supers = Collections.unmodifiableList(new ArrayList<>(supers));
 		lifeManager = new LifeManager(otherTs);
-		this.dependencies = new AbstractTsDependencies2() {
+		this.dependencies = new AbstractTsDependencies() {
 			@Override
 			public Generic getAncestor() {
 				return generic;
