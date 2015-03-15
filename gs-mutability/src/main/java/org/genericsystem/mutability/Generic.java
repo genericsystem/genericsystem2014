@@ -3,10 +3,10 @@ package org.genericsystem.mutability;
 import java.io.Serializable;
 import java.util.List;
 
-import org.genericsystem.kernel.DefaultGeneric;
+import org.genericsystem.defaults.DefaultVertex;
 import org.genericsystem.kernel.LifeManager;
 
-public interface Generic extends DefaultGeneric<Generic> {
+public interface Generic extends DefaultVertex<Generic> {
 
 	@Override
 	default Engine getRoot() {
@@ -23,19 +23,17 @@ public interface Generic extends DefaultGeneric<Generic> {
 		return getCurrentCache().unwrap(this).isSystem();
 	}
 
-	@Override
 	default LifeManager getLifeManager() {
 		return getCurrentCache().unwrap(this).getLifeManager();
 	}
 
-	@Override
-	default int compareTo(Generic vertex) {
-		long birthTs = getLifeManager().getBirthTs();
-		long compareBirthTs = vertex.getLifeManager().getBirthTs();
-		return birthTs == compareBirthTs ? Long.compare(getTs(), vertex.getTs()) : Long.compare(birthTs, compareBirthTs);
-	}
+	// @Override
+	// default int compareTo(Generic vertex) {
+	// long birthTs = getLifeManager().getBirthTs();
+	// long compareBirthTs = vertex.getLifeManager().getBirthTs();
+	// return birthTs == compareBirthTs ? Long.compare(getTs(), vertex.getTs()) : Long.compare(birthTs, compareBirthTs);
+	// }
 
-	@Override
 	default long getTs() {
 		return getCurrentCache().unwrap(this).getTs();
 	}

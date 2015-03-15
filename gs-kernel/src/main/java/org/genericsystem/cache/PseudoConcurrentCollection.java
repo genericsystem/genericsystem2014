@@ -1,4 +1,4 @@
-package org.genericsystem.kernel;
+package org.genericsystem.cache;
 
 import java.util.HashMap;
 import java.util.Iterator;

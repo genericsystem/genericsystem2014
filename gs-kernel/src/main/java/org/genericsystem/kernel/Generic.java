@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-public interface Generic extends DefaultGeneric<Generic> {
+import org.genericsystem.defaults.DefaultVertex;
+
+public interface Generic extends DefaultVertex<Generic>, Comparable<Generic> {
 
 	@Override
 	Root getRoot();
@@ -14,7 +16,6 @@ public interface Generic extends DefaultGeneric<Generic> {
 		return getRoot().getCurrentCache();
 	}
 
-	@Override
 	default LifeManager getLifeManager() {
 		return getRoot().getLifeManager(this);
 	}
@@ -27,6 +28,10 @@ public interface Generic extends DefaultGeneric<Generic> {
 	}
 
 	@Override
+	default boolean isSystem() {
+		return getLifeManager().isSystem();
+	}
+
 	default long getTs() {
 		return getRoot().getTs(this);
 	}
