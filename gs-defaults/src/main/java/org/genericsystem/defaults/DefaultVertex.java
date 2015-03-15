@@ -251,9 +251,10 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 	}
 
 	default T addGenerateInstance(T... components) {
-		class GeneratorBuilder {
-			Serializable newGenerateValue() {
-				Generate generate = getRoot().findAnnotedClass((T) DefaultVertex.this).getAnnotation(Generate.class);
+		class ValueGenerator {
+			@SuppressWarnings("unchecked")
+			Serializable generateValue() {
+				GenerateValue generate = getRoot().findAnnotedClass((T) DefaultVertex.this).getAnnotation(GenerateValue.class);
 				if (generate == null)
 					getCurrentCache().discardWithException(new IllegalStateException("Unable to find @Generate annotation on : " + info()));
 				try {
@@ -264,6 +265,6 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 				return null;
 			}
 		}
-		return addInstance(new GeneratorBuilder().newGenerateValue(), components);
+		return addInstance(new ValueGenerator().generateValue(), components);
 	}
 }

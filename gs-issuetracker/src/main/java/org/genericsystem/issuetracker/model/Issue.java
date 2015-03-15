@@ -1,11 +1,11 @@
 package org.genericsystem.issuetracker.model;
 
-import org.genericsystem.defaults.Generate;
+import org.genericsystem.defaults.GenerateValue;
 import org.genericsystem.kernel.annotations.SystemGeneric;
 import org.genericsystem.mutability.Generic;
 
 @SystemGeneric
-@Generate
+@GenerateValue
 public class Issue implements Generic {
 
 }

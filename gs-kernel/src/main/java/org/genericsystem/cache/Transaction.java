@@ -15,9 +15,14 @@ public class Transaction extends org.genericsystem.kernel.Transaction {
 	}
 
 	@Override
+	public Engine getRoot() {
+		return (Engine) super.getRoot();
+	}
+
+	@Override
 	protected void unplug(Generic generic) {
 		generic.getLifeManager().kill(getTs());
-		((DefaultEngine) getRoot()).getGarbageCollector().add(generic);
+		getRoot().getGarbageCollector().add(generic);
 	}
 
 	@Override

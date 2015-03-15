@@ -222,21 +222,6 @@ public class Cache extends Context {
 		Snapshot<Generic> getDependencies(Generic vertex) {
 			return transaction.getDependencies(vertex);
 		}
-
-		// @Override
-		// Snapshot<T> getInheritings(T generic) {
-		// return transaction.getInheritings(generic);
-		// }
-		//
-		// @Override
-		// Snapshot<T> getInstances(T generic) {
-		// return transaction.getInstances(generic);
-		// }
-		//
-		// @Override
-		// Snapshot<T> getComposites(T generic) {
-		// return transaction.getComposites(generic);
-		// }
 	}
 
 	public static interface ContextEventListener<X> {

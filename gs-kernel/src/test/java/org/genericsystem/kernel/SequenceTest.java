@@ -1,6 +1,6 @@
 package org.genericsystem.kernel;
 
-import org.genericsystem.defaults.Generate;
+import org.genericsystem.defaults.GenerateValue;
 import org.genericsystem.defaults.Generator.IntAutoIncrementGenerator;
 import org.genericsystem.kernel.Config.Sequence;
 import org.genericsystem.kernel.annotations.Components;
@@ -47,13 +47,13 @@ public class SequenceTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	@Generate
+	@GenerateValue
 	public static class Issue {
 
 	}
 
 	@SystemGeneric
-	@Generate(clazz = IntAutoIncrementGenerator.class)
+	@GenerateValue(clazz = IntAutoIncrementGenerator.class)
 	public static class IssueInt {
 
 	}
@@ -65,7 +65,7 @@ public class SequenceTest extends AbstractTest {
 
 	@SystemGeneric
 	@Components(Vehicle.class)
-	@Generate(clazz = IntAutoIncrementGenerator.class)
+	@GenerateValue(clazz = IntAutoIncrementGenerator.class)
 	public static class Id {
 
 	}

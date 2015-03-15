@@ -9,7 +9,7 @@ import org.genericsystem.defaults.Generator.IntAutoIncrementGenerator.StringAuto
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface Generate {
+public @interface GenerateValue {
 
 	Class<? extends Generator> clazz() default StringAutoIncrementGenerator.class;
 
