@@ -169,7 +169,7 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 		return getVertex(generic).getComponents();
 	}
 
-	Dependencies<Generic> getDependencies(Generic generic) {
+	Dependencies getDependencies(Generic generic) {
 		return getVertex(generic).getDependencies();
 	}
 
