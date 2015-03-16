@@ -18,7 +18,7 @@ import org.genericsystem.kernel.Generic.GenericImpl;
 public class Root extends GenericImpl implements DefaultRoot<Generic> {
 
 	private final TsGenerator generator = new TsGenerator();
-	private Context<Generic> context;
+	private Context context;
 	private final SystemCache systemCache;
 	private final Archiver archiver;
 	private final Map<Generic, Vertex> map = new ConcurrentHashMap<>();
@@ -80,7 +80,7 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 	}
 
 	@Override
-	public Context<Generic> getCurrentCache() {
+	public Context getCurrentCache() {
 		return context;
 	}
 
@@ -117,7 +117,7 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 		}
 	}
 
-	Context<Generic> buildTransaction() {
+	Context buildTransaction() {
 		return new Transaction(this, pickNewTs());
 	}
 

@@ -2,7 +2,6 @@ package org.genericsystem.issuetracker.bean;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
@@ -12,7 +11,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.genericsystem.cdi.Engine;
-import org.genericsystem.issuetracker.annotation.InjectedClass;
 import org.genericsystem.issuetracker.model.Description;
 import org.genericsystem.issuetracker.model.Issue;
 import org.genericsystem.issuetracker.model.IssuePriority;
@@ -25,54 +23,46 @@ import org.genericsystem.mutability.Generic;
 @Named
 @RequestScoped
 public class IssueBean {
-	private static final Logger log = Logger.getAnonymousLogger();
 
 	@Inject
 	private Engine engine;
 
 	@Inject
 	@Provide
-	@InjectedClass(Issue.class)
-	private Generic issue;
+	private Issue issue;
 
 	@Inject
 	@Provide
-	@InjectedClass(Description.class)
-	private Generic description;
+	private Description description;
 
 	@Inject
 	@Provide
-	@InjectedClass(IssuePriority.class)
-	private Generic issuePriority;
+	private IssuePriority issuePriority;
 
 	@Inject
 	@Provide
-	@InjectedClass(Priority.class)
-	private Generic priority;
+	private Priority priority;
 
 	@Inject
 	@Provide
-	@InjectedClass(IssueStatut.class)
-	private Generic issueStatut;
+	private IssueStatut issueStatut;
 
 	@Inject
 	@Provide
-	@InjectedClass(Statut.class)
-	private Generic statut;
+	private Statut statut;
+
+	@Inject
+	private FilterBean filterBean;
 
 	private String newIssueDescription;
 	private String searchedStatut;
 
-	public List<Generic> getIssues() {
-		return issue.getAllInstances().get().collect(Collectors.toList());
-	}
-
 	public List<Generic> getIssuesByStatut() {
-		return issue.getAllInstances().get().filter(generic -> generic.getLinks(issueStatut).get().anyMatch(link -> link.getTargetComponent().getValue().equals(this.searchedStatut))).collect(Collectors.toList());
+		return (searchedStatut != null) ? issue.getAllInstances().get().filter(filterBean.getPredicate(issueStatut, searchedStatut)).collect(Collectors.toList()) : issue.getAllInstances().get().collect(Collectors.toList());
 	}
 
 	public String addIssue() {
-		issue.addInstance().setHolder(description, newIssueDescription);
+		issue.addGenerateInstance().setHolder(description, newIssueDescription);
 		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Priority is required."));
 		return "#";
 	}

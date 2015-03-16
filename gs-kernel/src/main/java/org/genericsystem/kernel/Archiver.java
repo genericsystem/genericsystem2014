@@ -29,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-
 import org.genericsystem.defaults.DefaultLifeManager;
 import org.genericsystem.kernel.GenericHandler.SetArchiverHandler;
 import org.slf4j.Logger;
@@ -275,8 +274,7 @@ public class Archiver {
 				Map<Long, Generic> vertexMap = new HashMap<>();
 				for (;;)
 					loadDependency(vertexMap);
-			} catch (EOFException ignore) {
-			}
+			} catch (EOFException ignore) {}
 		}
 
 		protected long loadTs() throws IOException {
@@ -296,7 +294,7 @@ public class Archiver {
 			Generic meta = loadAncestor(ts, vertexMap);
 			List<Generic> supers = loadAncestors(ts, vertexMap);
 			List<Generic> components = loadAncestors(ts, vertexMap);
-			vertexMap.put(ts, new SetArchiverHandler<>(ts, transaction, meta, supers, value, components, otherTs).resolve());
+			vertexMap.put(ts, new SetArchiverHandler(ts, transaction, meta, supers, value, components, otherTs).resolve());
 			// log.info("load dependency : " + vertexMap.get(ts).info() + " " + ts + " " + vertexMap.get(ts).getTs() + " birthTs : " + vertexMap.get(ts).getLifeManager().getBirthTs());
 			assert getTransaction().isAlive(vertexMap.get(ts)) : vertexMap.get(ts).info();
 		}

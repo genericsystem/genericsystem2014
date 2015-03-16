@@ -21,8 +21,8 @@ public class Transaction extends org.genericsystem.kernel.Transaction {
 	}
 
 	@Override
-	protected Checker<Generic> buildChecker() {
-		return new Checker<Generic>(Transaction.this) {
+	protected Checker buildChecker() {
+		return new Checker(Transaction.this) {
 			@Override
 			public void checkAfterBuild(boolean isOnAdd, boolean isFlushTime, Generic vertex) throws RollbackException {
 				checkSystemConstraintsAfterBuild(isOnAdd, isFlushTime, vertex);// Check only system constraints on transactions
