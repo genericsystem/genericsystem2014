@@ -45,16 +45,6 @@ public class CacheElement extends AbstractCacheElement {
 	protected void unplug(Generic generic) {
 		if (!adds.remove(generic))
 			removes.add(generic);
-
-		// if (!adds.remove(generic)) {
-		// // removes.add(generic);
-		// if (generic instanceof LazyHandler) {
-		// // TODO : traiter execption si get() renvoi rien
-		// removes.add(((LazyHandler) generic).get());
-		// } else {
-		// removes.add(generic);
-		// }
-		// }
 	}
 
 	@Override

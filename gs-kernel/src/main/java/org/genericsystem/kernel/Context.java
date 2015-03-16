@@ -1,17 +1,17 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.Snapshot;
+import org.genericsystem.api.exception.UnreachableOverridesException;
 import org.genericsystem.defaults.DefaultContext;
-<<<<<<< HEAD
-=======
 import org.genericsystem.defaults.DefaultLifeManager;
 import org.genericsystem.kernel.Generic.GenericImpl;
->>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 import org.genericsystem.kernel.GenericHandler.AddHandler;
 import org.genericsystem.kernel.GenericHandler.SetHandler;
 import org.genericsystem.kernel.GenericHandler.UpdateHandler;
@@ -37,11 +37,6 @@ public abstract class Context implements DefaultContext<Generic> {
 		return new Checker(this);
 	}
 
-<<<<<<< HEAD
-	protected abstract Builder buildBuilder();
-
-=======
->>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 	protected Restructurator buildRestructurator() {
 		return new Restructurator(this);
 	}
@@ -65,11 +60,7 @@ public abstract class Context implements DefaultContext<Generic> {
 
 	@Override
 	public final Generic[] newTArray(int dim) {
-<<<<<<< HEAD
-		return builder.newTArray(dim);
-=======
 		return new Generic[dim];
->>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 	}
 
 	Generic[] rootComponents(int dim) {
@@ -78,9 +69,6 @@ public abstract class Context implements DefaultContext<Generic> {
 		return components;
 	}
 
-<<<<<<< HEAD
-	@SuppressWarnings("unchecked")
-=======
 	List<Generic> computeAndCheckOverridesAreReached(Generic adjustedMeta, List<Generic> overrides, Serializable value, List<Generic> components) {
 		List<Generic> supers = new ArrayList<>(new SupersComputer<>(adjustedMeta, overrides, value, components));
 		if (!ApiStatics.areOverridesReached(supers, overrides))
@@ -88,7 +76,6 @@ public abstract class Context implements DefaultContext<Generic> {
 		return supers;
 	}
 
->>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 	protected Generic getMeta(int dim) {
 		Generic adjustedMeta = ((Generic) root).adjustMeta(root.getValue(), rootComponents(dim));
 		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
@@ -106,10 +93,6 @@ public abstract class Context implements DefaultContext<Generic> {
 	@Override
 	public Generic setInstance(Generic meta, List<Generic> overrides, Serializable value, List<Generic> components) {
 		return new SetHandler(this, meta, overrides, value, components).resolve();
-<<<<<<< HEAD
-=======
-
->>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 	}
 
 	@Override
@@ -119,29 +102,17 @@ public abstract class Context implements DefaultContext<Generic> {
 
 	@Override
 	public void forceRemove(Generic generic) {
-<<<<<<< HEAD
-		getRestructurator().rebuildAll(null, null, builder.getContext().computeDependencies(generic));
-=======
 		getRestructurator().rebuildAll(null, null, computeDependencies(generic));
->>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 	}
 
 	@Override
 	public void remove(Generic generic) {
-<<<<<<< HEAD
-		getRestructurator().rebuildAll(null, null, builder.getContext().computeRemoveDependencies(generic));
-=======
 		getRestructurator().rebuildAll(null, null, computeRemoveDependencies(generic));
->>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 	}
 
 	@Override
 	public void conserveRemove(Generic generic) {
-<<<<<<< HEAD
-		getRestructurator().rebuildAll(generic, () -> generic, builder.getContext().computeDependencies(generic));
-=======
 		getRestructurator().rebuildAll(generic, () -> generic, computeDependencies(generic));
->>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 	}
 
 	protected abstract Generic plug(Generic generic);

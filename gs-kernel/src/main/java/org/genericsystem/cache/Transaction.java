@@ -20,15 +20,12 @@ public class Transaction extends org.genericsystem.kernel.Transaction {
 	}
 
 	@Override
-<<<<<<< HEAD
-=======
 	protected void unplug(Generic generic) {
 		generic.getLifeManager().kill(getTs());
 		getRoot().getGarbageCollector().add(generic);
 	}
 
 	@Override
->>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 	protected Checker buildChecker() {
 		return new Checker(Transaction.this) {
 			@Override

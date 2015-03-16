@@ -144,14 +144,6 @@ public class Cache extends Context {
 	}
 
 	@Override
-<<<<<<< HEAD
-	protected Builder buildBuilder() {
-		return new GenericBuilder(this);
-	}
-
-	@Override
-=======
->>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 	protected Generic plug(Generic generic) {
 		cacheElement.plug(generic);
 		getChecker().checkAfterBuild(true, false, generic);
@@ -177,11 +169,6 @@ public class Cache extends Context {
 	public int getCacheLevel() {
 		return cacheElement.getCacheLevel();
 	}
-
-	// @Override
-	// public boolean isAlive(Generic generic) {
-	// return generic instanceof LazyHandler ? ((LazyHandler) generic).get() != null : super.isAlive(generic);
-	// }
 
 	protected class TransactionElement extends AbstractCacheElement {
 
