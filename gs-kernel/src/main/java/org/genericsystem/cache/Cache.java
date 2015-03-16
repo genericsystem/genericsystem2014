@@ -2,6 +2,7 @@ package org.genericsystem.cache;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.CacheNoStartedException;
@@ -15,7 +16,7 @@ import org.genericsystem.kernel.Generic;
 import org.genericsystem.kernel.LifeManager;
 import org.genericsystem.kernel.Statics;
 
-public class Cache extends Context<Generic> {
+public class Cache extends Context {
 
 	protected Transaction transaction;
 	protected CacheElement cacheElement;
@@ -26,7 +27,8 @@ public class Cache extends Context<Generic> {
 	}
 
 	protected Cache(Transaction subContext) {
-		this(subContext, new ContextEventListener<Generic>() {});
+		this(subContext, new ContextEventListener<Generic>() {
+		});
 	}
 
 	protected Cache(Transaction subContext, ContextEventListener<Generic> listener) {
@@ -144,7 +146,7 @@ public class Cache extends Context<Generic> {
 	}
 
 	@Override
-	protected Builder<Generic> buildBuilder() {
+	protected Builder buildBuilder() {
 		return new GenericBuilder(this);
 	}
 
@@ -174,6 +176,11 @@ public class Cache extends Context<Generic> {
 	public int getCacheLevel() {
 		return cacheElement.getCacheLevel();
 	}
+
+	// @Override
+	// public boolean isAlive(Generic generic) {
+	// return generic instanceof LazyHandler ? ((LazyHandler) generic).get() != null : super.isAlive(generic);
+	// }
 
 	protected class TransactionElement extends AbstractCacheElement {
 
@@ -226,7 +233,7 @@ public class Cache extends Context<Generic> {
 
 		@Override
 		Snapshot<Generic> getDependencies(Generic vertex) {
-			return transaction.getDependencies(vertex);
+			return vertex instanceof LazyHandler ? () -> Stream.empty() : transaction.getDependencies(vertex);
 		}
 
 		// @Override
@@ -247,13 +254,17 @@ public class Cache extends Context<Generic> {
 
 	public static interface ContextEventListener<X> {
 
-		default void triggersMutationEvent(X oldDependency, X newDependency) {}
+		default void triggersMutationEvent(X oldDependency, X newDependency) {
+		}
 
-		default void triggersRefreshEvent() {}
+		default void triggersRefreshEvent() {
+		}
 
-		default void triggersClearEvent() {}
+		default void triggersClearEvent() {
+		}
 
-		default void triggersFlushEvent() {}
+		default void triggersFlushEvent() {
+		}
 	}
 
 }

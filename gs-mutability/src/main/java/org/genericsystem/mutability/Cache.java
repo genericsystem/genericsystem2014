@@ -13,9 +13,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
@@ -25,7 +27,7 @@ import org.genericsystem.kernel.annotations.InstanceClass;
 
 public class Cache implements DefaultContext<Generic>, ContextEventListener<org.genericsystem.kernel.Generic> {
 	private final Engine engine;
-	private final org.genericsystem.cache.Cache cache;
+	final org.genericsystem.cache.Cache cache;
 	private final Map<Generic, org.genericsystem.kernel.Generic> mutabilityMap = new IdentityHashMap<>();
 	private final Map<org.genericsystem.kernel.Generic, Set<Generic>> reverseMultiMap = new IdentityHashMap<>();
 
@@ -85,7 +87,7 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 	}
 
 	protected Generic wrap(org.genericsystem.kernel.Generic generic) {
-		return wrap(null, generic);
+		return generic != null ? wrap(generic.getRoot().findAnnotedClass(generic), generic) : null;
 	}
 
 	private void put(Generic mutable, org.genericsystem.kernel.Generic generic) {
@@ -272,11 +274,5 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 	public void conserveRemove(Generic generic) {
 		cache.conserveRemove(unwrap(generic));
 	}
-	
-	@Override
-	public Generic setMeta(int dim) {
-		return null;
-	}
-
 
 }

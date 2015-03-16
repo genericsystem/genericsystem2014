@@ -33,7 +33,7 @@ public class CacheElement extends AbstractCacheElement {
 		return adds.contains(generic) || (!removes.contains(generic) && subCache.isAlive(generic));
 	}
 
-	void checkConstraints(Checker<Generic> checker) throws RollbackException {
+	void checkConstraints(Checker checker) throws RollbackException {
 		adds.forEach(x -> checker.checkAfterBuild(true, true, x));
 		removes.forEach(x -> checker.checkAfterBuild(false, true, x));
 	}
@@ -46,6 +46,16 @@ public class CacheElement extends AbstractCacheElement {
 	protected void unplug(Generic generic) {
 		if (!adds.remove(generic))
 			removes.add(generic);
+
+		// if (!adds.remove(generic)) {
+		// // removes.add(generic);
+		// if (generic instanceof LazyHandler) {
+		// // TODO : traiter execption si get() renvoi rien
+		// removes.add(((LazyHandler) generic).get());
+		// } else {
+		// removes.add(generic);
+		// }
+		// }
 	}
 
 	@Override
@@ -67,6 +77,7 @@ public class CacheElement extends AbstractCacheElement {
 	}
 
 	void apply() throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
+		adds.removeIf(generic -> generic instanceof LazyHandler);
 		getSubCache().apply(removes, adds);
 	}
 

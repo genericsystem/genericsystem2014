@@ -3,6 +3,7 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+
 import org.genericsystem.defaults.DefaultVertex;
 
 public interface Generic extends DefaultVertex<Generic>, Comparable<Generic> {
@@ -15,7 +16,7 @@ public interface Generic extends DefaultVertex<Generic>, Comparable<Generic> {
 	}
 
 	@Override
-	default Context<Generic> getCurrentCache() {
+	default Context getCurrentCache() {
 		return getRoot().getCurrentCache();
 	}
 
@@ -26,6 +27,8 @@ public interface Generic extends DefaultVertex<Generic>, Comparable<Generic> {
 
 	@Override
 	default int compareTo(Generic vertex) {
+		if (equals(vertex))
+			return 0;
 		long birthTs = getLifeManager().getBirthTs();
 		long compareBirthTs = vertex.getLifeManager().getBirthTs();
 		return birthTs == compareBirthTs ? Long.compare(getTs(), vertex.getTs()) : Long.compare(birthTs, compareBirthTs);
