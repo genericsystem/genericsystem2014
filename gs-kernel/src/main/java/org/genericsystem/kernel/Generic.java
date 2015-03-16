@@ -11,18 +11,13 @@ public interface Generic extends DefaultVertex<Generic>, Comparable<Generic> {
 	@Override
 	Root getRoot();
 
-	default LifeManager getLifeManager() {
-		return getRoot().getLifeManager(this);
-	}
-
 	@Override
 	default Context getCurrentCache() {
 		return getRoot().getCurrentCache();
 	}
 
-	@Override
-	default boolean isSystem() {
-		return getLifeManager().isSystem();
+	default LifeManager getLifeManager() {
+		return getRoot().getLifeManager(this);
 	}
 
 	@Override
@@ -32,6 +27,11 @@ public interface Generic extends DefaultVertex<Generic>, Comparable<Generic> {
 		long birthTs = getLifeManager().getBirthTs();
 		long compareBirthTs = vertex.getLifeManager().getBirthTs();
 		return birthTs == compareBirthTs ? Long.compare(getTs(), vertex.getTs()) : Long.compare(birthTs, compareBirthTs);
+	}
+
+	@Override
+	default boolean isSystem() {
+		return getLifeManager().isSystem();
 	}
 
 	default long getTs() {
@@ -44,8 +44,8 @@ public interface Generic extends DefaultVertex<Generic>, Comparable<Generic> {
 	}
 
 	@Override
-	default List<Generic> getComponents() {
-		return getRoot().getComponents(this);
+	default List<Generic> getSupers() {
+		return getRoot().getSupers(this);
 	}
 
 	@Override
@@ -54,8 +54,8 @@ public interface Generic extends DefaultVertex<Generic>, Comparable<Generic> {
 	}
 
 	@Override
-	default List<Generic> getSupers() {
-		return getRoot().getSupers(this);
+	default List<Generic> getComponents() {
+		return getRoot().getComponents(this);
 	}
 
 	default Generic getNextDependency(Generic ancestor) {

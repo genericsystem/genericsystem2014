@@ -8,7 +8,6 @@ import org.genericsystem.api.exception.OptimisticLockConstraintViolationExceptio
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.Checker;
 import org.genericsystem.kernel.Generic;
-import org.genericsystem.kernel.PseudoConcurrentCollection;
 
 public class CacheElement extends AbstractCacheElement {
 

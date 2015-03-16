@@ -7,8 +7,12 @@ import java.util.Objects;
 
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.exception.ExistsException;
+<<<<<<< HEAD
 import org.genericsystem.api.exception.UnreachableOverridesException;
+=======
+>>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 
+<<<<<<< HEAD
 public abstract class GenericHandler {
 	protected final Context context;
 	final Generic meta;
@@ -18,12 +22,32 @@ public abstract class GenericHandler {
 	protected final Serializable value;
 	protected final List<Generic> components;
 	protected boolean resolved = false;
+=======
+abstract class GenericHandler {
+	final Context context;
+	final Generic meta;
+	Generic adjustedMeta;
+	final List<Generic> overrides;
+	List<Generic> supers;
+	final Serializable value;
+	final List<Generic> components;
+	Generic gettable;
+>>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 
+<<<<<<< HEAD
 	protected GenericHandler(Context context, Generic meta, List<Generic> overrides, Serializable value, List<Generic> components) {
+=======
+	GenericHandler(Context context, Generic meta, List<Generic> overrides, Serializable value, List<Generic> components) {
+>>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 		assert overrides != null;
 		this.context = context;
+<<<<<<< HEAD
 		this.meta = switchGeneric(meta != null ? meta : (Generic) context.getRoot());
 		this.overrides = switchGeneric(overrides);
+=======
+		this.meta = meta != null ? meta : (Generic) context.getRoot();
+		this.overrides = overrides;
+>>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 		this.value = value;
 		this.components = switchGeneric(components);
 		check();
@@ -62,17 +86,27 @@ public abstract class GenericHandler {
 		supers = computeAndCheckOverridesAreReached();
 	}
 
+<<<<<<< HEAD
 	List<Generic> computeAndCheckOverridesAreReached() {
 		List<Generic> supers = new ArrayList<>(new SupersComputer<>(adjustedMeta, overrides, value, components));
 		if (!ApiStatics.areOverridesReached(supers, overrides))
 			context.discardWithException(new UnreachableOverridesException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
 		return supers;
+=======
+	Generic get() {
+		if (gettable == null)
+			gettable = adjustedMeta.getDirectInstance(supers, value, components);
+		return gettable;
+>>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 	}
 
+<<<<<<< HEAD
 	protected Generic get() {
 		return adjustedMeta.getDirectInstance(supers, value, components);
 	}
 
+=======
+>>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 	Generic getEquiv() {
 		return adjustedMeta.getDirectEquivInstance(value, components);
 	}
@@ -83,10 +117,18 @@ public abstract class GenericHandler {
 	}
 
 	Generic build() {
+<<<<<<< HEAD
 		return context.getBuilder().buildAndPlug(null, isMeta() ? null : adjustedMeta, supers, value, components);
+=======
+		return gettable = context.getBuilder().buildAndPlug(null, isMeta() ? null : adjustedMeta, supers, value, components);
+>>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 	}
 
+<<<<<<< HEAD
 	protected Generic add() {
+=======
+	Generic add() {
+>>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 		return context.getRestructurator().rebuildAll(null, () -> build(), context.computePotentialDependencies(adjustedMeta, supers, value, components));
 	}
 
@@ -100,10 +142,17 @@ public abstract class GenericHandler {
 		return context.getRestructurator().rebuildAll(update, () -> getOrBuild(), context.computeDependencies(update));
 	}
 
+<<<<<<< HEAD
 	protected abstract Generic resolve();
+=======
+	static class GetHandler extends GenericHandler {
+>>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 
+<<<<<<< HEAD
 	static class GetHandler extends GenericHandler {
 
+=======
+>>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 		GetHandler(Context context, Generic gettable) {
 			super(context, gettable.getMeta(), gettable.getSupers(), gettable.getValue(), gettable.getComponents());
 			this.adjustedMeta = gettable.getMeta();
@@ -114,8 +163,12 @@ public abstract class GenericHandler {
 			super(context, meta, overrides, value, components);
 		}
 
+<<<<<<< HEAD
 		@Override
 		protected Generic resolve() {
+=======
+		Generic resolve() {
+>>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 			return get();
 		}
 	}
@@ -126,8 +179,12 @@ public abstract class GenericHandler {
 			super(context, meta, overrides, value, components);
 		}
 
+<<<<<<< HEAD
 		@Override
 		protected Generic resolve() {
+=======
+		Generic resolve() {
+>>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 			Generic generic = get();
 			if (generic != null)
 				context.discardWithException(new ExistsException("An equivalent instance already exists : " + generic.info()));
@@ -141,6 +198,7 @@ public abstract class GenericHandler {
 			super(context, meta, overrides, value, components);
 		}
 
+<<<<<<< HEAD
 		@Override
 		protected Generic resolve() {
 			Generic generic = get();
@@ -148,6 +206,10 @@ public abstract class GenericHandler {
 				return generic;
 
 			resolved = true;
+=======
+		Generic resolve() {
+			Generic generic = get();
+>>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 			if (generic != null)
 				return generic;
 			generic = getEquiv();
@@ -164,11 +226,15 @@ public abstract class GenericHandler {
 			this.update = update;
 		}
 
+<<<<<<< HEAD
 		@Override
 		protected Generic resolve() {
 			if (resolved)
 				return update;
 			resolved = true;
+=======
+		Generic resolve() {
+>>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 			return update(update);
 		}
 	}
@@ -179,8 +245,12 @@ public abstract class GenericHandler {
 			super(context, meta, overrides, value, components);
 		}
 
+<<<<<<< HEAD
 		@Override
 		protected final Generic resolve() {
+=======
+		final Generic resolve() {
+>>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 			return getOrBuild();
 		}
 	}
@@ -196,7 +266,11 @@ public abstract class GenericHandler {
 
 		@Override
 		Generic build() {
+<<<<<<< HEAD
 			return context.getBuilder().buildAndPlug(clazz, isMeta() ? null : adjustedMeta, supers, value, components);
+=======
+			return gettable = context.getBuilder().buildAndPlug(clazz, isMeta() ? null : adjustedMeta, supers, value, components);
+>>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 		}
 	}
 
@@ -213,7 +287,11 @@ public abstract class GenericHandler {
 
 		@Override
 		Generic build() {
+<<<<<<< HEAD
 			return context.plug(context.getBuilder().build(ts, null, isMeta() ? null : adjustedMeta, supers, value, components, otherGenerics));
+=======
+			return gettable = context.plug(context.getBuilder().build(ts, null, isMeta() ? null : adjustedMeta, supers, value, components, otherGenerics));
+>>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 		}
 	}
 }

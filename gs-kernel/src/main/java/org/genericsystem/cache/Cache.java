@@ -9,8 +9,6 @@ import org.genericsystem.api.exception.CacheNoStartedException;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
-import org.genericsystem.kernel.Builder;
-import org.genericsystem.kernel.Builder.GenericBuilder;
 import org.genericsystem.kernel.Context;
 import org.genericsystem.kernel.Generic;
 import org.genericsystem.kernel.LifeManager;
@@ -146,11 +144,14 @@ public class Cache extends Context {
 	}
 
 	@Override
+<<<<<<< HEAD
 	protected Builder buildBuilder() {
 		return new GenericBuilder(this);
 	}
 
 	@Override
+=======
+>>>>>>> branch 'master' of https://github.com/genericsystem/genericsystem2014.git
 	protected Generic plug(Generic generic) {
 		cacheElement.plug(generic);
 		getChecker().checkAfterBuild(true, false, generic);
@@ -235,21 +236,6 @@ public class Cache extends Context {
 		Snapshot<Generic> getDependencies(Generic vertex) {
 			return vertex instanceof LazyHandler ? () -> Stream.empty() : transaction.getDependencies(vertex);
 		}
-
-		// @Override
-		// Snapshot<T> getInheritings(T generic) {
-		// return transaction.getInheritings(generic);
-		// }
-		//
-		// @Override
-		// Snapshot<T> getInstances(T generic) {
-		// return transaction.getInstances(generic);
-		// }
-		//
-		// @Override
-		// Snapshot<T> getComposites(T generic) {
-		// return transaction.getComposites(generic);
-		// }
 	}
 
 	public static interface ContextEventListener<X> {

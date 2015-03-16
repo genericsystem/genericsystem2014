@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+
 import org.genericsystem.defaults.DefaultLifeManager;
 import org.genericsystem.defaults.DefaultRoot;
 import org.genericsystem.kernel.Config.MetaAttribute;
@@ -168,7 +169,7 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 		return getVertex(generic).getComponents();
 	}
 
-	Dependencies<Generic> getDependencies(Generic generic) {
+	Dependencies getDependencies(Generic generic) {
 		return getVertex(generic).getDependencies();
 	}
 
