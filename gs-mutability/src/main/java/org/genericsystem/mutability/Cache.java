@@ -102,8 +102,7 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 		Set<Generic> resultSet = reverseMultiMap.get(oldDependency);
 		if (resultSet != null) {
 			for (Generic mutable : resultSet) {
-				if (!revertMutations.peek().containsKey(mutable))
-					revertMutations.peek().put(mutable, oldDependency);
+				revertMutations.peek().putIfAbsent(mutable, oldDependency);
 				mutabilityMap.put(mutable, newDependency);
 			}
 			reverseMultiMap.remove(oldDependency);
@@ -126,23 +125,22 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 
 	@Override
 	public void triggersClearEvent() {
-		for (Entry<Generic, org.genericsystem.kernel.Generic> entry : revertMutations.peek().entrySet()) {
-			org.genericsystem.kernel.Generic newDependency = mutabilityMap.get(entry.getKey());
-			mutabilityMap.put(entry.getKey(), entry.getValue());
+		revertMutations.peek().forEach((key, value) -> {
+			org.genericsystem.kernel.Generic newDependency = mutabilityMap.get(key);
+			mutabilityMap.put(key, value);
 			if (newDependency != null) {
 				Set<Generic> set = reverseMultiMap.get(newDependency);
-				set.remove(entry.getKey());
+				set.remove(key);
 				if (set.isEmpty())
 					reverseMultiMap.remove(newDependency);
-				set = reverseMultiMap.get(entry.getValue());
+				set = reverseMultiMap.get(value);
 				if (set == null)
-					reverseMultiMap.put(entry.getValue(), set = Collections.newSetFromMap(new IdentityHashMap<Generic, Boolean>()));
-				set.add(entry.getKey());
+					reverseMultiMap.put(value, set = Collections.newSetFromMap(new IdentityHashMap<Generic, Boolean>()));
+				set.add(key);
 			}
-		}
+		});
 		revertMutations.pop();
 		revertMutations.push(new IdentityHashMap<>());
-
 	}
 
 	protected List<Generic> wrap(List<org.genericsystem.kernel.Generic> listT) {
