@@ -27,6 +27,7 @@ public abstract class GenericHandler {
 		this.value = value;
 		this.components = switchGeneric(components);
 		check();
+
 		adjust();
 	}
 
