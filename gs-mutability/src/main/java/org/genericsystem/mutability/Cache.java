@@ -2,10 +2,8 @@ package org.genericsystem.mutability;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
-import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Deque;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -31,13 +29,13 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 	private final Map<Generic, org.genericsystem.kernel.Generic> mutabilityMap = new IdentityHashMap<>();
 	private final Map<org.genericsystem.kernel.Generic, Set<Generic>> reverseMultiMap = new IdentityHashMap<>();
 
-	private final Deque<Map<Generic, org.genericsystem.kernel.Generic>> revertMutations = new ArrayDeque<>();
+	private CacheElement cacheElement;
 
 	public Cache(Engine engine, org.genericsystem.cache.Engine cacheEngine) {
 		this.engine = engine;
 		put(engine, cacheEngine);
 		this.cache = cacheEngine.newCache(this);
-		revertMutations.push(new IdentityHashMap<>());
+		cacheElement = new CacheElement();
 	}
 
 	@Override
@@ -102,7 +100,7 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 		Set<Generic> resultSet = reverseMultiMap.get(oldDependency);
 		if (resultSet != null) {
 			for (Generic mutable : resultSet) {
-				revertMutations.peek().putIfAbsent(mutable, oldDependency);
+				cacheElement.putIfAbsent(mutable, oldDependency);
 				mutabilityMap.put(mutable, newDependency);
 			}
 			reverseMultiMap.remove(oldDependency);
@@ -125,7 +123,7 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 
 	@Override
 	public void triggersClearEvent() {
-		revertMutations.peek().forEach((key, value) -> {
+		cacheElement.forEach((key, value) -> {
 			org.genericsystem.kernel.Generic newDependency = mutabilityMap.get(key);
 			mutabilityMap.put(key, value);
 			if (newDependency != null) {
@@ -139,8 +137,7 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 				set.add(key);
 			}
 		});
-		revertMutations.pop();
-		revertMutations.push(new IdentityHashMap<>());
+		cacheElement = new CacheElement(cacheElement == null ? null : cacheElement.getSubCache());
 	}
 
 	protected List<Generic> wrap(List<org.genericsystem.kernel.Generic> listT) {
@@ -161,7 +158,7 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 
 	@Override
 	public void triggersFlushEvent() {
-		revertMutations.push(new IdentityHashMap<>());
+		cacheElement = new CacheElement(cacheElement);
 	}
 
 	@Override
@@ -210,12 +207,12 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 
 	public void mount() {
 		cache.mount();
-		revertMutations.push(new IdentityHashMap<>());
+		cacheElement = new CacheElement(cacheElement);
 	}
 
 	public void unmount() {
 		cache.unmount();// triggersClearEvent
-		revertMutations.pop();
+		cacheElement = new CacheElement(cacheElement == null ? null : cacheElement);
 	}
 
 	public int getCacheLevel() {
