@@ -7,7 +7,7 @@ import org.genericsystem.kernel.Generic;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
 
-public class Engine extends Root implements DefaultEngine {
+public class Engine extends Root {
 
 	public Engine(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
@@ -46,8 +46,7 @@ public class Engine extends Root implements DefaultEngine {
 		getCurrentCache().pickNewTs();
 	}
 
-	@Override
-	public GarbageCollector getGarbageCollector() {
+	GarbageCollector getGarbageCollector() {
 		return garbageCollector;
 	}
 
@@ -55,16 +54,14 @@ public class Engine extends Root implements DefaultEngine {
 		return new Cache(new Transaction(this), listener);
 	}
 
-	@Override
-	public Cache start(Cache cache) {
+	Cache start(Cache cache) {
 		if (!equals(cache.getRoot()))
 			throw new IllegalStateException();
 		cacheLocal.set(cache);
 		return cache;
 	}
 
-	@Override
-	public void stop(Cache cache) {
+	void stop(Cache cache) {
 		garbageCollector.stopsScheduler();
 		assert cacheLocal.get() == cache;
 		cacheLocal.set(null);

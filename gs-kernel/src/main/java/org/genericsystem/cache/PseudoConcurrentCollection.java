@@ -1,10 +1,11 @@
-package org.genericsystem.kernel;
+package org.genericsystem.cache;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
+
 import org.genericsystem.api.core.IteratorSnapshot;
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 

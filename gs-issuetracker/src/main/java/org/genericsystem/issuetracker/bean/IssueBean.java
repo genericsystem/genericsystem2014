@@ -51,19 +51,18 @@ public class IssueBean {
 	@Provide
 	private Statut statut;
 
+	@Inject
+	private FilterBean filterBean;
+
 	private String newIssueDescription;
 	private String searchedStatut;
 
-	public List<Generic> getIssues() {
-		return issue.getAllInstances().get().collect(Collectors.toList());
-	}
-
 	public List<Generic> getIssuesByStatut() {
-		return issue.getAllInstances().get().filter(generic -> generic.getLinks(issueStatut).get().anyMatch(link -> link.getTargetComponent().getValue().equals(this.searchedStatut))).collect(Collectors.toList());
+		return (searchedStatut != null) ? issue.getAllInstances().get().filter(filterBean.getPredicate(issueStatut, searchedStatut)).collect(Collectors.toList()) : issue.getAllInstances().get().collect(Collectors.toList());
 	}
 
 	public String addIssue() {
-		issue.addInstance().setHolder(description, newIssueDescription);
+		issue.addGenerateInstance().setHolder(description, newIssueDescription);
 		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Priority is required."));
 		return "#";
 	}

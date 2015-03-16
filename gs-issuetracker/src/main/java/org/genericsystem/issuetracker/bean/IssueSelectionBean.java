@@ -29,7 +29,11 @@ public class IssueSelectionBean implements Serializable {
 		this.searchedIssue = issue.setInstance(searchedIssue);
 	}
 
-	public String setIssue(Generic searchedIssue) {
+	public Generic getSelectedIssue() {
+		return searchedIssue;
+	}
+
+	public String setSelectedIssue(Generic searchedIssue) {
 		this.searchedIssue = searchedIssue;
 		return "#";
 	}

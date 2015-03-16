@@ -1,13 +1,13 @@
 package org.genericsystem.cache;
 
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.ConcurrencyControlException;
 import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.kernel.Checker;
 import org.genericsystem.kernel.Generic;
-import org.genericsystem.kernel.PseudoConcurrentCollection;
 
 public class CacheElement extends AbstractCacheElement {
 

@@ -3,6 +3,7 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+
 import org.genericsystem.api.exception.ExistsException;
 
 abstract class GenericHandler {
@@ -15,7 +16,6 @@ abstract class GenericHandler {
 	final List<Generic> components;
 	Generic gettable;
 
-	@SuppressWarnings("unchecked")
 	GenericHandler(Context context, Generic meta, List<Generic> overrides, Serializable value, List<Generic> components) {
 		assert overrides != null;
 		this.context = context;

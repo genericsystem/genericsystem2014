@@ -10,13 +10,13 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.genericsystem.cdi.Engine;
+import org.genericsystem.issuetracker.generalization.ManyToOne;
 import org.genericsystem.issuetracker.model.Priority;
 import org.genericsystem.issuetracker.qualifier.Provide;
 
 @Named
 @SessionScoped
-public class PriorityBean implements Serializable {
+public class PriorityBean extends ManyToOne implements Serializable {
 
 	private static final long serialVersionUID = 3628359912273571503L;
 
@@ -25,15 +25,13 @@ public class PriorityBean implements Serializable {
 	private transient Priority priority;
 	private transient List<String> priorities;
 
-	@Inject
-	private transient Engine engine;
-
+	@Override
 	@PostConstruct
-	private void initPriorities() {
-		priority = engine.find(Priority.class);
-		priorities = priority.getAllInstances().get().map(generic -> Objects.toString(generic.getValue())).collect(Collectors.toList());
+	protected void initPriorities() {
+		priorities = priority.getInstances().get().map(generic -> Objects.toString(generic.getValue())).collect(Collectors.toList());
 	}
 
+	@Override
 	public List<String> getPriorities() {
 		return priorities;
 	}

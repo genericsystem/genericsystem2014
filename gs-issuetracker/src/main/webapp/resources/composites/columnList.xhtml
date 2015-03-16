@@ -13,7 +13,7 @@
 	</composite:interface>
 	<composite:implementation>
 			
-			<h:selectOneMenu value="#{cc.attrs.RenderedValue}">
+			<h:selectOneMenu value="#{cc.attrs.RenderedValue}" rendered="#{cc.attrs.ListOfObjects != null}">
 				<f:selectItems value="#{cc.attrs.ListOfObjects}" var="object"
 					itemLabel="#{object}" itemValue="#{object}">
 				</f:selectItems>

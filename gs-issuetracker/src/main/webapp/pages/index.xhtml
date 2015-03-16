@@ -12,65 +12,28 @@
 <h:body>
 	<h:messages id="message" />
 	<h:form id="form">
-		<h:dataTable value="#{issueBean.issues}" var="issue">
-			<h:column>
-				<f:facet name="header">
-					<h:outputLabel value="Issue" />
-				</f:facet>
-				<h:commandLink value="#{issue.getValue()}"
-					action="#{issueSelectionBean.setIssue(issue)}">
-					<f:ajax execute="@this" render="@form" />
-				</h:commandLink>
-			</h:column>
-			<h:column>
-				<f:facet name="header">
-					<h:outputLabel value="Description" />
-				</f:facet>
-				<h:inputText size="10"
-					value="#{issueBean.getDescription(issue).value}">
-					<f:ajax event="blur" execute="@this" render="@this" />
-				</h:inputText>
-			</h:column>
-			<h:column>
-				<f:facet name="header">
-					<h:outputLabel value="Priority" />
-				</f:facet>
-				<composites:columnList ListOfObjects="#{priorityBean.priorities}"
-					RenderedValue="#{issueBean.getPriority(issue).value}"
-					Render="@form message" />
-			</h:column>
-			<h:column>
-				<f:facet name="header">
-					<h:outputLabel value="Statut" />
-				</f:facet>
-				<composites:columnList ListOfObjects="#{statutBean.statuts}"
-					RenderedValue="#{issueBean.getStatut(issue).value}"
-					Render="@form message" />
+		<composites:columnList ListOfObjects="#{statutBean.statuts}"
+			RenderedValue="#{issueBean.searchedStatut}" Render="@form message" />
 
-			</h:column>
-			<h:column>
-				<composites:compositeTextArea
-					ObjectToAdd="#{commentBean.addComment(issue).value}"
-					NameOfObject="Comments" Render="@form message" />
-			</h:column>
-			<h:column>
-				<composites:deleteButton Action="#{issueBean.deleteIssue(issue)}" />
+		<composites:DatatableGeneric
+			ListOfObjects="#{issueBean.issuesByStatut}" 
+			Render="@form message"
+			Select="#{issueSelectionBean.setSelectedIssue(object)}"
+			ObjectValue="#{object.getValue()}" 
+			Header="Issue"
+			HeaderOfAttribute="Description"
+			ValueOfAttribute="#{issueBean.getDescription(object).value}"
+			HeaderRelation1="Priority"
+			ListOfRelation1="#{priorityBean.priorities}"
+			RenderedValueRelation1="#{issueBean.getPriority(object).value}"
+			HeaderRelation2="Statut" 
+			ListOfRelation2="#{statutBean.statuts}"
+			RenderedValueRelation2="#{issueBean.getStatut(object).value}"
+			DeleteObject="#{issueBean.deleteIssue(object)}" 
+			Footer="true" />
 
-			</h:column>
-			<f:facet name="footer">
-				<h:panelGroup id="addIssue" layout="block">
-					<h:inputText id="coucou" size="10"
-						value="#{issueBean.newIssueDescription}" />
-
-					<h:commandButton id="addButton" value="Add"
-						action="#{issueBean.addIssue}">
-						<f:ajax execute="addIssue" render="@form message" />
-					</h:commandButton>
-
-				</h:panelGroup>
-			</f:facet>
-		</h:dataTable>
-		<h:commandButton id="save" value="Save" action="#{issueBean.flush}">
+		<h:commandButton id="save" 
+			value="Save" action="#{issueBean.flush}">
 			<f:ajax execute="@this" render="@form message" />
 		</h:commandButton>
 		<h:commandButton id="cancel" value="Cancel"
@@ -78,42 +41,38 @@
 			<f:ajax execute="@this" render="@form message" />
 		</h:commandButton>
 
-		<composites:columnList
-				ListOfObjects="#{statutBean.statuts}"
-				RenderedValue="#{issueBean.searchedStatut}"
-				Render="@form message" />
-		<h:dataTable value="#{issueBean.issuesByStatut}" var="issue"
-			rendered="#{issueBean.issuesByStatut.size() != 0}">
-			<h:column>
-				<f:facet name="header">
-					<h:outputLabel value="Issue" />
-				</f:facet>
-				<h:outputText value="#{issue.getValue()}" />
-			</h:column>
-			<h:column>
-				<f:facet name="header">
-					<h:outputLabel value="Description" />
-				</f:facet>
-				<h:inputText size="10"
-					value="#{issueBean.getDescription(issue).value}">
-					<f:ajax event="blur" execute="@this" render="@this" />
-				</h:inputText>
-			</h:column>
-			<h:column>
-				<f:facet name="header">
-					<h:outputLabel value="Priority" />
-				</f:facet>
-				<composites:columnList ListOfObjects="#{priorityBean.priorities}"
-					RenderedValue="#{issueBean.getPriority(issue).value}"
-					Render="@form message" />
-			</h:column>
-		</h:dataTable>
-
 		<h:outputLabel value="Selected issue is : " />
 		<h:outputLabel value="#{issueSelectionBean.searchedIssue}" />
-		<composites:compositeDatatable ListOfObjects="#{commentBean.comments}"
-			NameOfObject="Comments"
-			DeleteObject="#{commentBean.deleteComment(object)}" />
+		
+		<h:panelGroup layout="block" rendered="#{issueSelectionBean.searchedIssue}">
+
+		<composites:UpdateGeneric
+			AttributeToUpdate="#{issueBean.getDescription(issueSelectionBean.selectedIssue).value}"
+			ListOfObjectsRelation1="#{priorityBean.priorities}"
+			RenderedValueRelation1="#{issueBean.getPriority(issueSelectionBean.selectedIssue).value}"
+			ListOfObjectsRelation2="#{statutBean.statuts}"
+			RenderedValueRelation2="#{issueBean.getStatut(issueSelectionBean.selectedIssue).value}"
+			Render="@form message"/>
+			
+		</h:panelGroup>
+
+		<composites:DatatableGeneric 
+			ListOfObjects="#{commentBean.comments}"
+			Render="@form message"
+			Select="#{commentSelectionBean.setSelectedComment(object)}"
+			ObjectValue="#{object.getTargetComponent().getValue()}"
+			Header="Comment"
+			DeleteObject="#{commentBean.deleteComment(object)}"
+			ValueOfAttribute="#{commentBean.addComment(object).value}" />
+
+		<composites:compositeTextArea
+			ObjectToAdd="#{commentBean.addComment(issueSelectionBean.selectedIssue).value}"
+			Rendered="#{issueSelectionBean.selectedIssue != null}"
+			Render="@form message" />
+			
+		<h:outputLabel value="Selected comment is : " />
+		<h:outputLabel value="#{commentSelectionBean.searchedComment}" />
+
 	</h:form>
 </h:body>
 
