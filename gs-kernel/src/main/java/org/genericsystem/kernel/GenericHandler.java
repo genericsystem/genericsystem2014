@@ -7,7 +7,6 @@ import java.util.Objects;
 
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.exception.ExistsException;
-
 import org.genericsystem.api.exception.UnreachableOverridesException;
 
 public abstract class GenericHandler {
@@ -68,6 +67,7 @@ public abstract class GenericHandler {
 		if (!ApiStatics.areOverridesReached(supers, overrides))
 			context.discardWithException(new UnreachableOverridesException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
 		return supers;
+	}
 
 	protected Generic get() {
 		return adjustedMeta.getDirectInstance(supers, value, components);
