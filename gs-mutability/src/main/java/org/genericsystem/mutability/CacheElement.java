@@ -15,7 +15,6 @@ public class CacheElement {
 
 	public CacheElement(CacheElement subCache) {
 		this.subCache = subCache;
-
 	}
 
 	public CacheElement getSubCache() {
