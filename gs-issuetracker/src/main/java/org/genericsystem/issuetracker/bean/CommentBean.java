@@ -45,8 +45,11 @@ public class CommentBean {
 
 			@Override
 			public void setValue(String value) {
-				instance.setLink(issueComment, "link", comment.setInstance(value));
-				selectedComment.getTargetComponent().updateValue(value);
+				if (instance.setLink(issueComment, "link", comment.setInstance(value)) == null)
+					instance.setLink(issueComment, "link", comment.setInstance(value));
+				else if (selectedComment != null)
+					selectedComment.getTargetComponent().updateValue(value);
+
 			}
 
 			@Override

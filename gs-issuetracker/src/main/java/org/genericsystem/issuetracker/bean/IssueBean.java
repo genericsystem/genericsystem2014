@@ -13,10 +13,7 @@ import javax.inject.Named;
 import org.genericsystem.cdi.Engine;
 import org.genericsystem.issuetracker.model.Description;
 import org.genericsystem.issuetracker.model.Issue;
-import org.genericsystem.issuetracker.model.IssuePriority;
 import org.genericsystem.issuetracker.model.IssueStatut;
-import org.genericsystem.issuetracker.model.Priority;
-import org.genericsystem.issuetracker.model.Statut;
 import org.genericsystem.issuetracker.qualifier.Provide;
 import org.genericsystem.mutability.Generic;
 
@@ -37,24 +34,10 @@ public class IssueBean {
 
 	@Inject
 	@Provide
-	private IssuePriority issuePriority;
-
-	@Inject
-	@Provide
-	private Priority priority;
-
-	@Inject
-	@Provide
 	private IssueStatut issueStatut;
 
 	@Inject
-	@Provide
-	private Statut statut;
-
-	@Inject
 	private FilterBean filterBean;
-
-	// private String newIssueDescription;
 
 	public List<Generic> getIssuesByStatut() {
 		return (filterBean.getPredicate(issueStatut) != null) ? issue.getAllInstances().get().filter(filterBean.getPredicate(issueStatut)).collect(Collectors.toList()) : issue.getAllInstances().get().collect(Collectors.toList());
@@ -96,35 +79,18 @@ public class IssueBean {
 		};
 	}
 
-	public ElStringWrapper getPriority(Generic instance) {
+	public ElStringWrapper getLink(Generic instance, Generic target) {
 		return new ElStringWrapper() {
 
 			@Override
 			public void setValue(String value) {
-				Generic searchedPriority = priority.getInstance(value);
-				instance.setLink(issuePriority, "linkStatut", searchedPriority);
+				Generic searchedPriority = target.getTargetComponent().getInstance(value);
+				instance.setLink(target, "link", searchedPriority);
 			}
 
 			@Override
 			public String getValue() {
-				Generic link = instance.getLinks(issuePriority).first();
-				return (link != null) ? (String) link.getTargetComponent().getValue() : null;
-			}
-		};
-	}
-
-	public ElStringWrapper getStatut(Generic instance) {
-		return new ElStringWrapper() {
-
-			@Override
-			public void setValue(String value) {
-				Generic searchedStatut = statut.getInstance(value);
-				instance.setLink(issueStatut, "linkStatut", searchedStatut);
-			}
-
-			@Override
-			public String getValue() {
-				Generic link = instance.getLinks(issueStatut).first();
+				Generic link = instance.getLinks(target).first();
 				return (link != null) ? (String) link.getTargetComponent().getValue() : null;
 			}
 		};
@@ -135,13 +101,5 @@ public class IssueBean {
 
 		public void setValue(String value);
 	}
-
-	// public String getNewIssueDescription() {
-	// return newIssueDescription;
-	// }
-	//
-	// public void setNewIssueDescription(String newIssueDescription) {
-	// this.newIssueDescription = newIssueDescription;
-	// }
 
 }

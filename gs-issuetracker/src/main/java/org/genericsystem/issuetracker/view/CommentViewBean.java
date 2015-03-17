@@ -26,8 +26,6 @@ public class CommentViewBean {
 	private CommentBean commentBean;
 
 	private Generic selectedComment;
-	private Generic selectedIssue;
-	private String newComment;
 
 	public List<Generic> getList() {
 		Generic instance = issueSelectionBean.getSelectedIssue();
@@ -40,14 +38,6 @@ public class CommentViewBean {
 
 	public String delete(Generic comment) {
 		return commentBean.deleteComment(comment);
-	}
-
-	public String getNewComment() {
-		return newComment;
-	}
-
-	public void setNewComment(String newComment) {
-		this.newComment = newComment;
 	}
 
 	public Generic getSelected() {
@@ -69,12 +59,10 @@ public class CommentViewBean {
 	}
 
 	public Generic getSelectedIssue() {
-		selectedIssue = issueSelectionBean.getSelectedIssue();
-		return selectedIssue;
+		return issueSelectionBean.getSelectedIssue();
 	}
 
 	public void setSelectedIssue(Generic selectedIssue) {
-		this.selectedIssue = issueSelectionBean.setSelectedIssue(selectedIssue);
+		issueSelectionBean.setSelectedIssue(selectedIssue);
 	}
-
 }

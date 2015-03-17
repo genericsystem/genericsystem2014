@@ -11,6 +11,9 @@ import org.genericsystem.issuetracker.bean.IssueBean.ElStringWrapper;
 import org.genericsystem.issuetracker.bean.IssueSelectionBean;
 import org.genericsystem.issuetracker.bean.PriorityBean;
 import org.genericsystem.issuetracker.bean.StatutBean;
+import org.genericsystem.issuetracker.model.IssuePriority;
+import org.genericsystem.issuetracker.model.IssueStatut;
+import org.genericsystem.issuetracker.qualifier.Provide;
 import org.genericsystem.mutability.Generic;
 
 @Named
@@ -29,11 +32,15 @@ public class IssueViewBean {
 	@Inject
 	private StatutBean statutBean;
 
-	private List<Generic> issues;
-	private Generic selectedIssue;
-	private List<String> priorities;
-	private List<String> statuts;
 	private String newIssueDescription;
+
+	@Inject
+	@Provide
+	private IssuePriority issuePriority;
+
+	@Inject
+	@Provide
+	private IssueStatut issueStatut;
 
 	public String addIssue() {
 		return issueBean.addIssue(newIssueDescription);
@@ -47,26 +54,20 @@ public class IssueViewBean {
 		return issueBean.getDescription(instance);
 	}
 
-	public ElStringWrapper getStatut(Generic instance) {
-		return issueBean.getStatut(instance);
-	}
-
-	public ElStringWrapper getPriority(Generic instance) {
-		return issueBean.getPriority(instance);
+	public ElStringWrapper getLink(Generic instance, Generic target) {
+		return issueBean.getLink(instance, target);
 	}
 
 	public List<Generic> getList() {
-		issues = issueBean.getIssuesByStatut();
-		return issues;
+		return issueBean.getIssuesByStatut();
 	}
 
 	public Generic getSelected() {
-		selectedIssue = issueSelectionBean.getSelectedIssue();
-		return selectedIssue;
+		return issueSelectionBean.getSelectedIssue();
 	}
 
 	public String setSelected(Generic selectedIssue) {
-		this.selectedIssue = issueSelectionBean.setSelectedIssue(selectedIssue);
+		issueSelectionBean.setSelectedIssue(selectedIssue);
 		return "#";
 	}
 
@@ -79,13 +80,11 @@ public class IssueViewBean {
 	}
 
 	public List<String> getPriorities() {
-		priorities = priorityBean.getPriorities();
-		return priorities;
+		return priorityBean.getPriorities();
 	}
 
 	public List<String> getStatuts() {
-		statuts = statutBean.getStatuts();
-		return statuts;
+		return statutBean.getStatuts();
 	}
 
 	public String getNewIssueDescription() {
@@ -94,6 +93,22 @@ public class IssueViewBean {
 
 	public void setNewIssueDescription(String newIssueDescription) {
 		this.newIssueDescription = newIssueDescription;
+	}
+
+	public IssuePriority getIssuePriority() {
+		return issuePriority;
+	}
+
+	public void setIssuePriority(IssuePriority issuePriority) {
+		this.issuePriority = issuePriority;
+	}
+
+	public IssueStatut getIssueStatut() {
+		return issueStatut;
+	}
+
+	public void setIssueStatut(IssueStatut issueStatut) {
+		this.issueStatut = issueStatut;
 	}
 
 }

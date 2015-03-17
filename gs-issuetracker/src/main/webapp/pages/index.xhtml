@@ -39,14 +39,16 @@
 					value="#{issueViewBean.getDescription(issueViewBean.selected).value}">
 				<f:ajax event="blur" execute="@this" render="@form message"/>
 			</h:inputText>
-			<h:selectOneMenu value="#{issueViewBean.getPriority(issueViewBean.selected).value}" 
+			
+			<h:selectOneMenu value="#{issueViewBean.getLink(issueViewBean.selected, issueViewBean.issuePriority).value}" 
 					rendered="#{issueViewBean.priorities != null}">
 				<f:selectItems value="#{issueViewBean.priorities}" var="object"
 					itemLabel="#{object}" itemValue="#{object}">
 				</f:selectItems>
 				<f:ajax event="blur" execute="@this" render="@form message" />
 			</h:selectOneMenu>
-			<h:selectOneMenu value="#{issueViewBean.getStatut(issueViewBean.selected).value}" 
+			
+			<h:selectOneMenu value="#{issueViewBean.getLink(issueViewBean.selected, issueViewBean.issueStatut).value}" 
 					rendered="#{issueViewBean.statuts != null}">
 				<f:selectItems value="#{issueViewBean.statuts}" var="object"
 					itemLabel="#{object}" itemValue="#{object}">
