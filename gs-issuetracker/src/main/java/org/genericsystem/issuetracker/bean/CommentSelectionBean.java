@@ -33,9 +33,9 @@ public class CommentSelectionBean implements Serializable {
 		return searchedComment;
 	}
 
-	public String setSelectedComment(Generic searchedComment) {
+	public Generic setSelectedComment(Generic searchedComment) {
 		this.searchedComment = searchedComment;
-		return "#";
+		return this.searchedComment;
 	}
 
 }

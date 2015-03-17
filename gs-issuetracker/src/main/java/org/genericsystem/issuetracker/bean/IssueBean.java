@@ -54,14 +54,13 @@ public class IssueBean {
 	@Inject
 	private FilterBean filterBean;
 
-	private String newIssueDescription;
-	private String searchedStatut;
+	// private String newIssueDescription;
 
 	public List<Generic> getIssuesByStatut() {
-		return (searchedStatut != null) ? issue.getAllInstances().get().filter(filterBean.getPredicate(issueStatut, searchedStatut)).collect(Collectors.toList()) : issue.getAllInstances().get().collect(Collectors.toList());
+		return (filterBean.getPredicate(issueStatut) != null) ? issue.getAllInstances().get().filter(filterBean.getPredicate(issueStatut)).collect(Collectors.toList()) : issue.getAllInstances().get().collect(Collectors.toList());
 	}
 
-	public String addIssue() {
+	public String addIssue(String newIssueDescription) {
 		issue.addGenerateInstance().setHolder(description, newIssueDescription);
 		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Priority is required."));
 		return "#";
@@ -137,20 +136,12 @@ public class IssueBean {
 		public void setValue(String value);
 	}
 
-	public String getNewIssueDescription() {
-		return newIssueDescription;
-	}
-
-	public void setNewIssueDescription(String newIssueDescription) {
-		this.newIssueDescription = newIssueDescription;
-	}
-
-	public String getSearchedStatut() {
-		return searchedStatut;
-	}
-
-	public void setSearchedStatut(String searchedStatut) {
-		this.searchedStatut = searchedStatut;
-	}
+	// public String getNewIssueDescription() {
+	// return newIssueDescription;
+	// }
+	//
+	// public void setNewIssueDescription(String newIssueDescription) {
+	// this.newIssueDescription = newIssueDescription;
+	// }
 
 }

@@ -8,74 +8,86 @@
 	xmlns:composites="http://java.sun.com/jsf/composite/composites">
 	
 <composite:interface>
-		<composite:attribute name="ListOfObjects"></composite:attribute>
-		<composite:attribute name="Header"></composite:attribute>
-		<composite:attribute name="Render"></composite:attribute>
-		<composite:attribute name="Select" method-signature="String action()"></composite:attribute>
-		<composite:attribute name="ObjectValue"></composite:attribute>
-		<composite:attribute name="HeaderOfAttribute"></composite:attribute>
-		<composite:attribute name="ValueOfAttribute"></composite:attribute>
-		<composite:attribute name="HeaderRelation1"></composite:attribute>
-		<composite:attribute name="ListOfRelation1"></composite:attribute>
-		<composite:attribute name="RenderedValueRelation1"></composite:attribute>
-		<composite:attribute name="HeaderRelation2"></composite:attribute>
-		<composite:attribute name="ListOfRelation2"></composite:attribute>
-		<composite:attribute name="RenderedValueRelation2"></composite:attribute>
-		<composite:attribute name="DeleteObject" method-signature="String action()"></composite:attribute>
-		<composite:attribute name="Footer"></composite:attribute>
+		<composite:attribute name="backBean"></composite:attribute>
 	</composite:interface>
 	<composite:implementation>
-		
-		<h:dataTable value="#{cc.attrs.ListOfObjects}" var="object">
+	
+			<h:dataTable value="#{cc.attrs.backBean.list}" var="object">
 			<h:column>
 				<f:facet name="header">
-					<h:outputLabel value="#{cc.attrs.Name}" />
+				
+					<h:outputLabel value="Issue" 
+						rendered="#{cc.attrs.backBean.equals(issueViewBean)}"/>
+					<h:outputLabel value="Comment" 
+						rendered="#{cc.attrs.backBean.equals(commentViewBean)}"/>
 				</f:facet>
-				<h:commandLink value="#{cc.attrs.ObjectValue}"
-					action="#{cc.attrs.Select}">
-					<f:ajax execute="@this" render="#{cc.attrs.Render}" />
+				
+				<h:commandLink value="#{object.getValue()}"
+					action="#{cc.attrs.backBean.setSelected(object)}" 
+					rendered="#{cc.attrs.backBean.equals(issueViewBean)}">
+					<f:ajax execute="@this" render="@form message" />
 				</h:commandLink>
+				<h:commandLink value="#{object.getTargetComponent().getValue()}"
+					action="#{cc.attrs.backBean.setSelected(object)}" 
+					rendered="#{cc.attrs.backBean.equals(commentViewBean)}">
+					<f:ajax execute="@this" render="@form message" />
+				</h:commandLink>
+				
 			</h:column>
-			<h:column >
+			
+			<h:column rendered="#{cc.attrs.backBean.equals(issueViewBean)}">
 				<f:facet name="header">
-					<h:outputLabel value="#{cc.attrs.HeaderOfAttribute}"/>
+					<h:outputLabel value="Description"/>
 				</f:facet>
 				<h:inputText size="10"
-					value="#{cc.attrs.ValueOfAttribute}" rendered="#{cc.attrs.ValueOfAttribute != null}">
-					<f:ajax event="blur" execute="@this" render="#{cc.attrs.Render}" />
+						value="#{cc.attrs.backBean.getDescription(object).value}"
+						rendered="#{cc.attrs.backBean.equals(issueViewBean)}">
+					<f:ajax event="blur" execute="@this" render="@form message" />
 				</h:inputText>
 			</h:column>
-			<h:column rendered="#{cc.attrs.HeaderRelation1 != null}">
+			
+			<h:column rendered="#{cc.attrs.backBean.equals(issueViewBean)}">
 				<f:facet name="header">
-					<h:outputLabel value="#{cc.attrs.HeaderRelation1}" />
+					<h:outputLabel value="Priority" />
 				</f:facet>
-				<composites:columnList ListOfObjects="#{cc.attrs.ListOfRelation1}"
-					RenderedValue="#{cc.attrs.RenderedValueRelation1}"
-					Render="#{cc.attrs.Render}" />
+				<h:selectOneMenu value="#{cc.attrs.backBean.getPriority(object).value}" 
+						rendered="#{cc.attrs.backBean.equals(issueViewBean)}">
+					<f:selectItems value="#{cc.attrs.backBean.priorities}" var="object"
+						itemLabel="#{object}" itemValue="#{object}">
+					</f:selectItems>
+					<f:ajax event="blur" execute="@this" render="@form message" />
+				</h:selectOneMenu>
 			</h:column>
-			<h:column rendered="#{cc.attrs.HeaderRelation2 != null}">
+			<h:column rendered="#{cc.attrs.backBean.equals(issueViewBean)}">
 				<f:facet name="header">
-					<h:outputLabel value="#{cc.attrs.HeaderRelation2}" />
+					<h:outputLabel value="Statut" />
 				</f:facet>
-				<composites:columnList ListOfObjects="#{cc.attrs.ListOfRelation2}"
-					RenderedValue="#{cc.attrs.RenderedValueRelation2}"
-					Render="#{cc.attrs.Render}" />
+				<h:selectOneMenu value="#{cc.attrs.backBean.getStatut(object).value}" 
+						rendered="#{cc.attrs.backBean.equals(issueViewBean)}">
+					<f:selectItems value="#{cc.attrs.backBean.statuts}" var="object"
+						itemLabel="#{object}" itemValue="#{object}">
+					</f:selectItems>
+					<f:ajax event="blur" execute="@this" render="@form message" />
+				</h:selectOneMenu>
 			</h:column>
 			<h:column>
-				<composites:deleteButton Action="#{cc.attrs.DeleteObject}" />
+				<h:commandButton value="X" action="#{cc.attrs.backBean.delete(object)}">
+					<f:ajax execute="@this" render="@form" />
+				</h:commandButton>
 			</h:column>
 			<f:facet name="footer">
-				<h:panelGroup id="addIssue" layout="block" rendered="#{cc.attrs.Footer != null}">
+				<h:panelGroup id="addIssue" layout="block" rendered="#{cc.attrs.backBean.equals(issueViewBean)}">
 					<h:inputText  size="10"
-						value="#{issueBean.newIssueDescription}" />
+						value="#{cc.attrs.backBean.newIssueDescription}" />
 					<h:commandButton  value="Add"
-						action="#{issueBean.addIssue}">
-						<f:ajax execute="addIssue" render="#{cc.attrs.Render}" />
+						action="#{cc.attrs.backBean.addIssue}">
+						<f:ajax execute="addIssue" render="@form message" />
 					</h:commandButton>
 				</h:panelGroup>
 			</f:facet>
 			</h:dataTable>
-			
+		
+		
 		
 	</composite:implementation>
 	

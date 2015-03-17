@@ -33,9 +33,9 @@ public class IssueSelectionBean implements Serializable {
 		return searchedIssue;
 	}
 
-	public String setSelectedIssue(Generic searchedIssue) {
-		this.searchedIssue = searchedIssue;
-		return "#";
+	public Generic setSelectedIssue(Generic searchedIssue) {
+		this.searchedIssue = searchedIssue;// TODO ?
+		return this.searchedIssue;
 	}
 
 }
