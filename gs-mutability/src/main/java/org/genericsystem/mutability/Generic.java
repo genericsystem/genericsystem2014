@@ -18,11 +18,6 @@ public interface Generic extends DefaultVertex<Generic> {
 		return getRoot().getCurrentCache();
 	}
 
-	@Override
-	default boolean isSystem() {
-		return getCurrentCache().unwrap(this).isSystem();
-	}
-
 	default LifeManager getLifeManager() {
 		return getCurrentCache().unwrap(this).getLifeManager();
 	}
@@ -36,6 +31,11 @@ public interface Generic extends DefaultVertex<Generic> {
 
 	default long getTs() {
 		return getCurrentCache().unwrap(this).getTs();
+	}
+
+	@Override
+	default boolean isSystem() {
+		return getCurrentCache().unwrap(this).isSystem();
 	}
 
 	@Override
