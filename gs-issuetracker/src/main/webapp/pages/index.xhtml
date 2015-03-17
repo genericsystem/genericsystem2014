@@ -12,66 +12,68 @@
 <h:body>
 	<h:messages id="message" />
 	<h:form id="form">
-		<composites:columnList ListOfObjects="#{statutBean.statuts}"
-			RenderedValue="#{issueBean.searchedStatut}" Render="@form message" />
+		<h:selectOneMenu value="#{filterBean.searchedStatut}" rendered="#{filterBean.statuts != null}">
+			<f:selectItems value="#{filterBean.statuts}" var="object"
+				itemLabel="#{object}" itemValue="#{object}">
+			</f:selectItems>
+			<f:ajax event="blur" execute="@this" render="@form message" />
+		</h:selectOneMenu>
 
 		<composites:DatatableGeneric
-			ListOfObjects="#{issueBean.issuesByStatut}" 
-			Render="@form message"
-			Select="#{issueSelectionBean.setSelectedIssue(object)}"
-			ObjectValue="#{object.getValue()}" 
-			Header="Issue"
-			HeaderOfAttribute="Description"
-			ValueOfAttribute="#{issueBean.getDescription(object).value}"
-			HeaderRelation1="Priority"
-			ListOfRelation1="#{priorityBean.priorities}"
-			RenderedValueRelation1="#{issueBean.getPriority(object).value}"
-			HeaderRelation2="Statut" 
-			ListOfRelation2="#{statutBean.statuts}"
-			RenderedValueRelation2="#{issueBean.getStatut(object).value}"
-			DeleteObject="#{issueBean.deleteIssue(object)}" 
-			Footer="true" />
+			backBean="#{issueViewBean}"/>
 
 		<h:commandButton id="save" 
 			value="Save" action="#{issueBean.flush}">
-			<f:ajax execute="@this" render="@form message" />
+			<f:ajax execute="@this" />
 		</h:commandButton>
 		<h:commandButton id="cancel" value="Cancel"
 			action="#{issueBean.clear}">
-			<f:ajax execute="@this" render="@form message" />
+			<f:ajax execute="@this" />
 		</h:commandButton>
 
 		<h:outputLabel value="Selected issue is : " />
-		<h:outputLabel value="#{issueSelectionBean.searchedIssue}" />
+		<h:outputLabel value="#{issueViewBean.searchedIssue}" />
 		
-		<h:panelGroup layout="block" rendered="#{issueSelectionBean.searchedIssue}">
-
-		<composites:UpdateGeneric
-			AttributeToUpdate="#{issueBean.getDescription(issueSelectionBean.selectedIssue).value}"
-			ListOfObjectsRelation1="#{priorityBean.priorities}"
-			RenderedValueRelation1="#{issueBean.getPriority(issueSelectionBean.selectedIssue).value}"
-			ListOfObjectsRelation2="#{statutBean.statuts}"
-			RenderedValueRelation2="#{issueBean.getStatut(issueSelectionBean.selectedIssue).value}"
-			Render="@form message"/>
+		<h:panelGroup layout="block" rendered="#{issueViewBean.selected != null}">
+			<h:inputText  size="10"
+					value="#{issueViewBean.getDescription(issueViewBean.selected).value}">
+				<f:ajax event="blur" execute="@this" render="@form message"/>
+			</h:inputText>
+			<h:selectOneMenu value="#{issueViewBean.getPriority(issueViewBean.selected).value}" 
+					rendered="#{issueViewBean.priorities != null}">
+				<f:selectItems value="#{issueViewBean.priorities}" var="object"
+					itemLabel="#{object}" itemValue="#{object}">
+				</f:selectItems>
+				<f:ajax event="blur" execute="@this" render="@form message" />
+			</h:selectOneMenu>
+			<h:selectOneMenu value="#{issueViewBean.getStatut(issueViewBean.selected).value}" 
+					rendered="#{issueViewBean.statuts != null}">
+				<f:selectItems value="#{issueViewBean.statuts}" var="object"
+					itemLabel="#{object}" itemValue="#{object}">
+				</f:selectItems>
+				<f:ajax event="blur" execute="@this" render="@form message" />
+			</h:selectOneMenu>
 			
 		</h:panelGroup>
-
-		<composites:DatatableGeneric 
-			ListOfObjects="#{commentBean.comments}"
-			Render="@form message"
-			Select="#{commentSelectionBean.setSelectedComment(object)}"
-			ObjectValue="#{object.getTargetComponent().getValue()}"
-			Header="Comment"
-			DeleteObject="#{commentBean.deleteComment(object)}"
-			ValueOfAttribute="#{commentBean.addComment(object).value}" />
-
-		<composites:compositeTextArea
-			ObjectToAdd="#{commentBean.addComment(issueSelectionBean.selectedIssue).value}"
-			Rendered="#{issueSelectionBean.selectedIssue != null}"
-			Render="@form message" />
+		
+		<composites:DatatableGeneric
+			backBean="#{commentViewBean}"/>
+		
+		<h:inputTextarea
+				value="#{commentViewBean.getComment(commentViewBean.selectedIssue).value}" 
+				rendered="#{commentViewBean.selectedIssue != null}">
+			<f:ajax event="blur" execute="@this" render="@form message"/>
+		</h:inputTextarea>
 			
 		<h:outputLabel value="Selected comment is : " />
-		<h:outputLabel value="#{commentSelectionBean.searchedComment}" />
+		<h:outputLabel value="#{commentViewBean.searchedComment}" />
+		
+		<h:panelGroup layout="block" rendered="#{commentViewBean.selected != null}">
+			<h:inputText  size="10"
+					value="#{commentViewBean.getComment(commentViewBean.selectedIssue).value}">
+				<f:ajax event="blur" execute="@this" render="@form message"/>
+			</h:inputText>
+		</h:panelGroup>
 
 	</h:form>
 </h:body>
