@@ -3,7 +3,6 @@ package org.genericsystem.issuetracker.bean;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
@@ -20,7 +19,6 @@ import org.genericsystem.mutability.Generic;
 @Named
 @RequestScoped
 public class CommentBean {
-	private static final Logger log = Logger.getAnonymousLogger();
 
 	@Inject
 	@Provide
@@ -47,22 +45,15 @@ public class CommentBean {
 
 			@Override
 			public void setValue(String value) {
-				log.info("CommentBean ; getComment ; setValue ; value : " + value);
 				instance.setLink(issueComment, "link", comment.setInstance(value));
-
-				// TODO update value of selectedComment
 				selectedComment.getTargetComponent().updateValue(value);
-				log.info("CommentBean ; getComment ; setValue ; selectedComment : " + selectedComment.info());
 			}
 
 			@Override
 			public String getValue() {
 				String returnString = null;
-				if (selectedComment != null) {
-					log.info("CommentBean ; getComment ; getValue ; selectedComment.getTargetComponent : " + selectedComment.getTargetComponent().info());
+				if (selectedComment != null)
 					returnString = Objects.toString(selectedComment.getTargetComponent().getValue());
-				}
-				log.info("CommentBean ; getComment ; getValue ; returnString : " + returnString);
 				return (returnString != null) ? returnString : "";
 			}
 		};
