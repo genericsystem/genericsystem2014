@@ -19,60 +19,67 @@
 			<f:ajax event="blur" execute="@this" render="@form message" />
 		</h:selectOneMenu>
 
-		<composites:DatatableGeneric
-			backBean="#{issueViewBean}"/>
+		<composites:datatableGeneric
+			backBean="#{editIssuesBean}"
+			title="Issue"/>
 
 		<h:commandButton id="save" 
-			value="Save" action="#{issueBean.flush}">
-			<f:ajax execute="@this" />
+			value="Save" action="#{cacheBean.flush}">
+			<f:ajax execute="@this" render="@form message"/>
 		</h:commandButton>
 		<h:commandButton id="cancel" value="Cancel"
-			action="#{issueBean.clear}">
-			<f:ajax execute="@this" />
+			action="#{cacheBean.clear}">
+			<f:ajax execute="@this" render="@form message"/>
 		</h:commandButton>
 
 		<h:outputLabel value="Selected issue is : " />
-		<h:outputLabel value="#{issueViewBean.searchedIssue}" />
+		<h:outputLabel value="#{issueSelectedBean.selectedIssue.getValue()}" />
 		
-		<h:panelGroup layout="block" rendered="#{issueViewBean.selected != null}">
+		<h:panelGroup layout="block" rendered="#{issueSelectedBean.selectedIssue != null}">
 			<h:inputText  size="10"
-					value="#{issueViewBean.getDescription(issueViewBean.selected).value}">
+					value="#{issueSelectedBean.getDescription(issueSelectedBean.selectedIssue).value}">
 				<f:ajax event="blur" execute="@this" render="@form message"/>
 			</h:inputText>
 			
-			<h:selectOneMenu value="#{issueViewBean.getLink(issueViewBean.selected, issueViewBean.issuePriority).value}" 
-					rendered="#{issueViewBean.priorities != null}">
-				<f:selectItems value="#{issueViewBean.priorities}" var="object"
+			<h:selectOneMenu value="#{issueSelectedBean.getPriority(issueSelectedBean.selectedIssue).value}" 
+					rendered="#{issueSelectedBean.priorities != null}">
+				<f:selectItems value="#{issueSelectedBean.priorities}" var="object"
 					itemLabel="#{object}" itemValue="#{object}">
 				</f:selectItems>
 				<f:ajax event="blur" execute="@this" render="@form message" />
 			</h:selectOneMenu>
 			
-			<h:selectOneMenu value="#{issueViewBean.getLink(issueViewBean.selected, issueViewBean.issueStatut).value}" 
-					rendered="#{issueViewBean.statuts != null}">
-				<f:selectItems value="#{issueViewBean.statuts}" var="object"
+			<h:selectOneMenu value="#{issueSelectedBean.getStatut(issueSelectedBean.selectedIssue).value}" 
+					rendered="#{issueSelectedBean.statuts != null}">
+				<f:selectItems value="#{issueSelectedBean.statuts}" var="object"
 					itemLabel="#{object}" itemValue="#{object}">
 				</f:selectItems>
 				<f:ajax event="blur" execute="@this" render="@form message" />
 			</h:selectOneMenu>
+			
+			<h:selectManyCheckbox value="#{issueSelectedBean.selectedVersions}" onclick="#{issueSelectedBean.addVersionsToIssue(issueSelectedBean.selectedIssue)}">
+				<f:selectItems value="#{issueSelectedBean.versions}"/>
+				<f:ajax event="click" execute="@this" render="@form message"/>
+			</h:selectManyCheckbox>
 			
 		</h:panelGroup>
 		
-		<composites:DatatableGeneric
-			backBean="#{commentViewBean}"/>
+		<composites:datatableGeneric
+			backBean="#{editCommentsBean}"
+			title="Comment"/>
 		
 		<h:inputTextarea
-				value="#{commentViewBean.getComment(commentViewBean.selectedIssue).value}" 
-				rendered="#{commentViewBean.selectedIssue != null}">
+				value="#{editCommentsBean.getComment(editCommentsBean.selectedIssue).value}" 
+				rendered="#{editCommentsBean.selectedIssue != null}">
 			<f:ajax event="blur" execute="@this" render="@form message"/>
 		</h:inputTextarea>
 			
 		<h:outputLabel value="Selected comment is : " />
-		<h:outputLabel value="#{commentViewBean.searchedComment}" />
+		<h:outputLabel value="#{commentSelectedBean.searchedComment}" />
 		
-		<h:panelGroup layout="block" rendered="#{commentViewBean.selected != null}">
+		<h:panelGroup layout="block" rendered="#{commentSelectedBean.selected != null}">
 			<h:inputText  size="10"
-					value="#{commentViewBean.getComment(commentViewBean.selectedIssue).value}">
+					value="#{commentSelectedBean.getComment(commentSelectedBean.selectedIssue).value}">
 				<f:ajax event="blur" execute="@this" render="@form message"/>
 			</h:inputText>
 		</h:panelGroup>
