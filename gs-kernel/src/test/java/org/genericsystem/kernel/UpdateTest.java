@@ -1,6 +1,6 @@
 package org.genericsystem.kernel;
 
-import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
+import org.genericsystem.api.core.exceptions.MetaRuleConstraintViolationException;
 import org.genericsystem.defaults.exceptions.PropertyConstraintViolationException;
 import org.testng.annotations.Test;
 

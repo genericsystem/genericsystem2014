@@ -2,7 +2,7 @@ package org.genericsystem.cache;
 
 import java.util.Arrays;
 
-import org.genericsystem.api.exception.CrossEnginesAssignementsException;
+import org.genericsystem.api.core.exceptions.CrossEnginesAssignementsException;
 import org.genericsystem.kernel.Generic;
 import org.genericsystem.kernel.Statics;
 import org.testng.annotations.Test;

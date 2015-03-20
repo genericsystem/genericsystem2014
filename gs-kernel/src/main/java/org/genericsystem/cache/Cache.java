@@ -4,10 +4,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.api.exception.CacheNoStartedException;
-import org.genericsystem.api.exception.ConcurrencyControlException;
-import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
-import org.genericsystem.api.exception.RollbackException;
+import org.genericsystem.api.core.exceptions.CacheNoStartedException;
+import org.genericsystem.api.core.exceptions.ConcurrencyControlException;
+import org.genericsystem.api.core.exceptions.OptimisticLockConstraintViolationException;
+import org.genericsystem.api.core.exceptions.RollbackException;
 import org.genericsystem.kernel.Context;
 import org.genericsystem.kernel.Generic;
 import org.genericsystem.kernel.LifeManager;

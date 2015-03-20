@@ -5,21 +5,22 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ApiStatics;
-import org.genericsystem.api.exception.AliveConstraintViolationException;
-import org.genericsystem.api.exception.ConstraintViolationException;
-import org.genericsystem.api.exception.CrossEnginesAssignementsException;
-import org.genericsystem.api.exception.LevelConstraintViolationException;
-import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
-import org.genericsystem.api.exception.NotAliveConstraintViolationException;
-import org.genericsystem.api.exception.NotAllowedSerializableTypeException;
-import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
-import org.genericsystem.api.exception.RollbackException;
+import org.genericsystem.api.core.annotations.Priority;
+import org.genericsystem.api.core.exceptions.AliveConstraintViolationException;
+import org.genericsystem.api.core.exceptions.ConstraintViolationException;
+import org.genericsystem.api.core.exceptions.CrossEnginesAssignementsException;
+import org.genericsystem.api.core.exceptions.LevelConstraintViolationException;
+import org.genericsystem.api.core.exceptions.MetaRuleConstraintViolationException;
+import org.genericsystem.api.core.exceptions.NotAliveConstraintViolationException;
+import org.genericsystem.api.core.exceptions.NotAllowedSerializableTypeException;
+import org.genericsystem.api.core.exceptions.ReferentialIntegrityConstraintViolationException;
+import org.genericsystem.api.core.exceptions.RollbackException;
+import org.genericsystem.api.core.systemproperty.AxedPropertyClass;
 import org.genericsystem.defaults.DefaultRoot;
 import org.genericsystem.defaults.constraints.Constraint;
 import org.genericsystem.kernel.Config.SystemMap;
-import org.genericsystem.kernel.annotations.Priority;
-import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
 
 public class Checker {
 
@@ -74,7 +75,7 @@ public class Checker {
 	private void checkSerializableType(Serializable value) {
 		if (value == null)
 			return;
-		if (value instanceof org.genericsystem.kernel.systemproperty.AxedPropertyClass)
+		if (value instanceof org.genericsystem.api.core.systemproperty.AxedPropertyClass)
 			return;
 		if (value instanceof Boolean)
 			return;

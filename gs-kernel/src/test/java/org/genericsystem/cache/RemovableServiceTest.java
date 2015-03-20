@@ -1,8 +1,8 @@
 package org.genericsystem.cache;
 
 import org.genericsystem.api.core.ApiStatics;
-import org.genericsystem.api.exception.AliveConstraintViolationException;
-import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
+import org.genericsystem.api.core.exceptions.AliveConstraintViolationException;
+import org.genericsystem.api.core.exceptions.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.kernel.Generic;
 import org.testng.annotations.Test;
 

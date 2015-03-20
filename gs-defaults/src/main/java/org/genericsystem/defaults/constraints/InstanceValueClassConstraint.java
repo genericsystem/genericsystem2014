@@ -2,7 +2,7 @@ package org.genericsystem.defaults.constraints;
 
 import java.io.Serializable;
 
-import org.genericsystem.api.exception.ConstraintViolationException;
+import org.genericsystem.api.core.exceptions.ConstraintViolationException;
 import org.genericsystem.defaults.DefaultVertex;
 import org.genericsystem.defaults.constraints.Constraint.CheckedConstraint;
 import org.genericsystem.defaults.exceptions.InstanceValueClassConstraintViolationException;

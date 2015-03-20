@@ -7,8 +7,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.kernel.annotations.Components;
-import org.genericsystem.kernel.annotations.SystemGeneric;
+import org.genericsystem.api.core.annotations.Components;
+import org.genericsystem.api.core.annotations.SystemGeneric;
 import org.genericsystem.mutability.Engine;
 import org.genericsystem.mutability.Generic;
 

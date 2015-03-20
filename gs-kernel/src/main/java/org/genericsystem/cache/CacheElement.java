@@ -3,9 +3,9 @@ package org.genericsystem.cache;
 import java.util.stream.Stream;
 
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.api.exception.ConcurrencyControlException;
-import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
-import org.genericsystem.api.exception.RollbackException;
+import org.genericsystem.api.core.exceptions.ConcurrencyControlException;
+import org.genericsystem.api.core.exceptions.OptimisticLockConstraintViolationException;
+import org.genericsystem.api.core.exceptions.RollbackException;
 import org.genericsystem.kernel.Checker;
 import org.genericsystem.kernel.Generic;
 

@@ -3,7 +3,7 @@ package org.genericsystem.defaults.constraints;
 import java.io.Serializable;
 
 import org.genericsystem.api.core.IVertex.SystemProperty;
-import org.genericsystem.api.exception.ConstraintViolationException;
+import org.genericsystem.api.core.exceptions.ConstraintViolationException;
 import org.genericsystem.defaults.DefaultVertex;
 
 /**

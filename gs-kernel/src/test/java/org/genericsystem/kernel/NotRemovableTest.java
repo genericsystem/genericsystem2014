@@ -1,10 +1,10 @@
 package org.genericsystem.kernel;
 
-import org.genericsystem.api.exception.AliveConstraintViolationException;
-import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
-import org.genericsystem.kernel.annotations.Components;
-import org.genericsystem.kernel.annotations.SystemGeneric;
-import org.genericsystem.kernel.annotations.constraints.PropertyConstraint;
+import org.genericsystem.api.core.annotations.Components;
+import org.genericsystem.api.core.annotations.SystemGeneric;
+import org.genericsystem.api.core.annotations.constraints.PropertyConstraint;
+import org.genericsystem.api.core.exceptions.AliveConstraintViolationException;
+import org.genericsystem.api.core.exceptions.ReferentialIntegrityConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test

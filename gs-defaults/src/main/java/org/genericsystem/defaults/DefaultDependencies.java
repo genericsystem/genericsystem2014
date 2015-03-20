@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.api.exception.AmbiguousSelectionException;
+import org.genericsystem.api.core.exceptions.AmbiguousSelectionException;
 
 public interface DefaultDependencies<T extends DefaultVertex<T>> extends IVertex<T> {
 

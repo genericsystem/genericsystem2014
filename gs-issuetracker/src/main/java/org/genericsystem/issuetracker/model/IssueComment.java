@@ -1,9 +1,9 @@
 package org.genericsystem.issuetracker.model;
 
 import org.genericsystem.api.core.ApiStatics;
-import org.genericsystem.kernel.annotations.Components;
-import org.genericsystem.kernel.annotations.SystemGeneric;
-import org.genericsystem.kernel.annotations.constraints.SingularConstraint;
+import org.genericsystem.api.core.annotations.Components;
+import org.genericsystem.api.core.annotations.SystemGeneric;
+import org.genericsystem.api.core.annotations.constraints.SingularConstraint;
 import org.genericsystem.mutability.Generic;
 
 @SystemGeneric

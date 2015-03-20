@@ -10,8 +10,8 @@ import java.util.TreeSet;
 
 import org.genericsystem.api.core.IContext;
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
-import org.genericsystem.api.exception.RollbackException;
+import org.genericsystem.api.core.exceptions.ReferentialIntegrityConstraintViolationException;
+import org.genericsystem.api.core.exceptions.RollbackException;
 
 public interface DefaultContext<T extends DefaultVertex<T>> extends IContext<T> {
 

@@ -1,7 +1,7 @@
 package org.genericsystem.issuetracker.model;
 
-import org.genericsystem.kernel.annotations.Components;
-import org.genericsystem.kernel.annotations.SystemGeneric;
+import org.genericsystem.api.core.annotations.Components;
+import org.genericsystem.api.core.annotations.SystemGeneric;
 import org.genericsystem.mutability.Generic;
 
 @SystemGeneric

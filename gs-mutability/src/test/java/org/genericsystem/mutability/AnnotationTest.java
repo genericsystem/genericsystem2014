@@ -7,12 +7,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.kernel.annotations.Components;
-import org.genericsystem.kernel.annotations.InstanceClass;
-import org.genericsystem.kernel.annotations.Meta;
-import org.genericsystem.kernel.annotations.Supers;
-import org.genericsystem.kernel.annotations.SystemGeneric;
-import org.genericsystem.kernel.annotations.value.IntValue;
+import org.genericsystem.api.core.annotations.Components;
+import org.genericsystem.api.core.annotations.InstanceClass;
+import org.genericsystem.api.core.annotations.Meta;
+import org.genericsystem.api.core.annotations.Supers;
+import org.genericsystem.api.core.annotations.SystemGeneric;
+import org.genericsystem.api.core.annotations.value.IntValue;
 import org.testng.annotations.Test;
 
 @Test

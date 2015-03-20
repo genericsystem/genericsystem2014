@@ -2,7 +2,7 @@ package org.genericsystem.cache;
 
 import java.util.function.Supplier;
 
-import org.genericsystem.api.exception.RollbackException;
+import org.genericsystem.api.core.exceptions.RollbackException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

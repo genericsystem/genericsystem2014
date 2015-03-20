@@ -3,7 +3,7 @@ package org.genericsystem.kernel;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
+import org.genericsystem.api.core.exceptions.MetaRuleConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test

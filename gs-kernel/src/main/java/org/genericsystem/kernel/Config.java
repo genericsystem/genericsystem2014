@@ -1,17 +1,17 @@
 package org.genericsystem.kernel;
 
 import org.genericsystem.api.core.ApiStatics;
-import org.genericsystem.kernel.annotations.Components;
-import org.genericsystem.kernel.annotations.Dependencies;
-import org.genericsystem.kernel.annotations.Meta;
-import org.genericsystem.kernel.annotations.Supers;
-import org.genericsystem.kernel.annotations.SystemGeneric;
-import org.genericsystem.kernel.annotations.constraints.InstanceValueClassConstraint;
-import org.genericsystem.kernel.annotations.constraints.PropertyConstraint;
-import org.genericsystem.kernel.annotations.value.AxedPropertyClassValue;
-import org.genericsystem.kernel.annotations.value.BooleanValue;
-import org.genericsystem.kernel.annotations.value.EngineValue;
-import org.genericsystem.kernel.systemproperty.NoReferentialIntegrityProperty;
+import org.genericsystem.api.core.annotations.Components;
+import org.genericsystem.api.core.annotations.Dependencies;
+import org.genericsystem.api.core.annotations.Meta;
+import org.genericsystem.api.core.annotations.Supers;
+import org.genericsystem.api.core.annotations.SystemGeneric;
+import org.genericsystem.api.core.annotations.constraints.InstanceValueClassConstraint;
+import org.genericsystem.api.core.annotations.constraints.PropertyConstraint;
+import org.genericsystem.api.core.annotations.value.AxedPropertyClassValue;
+import org.genericsystem.api.core.annotations.value.BooleanValue;
+import org.genericsystem.api.core.annotations.value.EngineValue;
+import org.genericsystem.api.core.systemproperty.NoReferentialIntegrityProperty;
 
 public class Config {
 	@SystemGeneric

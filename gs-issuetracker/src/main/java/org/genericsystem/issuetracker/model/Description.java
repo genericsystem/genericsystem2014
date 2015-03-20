@@ -1,9 +1,9 @@
 package org.genericsystem.issuetracker.model;
 
-import org.genericsystem.kernel.annotations.Components;
-import org.genericsystem.kernel.annotations.SystemGeneric;
-import org.genericsystem.kernel.annotations.constraints.InstanceValueClassConstraint;
-import org.genericsystem.kernel.annotations.constraints.PropertyConstraint;
+import org.genericsystem.api.core.annotations.Components;
+import org.genericsystem.api.core.annotations.SystemGeneric;
+import org.genericsystem.api.core.annotations.constraints.InstanceValueClassConstraint;
+import org.genericsystem.api.core.annotations.constraints.PropertyConstraint;
 import org.genericsystem.mutability.Generic;
 
 @SystemGeneric

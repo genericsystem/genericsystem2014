@@ -1,10 +1,10 @@
 package org.genericsystem.kernel;
 
+import org.genericsystem.api.core.annotations.Components;
+import org.genericsystem.api.core.annotations.SystemGeneric;
 import org.genericsystem.defaults.GenerateValue;
 import org.genericsystem.defaults.Generator.IntAutoIncrementGenerator;
 import org.genericsystem.kernel.Config.Sequence;
-import org.genericsystem.kernel.annotations.Components;
-import org.genericsystem.kernel.annotations.SystemGeneric;
 import org.testng.annotations.Test;
 
 @Test

@@ -7,16 +7,16 @@ import java.util.stream.Stream;
 
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.IVertex;
-import org.genericsystem.api.exception.NotFoundException;
+import org.genericsystem.api.core.exceptions.NotFoundException;
+import org.genericsystem.api.core.systemproperty.AxedPropertyClass;
+import org.genericsystem.api.core.systemproperty.CascadeRemoveProperty;
+import org.genericsystem.api.core.systemproperty.NoReferentialIntegrityProperty;
+import org.genericsystem.api.core.systemproperty.NonHeritableProperty;
 import org.genericsystem.defaults.constraints.InstanceValueClassConstraint;
 import org.genericsystem.defaults.constraints.PropertyConstraint;
 import org.genericsystem.defaults.constraints.RequiredConstraint;
 import org.genericsystem.defaults.constraints.SingularConstraint;
 import org.genericsystem.defaults.constraints.UniqueValueConstraint;
-import org.genericsystem.kernel.systemproperty.AxedPropertyClass;
-import org.genericsystem.kernel.systemproperty.CascadeRemoveProperty;
-import org.genericsystem.kernel.systemproperty.NoReferentialIntegrityProperty;
-import org.genericsystem.kernel.systemproperty.NonHeritableProperty;
 
 public interface DefaultSystemProperties<T extends DefaultVertex<T>> extends IVertex<T> {
 

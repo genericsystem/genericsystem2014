@@ -1,12 +1,12 @@
 package org.genericsystem.issuetracker.model;
 
+import org.genericsystem.api.core.annotations.Components;
+import org.genericsystem.api.core.annotations.Meta;
+import org.genericsystem.api.core.annotations.SystemGeneric;
+import org.genericsystem.api.core.annotations.constraints.RequiredConstraint;
+import org.genericsystem.api.core.annotations.constraints.SingularConstraint;
+import org.genericsystem.api.core.annotations.value.StringValue;
 import org.genericsystem.issuetracker.model.Statut.Open;
-import org.genericsystem.kernel.annotations.Components;
-import org.genericsystem.kernel.annotations.Meta;
-import org.genericsystem.kernel.annotations.SystemGeneric;
-import org.genericsystem.kernel.annotations.constraints.RequiredConstraint;
-import org.genericsystem.kernel.annotations.constraints.SingularConstraint;
-import org.genericsystem.kernel.annotations.value.StringValue;
 import org.genericsystem.mutability.Generic;
 
 @SystemGeneric
