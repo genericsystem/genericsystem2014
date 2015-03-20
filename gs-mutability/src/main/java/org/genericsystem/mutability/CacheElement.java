@@ -34,33 +34,22 @@ public class CacheElement {
 	}
 
 	protected Generic wrap(org.genericsystem.kernel.Generic generic, Engine engine, Cache cache) {
+		return wrap(cache.getRoot().cacheEngine.findAnnotedClass(generic), generic, engine, cache);
+	}
+
+	protected Generic wrap(Class<?> clazz, org.genericsystem.kernel.Generic generic, Engine engine, Cache cache) {
 		if (generic == null)
 			return null;
-		Generic result = recursiveWrap(generic);
-
-		if (result != null)
-			return result;
-
-		return wrap(generic.getRoot().findAnnotedClass(generic), generic, engine, cache);
+		Generic wrapper = getWrapper(generic);
+		return wrapper != null ? wrapper : createWrapper(clazz, generic, engine, cache);
 	}
 
-	private Generic recursiveWrap(org.genericsystem.kernel.Generic generic) {
-		return reverseMutabilityMap.getOrDefault(generic, subCache == null ? null : subCache.recursiveWrap(generic));
+	protected Generic getWrapper(org.genericsystem.kernel.Generic generic) {
+		return reverseMutabilityMap.getOrDefault(generic, subCache.getWrapper(generic));
 	}
 
-	protected Generic protectedWrap(Class<?> clazz, org.genericsystem.kernel.Generic generic, Engine engine, Cache cache) {
-		if (generic == null)
-			return null;
-		Generic result = recursiveWrap(generic);
-
-		if (result != null)
-			return result;
-
-		return wrap(clazz, generic, engine, cache);
-	}
-
-	private Generic wrap(Class<?> clazz, org.genericsystem.kernel.Generic generic, Engine engine, Cache cache) {
-		Generic result;
+	private Generic createWrapper(Class<?> clazz, org.genericsystem.kernel.Generic generic, Engine engine, Cache cache) {
+		Generic wrapper;
 		InstanceClass instanceClassAnnotation = null;
 		Class<?> findAnnotedClass = generic.getRoot().findAnnotedClass(generic.getMeta());
 		if (findAnnotedClass != null)
@@ -68,11 +57,11 @@ public class CacheElement {
 		if (clazz != null) {
 			if (instanceClassAnnotation != null && !instanceClassAnnotation.value().isAssignableFrom(clazz))
 				cache.discardWithException(new InstantiationException(clazz + " must extends " + instanceClassAnnotation.value()));
-			result = (Generic) newInstance(clazz, engine, cache);
+			wrapper = (Generic) newInstance(clazz, engine, cache);
 		} else
-			result = (Generic) newInstance(instanceClassAnnotation != null ? instanceClassAnnotation.value() : Object.class, engine, cache);
-		put(result, generic);
-		return result;
+			wrapper = (Generic) newInstance(instanceClassAnnotation != null ? instanceClassAnnotation.value() : Object.class, engine, cache);
+		put(wrapper, generic);
+		return wrapper;
 	}
 
 	private final static ProxyFactory PROXY_FACTORY = new ProxyFactory();
@@ -96,12 +85,11 @@ public class CacheElement {
 	public void mutate(org.genericsystem.kernel.Generic oldDependency, org.genericsystem.kernel.Generic newDependency) {
 		Generic fakeGeneric = reverseMutabilityMap.remove(oldDependency);
 		if (fakeGeneric == null)
-			fakeGeneric = recursiveWrap(oldDependency);
+			fakeGeneric = getWrapper(oldDependency);
 
 		if (fakeGeneric != null) {
 			mutabilityMap.put(fakeGeneric, newDependency);
 			reverseMutabilityMap.put(newDependency, fakeGeneric);
-
 		}
 	}
 

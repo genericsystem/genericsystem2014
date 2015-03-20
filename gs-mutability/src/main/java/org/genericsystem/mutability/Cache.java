@@ -90,7 +90,6 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 		cacheElement.applyInSubContext();
 		CacheElement subCache = cacheElement.getSubCache();
 		cacheElement = (subCache instanceof TransactionElement) ? new CacheElement(subCache) : subCache;
-
 	}
 
 	@Override
@@ -126,7 +125,8 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 
 	public void unmount() {
 		cache.unmount();// triggersClearEvent
-		cacheElement = new CacheElement(cacheElement == null ? null : cacheElement);
+		CacheElement subCache = cacheElement.getSubCache();
+		cacheElement = subCache instanceof TransactionElement ? new CacheElement(subCache) : subCache;
 	}
 
 	public int getCacheLevel() {
@@ -185,7 +185,7 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 	}
 
 	public Generic wrap(Class<?> clazz, org.genericsystem.kernel.Generic find) {
-		return cacheElement.protectedWrap(clazz, find, engine, this);
+		return cacheElement.wrap(clazz, find, engine, this);
 	}
 
 	class TransactionElement extends CacheElement {
@@ -208,6 +208,11 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 		@Override
 		public void refresh() {
 			return;
+		}
+
+		@Override
+		protected Generic getWrapper(org.genericsystem.kernel.Generic generic) {
+			return reverseMutabilityMap.get(generic);
 		}
 	}
 }
