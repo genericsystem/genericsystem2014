@@ -1,14 +1,14 @@
-package org.genericsystem.issuetracker.view;
+package org.genericsystem.issuetracker.bean.view;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.genericsystem.issuetracker.bean.AbstractBean.ElStringWrapper;
 import org.genericsystem.issuetracker.bean.IssueBean;
-import org.genericsystem.issuetracker.bean.IssueBean.ElStringWrapper;
-import org.genericsystem.issuetracker.bean.IssueSelectedBean;
 import org.genericsystem.issuetracker.bean.PriorityBean;
 import org.genericsystem.issuetracker.bean.StatutBean;
 import org.genericsystem.mutability.Generic;
@@ -18,7 +18,7 @@ import org.genericsystem.mutability.Generic;
 public class EditIssuesBean {
 
 	@Inject
-	private IssueSelectedBean issueSelectionBean;
+	private IssueSelectedBean issueSelectedBean;
 
 	@Inject
 	private IssueBean issueBean;
@@ -37,34 +37,34 @@ public class EditIssuesBean {
 	}
 
 	public String delete(Generic issue) {
-		issueSelectionBean.setSelectedIssue(null);
+		issueSelectedBean.setSelectedIssue(null);
 		issueBean.deleteIssue(issue);
 		return "#";
 	}
 
-	public String getValue(Generic generic) {
-		return (String) generic.getValue();
+	public Serializable getValue(Generic issue) {
+		return issue.getValue();
 	}
 
-	public ElStringWrapper getDescription(Generic instance) {
-		return issueBean.getLink(instance, issueBean.getDescription());
+	public ElStringWrapper getDescription(Generic issue) {
+		return issueBean.updateHolder(issue, issueBean.getDescription());
 	}
 
-	public ElStringWrapper getPriority(Generic instance) {
-		return issueBean.getLink(instance, issueBean.getIssuePriority());
+	public ElStringWrapper getPriority(Generic issue) {
+		return issueBean.updateHolder(issue, issueBean.getIssuePriority());
 	}
 
-	public ElStringWrapper getStatut(Generic instance) {
-		return issueBean.getLink(instance, issueBean.getIssueStatut());
+	public ElStringWrapper getStatut(Generic issue) {
+		return issueBean.updateHolder(issue, issueBean.getIssueStatut());
+	}
+
+	public String setSelected(Generic selectedIssue) {
+		issueSelectedBean.setSelectedIssue(selectedIssue);
+		return "#";
 	}
 
 	public List<Generic> getList() {
 		return issueBean.getIssuesByStatut();
-	}
-
-	public String setSelected(Generic selectedIssue) {
-		issueSelectionBean.selectIssueVersions(selectedIssue);
-		return "#";
 	}
 
 	public List<String> getPriorities() {

@@ -19,6 +19,18 @@ public class TestSE {
 		issue.setRelation("IssueStatut", statut).enableSingularConstraint(ApiStatics.BASE_POSITION);
 	}
 
+	public void test2() {
+		Engine engine = new Engine();
+		Generic issue = engine.addInstance("Issue");
+		Generic comment = engine.addInstance("Comment").setClassConstraint(String.class);
+		Generic issueComment = issue.setRelation("IssueComment", comment).enableSingularConstraint(ApiStatics.TARGET_POSITION);
+		Generic myIssue = issue.setInstance("myIssue");
+		myIssue.setLink(issueComment, "link", comment.setInstance("comment1"));
+		System.out.println(myIssue.getLinks(issueComment).info());
+		myIssue.setLink(issueComment, "link", comment.setInstance("comment2"));
+		System.out.println(myIssue.getLinks(issueComment).info());
+	}
+
 	public void testRequiredConstraint() {
 		Engine engine = new Engine();
 		Generic issue = engine.addInstance("Issue");

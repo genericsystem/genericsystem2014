@@ -4,7 +4,9 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 
+import org.genericsystem.issuetracker.model.Comment;
 import org.genericsystem.issuetracker.model.Issue;
+import org.genericsystem.issuetracker.model.IssueComment;
 import org.genericsystem.issuetracker.model.IssuePriority;
 import org.genericsystem.issuetracker.model.IssueStatut;
 import org.genericsystem.mutability.Engine;
@@ -65,5 +67,36 @@ public class IssueTrackerTest extends AbstractTest {
 
 	public void testDInsertion() {
 		System.out.println("@@@@@@@@@@" + b.getNom());
+	}
+
+	public void testWithoutCascadeRemove() {
+		// Issue issue = engine.find(Issue.class);
+		// Comment comment = engine.find(Comment.class);
+		// IssueComment issueComment = engine.find(IssueComment.class);
+		// Generic firstIssue = issue.addInstance("firstIssue");
+		// Generic link = firstIssue.addLink(issueComment, "myComment", comment);
+		// assert firstIssue.isAlive();
+		// assert link.isAlive();
+		// assert link.getTargetComponent().isAlive();
+		// firstIssue.remove();
+		// assert !firstIssue.isAlive();
+		// assert !link.isAlive();
+		// assert link.getTargetComponent().isAlive();
+	}
+
+	public void testWhithCascadeRemove() {
+		Issue issue = engine.find(Issue.class);
+		Comment comment = engine.find(Comment.class);
+		IssueComment issueComment = engine.find(IssueComment.class);
+		// issueComment.enableCascadeRemove(ApiStatics.TARGET_POSITION);
+		// Generic secondIssue = issue.addInstance("firstIssue");
+		// Generic link = secondIssue.addLink(issueComment, "yourComment", comment);
+		// assert secondIssue.isAlive();
+		// assert link.isAlive();
+		// assert link.getTargetComponent().isAlive();
+		// link.remove();
+		// assert secondIssue.isAlive();
+		// assert !link.isAlive();
+		// assert !link.getTargetComponent().isAlive();
 	}
 }
