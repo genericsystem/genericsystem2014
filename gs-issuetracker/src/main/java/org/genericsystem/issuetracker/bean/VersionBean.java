@@ -6,15 +6,11 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.genericsystem.issuetracker.model.Version;
 import org.genericsystem.issuetracker.qualifier.Provide;
 
-@Named
-@SessionScoped
 public class VersionBean implements Serializable {
 	private static final long serialVersionUID = -3550870042926403966L;
 

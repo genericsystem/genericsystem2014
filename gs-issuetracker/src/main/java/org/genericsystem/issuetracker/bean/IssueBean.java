@@ -18,8 +18,7 @@ import org.genericsystem.issuetracker.model.Version;
 import org.genericsystem.issuetracker.qualifier.Provide;
 import org.genericsystem.mutability.Generic;
 
-public class IssueBean implements Serializable {
-
+public class IssueBean extends AbstractBean implements Serializable {
 	private static final long serialVersionUID = 4142394683395145575L;
 
 	@Inject
@@ -49,8 +48,6 @@ public class IssueBean implements Serializable {
 	@Inject
 	private transient FilterBean filterBean;
 
-	private transient List<String> selectedVersions;
-
 	public void addIssue(String newIssueDescription) {
 		issue.addGenerateInstance().setHolder(description, newIssueDescription);
 		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Priority is required."));
@@ -64,45 +61,16 @@ public class IssueBean implements Serializable {
 		issue.remove();
 	}
 
-	public ElStringWrapper getLink(Generic instance, Generic relation) {
-		return new ElStringWrapper() {
-
-			@Override
-			public void setValue(String value) {
-				Generic searchedTarget = relation.getTargetComponent();
-				if (searchedTarget == null)
-					instance.setHolder(relation, value);
-				else
-					instance.setHolder(relation, "link", searchedTarget.getInstance(value));
-			}
-
-			@Override
-			public String getValue() {
-				Generic link = instance.getLinks(relation).first();
-				return (link != null) ? (link.getTargetComponent() != null) ? (String) link.getTargetComponent().getValue() : Objects.toString(instance.getValues(description).first()) : null;
-			}
-		};
+	public List<String> getVersionsByIssue(Generic selectedIssue) {
+		return selectedIssue.getLinks(issueVersion).get().map(generic -> Objects.toString(generic.getValue())).collect(Collectors.toList());
 	}
 
-	public void selectIssueVersions(Generic selectedIssue) {
-		selectedVersions = selectedIssue.getLinks(issueVersion).get().map(generic -> Objects.toString(generic.getValue())).collect(Collectors.toList());
-	}
-
-	public void addVersionsToIssue(Generic instance) {
-		if (selectedVersions != null)
-			for (String string : selectedVersions) {
-				instance.setLink(issueVersion, string, version);
-			}
-		for (Generic generic : instance.getLinks(issueVersion).get().collect(Collectors.toList()))
-			if (!selectedVersions.contains(generic.getValue()))
-				instance.getLink(issueVersion, generic.getValue(), version).remove();
-
-	}
-
-	public interface ElStringWrapper {
-		public String getValue();
-
-		public void setValue(String value);
+	public void addVersionsToIssue(Generic issue, List<String> selectedVersions) {
+		for (String selectVersion : selectedVersions)
+			issue.setLink(issueVersion, selectVersion, version);
+		for (Generic link : issue.getLinks(issueVersion).get().collect(Collectors.toList()))
+			if (!selectedVersions.contains(link.getValue()))
+				issue.getLink(issueVersion, link.getValue(), version).remove();
 	}
 
 	public Description getDescription() {
@@ -117,12 +85,8 @@ public class IssueBean implements Serializable {
 		return issuePriority;
 	}
 
-	public List<String> getSelectedVersions() {
-		return selectedVersions;
-	}
-
-	public void setSelectedVersions(List<String> selectedVersions) {
-		this.selectedVersions = selectedVersions;
+	public IssueVersion getIssueVersion() {
+		return issueVersion;
 	}
 
 }

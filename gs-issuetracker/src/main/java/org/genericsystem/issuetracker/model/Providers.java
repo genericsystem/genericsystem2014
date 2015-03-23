@@ -51,12 +51,6 @@ public class Providers {
 
 	@Produces
 	@Provide
-	public IssueComment getIssueComment() {
-		return engine.find(IssueComment.class);
-	}
-
-	@Produces
-	@Provide
 	public Comment getComment() {
 		return engine.find(Comment.class);
 	}

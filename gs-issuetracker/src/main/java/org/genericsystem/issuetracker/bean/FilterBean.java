@@ -1,17 +1,19 @@
 package org.genericsystem.issuetracker.bean;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.function.Predicate;
 
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.genericsystem.mutability.Generic;
 
 @Named
-@RequestScoped
-public class FilterBean {
+@SessionScoped
+public class FilterBean implements Serializable {
+	private static final long serialVersionUID = 3895394856549620861L;
 
 	private Predicate<? super Generic> predicate;
 
