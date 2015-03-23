@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-import org.genericsystem.api.exception.ExistsException;
+import org.genericsystem.api.core.exceptions.ExistsException;
 
 abstract class GenericHandler {
 	final Context context;

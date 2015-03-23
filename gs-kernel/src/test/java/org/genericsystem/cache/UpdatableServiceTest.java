@@ -3,7 +3,7 @@ package org.genericsystem.cache;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
+import org.genericsystem.api.core.exceptions.MetaRuleConstraintViolationException;
 import org.genericsystem.kernel.Generic;
 import org.testng.annotations.Test;
 

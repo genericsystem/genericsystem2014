@@ -12,7 +12,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.Extension;
 import javax.enterprise.util.AnnotationLiteral;
 
-import org.genericsystem.kernel.annotations.SystemGeneric;
+import org.genericsystem.api.core.annotations.SystemGeneric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

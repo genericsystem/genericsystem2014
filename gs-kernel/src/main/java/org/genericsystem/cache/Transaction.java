@@ -1,6 +1,6 @@
 package org.genericsystem.cache;
 
-import org.genericsystem.api.exception.RollbackException;
+import org.genericsystem.api.core.exceptions.RollbackException;
 import org.genericsystem.kernel.Checker;
 import org.genericsystem.kernel.Generic;
 

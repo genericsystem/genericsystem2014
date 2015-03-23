@@ -1,6 +1,6 @@
 package org.genericsystem.cdi;
 
-import org.genericsystem.api.exception.CacheNoStartedException;
+import org.genericsystem.api.core.exceptions.CacheNoStartedException;
 import org.genericsystem.mutability.Cache;
 import org.genericsystem.mutability.Generic;
 import org.testng.annotations.Test;

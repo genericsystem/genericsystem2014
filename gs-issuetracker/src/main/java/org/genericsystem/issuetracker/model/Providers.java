@@ -60,4 +60,16 @@ public class Providers {
 	public Comment getComment() {
 		return engine.find(Comment.class);
 	}
+
+	@Produces
+	@Provide
+	public Version getVersion() {
+		return engine.find(Version.class);
+	}
+
+	@Produces
+	@Provide
+	public IssueVersion getIssueVersion() {
+		return engine.find(IssueVersion.class);
+	}
 }

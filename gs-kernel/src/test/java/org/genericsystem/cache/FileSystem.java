@@ -1,16 +1,16 @@
 package org.genericsystem.cache;
 
 import org.genericsystem.api.core.Snapshot;
+import org.genericsystem.api.core.annotations.Components;
+import org.genericsystem.api.core.annotations.Dependencies;
+import org.genericsystem.api.core.annotations.InstanceClass;
+import org.genericsystem.api.core.annotations.SystemGeneric;
+import org.genericsystem.api.core.annotations.constraints.InstanceValueClassConstraint;
+import org.genericsystem.api.core.annotations.constraints.SingularConstraint;
 import org.genericsystem.cache.FileSystem.Directory;
 import org.genericsystem.cache.FileSystem.FileType;
 import org.genericsystem.kernel.Generic;
 import org.genericsystem.kernel.Generic.GenericImpl;
-import org.genericsystem.kernel.annotations.Components;
-import org.genericsystem.kernel.annotations.Dependencies;
-import org.genericsystem.kernel.annotations.InstanceClass;
-import org.genericsystem.kernel.annotations.SystemGeneric;
-import org.genericsystem.kernel.annotations.constraints.InstanceValueClassConstraint;
-import org.genericsystem.kernel.annotations.constraints.SingularConstraint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -2,7 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.List;
 
-import org.genericsystem.api.exception.AliveConstraintViolationException;
+import org.genericsystem.api.core.exceptions.AliveConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test

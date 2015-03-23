@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import org.genericsystem.api.exception.RollbackException;
+import org.genericsystem.api.core.exceptions.RollbackException;
 import org.genericsystem.cdi.PersistenceTest.Count;
 import org.genericsystem.mutability.Cache;
 import org.jboss.arquillian.container.test.api.Deployment;

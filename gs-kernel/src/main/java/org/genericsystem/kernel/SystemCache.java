@@ -6,27 +6,28 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import org.genericsystem.api.exception.CyclicException;
+
+import org.genericsystem.api.core.annotations.Components;
+import org.genericsystem.api.core.annotations.Dependencies;
+import org.genericsystem.api.core.annotations.Meta;
+import org.genericsystem.api.core.annotations.constraints.InstanceValueClassConstraint;
+import org.genericsystem.api.core.annotations.constraints.NoReferentialIntegrityProperty;
+import org.genericsystem.api.core.annotations.constraints.PropertyConstraint;
+import org.genericsystem.api.core.annotations.constraints.RequiredConstraint;
+import org.genericsystem.api.core.annotations.constraints.SingularConstraint;
+import org.genericsystem.api.core.annotations.constraints.UniqueValueConstraint;
+import org.genericsystem.api.core.annotations.value.AxedPropertyClassValue;
+import org.genericsystem.api.core.annotations.value.BooleanValue;
+import org.genericsystem.api.core.annotations.value.ByteArrayValue;
+import org.genericsystem.api.core.annotations.value.DoubleValue;
+import org.genericsystem.api.core.annotations.value.EngineValue;
+import org.genericsystem.api.core.annotations.value.FloatValue;
+import org.genericsystem.api.core.annotations.value.IntValue;
+import org.genericsystem.api.core.annotations.value.LongValue;
+import org.genericsystem.api.core.annotations.value.ShortValue;
+import org.genericsystem.api.core.annotations.value.StringValue;
+import org.genericsystem.api.core.exceptions.CyclicException;
 import org.genericsystem.kernel.GenericHandler.SetSystemHandler;
-import org.genericsystem.kernel.annotations.Components;
-import org.genericsystem.kernel.annotations.Dependencies;
-import org.genericsystem.kernel.annotations.Meta;
-import org.genericsystem.kernel.annotations.constraints.InstanceValueClassConstraint;
-import org.genericsystem.kernel.annotations.constraints.NoReferentialIntegrityProperty;
-import org.genericsystem.kernel.annotations.constraints.PropertyConstraint;
-import org.genericsystem.kernel.annotations.constraints.RequiredConstraint;
-import org.genericsystem.kernel.annotations.constraints.SingularConstraint;
-import org.genericsystem.kernel.annotations.constraints.UniqueValueConstraint;
-import org.genericsystem.kernel.annotations.value.AxedPropertyClassValue;
-import org.genericsystem.kernel.annotations.value.BooleanValue;
-import org.genericsystem.kernel.annotations.value.ByteArrayValue;
-import org.genericsystem.kernel.annotations.value.DoubleValue;
-import org.genericsystem.kernel.annotations.value.EngineValue;
-import org.genericsystem.kernel.annotations.value.FloatValue;
-import org.genericsystem.kernel.annotations.value.IntValue;
-import org.genericsystem.kernel.annotations.value.LongValue;
-import org.genericsystem.kernel.annotations.value.ShortValue;
-import org.genericsystem.kernel.annotations.value.StringValue;
 
 public class SystemCache {
 
@@ -124,7 +125,7 @@ public class SystemCache {
 
 	private List<Generic> setOverrides(Class<?> clazz) {
 		List<Generic> overridesVertices = new ArrayList<>();
-		org.genericsystem.kernel.annotations.Supers supersAnnotation = clazz.getAnnotation(org.genericsystem.kernel.annotations.Supers.class);
+		org.genericsystem.api.core.annotations.Supers supersAnnotation = clazz.getAnnotation(org.genericsystem.api.core.annotations.Supers.class);
 		if (supersAnnotation != null)
 			for (Class<?> overrideClass : supersAnnotation.value())
 				overridesVertices.add(set(overrideClass));
@@ -134,7 +135,7 @@ public class SystemCache {
 	private Serializable findValue(Class<?> clazz) {
 		AxedPropertyClassValue axedPropertyClass = clazz.getAnnotation(AxedPropertyClassValue.class);
 		if (axedPropertyClass != null)
-			return new org.genericsystem.kernel.systemproperty.AxedPropertyClass(axedPropertyClass.propertyClass(), axedPropertyClass.pos());
+			return new org.genericsystem.api.core.systemproperty.AxedPropertyClass(axedPropertyClass.propertyClass(), axedPropertyClass.pos());
 
 		BooleanValue booleanValue = clazz.getAnnotation(BooleanValue.class);
 		if (booleanValue != null)

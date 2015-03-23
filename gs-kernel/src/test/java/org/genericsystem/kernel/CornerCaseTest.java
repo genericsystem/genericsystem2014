@@ -1,6 +1,6 @@
 package org.genericsystem.kernel;
 
-import org.genericsystem.api.exception.AmbiguousSelectionException;
+import org.genericsystem.api.core.exceptions.AmbiguousSelectionException;
 import org.testng.annotations.Test;
 
 @Test

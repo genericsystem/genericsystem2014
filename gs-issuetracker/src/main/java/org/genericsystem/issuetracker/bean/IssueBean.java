@@ -1,133 +1,102 @@
 package org.genericsystem.issuetracker.bean;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-import javax.inject.Named;
 
-import org.genericsystem.cdi.Engine;
 import org.genericsystem.issuetracker.model.Description;
 import org.genericsystem.issuetracker.model.Issue;
 import org.genericsystem.issuetracker.model.IssuePriority;
 import org.genericsystem.issuetracker.model.IssueStatut;
-import org.genericsystem.issuetracker.model.Priority;
-import org.genericsystem.issuetracker.model.Statut;
+import org.genericsystem.issuetracker.model.IssueVersion;
+import org.genericsystem.issuetracker.model.Version;
 import org.genericsystem.issuetracker.qualifier.Provide;
 import org.genericsystem.mutability.Generic;
 
-@Named
-@RequestScoped
-public class IssueBean {
+public class IssueBean implements Serializable {
 
-	@Inject
-	private Engine engine;
+	private static final long serialVersionUID = 4142394683395145575L;
 
 	@Inject
 	@Provide
-	private Issue issue;
+	private transient Issue issue;
 
 	@Inject
 	@Provide
-	private Description description;
+	private transient Description description;
 
 	@Inject
 	@Provide
-	private IssuePriority issuePriority;
+	private transient IssueStatut issueStatut;
 
 	@Inject
 	@Provide
-	private Priority priority;
+	private transient IssuePriority issuePriority;
 
 	@Inject
 	@Provide
-	private IssueStatut issueStatut;
+	private transient IssueVersion issueVersion;
 
 	@Inject
 	@Provide
-	private Statut statut;
+	private transient Version version;
 
 	@Inject
-	private FilterBean filterBean;
+	private transient FilterBean filterBean;
 
-	// private String newIssueDescription;
+	private transient List<String> selectedVersions;
+
+	public void addIssue(String newIssueDescription) {
+		issue.addGenerateInstance().setHolder(description, newIssueDescription);
+		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Priority is required."));
+	}
 
 	public List<Generic> getIssuesByStatut() {
 		return (filterBean.getPredicate(issueStatut) != null) ? issue.getAllInstances().get().filter(filterBean.getPredicate(issueStatut)).collect(Collectors.toList()) : issue.getAllInstances().get().collect(Collectors.toList());
 	}
 
-	public String addIssue(String newIssueDescription) {
-		issue.addGenerateInstance().setHolder(description, newIssueDescription);
-		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Priority is required."));
-		return "#";
-	}
-
-	public String deleteIssue(Generic issue) {
+	public void deleteIssue(Generic issue) {
 		issue.remove();
-		return "#";
 	}
 
-	public String flush() {
-		engine.getCurrentCache().flush();
-		return "#";
-	}
-
-	public String clear() {
-		engine.getCurrentCache().clear();
-		return "#";
-	}
-
-	public ElStringWrapper getDescription(Generic instance) {
+	public ElStringWrapper getLink(Generic instance, Generic relation) {
 		return new ElStringWrapper() {
 
 			@Override
 			public void setValue(String value) {
-				instance.setHolder(description, value);
+				Generic searchedTarget = relation.getTargetComponent();
+				if (searchedTarget == null)
+					instance.setHolder(relation, value);
+				else
+					instance.setHolder(relation, "link", searchedTarget.getInstance(value));
 			}
 
 			@Override
 			public String getValue() {
-				return Objects.toString(instance.getValues(description).first());
+				Generic link = instance.getLinks(relation).first();
+				return (link != null) ? (link.getTargetComponent() != null) ? (String) link.getTargetComponent().getValue() : Objects.toString(instance.getValues(description).first()) : null;
 			}
 		};
 	}
 
-	public ElStringWrapper getPriority(Generic instance) {
-		return new ElStringWrapper() {
-
-			@Override
-			public void setValue(String value) {
-				Generic searchedPriority = priority.getInstance(value);
-				instance.setLink(issuePriority, "linkStatut", searchedPriority);
-			}
-
-			@Override
-			public String getValue() {
-				Generic link = instance.getLinks(issuePriority).first();
-				return (link != null) ? (String) link.getTargetComponent().getValue() : null;
-			}
-		};
+	public void selectIssueVersions(Generic selectedIssue) {
+		selectedVersions = selectedIssue.getLinks(issueVersion).get().map(generic -> Objects.toString(generic.getValue())).collect(Collectors.toList());
 	}
 
-	public ElStringWrapper getStatut(Generic instance) {
-		return new ElStringWrapper() {
-
-			@Override
-			public void setValue(String value) {
-				Generic searchedStatut = statut.getInstance(value);
-				instance.setLink(issueStatut, "linkStatut", searchedStatut);
+	public void addVersionsToIssue(Generic instance) {
+		if (selectedVersions != null)
+			for (String string : selectedVersions) {
+				instance.setLink(issueVersion, string, version);
 			}
+		for (Generic generic : instance.getLinks(issueVersion).get().collect(Collectors.toList()))
+			if (!selectedVersions.contains(generic.getValue()))
+				instance.getLink(issueVersion, generic.getValue(), version).remove();
 
-			@Override
-			public String getValue() {
-				Generic link = instance.getLinks(issueStatut).first();
-				return (link != null) ? (String) link.getTargetComponent().getValue() : null;
-			}
-		};
 	}
 
 	public interface ElStringWrapper {
@@ -136,12 +105,24 @@ public class IssueBean {
 		public void setValue(String value);
 	}
 
-	// public String getNewIssueDescription() {
-	// return newIssueDescription;
-	// }
-	//
-	// public void setNewIssueDescription(String newIssueDescription) {
-	// this.newIssueDescription = newIssueDescription;
-	// }
+	public Description getDescription() {
+		return description;
+	}
+
+	public IssueStatut getIssueStatut() {
+		return issueStatut;
+	}
+
+	public IssuePriority getIssuePriority() {
+		return issuePriority;
+	}
+
+	public List<String> getSelectedVersions() {
+		return selectedVersions;
+	}
+
+	public void setSelectedVersions(List<String> selectedVersions) {
+		this.selectedVersions = selectedVersions;
+	}
 
 }

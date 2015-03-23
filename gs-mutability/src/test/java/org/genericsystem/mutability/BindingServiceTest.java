@@ -1,6 +1,6 @@
 package org.genericsystem.mutability;
 
-import org.genericsystem.api.exception.ExistsException;
+import org.genericsystem.api.core.exceptions.ExistsException;
 import org.testng.annotations.Test;
 
 @Test

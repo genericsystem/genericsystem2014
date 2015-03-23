@@ -1,6 +1,6 @@
 package org.genericsystem.example;
 
-import org.genericsystem.api.exception.RollbackException;
+import org.genericsystem.api.core.exceptions.RollbackException;
 import org.genericsystem.cdi.CacheRequestProvider;
 import org.genericsystem.cdi.CacheSessionProvider;
 import org.genericsystem.cdi.EngineProvider;
