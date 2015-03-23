@@ -2,16 +2,14 @@ package org.genericsystem.issuetracker.bean;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.mutability.Generic;
 
 public abstract class AbstractBean {
-	private static final Logger log = Logger.getAnonymousLogger();
 
-	public ElStringWrapper updateHolder(Generic issue, Generic attribute) {
+	public ElStringWrapper updateSingleHolder(Generic issue, Generic attribute) {
 		return new ElStringWrapper() {
 
 			@Override
@@ -26,16 +24,8 @@ public abstract class AbstractBean {
 			@Override
 			public String getValue() {
 				Generic link = issue.getLinks(attribute).first();
-				log.info("AbstractBean ; updateHolder ; getValue ; link : " + link.info());
-				if (link != null) {
-					log.info("AbstractBean ; attribute : " + attribute.info());
-					log.info("AbstractBean ; updateHolder ; getValue ; return (target == null) : " + Objects.toString(link.getValue()));
-					if (link.getTargetComponent() != null) {
-						log.info("AbstractBean ; updateHolder ; getValue ; target : " + link.getTargetComponent().info());
-						log.info("AbstractBean ; updateHolder ; getValue ; return (target != null) : " + Objects.toString(link.getTargetComponent().getValue()));
-					}
+				if (link != null)
 					return (link.getTargetComponent() != null) ? Objects.toString(link.getTargetComponent().getValue()) : Objects.toString(link.getValue());
-				}
 				return null;
 			}
 
@@ -63,20 +53,20 @@ public abstract class AbstractBean {
 		};
 	}
 
-	public ElStringWrapper updateLink(Generic issue, Generic relation, Generic selectedTarget) {
+	public ElStringWrapper updateMultiHolder(Generic issue, Generic selectedHolder, Generic attribute) {
 		return new ElStringWrapper() {
 
 			@Override
 			public void setValue(String value) {
-				if (selectedTarget == null)
-					issue.setHolder(relation, null, relation.getTargetComponent().setInstance(value));
+				if (selectedHolder == null)
+					issue.setHolder(attribute, value);
 				else
-					selectedTarget.getTargetComponent().updateValue(value);
+					selectedHolder.updateValue(value);
 			}
 
 			@Override
 			public String getValue() {
-				return selectedTarget != null ? Objects.toString(selectedTarget.getTargetComponent().getValue()) : "";
+				return selectedHolder != null ? Objects.toString(selectedHolder.getValue()) : "";
 			}
 
 			@Override
@@ -90,8 +80,8 @@ public abstract class AbstractBean {
 				// TODO Auto-generated method stub
 
 			}
-
 		};
+
 	}
 
 	public interface ElStringWrapper {

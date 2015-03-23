@@ -24,13 +24,11 @@ public class CommentSelectedBean implements Serializable {
 	private transient Generic selected;
 
 	public ElStringWrapper getComment(Generic issue) {
-		// return commentBean.updateHolder(issue, selected);
-		// return commentBean.updateLink(issue, issueComment, selected);
-		return commentBean.getComment(issue, selected);
+		return commentBean.updateMultiHolder(issue, selected, commentBean.getComment());
 	}
 
 	public Serializable getSelectedComment() {
-		return selected.getTargetComponent().getValue();
+		return selected.getValue();
 	}
 
 	public Generic getSelectedIssue() {

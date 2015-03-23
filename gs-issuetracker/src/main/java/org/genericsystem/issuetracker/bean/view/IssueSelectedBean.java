@@ -46,19 +46,19 @@ public class IssueSelectedBean implements Serializable {
 	}
 
 	public ElStringWrapper updateVersions(Generic issue) {
-		return issueBean.updateHolder(issue, issueBean.getIssueVersion());
+		return issueBean.updateSingleHolder(issue, issueBean.getIssueVersion());
 	}
 
 	public ElStringWrapper updateDescription(Generic issue) {
-		return issueBean.updateHolder(issue, issueBean.getDescription());
+		return issueBean.updateSingleHolder(issue, issueBean.getDescription());
 	}
 
 	public ElStringWrapper updatePriority(Generic issue) {
-		return issueBean.updateHolder(issue, issueBean.getIssuePriority());
+		return issueBean.updateSingleHolder(issue, issueBean.getIssuePriority());
 	}
 
 	public ElStringWrapper updateStatut(Generic issue) {
-		return issueBean.updateHolder(issue, issueBean.getIssueStatut());
+		return issueBean.updateSingleHolder(issue, issueBean.getIssueStatut());
 	}
 
 	public IssueBean getIssueBean() {

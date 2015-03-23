@@ -18,7 +18,7 @@
 			<f:facet name="header">
 				<h:outputLabel value="#{cc.attrs.title}" />
 			</f:facet>
-			<h:commandLink value="#{cc.attrs.backBean.getValue(object)}"
+			<h:commandLink value="#{object.getValue()}"
 				action="#{cc.attrs.backBean.setSelected(object)}">
 				<f:ajax execute="@this" render="@form message" />
 			</h:commandLink>

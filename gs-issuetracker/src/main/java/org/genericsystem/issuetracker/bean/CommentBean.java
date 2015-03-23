@@ -9,7 +9,6 @@ import javax.inject.Inject;
 
 import org.genericsystem.issuetracker.model.Comment;
 import org.genericsystem.issuetracker.model.Issue;
-import org.genericsystem.issuetracker.model.IssueComment;
 import org.genericsystem.issuetracker.qualifier.Provide;
 import org.genericsystem.mutability.Generic;
 
@@ -22,10 +21,6 @@ public class CommentBean extends AbstractBean implements Serializable {
 
 	@Inject
 	@Provide
-	private transient IssueComment issueComment;
-
-	@Inject
-	@Provide
 	private transient Comment comment;
 
 	public List<String> getAllComments() {
@@ -33,41 +28,15 @@ public class CommentBean extends AbstractBean implements Serializable {
 	}
 
 	public List<Generic> getCommentsByIssue(Generic issue) {
-		return issue.getLinks(issueComment).get().collect(Collectors.toList());
+		return issue.getHolders(comment).get().collect(Collectors.toList());
 	}
 
 	public void deleteComment(Generic comment) {
 		comment.remove();
 	}
 
-	public ElStringWrapper getComment(Generic issue, Generic selectedComment) {
-		return new ElStringWrapper() {
-
-			@Override
-			public void setValue(String value) {
-				if (selectedComment == null)
-					issue.setLink(issueComment, null, comment.setInstance(value));
-				else
-					selectedComment.getTargetComponent().updateValue(value);
-			}
-
-			@Override
-			public String getValue() {
-				return selectedComment != null ? Objects.toString(selectedComment.getTargetComponent().getValue()) : "";
-			}
-
-			@Override
-			public List<String> getValues() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-			@Override
-			public void setValues(List<String> selectedTargets) {
-				// TODO Auto-generated method stub
-
-			}
-		};
+	public Comment getComment() {
+		return comment;
 	}
 
 }

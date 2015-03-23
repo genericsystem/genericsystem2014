@@ -1,6 +1,5 @@
 package org.genericsystem.issuetracker.bean.view;
 
-import java.io.Serializable;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
@@ -42,20 +41,16 @@ public class EditIssuesBean {
 		return "#";
 	}
 
-	public Serializable getValue(Generic issue) {
-		return issue.getValue();
-	}
-
 	public ElStringWrapper getDescription(Generic issue) {
-		return issueBean.updateHolder(issue, issueBean.getDescription());
+		return issueBean.updateSingleHolder(issue, issueBean.getDescription());
 	}
 
 	public ElStringWrapper getPriority(Generic issue) {
-		return issueBean.updateHolder(issue, issueBean.getIssuePriority());
+		return issueBean.updateSingleHolder(issue, issueBean.getIssuePriority());
 	}
 
 	public ElStringWrapper getStatut(Generic issue) {
-		return issueBean.updateHolder(issue, issueBean.getIssueStatut());
+		return issueBean.updateSingleHolder(issue, issueBean.getIssueStatut());
 	}
 
 	public String setSelected(Generic selectedIssue) {

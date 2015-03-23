@@ -1,9 +1,7 @@
 package org.genericsystem.issuetracker.bean.view;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -16,7 +14,6 @@ import org.genericsystem.mutability.Generic;
 @Named
 @RequestScoped
 public class EditCommentsBean {
-	private static final Logger log = Logger.getAnonymousLogger();
 
 	@Inject
 	private IssueSelectedBean issueSelectedBean;
@@ -38,13 +35,7 @@ public class EditCommentsBean {
 	}
 
 	public ElStringWrapper getComment(Generic issue) {
-		// return commentBean.updateHolder(issue, null);
-		// return commentBean.updateLink(issue, issueComment, commentSelectedBean.getSelected());
-		return commentBean.getComment(issue, commentSelectedBean.getSelected());
-	}
-
-	public Serializable getValue(Generic comment) {
-		return comment.getTargetComponent().getValue();
+		return commentBean.updateMultiHolder(issue, null, commentBean.getComment());
 	}
 
 	public String delete(Generic comment) {
@@ -62,8 +53,6 @@ public class EditCommentsBean {
 	}
 
 	public Generic getSelectedIssue() {
-		if (issueSelectedBean.getSelectedIssue() != null)
-			log.info("EditCommentBean ; getSelectedIssue : " + issueSelectedBean.getSelectedIssue().getValue());
 		return issueSelectedBean.getSelectedIssue();
 	}
 
