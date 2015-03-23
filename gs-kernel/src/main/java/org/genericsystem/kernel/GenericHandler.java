@@ -8,6 +8,7 @@ import java.util.Objects;
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.exception.ExistsException;
 import org.genericsystem.api.exception.UnreachableOverridesException;
+import org.genericsystem.cache.LazyHandler;
 
 public abstract class GenericHandler {
 	protected final Context context;
@@ -40,7 +41,7 @@ public abstract class GenericHandler {
 	}
 
 	private Generic switchGeneric(Generic generic) {
-		if (!(generic instanceof GenericHandler))
+		if (!(generic instanceof LazyHandler))
 			return generic;
 
 		Generic newDependency = ((GenericHandler) generic).resolve();

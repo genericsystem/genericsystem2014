@@ -1,9 +1,14 @@
 package org.genericsystem.mutability;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.ProxyFactory;
@@ -15,7 +20,7 @@ public class CacheElement {
 
 	private final CacheElement subCache;
 	final Map<Generic, org.genericsystem.kernel.Generic> mutabilityMap = new IdentityHashMap<>();
-	final Map<org.genericsystem.kernel.Generic, Generic> reverseMutabilityMap = new IdentityHashMap<>();
+	final Map<org.genericsystem.kernel.Generic, Set<Generic>> reverseMutabilityMap = new IdentityHashMap<>();
 
 	public CacheElement(CacheElement subCache) {
 		this.subCache = subCache;
@@ -26,7 +31,7 @@ public class CacheElement {
 	}
 
 	protected org.genericsystem.kernel.Generic unwrap(Generic mutable) {
-		return mutabilityMap.getOrDefault(mutable, subCache == null ? null : subCache.unwrap(mutable));
+		return mutabilityMap.getOrDefault(mutable, subCache.unwrap(mutable));
 	}
 
 	protected void put(Generic mutable, org.genericsystem.kernel.Generic generic) {
@@ -45,7 +50,14 @@ public class CacheElement {
 	}
 
 	protected Generic getWrapper(org.genericsystem.kernel.Generic generic) {
-		return reverseMutabilityMap.getOrDefault(generic, subCache.getWrapper(generic));
+		Set<Generic> wrappers = reverseMutabilityMap.get(generic);
+		return wrappers != null ? wrappers.stream().findFirst().orElse(null) : subCache.getWrapper(generic);
+		// return reverseMutabilityMap.getOrDefault(generic, subCache.getWrapper(generic));
+	}
+
+	protected Stream<Generic> getWrappers(org.genericsystem.kernel.Generic generic) {
+		return Stream.concat(reverseMutabilityMap.getOrDefault(generic, Collections.emptySet()).stream(), subCache.getWrappers(generic)).distinct();
+		// return reverseMutabilityMap.getOrDefault(generic, subCache.getWrapper(generic));
 	}
 
 	private Generic createWrapper(Class<?> clazz, org.genericsystem.kernel.Generic generic, Engine engine, Cache cache) {
@@ -83,19 +95,15 @@ public class CacheElement {
 	}
 
 	public void mutate(org.genericsystem.kernel.Generic oldDependency, org.genericsystem.kernel.Generic newDependency) {
-		Generic fakeGeneric = reverseMutabilityMap.remove(oldDependency);
-		if (fakeGeneric == null)
-			fakeGeneric = getWrapper(oldDependency);
-
-		if (fakeGeneric != null) {
-			mutabilityMap.put(fakeGeneric, newDependency);
-			reverseMutabilityMap.put(newDependency, fakeGeneric);
-		}
+		Set<Generic> removedWrappers = reverseMutabilityMap.remove(oldDependency);
+		Set<Generic> wrappers = Stream.concat(removedWrappers != null ? removedWrappers.stream() : Stream.empty(), subCache.getWrappers(oldDependency)).collect(Collectors.toSet());
+		wrappers.forEach(wrapper -> mutabilityMap.put(wrapper, newDependency));
+		reverseMutabilityMap.put(newDependency, wrappers);
 	}
 
 	public void applyInSubContext() {
-		mutabilityMap.forEach((k, v) -> subCache.mutabilityMap.put(k, v));
-		reverseMutabilityMap.forEach((k, v) -> subCache.reverseMutabilityMap.put(k, v));
+		mutabilityMap.forEach((wrapper, generic) -> subCache.mutabilityMap.put(wrapper, generic));
+		reverseMutabilityMap.forEach((generic, wrappers) -> subCache.reverseMutabilityMap.computeIfAbsent(generic, w -> new HashSet<>()).addAll(wrappers));
 	}
 
 	public void refresh() {
@@ -107,6 +115,7 @@ public class CacheElement {
 				iterator.remove();
 			}
 		}
-		subCache.refresh();
+		if (subCache != null)
+			subCache.refresh();
 	}
 }

@@ -3,6 +3,8 @@ package org.genericsystem.mutability;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -202,17 +204,23 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 		@Override
 		protected void put(Generic mutable, org.genericsystem.kernel.Generic generic) {
 			mutabilityMap.put(mutable, generic);
-			reverseMutabilityMap.put(generic, mutable);
-		}
-
-		@Override
-		public void refresh() {
-			return;
+			reverseMutabilityMap.computeIfAbsent(generic, wrappers -> new HashSet<>()).add(mutable);
 		}
 
 		@Override
 		protected Generic getWrapper(org.genericsystem.kernel.Generic generic) {
-			return reverseMutabilityMap.get(generic);
+			return reverseMutabilityMap.getOrDefault(generic, Collections.emptySet()).stream().findFirst().orElse(null);
 		}
+
+		@Override
+		protected java.util.stream.Stream<Generic> getWrappers(org.genericsystem.kernel.Generic generic) {
+			return reverseMutabilityMap.getOrDefault(generic, Collections.emptySet()).stream();
+		};
+
+		@Override
+		protected org.genericsystem.kernel.Generic unwrap(Generic mutable) {
+			return mutabilityMap.get(mutable);
+		}
+
 	}
 }

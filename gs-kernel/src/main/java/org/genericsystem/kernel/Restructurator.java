@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.NavigableSet;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+
 import org.genericsystem.kernel.GenericHandler.AtomicHandler;
 
 public class Restructurator {
@@ -24,7 +25,6 @@ public class Restructurator {
 			if (toRebuild != null) {
 				dependenciesToRebuild.remove(toRebuild);
 				convertMap.put(toRebuild, build);
-				context.triggersMutation(toRebuild, build);
 			}
 			dependenciesToRebuild.forEach(x -> convertMap.convert(x));
 			return build;
