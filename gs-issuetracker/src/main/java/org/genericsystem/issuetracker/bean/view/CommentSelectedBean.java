@@ -1,4 +1,4 @@
-package org.genericsystem.issuetracker.bean;
+package org.genericsystem.issuetracker.bean.view;
 
 import java.io.Serializable;
 
@@ -6,7 +6,8 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.genericsystem.issuetracker.bean.IssueBean.ElStringWrapper;
+import org.genericsystem.issuetracker.bean.AbstractBean.ElStringWrapper;
+import org.genericsystem.issuetracker.bean.CommentBean;
 import org.genericsystem.mutability.Generic;
 
 @Named
@@ -20,23 +21,14 @@ public class CommentSelectedBean implements Serializable {
 	@Inject
 	private CommentBean commentBean;
 
-	private transient Generic selectedComment;
+	private transient Generic selected;
 
-	public ElStringWrapper getComment(Generic instance) {
-		return commentBean.getComment(instance, selectedComment);
+	public ElStringWrapper getComment(Generic issue) {
+		return commentBean.updateMultiHolder(issue, selected, commentBean.getComment());
 	}
 
-	public String getSearchedComment() {
-		return (selectedComment != null) ? (String) selectedComment.getTargetComponent().getValue() : "---";
-	}
-
-	public Generic getSelected() {
-		return selectedComment;
-	}
-
-	public Generic setSelected(Generic selectedComment) {
-		this.selectedComment = selectedComment;
-		return this.selectedComment;
+	public Serializable getSelectedComment() {
+		return selected.getValue();
 	}
 
 	public Generic getSelectedIssue() {
@@ -45,6 +37,14 @@ public class CommentSelectedBean implements Serializable {
 
 	public void setSelectedIssue(Generic selectedIssue) {
 		issueSelectedBean.setSelectedIssue(selectedIssue);
+	}
+
+	public Generic getSelected() {
+		return selected;
+	}
+
+	public void setSelected(Generic selected) {
+		this.selected = selected;
 	}
 
 }
