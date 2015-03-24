@@ -107,6 +107,9 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 				mutabilityMap.put(mutable, newDependency);
 			}
 			reverseMultiMap.remove(oldDependency);
+			Set<Generic> newDependencySet = reverseMultiMap.get(newDependency);
+			if (newDependencySet != null)
+				resultSet.addAll(reverseMultiMap.get(newDependency));
 			reverseMultiMap.put(newDependency, resultSet);
 		}
 	}
