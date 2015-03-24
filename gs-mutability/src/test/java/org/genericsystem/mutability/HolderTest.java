@@ -441,12 +441,12 @@ public class HolderTest extends AbstractTest {
 		assert myMbw != myAudi;
 		assert myAudi.isAlive();
 		assert myMbw.isAlive();
-		assert engine.getCurrentCache().wrap(realMyMbw) == myAudi;
-		assert engine.getCurrentCache().wrap(realMyMbw) != myMbw;
+		assert engine.getCurrentCache().wrap(realMyMbw) == myMbw;
+		assert engine.getCurrentCache().wrap(realMyMbw) != myAudi;
 
 		myAudi.update("myMercedes");
-		assert myAudi.isAlive();
 		assert myMbw.isAlive();
+		assert myAudi.isAlive();
 
 		assert engine.getCurrentCache().unwrap(myMbw) == engine.getCurrentCache().unwrap(myAudi);
 

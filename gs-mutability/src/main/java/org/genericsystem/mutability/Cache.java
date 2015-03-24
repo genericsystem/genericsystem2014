@@ -3,16 +3,21 @@ package org.genericsystem.mutability;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import javassist.util.proxy.MethodFilter;
+import javassist.util.proxy.ProxyFactory;
+import javassist.util.proxy.ProxyObject;
 
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.exception.AliveConstraintViolationException;
 import org.genericsystem.api.exception.RollbackException;
 import org.genericsystem.cache.Cache.ContextEventListener;
 import org.genericsystem.defaults.DefaultContext;
+import org.genericsystem.kernel.annotations.InstanceClass;
 
 public class Cache implements DefaultContext<Generic>, ContextEventListener<org.genericsystem.kernel.Generic> {
 	private final Engine engine;
@@ -53,7 +58,7 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 	}
 
 	protected Generic wrap(org.genericsystem.kernel.Generic generic) {
-		return cacheElement.wrap(generic, engine, this);
+		return cacheElement.wrap(generic);
 	}
 
 	@Override
@@ -187,10 +192,13 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 	}
 
 	public Generic wrap(Class<?> clazz, org.genericsystem.kernel.Generic find) {
-		return cacheElement.wrap(clazz, find, engine, this);
+		return cacheElement.wrap(clazz, find);
 	}
 
 	class TransactionElement extends CacheElement {
+
+		final Map<org.genericsystem.kernel.Generic, Generic> reverseMutabilityMap = new IdentityHashMap<>();
+		final Map<Generic, org.genericsystem.kernel.Generic> mutabilityMap = new IdentityHashMap<>();
 
 		public TransactionElement() {
 			super(null);
@@ -204,23 +212,75 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 		@Override
 		protected void put(Generic mutable, org.genericsystem.kernel.Generic generic) {
 			mutabilityMap.put(mutable, generic);
-			reverseMutabilityMap.computeIfAbsent(generic, wrappers -> new HashSet<>()).add(mutable);
+			reverseMutabilityMap.put(generic, mutable);
+			// reverseMutabilityMap.computeIfAbsent(generic, wrappers -> new HashSet<>()).add(mutable);
 		}
 
 		@Override
 		protected Generic getWrapper(org.genericsystem.kernel.Generic generic) {
-			return reverseMutabilityMap.getOrDefault(generic, Collections.emptySet()).stream().findFirst().orElse(null);
+			return reverseMutabilityMap.get(generic);
+			// return reverseMutabilityMap.getOrDefault(generic, Collections.emptySet()).stream().findFirst().orElse(null);
 		}
 
-		@Override
-		protected java.util.stream.Stream<Generic> getWrappers(org.genericsystem.kernel.Generic generic) {
-			return reverseMutabilityMap.getOrDefault(generic, Collections.emptySet()).stream();
-		};
+		//
+		// @Override
+		// protected java.util.stream.Stream<Generic> getWrappers(org.genericsystem.kernel.Generic generic) {
+		// return reverseMutabilityMap.getOrDefault(generic, Collections.emptySet()).stream();
+		// };
 
 		@Override
 		protected org.genericsystem.kernel.Generic unwrap(Generic mutable) {
-			return mutabilityMap.get(mutable);
+			Generic wrapper = super.mutabilityMap.get(mutable);
+			return mutabilityMap.get(wrapper != null ? wrapper : mutable);
+		}
+
+		@Override
+		public Generic wrap(org.genericsystem.kernel.Generic generic) {
+			return wrap(getRoot().cacheEngine.findAnnotedClass(generic), generic);
+		}
+
+		@Override
+		public Generic wrap(Class<?> clazz, org.genericsystem.kernel.Generic generic) {
+			if (generic == null)
+				return null;
+			Generic wrapper = getWrapper(generic);
+			return wrapper != null ? wrapper : createWrapper(clazz, generic);
+		}
+
+		private Generic createWrapper(Class<?> clazz, org.genericsystem.kernel.Generic generic) {
+			Generic wrapper;
+			InstanceClass instanceClassAnnotation = null;
+			Class<?> findAnnotedClass = generic.getRoot().findAnnotedClass(generic.getMeta());
+			if (findAnnotedClass != null)
+				instanceClassAnnotation = findAnnotedClass.getAnnotation(InstanceClass.class);
+			if (clazz != null) {
+				if (instanceClassAnnotation != null && !instanceClassAnnotation.value().isAssignableFrom(clazz))
+					discardWithException(new InstantiationException(clazz + " must extends " + instanceClassAnnotation.value()));
+				wrapper = (Generic) newInstance(clazz, engine);
+			} else
+				wrapper = (Generic) newInstance(instanceClassAnnotation != null ? instanceClassAnnotation.value() : Object.class, engine);
+			put(wrapper, generic);
+			return wrapper;
+		}
+
+		@SuppressWarnings("unchecked")
+		<T> T newInstance(Class<?> clazz, Engine engine) {
+			PROXY_FACTORY.setSuperclass(clazz);
+			if (!Generic.class.isAssignableFrom(clazz))
+				PROXY_FACTORY.setInterfaces(new Class[] { Generic.class });
+			T instance = null;
+			try {
+				instance = (T) PROXY_FACTORY.createClass(METHOD_FILTER).newInstance();
+			} catch (InstantiationException | IllegalAccessException e) {
+				discardWithException(e);
+			}
+			((ProxyObject) instance).setHandler(engine);
+			return instance;
 		}
 
 	}
+
+	private final static ProxyFactory PROXY_FACTORY = new ProxyFactory();
+	private final static MethodFilter METHOD_FILTER = method -> method.getName().equals("getRoot");
+
 }

@@ -28,6 +28,7 @@ public class MutabilityTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("VehicleZ");
 		Generic car = engine.addInstance(vehicle, "Car");
+		assert vehicle.isAlive();
 		vehicle.updateValue("Vehicle");
 		assert vehicle.isAlive();
 		assert car.isAlive();// Aie, dependencies have been rebuilt and should be alive !
