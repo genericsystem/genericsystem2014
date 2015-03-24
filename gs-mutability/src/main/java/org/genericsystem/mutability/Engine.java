@@ -14,7 +14,7 @@ public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 
 	protected final ThreadLocal<Cache> cacheLocal = new ThreadLocal<>();
 
-	final org.genericsystem.cache.Engine cacheEngine;
+	private final org.genericsystem.cache.Engine cacheEngine;
 
 	public Engine() {
 		this.cacheEngine = new org.genericsystem.cache.Engine();
