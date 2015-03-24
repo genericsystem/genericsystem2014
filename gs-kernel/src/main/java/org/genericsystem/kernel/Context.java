@@ -11,7 +11,6 @@ import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.core.annotations.InstanceClass;
 import org.genericsystem.api.core.exceptions.UnreachableOverridesException;
 import org.genericsystem.defaults.DefaultContext;
-import org.genericsystem.defaults.DefaultLifeManager;
 import org.genericsystem.kernel.Generic.GenericImpl;
 import org.genericsystem.kernel.GenericHandler.AddHandler;
 import org.genericsystem.kernel.GenericHandler.SetHandler;
@@ -151,7 +150,7 @@ public abstract class Context implements DefaultContext<Generic> {
 		}
 
 		Generic buildAndPlug(Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components) {
-			return Context.this.plug(build(Context.this.getRoot().pickNewTs(), clazz, meta, supers, value, components, Context.this.getRoot().isInitialized() ? DefaultLifeManager.USER_TS : DefaultLifeManager.SYSTEM_TS));
+			return Context.this.plug(build(Context.this.getRoot().pickNewTs(), clazz, meta, supers, value, components, Context.this.getRoot().isInitialized() ? LifeManager.USER_TS : LifeManager.SYSTEM_TS));
 		}
 
 		Class<?> getAnnotedClass(Generic vertex) {

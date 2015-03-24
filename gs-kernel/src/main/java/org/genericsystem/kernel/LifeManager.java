@@ -5,11 +5,16 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.genericsystem.api.core.exceptions.ConcurrencyControlException;
 import org.genericsystem.api.core.exceptions.OptimisticLockConstraintViolationException;
-import org.genericsystem.defaults.DefaultLifeManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LifeManager implements DefaultLifeManager {
+public class LifeManager {
+
+	public final static long TS_OLD_SYSTEM = 1L;
+	public final static long TS_SYSTEM = 0L;
+	public final static long[] SYSTEM_TS = new long[] { TS_SYSTEM, 0L, Long.MAX_VALUE };
+	public final static long[] USER_TS = new long[] { Long.MAX_VALUE, 0L, Long.MAX_VALUE };
+
 	protected static Logger log = LoggerFactory.getLogger(LifeManager.class);
 
 	private long birthTs;
@@ -116,13 +121,16 @@ public class LifeManager implements DefaultLifeManager {
 		return lock.isWriteLockedByCurrentThread();
 	}
 
-	@Override
 	public long getBirthTs() {
 		return birthTs;
 	}
 
 	public boolean willDie() {
 		return deathTs != Long.MAX_VALUE;
+	}
+
+	public boolean isSystem() {
+		return getBirthTs() == TS_SYSTEM;
 	}
 
 }

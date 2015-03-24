@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-import org.genericsystem.defaults.DefaultLifeManager;
+
 import org.genericsystem.kernel.GenericHandler.SetArchiverHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -274,7 +274,8 @@ public class Archiver {
 				Map<Long, Generic> vertexMap = new HashMap<>();
 				for (;;)
 					loadDependency(vertexMap);
-			} catch (EOFException ignore) {}
+			} catch (EOFException ignore) {
+			}
 		}
 
 		protected long loadTs() throws IOException {
@@ -288,8 +289,8 @@ public class Archiver {
 		protected void loadDependency(Map<Long, Generic> vertexMap) throws IOException, ClassNotFoundException {
 			long ts = loadTs();
 			long[] otherTs = loadOtherTs();
-			if (otherTs[0] == DefaultLifeManager.TS_SYSTEM)
-				otherTs[0] = DefaultLifeManager.TS_OLD_SYSTEM;
+			if (otherTs[0] == LifeManager.TS_SYSTEM)
+				otherTs[0] = LifeManager.TS_OLD_SYSTEM;
 			Serializable value = (Serializable) objectInputStream.readObject();
 			Generic meta = loadAncestor(ts, vertexMap);
 			List<Generic> supers = loadAncestors(ts, vertexMap);

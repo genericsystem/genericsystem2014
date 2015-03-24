@@ -24,7 +24,6 @@ public class Restructurator {
 			if (toRebuild != null) {
 				dependenciesToRebuild.remove(toRebuild);
 				convertMap.put(toRebuild, build);
-				context.triggersMutation(toRebuild, build);
 			}
 			dependenciesToRebuild.forEach(x -> convertMap.convert(x));
 			return build;
