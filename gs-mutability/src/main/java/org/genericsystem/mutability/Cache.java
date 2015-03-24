@@ -213,20 +213,12 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 		protected void put(Generic mutable, org.genericsystem.kernel.Generic generic) {
 			mutabilityMap.put(mutable, generic);
 			reverseMutabilityMap.put(generic, mutable);
-			// reverseMutabilityMap.computeIfAbsent(generic, wrappers -> new HashSet<>()).add(mutable);
 		}
 
 		@Override
 		protected Generic getWrapper(org.genericsystem.kernel.Generic generic) {
 			return reverseMutabilityMap.get(generic);
-			// return reverseMutabilityMap.getOrDefault(generic, Collections.emptySet()).stream().findFirst().orElse(null);
 		}
-
-		//
-		// @Override
-		// protected java.util.stream.Stream<Generic> getWrappers(org.genericsystem.kernel.Generic generic) {
-		// return reverseMutabilityMap.getOrDefault(generic, Collections.emptySet()).stream();
-		// };
 
 		@Override
 		protected org.genericsystem.kernel.Generic unwrap(Generic mutable) {

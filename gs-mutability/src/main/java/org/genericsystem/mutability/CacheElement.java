@@ -8,8 +8,6 @@ public class CacheElement {
 	private final CacheElement subCache;
 	final Map<Generic, Generic> mutabilityMap = new IdentityHashMap<>();
 
-	// final Map<org.genericsystem.kernel.Generic, Set<Generic>> reverseMutabilityMap = new IdentityHashMap<>();
-
 	public CacheElement(CacheElement subCache) {
 		this.subCache = subCache;
 	}
@@ -22,7 +20,7 @@ public class CacheElement {
 		return subCache.unwrap(unwrapSelf(mutable));
 	}
 
-	protected Generic unwrapSelf(Generic mutable) {
+	private Generic unwrapSelf(Generic mutable) {
 		Generic wrapper = mutabilityMap.get(mutable);
 		if (wrapper == null)
 			return mutable;
@@ -37,20 +35,8 @@ public class CacheElement {
 		return subCache.getWrapper(generic);
 	}
 
-	// protected Stream<Generic> getWrappers(org.genericsystem.kernel.Generic generic) {
-	// return Stream.concat(reverseMutabilityMap.getOrDefault(generic, Collections.emptySet()).stream(), subCache.getWrappers(generic)).distinct();
-	// // return reverseMutabilityMap.getOrDefault(generic, subCache.getWrapper(generic));
-	// }
-
 	public void mutate(org.genericsystem.kernel.Generic oldDependency, org.genericsystem.kernel.Generic newDependency) {
-		Generic oldWrapper = wrap(oldDependency);
-		Generic newWrapper = wrap(newDependency);
-		mutabilityMap.put(oldWrapper, newWrapper);
-
-		// Set<Generic> removedWrappers = reverseMutabilityMap.remove(oldDependency);
-		// Set<Generic> wrappers = Stream.concat(removedWrappers != null ? removedWrappers.stream() : Stream.empty(), subCache.getWrappers(oldDependency)).collect(Collectors.toSet());
-		// wrappers.forEach(wrapper -> mutabilityMap.put(wrapper, newDependency));
-		// reverseMutabilityMap.put(newDependency, wrappers);
+		mutabilityMap.put(wrap(oldDependency), wrap(newDependency));
 	}
 
 	public void applyInSubContext() {
@@ -58,16 +44,7 @@ public class CacheElement {
 	}
 
 	public void refresh() {
-		// Iterator<Entry<Generic, org.genericsystem.kernel.Generic>> iterator = mutabilityMap.entrySet().iterator();
-		// while (iterator.hasNext()) {
-		// Entry<Generic, org.genericsystem.kernel.Generic> entry = iterator.next();
-		// if (!entry.getValue().isAlive()) {
-		// reverseMutabilityMap.remove(entry.getValue());
-		// iterator.remove();
-		// }
-		// }
-		// if (subCache != null)
-		// subCache.refresh();
+		// do the refresh
 	}
 
 	public Generic wrap(Class<?> clazz, org.genericsystem.kernel.Generic find) {
