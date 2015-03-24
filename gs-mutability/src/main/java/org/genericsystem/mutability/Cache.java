@@ -27,13 +27,13 @@ import org.genericsystem.defaults.DefaultContext;
 
 public class Cache implements DefaultContext<Generic>, ContextEventListener<org.genericsystem.kernel.Generic> {
 	private final Engine engine;
-	private final org.genericsystem.cache.Cache cache;
+	final org.genericsystem.cache.Cache cache;
 	private final Map<Generic, org.genericsystem.kernel.Generic> mutabilityMap = new IdentityHashMap<>();
 	private final Map<org.genericsystem.kernel.Generic, Set<Generic>> reverseMultiMap = new IdentityHashMap<>();
 
 	private final Deque<Map<Generic, org.genericsystem.kernel.Generic>> revertMutations = new ArrayDeque<>();
 
-	public Cache(Engine engine, org.genericsystem.cache.Engine cacheEngine) {
+	public Cache(Engine engine, org.genericsystem.cache.AbstractEngine cacheEngine) {
 		this.engine = engine;
 		put(engine, cacheEngine);
 		this.cache = cacheEngine.newCache(this);

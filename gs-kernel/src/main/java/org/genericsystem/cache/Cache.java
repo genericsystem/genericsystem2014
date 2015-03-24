@@ -19,7 +19,7 @@ public class Cache extends Context {
 	protected CacheElement cacheElement;
 	private final ContextEventListener<Generic> listener;
 
-	protected Cache(Engine engine) {
+	protected Cache(AbstractEngine engine) {
 		this(new Transaction(engine));
 	}
 
@@ -124,8 +124,8 @@ public class Cache extends Context {
 	}
 
 	@Override
-	public Engine getRoot() {
-		return (Engine) super.getRoot();
+	public AbstractEngine getRoot() {
+		return (AbstractEngine) super.getRoot();
 	}
 
 	public Cache start() {

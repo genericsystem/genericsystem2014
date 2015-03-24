@@ -14,12 +14,7 @@ public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 
 	protected final ThreadLocal<Cache> cacheLocal = new ThreadLocal<>();
 
-	private final org.genericsystem.cache.Engine cacheEngine;
-
-	public Engine() {
-		this.cacheEngine = new org.genericsystem.cache.Engine();
-		newCache().start();
-	}
+	private final org.genericsystem.cache.AbstractEngine cacheEngine;
 
 	public Engine(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
@@ -30,7 +25,29 @@ public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 	}
 
 	public Engine(Serializable engineValue, String persistentDirectoryPath, Class<?>... userClasses) {
-		this.cacheEngine = new org.genericsystem.cache.Engine(engineValue, persistentDirectoryPath, userClasses);
+		this.cacheEngine = new org.genericsystem.cache.AbstractEngine(engineValue, persistentDirectoryPath, userClasses) {
+			@Override
+			protected void startContext() {
+				Engine.this.start(new Cache(Engine.this, this));
+			}
+
+			@Override
+			protected org.genericsystem.cache.Cache start(org.genericsystem.cache.Cache cache) {
+				if (!equals(cache.getRoot()))
+					throw new IllegalStateException();
+				return cache;
+			}
+
+			@Override
+			protected void stop(org.genericsystem.cache.Cache cache) {
+				garbageCollector.stopsScheduler();
+			}
+
+			@Override
+			public org.genericsystem.cache.Cache getCurrentCache() {
+				return Engine.this.getCurrentCache().cache;
+			}
+		};
 		newCache().start();
 	}
 
@@ -94,7 +111,7 @@ public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 		return getCurrentCache().wrap(cacheEngine.getMetaRelation());
 	}
 
-	public org.genericsystem.cache.Engine getConcurrencyEngine() {
+	public org.genericsystem.cache.AbstractEngine getConcurrencyEngine() {
 		return cacheEngine;
 	}
 
