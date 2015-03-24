@@ -3,7 +3,7 @@ package org.genericsystem.mutability;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
+import org.genericsystem.api.core.exceptions.MetaRuleConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test

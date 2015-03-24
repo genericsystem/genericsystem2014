@@ -3,7 +3,7 @@ package org.genericsystem.kernel;
 import java.util.Arrays;
 
 import org.genericsystem.api.core.ApiStatics;
-import org.genericsystem.api.exception.ExistsException;
+import org.genericsystem.api.core.exceptions.ExistsException;
 import org.genericsystem.defaults.exceptions.SingularConstraintViolationException;
 import org.testng.annotations.Test;
 
@@ -98,7 +98,7 @@ public class BindingServiceTest extends AbstractTest {
 		Generic singular = engine.addInstance("Singular");
 
 		Generic vehiclePower = vehicle.addAttribute(singular, "Power");
-		catchAndCheckCause(() -> singular.enableSingularConstraint(ApiStatics.BASE_POSITION), org.genericsystem.api.exception.NotFoundException.class);
+		catchAndCheckCause(() -> singular.enableSingularConstraint(ApiStatics.BASE_POSITION), org.genericsystem.api.core.exceptions.NotFoundException.class);
 	}
 
 	public void test003_InheritanceFromType() {

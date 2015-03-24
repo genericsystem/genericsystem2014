@@ -1,72 +1,42 @@
 package org.genericsystem.issuetracker.bean;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.Objects;
 import java.util.stream.Collectors;
-import javax.enterprise.context.RequestScoped;
+
 import javax.inject.Inject;
-import javax.inject.Named;
-import org.genericsystem.issuetracker.bean.IssueBean.ElStringWrapper;
+
 import org.genericsystem.issuetracker.model.Comment;
-import org.genericsystem.issuetracker.model.IssueComment;
+import org.genericsystem.issuetracker.model.Issue;
 import org.genericsystem.issuetracker.qualifier.Provide;
 import org.genericsystem.mutability.Generic;
 
-@Named
-@RequestScoped
-public class CommentBean {
-	private static final Logger log = Logger.getAnonymousLogger();
+public class CommentBean extends AbstractBean implements Serializable {
+	private static final long serialVersionUID = 5563656957808416784L;
 
 	@Inject
 	@Provide
-	private IssueComment issueComment;
+	private transient Issue issue;
 
 	@Inject
 	@Provide
-	private Comment comment;
+	private transient Comment comment;
 
-	@Inject
-	private IssueSelectionBean issueSelectionBean;
-
-	private String newComment;
-
-	private List<Generic> getCommentsByIssue(Generic instance) {
-		return instance.getLinks(issueComment).get().collect(Collectors.toList());
+	public List<String> getAllComments() {
+		return comment.getInstances().get().map(generic -> Objects.toString(generic.getValue())).collect(Collectors.toList());
 	}
 
-	public List<Generic> getComments() {
-		Generic instance = issueSelectionBean.getSelectedIssue();
-		return (instance != null) ? getCommentsByIssue(instance) : new ArrayList<>();
+	public List<Generic> getCommentsByIssue(Generic issue) {
+		return issue.getHolders(comment).get().collect(Collectors.toList());
 	}
 
-	public ElStringWrapper addComment(Generic instance) {
-		return new ElStringWrapper() {
-
-			@Override
-			public void setValue(String value) {
-				instance.setLink(issueComment, "link", comment.setInstance(value));
-			}
-
-			@Override
-			public String getValue() {
-				return "";
-			}
-		};
-	}
-
-	public String deleteComment(Generic comment) {
+	public void deleteComment(Generic comment) {
 		comment.remove();
-		return "#";
 	}
 
-	public String getNewComment() {
-		return newComment;
-	}
-
-	public void setNewComment(String newComment) {
-		log.info("CommentBean ; setNewComment ; commentValue : " + newComment);
-		this.newComment = newComment;
+	public Comment getComment() {
+		return comment;
 	}
 
 }

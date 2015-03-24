@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import org.genericsystem.api.core.IVertex.Visitor;
-import org.genericsystem.api.exception.ExistsException;
+import org.genericsystem.api.core.exceptions.ExistsException;
 import org.testng.annotations.Test;
 
 @Test

@@ -1,7 +1,7 @@
 package org.genericsystem.mutability;
 
-import org.genericsystem.api.exception.AliveConstraintViolationException;
-import org.genericsystem.api.exception.ReferentialIntegrityConstraintViolationException;
+import org.genericsystem.api.core.exceptions.AliveConstraintViolationException;
+import org.genericsystem.api.core.exceptions.ReferentialIntegrityConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test

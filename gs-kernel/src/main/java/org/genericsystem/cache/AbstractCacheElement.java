@@ -1,8 +1,8 @@
 package org.genericsystem.cache;
 
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.api.exception.ConcurrencyControlException;
-import org.genericsystem.api.exception.OptimisticLockConstraintViolationException;
+import org.genericsystem.api.core.exceptions.ConcurrencyControlException;
+import org.genericsystem.api.core.exceptions.OptimisticLockConstraintViolationException;
 import org.genericsystem.kernel.Generic;
 
 public abstract class AbstractCacheElement {

@@ -2,7 +2,7 @@ package org.genericsystem.kernel;
 
 import java.util.Arrays;
 
-import org.genericsystem.api.exception.AmbiguousSelectionException;
+import org.genericsystem.api.core.exceptions.AmbiguousSelectionException;
 import org.testng.annotations.Test;
 
 @Test

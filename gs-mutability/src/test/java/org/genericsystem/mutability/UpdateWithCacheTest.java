@@ -1,6 +1,6 @@
 package org.genericsystem.mutability;
 
-import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
+import org.genericsystem.api.core.exceptions.MetaRuleConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test

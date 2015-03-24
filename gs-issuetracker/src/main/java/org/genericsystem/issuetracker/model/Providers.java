@@ -51,13 +51,19 @@ public class Providers {
 
 	@Produces
 	@Provide
-	public IssueComment getIssueComment() {
-		return engine.find(IssueComment.class);
+	public Comment getComment() {
+		return engine.find(Comment.class);
 	}
 
 	@Produces
 	@Provide
-	public Comment getComment() {
-		return engine.find(Comment.class);
+	public Version getVersion() {
+		return engine.find(Version.class);
+	}
+
+	@Produces
+	@Provide
+	public IssueVersion getIssueVersion() {
+		return engine.find(IssueVersion.class);
 	}
 }

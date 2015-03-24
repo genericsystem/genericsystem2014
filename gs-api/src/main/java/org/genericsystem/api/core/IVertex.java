@@ -7,7 +7,7 @@ import java.util.Set;
 
 import javax.json.JsonObject;
 
-import org.genericsystem.api.exception.RollbackException;
+import org.genericsystem.api.core.exceptions.RollbackException;
 
 /**
  * Represents a node of the graph.

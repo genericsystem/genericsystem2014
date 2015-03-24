@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.stream.Collectors;
 
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.api.exception.ConstraintViolationException;
+import org.genericsystem.api.core.exceptions.ConstraintViolationException;
 import org.genericsystem.defaults.DefaultVertex;
 import org.genericsystem.defaults.constraints.Constraint.CheckableConstraint;
 import org.genericsystem.defaults.exceptions.PropertyConstraintViolationException;

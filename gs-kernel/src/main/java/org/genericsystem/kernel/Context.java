@@ -8,14 +8,14 @@ import java.util.List;
 
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.api.exception.UnreachableOverridesException;
+import org.genericsystem.api.core.annotations.InstanceClass;
+import org.genericsystem.api.core.exceptions.UnreachableOverridesException;
 import org.genericsystem.defaults.DefaultContext;
 import org.genericsystem.defaults.DefaultLifeManager;
 import org.genericsystem.kernel.Generic.GenericImpl;
 import org.genericsystem.kernel.GenericHandler.AddHandler;
 import org.genericsystem.kernel.GenericHandler.SetHandler;
 import org.genericsystem.kernel.GenericHandler.UpdateHandler;
-import org.genericsystem.kernel.annotations.InstanceClass;
 
 public abstract class Context implements DefaultContext<Generic> {
 
@@ -93,6 +93,7 @@ public abstract class Context implements DefaultContext<Generic> {
 	@Override
 	public Generic setInstance(Generic meta, List<Generic> overrides, Serializable value, List<Generic> components) {
 		return new SetHandler(this, meta, overrides, value, components).resolve();
+
 	}
 
 	@Override

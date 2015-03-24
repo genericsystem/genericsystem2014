@@ -5,11 +5,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+
+import org.genericsystem.api.core.annotations.SystemGeneric;
 import org.genericsystem.kernel.Generic;
 import org.genericsystem.kernel.Generic.GenericImpl;
 import org.genericsystem.kernel.LifeManager;
 import org.genericsystem.kernel.Statics;
-import org.genericsystem.kernel.annotations.SystemGeneric;
 import org.testng.annotations.Test;
 
 @Test

@@ -9,8 +9,8 @@ import java.util.Objects;
 
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.ISignature;
-import org.genericsystem.api.exception.AmbiguousSelectionException;
-import org.genericsystem.api.exception.MetaRuleConstraintViolationException;
+import org.genericsystem.api.core.exceptions.AmbiguousSelectionException;
+import org.genericsystem.api.core.exceptions.MetaRuleConstraintViolationException;
 
 public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncestors<T>, DefaultDependencies<T>, DefaultDisplay<T>, DefaultSystemProperties<T>, DefaultCompositesInheritance<T>, DefaultWritable<T> {
 

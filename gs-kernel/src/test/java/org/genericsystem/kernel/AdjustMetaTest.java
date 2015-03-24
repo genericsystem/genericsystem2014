@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import org.genericsystem.api.core.ApiStatics;
-import org.genericsystem.api.exception.ExistsException;
+import org.genericsystem.api.core.exceptions.ExistsException;
 import org.genericsystem.kernel.Config.SystemMap;
 import org.testng.annotations.Test;
 
