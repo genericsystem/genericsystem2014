@@ -426,4 +426,34 @@ public class HolderTest extends AbstractTest {
 		assert v1.isAlive();
 		assert v2.isAlive();
 	}
+
+	public void test666() {
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = engine.addInstance(vehicle, "Car");
+		Generic myAudi = car.addInstance("myAudi");
+		Generic myMbw = car.addInstance("myMbw");
+		assert engine.getCurrentCache().unwrap(myMbw) != engine.getCurrentCache().unwrap(myAudi);
+
+		myAudi.update("myMbw");
+		org.genericsystem.kernel.Generic realMyMbw = engine.getCurrentCache().unwrap(myMbw);
+		assert engine.getCurrentCache().unwrap(myMbw) == engine.getCurrentCache().unwrap(myAudi);
+		assert myMbw != myAudi;
+		assert myAudi.isAlive();
+		assert myMbw.isAlive();
+		assert engine.getCurrentCache().wrap(realMyMbw) == myMbw;
+		assert engine.getCurrentCache().wrap(realMyMbw) != myAudi;
+
+		myAudi.update("myMercedes");
+		assert myMbw.isAlive();
+		assert myAudi.isAlive();
+
+		assert engine.getCurrentCache().unwrap(myMbw) == engine.getCurrentCache().unwrap(myAudi);
+
+		myAudi.update("myTruc");
+		assert myAudi.isAlive();
+		assert myMbw.isAlive();
+
+		assert engine.getCurrentCache().unwrap(myMbw) == engine.getCurrentCache().unwrap(myAudi);
+	}
 }
