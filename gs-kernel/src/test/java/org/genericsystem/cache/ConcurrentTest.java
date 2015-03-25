@@ -9,7 +9,7 @@ public class ConcurrentTest extends AbstractTest {
 	public void test() {
 		Engine engine = new Engine();
 		Cache cache = engine.getCurrentCache();
-		Cache cache2 = engine.newContext().start();
+		Cache cache2 = engine.newCache().start();
 		Generic car = engine.addInstance("Car");
 
 		assert cache2.isAlive(car);
@@ -42,7 +42,7 @@ public class ConcurrentTest extends AbstractTest {
 		assert cache.isAlive(car);
 		assert engine.getInstances().contains(car);
 
-		Cache cache2 = engine.newContext().start();
+		Cache cache2 = engine.newCache().start();
 
 		assert cache2.isAlive(car);
 		assert engine.getInstances().contains(car);
@@ -56,7 +56,7 @@ public class ConcurrentTest extends AbstractTest {
 		assert cache.isAlive(car);
 		assert engine.getInstances().contains(car);
 
-		Cache cache2 = engine.newContext().start();
+		Cache cache2 = engine.newCache().start();
 		assert !cache2.isAlive(car);
 		assert !engine.getInstances().contains(car);
 	}

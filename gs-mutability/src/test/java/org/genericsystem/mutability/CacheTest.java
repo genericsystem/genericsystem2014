@@ -186,7 +186,7 @@ public class CacheTest extends AbstractTest {
 
 	public void test002_mountNewCache() {
 		Engine engine = new Engine();
-		Cache cache = engine.newContext().start();
+		Cache cache = engine.newCache().start();
 		Cache currentCache = engine.getCurrentCache();
 		assert cache == currentCache;
 		currentCache.mount();

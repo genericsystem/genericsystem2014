@@ -39,7 +39,7 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 
 	public Root(Serializable value, String persistentDirectoryPath, Class<?>... userClasses) {
 		init(this, LifeManager.TS_SYSTEM, null, Collections.emptyList(), value, Collections.emptyList(), LifeManager.SYSTEM_TS);
-		contextWrapper.set(newContext());
+		contextWrapper.set(newCache());
 		systemCache = new SystemCache(this, getClass());
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class, Sequence.class), userClasses);
 		flushContext();
@@ -75,7 +75,7 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 	}
 
 	@Override
-	public Context newContext() {
+	public Context newCache() {
 		return new Transaction(this, pickNewTs());
 	}
 

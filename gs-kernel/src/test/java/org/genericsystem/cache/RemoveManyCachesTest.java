@@ -12,7 +12,7 @@ public class RemoveManyCachesTest extends AbstractTest {
 		Generic car = engine.addInstance("Car");
 		Generic color = car.addAttribute("Color");
 		cache.flush();
-		Cache cache2 = engine.newContext().start();
+		Cache cache2 = engine.newCache().start();
 		Generic myBmw = car.addInstance("myBmw");
 		Generic myBmwRed = myBmw.addHolder(color, "red");
 
@@ -30,7 +30,7 @@ public class RemoveManyCachesTest extends AbstractTest {
 		Generic car = engine.addInstance("Car");
 		Generic color = car.addAttribute("Color");
 		cache.flush();
-		Cache cache2 = engine.newContext().start();
+		Cache cache2 = engine.newCache().start();
 		Generic myBmw2 = car.addInstance("myBmw");
 		Generic myBmwRed2 = myBmw2.addHolder(color, "red");
 		cache.start();

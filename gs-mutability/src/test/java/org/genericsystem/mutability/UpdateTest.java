@@ -90,7 +90,7 @@ public class UpdateTest extends AbstractTest {
 		Cache cache1 = engine.getCurrentCache();
 		Generic car = engine.addInstance("Car");
 		cache1.flush();
-		Cache cache2 = engine.newContext().start();
+		Cache cache2 = engine.newCache().start();
 		Generic car2 = engine.getInstances().get().filter(x -> "Car".equals(x.getValue())).findFirst().get();
 		assert car2.isAlive();
 		car2.remove();
