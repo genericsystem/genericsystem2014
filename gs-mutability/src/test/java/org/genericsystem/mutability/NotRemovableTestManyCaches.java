@@ -9,7 +9,7 @@ public class NotRemovableTestManyCaches extends AbstractTest {
 	public void test001_aliveEx() {
 		Engine engine = new Engine();
 		Cache cache = engine.getCurrentCache();
-		Cache cache2 = engine.newCache().start();
+		Cache cache2 = engine.newContext().start();
 		Generic car = engine.addInstance("Car");
 		Generic color = car.addAttribute("Color");
 		Generic myBmw = car.addInstance("myBmw");

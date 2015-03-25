@@ -2,7 +2,6 @@ package org.genericsystem.cache;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.core.exceptions.CacheNoStartedException;
 import org.genericsystem.api.core.exceptions.ConcurrencyControlException;
@@ -19,13 +18,12 @@ public class Cache extends Context {
 	protected CacheElement cacheElement;
 	private final ContextEventListener<Generic> listener;
 
-	protected Cache(AbstractEngine engine) {
+	protected Cache(Engine engine) {
 		this(new Transaction(engine));
 	}
 
 	protected Cache(Transaction subContext) {
-		this(subContext, new ContextEventListener<Generic>() {
-		});
+		this(subContext, new ContextEventListener<Generic>() {});
 	}
 
 	protected Cache(Transaction subContext, ContextEventListener<Generic> listener) {
@@ -49,7 +47,7 @@ public class Cache extends Context {
 		cacheElement = new CacheElement(cacheElement == null ? new TransactionElement() : cacheElement.getSubCache());
 	}
 
-	public void pickNewTs() throws RollbackException {
+	public void shift() throws RollbackException {
 		transaction = new Transaction(getRoot(), getRoot().pickNewTs());
 		listener.triggersRefreshEvent();
 	}
@@ -80,7 +78,7 @@ public class Cache extends Context {
 				cause = e;
 				try {
 					Thread.sleep(Statics.ATTEMPT_SLEEP);
-					pickNewTs();
+					shift();
 				} catch (InterruptedException ex) {
 					discardWithException(ex);
 				}
@@ -124,8 +122,8 @@ public class Cache extends Context {
 	}
 
 	@Override
-	public AbstractEngine getRoot() {
-		return (AbstractEngine) super.getRoot();
+	public Engine getRoot() {
+		return (Engine) super.getRoot();
 	}
 
 	public Cache start() {
@@ -226,17 +224,13 @@ public class Cache extends Context {
 
 	public static interface ContextEventListener<X> {
 
-		default void triggersMutationEvent(X oldDependency, X newDependency) {
-		}
+		default void triggersMutationEvent(X oldDependency, X newDependency) {}
 
-		default void triggersRefreshEvent() {
-		}
+		default void triggersRefreshEvent() {}
 
-		default void triggersClearEvent() {
-		}
+		default void triggersClearEvent() {}
 
-		default void triggersFlushEvent() {
-		}
+		default void triggersFlushEvent() {}
 	}
 
 }

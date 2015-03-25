@@ -9,4 +9,6 @@ public interface DefaultRoot<T extends DefaultVertex<T>> extends IRoot<T> {
 
 	T getSequence();
 
+	public DefaultContext<T> newContext();
+
 }

@@ -14,7 +14,7 @@ public class IteratorAndRemoveCacheTest extends AbstractTest {
 	public void test002_IterateAndRemove() {
 		Engine engine = new Engine();
 		Cache cache1 = engine.getCurrentCache();
-		Cache cache2 = engine.newCache().start();
+		Cache cache2 = engine.newContext().start();
 		Generic car = engine.addInstance("Car");
 		Generic myCar1 = car.addInstance("myCar1");
 		Generic myCar2 = car.addInstance("myCar2");
@@ -26,12 +26,12 @@ public class IteratorAndRemoveCacheTest extends AbstractTest {
 		for (Generic g : car.getInstances()) {
 			if (cpt % 2 == 0) {
 				cache1.start();
-				cache1.pickNewTs();
+				cache1.shift();
 				g.remove();
 				cache1.flush();
 			} else {
 				cache2.start();
-				cache2.pickNewTs();
+				cache2.shift();
 				g.remove();
 				cache2.flush();
 			}
@@ -48,7 +48,7 @@ public class IteratorAndRemoveCacheTest extends AbstractTest {
 		cache1.flush();
 		myCar1.remove();
 		cache1.flush();
-		Cache cache2 = engine.newCache().start();
+		Cache cache2 = engine.newContext().start();
 		catchAndCheckCause(() -> myCar1.remove(), AliveConstraintViolationException.class);
 		cache2.flush();
 	}
@@ -60,11 +60,11 @@ public class IteratorAndRemoveCacheTest extends AbstractTest {
 		Cache cache = engine.getCurrentCache();
 		cache.flush();
 
-		Cache cache2 = engine.newCache().start();
+		Cache cache2 = engine.newContext().start();
 		myCar.remove();
 
 		cache.start();
-		cache.pickNewTs();
+		cache.shift();
 		myCar.remove();
 		cache.flush();
 		cache2.start();
@@ -74,7 +74,7 @@ public class IteratorAndRemoveCacheTest extends AbstractTest {
 	public void test003_IterateAndRemove() {
 		Engine engine = new Engine();
 		Cache cache1 = engine.getCurrentCache();
-		Cache cache2 = engine.newCache().start();
+		Cache cache2 = engine.newContext().start();
 		Generic car = engine.addInstance("Car");
 		Generic myCar1 = car.addInstance("myCar1");
 		Generic myCar2 = car.addInstance("myCar2");
@@ -88,12 +88,12 @@ public class IteratorAndRemoveCacheTest extends AbstractTest {
 				cache2.flush();
 			if (cpt % 2 == 0) {
 				cache1.start();
-				cache1.pickNewTs();
+				cache1.shift();
 				g.remove();
 				cache1.flush();
 			} else {
 				cache2.start();
-				cache2.pickNewTs();
+				cache2.shift();
 				g.remove();
 			}
 			cpt++;
@@ -101,7 +101,7 @@ public class IteratorAndRemoveCacheTest extends AbstractTest {
 		cache2.flush();
 		assert car.getInstances().size() == 0;
 		cache1.start();
-		cache1.pickNewTs();
+		cache1.shift();
 		assert car.getInstances().size() == 0;
 	}
 

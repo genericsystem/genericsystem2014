@@ -6,13 +6,14 @@ import javassist.util.proxy.MethodHandler;
 import org.genericsystem.defaults.DefaultRoot;
 import org.genericsystem.kernel.Config.Sequence;
 import org.genericsystem.kernel.Config.SystemMap;
+import org.genericsystem.kernel.Context;
 import org.genericsystem.kernel.Statics;
 
 public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 
 	protected final ThreadLocal<Cache> cacheLocal = new ThreadLocal<>();
 
-	private final org.genericsystem.cache.AbstractEngine cacheEngine;
+	final org.genericsystem.cache.Engine cacheEngine;
 
 	public Engine(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
@@ -23,30 +24,26 @@ public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 	}
 
 	public Engine(Serializable engineValue, String persistentDirectoryPath, Class<?>... userClasses) {
-		this.cacheEngine = new org.genericsystem.cache.AbstractEngine(engineValue, persistentDirectoryPath, userClasses) {
+		Cache cache = new Cache(this);
+		cache.start();
+		this.cacheEngine = new org.genericsystem.cache.Engine(engineValue, persistentDirectoryPath, userClasses) {
 			@Override
-			protected void startContext() {
-				Engine.this.start(new Cache(Engine.this, this));
-			}
+			protected Wrapper buildContextWrapper() {
+				return new Wrapper() {
 
-			@Override
-			protected org.genericsystem.cache.Cache start(org.genericsystem.cache.Cache cache) {
-				if (!equals(cache.getRoot()))
-					throw new IllegalStateException();
-				return cache;
-			}
+					@Override
+					public void set(Context context) {
+						cacheLocal.get().cache = (org.genericsystem.cache.Cache) context;
+					}
 
-			@Override
-			protected void stop(org.genericsystem.cache.Cache cache) {
-				garbageCollector.stopsScheduler();
-			}
-
-			@Override
-			public org.genericsystem.cache.Cache getCurrentCache() {
-				return Engine.this.getCurrentCache().cache;
+					@Override
+					public Context get() {
+						return cacheLocal.get().cache;
+					}
+				};
 			}
 		};
-		newCache().start();
+		cache.init(cacheEngine);
 	}
 
 	@Override
@@ -75,8 +72,9 @@ public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 		return cacheEngine.findAnnotedClass(getCurrentCache().unwrap(vertex));
 	}
 
-	public Cache newCache() {
-		return new Cache(this, cacheEngine);
+	@Override
+	public Cache newContext() {
+		return new Cache(this).init(cacheEngine);
 	}
 
 	Cache start(Cache cache) {
@@ -109,7 +107,7 @@ public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 		return getCurrentCache().wrap(cacheEngine.getMetaRelation());
 	}
 
-	public org.genericsystem.cache.AbstractEngine getConcurrencyEngine() {
+	public org.genericsystem.cache.Engine getConcurrencyEngine() {
 		return cacheEngine;
 	}
 
