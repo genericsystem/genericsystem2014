@@ -21,12 +21,7 @@ public class GarbageCollector extends LinkedHashSet<Generic> {
 	}
 
 	public void startScheduler() {
-		scheduler.scheduleAtFixedRate(new Runnable() {
-			@Override
-			public void run() {
-				runGarbage(Statics.LIFE_TIMEOUT);
-			}
-		}, Statics.GARBAGE_INITIAL_DELAY, Statics.GARBAGE_PERIOD, TimeUnit.MILLISECONDS);
+		scheduler.scheduleAtFixedRate(() -> runGarbage(Statics.LIFE_TIMEOUT), Statics.GARBAGE_INITIAL_DELAY, Statics.GARBAGE_PERIOD, TimeUnit.MILLISECONDS);
 	}
 
 	public void runGarbage(long timeOut) {

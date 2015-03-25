@@ -93,14 +93,11 @@ public class Archiver {
 
 	private Archiver startScheduler() {
 		if (directory != null && lockFile != null && SNAPSHOTS_PERIOD > 0L)
-			scheduler.scheduleAtFixedRate(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						doSnapshot();
-					} catch (IOException e) {
-						log.error(e.getMessage(), e);
-					}
+			scheduler.scheduleAtFixedRate(() -> {
+				try {
+					doSnapshot();
+				} catch (IOException e) {
+					log.error(e.getMessage(), e);
 				}
 			}, SNAPSHOTS_INITIAL_DELAY, SNAPSHOTS_PERIOD, TimeUnit.MILLISECONDS);
 		return this;
