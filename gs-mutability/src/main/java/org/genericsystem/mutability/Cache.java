@@ -13,11 +13,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
-
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.core.annotations.InstanceClass;
 import org.genericsystem.api.core.exceptions.AliveConstraintViolationException;
@@ -99,19 +97,17 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 
 	@Override
 	public void triggersMutationEvent(org.genericsystem.kernel.Generic oldDependency, org.genericsystem.kernel.Generic newDependency) {
-		Set<Generic> resultSet = reverseMultiMap.get(oldDependency);
+		Set<Generic> resultSet = reverseMultiMap.remove(oldDependency);
 		if (resultSet == null)
 			return;
 		for (Generic mutable : resultSet) {
 			revertMutations.peek().computeIfAbsent(mutable, k -> oldDependency);
 			mutabilityMap.put(mutable, newDependency);
 		}
-		reverseMultiMap.remove(oldDependency);
-		reverseMultiMap.compute(newDependency, (k, v) -> {
-			if (v != null)
-				resultSet.addAll(v);
-			return resultSet;
-		});
+		Set<Generic> newDependencySet = reverseMultiMap.get(newDependency);
+		if (newDependencySet != null)
+			resultSet.addAll(newDependencySet);
+		reverseMultiMap.put(newDependency, resultSet);
 	}
 
 	@Override
