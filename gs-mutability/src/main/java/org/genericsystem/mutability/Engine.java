@@ -2,9 +2,7 @@ package org.genericsystem.mutability;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-
 import javassist.util.proxy.MethodHandler;
-
 import org.genericsystem.defaults.DefaultRoot;
 import org.genericsystem.kernel.Config.Sequence;
 import org.genericsystem.kernel.Config.SystemMap;
