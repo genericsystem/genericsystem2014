@@ -73,7 +73,7 @@ public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 	}
 
 	@Override
-	public Cache newContext() {
+	public Cache newCache() {
 		return new Cache(this).init(cacheEngine);
 	}
 

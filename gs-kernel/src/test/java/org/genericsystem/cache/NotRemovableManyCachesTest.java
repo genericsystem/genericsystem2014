@@ -13,7 +13,7 @@ public class NotRemovableManyCachesTest extends AbstractTest {
 	public void test001_aliveEx() {
 		Engine engine = new Engine();
 		Cache cache = engine.getCurrentCache();
-		Cache cache2 = engine.newContext().start();
+		Cache cache2 = engine.newCache().start();
 		Generic car = engine.addInstance("Car");
 		Generic color = car.addAttribute("Color");
 		Generic myBmw = car.addInstance("myBmw");
@@ -26,7 +26,7 @@ public class NotRemovableManyCachesTest extends AbstractTest {
 	public void test003_aliveEx() {
 		Engine engine = new Engine();
 		Cache cache = engine.getCurrentCache();
-		Cache cache2 = engine.newContext().start();
+		Cache cache2 = engine.newCache().start();
 		Generic car = engine.addInstance("Car");
 		Generic color = car.addAttribute("Color");
 		Generic myBmw = car.addInstance("myBmw");
@@ -42,7 +42,7 @@ public class NotRemovableManyCachesTest extends AbstractTest {
 		Cache cache = engine.getCurrentCache();
 		Generic car = engine.addInstance("Car");
 		cache.flush();
-		Cache cache2 = engine.newContext().start();
+		Cache cache2 = engine.newCache().start();
 		Generic color = car.addAttribute("Color");
 		Generic myBmw = car.addInstance("myBmw");
 		catchAndCheckCause(() -> car.remove(), ReferentialIntegrityConstraintViolationException.class);
@@ -51,8 +51,8 @@ public class NotRemovableManyCachesTest extends AbstractTest {
 	public void test002_referenceEx() {
 		Engine engine = new Engine();
 		Cache cache = engine.getCurrentCache();
-		Cache cache2 = engine.newContext().start();
-		Cache cache3 = engine.newContext().start();
+		Cache cache2 = engine.newCache().start();
+		Cache cache3 = engine.newCache().start();
 		Generic car = engine.addInstance("Car");
 		Generic color = car.addAttribute("Color");
 		Generic myBmw = car.addInstance("myBmw");
@@ -74,7 +74,7 @@ public class NotRemovableManyCachesTest extends AbstractTest {
 		cache1.flush();
 		myCar1.remove();
 		cache1.flush();
-		Cache cache2 = engine.newContext().start();
+		Cache cache2 = engine.newCache().start();
 		catchAndCheckCause(() -> myCar1.remove(), AliveConstraintViolationException.class);
 		cache2.flush();
 	}
@@ -86,7 +86,7 @@ public class NotRemovableManyCachesTest extends AbstractTest {
 		Cache cache = engine.getCurrentCache();
 		cache.flush();
 
-		Cache cache2 = engine.newContext().start();
+		Cache cache2 = engine.newCache().start();
 		myCar.remove();
 
 		cache.start();
