@@ -25,7 +25,7 @@ public class Engine extends Root {
 	protected final GarbageCollector garbageCollector = new GarbageCollector(this);
 
 	@Override
-	public Cache newContext() {
+	public Cache newCache() {
 		return new Cache(this);
 	}
 
