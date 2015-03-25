@@ -33,4 +33,31 @@ public class MutabilityTest extends AbstractTest {
 		assert car.isAlive();// Aie, dependencies have been rebuilt and should be alive !
 	}
 
+	public void test_fusion_then_mutation() {
+		Engine engine = new Engine();
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = engine.addInstance(vehicle, "Car");
+		Generic myAudi = car.addInstance("myAudi");
+		Generic myMbw = car.addInstance("myMbw");
+		assert engine.getCurrentCache().unwrap(myMbw) != engine.getCurrentCache().unwrap(myAudi);
+
+		myAudi.update("myMbw");
+		assert engine.getCurrentCache().unwrap(myMbw) == engine.getCurrentCache().unwrap(myAudi);
+		assert myMbw != myAudi;
+		assert myAudi.isAlive();
+		assert myMbw.isAlive();
+
+		myAudi.update("myMercedes");
+		assert myAudi.isAlive();
+		assert myMbw.isAlive();
+
+		assert engine.getCurrentCache().unwrap(myMbw) == engine.getCurrentCache().unwrap(myAudi);
+
+		myAudi.update("myTruc");
+		assert myAudi.isAlive();
+		assert myMbw.isAlive();
+
+		assert engine.getCurrentCache().unwrap(myMbw) == engine.getCurrentCache().unwrap(myAudi);
+	}
+
 }

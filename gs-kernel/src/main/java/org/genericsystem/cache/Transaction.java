@@ -6,17 +6,17 @@ import org.genericsystem.kernel.Generic;
 
 public class Transaction extends org.genericsystem.kernel.Transaction {
 
-	protected Transaction(Engine engine, long ts) {
+	protected Transaction(AbstractEngine engine, long ts) {
 		super(engine, ts);
 	}
 
-	protected Transaction(Engine engine) {
+	protected Transaction(AbstractEngine engine) {
 		super(engine);
 	}
 
 	@Override
-	public Engine getRoot() {
-		return (Engine) super.getRoot();
+	public AbstractEngine getRoot() {
+		return (AbstractEngine) super.getRoot();
 	}
 
 	@Override

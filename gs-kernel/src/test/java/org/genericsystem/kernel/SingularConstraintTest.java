@@ -165,7 +165,7 @@ public class SingularConstraintTest extends AbstractTest {
 		Generic location = engine.addInstance("Location");
 		Generic outside = location.addInstance("outside");
 
-		Generic vehicleColorLocation = vehicle.addAttribute("vehicleColor", color, location);
+		Generic vehicleColorLocation = vehicle.addRelation("vehicleColor", color, location);
 		vehicleColorLocation.enableSingularConstraint(ApiStatics.TERNARY_POSITION);
 
 		Generic myVehicleRedOutside = myVehicle.addHolder(vehicleColorLocation, "myVehicleRedOutside", red, outside);

@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.genericsystem.defaults.DefaultLifeManager;
 import org.genericsystem.defaults.DefaultRoot;
 import org.genericsystem.kernel.Config.MetaAttribute;
 import org.genericsystem.kernel.Config.MetaRelation;
@@ -40,7 +39,7 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 	}
 
 	public Root(Serializable value, String persistentDirectoryPath, Class<?>... userClasses) {
-		init(this, DefaultLifeManager.TS_SYSTEM, null, Collections.emptyList(), value, Collections.emptyList(), DefaultLifeManager.SYSTEM_TS);
+		init(this, LifeManager.TS_SYSTEM, null, Collections.emptyList(), value, Collections.emptyList(), LifeManager.SYSTEM_TS);
 		startContext();
 		systemCache = new SystemCache(this, getClass());
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class, Sequence.class), userClasses);

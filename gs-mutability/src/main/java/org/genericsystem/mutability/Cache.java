@@ -27,13 +27,13 @@ import org.genericsystem.defaults.DefaultContext;
 
 public class Cache implements DefaultContext<Generic>, ContextEventListener<org.genericsystem.kernel.Generic> {
 	private final Engine engine;
-	private final org.genericsystem.cache.Cache cache;
+	final org.genericsystem.cache.Cache cache;
 	private final Map<Generic, org.genericsystem.kernel.Generic> mutabilityMap = new IdentityHashMap<>();
 	private final Map<org.genericsystem.kernel.Generic, Set<Generic>> reverseMultiMap = new IdentityHashMap<>();
 
 	private final Deque<Map<Generic, org.genericsystem.kernel.Generic>> revertMutations = new ArrayDeque<>();
 
-	public Cache(Engine engine, org.genericsystem.cache.Engine cacheEngine) {
+	public Cache(Engine engine, org.genericsystem.cache.AbstractEngine cacheEngine) {
 		this.engine = engine;
 		put(engine, cacheEngine);
 		this.cache = cacheEngine.newCache(this);
@@ -100,15 +100,18 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 	@Override
 	public void triggersMutationEvent(org.genericsystem.kernel.Generic oldDependency, org.genericsystem.kernel.Generic newDependency) {
 		Set<Generic> resultSet = reverseMultiMap.get(oldDependency);
-		if (resultSet != null) {
-			for (Generic mutable : resultSet) {
-				if (!revertMutations.peek().containsKey(mutable))
-					revertMutations.peek().put(mutable, oldDependency);
-				mutabilityMap.put(mutable, newDependency);
-			}
-			reverseMultiMap.remove(oldDependency);
-			reverseMultiMap.put(newDependency, resultSet);
+		if (resultSet == null)
+			return;
+		for (Generic mutable : resultSet) {
+			revertMutations.peek().computeIfAbsent(mutable, k -> oldDependency);
+			mutabilityMap.put(mutable, newDependency);
 		}
+		reverseMultiMap.remove(oldDependency);
+		reverseMultiMap.compute(newDependency, (k, v) -> {
+			if (v != null)
+				resultSet.addAll(v);
+			return resultSet;
+		});
 	}
 
 	@Override
@@ -126,23 +129,21 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 
 	@Override
 	public void triggersClearEvent() {
-		for (Entry<Generic, org.genericsystem.kernel.Generic> entry : revertMutations.peek().entrySet()) {
-			org.genericsystem.kernel.Generic newDependency = mutabilityMap.get(entry.getKey());
-			mutabilityMap.put(entry.getKey(), entry.getValue());
+		revertMutations.peek().forEach((mutable, generic) -> {
+			org.genericsystem.kernel.Generic newDependency = mutabilityMap.get(mutable);
+			mutabilityMap.put(mutable, generic);
 			if (newDependency != null) {
 				Set<Generic> set = reverseMultiMap.get(newDependency);
-				set.remove(entry.getKey());
+				set.remove(mutable);
 				if (set.isEmpty())
 					reverseMultiMap.remove(newDependency);
-				set = reverseMultiMap.get(entry.getValue());
-				if (set == null)
-					reverseMultiMap.put(entry.getValue(), set = Collections.newSetFromMap(new IdentityHashMap<Generic, Boolean>()));
-				set.add(entry.getKey());
+				set = reverseMultiMap.getOrDefault(generic, Collections.newSetFromMap(new IdentityHashMap<Generic, Boolean>()));
+				set.add(mutable);
+				reverseMultiMap.put(generic, set);
 			}
-		}
+		});
 		revertMutations.pop();
 		revertMutations.push(new IdentityHashMap<>());
-
 	}
 
 	protected List<Generic> wrap(List<org.genericsystem.kernel.Generic> listT) {
