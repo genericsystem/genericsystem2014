@@ -12,16 +12,15 @@
 <h:body>
 	<h:messages id="message" />
 	<h:form id="form">
-	
-		<h:commandButton id="save" value="Save" action="#{cacheBean.flush}">
-			<f:ajax execute="@this" render="@form message" />
-		</h:commandButton>
-		<h:commandButton id="cancel" value="Cancel"
-			action="#{cacheBean.clear}">
-			<f:ajax execute="@this" render="@form message" />
-		</h:commandButton>
-		
-		<br />
+		<h:panelGrid columns="2">
+			<h:commandButton id="save" value="Save" action="#{cacheBean.flush}">
+				<f:ajax execute="@this" render="@form message" />
+			</h:commandButton>
+			<h:commandButton id="cancel" value="Cancel"
+				action="#{cacheBean.clear}">
+				<f:ajax execute="@this" render="@form message" />
+			</h:commandButton>
+		</h:panelGrid>
 	
 		<h:selectOneMenu value="#{filterBean.searchedStatut}"
 			rendered="#{filterBean.statuts != null}">
