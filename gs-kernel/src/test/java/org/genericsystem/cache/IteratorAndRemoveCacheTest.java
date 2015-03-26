@@ -26,12 +26,12 @@ public class IteratorAndRemoveCacheTest extends AbstractTest {
 		for (Generic g : car.getInstances()) {
 			if (cpt % 2 == 0) {
 				cache1.start();
-				cache1.pickNewTs();
+				cache1.shift();
 				g.remove();
 				cache1.flush();
 			} else {
 				cache2.start();
-				cache2.pickNewTs();
+				cache2.shift();
 				g.remove();
 				cache2.flush();
 			}
@@ -64,7 +64,7 @@ public class IteratorAndRemoveCacheTest extends AbstractTest {
 		myCar.remove();
 
 		cache.start();
-		cache.pickNewTs();
+		cache.shift();
 		myCar.remove();
 		cache.flush();
 		cache2.start();
@@ -88,12 +88,12 @@ public class IteratorAndRemoveCacheTest extends AbstractTest {
 				cache2.flush();
 			if (cpt % 2 == 0) {
 				cache1.start();
-				cache1.pickNewTs();
+				cache1.shift();
 				g.remove();
 				cache1.flush();
 			} else {
 				cache2.start();
-				cache2.pickNewTs();
+				cache2.shift();
 				g.remove();
 			}
 			cpt++;
@@ -101,7 +101,7 @@ public class IteratorAndRemoveCacheTest extends AbstractTest {
 		cache2.flush();
 		assert car.getInstances().size() == 0;
 		cache1.start();
-		cache1.pickNewTs();
+		cache1.shift();
 		assert car.getInstances().size() == 0;
 	}
 

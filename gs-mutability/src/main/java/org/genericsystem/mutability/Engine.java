@@ -2,24 +2,18 @@ package org.genericsystem.mutability;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-
 import javassist.util.proxy.MethodHandler;
-
 import org.genericsystem.defaults.DefaultRoot;
 import org.genericsystem.kernel.Config.Sequence;
 import org.genericsystem.kernel.Config.SystemMap;
+import org.genericsystem.kernel.Context;
 import org.genericsystem.kernel.Statics;
 
 public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 
 	protected final ThreadLocal<Cache> cacheLocal = new ThreadLocal<>();
 
-	private final org.genericsystem.cache.Engine cacheEngine;
-
-	public Engine() {
-		this.cacheEngine = new org.genericsystem.cache.Engine();
-		newCache().start();
-	}
+	final org.genericsystem.cache.Engine cacheEngine;
 
 	public Engine(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
@@ -30,8 +24,26 @@ public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 	}
 
 	public Engine(Serializable engineValue, String persistentDirectoryPath, Class<?>... userClasses) {
-		this.cacheEngine = new org.genericsystem.cache.Engine(engineValue, persistentDirectoryPath, userClasses);
-		newCache().start();
+		Cache cache = new Cache(this);
+		cache.start();
+		this.cacheEngine = new org.genericsystem.cache.Engine(engineValue, persistentDirectoryPath, userClasses) {
+			@Override
+			protected Wrapper buildContextWrapper() {
+				return new Wrapper() {
+
+					@Override
+					public void set(Context context) {
+						cacheLocal.get().cache = (org.genericsystem.cache.Cache) context;
+					}
+
+					@Override
+					public Context get() {
+						return cacheLocal.get().cache;
+					}
+				};
+			}
+		};
+		cache.init(cacheEngine);
 	}
 
 	@Override
@@ -60,8 +72,9 @@ public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 		return cacheEngine.findAnnotedClass(getCurrentCache().unwrap(vertex));
 	}
 
+	@Override
 	public Cache newCache() {
-		return new Cache(this, cacheEngine);
+		return new Cache(this).init(cacheEngine);
 	}
 
 	Cache start(Cache cache) {

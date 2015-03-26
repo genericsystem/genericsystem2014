@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
-
 import org.genericsystem.defaults.DefaultRoot;
 import org.genericsystem.kernel.Config.MetaAttribute;
 import org.genericsystem.kernel.Config.MetaRelation;
@@ -18,7 +17,7 @@ import org.genericsystem.kernel.Generic.GenericImpl;
 public class Root extends GenericImpl implements DefaultRoot<Generic> {
 
 	private final TsGenerator generator = new TsGenerator();
-	private Context context;
+	protected Wrapper contextWrapper = buildContextWrapper();
 	private final SystemCache systemCache;
 	private final Archiver archiver;
 	private final Map<Generic, Vertex> map = new ConcurrentHashMap<>();
@@ -40,25 +39,48 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 
 	public Root(Serializable value, String persistentDirectoryPath, Class<?>... userClasses) {
 		init(this, LifeManager.TS_SYSTEM, null, Collections.emptyList(), value, Collections.emptyList(), LifeManager.SYSTEM_TS);
-		startContext();
+		contextWrapper.set(newCache());
 		systemCache = new SystemCache(this, getClass());
 		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class, Sequence.class), userClasses);
 		flushContext();
 		archiver = new Archiver(this, persistentDirectoryPath);
 		initialized = true;
-		shiftContext();
+		// shiftContext();
 	}
 
-	protected void startContext() {
-		context = new Transaction(this, pickNewTs());
+	public interface Wrapper {
+		Context get();
+
+		void set(Context context);
+	}
+
+	public class ContextWrapper implements Wrapper {
+
+		private Context context;
+
+		@Override
+		public Context get() {
+			return context;
+		}
+
+		@Override
+		public void set(Context context) {
+			this.context = context;
+
+		}
+	}
+
+	protected Wrapper buildContextWrapper() {
+		return new ContextWrapper();
+	}
+
+	@Override
+	public Context newCache() {
+		return new Transaction(this, pickNewTs());
 	}
 
 	protected void flushContext() {
 		// //Autoflush
-	}
-
-	protected void shiftContext() {
-		context = new Transaction(this, pickNewTs());
 	}
 
 	public long pickNewTs() {
@@ -81,7 +103,7 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 
 	@Override
 	public Context getCurrentCache() {
-		return context;
+		return contextWrapper.get();
 	}
 
 	@SuppressWarnings("unchecked")

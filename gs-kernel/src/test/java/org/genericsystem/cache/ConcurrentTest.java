@@ -20,7 +20,7 @@ public class ConcurrentTest extends AbstractTest {
 		assert cache2.isAlive(car);
 		cache.start();
 		assert !cache.isAlive(car);
-		cache.pickNewTs();
+		cache.shift();
 		assert cache.isAlive(car);
 	}
 

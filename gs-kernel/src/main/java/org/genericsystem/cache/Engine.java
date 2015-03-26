@@ -1,8 +1,8 @@
 package org.genericsystem.cache;
 
 import java.io.Serializable;
-
 import org.genericsystem.cache.Cache.ContextEventListener;
+import org.genericsystem.kernel.Context;
 import org.genericsystem.kernel.Generic;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
@@ -17,23 +17,16 @@ public class Engine extends Root {
 		this(engineValue, null, userClasses);
 	}
 
-	private final GarbageCollector garbageCollector = new GarbageCollector(this);
-
-	private ThreadLocal<Cache> cacheLocal;
-
 	public Engine(Serializable engineValue, String persistentDirectoryPath, Class<?>... userClasses) {
 		super(engineValue, persistentDirectoryPath, userClasses);
 		// garbageCollector.startScheduler();
 	}
 
-	public Cache newCache() {
-		return new Cache(this);
-	}
+	protected final GarbageCollector garbageCollector = new GarbageCollector(this);
 
 	@Override
-	protected void startContext() {
-		cacheLocal = new ThreadLocal<>();
-		start(newCache());
+	public Cache newCache() {
+		return new Cache(this);
 	}
 
 	@Override
@@ -41,38 +34,42 @@ public class Engine extends Root {
 		getCurrentCache().flush();
 	}
 
+	public Cache newCache(ContextEventListener<Generic> listener) {
+		return new Cache(new Transaction(this), listener);
+	}
+
+	protected Cache start(Cache cache) {
+		contextWrapper.set(cache);
+		return cache;
+	}
+
+	protected void stop(Cache cache) {
+		garbageCollector.stopsScheduler();
+		assert contextWrapper.get() == cache;
+		contextWrapper.set(null);
+	}
+
 	@Override
-	protected void shiftContext() {
-		getCurrentCache().pickNewTs();
+	public Cache getCurrentCache() {
+		Cache currentCache = (Cache) contextWrapper.get();
+		if (currentCache == null)
+			throw new IllegalStateException("Unable to find the current cache. Did you miss to call start() method on it ?");
+		return currentCache;
 	}
 
 	GarbageCollector getGarbageCollector() {
 		return garbageCollector;
 	}
 
-	public Cache newCache(ContextEventListener<Generic> listener) {
-		return new Cache(new Transaction(this), listener);
-	}
-
-	Cache start(Cache cache) {
-		if (!equals(cache.getRoot()))
-			throw new IllegalStateException();
-		cacheLocal.set(cache);
-		return cache;
-	}
-
-	void stop(Cache cache) {
-		garbageCollector.stopsScheduler();
-		assert cacheLocal.get() == cache;
-		cacheLocal.set(null);
+	public static class LocalContextWrapper extends ThreadLocal<Cache> implements Wrapper {
+		@Override
+		public void set(Context context) {
+			super.set((Cache) context);
+		}
 	}
 
 	@Override
-	public Cache getCurrentCache() {
-		Cache currentCache = cacheLocal.get();
-		if (currentCache == null)
-			throw new IllegalStateException("Unable to find the current cache. Did you miss to call start() method on it ?");
-		return currentCache;
+	protected Wrapper buildContextWrapper() {
+		return new LocalContextWrapper();
 	}
-
 }
