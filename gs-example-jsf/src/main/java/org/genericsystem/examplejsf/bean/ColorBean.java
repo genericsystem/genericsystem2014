@@ -11,7 +11,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.genericsystem.cdi.Engine;
-import org.genericsystem.examplejsf.crud.Color;
+import org.genericsystem.examplejsf.model.Color;
 import org.genericsystem.mutability.Generic;
 
 @Named

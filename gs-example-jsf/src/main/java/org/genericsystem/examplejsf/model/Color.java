@@ -1,8 +1,8 @@
-package org.genericsystem.examplejsf.crud;
+package org.genericsystem.examplejsf.model;
 
-import org.genericsystem.kernel.annotations.Meta;
-import org.genericsystem.kernel.annotations.SystemGeneric;
-import org.genericsystem.kernel.annotations.value.StringValue;
+import org.genericsystem.api.core.annotations.Meta;
+import org.genericsystem.api.core.annotations.SystemGeneric;
+import org.genericsystem.api.core.annotations.value.StringValue;
 
 @SystemGeneric
 public class Color {
