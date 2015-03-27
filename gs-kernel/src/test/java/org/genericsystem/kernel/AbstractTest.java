@@ -12,7 +12,7 @@ public abstract class AbstractTest {
 
 	@FunctionalInterface
 	public static interface VoidSupplier {
-		public void getNothing();
+		void getNothing();
 	}
 
 	public void catchAndCheckCause(VoidSupplier supplier, Class<? extends Throwable> clazz) {
