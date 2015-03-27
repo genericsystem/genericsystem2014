@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 @Test
 public class AncestorsServiceTest extends AbstractTest {
 
-	public void isAncestorOfByInheritence() {
+	public void test001() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic car = root.addInstance(vehicle, "Car");
@@ -41,12 +41,30 @@ public class AncestorsServiceTest extends AbstractTest {
 		assert root.isAncestorOf(transformer2);
 		assert !device.isAncestorOf(car);
 		assert !device.isAncestorOf(vehicle);
+		assert !device.isAncestorOf(root);
 		assert !robot.isAncestorOf(car);
 		assert !robot.isAncestorOf(vehicle);
+		assert !robot.isAncestorOf(device);
+		assert !robot.isAncestorOf(root);
 		assert !vehicle.isAncestorOf(robot);
 		assert !vehicle.isAncestorOf(device);
+		assert !vehicle.isAncestorOf(root);
 		assert !car.isAncestorOf(robot);
 		assert !car.isAncestorOf(device);
+		assert !car.isAncestorOf(vehicle);
+		assert !car.isAncestorOf(root);
+
+		assert !transformer.isAncestorOf(robot);
+		assert !transformer.isAncestorOf(device);
+		assert !transformer.isAncestorOf(car);
+		assert !transformer.isAncestorOf(vehicle);
+		assert !transformer.isAncestorOf(root);
+		assert !transformer2.isAncestorOf(transformer);
+		assert !transformer2.isAncestorOf(robot);
+		assert !transformer2.isAncestorOf(device);
+		assert !transformer2.isAncestorOf(car);
+		assert !transformer2.isAncestorOf(vehicle);
+
 		assert device.isAlive();
 		assert robot.isAlive();
 		assert vehicle.isAlive();
@@ -55,7 +73,7 @@ public class AncestorsServiceTest extends AbstractTest {
 		assert transformer2.isAlive();
 	}
 
-	public void isAncestorOfByInheritenceSimpleConfiguration() {
+	public void test002() {
 
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
@@ -64,13 +82,12 @@ public class AncestorsServiceTest extends AbstractTest {
 		assert vehicle.isAncestorOf(car);
 		assert vehicle.isAncestorOf(microcar);
 		assert car.isAncestorOf(microcar);
-		assert microcar.isAncestorOf(microcar);
 		assert vehicle.isAncestorOf(vehicle);
 		assert car.isAncestorOf(car);
 		assert microcar.isAncestorOf(microcar);
 	}
 
-	public void isAncestorOfViaComposite() {
+	public void test003() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic power = root.addInstance("Power", vehicle);
@@ -82,7 +99,8 @@ public class AncestorsServiceTest extends AbstractTest {
 		assert vehicle.isAncestorOf(airConditioner);
 		assert vehicle.isAncestorOf(power);
 		assert car.isAncestorOf(car);
-		assert car.isAncestorOf(car);
+		assert car.isAncestorOf(airConditioner);
+		assert car.isAncestorOf(radio);
 		assert microcar.isAncestorOf(radio);
 		assert !car.isAncestorOf(power);
 		assert !microcar.isAncestorOf(power);
@@ -92,40 +110,15 @@ public class AncestorsServiceTest extends AbstractTest {
 		assert root.isAncestorOf(radio);
 	}
 
-	public void isAncestorOfViaComponent() {
+	public void test004() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
-		Generic power = root.addInstance("Power", vehicle);
 		Generic car = root.addInstance(vehicle, "Car");
 		Generic airConditioner = root.addInstance("AirConditioner", car);
 		Generic button = root.addInstance("button", airConditioner);
 		Generic microcar = root.addInstance(car, "microcar");
-		Generic radio = root.addInstance("Radio", microcar);
 		assert vehicle.isAncestorOf(button);
 		assert !microcar.isAncestorOf(button);
 		assert root.isAncestorOf(button);
 	}
-
-	// public void isAncestorOfViaComposite3() {
-	// Root root = new Root();
-	// Vertex vehicle = root.addInstance("Vehicle");
-	// Vertex car = root.addInstance(vehicle, "Car");
-	// Vertex microcar = root.addInstance(car, "microcar");
-	//
-	// Vertex airConditioner = root.addInstance("AirConditioner", car);
-	// Vertex button = root.addInstance("button", airConditioner);
-	// Vertex pushButton = root.addInstance(button, "PushButton");
-	// Vertex color = root.addInstance("color", pushButton);
-	//
-	// log.info(pushButton.info());
-	// assert vehicle.isAncestorOf(color);
-	// assert vehicle.isAncestorOf(color);
-	// assert car.isAncestorOf(color);
-	// assert !microcar.isAncestorOf(color);
-	// assert root.isAncestorOf(color);
-	//
-	// assert vehicle.isAncestorOf(pushButton);
-	// assert !microcar.isAncestorOf(pushButton);
-	// assert root.isAncestorOf(pushButton);
-	// }
 }
