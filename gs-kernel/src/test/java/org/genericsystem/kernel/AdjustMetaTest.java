@@ -25,32 +25,31 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test001_AdjustMeta() {
 		Root engine = new Root();
-		Generic type1 = engine.addInstance("Type1");
-		Generic type2 = engine.addInstance(type1, "Type2");
-		Generic type3 = engine.addInstance(type1, "Type3");
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = engine.addInstance(vehicle, "Car");
+		Generic bike = engine.addInstance(vehicle, "Bike");
 
-		Generic instance = type2.addInstance("instance");
-		assert instance.getMeta().equals(type2);
-		assert instance.equals(type2.getInstance("instance"));
-		type3.addInstance("instance");
+		Generic myBmw = car.addInstance("myBmw");
+		assert myBmw.getMeta().equals(car);
+		assert myBmw.equals(car.getInstance("myBmw"));
+		bike.addInstance("myBmw");
 
-		catchAndCheckCause(() -> type3.addInstance("instance"), ExistsException.class);
+		catchAndCheckCause(() -> bike.addInstance("myBmw"), ExistsException.class);
 
 	}
 
 	public void test002_AdjustMeta() {
 		Root engine = new Root();
-		Generic type1 = engine.addInstance("Type1");
-		Generic type2 = engine.addInstance(type1, "Type2");
-		Generic type3 = engine.addInstance(type2, "Type3");
+		Generic vehicle = engine.addInstance("Vehicle");
+		Generic bike = engine.addInstance(vehicle, "Bike");
+		Generic vtt = engine.addInstance(bike, "VTT");
 
-		Generic instance1 = type1.addInstance("instance");
-		Generic instance2 = type2.addInstance("instance2");
-		Generic instance3 = type3.addInstance("instance");
-		assert type1.getInstance("instance").equals(instance1);
-		assert type2.getInstance("instance2").equals(instance2);
-		assert type3.getInstance("instance").equals(instance3);
-		// catchAndCheckCause(() -> type3.addInstance("instance"), CollisionException.class);
+		Generic vehicleInstance = vehicle.addInstance("instance");
+		Generic bikeInstance = bike.addInstance("instanceBike");
+		Generic vttInstance = vtt.addInstance("instance");
+		assert vehicle.getInstance("instance").equals(vehicleInstance);
+		assert bike.getInstance("instanceBike").equals(bikeInstance);
+		assert vtt.getInstance("instance").equals(vttInstance);
 	}
 
 	public void test003_AdjustMeta() {
@@ -58,18 +57,15 @@ public class AdjustMetaTest extends AbstractTest {
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic car = engine.addInstance(vehicle, "Car");
 		Generic color = engine.addInstance("Color");
-		// Vertex vehicleColor = engine.addInstance("vehicleColor", vehicle, color);
-		Generic vehicleColor = vehicle.addAttribute("VehicleColor", color);
-		Generic carColor = car.addAttribute(vehicleColor, "CarColor", color);
+		Generic vehicleColor = vehicle.addRelation("VehicleColor", color);
+		Generic carColor = car.addRelation(vehicleColor, "CarColor", color);
 		assert carColor.inheritsFrom(vehicleColor);
 
 		Generic myBmw = car.addInstance("myBmw");
 		Generic red = color.addInstance("red");
-		assert myBmw.getAttributes(ApiStatics.BASE_POSITION).contains(carColor);
-		assert !myBmw.getAttributes(ApiStatics.TARGET_POSITION).contains(carColor);
-		// assert false : myBmw.getAttributes(vehicleColor).info() + "   " + color.getAttributes(vehicleColor).info();
-		// assert false : color.getAttributes().stream().filter(x -> x.inheritsFrom(vehicleColor)).collect(Collectors.toList());
-		Generic myBmwRed = myBmw.addHolder(vehicleColor, "myBmwRed", red);
+		assert myBmw.getRelations(ApiStatics.BASE_POSITION).contains(carColor);
+		assert !myBmw.getRelations(ApiStatics.TARGET_POSITION).contains(carColor);
+		Generic myBmwRed = myBmw.addLink(vehicleColor, "myBmwRed", red);
 		assert carColor.equals(myBmwRed.getMeta());
 	}
 
@@ -83,6 +79,7 @@ public class AdjustMetaTest extends AbstractTest {
 		Generic holder = myBmw.addHolder(power, 235);
 		assert holder.getMeta().equals(power);
 		Generic carPower = car.addAttribute(power, "CarPower");
+		assert !holder.isAlive();
 		assert carPower.equals(myBmw.getHolders(power).first().getMeta());
 	}
 
@@ -95,79 +92,63 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test001_AdjustMeta_MetaLevel_metaAttribut_NoComposite() {
 		Root engine = new Root();
-		assert engine == engine.adjustMeta("Power", Collections.emptyList());
+		assert engine == engine.adjustMeta("Color", Collections.emptyList());
 	}
 
 	public void test002_AdjustMeta_MetaLevel_metaAttribut_OneComposite() {
 		Root engine = new Root();
-		Generic metaAttribute = engine.getMetaAttribute();
-		assert metaAttribute != null;
 		Generic car = engine.addInstance("Car");
-		assert metaAttribute == engine.adjustMeta("Power", car);
+		assert engine.getMetaAttribute() == engine.adjustMeta("Power", car);
 	}
 
 	public void test003_AdjustMeta_MetaLevel_metaAttribut_TwoComposites() {
 		Root engine = new Root();
-		Generic metaRelation = engine.getMetaRelation();
-		Generic car = engine.addInstance("Car");
-		Generic color = engine.addInstance("Color");
-		assert metaRelation == engine.adjustMeta("CarColor", car, color);
-	}
-
-	public void test004_AdjustMeta_MetaLevel_metaAttribut() {
-		Root engine = new Root();
-		engine.addInstance("Robot");
 		Generic car = engine.addInstance("Car");
 		Generic color = engine.addInstance("Color");
 		assert engine.getMetaRelation() == engine.adjustMeta("CarColor", car, color);
-		engine.addInstance("CarColor", car, color);
-		assert engine.getMetaAttribute() == engine.adjustMeta("Radio", car);
 	}
 
 	public void test005_AdjustMeta_MetaLevel_metaRelation_ThreeComposites() {
 		Root engine = new Root();
-		Generic metaAttribute = engine.getMetaAttribute();
-		assert metaAttribute == engine.adjustMeta(engine.getValue(), engine);
-		Generic metaRelation = engine.getMetaRelation();
+		assert engine.getMetaAttribute() == engine.adjustMeta(engine.getValue(), engine);
 		Generic car = engine.addInstance("Car");
 		Generic color = engine.addInstance("Color");
 		engine.addInstance("CarColor", car, color);
-		Generic finition = engine.addInstance("Finition");
-		Generic adjustMeta = engine.adjustMeta("CarColorFinition", Arrays.asList(car, color, finition));
-		assert metaRelation == adjustMeta : adjustMeta.info();
+		Generic design = engine.addInstance("Design");
+		Generic adjustMeta = engine.adjustMeta("CarColorDesign", Arrays.asList(car, color, design));
+		assert engine.getMetaRelation() == adjustMeta : adjustMeta.info();
 	}
 
 	public void test006_AdjustMeta_TypeLevel_Relation_TwoComposites() {
 		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = engine.addInstance("Car");
 		Generic color = engine.addInstance("Color");
-		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		Generic car = vehicle.addInstance("Car");
+		Generic carColor = engine.addInstance("CarColor", car, color);
+		Generic myBmw = car.addInstance("myBmw");
 		Generic red = color.addInstance("Red");
-		assert vehicleColor == vehicleColor.adjustMeta("CarRed", Arrays.asList(car, red)) : engine.adjustMeta("CarRed", Arrays.asList(car, red));
+		assert carColor == carColor.adjustMeta("myBmwRed", Arrays.asList(myBmw, red)) : engine.adjustMeta("myBmwRed", Arrays.asList(myBmw, red));
 	}
 
 	public void test007_AdjustMeta_TypeLevel_Relation_TwoComposites_oneCompositeSpecializedByInheritance() {
 		Root engine = new Root();
-		assert engine.getMetaAttribute().equalsRegardlessSupers(engine.getMetaAttribute(), engine.getValue(), Collections.singletonList(engine));
-		engine.setInstance(engine.getValue(), engine);
+		assert engine.getMetaAttribute().equalsRegardlessSupers(engine.getMetaAttribute(), engine.getMetaAttribute().getValue(), Collections.singletonList(engine));
 
-		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = engine.addInstance("Car");
 		Generic color = engine.addInstance("Color");
-		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Generic carColor = engine.addInstance("CarColor", car, color);
 		Generic red = engine.addInstance(color, "red");
-		Generic car = vehicle.addInstance("Car");
-		assert vehicleColor == vehicleColor.adjustMeta("CarRed", car, red);
+		Generic myBmw = car.addInstance("myBmw");
+		assert carColor == carColor.adjustMeta("myBmwRed", myBmw, red);
 	}
 
 	public void test008_AdjustMeta_TypeLevel_Relation_TwoComposites_oneCompositeSpecializedByInstanciation() {
 		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
+		Generic car = engine.addInstance("Car");
 		Generic color = engine.addInstance("Color");
-		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Generic carColor = engine.addInstance("CarColor", car, color);
 		Generic red = color.addInstance("red");
-		Generic car = vehicle.addInstance("Car");
-		assert vehicleColor == vehicleColor.adjustMeta("CarRed", car, red);
+		Generic myBmw = car.addInstance("myBmw");
+		assert carColor == carColor.adjustMeta("myBmwRed", myBmw, red);
 	}
 
 	public void test009_AdjustMeta_TypeLevel_Relation_TwoComposites_TwoCompositeSpecializedByInheritance() {
@@ -175,16 +156,16 @@ public class AdjustMetaTest extends AbstractTest {
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		Generic vehicle2 = engine.addInstance(vehicle, "Vehicle2");
+		Generic car = engine.addInstance(vehicle, "Car");
 		Generic red = engine.addInstance(color, "red");
-		Generic car = vehicle2.addInstance("Car");
-		assert vehicleColor == vehicleColor.adjustMeta("CarRed", car, red);
+		Generic myBmw = car.addInstance("myBmw");
+		assert vehicleColor == vehicleColor.adjustMeta("myBmwRed", myBmw, red);
 	}
 
 	public void testMeta() {
 		Root engine = new Root();
-		assert engine.getMetaAttribute().equals(engine.adjustMeta(engine.getValue(), engine));
-		assert engine.getMetaRelation().equals(engine.adjustMeta(engine.getValue(), engine, engine));
+		assert engine.getMetaAttribute().equals(engine.adjustMeta(engine.getMetaAttribute().getValue(), engine));
+		assert engine.getMetaRelation().equals(engine.adjustMeta(engine.getMetaRelation().getValue(), engine, engine));
 		assert engine.getMetaRelation() == engine.setInstance(engine.getValue(), engine, engine);
 		Generic metaTernaryRelation = engine.setInstance(engine.getValue(), engine, engine, engine);
 		assert engine.getCurrentCache().getMeta(3).equals(metaTernaryRelation);
@@ -192,13 +173,14 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test010_AdjustMeta_TypeLevel_Relation_TwoComposites_TwoCompositeSpecializedByInstanciation() {
 		Root engine = new Root();
+		// TODO car n'hérite pas de vehicle. l'assert renverra vehicleColor independament des parametres.
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		Generic vehicle2 = engine.addInstance("Vehicle2");
+		Generic car = engine.addInstance("Car");
 		Generic red = color.addInstance("red");
-		Generic car = vehicle2.addInstance("Car");
-		assert vehicleColor == vehicleColor.adjustMeta("CarRed", car, red) : engine.adjustMeta("CarRed", car, red);
+		Generic myBmw = car.addInstance("myBmw");
+		assert vehicleColor == vehicleColor.adjustMeta("myBmwRed", myBmw, red) : engine.adjustMeta("myBmwRed", myBmw, red);
 	}
 
 	public void test011_AdjustMeta_TypeLevel_Relation_TwoComposites_TwoCompositeSpecialized() {
@@ -206,10 +188,10 @@ public class AdjustMetaTest extends AbstractTest {
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		Generic vehicle2 = engine.addInstance(vehicle, "Vehicle2");
+		Generic car = engine.addInstance(vehicle, "Car");
 		Generic red = color.addInstance("red");
-		Generic car = vehicle2.addInstance("Car");
-		assert vehicleColor == vehicleColor.adjustMeta("CarRed", car, red);
+		Generic myBmw = car.addInstance("myBmw");
+		assert vehicleColor == vehicleColor.adjustMeta("myBmwRed", myBmw, red);
 	}
 
 	public void test012_AdjustMeta_TypeLevel_Relation_ThreeComposites() {
@@ -217,12 +199,12 @@ public class AdjustMetaTest extends AbstractTest {
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
 		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		Generic vehicle2 = engine.addInstance(vehicle, "Vehicle2");
+		Generic car = engine.addInstance(vehicle, "Car");
 		Generic red = color.addInstance("red");
-		Generic finition = engine.addInstance("Finition");
-		Generic car = vehicle2.addInstance("Car");
-
-		assert vehicleColor == vehicleColor.adjustMeta("CarRed", car, red, finition);
+		Generic design = engine.addInstance("Design");
+		Generic myBmw = car.addInstance("myBmw");
+		// TODO : puisque pas d'inheritings a vehicleColor, renvoie toujours vehicleColor. Que teste-t-on alors ?
+		assert vehicleColor == vehicleColor.adjustMeta("myBmwRed", myBmw, red, design);
 	}
 
 	public void test013_AdjustMeta_TypeLevel_Relation_ThreeComposites() {
@@ -234,31 +216,17 @@ public class AdjustMetaTest extends AbstractTest {
 		Generic car = engine.addInstance(vehicle, "Car");
 		Generic carColor = engine.addInstance(vehicleColor, "CarColor", car, color);
 		Generic red = color.addInstance("red");
-		Generic finition = engine.addInstance("Finition");
-		car.addInstance("myBmw");
+		Generic design = engine.addInstance("Design");
 
-		assert carColor == vehicleColor.adjustMeta("CarRed", car, red, finition);
+		assert carColor == vehicleColor.adjustMeta("CarRed", car, red, design);
 	}
 
 	public void test020_AdjustMeta_TypeLevel_Attribute() {
 		Root engine = new Root();
+		// TODO power n'est pas un attribut comme ça ? carPower n'a aucun rapport avec car ?
 		Generic power = engine.addInstance("Power", engine);
 		Generic car = engine.addInstance("Car", engine);
 		Generic carPower = engine.addInstance(power, "carPower", engine);
 		assert carPower.equals(power.adjustMeta(235, car));
-	}
-
-	public void testAdjustMetaValue() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic power = vehicle.addAttribute("Power");
-		Generic car = engine.addInstance(vehicle, "Car");
-		Generic myBmw = car.addInstance("myBmw");
-		Generic power235 = myBmw.addHolder(power, 235);
-		assert power235.getMeta().equals(power);
-
-		Generic power2 = car.addAttribute(power, "Power2");
-		assert !power235.isAlive();
-		assert myBmw.getHolders(power).get().findFirst().get().getMeta().equals(power2) : "meta : " + power235.getMeta();
 	}
 }
