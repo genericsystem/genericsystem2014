@@ -2,7 +2,6 @@ package org.genericsystem.mutability;
 
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.exceptions.ReferentialIntegrityConstraintViolationException;
-import org.genericsystem.kernel.Config.MetaRelation;
 import org.testng.annotations.Test;
 
 @Test
@@ -64,7 +63,7 @@ public class ReferentialIntegrityConstraintTest extends AbstractTest {
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic color = engine.addInstance("Color");
 		vehicle.addAttribute("vehicleColor", color);
-		engine.find(MetaRelation.class).enableReferentialIntegrity(ApiStatics.BASE_POSITION);
+		engine.getMetaRelation().enableReferentialIntegrity(ApiStatics.BASE_POSITION);
 		catchAndCheckCause(() -> vehicle.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 

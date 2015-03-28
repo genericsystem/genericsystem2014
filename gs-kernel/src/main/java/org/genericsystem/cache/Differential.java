@@ -9,27 +9,27 @@ import org.genericsystem.api.core.exceptions.RollbackException;
 import org.genericsystem.kernel.Checker;
 import org.genericsystem.kernel.Generic;
 
-public class CacheElement extends AbstractCacheElement {
+public class Differential extends AbstractDifferential {
 
-	private final AbstractCacheElement subCache;
+	private final AbstractDifferential differential;
 	private final PseudoConcurrentCollection<Generic> adds = new PseudoConcurrentCollection<>();
 	private final PseudoConcurrentCollection<Generic> removes = new PseudoConcurrentCollection<>();
 
-	public CacheElement(AbstractCacheElement subCache) {
-		this.subCache = subCache;
+	public Differential(AbstractDifferential subCache) {
+		this.differential = subCache;
 	}
 
-	public AbstractCacheElement getSubCache() {
-		return subCache;
+	public AbstractDifferential getSubCache() {
+		return differential;
 	}
 
 	public int getCacheLevel() {
-		return subCache instanceof CacheElement ? ((CacheElement) subCache).getCacheLevel() + 1 : 0;
+		return differential instanceof Differential ? ((Differential) differential).getCacheLevel() + 1 : 0;
 	}
 
 	@Override
 	boolean isAlive(Generic generic) {
-		return adds.contains(generic) || (!removes.contains(generic) && subCache.isAlive(generic));
+		return adds.contains(generic) || (!removes.contains(generic) && differential.isAlive(generic));
 	}
 
 	void checkConstraints(Checker checker) throws RollbackException {
@@ -55,12 +55,12 @@ public class CacheElement extends AbstractCacheElement {
 				Generic result = adds.get(o);
 				if (result != null)
 					return generic.isDirectAncestorOf(result) ? result : null;
-				return !removes.contains(o) ? subCache.getDependencies(generic).get(o) : null;
+				return !removes.contains(o) ? differential.getDependencies(generic).get(o) : null;
 			}
 
 			@Override
 			public Stream<Generic> get() {
-				return Stream.concat(subCache.getDependencies(generic).get().filter(x -> !removes.contains(x)), adds.get().filter(x -> generic.isDirectAncestorOf(x)));
+				return Stream.concat(differential.getDependencies(generic).get().filter(x -> !removes.contains(x)), adds.get().filter(x -> generic.isDirectAncestorOf(x)));
 			}
 		};
 	}

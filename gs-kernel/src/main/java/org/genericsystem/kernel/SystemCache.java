@@ -7,6 +7,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.genericsystem.api.core.IRoot;
 import org.genericsystem.api.core.annotations.Components;
 import org.genericsystem.api.core.annotations.Dependencies;
 import org.genericsystem.api.core.annotations.Meta;
@@ -39,6 +40,7 @@ public class SystemCache {
 
 	public SystemCache(Root root, Class<?> rootClass) {
 		this.root = root;
+		put(IRoot.class, root);
 		put(Root.class, root);
 		put(rootClass, root);
 	}

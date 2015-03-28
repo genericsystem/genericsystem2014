@@ -7,11 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+
+import org.genericsystem.defaults.DefaultConfig.MetaAttribute;
+import org.genericsystem.defaults.DefaultConfig.MetaRelation;
+import org.genericsystem.defaults.DefaultConfig.Sequence;
+import org.genericsystem.defaults.DefaultConfig.SystemMap;
 import org.genericsystem.defaults.DefaultRoot;
-import org.genericsystem.kernel.Config.MetaAttribute;
-import org.genericsystem.kernel.Config.MetaRelation;
-import org.genericsystem.kernel.Config.Sequence;
-import org.genericsystem.kernel.Config.SystemMap;
 import org.genericsystem.kernel.Generic.GenericImpl;
 
 public class Root extends GenericImpl implements DefaultRoot<Generic> {
@@ -92,16 +93,6 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 	}
 
 	@Override
-	public final Generic getMetaAttribute() {
-		return find(MetaAttribute.class);
-	}
-
-	@Override
-	public final Generic getMetaRelation() {
-		return find(MetaRelation.class);
-	}
-
-	@Override
 	public Context getCurrentCache() {
 		return contextWrapper.get();
 	}
@@ -143,19 +134,8 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 		return new Transaction(this, pickNewTs());
 	}
 
-	@Override
-	public Generic getMap() {
-		return find(SystemMap.class);
-	}
-
 	private Vertex getVertex(Generic generic) {
 		return map.get(generic);
-	}
-
-	@Override
-	public Generic getSequence() {
-		return find(Sequence.class);
-
 	}
 
 	long getTs(Generic generic) {

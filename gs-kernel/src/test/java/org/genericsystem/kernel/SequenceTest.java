@@ -4,7 +4,6 @@ import org.genericsystem.api.core.annotations.Components;
 import org.genericsystem.api.core.annotations.SystemGeneric;
 import org.genericsystem.defaults.GenerateValue;
 import org.genericsystem.defaults.Generator.IntAutoIncrementGenerator;
-import org.genericsystem.kernel.Config.Sequence;
 import org.testng.annotations.Test;
 
 @Test
@@ -12,7 +11,7 @@ public class SequenceTest extends AbstractTest {
 
 	public void testFindSequence() {
 		Root root = new Root();
-		Generic sequence = root.find(Sequence.class);
+		Generic sequence = root.getSequence();
 		assert sequence != null;
 		assert sequence.getMeta() == root.getMetaAttribute();
 		assert sequence.getComponents().contains(root);
