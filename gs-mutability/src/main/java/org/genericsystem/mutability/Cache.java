@@ -225,11 +225,6 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 	}
 
 	@Override
-	public Generic getInstance(Generic meta, List<Generic> overrides, Serializable value, Generic... components) {
-		return wrap(unwrap(meta).getInstance(unwrap(overrides), value, unwrap(components)));
-	}
-
-	@Override
 	public Snapshot<Generic> getDependencies(Generic generic) {
 		return () -> cache.getDependencies(unwrap(generic)).get().map(this::wrap);
 	}

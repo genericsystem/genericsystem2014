@@ -1,7 +1,7 @@
 package org.genericsystem.example;
 
 import org.genericsystem.api.core.ApiStatics;
-import org.genericsystem.kernel.Config.MetaRelation;
+import org.genericsystem.defaults.DefaultConfig.MetaRelation;
 import org.genericsystem.mutability.Engine;
 import org.genericsystem.mutability.Generic;
 
