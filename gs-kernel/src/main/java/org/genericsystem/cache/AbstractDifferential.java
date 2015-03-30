@@ -5,7 +5,7 @@ import org.genericsystem.api.core.exceptions.ConcurrencyControlException;
 import org.genericsystem.api.core.exceptions.OptimisticLockConstraintViolationException;
 import org.genericsystem.kernel.Generic;
 
-public abstract class AbstractCacheElement {
+public abstract class AbstractDifferential {
 
 	abstract boolean isAlive(Generic vertex);
 

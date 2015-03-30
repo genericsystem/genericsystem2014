@@ -2,18 +2,17 @@ package org.genericsystem.mutability;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+
 import javassist.util.proxy.MethodHandler;
+
 import org.genericsystem.defaults.DefaultRoot;
-import org.genericsystem.kernel.Config.Sequence;
-import org.genericsystem.kernel.Config.SystemMap;
-import org.genericsystem.kernel.Context;
 import org.genericsystem.kernel.Statics;
 
 public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 
 	protected final ThreadLocal<Cache> cacheLocal = new ThreadLocal<>();
 
-	final org.genericsystem.cache.Engine cacheEngine;
+	private final org.genericsystem.cache.Engine cacheEngine;
 
 	public Engine(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
@@ -24,26 +23,8 @@ public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 	}
 
 	public Engine(Serializable engineValue, String persistentDirectoryPath, Class<?>... userClasses) {
-		Cache cache = new Cache(this);
-		cache.start();
-		this.cacheEngine = new org.genericsystem.cache.Engine(engineValue, persistentDirectoryPath, userClasses) {
-			@Override
-			protected Wrapper buildContextWrapper() {
-				return new Wrapper() {
-
-					@Override
-					public void set(Context context) {
-						cacheLocal.get().cache = (org.genericsystem.cache.Cache) context;
-					}
-
-					@Override
-					public Context get() {
-						return cacheLocal.get().cache;
-					}
-				};
-			}
-		};
-		cache.init(cacheEngine);
+		this.cacheEngine = new org.genericsystem.cache.Engine(engineValue, persistentDirectoryPath, userClasses);
+		newCache().start();
 	}
 
 	@Override
@@ -74,7 +55,7 @@ public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 
 	@Override
 	public Cache newCache() {
-		return new Cache(this).init(cacheEngine);
+		return new Cache(this, cacheEngine);
 	}
 
 	Cache start(Cache cache) {
@@ -97,16 +78,6 @@ public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 		return currentCache;
 	}
 
-	@Override
-	public Generic getMetaAttribute() {
-		return getCurrentCache().wrap(cacheEngine.getMetaAttribute());
-	}
-
-	@Override
-	public Generic getMetaRelation() {
-		return getCurrentCache().wrap(cacheEngine.getMetaRelation());
-	}
-
 	public org.genericsystem.cache.Engine getConcurrencyEngine() {
 		return cacheEngine;
 	}
@@ -115,15 +86,4 @@ public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 	public void close() {
 		cacheEngine.close();
 	}
-
-	@Override
-	public Generic getMap() {
-		return find(SystemMap.class);
-	}
-
-	@Override
-	public Generic getSequence() {
-		return find(Sequence.class);
-	}
-
 }

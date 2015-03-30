@@ -5,7 +5,6 @@ import java.util.Collections;
 
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.exceptions.ReferentialIntegrityConstraintViolationException;
-import org.genericsystem.kernel.Config.MetaRelation;
 import org.testng.annotations.Test;
 
 @Test
@@ -225,10 +224,10 @@ public class RemoveTest extends AbstractTest {
 		Generic vehicleColor = vehicle.addRelation("VehicleColor", color);
 
 		// Disable default referential integrity for vehicle in vehicleColor for the first target : color
-		engine.find(MetaRelation.class).disableReferentialIntegrity(ApiStatics.TARGET_POSITION);
+		engine.getMetaRelation().disableReferentialIntegrity(ApiStatics.TARGET_POSITION);
 
 		// Enable cascade remove for Color in vehicleColor
-		engine.find(MetaRelation.class).enableCascadeRemove(ApiStatics.TARGET_POSITION);
+		engine.getMetaRelation().enableCascadeRemove(ApiStatics.TARGET_POSITION);
 
 		// Remove the type vehicle
 		vehicle.remove();

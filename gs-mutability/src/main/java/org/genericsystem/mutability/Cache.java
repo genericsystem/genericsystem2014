@@ -13,9 +13,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
+
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.core.annotations.InstanceClass;
 import org.genericsystem.api.core.exceptions.AliveConstraintViolationException;
@@ -31,15 +33,11 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 
 	private final Deque<Map<Generic, org.genericsystem.kernel.Generic>> revertMutations = new ArrayDeque<>();
 
-	public Cache(Engine engine) {
+	public Cache(Engine engine, org.genericsystem.cache.Engine cacheEngine) {
 		this.engine = engine;
-		revertMutations.push(new IdentityHashMap<>());
-	}
-
-	Cache init(org.genericsystem.cache.Engine cacheEngine) {
-		put(engine, engine.cacheEngine);
+		put(engine, cacheEngine);
 		this.cache = cacheEngine.newCache(this);
-		return this;
+		revertMutations.push(new IdentityHashMap<>());
 	}
 
 	@Override
@@ -48,10 +46,12 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 	}
 
 	public Cache start() {
+		cache.start();
 		return engine.start(this);
 	}
 
 	public void stop() {
+		cache.stop();
 		engine.stop(this);
 	}
 
@@ -99,6 +99,7 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 
 	@Override
 	public void triggersMutationEvent(org.genericsystem.kernel.Generic oldDependency, org.genericsystem.kernel.Generic newDependency) {
+		System.out.println(oldDependency.info() + " " + newDependency.info());
 		Set<Generic> resultSet = reverseMultiMap.remove(oldDependency);
 		if (resultSet == null)
 			return;

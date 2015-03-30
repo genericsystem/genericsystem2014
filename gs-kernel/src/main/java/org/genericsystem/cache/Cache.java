@@ -15,7 +15,7 @@ import org.genericsystem.kernel.Statics;
 public class Cache extends Context {
 
 	protected Transaction transaction;
-	protected CacheElement cacheElement;
+	protected Differential cacheElement;
 	private final ContextEventListener<Generic> listener;
 
 	protected Cache(Engine engine) {
@@ -44,7 +44,7 @@ public class Cache extends Context {
 	}
 
 	protected void initialize() {
-		cacheElement = new CacheElement(cacheElement == null ? new TransactionElement() : cacheElement.getSubCache());
+		cacheElement = new Differential(cacheElement == null ? new TransactionDifferential() : cacheElement.getSubCache());
 	}
 
 	public void shift() throws RollbackException {
@@ -88,9 +88,9 @@ public class Cache extends Context {
 	}
 
 	protected void doSynchronizedApplyInSubContext() throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
-		CacheElement originalCacheElement = this.cacheElement;
-		if (this.cacheElement.getSubCache() instanceof CacheElement)
-			this.cacheElement = (CacheElement) this.cacheElement.getSubCache();
+		Differential originalCacheElement = this.cacheElement;
+		if (this.cacheElement.getSubCache() instanceof Differential)
+			this.cacheElement = (Differential) this.cacheElement.getSubCache();
 		try {
 			synchronizedApply(originalCacheElement);
 		} finally {
@@ -98,7 +98,7 @@ public class Cache extends Context {
 		}
 	}
 
-	private void synchronizedApply(CacheElement cacheElement) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
+	private void synchronizedApply(Differential cacheElement) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
 		synchronized (getRoot()) {
 			cacheElement.apply();
 		}
@@ -111,12 +111,12 @@ public class Cache extends Context {
 	}
 
 	public void mount() {
-		cacheElement = new CacheElement(cacheElement);
+		cacheElement = new Differential(cacheElement);
 	}
 
 	public void unmount() {
-		AbstractCacheElement subCache = cacheElement.getSubCache();
-		cacheElement = subCache instanceof CacheElement ? (CacheElement) subCache : new CacheElement(subCache);
+		AbstractDifferential subCache = cacheElement.getSubCache();
+		cacheElement = subCache instanceof Differential ? (Differential) subCache : new Differential(subCache);
 		listener.triggersClearEvent();
 		listener.triggersRefreshEvent();
 	}
@@ -167,7 +167,7 @@ public class Cache extends Context {
 		return cacheElement.getCacheLevel();
 	}
 
-	protected class TransactionElement extends AbstractCacheElement {
+	protected class TransactionDifferential extends AbstractDifferential {
 
 		private Set<LifeManager> lockedLifeManagers = new HashSet<>();
 

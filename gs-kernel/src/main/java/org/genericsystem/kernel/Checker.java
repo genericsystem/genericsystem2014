@@ -18,9 +18,9 @@ import org.genericsystem.api.core.exceptions.NotAllowedSerializableTypeException
 import org.genericsystem.api.core.exceptions.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.api.core.exceptions.RollbackException;
 import org.genericsystem.api.core.systemproperty.AxedPropertyClass;
+import org.genericsystem.defaults.DefaultConfig.SystemMap;
 import org.genericsystem.defaults.DefaultRoot;
 import org.genericsystem.defaults.constraints.Constraint;
-import org.genericsystem.kernel.Config.SystemMap;
 
 public class Checker {
 
@@ -213,7 +213,7 @@ public class Checker {
 	}
 
 	private void checkConstraints(boolean isOnAdd, boolean isFlushTime, Generic vertex) {
-		Generic map = getContext().getRoot().find(SystemMap.class);
+		Generic map = getContext().getRoot().getMap();
 		if (map != null) {
 			Stream<Generic> contraintsHolders = vertex.getMeta().getHolders(map).get()
 					.filter(holder -> holder.getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) holder.getMeta().getValue()).getClazz()))

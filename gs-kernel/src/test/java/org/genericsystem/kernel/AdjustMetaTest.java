@@ -5,7 +5,6 @@ import java.util.Collections;
 
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.exceptions.ExistsException;
-import org.genericsystem.kernel.Config.SystemMap;
 import org.testng.annotations.Test;
 
 @Test
@@ -220,7 +219,7 @@ public class AdjustMetaTest extends AbstractTest {
 	public void test019() {
 		Root engine = new Root();
 		Generic metaAttribute = engine.getMetaAttribute();
-		Generic systemMap = engine.find(SystemMap.class);
+		Generic systemMap = engine.getMap();
 		assert systemMap.getMeta().equals(metaAttribute);
 	}
 }
