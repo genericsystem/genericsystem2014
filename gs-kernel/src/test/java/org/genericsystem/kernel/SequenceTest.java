@@ -2,8 +2,8 @@ package org.genericsystem.kernel;
 
 import org.genericsystem.api.core.annotations.Components;
 import org.genericsystem.api.core.annotations.SystemGeneric;
-import org.genericsystem.defaults.GenerateValue;
-import org.genericsystem.defaults.Generator.IntAutoIncrementGenerator;
+import org.genericsystem.defaults.DefaultGenerator.IntAutoIncrementGenerator;
+import org.genericsystem.defaults.annotation.GenerateValue;
 import org.testng.annotations.Test;
 
 @Test
