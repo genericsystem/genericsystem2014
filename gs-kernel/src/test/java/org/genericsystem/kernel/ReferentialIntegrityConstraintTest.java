@@ -7,96 +7,96 @@ import org.testng.annotations.Test;
 @Test
 public class ReferentialIntegrityConstraintTest extends AbstractTest {
 
-	public void test001_enableReferentialIntegrity_remove() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic color = engine.addInstance("Color");
-		vehicle.addAttribute("VehicleColor", color);
+	public void test001() {
+		Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic color = root.addInstance("Color");
+		car.addRelation("CarColor", color);
 		color.enableReferentialIntegrity(ApiStatics.BASE_POSITION);
 		catchAndCheckCause(() -> color.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
-	public void test002_enableReferentialIntegrity_remove() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic color = engine.addInstance("Color");
-		vehicle.addAttribute("VehicleColor", color);
-		vehicle.remove();
+	public void test002() {
+		Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic color = root.addInstance("Color");
+		car.addRelation("CarColor", color);
+		car.remove();
 	}
 
-	public void test004_enableReferentialIntegrity_remove() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic color = engine.addInstance("Color");
-		vehicle.addAttribute("VehicleColor", color);
-		engine.getMetaAttribute().disableReferentialIntegrity(ApiStatics.BASE_POSITION);
-		vehicle.remove();
+	public void test003() {
+		Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic color = root.addInstance("Color");
+		car.addRelation("CarColor", color);
+		root.getMetaAttribute().disableReferentialIntegrity(ApiStatics.BASE_POSITION);
+		car.remove();
 	}
 
-	public void test005_enableReferentialIntegrity_remove() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic myVehicle = vehicle.addInstance("myVechile");
-		Generic color = engine.addInstance("Color");
+	public void test004() {
+		Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic myCar = car.addInstance("myCar");
+		Generic color = root.addInstance("Color");
 		Generic red = color.addInstance("red");
-		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
-		myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
+		Generic carColor = car.addRelation("CarColor", color);
+		myCar.addLink(carColor, "myCarRed", red);
 		color.enableReferentialIntegrity(ApiStatics.BASE_POSITION);
 		catchAndCheckCause(() -> red.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
-	public void test005_enableReferentialIntegrity_remove2() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic myVehicle = vehicle.addInstance("myVechile");
-		Generic color = engine.addInstance("Color");
+	public void test005() {
+		Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic myCar = car.addInstance("myCar");
+		Generic color = root.addInstance("Color");
 		Generic red = color.addInstance("red");
-		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
-		myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
-		vehicleColor.enableReferentialIntegrity(ApiStatics.BASE_POSITION);
-		catchAndCheckCause(() -> myVehicle.remove(), ReferentialIntegrityConstraintViolationException.class);
+		Generic carColor = car.addRelation("CarColor", color);
+		myCar.addLink(carColor, "myCarRed", red);
+		carColor.enableReferentialIntegrity(ApiStatics.BASE_POSITION);
+		catchAndCheckCause(() -> myCar.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
-	public void test005_enableReferentialIntegrity_remove3() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic color = engine.addInstance("Color");
-		vehicle.addAttribute("vehicleColor", color);
-		engine.getMetaRelation().enableReferentialIntegrity(ApiStatics.BASE_POSITION);
-		catchAndCheckCause(() -> vehicle.remove(), ReferentialIntegrityConstraintViolationException.class);
+	public void test006() {
+		Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic color = root.addInstance("Color");
+		car.addRelation("CarColor", color);
+		root.getMetaRelation().enableReferentialIntegrity(ApiStatics.BASE_POSITION);
+		catchAndCheckCause(() -> car.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
-	public void test006_enableReferentialIntegrity_remove() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic myVehicle = vehicle.addInstance("myVechile");
-		Generic color = engine.addInstance("Color");
+	public void test007() {
+		Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic myCar = car.addInstance("myCar");
+		Generic color = root.addInstance("Color");
 		Generic red = color.addInstance("red");
-		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
-		myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
-		myVehicle.remove();
+		Generic carColor = car.addRelation("CarColor", color);
+		myCar.addLink(carColor, "myCarRed", red);
+		myCar.remove();
 	}
 
-	public void test007_enableReferentialIntegrity_remove() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic myVehicle = vehicle.addInstance("myVechile");
-		Generic color = engine.addInstance("Color");
+	public void test008() {
+		Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic myCar = car.addInstance("myCar");
+		Generic color = root.addInstance("Color");
 		Generic red = color.addInstance("red");
-		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
-		myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
+		Generic carColor = car.addRelation("CarColor", color);
+		myCar.addLink(carColor, "myCarRed", red);
 		catchAndCheckCause(() -> red.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
-	public void test008_enableReferentialIntegrity_remove() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic myVehicle = vehicle.addInstance("myVechile");
-		Generic color = engine.addInstance("Color");
+	public void test009() {
+		Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic myCar = car.addInstance("myCar");
+		Generic color = root.addInstance("Color");
 		Generic red = color.addInstance("red");
-		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
-		myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
-		engine.getMetaAttribute().disableReferentialIntegrity(ApiStatics.BASE_POSITION);
-		myVehicle.remove();
+		Generic carColor = car.addRelation("CarColor", color);
+		myCar.addLink(carColor, "myCarRed", red);
+		root.getMetaAttribute().disableReferentialIntegrity(ApiStatics.BASE_POSITION);
+		myCar.remove();
 	}
 }

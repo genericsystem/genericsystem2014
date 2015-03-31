@@ -10,49 +10,49 @@ import org.testng.annotations.Test;
 @Test
 public class ConsitencyConstraintTest extends AbstractTest {
 
-	public void test001_enableSingularConstraint() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic myVehicle = vehicle.addInstance("myVehicle");
-		Generic color = engine.addInstance("Color");
+	public void test001() {
+		Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic myCar = car.addInstance("myCar");
+		Generic color = root.addInstance("Color");
 		Generic red = color.addInstance("red");
 		Generic yellow = color.addInstance("yellow");
-		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
+		Generic carColor = car.addAttribute("carColor", color);
 
-		myVehicle.addHolder(vehicleColor, "vehicleRed", red);
-		myVehicle.addHolder(vehicleColor, "vehicleYellow", yellow);
-		catchAndCheckCause(() -> vehicleColor.enableSingularConstraint(ApiStatics.BASE_POSITION), SingularConstraintViolationException.class);
+		myCar.addHolder(carColor, "myCarRed", red);
+		myCar.addHolder(carColor, "myCarYellow", yellow);
+		catchAndCheckCause(() -> carColor.enableSingularConstraint(ApiStatics.BASE_POSITION), SingularConstraintViolationException.class);
 	}
 
-	public void test002_enableUniqueValueConstraint() {
+	public void test002() {
 		Root root = new Root();
-		Generic vehicle = root.addInstance("Vehicle");
-		Generic myVehicle = vehicle.addInstance("myVehicle");
-		Generic myVehicle2 = vehicle.addInstance("myVehicle2");
+		Generic car = root.addInstance("Car");
+		Generic myFirstCar = car.addInstance("myFirstCar");
+		Generic mySecondCar = car.addInstance("mySecondCar");
 		Generic power = root.addInstance("Power");
-		vehicle.addAttribute(power, "Power");
-		myVehicle.addHolder(power, 125);
-		myVehicle2.addHolder(power, 125);
+		car.addAttribute(power, "Power");
+		myFirstCar.addHolder(power, 125);
+		mySecondCar.addHolder(power, 125);
 		catchAndCheckCause(() -> power.enableUniqueValueConstraint(), UniqueValueConstraintViolationException.class);
 	}
 
-	public void test003_enablePropertyConstraint() {
+	public void test003() {
 		Root root = new Root();
-		Generic vehicle = root.addInstance("Vehicle");
-		Generic power = root.addInstance("Power", vehicle);
-		Generic myVehicle = vehicle.addInstance("myVehicle");
-		myVehicle.addHolder(power, "126");
-		myVehicle.addHolder(power, "123");
+		Generic car = root.addInstance("Car");
+		Generic power = root.addInstance("Power", car);
+		Generic myCar = car.addInstance("myCar");
+		myCar.addHolder(power, "126");
+		myCar.addHolder(power, "123");
 		catchAndCheckCause(() -> power.enablePropertyConstraint(), PropertyConstraintViolationException.class);
 	}
 
-	public void test03_InstanceValueClassConstraint() {
+	public void test004() {
 		Root root = new Root();
-		Generic vehicle = root.addInstance("Vehicle");
-		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic car = root.addInstance("Car");
+		Generic myCar = car.addInstance("myCar");
 		Generic power = root.addInstance("Power");
-		vehicle.addAttribute(power, "Power");
-		myVehicle.addHolder(power, "125");
+		car.addAttribute(power, "Power");
+		myCar.addHolder(power, "125");
 
 		catchAndCheckCause(() -> power.setClassConstraint(Integer.class), InstanceValueClassConstraintViolationException.class);
 

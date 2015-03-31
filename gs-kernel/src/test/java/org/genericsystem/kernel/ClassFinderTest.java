@@ -26,7 +26,7 @@ public class ClassFinderTest extends AbstractTest {
 		assert car.getAttributes(engine).contains(carPower);
 	}
 
-	public void test5() {
+	public void test003() {
 		Generic engine = new Root();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic car = engine.addInstance(vehicle, "Car");
@@ -35,7 +35,7 @@ public class ClassFinderTest extends AbstractTest {
 		assert car.getAttributes(engine).contains(carPower);
 	}
 
-	public void test6() {
+	public void test004() {
 		Generic engine = new Root();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic car = engine.addInstance(vehicle, "Car");
@@ -46,7 +46,7 @@ public class ClassFinderTest extends AbstractTest {
 		assert sportCar.getAttributes(engine).containsAll(Arrays.asList(carPower, sportCarPower)) : car.getAttributes(engine) + " " + sportCarPower.info();
 	}
 
-	public void test7() {
+	public void test005() {
 		Generic engine = new Root();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic robot = engine.addInstance("robot");
@@ -56,7 +56,7 @@ public class ClassFinderTest extends AbstractTest {
 		assert transformer.getAttributes(engine).containsAll(Arrays.asList(robotPower, vehiclePower)) : transformer.getAttributes(engine);
 	}
 
-	public void test8() {
+	public void test006() {
 		Generic engine = new Root();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic robot = engine.addInstance("robot");
@@ -69,7 +69,7 @@ public class ClassFinderTest extends AbstractTest {
 		assert !transformer.getAttributes(engine).contains(vehiclePower);
 	}
 
-	public void test9() {
+	public void test007() {
 		Generic engine = new Root();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic robot = engine.addInstance("robot");
@@ -82,34 +82,26 @@ public class ClassFinderTest extends AbstractTest {
 		assert !transformer.getAttributes(engine).contains(vehiclePower);
 	}
 
-	public void test12() {
-		Generic engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic car = engine.addInstance(vehicle, "Car");
-		assert car.getCurrentCache().computeDependencies(car).contains(car);
-		assert !car.getCurrentCache().computeDependencies(car).contains(vehicle);
-		assert !car.getCurrentCache().computeDependencies(car).contains(engine);
-		assert vehicle.getCurrentCache().computeDependencies(vehicle).contains(car);
-		assert vehicle.getCurrentCache().computeDependencies(vehicle).contains(vehicle);
-		assert !vehicle.getCurrentCache().computeDependencies(vehicle).contains(engine);
-	}
-
-	public void test13() {
+	public void test008() {
 		Generic engine = new Root();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic car = engine.addInstance(vehicle, "Car");
 		Generic sportCar = engine.addInstance(car, "SportCar");
-		assert car.getCurrentCache().computeDependencies(car).contains(car);
-		assert !car.getCurrentCache().computeDependencies(car).contains(vehicle);
-		assert car.getCurrentCache().computeDependencies(car).contains(sportCar);
-		assert !car.getCurrentCache().computeDependencies(car).contains(engine);
-		assert vehicle.getCurrentCache().computeDependencies(vehicle).contains(car);
-		assert vehicle.getCurrentCache().computeDependencies(vehicle).contains(vehicle);
 		assert !vehicle.getCurrentCache().computeDependencies(vehicle).contains(engine);
+		assert vehicle.getCurrentCache().computeDependencies(vehicle).contains(vehicle);
+		assert vehicle.getCurrentCache().computeDependencies(vehicle).contains(car);
 		assert vehicle.getCurrentCache().computeDependencies(vehicle).contains(sportCar);
+		assert !car.getCurrentCache().computeDependencies(car).contains(engine);
+		assert !car.getCurrentCache().computeDependencies(car).contains(vehicle);
+		assert car.getCurrentCache().computeDependencies(car).contains(car);
+		assert car.getCurrentCache().computeDependencies(car).contains(sportCar);
+		assert !sportCar.getCurrentCache().computeDependencies(car).contains(engine);
+		assert !sportCar.getCurrentCache().computeDependencies(car).contains(vehicle);
+		assert sportCar.getCurrentCache().computeDependencies(car).contains(car);
+		assert sportCar.getCurrentCache().computeDependencies(car).contains(sportCar);
 	}
 
-	public void test14() {
+	public void test009() {
 		Generic engine = new Root();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic car = engine.addInstance(vehicle, "Car");
@@ -124,10 +116,9 @@ public class ClassFinderTest extends AbstractTest {
 		assert vehicle.getCurrentCache().computeDependencies(vehicle).contains(vehicle);
 		assert !vehicle.getCurrentCache().computeDependencies(vehicle).contains(engine);
 		assert vehicle.getCurrentCache().computeDependencies(vehicle).contains(myCar);
-		// assert false : engine.computeAllDependencies();
 	}
 
-	public void test15() {
+	public void test010() {
 		Generic engine = new Root();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic car = engine.addInstance(vehicle, "Car");
@@ -144,10 +135,9 @@ public class ClassFinderTest extends AbstractTest {
 		assert !vehicle.getCurrentCache().computeDependencies(vehicle).contains(engine);
 		assert vehicle.getCurrentCache().computeDependencies(vehicle).contains(power);
 		assert vehicle.getCurrentCache().computeDependencies(vehicle).contains(unit);
-		// assert false : engine.computeAllDependencies();
 	}
 
-	public void test16() {
+	public void test011() {
 		Generic engine = new Root();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic vehiclePower = engine.addInstance("Power", vehicle);
@@ -170,14 +160,14 @@ public class ClassFinderTest extends AbstractTest {
 	 * Other tests ------TODO put in AliveConstraintTest
 	 */
 
-	public void test10() {
+	public void test012() {
 		Generic engine = new Root();
 		Generic vehicle = engine.addInstance("Vehicle");
 		vehicle.remove();
 		catchAndCheckCause(() -> engine.addInstance(vehicle, "Car"), AliveConstraintViolationException.class);
 	}
 
-	public void test11() {
+	public void test013() {
 		Generic engine = new Root();
 		Generic vehicle = engine.addInstance("Vehicle");
 		vehicle.remove();

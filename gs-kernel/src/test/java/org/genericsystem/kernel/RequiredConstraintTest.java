@@ -6,36 +6,36 @@ import org.testng.annotations.Test;
 @Test
 public class RequiredConstraintTest {
 
-	public void testRequiredConstraint() {
-		Root engine = new Root();
-		Generic issue = engine.addInstance("Issue");
-		Generic priority = engine.addInstance("Priority");
-		Generic statut = engine.addInstance("Statut");
+	public void test001() {
+		Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic color = root.addInstance("Color");
+		Generic numberDoors = root.addInstance("NumberDoors");
 
-		Generic description = issue.addAttribute("description");
-		Generic issuePriority = issue.setRelation("IssuePriority", priority);
-		Generic issueStatut = issue.setRelation("IssueStatut", statut);
-		issuePriority.enableSingularConstraint(ApiStatics.BASE_POSITION);
-		issuePriority.enableRequiredConstraint(ApiStatics.BASE_POSITION);
-		issueStatut.enableSingularConstraint(ApiStatics.BASE_POSITION);
+		Generic power = car.addAttribute("Power");
+		Generic carColor = car.setRelation("CarColor", color);
+		Generic carNumberDoors = car.setRelation("CarNumberDoors", numberDoors);
+		carColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
+		carColor.enableRequiredConstraint(ApiStatics.BASE_POSITION);
+		carNumberDoors.enableSingularConstraint(ApiStatics.BASE_POSITION);
 
-		Generic myPriority = priority.addInstance("myPriority");
-		Generic myStatut = statut.addInstance("myStatut");
-		Generic myIssue = issue.addInstance("myIssue");
+		Generic red = color.addInstance("red");
+		Generic fiveDoors = numberDoors.addInstance("fiveDoors");
+		Generic myBmw = car.addInstance("myBmw");
 
-		issue.setLink(issueStatut, "myIssueStatut", myStatut);
-		issue.setHolder(description, "myDescription");
-		Generic myIssueWithPriority = myIssue.setLink(issuePriority, "myIssueWithPriority", myPriority);
+		car.setLink(carNumberDoors, "carFiveDoors", fiveDoors);
+		car.setHolder(power, "123");
+		Generic myBmwRed = myBmw.setLink(carColor, "myBmwRed", red);
 
-		myIssue.remove();
-		assert !myIssue.isAlive();
-		assert !myIssueWithPriority.isAlive();
-		assert issue.isAlive();
-		assert priority.isAlive();
-		assert issuePriority.isAlive();
-		assert myPriority.isAlive();
-		assert !myIssue.isAlive();
-		assert !myIssueWithPriority.isAlive();
+		myBmw.remove();
+		assert !myBmw.isAlive();
+		assert !myBmwRed.isAlive();
+		assert car.isAlive();
+		assert color.isAlive();
+		assert carColor.isAlive();
+		assert red.isAlive();
+		assert !myBmw.isAlive();
+		assert !myBmwRed.isAlive();
 	}
 
 }

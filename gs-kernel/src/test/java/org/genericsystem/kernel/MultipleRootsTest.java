@@ -8,51 +8,52 @@ import org.testng.annotations.Test;
 @Test
 public class MultipleRootsTest extends AbstractTest {
 
-	public void test001_Root_name() {
-		Root engine1 = new Root();
-		String nameOfsecondEngine = "SecondEngine";
-		Root engine2 = new Root(nameOfsecondEngine);
-		assert engine1.getMeta().equals(engine1);
-		assert engine1.getSupers().isEmpty();
-		assert engine1.getComponents().isEmpty();
-		assert Statics.ENGINE_VALUE.equals(engine1.getValue());
-		assert engine1.isAlive();
-		assert engine2.getMeta().equals(engine2);
-		assert engine2.getSupers().isEmpty();
-		assert engine2.getComponents().isEmpty();
-		assert engine2.getValue().equals(nameOfsecondEngine);
-		assert engine2.isAlive();
+	public void test001() {
+		Root root1 = new Root();
+		String nameOfsecondRoot = "SecondRoot";
+		Root root2 = new Root(nameOfsecondRoot);
+		assert root1.getMeta().equals(root1);
+		assert root1.getSupers().isEmpty();
+		assert root1.getComponents().isEmpty();
+		assert Statics.ENGINE_VALUE.equals(root1.getValue());
+		assert root1.isAlive();
+		assert !root2.getMeta().equals(root1);
+		assert root2.getMeta().equals(root2);
+		assert root2.getSupers().isEmpty();
+		assert root2.getComponents().isEmpty();
+		assert root2.getValue().equals(nameOfsecondRoot);
+		assert root2.isAlive();
 	}
 
-	public void test002_addInstance_attribute() {
-		Root engine1 = new Root();
-		Root engine2 = new Root("SecondEngine");
-		Generic car = engine1.addInstance("Car");
-		Generic car2 = engine2.addInstance("Car");
-		catchAndCheckCause(() -> engine1.addInstance("Power", car, car2), CrossEnginesAssignementsException.class);
+	public void test002() {
+		Root root1 = new Root();
+		Root root2 = new Root("SecondRoot");
+		Generic car1 = root1.addInstance("Car");
+		Generic car2 = root2.addInstance("Car");
+		catchAndCheckCause(() -> root1.addInstance("Power", car1, car2), CrossEnginesAssignementsException.class);
 	}
 
-	public void test003_addInstance_attribute() {
-		Root engine1 = new Root();
-		Root engine2 = new Root("SecondEngine");
-		Generic car = engine1.addInstance("Car");
-		engine2.addInstance("Car");
-		catchAndCheckCause(() -> engine2.addInstance("Power", car), CrossEnginesAssignementsException.class);
+	public void test003() {
+		Root root1 = new Root();
+		Root root2 = new Root("SecondRoot");
+		Generic car = root1.addInstance("Car");
+		root2.addInstance("Car");
+		catchAndCheckCause(() -> root2.addInstance("Power", car), CrossEnginesAssignementsException.class);
 	}
 
-	public void test004_addInstance_attribute() {
-		Root engine1 = new Root("FirstEngine");
-		Root engine2 = new Root("SecondEngine");
-		Generic car = engine1.addInstance("Car1");
-		engine2.addInstance("Car2");
-		catchAndCheckCause(() -> engine2.addInstance("Power", car), CrossEnginesAssignementsException.class);
+	public void test004() {
+		Root root1 = new Root("FirstRoot");
+		Root root2 = new Root("SecondRoot");
+		Generic car = root1.addInstance("Car1");
+		root2.addInstance("Car2");
+		catchAndCheckCause(() -> root2.addInstance("Power", car), CrossEnginesAssignementsException.class);
 	}
 
-	public void test005_addInstance_overrides() {
-		Root engine1 = new Root();
-		Root engine2 = new Root("SecondEngine");
-		Generic car = engine2.addInstance("Car");
-		Generic robot = engine2.addInstance("Robot");
-		catchAndCheckCause(() -> engine1.addInstance(Arrays.asList(car, robot), "Transformer"), CrossEnginesAssignementsException.class);
+	public void test005() {
+		Root root1 = new Root();
+		Root root2 = new Root("SecondRoot");
+		Generic car = root2.addInstance("Car");
+		Generic robot = root2.addInstance("Robot");
+		catchAndCheckCause(() -> root1.addInstance(Arrays.asList(car, robot), "Transformer"), CrossEnginesAssignementsException.class);
 	}
 }

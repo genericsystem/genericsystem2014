@@ -18,19 +18,19 @@ public class SequenceTest extends AbstractTest {
 	}
 
 	public void testStringAutoIncrementGenerator() {
-		Root root = new Root(Issue.class);
-		Generic issue = root.find(Issue.class);
-		Generic myIssue = issue.addGenerateInstance();
-		assert myIssue.getValue() instanceof String;
-		assert ((String) myIssue.getValue()).contains(Issue.class.getSimpleName());
+		Root root = new Root(Car.class);
+		Generic car = root.find(Car.class);
+		Generic myBmw = car.addGenerateInstance();
+		assert myBmw.getValue() instanceof String;
+		assert ((String) myBmw.getValue()).contains(Car.class.getSimpleName());
 	}
 
 	public void testIntAutoIncrementGenerator() {
-		Root root = new Root(IssueInt.class);
-		Generic issue = root.find(IssueInt.class);
-		Generic myIssue = issue.addGenerateInstance();
-		assert myIssue.getValue() instanceof Integer;
-		assert ((Integer) myIssue.getValue()) == 0;
+		Root root = new Root(CarInt.class);
+		Generic car = root.find(CarInt.class);
+		Generic myBmw = car.addGenerateInstance();
+		assert myBmw.getValue() instanceof Integer;
+		assert ((Integer) myBmw.getValue()) == 0;
 	}
 
 	public void testHolderIntAutoIncrementGenerator() {
@@ -47,13 +47,13 @@ public class SequenceTest extends AbstractTest {
 
 	@SystemGeneric
 	@GenerateValue
-	public static class Issue {
+	public static class Car {
 
 	}
 
 	@SystemGeneric
 	@GenerateValue(clazz = IntAutoIncrementGenerator.class)
-	public static class IssueInt {
+	public static class CarInt {
 
 	}
 

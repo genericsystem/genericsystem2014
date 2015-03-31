@@ -6,21 +6,21 @@ import org.testng.annotations.Test;
 @Test
 public class CornerCaseTest extends AbstractTest {
 
-	public void test000() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic car = engine.addInstance(vehicle, "Car");
+	public void test001() {
+		Root root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
 		Generic power = vehicle.addAttribute("Power");
-		Generic carPower = car.addAttribute(power, "CarPower");
-		Generic carPower2 = car.addAttribute(power, "CarPower2");
+		car.addAttribute(power, "FirstCarPower");
+		car.addAttribute(power, "SecondCarPower");
 		Generic myCar = car.addInstance("myCar");
 		catchAndCheckCause(() -> myCar.addHolder(power, 233), AmbiguousSelectionException.class);
 	}
 
-	public void test001() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic car = engine.addInstance(vehicle, "Car");
+	public void test002() {
+		Root root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
 		Generic power = vehicle.addAttribute("Power");
 		Generic carPower = car.addAttribute(power, "CarPower");
 		Generic myCar = car.addInstance("myCar");
@@ -30,12 +30,11 @@ public class CornerCaseTest extends AbstractTest {
 		assert v233 == v233_2;
 	}
 
-	public void test002() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic power = vehicle.addAttribute("Power");
-		assert engine.getInstance("Power", vehicle).equals(power);
-		// catchAndCheckCause(() -> vehicle.setAttribute(power, "Power"), CollisionException.class);
+	public void test003() {
+		Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic power = car.addAttribute("Power");
+		assert root.getInstance("Power", car).equals(power);
 	}
 
 }
