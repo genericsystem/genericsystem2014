@@ -34,7 +34,7 @@ public class RemoveManyCachesTest extends AbstractTest {
 		Generic myBmw2 = car.addInstance("myBmw");
 		Generic myBmwRed2 = myBmw2.addHolder(color, "red");
 		cache.start();
-		cache.shift();
+		cache.shiftTs();
 		Generic myBmw = car.addInstance("myBmw");
 		Generic myBmwRed = myBmw.addHolder(color, "red");
 		cache.flush();

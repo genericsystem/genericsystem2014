@@ -172,8 +172,8 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 		return generic != null && cache.isAlive(generic);
 	}
 
-	public void pickNewTs() {
-		cache.shift();// triggers refresh automatically
+	public void shiftTs() {
+		cache.shiftTs();// triggers refresh automatically
 	}
 
 	public void tryFlush() {
