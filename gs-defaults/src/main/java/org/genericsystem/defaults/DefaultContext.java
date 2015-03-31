@@ -33,15 +33,6 @@ public interface DefaultContext<T extends DefaultVertex<T>> extends IContext<T> 
 		return vertex != null && vertex.equals(new AliveFinder().find(vertex));
 	}
 
-	// TODO KK remove
-	// default T getInstance(T meta, List<T> overrides, Serializable value, T... components) {
-	// List<T> componentsList = Arrays.asList(components);
-	// T adjustMeta = meta.adjustMeta(value, componentsList);
-	// if (adjustMeta.getComponents().size() < components.length)
-	// return null;
-	// return adjustMeta.getDirectInstance(overrides, value, componentsList);
-	// }
-
 	default Snapshot<T> getInstances(T vertex) {
 		return getDependencies(vertex).filter(x -> vertex.equals(x.getMeta()));
 	}
