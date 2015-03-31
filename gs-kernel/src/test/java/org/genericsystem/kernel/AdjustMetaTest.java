@@ -13,31 +13,31 @@ public class AdjustMetaTest extends AbstractTest {
 	public void test001() {
 		Root root = new Root();
 		Generic metaAttribute = root.getMetaAttribute();
-		assert metaAttribute.equals(root.adjustMeta(metaAttribute.getValue(), root));
-		assert metaAttribute == root.adjustMeta(root.getValue(), root);
-		assert root.getMetaRelation().equals(root.adjustMeta(root.getMetaRelation().getValue(), root, root));
+		assert metaAttribute.equals(root.adjustMeta(root));
+		assert metaAttribute == root.adjustMeta(root);
+		assert root.getMetaRelation().equals(root.adjustMeta(root, root));
 		assert root.getMetaRelation() == root.setInstance(root.getValue(), root, root);
 		Generic metaTernaryRelation = root.setInstance(root.getValue(), root, root, root);
 		assert root.getCurrentCache().getMeta(3).equals(metaTernaryRelation);
-		assert metaAttribute.getInheritings().first() == root.adjustMeta(root.getValue(), root, root);
+		assert metaAttribute.getInheritings().first() == root.adjustMeta(root, root);
 	}
 
 	public void test002() {
 		Root root = new Root();
-		assert root == root.adjustMeta("Color", Collections.emptyList());
+		assert root == root.adjustMeta(Collections.emptyList());
 	}
 
 	public void test003() {
 		Root root = new Root();
 		Generic car = root.addInstance("Car");
-		assert root.getMetaAttribute() == root.adjustMeta("Power", car);
+		assert root.getMetaAttribute() == root.adjustMeta(car);
 	}
 
 	public void test004() {
 		Root root = new Root();
 		Generic car = root.addInstance("Car");
 		Generic color = root.addInstance("Color");
-		assert root.getMetaRelation() == root.adjustMeta("CarColor", car, color);
+		assert root.getMetaRelation() == root.adjustMeta(car, color);
 	}
 
 	public void test005() {

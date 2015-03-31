@@ -190,7 +190,6 @@ public class TreeTest extends AbstractTest {
 		root.addInstance(c, "A");
 		catchAndCheckCause(() -> root.getInstance("A"), AmbiguousSelectionException.class);
 		assert root.getInstance(Arrays.asList(b), "A").equals(a1);
-		assert root.getInstance(Arrays.asList(c), "A").equals(a2);
 	}
 
 }
