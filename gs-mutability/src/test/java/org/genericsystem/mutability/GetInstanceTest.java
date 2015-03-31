@@ -47,8 +47,7 @@ public class GetInstanceTest extends AbstractTest {
 		Generic car = engine.addInstance(vehicle, "Car");
 		Generic myBmwCar = car.addInstance("myBmw");
 
-		assert engine.getInstance("myBmw") == myBmw;
-		assert vehicle.getInstance(car, "myBmw") == myBmwCar;
-		assert engine.getInstance(car, "myBmw") == myBmwCar;
+		assert vehicle.getInstance("myBmw") == myBmw;
+		assert car.getInstance("myBmw") == myBmwCar;
 	}
 }
