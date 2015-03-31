@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -116,9 +117,8 @@ public class InstanciationTest extends AbstractTest {
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic vehicle2 = root.addInstance(vehicle, "Vehicle");
 		assert vehicle.isAlive();
-		assert root.getInstance("Vehicle").equals(vehicle);
+		assert root.getInstance(Collections.emptyList(), "Vehicle").equals(vehicle);
 		assert root.getInstance(vehicle, "Vehicle").equals(vehicle2);
-		// catchAndCheckCause(() -> root.addInstance(vehicle, "Vehicle"), CollisionException.class);
 	}
 
 	public void test008_addInstance_multipleOverrides() {

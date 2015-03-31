@@ -300,6 +300,8 @@ public class HolderTest extends AbstractTest {
 		Generic vUnit1 = unit.addInstance(unitValue1, power1);
 		Generic vUnit2 = unit.addInstance(Arrays.asList(vUnit1), unitValue2, power2);
 		assert !power1.equals(power2);
+		assert power2.inheritsFrom(power1);
+		assert v2.inheritsFrom(v1);
 		assert v1.isInstanceOf(power1);
 		assert v2.isInstanceOf(power1);
 		assert !v1.isInstanceOf(power2);
@@ -326,7 +328,7 @@ public class HolderTest extends AbstractTest {
 		assert power1.getInstances().contains(v1);
 		assert power1.getInstance(powerValue, vehicle) != null;
 		assert power1.getInstance(powerValue, vehicle).equals(v1);
-		assert power1.getInstance(powerValue, car) != null : power1.getInstance(powerValue, car).info();
+		assert power1.getInstance(powerValue, car) == null;
 		assert power2.getInstance(powerValue, car) != null;
 		assert power2.getInstance(powerValue, car).equals(v2);
 		assert power2.getInstance(powerValue, microcar) == null;

@@ -1,6 +1,8 @@
 package org.genericsystem.defaults;
 
 import java.io.Serializable;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.IVertex;
@@ -9,9 +11,28 @@ import org.genericsystem.api.core.systemproperty.NonHeritableProperty;
 
 public interface DefaultCompositesInheritance<T extends DefaultVertex<T>> extends IVertex<T> {
 
+	@SuppressWarnings("unchecked")
 	@Override
-	default Snapshot<T> getAttributes() {
-		return getAttributes(getRoot().getMetaAttribute());
+	default T getAttribute(Serializable value, T... targets) {
+		return getNonAmbiguousResult(getAttributes(value, targets).get());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default T getAttribute(T... targets) {
+		return getNonAmbiguousResult(getAttributes(targets).get());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Snapshot<T> getAttributes(Serializable value, T... targets) {
+		return getAttributes(targets).filter(DefaultDependencies.valueFilter(value));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Snapshot<T> getAttributes(T... targets) {
+		return getAttributes(getRoot().getMetaAttribute()).filter(componentsFilter(targets));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -22,14 +43,74 @@ public interface DefaultCompositesInheritance<T extends DefaultVertex<T>> extend
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default Snapshot<T> getHolders(T attribute, int pos) {
-		return () -> getHolders(attribute).get().filter(holder -> holder.getComponent(pos) != null && ((T) this).isSpecializationOf(holder.getComponent(pos)));
-
+	default Snapshot<T> getAttributes(T attribute) {
+		T nonHeritableProperty = getKey(NonHeritableProperty.class, ApiStatics.NO_POSITION);
+		if (nonHeritableProperty == null || attribute.inheritsFrom(nonHeritableProperty) || attribute.isHeritableEnabled())
+			return () -> new InheritanceComputer<>((T) DefaultCompositesInheritance.this, attribute, ApiStatics.STRUCTURAL).inheritanceStream();
+		return () -> this.getComposites().get().filter(holder -> holder.isSpecializationOf(attribute) && holder.getLevel() == ApiStatics.STRUCTURAL);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	default Snapshot<T> getRelations() {
-		return getRelations(getRoot().getMetaRelation());
+	default T getHolder(T attribute, Serializable value, T... targets) {
+		return getNonAmbiguousResult(getHolders(attribute, value, targets).get());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default T getHolder(T attribute, T... targets) {
+		return getNonAmbiguousResult(getHolders(attribute, targets).get());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Snapshot<T> getHolders(T attribute, Serializable value, T... targets) {
+		return getHolders(attribute).filter(DefaultDependencies.valueFilter(value)).filter(componentsFilter(targets));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Snapshot<T> getHolders(T attribute, T... targets) {
+		return getHolders(attribute).filter(componentsFilter(targets));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Snapshot<T> getHolders(T attribute, int pos) {
+		return () -> getHolders(attribute).get().filter(holder -> holder.getComponent(pos) != null && ((T) this).isSpecializationOf(holder.getComponent(pos)));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Snapshot<T> getHolders(T attribute) {
+		T nonHeritableProperty = getKey(NonHeritableProperty.class, ApiStatics.NO_POSITION);
+		if (nonHeritableProperty == null || attribute.inheritsFrom(nonHeritableProperty) || attribute.isHeritableEnabled())
+			return () -> new InheritanceComputer<>((T) DefaultCompositesInheritance.this, attribute, ApiStatics.CONCRETE).inheritanceStream();
+		return () -> this.getComposites().get().filter(holder -> holder.isSpecializationOf(attribute) && holder.getLevel() == ApiStatics.CONCRETE);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default T getRelation(Serializable value, T... targets) {
+		return getNonAmbiguousResult(getRelations(value, targets).get());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default T getRelation(T... targets) {
+		return getNonAmbiguousResult(getRelations(targets).get());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Snapshot<T> getRelations(Serializable value, T... targets) {
+		return getRelations(targets).filter(DefaultDependencies.valueFilter(value));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Snapshot<T> getRelations(T... targets) {
+		return getRelations(getRoot().getMetaRelation()).filter(componentsFilter(targets));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -46,8 +127,26 @@ public interface DefaultCompositesInheritance<T extends DefaultVertex<T>> extend
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default Snapshot<T> getLinks(T relation) {
-		return ((T) this).getHolders(relation);
+	default T getLink(T relation, Serializable value, T... targets) {
+		return getNonAmbiguousResult(getLinks(relation, value, targets).get());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default T getLink(T relation, T... targets) {
+		return getNonAmbiguousResult(getLinks(relation, targets).get());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Snapshot<T> getLinks(T relation, Serializable value, T... targets) {
+		return getLinks(relation).filter(DefaultDependencies.valueFilter(value)).filter(componentsFilter(targets));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Snapshot<T> getLinks(T relation, T... targets) {
+		return getLinks(relation).filter(componentsFilter(targets));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -56,9 +155,22 @@ public interface DefaultCompositesInheritance<T extends DefaultVertex<T>> extend
 		return () -> getLinks(relation).get().filter(link -> link.getComponent(pos) != null && ((T) this).isSpecializationOf(link.getComponent(pos)));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	default Snapshot<Serializable> getValues(T attribute) {
-		return () -> getHolders(attribute).get().map(T::getValue);
+	default Snapshot<T> getLinks(T relation) {
+		return ((T) this).getHolders(relation);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Snapshot<Serializable> getValues(T attribute, Serializable value, T... targets) {
+		return () -> getLinks(attribute, value, targets).get().map(T::getValue);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Snapshot<Serializable> getValues(T attribute, T... targets) {
+		return () -> getLinks(attribute, targets).get().map(T::getValue);
 	}
 
 	@Override
@@ -67,20 +179,10 @@ public interface DefaultCompositesInheritance<T extends DefaultVertex<T>> extend
 	}
 
 	@SuppressWarnings("unchecked")
-	@Override
-	default Snapshot<T> getAttributes(T attribute) {
-		T nonHeritableProperty = getKey(NonHeritableProperty.class, ApiStatics.NO_POSITION);
-		if (nonHeritableProperty == null || attribute.inheritsFrom(nonHeritableProperty) || attribute.isHeritableEnabled())
-			return () -> new InheritanceComputer<>((T) DefaultCompositesInheritance.this, attribute, ApiStatics.STRUCTURAL).inheritanceStream();
-		return () -> this.getComposites().get().filter(holder -> holder.isSpecializationOf(attribute) && holder.getLevel() == ApiStatics.STRUCTURAL);
+	default Predicate<T> componentsFilter(T... components) {
+		return DefaultDependencies.componentsFilter((x, y) -> x.isSpecializationOf(y), components);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	default Snapshot<T> getHolders(T attribute) {
-		T nonHeritableProperty = getKey(NonHeritableProperty.class, ApiStatics.NO_POSITION);
-		if (nonHeritableProperty == null || attribute.inheritsFrom(nonHeritableProperty) || attribute.isHeritableEnabled())
-			return () -> new InheritanceComputer<>((T) DefaultCompositesInheritance.this, attribute, ApiStatics.CONCRETE).inheritanceStream();
-		return () -> this.getComposites().get().filter(holder -> holder.isSpecializationOf(attribute) && holder.getLevel() == ApiStatics.CONCRETE);
-	}
+	T getNonAmbiguousResult(Stream<T> stream);
+
 }

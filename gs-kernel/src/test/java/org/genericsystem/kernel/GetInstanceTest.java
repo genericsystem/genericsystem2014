@@ -1,5 +1,7 @@
 package org.genericsystem.kernel;
 
+import java.util.Collections;
+
 import org.testng.annotations.Test;
 
 @Test
@@ -34,7 +36,7 @@ public class GetInstanceTest extends AbstractTest {
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic carVehicle = engine.addInstance(vehicle, "Car");
 
-		assert engine.getInstance("Car") == car;
+		assert engine.getInstance(Collections.emptyList(), "Car") == car;
 		assert engine.getInstance(vehicle, "Car") == carVehicle;
 	}
 

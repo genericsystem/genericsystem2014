@@ -76,7 +76,7 @@ public abstract class Context implements DefaultContext<Generic> {
 	}
 
 	protected Generic getMeta(int dim) {
-		Generic adjustedMeta = ((Generic) root).adjustMeta(root.getValue(), rootComponents(dim));
+		Generic adjustedMeta = ((Generic) root).adjustMeta(rootComponents(dim));
 		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
 	}
 

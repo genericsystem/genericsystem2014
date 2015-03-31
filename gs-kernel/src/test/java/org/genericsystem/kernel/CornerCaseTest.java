@@ -34,8 +34,8 @@ public class CornerCaseTest extends AbstractTest {
 		Root engine = new Root();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic power = vehicle.addAttribute("Power");
-		assert engine.getInstance("Power", vehicle).equals(power);
-		// catchAndCheckCause(() -> vehicle.setAttribute(power, "Power"), CollisionException.class);
+		assert engine.getInstance("Power", vehicle) == null;
+		assert engine.getMetaAttribute().getInstance("Power", vehicle).equals(power);
 	}
 
 }
