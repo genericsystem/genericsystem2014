@@ -98,7 +98,7 @@ public class UpdateTest extends AbstractTest {
 		cache2.flush();
 		cache1.start();
 		assert car.isAlive();
-		cache1.pickNewTs();
+		cache1.shiftTs();
 		assert !car.isAlive();
 	}
 
