@@ -10,6 +10,14 @@ public class MetasTests extends AbstractTest {
 		Generic metaAttribute = root.getMetaAttribute();
 		Generic metaRelation = metaAttribute.getInheritings().first();
 
+		Generic metaAttribute = root.getMetaAttribute();
+		assert metaAttribute == root.adjustMeta(root);
+		assert metaAttribute.getMeta() == metaAttribute;
+		assert metaAttribute.isMeta();
+		assert metaAttribute.getBaseComponent().equals(root);
+		assert metaAttribute.inheritsFrom(root);
+		
+		assert metaRelation == engine.adjustMeta(root, root);
 		assert metaRelation.isMeta();
 		assert metaRelation.getBaseComponent().equals(root);
 		assert metaRelation.getTargetComponent().equals(root);

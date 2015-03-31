@@ -1,6 +1,7 @@
 package org.genericsystem.kernel;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -114,7 +115,7 @@ public class InstanciationTest extends AbstractTest {
 		Generic car = root.addInstance("Car");
 		Generic otherCar = root.addInstance(car, "Car");
 		assert car.isAlive();
-		assert root.getInstance("Car").equals(car);
+		assert root.getInstance(Collections.emptyList(), "Car").equals(car);
 		assert root.getInstance(car, "Car").equals(otherCar);
 	}
 

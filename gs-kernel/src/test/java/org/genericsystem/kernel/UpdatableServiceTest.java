@@ -131,7 +131,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert !power.isAlive();
 		assert engine.equals(newVehicle.getMeta());
 		assert engine.getCurrentCache().computeDependencies(engine).contains(newVehicle);
-		Generic newPower = engine.getInstance("Power", newVehicle);
+		Generic newPower = engine.getRoot().getMetaAttribute().getInstance("Power", newVehicle);
 		assert newPower.getComponents().size() == 1;
 		Generic compositeOfPower = newPower.getComponents().get(0);
 		assert newVehicle.getValue().equals(compositeOfPower.getValue());
@@ -174,7 +174,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert newVehicle.getInstances().size() == 1;
 		assert newVehicle.getInheritings().size() == 0;
 
-		Generic newPower = engine.getInstance("Power", newVehicle);
+		Generic newPower = engine.getRoot().getMetaAttribute().getInstance("Power", newVehicle);
 		assert newPower != null;
 		assert newPower.getComponents().size() == 1;
 		assert newPower.getSupers().size() == 0;

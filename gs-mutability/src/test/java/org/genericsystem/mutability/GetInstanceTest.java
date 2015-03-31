@@ -1,5 +1,7 @@
 package org.genericsystem.mutability;
 
+import java.util.Collections;
+
 import org.genericsystem.kernel.Generic;
 import org.genericsystem.kernel.Root;
 import org.testng.annotations.Test;
@@ -36,7 +38,7 @@ public class GetInstanceTest extends AbstractTest {
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic carVehicle = engine.addInstance(vehicle, "Car");
 
-		assert engine.getInstance("Car") == car;
+		assert engine.getInstance(Collections.emptyList(), "Car") == car;
 		assert engine.getInstance(vehicle, "Car") == carVehicle;
 	}
 
@@ -47,8 +49,7 @@ public class GetInstanceTest extends AbstractTest {
 		Generic car = engine.addInstance(vehicle, "Car");
 		Generic myBmwCar = car.addInstance("myBmw");
 
-		assert engine.getInstance("myBmw") == myBmw;
-		assert vehicle.getInstance(car, "myBmw") == myBmwCar;
-		assert engine.getInstance(car, "myBmw") == myBmwCar;
+		assert vehicle.getInstance("myBmw") == myBmw;
+		assert car.getInstance("myBmw") == myBmwCar;
 	}
 }

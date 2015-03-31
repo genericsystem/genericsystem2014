@@ -53,7 +53,7 @@ public class AttributesTest extends AbstractTest {
 		Generic vehicle = root.addInstance("Vehicle");
 		assert vehicle.getLevel() == 1 : vehicle.getLevel();
 		Generic power = root.addInstance("Power", vehicle);
-		assert root.getInstance("Power", vehicle) == power;
+		assert root.getMetaAttribute().getInstance("Power", vehicle) == power;
 		assert power.getComponents().size() == 1;
 		assert vehicle.equals(power.getComponents().get(0));
 		assert power.isAlive();
@@ -69,7 +69,7 @@ public class AttributesTest extends AbstractTest {
 		assert carPowerUnit.isDependencyOf(root, Collections.emptyList(), "Power", Collections.singletonList(vehicle));
 		assert !carPowerUnit.inheritsFrom(root, "Power", Collections.singletonList(vehicle));
 		Generic vehiclePower = root.addInstance("Power", vehicle);
-		assert root.getInstance("Power", car).getSupers().stream().anyMatch(x -> x.equals(vehiclePower));
+		assert root.getMetaAttribute().getInstance("Power", car).getSupers().stream().anyMatch(x -> x.equals(vehiclePower));
 	}
 
 	public void test008() {

@@ -4,8 +4,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.ISignature;
@@ -20,6 +22,7 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 		return getRoot().getCurrentCache();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default boolean isAlive() {
 		return getCurrentCache().isAlive((T) this);
@@ -128,12 +131,12 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 	}
 
 	@SuppressWarnings("unchecked")
-	default T adjustMeta(Serializable value, T... components) {
-		return adjustMeta(value, Arrays.asList(components));
+	default T adjustMeta(T... components) {
+		return adjustMeta(Arrays.asList(components));
 	}
 
 	@SuppressWarnings("unchecked")
-	default T adjustMeta(Serializable value, List<T> components) {
+	default T adjustMeta(List<T> components) {
 		T result = null;
 		if (!components.equals(getComponents()))
 			for (T directInheriting : getInheritings()) {
@@ -144,7 +147,7 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 						getCurrentCache().discardWithException(new AmbiguousSelectionException("Ambigous selection : " + result.info() + directInheriting.info()));
 				}
 			}
-		return result == null ? (T) this : result.adjustMeta(value, components);
+		return result == null ? (T) this : result.adjustMeta(components);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -251,9 +254,9 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 		visitor.traverse((T) this);
 	}
 
+	@SuppressWarnings("unchecked")
 	default T addGenerateInstance(T... components) {
 		class ValueGenerator {
-			@SuppressWarnings("unchecked")
 			Serializable generateValue() {
 				GenerateValue generate = getRoot().findAnnotedClass((T) DefaultVertex.this).getAnnotation(GenerateValue.class);
 				if (generate == null)
@@ -267,5 +270,16 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 			}
 		}
 		return addInstance(new ValueGenerator().generateValue(), components);
+	}
+
+	@Override
+	default T getNonAmbiguousResult(Stream<T> stream) {
+		Iterator<T> iterator = stream.iterator();
+		if (!iterator.hasNext())
+			return null;
+		T result = iterator.next();
+		if (iterator.hasNext())
+			getCurrentCache().discardWithException(new AmbiguousSelectionException(result.info() + " " + iterator.next().info()));
+		return result;
 	}
 }

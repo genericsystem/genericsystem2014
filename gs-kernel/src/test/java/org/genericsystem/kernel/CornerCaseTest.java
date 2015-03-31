@@ -34,7 +34,8 @@ public class CornerCaseTest extends AbstractTest {
 		Root root = new Root();
 		Generic car = root.addInstance("Car");
 		Generic power = car.addAttribute("Power");
-		assert root.getInstance("Power", car).equals(power);
+		assert root.getInstance("Power", car) == null;
+		assert root.getMetaAttribute().getInstance("Power", car).equals(power);
 	}
 
 }
