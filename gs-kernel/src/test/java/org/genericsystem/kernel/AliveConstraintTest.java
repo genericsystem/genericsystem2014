@@ -45,4 +45,21 @@ public class AliveConstraintTest extends AbstractTest {
 		assert vehicle.isAlive();
 	}
 
+	public void test005() {
+		Root engine = new Root();
+		Generic car = engine.addInstance("Car");
+		Generic airConditioner = engine.addInstance("airConditioner", car);
+		Generic radio = engine.addInstance("Radio", car);
+		assert car.isAlive();
+		assert airConditioner.isAlive();
+		assert radio.isAlive();
+		airConditioner.remove();
+		assert car.isAlive();
+		assert !airConditioner.isAlive();
+		assert radio.isAlive();
+		car.remove();
+		assert !car.isAlive();
+		assert !radio.isAlive();
+	}
+
 }

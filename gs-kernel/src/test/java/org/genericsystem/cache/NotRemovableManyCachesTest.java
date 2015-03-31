@@ -58,11 +58,11 @@ public class NotRemovableManyCachesTest extends AbstractTest {
 		Generic myBmw = car.addInstance("myBmw");
 		cache3.flush();
 		cache2.start();
-		cache2.shift();
+		cache2.shiftTs();
 		Generic myBmwRed = myBmw.addHolder(color, "red");
 		cache2.flush();
 		cache.start();
-		cache.shift();
+		cache.shiftTs();
 		catchAndCheckCause(() -> car.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 

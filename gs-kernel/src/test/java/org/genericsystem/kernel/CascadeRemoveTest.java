@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 @Test
 public class CascadeRemoveTest extends AbstractTest {
 
-	public void test001_CascadeRemove() {
+	public void test001() {
 		Root root = new Root();
 		Generic car = root.addInstance("Car");
 		Generic color = root.addInstance("Color");
@@ -17,12 +17,14 @@ public class CascadeRemoveTest extends AbstractTest {
 		Generic red = color.addInstance("red");
 		Generic myCarRed = myCar.addLink(carColor, "defaultColor", red);
 		myCarRed.remove();
+
 		assert red.isAlive();
+		assert !myCar.isAlive();
 		assert !myCarRed.isAlive();
 		assert !myCarRed.getBaseComponent().isAlive();
 	}
 
-	public void test001_CascadeRemove_TargetPosition() {
+	public void test002() {
 		Root root = new Root();
 		Generic car = root.addInstance("Car");
 		Generic color = root.addInstance("Color");
@@ -33,11 +35,12 @@ public class CascadeRemoveTest extends AbstractTest {
 		Generic myCarRed = myCar.addLink(carColor, "defaultColor", red);
 		myCarRed.remove();
 		assert myCar.isAlive();
+		assert !red.isAlive();
 		assert !myCarRed.isAlive();
 		assert !myCarRed.getTargetComponent().isAlive();
 	}
 
-	public void test002_CascadeRemove() {
+	public void test003() {
 		Root root = new Root();
 		Generic car = root.addInstance("Car");
 		Generic color = root.addInstance("Color");
@@ -47,11 +50,12 @@ public class CascadeRemoveTest extends AbstractTest {
 		Generic myCarColor = myCar.addLink(carColor, "defaultColor", color);
 		myCarColor.remove();
 		assert color.isAlive();
+		assert !myCar.isAlive();
 		assert !myCarColor.isAlive();
 		assert !myCarColor.getBaseComponent().isAlive();
 	}
 
-	public void test002_CascadeRemove_TargetPosition() {
+	public void test004() {
 		Root root = new Root();
 		Generic car = root.addInstance("Car");
 		Generic color = root.addInstance("Color");
@@ -61,11 +65,12 @@ public class CascadeRemoveTest extends AbstractTest {
 		Generic carRed = car.addLink(carColor, "defaultColor", red);
 		carRed.remove();
 		assert car.isAlive();
+		assert !red.isAlive();
 		assert !carRed.isAlive();
 		assert !carRed.getTargetComponent().isAlive();
 	}
 
-	public void test003_CascadeRemove() {
+	public void test005() {
 		Root root = new Root();
 		Generic car = root.addInstance("Car");
 		Generic color = root.addInstance("Color");
@@ -76,7 +81,7 @@ public class CascadeRemoveTest extends AbstractTest {
 		catchAndCheckCause(() -> carRed.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
-	public void test003_CascadeRemove_TargetPosition() {
+	public void test006() {
 		Root root = new Root();
 		Generic car = root.addInstance("Car");
 		Generic color = root.addInstance("Color");
@@ -89,4 +94,5 @@ public class CascadeRemoveTest extends AbstractTest {
 		assert myCarColor.getTargetComponent().isAlive();
 		catchAndCheckCause(() -> myCarColor.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
+
 }

@@ -4,34 +4,28 @@ import java.util.Arrays;
 
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.exceptions.ExistsException;
+import org.genericsystem.api.core.exceptions.NotFoundException;
 import org.genericsystem.defaults.exceptions.SingularConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test
 public class BindingServiceTest extends AbstractTest {
 
-	public void test001_addInstance() {
-		// given
+	public void test001() {
 		Generic engine = new Root();
-
-		// when
 		Generic vehicle = engine.addInstance("Vehicle");
-
-		// then
 		assert "Vehicle".equals(vehicle.getValue());
 		assert vehicle.isAlive();
 	}
 
-	public void test002_addSameValueKO() {
-		// given
+	public void test002() {
 		Generic engine = new Root();
 		engine.addInstance("Vehicle");
 
 		catchAndCheckCause(() -> engine.addInstance("Vehicle"), ExistsException.class);
 	}
 
-	public void test003_allInheritingsTest() {
-		// given
+	public void test003() {
 		Generic engine = new Root();
 		Generic animal = engine.addInstance("Animal");// Alone type
 		Generic machine = engine.addInstance("Machine");
@@ -41,14 +35,14 @@ public class BindingServiceTest extends AbstractTest {
 		Generic bike = engine.addInstance(vehicle, "Bike");
 		Generic transformer = engine.addInstance(Arrays.asList(robot, car), "Transformer");
 		Generic plasticTransformer = engine.addInstance(transformer, "PlasticTransformer");
-		// then
+
 		assert !machine.getAllInheritings().contains(animal) : machine.getAllInheritings().info();
 		assert machine.getAllInheritings().containsAll(Arrays.asList(machine, vehicle, robot, car, bike, transformer, plasticTransformer)) : machine.getAllInheritings().info();
 		assert machine.getAllInheritings().size() == 7 : machine.getAllInheritings().info();
 
 	}
 
-	public void test000_NoInheritanceFromType() {
+	public void test004() {
 		Generic engine = new Root();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic power = engine.addInstance("Power");
@@ -58,7 +52,7 @@ public class BindingServiceTest extends AbstractTest {
 		assert myBmw.getAttributes(power).size() == 0 : myBmw.getAttributes(power).info();
 	}
 
-	public void test000_InheritanceFromType() {
+	public void test005() {
 		Generic engine = new Root();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic power = engine.addInstance("Power");
@@ -75,7 +69,7 @@ public class BindingServiceTest extends AbstractTest {
 
 	}
 
-	public void test001InheritanceFromType() {
+	public void test006() {
 		Generic engine = new Root();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic power = engine.addInstance("Power");
@@ -92,21 +86,20 @@ public class BindingServiceTest extends AbstractTest {
 
 	}
 
-	public void test002_InheritanceFromType() {
+	public void test007() {
 		Generic engine = new Root();
 		Generic vehicle = engine.addInstance("Vehicle");
-		Generic singular = engine.addInstance("Singular");
+		Generic power = engine.addInstance("Power");
 
-		Generic vehiclePower = vehicle.addAttribute(singular, "Power");
-		catchAndCheckCause(() -> singular.enableSingularConstraint(ApiStatics.BASE_POSITION), org.genericsystem.api.core.exceptions.NotFoundException.class);
+		vehicle.addAttribute(power, "VehiclePower");
+		catchAndCheckCause(() -> power.enableSingularConstraint(ApiStatics.BASE_POSITION), NotFoundException.class);
 	}
 
-	public void test003_InheritanceFromType() {
+	public void test008() {
 		Generic engine = new Root();
 		Generic vehicle = engine.addInstance("Vehicle");
-		Generic singular = engine.addInstance("Singular");
-
-		Generic vehiclePower = vehicle.addAttribute(singular, "Power");
+		Generic power = engine.addInstance("Power");
+		Generic vehiclePower = vehicle.addAttribute(power, "VehiclePower");
 
 		vehiclePower.enableSingularConstraint(ApiStatics.BASE_POSITION);
 		assert vehiclePower.isSingularConstraintEnabled(ApiStatics.BASE_POSITION);

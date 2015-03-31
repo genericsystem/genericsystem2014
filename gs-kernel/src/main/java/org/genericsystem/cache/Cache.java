@@ -47,7 +47,7 @@ public class Cache extends Context {
 		cacheElement = new Differential(cacheElement == null ? new TransactionDifferential() : cacheElement.getSubCache());
 	}
 
-	public void shift() throws RollbackException {
+	public void shiftTs() throws RollbackException {
 		transaction = new Transaction(getRoot(), getRoot().pickNewTs());
 		listener.triggersRefreshEvent();
 	}
@@ -78,7 +78,7 @@ public class Cache extends Context {
 				cause = e;
 				try {
 					Thread.sleep(Statics.ATTEMPT_SLEEP);
-					shift();
+					shiftTs();
 				} catch (InterruptedException ex) {
 					discardWithException(ex);
 				}
