@@ -1,9 +1,11 @@
 package org.genericsystem.kernel;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 import org.genericsystem.api.core.IVertex.Visitor;
+import org.genericsystem.api.core.exceptions.AmbiguousSelectionException;
 import org.genericsystem.api.core.exceptions.ExistsException;
 import org.testng.annotations.Test;
 
@@ -192,7 +194,8 @@ public class TreeTest extends AbstractTest {
 		Generic a1 = root.addInstance("A");
 		Generic b = root.addInstance(a1, "B");
 		Generic a2 = root.addInstance(b, "A");
-		assert root.getInstance("A").equals(a1);
+		assert root.getInstance(Collections.emptyList(), "A").equals(a1);
+		catchAndCheckCause(() -> root.getInstance("A"), AmbiguousSelectionException.class);
 		assert root.getInstance(Arrays.asList(b), "A").equals(a2);
 	}
 
@@ -201,7 +204,8 @@ public class TreeTest extends AbstractTest {
 		Generic a1 = root.addInstance("A");
 		Generic b = root.addInstance("B");
 		Generic a2 = root.addInstance(b, "A");
-		assert root.getInstance("A").equals(a1);
+		assert root.getInstance(Collections.emptyList(), "A").equals(a1);
+		catchAndCheckCause(() -> root.getInstance("A"), AmbiguousSelectionException.class);
 		assert root.getInstance(Arrays.asList(b), "A").equals(a2);
 	}
 
@@ -210,8 +214,8 @@ public class TreeTest extends AbstractTest {
 		Generic b = root.addInstance("B");
 		Generic c = root.addInstance("C");
 		Generic a1 = root.addInstance(b, "A");
-		Generic a2 = root.addInstance(c, "A");
-		assert root.getInstance("A") == null : root.getInstance("A").info();
+		root.addInstance(c, "A");
+		catchAndCheckCause(() -> root.getInstance("A"), AmbiguousSelectionException.class);
 		assert root.getInstance(Arrays.asList(b), "A").equals(a1);
 	}
 

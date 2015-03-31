@@ -12,8 +12,8 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test001() {
 		Root engine = new Root();
-		assert engine.getMetaAttribute().equals(engine.adjustMeta(engine.getMetaAttribute().getValue(), engine));
-		assert engine.getMetaRelation().equals(engine.adjustMeta(engine.getMetaRelation().getValue(), engine, engine));
+		assert engine.getMetaAttribute().equals(engine.adjustMeta(engine));
+		assert engine.getMetaRelation().equals(engine.adjustMeta(engine, engine));
 		assert engine.getMetaRelation() == engine.setInstance(engine.getValue(), engine, engine);
 		Generic metaTernaryRelation = engine.setInstance(engine.getValue(), engine, engine, engine);
 		assert engine.getCurrentCache().getMeta(3).equals(metaTernaryRelation);
@@ -21,30 +21,30 @@ public class AdjustMetaTest extends AbstractTest {
 
 	public void test002() {
 		Root engine = new Root();
-		assert engine == engine.adjustMeta("Color", Collections.emptyList());
+		assert engine == engine.adjustMeta(Collections.emptyList());
 	}
 
 	public void test003() {
 		Root engine = new Root();
 		Generic car = engine.addInstance("Car");
-		assert engine.getMetaAttribute() == engine.adjustMeta("Power", car);
+		assert engine.getMetaAttribute() == engine.adjustMeta(car);
 	}
 
 	public void test004() {
 		Root engine = new Root();
 		Generic car = engine.addInstance("Car");
 		Generic color = engine.addInstance("Color");
-		assert engine.getMetaRelation() == engine.adjustMeta("CarColor", car, color);
+		assert engine.getMetaRelation() == engine.adjustMeta(car, color);
 	}
 
 	public void test005() {
 		Root engine = new Root();
-		assert engine.getMetaAttribute() == engine.adjustMeta(engine.getValue(), engine);
+		assert engine.getMetaAttribute() == engine.adjustMeta(engine);
 		Generic car = engine.addInstance("Car");
 		Generic color = engine.addInstance("Color");
 		engine.addInstance("CarColor", car, color);
 		Generic design = engine.addInstance("Design");
-		Generic adjustMeta = engine.adjustMeta("CarColorDesign", Arrays.asList(car, color, design));
+		Generic adjustMeta = engine.adjustMeta(Arrays.asList(car, color, design));
 		assert engine.getMetaRelation() == adjustMeta : adjustMeta.info();
 	}
 
@@ -55,7 +55,7 @@ public class AdjustMetaTest extends AbstractTest {
 		Generic carColor = engine.addInstance("CarColor", car, color);
 		Generic myBmw = car.addInstance("myBmw");
 		Generic red = color.addInstance("Red");
-		assert carColor == carColor.adjustMeta("myBmwRed", Arrays.asList(myBmw, red)) : engine.adjustMeta("myBmwRed", Arrays.asList(myBmw, red));
+		assert carColor == carColor.adjustMeta(Arrays.asList(myBmw, red)) : engine.adjustMeta(Arrays.asList(myBmw, red));
 	}
 
 	public void test007() {
@@ -67,7 +67,7 @@ public class AdjustMetaTest extends AbstractTest {
 		Generic carColor = engine.addInstance("CarColor", car, color);
 		Generic red = engine.addInstance(color, "red");
 		Generic myBmw = car.addInstance("myBmw");
-		assert carColor == carColor.adjustMeta("myBmwRed", myBmw, red);
+		assert carColor == carColor.adjustMeta(myBmw, red);
 	}
 
 	public void test008() {
@@ -77,7 +77,7 @@ public class AdjustMetaTest extends AbstractTest {
 		Generic carColor = engine.addInstance("CarColor", car, color);
 		Generic red = color.addInstance("red");
 		Generic myBmw = car.addInstance("myBmw");
-		assert carColor == carColor.adjustMeta("myBmwRed", myBmw, red);
+		assert carColor == carColor.adjustMeta(myBmw, red);
 	}
 
 	public void test009() {
@@ -88,7 +88,7 @@ public class AdjustMetaTest extends AbstractTest {
 		Generic car = engine.addInstance(vehicle, "Car");
 		Generic red = engine.addInstance(color, "red");
 		Generic myBmw = car.addInstance("myBmw");
-		assert vehicleColor == vehicleColor.adjustMeta("myBmwRed", myBmw, red);
+		assert vehicleColor == vehicleColor.adjustMeta(myBmw, red);
 	}
 
 	public void test010() {
@@ -99,7 +99,7 @@ public class AdjustMetaTest extends AbstractTest {
 		Generic car = engine.addInstance(vehicle, "Car");
 		Generic red = color.addInstance("red");
 		Generic myBmw = car.addInstance("myBmw");
-		assert vehicleColor == vehicleColor.adjustMeta("myBmwRed", myBmw, red);
+		assert vehicleColor == vehicleColor.adjustMeta(myBmw, red);
 	}
 
 	public void test011() {
@@ -113,7 +113,7 @@ public class AdjustMetaTest extends AbstractTest {
 		Generic red = color.addInstance("red");
 		Generic design = engine.addInstance("Design");
 
-		assert carColor == vehicleColor.adjustMeta("CarRed", car, red, design);
+		assert carColor == vehicleColor.adjustMeta(car, red, design);
 	}
 
 	public void test012() {
@@ -127,8 +127,8 @@ public class AdjustMetaTest extends AbstractTest {
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		Generic myBmw = car.addInstance("myBmw");
 		Generic red = color.addInstance("red");
-		assert carColor == vehicleColor.adjustMeta("myBmwRed", myBmw, red);
-		assert vehicleColor == vehicleColor.adjustMeta("myVehicleRed", myVehicle, red);
+		assert carColor == vehicleColor.adjustMeta(myBmw, red);
+		assert vehicleColor == vehicleColor.adjustMeta(myVehicle, red);
 	}
 
 	public void test013() {
@@ -137,7 +137,7 @@ public class AdjustMetaTest extends AbstractTest {
 		Generic power = engine.addInstance("Power", engine);
 		Generic car = engine.addInstance("Car", engine);
 		Generic carPower = engine.addInstance(power, "carPower", engine);
-		assert carPower.equals(power.adjustMeta(235, car));
+		assert carPower.equals(power.adjustMeta(car));
 	}
 
 	/**

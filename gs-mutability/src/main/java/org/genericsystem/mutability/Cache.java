@@ -231,7 +231,6 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 
 	@Override
 	public void discardWithException(Throwable exception) throws RollbackException {
-		assert false;
 		cache.discardWithException(exception);
 	}
 
