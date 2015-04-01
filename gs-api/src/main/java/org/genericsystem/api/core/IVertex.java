@@ -513,21 +513,21 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 *
 	 * @param value
 	 *            the value of returned vertex.
-	 * @param superT
-	 *            the super of returned vertex.
+	 * @param override
+	 *            the override of returned vertex.
 	 * @param components
 	 *            the components of returned vertex.
 	 * @return a vertex if exists, <code>null</code> otherwise.
 	 */
 	@SuppressWarnings("unchecked")
-	T getInstance(T superT, Serializable value, T... components);
+	T getInstance(T override, Serializable value, T... components);
 
 	/**
-	 * Returns if exists an instance of this (meta) vertex. The returned vertex satisfies the specified <code>supers</code>, <code>value</code> and <code>components</code>.<br>
+	 * Returns if exists an instance of this (meta) vertex. The returned vertex satisfies the specified <code>overrides</code>, <code>value</code> and <code>components</code>.<br>
 	 * Note that the returned vertex if any, inherits from any vertex specified in the list of <code>supers</code> but can have more or more precise supers in an undefined order.
 	 *
-	 * @param supers
-	 *            the list of supers of returned vertex.
+	 * @param overrides
+	 *            the list of overrides of returned vertex.
 	 * @param value
 	 *            the value of returned vertex.
 	 * @param components
@@ -535,7 +535,7 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 * @return a vertex if exists, <code>null</code> otherwise.
 	 */
 	@SuppressWarnings("unchecked")
-	T getInstance(List<T> supers, Serializable value, T... components);
+	T getInstance(List<T> overrides, Serializable value, T... components);
 
 	/**
 	 * Returns vertices that have this vertex as meta.<br>
@@ -568,6 +568,44 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	Snapshot<T> getInstances(T... components);
+
+	/**
+	 * Returns vertices that have this vertex as meta.<br>
+	 * The returned vertex satisfies the specified <code>override</code>, <code>value</code> and <code>components</code>.
+	 * <p>
+	 * To get all vertices that are instances of this vertex, consider <code>getAllInstances()</code>.
+	 * </p>
+	 * 
+	 * @param override
+	 *            the override of returned vertex.
+	 * @param value
+	 *            the value of returned vertex.
+	 * @param components
+	 *            the components of returned vertex.
+	 *
+	 * @return the vertices that have this vertex for meta.
+	 */
+	@SuppressWarnings("unchecked")
+	Snapshot<T> getInstances(T override, Serializable value, T... components);
+
+	/**
+	 * Returns vertices that have this vertex as meta.<br>
+	 * The returned vertex satisfies the specified <code>overrides</code>, <code>value</code> and <code>components</code>.
+	 * <p>
+	 * To get all vertices that are instances of this vertex, consider <code>getAllInstances()</code>.
+	 * </p>
+	 * 
+	 * @param overrides
+	 *            the overrides of returned vertex.
+	 * @param value
+	 *            the value of returned vertex.
+	 * @param components
+	 *            the components of returned vertex.
+	 *
+	 * @return the vertices that have this vertex for meta.
+	 */
+	@SuppressWarnings("unchecked")
+	Snapshot<T> getInstances(List<T> overrides, Serializable value, T... components);
 
 	/**
 	 * Returns vertices that are instances of this vertex.<br>

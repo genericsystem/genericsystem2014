@@ -2,6 +2,7 @@ package org.genericsystem.defaults;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -44,14 +45,14 @@ public interface DefaultDependencies<T extends DefaultVertex<T>> extends IVertex
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T getInstance(T superT, Serializable value, T... components) {
-		return getInstance(Collections.singletonList(superT), value, components);
+	default T getInstance(T override, Serializable value, T... components) {
+		return getNonAmbiguousResult(getInstances(override, value, components).get());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default T getInstance(List<T> overrides, Serializable value, T... components) {
-		return getNonAmbiguousResult(getInstances(value, components).filter(overridesFilter(overrides)).get());
+		return getNonAmbiguousResult(getInstances(overrides, value, components).get());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -66,6 +67,19 @@ public interface DefaultDependencies<T extends DefaultVertex<T>> extends IVertex
 		return getCurrentCache().getInstances((T) this).filter(componentsFilter((x, y) -> x.equals(y), components));
 	}
 
+	@Override
+	@SuppressWarnings("unchecked")
+	default Snapshot<T> getInstances(T override, Serializable value, T... components) {
+		return getInstances(Collections.singletonList(override), value, components);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default Snapshot<T> getInstances(List<T> overrides, Serializable value, T... components) {
+		List<T> supers = getCurrentCache().computeAndCheckOverridesAreReached((T) this, overrides, value, Arrays.asList(components));
+		return getInstances(value, components).filter(overridesFilter(supers));
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getAllInstances(Serializable value, T... components) {
@@ -75,7 +89,7 @@ public interface DefaultDependencies<T extends DefaultVertex<T>> extends IVertex
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getAllInstances(T... components) {
-		return () -> getAllInheritings().get().flatMap(inheriting -> inheriting.getInstances().get()).filter(componentsFilter((x, y) -> x.equals(y), components));
+		return () -> getAllInheritings().get().flatMap(inheriting -> inheriting.getInstances(components).get());
 	}
 
 	@SuppressWarnings("unchecked")

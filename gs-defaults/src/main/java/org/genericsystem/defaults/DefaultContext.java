@@ -14,6 +14,8 @@ import org.genericsystem.api.core.exceptions.RollbackException;
 
 public interface DefaultContext<T extends DefaultVertex<T>> extends IContext<T> {
 
+	List<T> computeAndCheckOverridesAreReached(T adjustedMeta, List<T> overrides, Serializable value, List<T> components);
+
 	DefaultRoot<T> getRoot();
 
 	// TODO KK remove internal class
