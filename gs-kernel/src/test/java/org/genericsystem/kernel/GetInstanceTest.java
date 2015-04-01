@@ -9,7 +9,7 @@ import org.testng.annotations.Test;
 @Test
 public class GetInstanceTest extends AbstractTest {
 
-	public void test001_getInstance_filterValue() {
+	public void test001() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic car = root.addInstance(vehicle, "Car");
@@ -19,7 +19,7 @@ public class GetInstanceTest extends AbstractTest {
 		assert car.getInstance("myBmw") == myBmw;
 	}
 
-	public void test002_getInstance_filterValue() {
+	public void test002() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic myBmw = vehicle.addInstance("myBmw");
@@ -30,7 +30,7 @@ public class GetInstanceTest extends AbstractTest {
 		assert car.getInstance("myBmw") == myBmwCar;
 	}
 
-	public void test003_getInstance_filterValue() {
+	public void test003() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic vehiclePower = vehicle.addAttribute("power");
@@ -45,7 +45,7 @@ public class GetInstanceTest extends AbstractTest {
 		assert vehiclePower.getInstance(115) == myBmw115;
 	}
 
-	public void test004_getInstance_filterValue() {
+	public void test004() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic color = root.addInstance("Color");
@@ -63,7 +63,20 @@ public class GetInstanceTest extends AbstractTest {
 		assert vehicleColor.getInstance("myBmwRed") == myBmwRed;
 	}
 
-	public void test001_getInstance_filterValueComponents() {
+	public void test005() {
+		Root root = new Root();
+		Generic tree = root.addInstance("Tree");
+		Generic father = tree.addInstance("father");
+		Generic mother = tree.addInstance("mother");
+		Generic children1 = tree.addInstance(Arrays.asList(father, mother), "children1");
+		tree.addInstance(Arrays.asList(father, mother), "children2");
+		tree.addInstance(children1, "children2");
+
+		catchAndCheckCause(() -> tree.getInstance("children2"), AmbiguousSelectionException.class);
+		assert tree.getInstance("children1") == children1;
+	}
+
+	public void test006() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic color = root.addInstance("Color");
@@ -83,7 +96,7 @@ public class GetInstanceTest extends AbstractTest {
 		assert vehicleColor.getInstance("", blue) == myBmwBlue;
 	}
 
-	public void test001_getInstance_filterComponents() {
+	public void test007() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic color = root.addInstance("Color");
@@ -103,7 +116,7 @@ public class GetInstanceTest extends AbstractTest {
 		assert vehicleColor.getInstance(blue) == myBmwBlue;
 	}
 
-	public void test001_getInstance_filterOverridesValue() {
+	public void test008() {
 		Root root = new Root();
 		Generic car = root.addInstance("Car");
 		Generic vehicle = root.addInstance("Vehicle");
@@ -114,7 +127,7 @@ public class GetInstanceTest extends AbstractTest {
 		catchAndCheckCause(() -> root.getInstance("Car"), AmbiguousSelectionException.class);
 	}
 
-	public void test002_getInstance_filterOverridesValue() {
+	public void test009() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic vehiclePower = vehicle.addAttribute("power");
@@ -136,7 +149,20 @@ public class GetInstanceTest extends AbstractTest {
 		assert root.getRoot().getMetaAttribute().getInstance(vehiclePower, "power") == carVehiclePower;
 	}
 
-	public void test001_getInstance_filterOverridesValueComponents() {
+	public void test010() {
+		Root root = new Root();
+		Generic tree = root.addInstance("Tree");
+		Generic father = tree.addInstance("father");
+		Generic mother = tree.addInstance("mother");
+		Generic children1 = tree.addInstance(Arrays.asList(father, mother), "children1");
+		Generic children2 = tree.addInstance(Arrays.asList(father, mother), "children2");
+		tree.addInstance(children1, "children2");
+
+		assert tree.getInstance(Collections.emptyList(), "children2") == null;
+		assert tree.getInstance(Arrays.asList(father), "children2") == children2;
+	}
+
+	public void test011() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic vehiclePower = vehicle.addAttribute("power");
@@ -155,7 +181,7 @@ public class GetInstanceTest extends AbstractTest {
 		assert root.getRoot().getMetaAttribute().getInstance(vehiclePower, "power", bike) == bikePower;
 	}
 
-	public void test002_getInstance_filterOverridesValueComponents() {
+	public void test012() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic vehiclePower = vehicle.addAttribute("power");
@@ -175,7 +201,7 @@ public class GetInstanceTest extends AbstractTest {
 		assert root.getRoot().getMetaAttribute().getInstance(vehiclePower, "power", carVehicle) == carVehiclePower;
 	}
 
-	public void test001_getInstances_filterValue() {
+	public void test013() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic vehiclePower = vehicle.addAttribute("power");
@@ -190,7 +216,7 @@ public class GetInstanceTest extends AbstractTest {
 		assert vehiclePower.getInstances(116).size() == 2;
 	}
 
-	public void test002_getInstances_filterValue() {
+	public void test014() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic color = root.addInstance("Color");
@@ -208,7 +234,20 @@ public class GetInstanceTest extends AbstractTest {
 		assert vehicleColor.getInstances("").size() == 3;
 	}
 
-	public void test001_getInstances_filterValueComponents() {
+	public void test015() {
+		Root root = new Root();
+		Generic tree = root.addInstance("Tree");
+		Generic father = tree.addInstance("father");
+		Generic mother = tree.addInstance("mother");
+		Generic children1 = tree.addInstance(Arrays.asList(father, mother), "children1");
+		Generic children2 = tree.addInstance(Arrays.asList(father, mother), "children2");
+		Generic children3 = tree.addInstance(children1, "children2");
+
+		assert tree.getInstances("children2").size() == 2;
+		assert tree.getInstances("children2").containsAll(Arrays.asList(children2, children3));
+	}
+
+	public void test016() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic color = root.addInstance("Color");
@@ -224,10 +263,10 @@ public class GetInstanceTest extends AbstractTest {
 		vehicleColor.addInstance("", myBmw, blue);
 
 		assert vehicleColor.getInstances("", myBmw).size() == 2;
-		assert vehicleColor.getInstances("", myBmw, red).size() == 2;
+		assert vehicleColor.getInstances("", myBmw, red).size() == 1;
 	}
 
-	public void test001_getInstances_filterComponents() {
+	public void test017() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic color = root.addInstance("Color");
@@ -246,7 +285,42 @@ public class GetInstanceTest extends AbstractTest {
 		assert vehicleColor.getInstances(blue).size() == 1;
 	}
 
-	public void test001_getAllInstances_filterValue() {
+	public void test018() {
+		Root root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic vehiclePower = vehicle.addAttribute("power");
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic trunck = root.addInstance(vehicle, "Trunck");
+		Generic bike = root.addInstance(vehicle, "Bike");
+		Generic carPower = car.addAttribute("carPower");
+		Generic bikePower = bike.addAttribute(vehiclePower, "power");
+		Generic trunckPower = trunck.addAttribute("power");
+
+		assert !carPower.inheritsFrom(vehiclePower);
+		assert trunckPower.inheritsFrom(vehiclePower);
+
+		assert root.getRoot().getMetaAttribute().getInstances(Collections.emptyList(), "power", trunck).first() == trunckPower;
+		assert root.getRoot().getMetaAttribute().getInstances(vehiclePower, "power", bike).first() == bikePower;
+	}
+
+	public void test019() {
+		Root root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic vehiclePower = vehicle.addAttribute("power");
+		Generic car = root.addInstance("Car");
+		Generic carVehicle = root.addInstance(vehicle, "Car");
+
+		Generic carPower = car.addAttribute("power");
+		Generic carVehiclePower = carVehicle.addAttribute("power");
+
+		assert !carPower.inheritsFrom(vehiclePower);
+		assert carVehiclePower.inheritsFrom(vehiclePower);
+
+		assert root.getRoot().getMetaAttribute().getInstances(Collections.emptyList(), "power", car).first() == carPower;
+		assert root.getRoot().getMetaAttribute().getInstances(vehiclePower, "power", carVehicle).first() == carVehiclePower;
+	}
+
+	public void test020() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic myBmw = vehicle.addInstance("myBmw");
@@ -259,7 +333,20 @@ public class GetInstanceTest extends AbstractTest {
 		assert car.getAllInstances("myBmw").first() == myBmwCar;
 	}
 
-	public void test001_getAllInstances_filterComponentsValue() {
+	public void test021() {
+		Root root = new Root();
+		Generic tree = root.addInstance("Tree");
+		Generic father = tree.addInstance("father");
+		Generic mother = tree.addInstance("mother");
+		Generic children1 = tree.addInstance(Arrays.asList(father, mother), "children1");
+		Generic children2 = tree.addInstance(Arrays.asList(father, mother), "children2");
+		Generic children3 = tree.addInstance(children1, "children2");
+
+		assert tree.getAllInstances("children2").size() == 2;
+		assert tree.getAllInstances("children2").containsAll(Arrays.asList(children2, children3));
+	}
+
+	public void test022() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic color = root.addInstance("Color");
@@ -278,7 +365,7 @@ public class GetInstanceTest extends AbstractTest {
 		assert vehicleColor.getAllInstances("", myBmw).containsAll(Arrays.asList(myBmwRed, myBmwBlue));
 	}
 
-	public void test001_getAllInstances_filterComponents() {
+	public void test023() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic color = root.addInstance("Color");
@@ -295,5 +382,58 @@ public class GetInstanceTest extends AbstractTest {
 
 		assert vehicleColor.getAllInstances(myBmw).size() == 2;
 		assert vehicleColor.getAllInstances(myBmw).containsAll(Arrays.asList(myBmwRed, myBmwBlue));
+	}
+
+	public void test024() {
+		Root root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic vehiclePower = vehicle.addAttribute("power");
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic trunck = root.addInstance(vehicle, "Trunck");
+		Generic bike = root.addInstance(vehicle, "Bike");
+		Generic carPower = car.addAttribute("carPower");
+		Generic bikePower = bike.addAttribute(vehiclePower, "power");
+		Generic trunckPower = trunck.addAttribute("power");
+
+		assert !carPower.inheritsFrom(vehiclePower);
+		assert trunckPower.inheritsFrom(vehiclePower);
+
+		assert root.getRoot().getMetaAttribute().getAllInstances(Collections.emptyList(), "power").size() == 1;
+		assert root.getRoot().getMetaAttribute().getAllInstances(Collections.emptyList(), "power").first() == vehiclePower;
+		assert root.getRoot().getMetaAttribute().getAllInstances(vehiclePower, "power").size() == 2;
+		assert root.getRoot().getMetaAttribute().getAllInstances(vehiclePower, "power").containsAll(Arrays.asList(bikePower, trunckPower));
+	}
+
+	public void test025() {
+		Root root = new Root();
+		Generic tree = root.addInstance("Tree");
+		Generic father = tree.addInstance("father");
+		Generic mother = tree.addInstance("mother");
+		Generic children1 = tree.addInstance(Arrays.asList(father, mother), "children1");
+		Generic children2 = tree.addInstance(Arrays.asList(father, mother), "children2");
+		tree.addInstance(children1, "children2");
+
+		assert tree.getAllInstances(Arrays.asList(mother), "children2").size() == 1;
+		assert tree.getAllInstances("children2").first() == children2;
+	}
+
+	public void test026() {
+		Root root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic vehiclePower = vehicle.addAttribute("power");
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic trunck = root.addInstance(vehicle, "Trunck");
+		Generic bike = root.addInstance(vehicle, "Bike");
+		Generic carPower = car.addAttribute("carPower");
+		Generic bikePower = bike.addAttribute(vehiclePower, "power");
+		Generic trunckPower = trunck.addAttribute("power");
+
+		assert !carPower.inheritsFrom(vehiclePower);
+		assert trunckPower.inheritsFrom(vehiclePower);
+
+		assert root.getRoot().getMetaAttribute().getAllInstances(Collections.emptyList(), "power", vehicle).size() == 1;
+		assert root.getRoot().getMetaAttribute().getAllInstances(Collections.emptyList(), "power", vehicle).first() == vehiclePower;
+		assert root.getRoot().getMetaAttribute().getAllInstances(vehiclePower, "power", bike).size() == 1;
+		assert root.getRoot().getMetaAttribute().getAllInstances(vehiclePower, "power", bike).first() == bikePower;
 	}
 }

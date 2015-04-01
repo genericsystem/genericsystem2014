@@ -1,7 +1,6 @@
 package org.genericsystem.defaults;
 
 import java.io.Serializable;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.genericsystem.api.core.ApiStatics;
@@ -29,10 +28,15 @@ public interface DefaultCompositesInheritance<T extends DefaultVertex<T>> extend
 		return getAttributes(targets).filter(DefaultDependencies.valueFilter(value));
 	}
 
+	@Override
+	default Snapshot<T> getAttributes() {
+		return getAttributes(getRoot().getMetaAttribute());
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getAttributes(T... targets) {
-		return getAttributes(getRoot().getMetaAttribute()).filter(componentsFilter(targets));
+		return getAttributes().filter(DefaultDependencies.componentsFilter(targets));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -65,13 +69,13 @@ public interface DefaultCompositesInheritance<T extends DefaultVertex<T>> extend
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getHolders(T attribute, Serializable value, T... targets) {
-		return getHolders(attribute).filter(DefaultDependencies.valueFilter(value)).filter(componentsFilter(targets));
+		return getHolders(attribute).filter(DefaultDependencies.valueFilter(value)).filter(DefaultDependencies.componentsFilter(targets));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getHolders(T attribute, T... targets) {
-		return getHolders(attribute).filter(componentsFilter(targets));
+		return getHolders(attribute).filter(DefaultDependencies.componentsFilter(targets));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -110,7 +114,7 @@ public interface DefaultCompositesInheritance<T extends DefaultVertex<T>> extend
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getRelations(T... targets) {
-		return getRelations(getRoot().getMetaRelation()).filter(componentsFilter(targets));
+		return getRelations(getRoot().getMetaRelation()).filter(DefaultDependencies.componentsFilter(targets));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -140,13 +144,13 @@ public interface DefaultCompositesInheritance<T extends DefaultVertex<T>> extend
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getLinks(T relation, Serializable value, T... targets) {
-		return getLinks(relation).filter(DefaultDependencies.valueFilter(value)).filter(componentsFilter(targets));
+		return getLinks(relation).filter(DefaultDependencies.valueFilter(value)).filter(DefaultDependencies.componentsFilter(targets));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getLinks(T relation, T... targets) {
-		return getLinks(relation).filter(componentsFilter(targets));
+		return getLinks(relation).filter(DefaultDependencies.componentsFilter(targets));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -176,11 +180,6 @@ public interface DefaultCompositesInheritance<T extends DefaultVertex<T>> extend
 	@Override
 	default Snapshot<Serializable> getValues(T attribute, int pos) {
 		return () -> getHolders(attribute, pos).get().map(T::getValue);
-	}
-
-	@SuppressWarnings("unchecked")
-	default Predicate<T> componentsFilter(T... components) {
-		return DefaultDependencies.componentsFilter((x, y) -> x.isSpecializationOf(y), components);
 	}
 
 	T getNonAmbiguousResult(Stream<T> stream);
