@@ -8,19 +8,19 @@ import org.testng.annotations.Test;
 @Test
 public class IteratorAndRemoveTest extends AbstractTest {
 
-	public void test002_IterateAndRemove() {
-		Generic engine = new Root();
-		Generic car = engine.addInstance("Car");
-		car.addInstance("myCar1");
-		car.addInstance("myCar2");
-		Generic myCar3 = car.addInstance("myCar3");
-		car.addInstance("myCar4");
+	public void test001() {
+		Generic root = new Root();
+		Generic car = root.addInstance("Car");
+		car.addInstance("myFirstCar");
+		car.addInstance("mySecondCar");
+		Generic myThirdCar = car.addInstance("myThirdCar");
+		car.addInstance("myFourthCar");
 
 		Snapshot<Generic> myCars = car.getInstances();
 
 		Iterator<Generic> iterator = myCars.iterator();
 		int cpt = 0;
-		myCar3.remove();
+		myThirdCar.remove();
 		while (iterator.hasNext()) {
 			iterator.next();
 			cpt++;
@@ -28,27 +28,27 @@ public class IteratorAndRemoveTest extends AbstractTest {
 		assert cpt == 3;
 	}
 
-	public void test004_IterateAndRemoveInLoop_beforeFindIt() {
-		Generic engine = new Root();
-		Generic car = engine.addInstance("Car");
-		Generic myCar1 = car.addInstance("myCar1");
-		car.addInstance("myCar2");
-		car.addInstance("myCar3");
-		car.addInstance("myCar4");
+	public void test002() {
+		Generic root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic myFirstCar = car.addInstance("myFirstCar");
+		car.addInstance("mySecondCar");
+		car.addInstance("myThirdCar");
+		car.addInstance("myFourthCar");
 
 		for (Generic v : car.getInstances())
-			if (v.equals(myCar1))
+			if (v.equals(myFirstCar))
 				v.remove();
 		assert car.getInstances().size() == 3;
 	}
 
-	public void test005_IterateAndRemoveInLoop_beforeFindIt() {
-		Generic engine = new Root();
-		Generic car = engine.addInstance("Car");
-		car.addInstance("myCar1");
-		car.addInstance("myCar2");
-		Generic myCar3 = car.addInstance("myCar3");
-		car.addInstance("myCar4");
+	public void test003() {
+		Generic root = new Root();
+		Generic car = root.addInstance("Car");
+		car.addInstance("myFirstCar");
+		car.addInstance("mySecondCar");
+		Generic myCar3 = car.addInstance("myThirdCar");
+		car.addInstance("myFourthCar");
 
 		Snapshot<Generic> myCars = car.getInstances();
 
@@ -65,27 +65,28 @@ public class IteratorAndRemoveTest extends AbstractTest {
 		assert car.getInstances().size() == 3;
 	}
 
-	public void test006_IterateAndRemoveInLoop_attributes() {
-		Generic engine = new Root();
-		Generic car = engine.addInstance("Car");
-		Generic color = car.addAttribute("Color");
-		Generic power = car.addAttribute("Power");
-		Generic doors = car.addAttribute("Doors");
+	public void test004() {
+		Generic root = new Root();
+		Generic car = root.addInstance("Car");
+		car.addAttribute("Options");
+		car.addAttribute("Power");
+		car.addAttribute("Doors");
 
 		for (Generic v : car.getComponents())
 			v.remove();
 		assert car.getComponents().size() == 0;
 	}
 
-	public void test007_IterateAndRemoveInLoop_attributes() {
-		Generic engine = new Root();
-		Generic car = engine.addInstance("Car");
-		Generic color = car.addAttribute("Color");
+	public void test005() {
+		Generic root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic options = car.addAttribute("Options");
 		Generic power = car.addAttribute("Power");
 		Generic doors = car.addAttribute("Doors");
 
-		for (Generic v : car.getComponents()) {
-			color.remove();
+		for (@SuppressWarnings("unused")
+		Generic v : car.getComponents()) {
+			options.remove();
 			power.remove();
 			doors.remove();
 		}

@@ -8,27 +8,7 @@ import org.testng.annotations.Test;
 @Test
 public class HolderTest extends AbstractTest {
 
-	public void testHolder1Attribut() {
-		Root root = new Root();
-		Generic vehicle = root.addInstance("Vehicle");
-		Generic power = root.addInstance("Power", vehicle);
-		int powerValue = 1;
-		Generic holder = power.addInstance(powerValue, vehicle);
-		assert holder.isInstanceOf(power);
-		assert vehicle.getHolders(power) != null;
-		assert vehicle.getHolders(power).size() == 1 : vehicle.getHolders(power);
-		assert vehicle.getHolders(power).contains(holder) : vehicle.getHolders(power);
-		assert power.getInstances() != null;
-		assert power.getInstances().size() == 1;
-		assert power.getInstances().contains(holder);
-		assert power.getInstance(powerValue, vehicle) != null;
-		assert power.getInstance(powerValue, vehicle).equals(holder);
-		assert power.isAlive();
-		assert holder.isAlive();
-		// assert false : vehicle.toPrettyString();
-	}
-
-	public void testHolder1AttributWith2LevelsInheritance1AttributOnParent() {
+	public void test001() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic power = root.addInstance("Power", vehicle);
@@ -50,7 +30,7 @@ public class HolderTest extends AbstractTest {
 		assert v1.isAlive();
 	}
 
-	public void testHolderOverrideWithDifferentValue1AttributWith2LevelsInheritance1AttributOnParent() {
+	public void test002() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic power = root.addInstance("Power", vehicle);
@@ -77,7 +57,7 @@ public class HolderTest extends AbstractTest {
 		assert v2.isAlive();
 	}
 
-	public void testHolderOverrideWithSameValue1AttributWith2LevelsInheritance1AttributOnParent() {
+	public void test003() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic power = root.addInstance("Power", vehicle);
@@ -104,7 +84,7 @@ public class HolderTest extends AbstractTest {
 		assert v2.isAlive();
 	}
 
-	public void testHolder1AttributWith2LevelsInheritance1AttributOnFirstChild() {
+	public void test004() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic car = root.addInstance(Arrays.asList(vehicle), "Car");
@@ -112,6 +92,8 @@ public class HolderTest extends AbstractTest {
 		int powerValue = 1;
 		Generic v1 = power.addInstance(powerValue, car);
 		assert v1.isInstanceOf(power);
+		assert !(vehicle.getHolders(power).size() == 1) : vehicle.getHolders(power);
+		assert !vehicle.getHolders(power).contains(v1) : vehicle.getHolders(power);
 		assert car.getHolders(power) != null;
 		assert car.getHolders(power).size() == 1 : car.getHolders(power);
 		assert car.getHolders(power).contains(v1) : car.getHolders(power);
@@ -121,7 +103,7 @@ public class HolderTest extends AbstractTest {
 		assert power.getInstance(powerValue, car).equals(v1);
 	}
 
-	public void testHolder1AttributWith2LevelsInheritance2children1AttributOnParent() {
+	public void test005() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic car = root.addInstance(Arrays.asList(vehicle), "Car");
@@ -145,7 +127,7 @@ public class HolderTest extends AbstractTest {
 		assert power.getInstance(powerValue, vehicle).equals(v1);
 	}
 
-	public void testHolderOverrideWithDifferentValue1AttributWith3LevelsInheritance1AttributOnParentOverrideOnFirstChild() {
+	public void test006() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic power = root.addInstance("Power", vehicle);
@@ -177,7 +159,7 @@ public class HolderTest extends AbstractTest {
 		assert v2.isAlive();
 	}
 
-	public void testHolderOverrideWithDifferentValue1AttributWith3LevelsInheritance1AttributOnParentOverrideOnSecondChild() {
+	public void test007() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic power = root.addInstance("Power", vehicle);
@@ -211,7 +193,7 @@ public class HolderTest extends AbstractTest {
 		assert v2.isAlive();
 	}
 
-	public void test2ChainedAttributs() {
+	public void test008() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic power = root.addInstance("Power", vehicle);
@@ -243,7 +225,7 @@ public class HolderTest extends AbstractTest {
 		assert vUnit.isAlive();
 	}
 
-	public void testHolderOverrideWithDifferentValue2ChainedAttributWith2LevelsInheritance2AttributsOnParent() {
+	public void test009() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic power = root.addInstance("Power", vehicle);
@@ -284,7 +266,7 @@ public class HolderTest extends AbstractTest {
 		assert vUnit.isAlive();
 	}
 
-	public void testHolderOverrideWithDifferentValue2ChainedAttributsWith3LevelsInheritance1AttributOnParentOverrideOnFirstChild() {
+	public void test010() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic power1 = root.addInstance("Power", vehicle);
@@ -354,31 +336,31 @@ public class HolderTest extends AbstractTest {
 		assert v2.isAlive();
 	}
 
-	public void test_getHolder() {
-		final Root engine = new Root();
-		Generic car = engine.addInstance("Car");
+	public void test011() {
+		final Root root = new Root();
+		Generic car = root.addInstance("Car");
 		Generic power = car.addAttribute("Power");
 		Generic myCar = car.addInstance("myCar");
-		Generic myCarPower = myCar.setHolder(power, 256);
-		assert myCarPower.equals(myCar.getHolder(power));
+		Generic myCar256 = myCar.setHolder(power, 256);
+		assert myCar256.equals(myCar.getHolder(power));
 	}
 
-	public void test_getHolder2() {
-		final Root engine = new Root();
-		Generic car = engine.addInstance("Car");
+	public void test012() {
+		final Root root = new Root();
+		Generic car = root.addInstance("Car");
 		Generic power = car.addAttribute("Power");
 		Generic maxSpeed = car.addAttribute("MaxSpeed");
 		Generic mode = car.addAttribute("Mode");
 		Generic myCar = car.addInstance("myCar");
-		Generic myCarPower = myCar.setHolder(power, 256);
+		Generic myCar256 = myCar.setHolder(power, 256);
 		myCar.setHolder(maxSpeed, 300);
 		myCar.setHolder(mode, "manual");
-		assert myCarPower.equals(myCar.getHolder(power));
+		assert myCar256.equals(myCar.getHolder(power));
 	}
 
-	public void test_getHolder_ambiguous() {
-		final Root engine = new Root();
-		Generic car = engine.addInstance("Car");
+	public void test013() {
+		final Root root = new Root();
+		Generic car = root.addInstance("Car");
 		Generic power = car.addAttribute("Power");
 		Generic myCar = car.addInstance("myCar");
 		myCar.setHolder(power, 256);
@@ -386,36 +368,36 @@ public class HolderTest extends AbstractTest {
 		catchAndCheckCause(() -> myCar.getHolder(power), AmbiguousSelectionException.class);
 	}
 
-	public void test_getHolder_default() {
-		final Root engine = new Root();
-		Generic car = engine.addInstance("Car");
+	public void test014() {
+		final Root root = new Root();
+		Generic car = root.addInstance("Car");
 		Generic power = car.addAttribute("Power");
 		Generic carDefaultPower = car.setHolder(power, 200);
 		Generic myCar = car.addInstance("myCar");
 		assert carDefaultPower.equals(myCar.getHolder(power));
 	}
 
-	public void test_getHolder_default_property() {
-		final Root engine = new Root();
-		Generic car = engine.addInstance("Car");
+	public void test015() {
+		final Root root = new Root();
+		Generic car = root.addInstance("Car");
 		Generic power = car.addAttribute("Power").enablePropertyConstraint();
 		car.setHolder(power, 200);
 		Generic myCar = car.addInstance("myCar");
-		Generic myCarPower = myCar.setHolder(power, 256);
-		assert myCarPower.equals(myCar.getHolder(power));
+		Generic myCar256 = myCar.setHolder(power, 256);
+		assert myCar256.equals(myCar.getHolder(power));
 	}
 
-	public void test_getHolder_default2() {
-		final Root engine = new Root();
-		Generic car = engine.addInstance("Car");
+	public void test016() {
+		final Root root = new Root();
+		Generic car = root.addInstance("Car");
 		Generic power = car.addAttribute("Power");
 		car.setHolder(power, 200);
 		Generic myCar = car.addInstance("myCar");
-		Generic myCarPower = myCar.setHolder(power, 256);
-		assert myCarPower.equals(myCar.getHolder(power, 256));
+		Generic myCar256 = myCar.setHolder(power, 256);
+		assert myCar256.equals(myCar.getHolder(power, 256));
 	}
 
-	public void test_getHolder_default3() {
+	public void test017() {
 		final Root engine = new Root();
 		Generic car = engine.addInstance("Car");
 		Generic power = car.addAttribute("Power");
@@ -425,7 +407,7 @@ public class HolderTest extends AbstractTest {
 		assert carDefaultPower.equals(car.getHolder(power));
 	}
 
-	public void test_getHolder_default_ambiguous() {
+	public void test018() {
 		final Root engine = new Root();
 		Generic car = engine.addInstance("Car");
 		Generic power = car.addAttribute("Power");

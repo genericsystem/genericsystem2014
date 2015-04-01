@@ -5,9 +5,11 @@ import org.testng.annotations.Test;
 @Test
 public class MetaAttributeTest extends AbstractTest {
 
-	public void test001_metaAttribute() {
+	public void test001() {
 		Root root = new Root();
 		Generic metaAttribute = root.getMetaAttribute();
+		assert metaAttribute != null;
+		assert root.getLevel() == 0;
 		assert metaAttribute == root.setInstance(root.getValue(), root);
 		assert metaAttribute.getLevel() == 0;
 		assert metaAttribute.isMeta();
@@ -17,37 +19,38 @@ public class MetaAttributeTest extends AbstractTest {
 		assert metaAttribute.isInstanceOf(metaAttribute);
 		assert !root.getInstances().contains(metaAttribute);
 		assert !root.getAllInstances().contains(metaAttribute);
+		assert metaAttribute.getBaseComponent().equals(root);
 	}
 
-	public void test002_addInstance_metaAttribute() {
-		Root engine = new Root();
-		Generic metaAttribute = engine.getMetaAttribute();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic power = engine.addInstance("Power", vehicle);
+	public void test002() {
+		Root root = new Root();
+		Generic metaAttribute = root.getMetaAttribute();
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic power = root.addInstance("Power", vehicle);
 		assert power.getMeta() == metaAttribute;
 		assert power.isInstanceOf(metaAttribute) : power.info();
 	}
 
-	public void test003_addInstance_metaAttribute_override() {
-		Root engine = new Root();
-		Generic metaAttribute = engine.getMetaAttribute();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic power = engine.addInstance("Power", vehicle);
-		Generic power2 = engine.addInstance(power, "Power2", vehicle);
+	public void test003() {
+		Root root = new Root();
+		Generic metaAttribute = root.getMetaAttribute();
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic option = root.addInstance("Option", vehicle);
+		Generic power = root.addInstance(option, "Power", vehicle);
 
-		assert power2.getMeta() == metaAttribute;
-		assert power2.isInstanceOf(metaAttribute) : power.info();
+		assert power.getMeta() == metaAttribute;
+		assert power.isInstanceOf(metaAttribute) : power.info();
 	}
 
-	public void test004_addInstance_metaAttribute_override() {
-		Root engine = new Root();
-		Generic metaAttribute = engine.getMetaAttribute();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic power = engine.addInstance("Power", vehicle);
-		Generic power2 = engine.addInstance(power, "Power2", vehicle);
+	public void test004() {
+		Root root = new Root();
+		Generic metaAttribute = root.getMetaAttribute();
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic options = root.addInstance("Options", vehicle);
+		Generic music = root.addInstance(options, "Music", vehicle);
 
-		assert power2.getMeta() == metaAttribute;
-		assert power2.isInstanceOf(metaAttribute) : power2.info();
-		assert power2.getSupers().stream().anyMatch(superVertex -> superVertex.equals(power)) : power2.info();
+		assert music.getMeta() == metaAttribute;
+		assert music.isInstanceOf(metaAttribute) : music.info();
+		assert music.getSupers().stream().anyMatch(superVertex -> superVertex.equals(options)) : music.info();
 	}
 }

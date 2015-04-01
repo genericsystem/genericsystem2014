@@ -8,74 +8,75 @@ import org.testng.annotations.Test;
 @Test
 public class PropertyConstraintTest extends AbstractTest {
 
-	public void test001_enablePropertyConstraint_addInstance() {
+	public void test001() {
 		Root root = new Root();
-		Generic vehicle = root.addInstance("Vehicle");
-		Generic power = root.addInstance("Power", vehicle);
-		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic car = root.addInstance("Car");
+		Generic power = root.addInstance("Power", car);
+		Generic myCar = car.addInstance("myCar");
 
 		power.enablePropertyConstraint();
 		assert power.isPropertyConstraintEnabled();
 
-		Generic v123 = myVehicle.addHolder(power, "123");
-		assert !v123.inheritsFrom(power, "126", Arrays.asList(myVehicle));
+		Generic myCar123 = myCar.addHolder(power, "123");
+		assert !myCar123.inheritsFrom(power, "126", Arrays.asList(myCar));
 
-		catchAndCheckCause(() -> myVehicle.addHolder(power, "126"), PropertyConstraintViolationException.class);
+		catchAndCheckCause(() -> myCar.addHolder(power, "126"), PropertyConstraintViolationException.class);
 	}
 
-	public void test001_enablePropertyConstraint_addInstance_link() {
+	public void test002() {
 		Root root = new Root();
-		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance("Car");
 		Generic color = root.addInstance("Color");
-		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic myCar = car.addInstance("myCar");
 		Generic red = color.addInstance("red");
 		Generic blue = color.addInstance("blue");
-		Generic vehicleColorOutside = vehicle.addAttribute("outside", color);
+		Generic carColor = car.addAttribute("CarColor", color);
 
-		vehicleColorOutside.enablePropertyConstraint();
-		assert vehicleColorOutside.isPropertyConstraintEnabled();
-		myVehicle.addHolder(vehicleColorOutside, "outside", red);
-		myVehicle.addHolder(vehicleColorOutside, "outside", blue);
-		assert myVehicle.getHolders(vehicleColorOutside).size() == 2;
+		carColor.enablePropertyConstraint();
+		assert carColor.isPropertyConstraintEnabled();
+		myCar.addLink(carColor, "myCarRed", red);
+		myCar.addLink(carColor, "myCarBlue", blue);
+		assert myCar.getHolders(carColor).size() == 2;
+		catchAndCheckCause(() -> myCar.addLink(carColor, "mySecondCarRed", red), PropertyConstraintViolationException.class);
 	}
 
-	public void test002_enablePropertyConstraint_addInstance() {
+	public void test003() {
 		Root root = new Root();
-		Generic vehicle = root.addInstance("Vehicle");
-		Generic power = root.addInstance("Power", vehicle);
-		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic car = root.addInstance("Car");
+		Generic power = root.addInstance("Power", car);
+		Generic myCar = car.addInstance("myCar");
 
 		power.enablePropertyConstraint();
 		assert power.isPropertyConstraintEnabled();
-		myVehicle.addHolder(power, "123");
-		catchAndCheckCause(() -> myVehicle.addHolder(power, "126"), PropertyConstraintViolationException.class);
+		myCar.addHolder(power, "123");
+		catchAndCheckCause(() -> myCar.addHolder(power, "126"), PropertyConstraintViolationException.class);
 	}
 
-	public void test001_enablePropertyConstraint_setInstance() {
+	public void test004() {
 		Root Root = new Root();
-		Generic vehicle = Root.addInstance("Vehicle");
-		Generic power = Root.addInstance("Power", vehicle);
+		Generic car = Root.addInstance("Car");
+		Generic power = Root.addInstance("Power", car);
 		power.enablePropertyConstraint();
 		assert power.isPropertyConstraintEnabled();
-		power.setInstance("123", vehicle);
-		power.setInstance("126", vehicle);
+		power.setInstance("123", car);
+		power.setInstance("126", car);
 		assert power.getInstances().size() == 1;
 		power.getInstances().forEach(x -> x.getValue().equals("126"));
 	}
 
-	public void test001_disablePropertyConstraint_setInstance() {
+	public void test005() {
 		Root root = new Root();
-		Generic vehicle = root.addInstance("Vehicle");
-		Generic power = root.addInstance("Power", vehicle);
+		Generic car = root.addInstance("Car");
+		Generic power = root.addInstance("Power", car);
 		power.enablePropertyConstraint();
 		assert power.isPropertyConstraintEnabled();
-		power.setInstance("123", vehicle);
-		power.setInstance("126", vehicle);
+		power.setInstance("123", car);
+		power.setInstance("126", car);
 		assert power.getInstances().size() == 1;
 		power.getInstances().forEach(x -> x.getValue().equals("126"));
 		power.disablePropertyConstraint();
 		assert !power.isPropertyConstraintEnabled();
-		power.setInstance("123", vehicle);
+		power.setInstance("123", car);
 		assert power.getInstances().size() == 2;
 	}
 

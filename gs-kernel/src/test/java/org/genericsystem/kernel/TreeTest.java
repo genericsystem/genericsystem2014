@@ -97,59 +97,32 @@ public class TreeTest extends AbstractTest {
 
 		Generic tree = root.addInstance("Tree");
 		Generic color = root.addInstance("Color");
-		Generic treeColor = tree.addAttribute("TreeColor", color);
+		Generic treeColor = tree.addRelation("TreeColor", color);
 
 		Generic blue = color.addInstance("blue");
 		Generic red = color.addInstance("red");
 		Generic green = color.addInstance("green");
 
-		tree.setHolder(treeColor, "treeIsBlueByDefault", blue);
+		tree.setLink(treeColor, "treeIsBlueByDefault", blue);
 
 		Generic html = tree.addInstance("html");
-		html.setHolder(treeColor, "htmlIsRed", red);
+		html.setLink(treeColor, "htmlIsRed", red);
 		Generic head = tree.addInstance(html, "head");
 		Generic body = tree.addInstance(html, "body");
 		Generic div = tree.addInstance(body, "div");
-		div.setHolder(treeColor, "divIsGreen", green);
+		div.setLink(treeColor, "divIsGreen", green);
 
-		assert tree.getHolders(treeColor).first().getTargetComponent().equals(blue);
-		assert html.getHolders(treeColor).first().getTargetComponent().equals(red);
-		assert head.getHolders(treeColor).first().getTargetComponent().equals(red);
-		assert body.getHolders(treeColor).first().getTargetComponent().equals(red);
-		assert div.getHolders(treeColor).first().getTargetComponent().equals(green);
+		assert tree.getLinks(treeColor).first().getTargetComponent().equals(blue);
+		assert html.getLinks(treeColor).first().getTargetComponent().equals(red);
+		assert head.getLinks(treeColor).first().getTargetComponent().equals(red);
+		assert body.getLinks(treeColor).first().getTargetComponent().equals(red);
+		assert div.getLinks(treeColor).first().getTargetComponent().equals(green);
 	}
 
 	public void test008() {
 		Root root = new Root();
 
-		Generic tree = root.addInstance("Tree");
-		Generic color = root.addInstance("Color");
-		Generic treeColor = tree.addAttribute("TreeColor", color);
-
-		Generic blue = color.addInstance("blue");
-		Generic red = color.addInstance("red");
-		Generic green = color.addInstance("green");
-
-		tree.setHolder(treeColor, "treeIsBlueByDefault", blue);
-
-		Generic html = tree.addInstance("html");
-		html.setHolder(treeColor, "htmlIsRed", red);
-		Generic head = tree.addInstance(html, "head");
-		Generic body = tree.addInstance(html, "body");
-		Generic div = tree.addInstance(body, "div");
-		div.setHolder(treeColor, "divIsGreen", green);
-
-		assert tree.getHolders(treeColor).first().getTargetComponent().equals(blue);
-		assert html.getHolders(treeColor).first().getTargetComponent().equals(red);
-		assert head.getHolders(treeColor).first().getTargetComponent().equals(red);
-		assert body.getHolders(treeColor).first().getTargetComponent().equals(red);
-		assert div.getHolders(treeColor).first().getTargetComponent().equals(green);
-	}
-
-	public void testTraverseTree() {
-		Root engine = new Root();
-
-		Generic html5Tags = engine.addInstance("Html5Tags");
+		Generic html5Tags = root.addInstance("Html5Tags");
 
 		Generic html = html5Tags.addInstance("html");
 
@@ -189,7 +162,7 @@ public class TreeTest extends AbstractTest {
 		assert result[0] == 0;
 	}
 
-	public void testTree1() {
+	public void test009() {
 		Root root = new Root();
 		Generic a1 = root.addInstance("A");
 		Generic b = root.addInstance(a1, "B");
@@ -199,7 +172,7 @@ public class TreeTest extends AbstractTest {
 		assert root.getInstance(Arrays.asList(b), "A").equals(a2);
 	}
 
-	public void testTree2() {
+	public void test010() {
 		Root root = new Root();
 		Generic a1 = root.addInstance("A");
 		Generic b = root.addInstance("B");
@@ -209,7 +182,7 @@ public class TreeTest extends AbstractTest {
 		assert root.getInstance(Arrays.asList(b), "A").equals(a2);
 	}
 
-	public void testTree3() {
+	public void test011() {
 		Root root = new Root();
 		Generic b = root.addInstance("B");
 		Generic c = root.addInstance("C");

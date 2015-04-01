@@ -5,10 +5,10 @@ import org.testng.annotations.Test;
 @Test
 public class SystemPropertiesTest extends AbstractTest {
 
-	public void test001_enableConstraint() {
+	public void test001() {
 		Root root = new Root();
-		Generic vehicle = root.addInstance("Vehicle");
-		Generic power = root.addInstance("Power", vehicle);
+		Generic car = root.addInstance("Car");
+		Generic power = root.addInstance("Power", car);
 		power.enablePropertyConstraint();
 		power.enablePropertyConstraint();
 		power.enableReferentialIntegrity(0);
@@ -26,7 +26,7 @@ public class SystemPropertiesTest extends AbstractTest {
 		assert power.isReferentialIntegrityEnabled(0);
 	}
 
-	public void test002_inheritedConstraint() {
+	public void test002() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic car = root.addInstance(vehicle, "Car");
@@ -50,7 +50,7 @@ public class SystemPropertiesTest extends AbstractTest {
 		assert carPower.isReferentialIntegrityEnabled(0);
 	}
 
-	public void test003_inheritedModifiedConstraint() {
+	public void test003() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic car = root.addInstance(vehicle, "Car");
