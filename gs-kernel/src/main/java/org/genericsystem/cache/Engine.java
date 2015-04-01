@@ -1,6 +1,7 @@
 package org.genericsystem.cache;
 
 import java.io.Serializable;
+
 import org.genericsystem.cache.Cache.ContextEventListener;
 import org.genericsystem.kernel.Context;
 import org.genericsystem.kernel.Generic;
@@ -61,7 +62,7 @@ public class Engine extends Root {
 		return garbageCollector;
 	}
 
-	public static class LocalContextWrapper extends ThreadLocal<Cache> implements Wrapper {
+	public static class LocalContextWrapper extends InheritableThreadLocal<Cache> implements Wrapper {
 		@Override
 		public void set(Context context) {
 			super.set((Cache) context);
