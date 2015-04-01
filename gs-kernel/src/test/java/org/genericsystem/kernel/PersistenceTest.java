@@ -13,53 +13,48 @@ public class PersistenceTest extends AbstractTest {
 
 	private final String directoryPath = System.getenv("HOME") + "/test/snapshot_save";
 
-	public void testDefaultConfiguration() {
+	public void test001() {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
 		Root root = new Root(Statics.ENGINE_VALUE, snapshot);
 		root.close();
 		compareGraph(root, new Root(Statics.ENGINE_VALUE, snapshot));
 	}
 
-	public void testType() {
+	public void test002() {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
 		Root root = new Root(Statics.ENGINE_VALUE, snapshot);
 		root.addInstance("Vehicle");
 		root.close();
-		Root engine = new Root(Statics.ENGINE_VALUE, snapshot);
-		compareGraph(root, engine);
-		assert null != engine.getInstance("Vehicle");
+		Root root2 = new Root(Statics.ENGINE_VALUE, snapshot);
+		compareGraph(root, root2);
+		assert null != root2.getInstance("Vehicle");
 	}
 
-	public void testTypeAnnoted() {
+	public void test003() {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
-		Root engine = new Root(Statics.ENGINE_VALUE, snapshot, Vehicle.class);
-		Generic vehicle = engine.find(Vehicle.class);
+		Root root = new Root(Statics.ENGINE_VALUE, snapshot, Vehicle.class);
+		Generic vehicle = root.find(Vehicle.class);
 		vehicle.addInstance("myVehicle");
 		assert vehicle.getLifeManager().getBirthTs() == LifeManager.TS_SYSTEM;
 		assert vehicle.getInstance("myVehicle").getLifeManager().getBirthTs() > vehicle.getLifeManager().getBirthTs();
 		assert vehicle.isSystem();
-		engine.close();
+		root.close();
 
-		Root engine2 = new Root(Statics.ENGINE_VALUE, snapshot);
-		Generic vehicle2 = engine2.getInstance(Vehicle.class);
+		Root root2 = new Root(Statics.ENGINE_VALUE, snapshot);
+		Generic vehicle2 = root2.getInstance(Vehicle.class);
 		assert vehicle2.getInstance("myVehicle").getLifeManager().getBirthTs() > vehicle2.getLifeManager().getBirthTs();
 		assert !vehicle2.isSystem();
-		engine2.close();
+		root2.close();
 
-		Root engine3 = new Root(Statics.ENGINE_VALUE, snapshot, Vehicle.class);
-		Generic vehicle3 = engine3.find(Vehicle.class);
+		Root root3 = new Root(Statics.ENGINE_VALUE, snapshot, Vehicle.class);
+		Generic vehicle3 = root3.find(Vehicle.class);
 		assert vehicle3.getLifeManager().getBirthTs() == LifeManager.TS_SYSTEM;
 		assert vehicle3.getInstance("myVehicle").getLifeManager().getBirthTs() > vehicle3.getLifeManager().getBirthTs();
 		assert vehicle3.isSystem();
-		engine3.close();
+		root3.close();
 	}
 
-	@SystemGeneric
-	public static class Vehicle {
-
-	}
-
-	public void testHolder() {
+	public void test004() {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
 		Root root = new Root(Statics.ENGINE_VALUE, snapshot);
 		Generic vehicle = root.addInstance("Vehicle");
@@ -70,60 +65,60 @@ public class PersistenceTest extends AbstractTest {
 		compareGraph(root, new Root(Statics.ENGINE_VALUE, snapshot));
 	}
 
-	public void testAddAndRemove() {
+	public void test005() {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
 		Root root = new Root(Statics.ENGINE_VALUE, snapshot);
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic car = root.addInstance(vehicle, "Car");
-		root.addInstance(vehicle, "Truck");
+		root.addInstance(vehicle, "Bike");
 		car.remove();
 		root.close();
 		Root root2 = new Root(Statics.ENGINE_VALUE, snapshot);
 		compareGraph(root, root2);
 	}
 
-	public void testLink() {
+	public void test006() {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
 		Root root = new Root(Statics.ENGINE_VALUE, snapshot);
-		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance("Car");
 		Generic color = root.addInstance("Color");
-		Generic vehicleColor = vehicle.setAttribute("VehicleColor", color);
-		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic carColor = car.setAttribute("CarColor", color);
+		Generic myCar = car.addInstance("myCar");
 		Generic red = color.addInstance("red");
-		myVehicle.setHolder(vehicleColor, "myVehicleRed", red);
+		myCar.setHolder(carColor, "myCarRed", red);
 		root.close();
 		compareGraph(root, new Root(Statics.ENGINE_VALUE, snapshot));
 	}
 
-	public void testHeritageMultiple() {
+	public void test007() {
+		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
+		Root root = new Root(Statics.ENGINE_VALUE, snapshot);
+		Generic car = root.addInstance("Car");
+		Generic robot = root.addInstance("Robot");
+		root.addInstance(Arrays.asList(car, robot), "Transformer");
+		root.close();
+		compareGraph(root, new Root(Statics.ENGINE_VALUE, snapshot));
+	}
+
+	public void test008() {
+		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
+		Root root = new Root(Statics.ENGINE_VALUE, snapshot);
+		Generic object = root.addInstance("Object");
+		Generic car = root.addInstance(object, "Car");
+		Generic robot = root.addInstance(object, "Robot");
+		root.addInstance(Arrays.asList(car, robot), "Transformer");
+		root.close();
+		compareGraph(root, new Root(Statics.ENGINE_VALUE, snapshot));
+	}
+
+	public void test009() {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
 		Root root = new Root(Statics.ENGINE_VALUE, snapshot);
 		Generic vehicle = root.addInstance("Vehicle");
-		Generic robot = root.addInstance("Robot");
-		root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
-		root.close();
-		compareGraph(root, new Root(Statics.ENGINE_VALUE, snapshot));
-	}
-
-	public void testHeritageMultipleDiamond() {
-		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
-		Root root = new Root(Statics.ENGINE_VALUE, snapshot);
-		Generic nommable = root.addInstance("Nommable");
-		Generic vehicle = root.addInstance(nommable, "Vehicle");
-		Generic robot = root.addInstance(nommable, "Robot");
-		root.addInstance(Arrays.asList(vehicle, robot), "Transformer");
-		root.close();
-		compareGraph(root, new Root(Statics.ENGINE_VALUE, snapshot));
-	}
-
-	public void testTree() {
-		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
-		Root root = new Root(Statics.ENGINE_VALUE, snapshot);
-		Generic tree = root.addInstance("Tree");
-		Generic rootTree = tree.addInstance("Root");
-		Generic child = tree.addInstance(rootTree, "Child");
-		tree.addInstance(rootTree, "Child2");
-		tree.addInstance(child, "Child3");
+		Generic car = vehicle.addInstance("Car");
+		Generic electriccar = vehicle.addInstance(car, "Electriccar");
+		vehicle.addInstance(car, "Microcar");
+		vehicle.addInstance(electriccar, "Hybrid");
 		root.close();
 		compareGraph(root, new Root(Statics.ENGINE_VALUE, snapshot));
 	}
@@ -135,22 +130,6 @@ public class PersistenceTest extends AbstractTest {
 				f.delete();
 		return directoryPath;
 	}
-
-	// private void compareOrderGraph(Vertex persistedNode, Vertex readNode) {
-	// DependenciesOrder<Vertex> persistVisit = new DependenciesOrder<Vertex>().visit(persistedNode);
-	// DependenciesOrder<Vertex> readVisit = new DependenciesOrder<Vertex>().visit(readNode);
-	// assert persistVisit.size() == readVisit.size() : persistVisit + " \n " + readVisit;
-	// for (Vertex persist : persistVisit) {
-	// for (Vertex read : readVisit)
-	// if (persist == read)
-	// assert false : persistVisit + " \n " + readVisit;
-	// }
-	// ArrayDeque<Vertex> clone = readVisit.clone();
-	// for (Vertex persist : persistVisit) {
-	// Vertex read = readVisit.pop();
-	// assert persist.genericEquals(read) : persistVisit + " \n " + clone;
-	// }
-	// }
 
 	private void compareGraph(Generic persistedNode, Generic readNode) {
 		Collection<Generic> persistVisit = persistedNode.getCurrentCache().computeDependencies(persistedNode);
@@ -167,6 +146,11 @@ public class PersistenceTest extends AbstractTest {
 					continue LOOP;
 			assert false : persistVisit + " \n " + readVisit;
 		}
+	}
+
+	@SystemGeneric
+	public static class Vehicle {
+
 	}
 
 }

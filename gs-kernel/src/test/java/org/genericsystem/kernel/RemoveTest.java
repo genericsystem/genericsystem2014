@@ -10,10 +10,10 @@ import org.testng.annotations.Test;
 @Test
 public class RemoveTest extends AbstractTest {
 
-	public void test001_conserveRemove() {
-		Generic engine = new Root();
-		Generic car = engine.addInstance("Car");
-		Generic color = engine.addInstance("Color");
+	public void test001() {
+		Generic root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic color = root.addInstance("Color");
 		Generic myBmw = car.addInstance("myBmw");
 		Generic red = color.addInstance("red");
 		Generic carColor = car.addRelation("CarColor", color);
@@ -26,53 +26,58 @@ public class RemoveTest extends AbstractTest {
 		assert myBmwRed.isAlive();
 		assert myBmwRed.getSupers().size() == 0;
 		assert !carRed.isAlive();
+		assert carColor.isAlive();
 	}
 
-	public void test002_conserveRemove() {
-		Generic engine = new Root();
-		Generic vehicle = engine.addInstance("vehicle");
-		Generic color = engine.addInstance("Color");
-		Generic outsideColor = engine.addInstance(color, "OutsideColor");
+	public void test002() {
+		Generic root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic color = root.addInstance("Color");
+		Generic outsideColor = root.addInstance(color, "OutsideColor");
 
-		Generic myBmw = vehicle.addInstance("myBmw");
+		Generic myBmw = car.addInstance("myBmw");
 		Generic red = color.addInstance("red");
 		Generic outsideRed = outsideColor.addInstance("OutsideRed");
 
-		Generic vehicleColor = vehicle.addRelation("vehicleColor", color);
-		Generic vehicleRed = vehicle.addLink(vehicleColor, "vehicleRed", red);
+		Generic carColor = car.addRelation("carColor", color);
+		Generic carRed = car.addLink(carColor, "carRed", red);
 
-		Generic vehicleOutsideColor = vehicle.addRelation(vehicleColor, "vehicleOutsideColor", outsideColor);
-		Generic vehicleOutsideRed = vehicle.addLink(vehicleOutsideColor, "vehicleOutsideRed", outsideRed);
+		Generic carOutsideColor = car.addRelation(carColor, "CarOutsideColor", outsideColor);
+		Generic carOutsideRed = car.addLink(carOutsideColor, "carOutsideRed", outsideRed);
 
-		myBmw.addLink(vehicleOutsideColor, vehicleOutsideRed, "myBmwOutsideRed", outsideRed);
+		myBmw.addLink(carOutsideColor, carOutsideRed, "myBmwOutsideRed", outsideRed);
 
-		vehicleRed.conserveRemove();
-		Generic myBmwRed = myBmw.getLink(vehicleOutsideColor, "myBmwOutsideRed", outsideRed);
+		carRed.conserveRemove();
+		Generic myBmwRed = myBmw.getLink(carOutsideColor, "myBmwOutsideRed", outsideRed);
 		assert myBmwRed != null;
 		assert myBmwRed.isAlive();
 		assert myBmwRed.getSupers().size() == 1;
-		assert myBmwRed.getSupers().get(0).equals(vehicleOutsideColor, Collections.emptyList(), "vehicleOutsideRed", Arrays.asList(vehicle, outsideRed)) : myBmwRed.getSupers().get(0).info();
-		assert !vehicleRed.isAlive();
+		assert myBmwRed.getSupers().get(0).equals(carOutsideColor, Collections.emptyList(), "carOutsideRed", Arrays.asList(car, outsideRed)) : myBmwRed.getSupers().get(0).info();
+		assert !carRed.isAlive();
 	}
 
-	public void test003_conserveRemove() {
-		Generic engine = new Root();
-		Generic vehicle = engine.addInstance("vehicle");
-		Generic color = engine.addInstance("Color");
-		Generic vehicleColor = vehicle.addRelation("vehicleColor", color);
-		vehicleColor.getMeta().disableReferentialIntegrity(ApiStatics.TARGET_POSITION);
+	public void test003() {
+		Generic root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic color = root.addInstance("Color");
+		Generic carColor = car.addRelation("CarColor", color);
+		carColor.getMeta().disableReferentialIntegrity(ApiStatics.TARGET_POSITION);
 		color.conserveRemove();
 
-		Generic newVehicleColor = vehicle.getAttribute("vehicleColor");
-		assert !vehicleColor.isAlive();
-		assert newVehicleColor.isAlive();
-		assert newVehicleColor.getComponents().size() == 1 : newVehicleColor.info();
-		assert newVehicleColor.getComponent(ApiStatics.BASE_POSITION).equals(vehicle) : vehicle.info() + " " + vehicle.getComposites();
+		Generic newCarColor = car.getAttribute("CarColor");
+		assert !carColor.isAlive();
+		assert newCarColor.isAlive();
+		assert newCarColor.getComponents().size() == 1 : newCarColor.info();
+		assert newCarColor.getComponent(ApiStatics.BASE_POSITION).equals(car) : car.info() + " " + car.getComposites();
 	}
 
-	public void test001_removeTypeWithHolder() {
-		Generic engine = new Root();
-		Generic car = engine.addInstance("Car");
+	/**
+	 * TODO tests à déplacer dans la seconde classe remove
+	 */
+
+	public void test004() {
+		Generic root = new Root();
+		Generic car = root.addInstance("Car");
 		Generic power = car.addAttribute("Power");
 		Generic myBmw = car.addInstance("myBmw");
 		myBmw.addHolder(power, 123);
@@ -80,159 +85,162 @@ public class RemoveTest extends AbstractTest {
 		catchAndCheckCause(() -> car.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
-	public void test001_simpleHolder() {
-		Generic engine = new Root();
-		Generic car = engine.addInstance("Car");
-		Generic color = car.addAttribute("Color");
+	public void test005() {
+		Generic root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic power = car.addAttribute("Power");
 		Generic myBmw = car.addInstance("myBmw");
-		Generic myBmwRed = myBmw.addHolder(color, "red");
+		Generic myBmw123 = myBmw.addHolder(power, "123");
 
-		assert myBmw.getHolders(color).contains(myBmwRed) : myBmw.getHolders(color).info();
-		assert myBmw.getHolders(color).size() == 1;
+		assert myBmw.getHolders(power).contains(myBmw123) : myBmw.getHolders(power).info();
+		assert myBmw.getHolders(power).size() == 1;
 
-		myBmwRed.remove();
+		myBmw123.remove();
 
-		assert myBmw.getHolders(color).size() == 0;
+		assert myBmw.getHolders(power).size() == 0;
 	}
 
-	public void test002_multipleHolders() {
-		Generic engine = new Root();
-		Generic car = engine.addInstance("Car");
-		Generic color = car.addAttribute("Color");
+	public void test006() {
+		Generic root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic power = car.addAttribute("Power");
 		Generic myBmw = car.addInstance("myBmw");
-		Generic myBmwRed = myBmw.addHolder(color, "red");
-		Generic myBmwBlue = myBmw.addHolder(color, "blue");
+		Generic myBmw123 = myBmw.addHolder(power, "123");
+		Generic myBmw233 = myBmw.addHolder(power, "233");
 
-		myBmwRed.remove();
-		assert myBmw.getHolders(color).contains(myBmwBlue);
-		assert myBmw.getHolders(color).size() == 1;
+		myBmw123.remove();
+		assert !myBmw.getHolders(power).contains(myBmw123);
+		assert myBmw.getHolders(power).contains(myBmw233);
+		assert myBmw.getHolders(power).size() == 1;
 
-		Generic myBmwGreen = myBmw.addHolder(color, "green");
+		Generic myBmw126 = myBmw.addHolder(power, "126");
 
-		myBmwBlue.remove();
-		assert myBmw.getHolders(color).contains(myBmwGreen);
-		assert myBmw.getHolders(color).size() == 1;
+		myBmw233.remove();
+		assert myBmw.getHolders(power).contains(myBmw126);
+		assert myBmw.getHolders(power).size() == 1;
 	}
 
-	public void test003_removeAndAdd() {
-		Generic engine = new Root();
-		Generic car = engine.addInstance("Car");
-		Generic color = car.addAttribute("Color");
+	public void test007() {
+		Generic root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic power = car.addAttribute("Power");
 		Generic myBmw = car.addInstance("myBmw");
-		Generic myBmwRed = myBmw.addHolder(color, "red");
-		Generic myBmwBlue = myBmw.addHolder(color, "blue");
+		Generic myBmw123 = myBmw.addHolder(power, "123");
+		Generic myBmw233 = myBmw.addHolder(power, "233");
 
-		myBmwRed.remove();
-		myBmwRed = myBmw.addHolder(color, "red");
+		myBmw123.remove();
+		myBmw123 = myBmw.addHolder(power, "123");
 
-		assert myBmw.getHolders(color).contains(myBmwRed);
-		assert myBmw.getHolders(color).contains(myBmwBlue);
-		assert myBmw.getHolders(color).size() == 2;
+		assert myBmw.getHolders(power).contains(myBmw123);
+		assert myBmw.getHolders(power).contains(myBmw233);
+		assert myBmw.getHolders(power).size() == 2;
 	}
 
-	public void test004_removeAndAddAndRemove() {
-		Generic engine = new Root();
-		Generic car = engine.addInstance("Car");
-		Generic color = car.addAttribute("Color");
+	public void test008() {
+		Generic root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic power = car.addAttribute("Power");
 		Generic myBmw = car.addInstance("myBmw");
-		Generic myBmwRed = myBmw.addHolder(color, "red");
-		Generic myBmwBlue = myBmw.addHolder(color, "blue");
+		Generic myBmw123 = myBmw.addHolder(power, "123");
+		Generic myBmw233 = myBmw.addHolder(power, "233");
 
-		myBmwRed.remove();
-		myBmwRed = myBmw.addHolder(color, "red");
-		myBmwRed.remove();
+		myBmw123.remove();
+		myBmw123 = myBmw.addHolder(power, "123");
+		myBmw123.remove();
 
-		assert myBmw.getHolders(color).contains(myBmwBlue);
-		assert myBmw.getHolders(color).size() == 1;
+		assert !myBmw.getHolders(power).contains(myBmw123);
+		assert myBmw.getHolders(power).contains(myBmw233);
+		assert myBmw.getHolders(power).size() == 1;
 	}
 
-	public void test005_removeConcret_withHolder() {
-		Generic engine = new Root();
-		Generic car = engine.addInstance("Car");
-		Generic color = car.addAttribute("Color");
+	public void test009() {
+		Generic root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic power = car.addAttribute("Power");
 		Generic myBmw = car.addInstance("myBmw");
-		Generic myBmwRed = myBmw.addHolder(color, "red");
+		Generic myBmw123 = myBmw.addHolder(power, "123");
 
-		assert color.getInstances().contains(myBmwRed);
-		assert color.getInstances().size() == 1;
+		assert power.getInstances().contains(myBmw123);
+		assert power.getInstances().size() == 1;
 		myBmw.remove();
 
 		assert car.getInstances().size() == 0;
-		assert color.getInstances().size() == 0;
+		assert power.getInstances().size() == 0;
 	}
 
-	public void test006_removeStructural_withHolder() {
-		Generic engine = new Root();
-		Generic car = engine.addInstance("Car");
-		Generic color = car.addAttribute("Color");
+	public void test010() {
+		Generic root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic power = car.addAttribute("Power");
 		Generic myBmw = car.addInstance("myBmw");
-		Generic myBmwRed = myBmw.addHolder(color, "red");
+		myBmw.addHolder(power, "123");
 		myBmw.remove();
 		car.remove();
 
-		assert !engine.getInstances().contains(car);
-		assert !engine.getInstances().contains(color);
-	}
-
-	public void test007_removeConcretAndAttribut() {
-		Generic engine = new Root();
-		Generic car = engine.addInstance("Car");
-		Generic color = car.addAttribute("Color");
-		Generic myBmw = car.addInstance("myBmw");
-		Generic myBmwRed = myBmw.addHolder(color, "red");
-		myBmw.remove();
-		color.remove();
-
-		assert engine.getInstances().contains(car);
+		assert !root.getInstances().contains(car);
+		assert !root.getInstances().contains(power);
 		assert !car.getInstances().contains(myBmw);
-		assert !engine.getInstances().contains(color);
+	}
+
+	public void test011() {
+		Generic root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic power = car.addAttribute("Power");
+		Generic myBmw = car.addInstance("myBmw");
+		myBmw.addHolder(power, "123");
+		myBmw.remove();
+		power.remove();
+
+		assert root.getInstances().contains(car);
+		assert !car.getInstances().contains(myBmw);
+		assert !root.getInstances().contains(power);
 
 	}
 
-	public void test008_removeInstanceAndAttribute() {
-		Generic engine = new Root();
-		Generic car = engine.addInstance("Car");
-		Generic color = car.addAttribute("Color");
+	public void test012() {
+		Generic root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic power = car.addAttribute("Power");
 		Generic myBmw = car.addInstance("myBmw");
-		Generic myBmwRed = myBmw.addHolder(color, "red");
-		myBmwRed.remove();
-		color.remove();
+		Generic myBmw123 = myBmw.addHolder(power, "123");
+		myBmw123.remove();
+		power.remove();
 
-		assert engine.getInstances().contains(car);
+		assert root.getInstances().contains(car);
 		assert car.getInstances().contains(myBmw);
-		assert !engine.getInstances().contains(color);
+		assert !root.getInstances().contains(power);
 
 	}
 
-	public void test009_removeConcret() {
-		Generic engine = new Root();
-		Generic car = engine.addInstance("Car");
-		Generic color = car.addAttribute("Color");
+	public void test013() {
+		Generic root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic power = car.addAttribute("Power");
 		Generic myBmw = car.addInstance("myBmw");
-		Generic myBmwRed = myBmw.addHolder(color, "red");
-		myBmwRed.remove();
+		Generic myBmw123 = myBmw.addHolder(power, "123");
+		myBmw123.remove();
 
-		assert color.getInstances().size() == 0;
+		assert power.getInstances().size() == 0;
 
 	}
 
-	public void test010_cascadeRemove() {
-		Root engine = new Root();
+	public void test014() {
+		Root root = new Root();
 
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic color = engine.addInstance("Color");
-		Generic vehicleColor = vehicle.addRelation("VehicleColor", color);
+		Generic car = root.addInstance("Car");
+		Generic color = root.addInstance("Color");
+		Generic carColor = car.addRelation("CarColor", color);
 
 		// Disable default referential integrity for vehicle in vehicleColor for the first target : color
-		engine.getMetaRelation().disableReferentialIntegrity(ApiStatics.TARGET_POSITION);
+		root.getMetaRelation().disableReferentialIntegrity(ApiStatics.TARGET_POSITION);
 
 		// Enable cascade remove for Color in vehicleColor
-		engine.getMetaRelation().enableCascadeRemove(ApiStatics.TARGET_POSITION);
+		root.getMetaRelation().enableCascadeRemove(ApiStatics.TARGET_POSITION);
 
 		// Remove the type vehicle
-		vehicle.remove();
-		assert !vehicle.isAlive();
-		assert !vehicleColor.isAlive();
+		car.remove();
+		assert !car.isAlive();
+		assert !carColor.isAlive();
 		assert !color.isAlive();
 	}
 }

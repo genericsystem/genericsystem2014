@@ -111,14 +111,6 @@ public class AnnotationTest extends AbstractTest {
 		assert myVehicle.getValues(engine.find(Power.class)).contains(new Integer(123)) : myVehicle.getValues(engine.find(Power.class));
 	}
 
-	// public void test005_SuperAttribute() {
-	// Root engine = new Root(Car.class, ElectrikPower.class);
-	// Generic car = engine.find(Car.class);
-	// Generic electrikPowerCar = engine.find(ElectrikPower.class);
-	// // TODO test 11, excepté que Car et ElectrikPower ont chacun un super (non utilisé dans ce test).
-	// assert car.getAttributes(engine).contains(electrikPowerCar) : car.getAttributes(engine);
-	// }
-
 	public void test006_AttributeOnAttribute() {
 		Root engine = new Root(ElectrikPower.class, Unit.class);
 		Generic electrikPower = engine.find(ElectrikPower.class);

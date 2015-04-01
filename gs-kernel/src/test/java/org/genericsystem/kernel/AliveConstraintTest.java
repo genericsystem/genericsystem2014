@@ -62,4 +62,11 @@ public class AliveConstraintTest extends AbstractTest {
 		assert !radio.isAlive();
 	}
 
+	public void test006() {
+		Generic root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
+		vehicle.remove();
+		catchAndCheckCause(() -> root.addInstance(vehicle, "Car"), AliveConstraintViolationException.class);
+	}
+
 }

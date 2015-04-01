@@ -6,55 +6,55 @@ import org.testng.annotations.Test;
 @Test
 public class UniqueValueConstraintTest extends AbstractTest {
 
-	public void test01_enableConstraint() {
+	public void test001() {
 		Root root = new Root();
-		Generic vehicle = root.addInstance("Vehicle");
-		Generic myVehicle = vehicle.addInstance("myVehicle");
-		Generic power = root.addInstance("Power", vehicle);
-		myVehicle.addHolder(power, "125");
+		Generic car = root.addInstance("Car");
+		Generic myBmw = car.addInstance("myBmw");
+		Generic power = root.addInstance("Power", car);
+		myBmw.addHolder(power, "125");
 
-		assert !vehicle.isUniqueValueEnabled();
-		vehicle.enableUniqueValueConstraint();
-		assert vehicle.isUniqueValueEnabled();
-		vehicle.disableUniqueValueConstraint();
-		assert !vehicle.isUniqueValueEnabled();
+		assert !car.isUniqueValueEnabled();
+		car.enableUniqueValueConstraint();
+		assert car.isUniqueValueEnabled();
+		car.disableUniqueValueConstraint();
+		assert !car.isUniqueValueEnabled();
 
 	}
 
-	public void test02_erorrCase() {
+	public void test002() {
 		Root root = new Root();
-		Generic vehicle = root.addInstance("Vehicle");
-		Generic myVehicle = vehicle.addInstance("myVehicle");
-		Generic myVehicle2 = vehicle.addInstance("myVehicle2");
+		Generic car = root.addInstance("Car");
+		Generic myBmw = car.addInstance("myBmw");
+		Generic myAudi = car.addInstance("myAudi");
 		Generic power = root.addInstance("Power");
-		vehicle.addAttribute(power, "Power");
+		car.addAttribute(power, "Power");
 		power.enableUniqueValueConstraint();
-		myVehicle.addHolder(power, 125);
-		catchAndCheckCause(() -> myVehicle2.addHolder(power, 125), UniqueValueConstraintViolationException.class);
+		myBmw.addHolder(power, 125);
+		catchAndCheckCause(() -> myAudi.addHolder(power, 125), UniqueValueConstraintViolationException.class);
 	}
 
-	public void test03_sameValue_differentType() {
+	public void test003() {
 		Root root = new Root();
-		Generic vehicle = root.addInstance("Vehicle");
-		Generic myVehicle = vehicle.addInstance("myVehicle");
-		Generic myVehicle2 = vehicle.addInstance("myVehicle2");
+		Generic car = root.addInstance("Car");
+		Generic myBmw = car.addInstance("myBmw");
+		Generic myAudi = car.addInstance("myAudi");
 		Generic power = root.addInstance("Power");
-		vehicle.addAttribute(power, "Power");
+		car.addAttribute(power, "Power");
 		power.enableUniqueValueConstraint();
-		myVehicle.addHolder(power, 125);
-		myVehicle2.addHolder(power, "125");
+		myBmw.addHolder(power, 125);
+		myAudi.addHolder(power, "125");
 	}
 
-	public void test04_disableConstraint() {
+	public void test004() {
 		Root root = new Root();
-		Generic vehicle = root.addInstance("Vehicle");
-		Generic myVehicle = vehicle.addInstance("myVehicle");
-		Generic myVehicle2 = vehicle.addInstance("myVehicle2");
+		Generic car = root.addInstance("Car");
+		Generic myBmw = car.addInstance("myBmw");
+		Generic myAudi = car.addInstance("myAudi");
 		Generic power = root.addInstance("Power");
-		vehicle.addAttribute(power, "Power");
+		car.addAttribute(power, "Power");
 		power.enableUniqueValueConstraint();
-		myVehicle.addHolder(power, 125);
+		myBmw.addHolder(power, 125);
 		power.disableUniqueValueConstraint();
-		myVehicle2.addHolder(power, 125);
+		myAudi.addHolder(power, 125);
 	}
 }

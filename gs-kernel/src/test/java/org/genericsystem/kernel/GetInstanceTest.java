@@ -10,9 +10,9 @@ import org.testng.annotations.Test;
 public class GetInstanceTest extends AbstractTest {
 
 	public void test001_getInstance_filterValue() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic car = engine.addInstance(vehicle, "Car");
+		Root root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
 		Generic myBmw = car.addInstance("myBmw");
 
 		assert vehicle.getInstance("myBmw") == null;
@@ -20,10 +20,10 @@ public class GetInstanceTest extends AbstractTest {
 	}
 
 	public void test002_getInstance_filterValue() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
+		Root root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
 		Generic myBmw = vehicle.addInstance("myBmw");
-		Generic car = engine.addInstance(vehicle, "Car");
+		Generic car = root.addInstance(vehicle, "Car");
 		Generic myBmwCar = car.addInstance("myBmw");
 
 		assert vehicle.getInstance("myBmw") == myBmw;
@@ -31,10 +31,10 @@ public class GetInstanceTest extends AbstractTest {
 	}
 
 	public void test003_getInstance_filterValue() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
+		Root root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
 		Generic vehiclePower = vehicle.addAttribute("power");
-		Generic car = engine.addInstance(vehicle, "Car");
+		Generic car = root.addInstance(vehicle, "Car");
 
 		Generic myBmw = car.addInstance("myBmw");
 		Generic myAudi = car.addInstance("myAudi");
@@ -46,11 +46,11 @@ public class GetInstanceTest extends AbstractTest {
 	}
 
 	public void test004_getInstance_filterValue() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic color = engine.addInstance("Color");
+		Root root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic color = root.addInstance("Color");
 		Generic vehicleColor = vehicle.addRelation("vehicleColor", color);
-		Generic car = engine.addInstance(vehicle, "Car");
+		Generic car = root.addInstance(vehicle, "Car");
 
 		Generic red = color.addInstance("red");
 		Generic blue = color.addInstance("blue");
@@ -64,11 +64,11 @@ public class GetInstanceTest extends AbstractTest {
 	}
 
 	public void test001_getInstance_filterValueComponents() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic color = engine.addInstance("Color");
+		Root root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic color = root.addInstance("Color");
 		Generic vehicleColor = vehicle.addRelation("vehicleColor", color);
-		Generic car = engine.addInstance(vehicle, "Car");
+		Generic car = root.addInstance(vehicle, "Car");
 
 		Generic red = color.addInstance("red");
 		Generic blue = color.addInstance("blue");
@@ -84,11 +84,11 @@ public class GetInstanceTest extends AbstractTest {
 	}
 
 	public void test001_getInstance_filterComponents() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic color = engine.addInstance("Color");
+		Root root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic color = root.addInstance("Color");
 		Generic vehicleColor = vehicle.addRelation("vehicleColor", color);
-		Generic car = engine.addInstance(vehicle, "Car");
+		Generic car = root.addInstance(vehicle, "Car");
 
 		Generic red = color.addInstance("red");
 		Generic blue = color.addInstance("blue");
@@ -104,22 +104,22 @@ public class GetInstanceTest extends AbstractTest {
 	}
 
 	public void test001_getInstance_filterOverridesValue() {
-		Root engine = new Root();
-		Generic car = engine.addInstance("Car");
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic carVehicle = engine.addInstance(vehicle, "Car");
+		Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic carVehicle = root.addInstance(vehicle, "Car");
 
-		assert engine.getInstance(Collections.emptyList(), "Car") == car;
-		assert engine.getInstance(vehicle, "Car") == carVehicle;
-		catchAndCheckCause(() -> engine.getInstance("Car"), AmbiguousSelectionException.class);
+		assert root.getInstance(Collections.emptyList(), "Car") == car;
+		assert root.getInstance(vehicle, "Car") == carVehicle;
+		catchAndCheckCause(() -> root.getInstance("Car"), AmbiguousSelectionException.class);
 	}
 
 	public void test002_getInstance_filterOverridesValue() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
+		Root root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
 		Generic vehiclePower = vehicle.addAttribute("power");
-		Generic car = engine.addInstance("Car");
-		Generic carVehicle = engine.addInstance(vehicle, "Car");
+		Generic car = root.addInstance("Car");
+		Generic carVehicle = root.addInstance(vehicle, "Car");
 
 		Generic carPower = car.addAttribute("power");
 		Generic carVehiclePower = carVehicle.addAttribute("power");
@@ -127,22 +127,22 @@ public class GetInstanceTest extends AbstractTest {
 		assert !carPower.inheritsFrom(vehiclePower);
 		assert carVehiclePower.inheritsFrom(vehiclePower);
 
-		catchAndCheckCause(() -> engine.getRoot().getMetaAttribute().getInstance("power"), AmbiguousSelectionException.class);
-		assert engine.getRoot().getMetaAttribute().getInstances("power").size() == 3;
-		assert engine.getRoot().getMetaAttribute().getInstances("power").containsAll(Arrays.asList(vehiclePower, carPower, carVehiclePower));
-		catchAndCheckCause(() -> engine.getRoot().getMetaAttribute().getInstance(Collections.emptyList(), "power"), AmbiguousSelectionException.class);
-		assert engine.getRoot().getMetaAttribute().getInstances(Collections.emptyList(), "power").size() == 2;
-		assert engine.getRoot().getMetaAttribute().getInstances(Collections.emptyList(), "power").containsAll(Arrays.asList(vehiclePower, carPower));
-		assert engine.getRoot().getMetaAttribute().getInstance(vehiclePower, "power") == carVehiclePower;
+		catchAndCheckCause(() -> root.getRoot().getMetaAttribute().getInstance("power"), AmbiguousSelectionException.class);
+		assert root.getRoot().getMetaAttribute().getInstances("power").size() == 3;
+		assert root.getRoot().getMetaAttribute().getInstances("power").containsAll(Arrays.asList(vehiclePower, carPower, carVehiclePower));
+		catchAndCheckCause(() -> root.getRoot().getMetaAttribute().getInstance(Collections.emptyList(), "power"), AmbiguousSelectionException.class);
+		assert root.getRoot().getMetaAttribute().getInstances(Collections.emptyList(), "power").size() == 2;
+		assert root.getRoot().getMetaAttribute().getInstances(Collections.emptyList(), "power").containsAll(Arrays.asList(vehiclePower, carPower));
+		assert root.getRoot().getMetaAttribute().getInstance(vehiclePower, "power") == carVehiclePower;
 	}
 
 	public void test001_getInstance_filterOverridesValueComponents() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
+		Root root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
 		Generic vehiclePower = vehicle.addAttribute("power");
-		Generic car = engine.addInstance(vehicle, "Car");
-		Generic trunck = engine.addInstance(vehicle, "Trunck");
-		Generic bike = engine.addInstance(vehicle, "Bike");
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic trunck = root.addInstance(vehicle, "Trunck");
+		Generic bike = root.addInstance(vehicle, "Bike");
 		Generic carPower = car.addAttribute("carPower");
 		Generic bikePower = bike.addAttribute(vehiclePower, "power");
 		Generic trunckPower = trunck.addAttribute("power");
@@ -150,17 +150,17 @@ public class GetInstanceTest extends AbstractTest {
 		assert !carPower.inheritsFrom(vehiclePower);
 		assert trunckPower.inheritsFrom(vehiclePower);
 
-		assert engine.getRoot().getMetaAttribute().getInstance("power", trunck) == trunckPower;
-		assert engine.getRoot().getMetaAttribute().getInstance(Collections.emptyList(), "power", trunck) == trunckPower;
-		assert engine.getRoot().getMetaAttribute().getInstance(vehiclePower, "power", bike) == bikePower;
+		assert root.getRoot().getMetaAttribute().getInstance("power", trunck) == trunckPower;
+		assert root.getRoot().getMetaAttribute().getInstance(Collections.emptyList(), "power", trunck) == trunckPower;
+		assert root.getRoot().getMetaAttribute().getInstance(vehiclePower, "power", bike) == bikePower;
 	}
 
 	public void test002_getInstance_filterOverridesValueComponents() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
+		Root root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
 		Generic vehiclePower = vehicle.addAttribute("power");
-		Generic car = engine.addInstance("Car");
-		Generic carVehicle = engine.addInstance(vehicle, "Car");
+		Generic car = root.addInstance("Car");
+		Generic carVehicle = root.addInstance(vehicle, "Car");
 
 		Generic carPower = car.addAttribute("power");
 		Generic carVehiclePower = carVehicle.addAttribute("power");
@@ -168,18 +168,18 @@ public class GetInstanceTest extends AbstractTest {
 		assert !carPower.inheritsFrom(vehiclePower);
 		assert carVehiclePower.inheritsFrom(vehiclePower);
 
-		assert engine.getRoot().getMetaAttribute().getInstance("power", car) == carPower;
-		assert engine.getRoot().getMetaAttribute().getInstance("power", carVehicle) == carVehiclePower;
+		assert root.getRoot().getMetaAttribute().getInstance("power", car) == carPower;
+		assert root.getRoot().getMetaAttribute().getInstance("power", carVehicle) == carVehiclePower;
 
-		assert engine.getRoot().getMetaAttribute().getInstance(Collections.emptyList(), "power", car) == carPower;
-		assert engine.getRoot().getMetaAttribute().getInstance(vehiclePower, "power", carVehicle) == carVehiclePower;
+		assert root.getRoot().getMetaAttribute().getInstance(Collections.emptyList(), "power", car) == carPower;
+		assert root.getRoot().getMetaAttribute().getInstance(vehiclePower, "power", carVehicle) == carVehiclePower;
 	}
 
 	public void test001_getInstances_filterValue() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
+		Root root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
 		Generic vehiclePower = vehicle.addAttribute("power");
-		Generic car = engine.addInstance(vehicle, "Car");
+		Generic car = root.addInstance(vehicle, "Car");
 
 		Generic myBmw = car.addInstance("myBmw");
 		Generic myAudi = car.addInstance("myAudi");
@@ -191,11 +191,11 @@ public class GetInstanceTest extends AbstractTest {
 	}
 
 	public void test002_getInstances_filterValue() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic color = engine.addInstance("Color");
+		Root root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic color = root.addInstance("Color");
 		Generic vehicleColor = vehicle.addRelation("vehicleColor", color);
-		Generic car = engine.addInstance(vehicle, "Car");
+		Generic car = root.addInstance(vehicle, "Car");
 
 		Generic red = color.addInstance("red");
 		Generic blue = color.addInstance("blue");
@@ -209,11 +209,11 @@ public class GetInstanceTest extends AbstractTest {
 	}
 
 	public void test001_getInstances_filterValueComponents() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic color = engine.addInstance("Color");
+		Root root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic color = root.addInstance("Color");
 		Generic vehicleColor = vehicle.addRelation("vehicleColor", color);
-		Generic car = engine.addInstance(vehicle, "Car");
+		Generic car = root.addInstance(vehicle, "Car");
 
 		Generic red = color.addInstance("red");
 		Generic blue = color.addInstance("blue");
@@ -228,11 +228,11 @@ public class GetInstanceTest extends AbstractTest {
 	}
 
 	public void test001_getInstances_filterComponents() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic color = engine.addInstance("Color");
+		Root root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic color = root.addInstance("Color");
 		Generic vehicleColor = vehicle.addRelation("vehicleColor", color);
-		Generic car = engine.addInstance(vehicle, "Car");
+		Generic car = root.addInstance(vehicle, "Car");
 
 		Generic red = color.addInstance("red");
 		Generic blue = color.addInstance("blue");
@@ -247,11 +247,11 @@ public class GetInstanceTest extends AbstractTest {
 	}
 
 	public void test001_getAllInstances_filterValue() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
+		Root root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
 		Generic myBmw = vehicle.addInstance("myBmw");
 		vehicle.addInstance("myAudi");
-		Generic car = engine.addInstance(vehicle, "Car");
+		Generic car = root.addInstance(vehicle, "Car");
 		Generic myBmwCar = car.addInstance("myBmw");
 		car.addInstance("myAudi");
 
@@ -260,11 +260,11 @@ public class GetInstanceTest extends AbstractTest {
 	}
 
 	public void test001_getAllInstances_filterComponentsValue() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic color = engine.addInstance("Color");
+		Root root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic color = root.addInstance("Color");
 		Generic vehicleColor = vehicle.addRelation("vehicleColor", color);
-		Generic car = engine.addInstance(vehicle, "Car");
+		Generic car = root.addInstance(vehicle, "Car");
 
 		Generic red = color.addInstance("red");
 		Generic blue = color.addInstance("blue");
@@ -279,11 +279,11 @@ public class GetInstanceTest extends AbstractTest {
 	}
 
 	public void test001_getAllInstances_filterComponents() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic color = engine.addInstance("Color");
+		Root root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic color = root.addInstance("Color");
 		Generic vehicleColor = vehicle.addRelation("vehicleColor", color);
-		Generic car = engine.addInstance(vehicle, "Car");
+		Generic car = root.addInstance(vehicle, "Car");
 
 		Generic red = color.addInstance("red");
 		Generic blue = color.addInstance("blue");
