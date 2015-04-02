@@ -36,6 +36,7 @@
 		<module>gs-kernel</module>
 		<module>gs-cdi</module>
 		<module>gs-mutability</module>
+		<module>gs-example-swing</module>
 	</modules>
 
 	<distributionManagement>
