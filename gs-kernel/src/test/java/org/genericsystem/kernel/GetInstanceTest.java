@@ -329,8 +329,8 @@ public class GetInstanceTest extends AbstractTest {
 		Generic myBmwCar = car.addInstance("myBmw");
 		car.addInstance("myAudi");
 
-		assert vehicle.getAllInstances("myBmw").containsAll(Arrays.asList(myBmw, myBmwCar)) : vehicle.getAllInstances("myBmw").info();
-		assert car.getAllInstances("myBmw").first() == myBmwCar;
+		assert vehicle.getSubInstances("myBmw").containsAll(Arrays.asList(myBmw, myBmwCar)) : vehicle.getSubInstances("myBmw").info();
+		assert car.getSubInstances("myBmw").first() == myBmwCar;
 	}
 
 	public void test021() {
@@ -342,8 +342,8 @@ public class GetInstanceTest extends AbstractTest {
 		Generic children2 = tree.addInstance(Arrays.asList(father, mother), "children2");
 		Generic children3 = tree.addInstance(children1, "children2");
 
-		assert tree.getAllInstances("children2").size() == 2;
-		assert tree.getAllInstances("children2").containsAll(Arrays.asList(children2, children3));
+		assert tree.getSubInstances("children2").size() == 2;
+		assert tree.getSubInstances("children2").containsAll(Arrays.asList(children2, children3));
 	}
 
 	public void test022() {
@@ -361,8 +361,8 @@ public class GetInstanceTest extends AbstractTest {
 		vehicleColor.addInstance("", myAudi, red);
 		Generic myBmwBlue = vehicleColor.addInstance("", myBmw, blue);
 
-		assert vehicleColor.getAllInstances("", myBmw).size() == 2;
-		assert vehicleColor.getAllInstances("", myBmw).containsAll(Arrays.asList(myBmwRed, myBmwBlue));
+		assert vehicleColor.getSubInstances("", myBmw).size() == 2;
+		assert vehicleColor.getSubInstances("", myBmw).containsAll(Arrays.asList(myBmwRed, myBmwBlue));
 	}
 
 	public void test023() {
@@ -380,8 +380,8 @@ public class GetInstanceTest extends AbstractTest {
 		vehicleColor.addInstance("", myAudi, red);
 		Generic myBmwBlue = vehicleColor.addInstance("myBmwBlue", myBmw, blue);
 
-		assert vehicleColor.getAllInstances(myBmw).size() == 2;
-		assert vehicleColor.getAllInstances(myBmw).containsAll(Arrays.asList(myBmwRed, myBmwBlue));
+		assert vehicleColor.getSubInstances(myBmw).size() == 2;
+		assert vehicleColor.getSubInstances(myBmw).containsAll(Arrays.asList(myBmwRed, myBmwBlue));
 	}
 
 	public void test024() {
@@ -398,10 +398,10 @@ public class GetInstanceTest extends AbstractTest {
 		assert !carPower.inheritsFrom(vehiclePower);
 		assert trunckPower.inheritsFrom(vehiclePower);
 
-		assert root.getRoot().getMetaAttribute().getAllInstances(Collections.emptyList(), "power").size() == 1;
-		assert root.getRoot().getMetaAttribute().getAllInstances(Collections.emptyList(), "power").first() == vehiclePower;
-		assert root.getRoot().getMetaAttribute().getAllInstances(vehiclePower, "power").size() == 2;
-		assert root.getRoot().getMetaAttribute().getAllInstances(vehiclePower, "power").containsAll(Arrays.asList(bikePower, trunckPower));
+		assert root.getRoot().getMetaAttribute().getSubInstances(Collections.emptyList(), "power").size() == 1;
+		assert root.getRoot().getMetaAttribute().getSubInstances(Collections.emptyList(), "power").first() == vehiclePower;
+		assert root.getRoot().getMetaAttribute().getSubInstances(vehiclePower, "power").size() == 2;
+		assert root.getRoot().getMetaAttribute().getSubInstances(vehiclePower, "power").containsAll(Arrays.asList(bikePower, trunckPower));
 	}
 
 	public void test025() {
@@ -413,8 +413,8 @@ public class GetInstanceTest extends AbstractTest {
 		Generic children2 = tree.addInstance(Arrays.asList(father, mother), "children2");
 		tree.addInstance(children1, "children2");
 
-		assert tree.getAllInstances(Arrays.asList(mother), "children2").size() == 1;
-		assert tree.getAllInstances("children2").first() == children2;
+		assert tree.getSubInstances(Arrays.asList(mother), "children2").size() == 1;
+		assert tree.getSubInstances("children2").first() == children2;
 	}
 
 	public void test026() {
@@ -431,9 +431,9 @@ public class GetInstanceTest extends AbstractTest {
 		assert !carPower.inheritsFrom(vehiclePower);
 		assert trunckPower.inheritsFrom(vehiclePower);
 
-		assert root.getRoot().getMetaAttribute().getAllInstances(Collections.emptyList(), "power", vehicle).size() == 1;
-		assert root.getRoot().getMetaAttribute().getAllInstances(Collections.emptyList(), "power", vehicle).first() == vehiclePower;
-		assert root.getRoot().getMetaAttribute().getAllInstances(vehiclePower, "power", bike).size() == 1;
-		assert root.getRoot().getMetaAttribute().getAllInstances(vehiclePower, "power", bike).first() == bikePower;
+		assert root.getRoot().getMetaAttribute().getSubInstances(Collections.emptyList(), "power", vehicle).size() == 1;
+		assert root.getRoot().getMetaAttribute().getSubInstances(Collections.emptyList(), "power", vehicle).first() == vehiclePower;
+		assert root.getRoot().getMetaAttribute().getSubInstances(vehiclePower, "power", bike).size() == 1;
+		assert root.getRoot().getMetaAttribute().getSubInstances(vehiclePower, "power", bike).first() == bikePower;
 	}
 }

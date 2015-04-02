@@ -54,7 +54,7 @@ public class IssueBean extends AbstractBean implements Serializable {
 	}
 
 	public List<Generic> getIssuesByStatut() {
-		return (filterBean.getPredicate(issueStatut) != null) ? issue.getAllInstances().get().filter(filterBean.getPredicate(issueStatut)).collect(Collectors.toList()) : issue.getAllInstances().get().collect(Collectors.toList());
+		return (filterBean.getPredicate(issueStatut) != null) ? issue.getSubInstances().get().filter(filterBean.getPredicate(issueStatut)).collect(Collectors.toList()) : issue.getSubInstances().get().collect(Collectors.toList());
 	}
 
 	public void deleteIssue(Generic issue) {

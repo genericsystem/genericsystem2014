@@ -106,4 +106,29 @@ public class LinkTest extends AbstractTest {
 		assert null == myCar.getLink(carColor, green, green);
 	}
 
+	public void test009() {
+		final Root root = new Root();
+		Generic humain = root.addInstance("Human");
+		Generic hierarchy = humain.addRelation("Hierarchy", humain);
+		Generic nicolas = humain.addInstance("nicolas");
+		Generic michael = humain.addInstance("michael");
+		Generic nicolasBossOfMichael = nicolas.addLink(hierarchy, "isBossOf", michael);
+		assert nicolasBossOfMichael.equals(nicolas.getLink(hierarchy));
+		assert nicolasBossOfMichael.equals(nicolas.getLink(hierarchy, michael));
+		assert nicolasBossOfMichael.equals(nicolas.getLink(hierarchy, nicolas));
+		assert nicolasBossOfMichael.equals(nicolas.getLink(hierarchy, michael, nicolas));
+		assert null == nicolas.getLink(hierarchy, nicolas, nicolas);
+	}
+
+	public void test010() {
+		final Root root = new Root();
+		Generic humain = root.addInstance("Human");
+		Generic hierarchy = humain.addRelation("Hierarchy", humain);
+		Generic nicolas = humain.addInstance("nicolas");
+		humain.addInstance("michael");
+		assert hierarchy.equals(nicolas.getRelation(humain)) : nicolas.getRelations().info();
+		assert hierarchy.equals(nicolas.getRelation(humain));
+		assert hierarchy.equals(nicolas.getRelation(humain, humain));
+	}
+
 }

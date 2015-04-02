@@ -22,6 +22,7 @@ public class Launcher {
 
 		SwingUtilities.invokeLater(new Runnable() {
 
+			@Override
 			public void run() {
 				JFrame window = new JFrame();
 
@@ -44,7 +45,7 @@ public class Launcher {
 				car.addInstance("myBmw");
 				car.addInstance("myAudi");
 				car.addInstance("myMercedes");
-				Snapshot<Generic> snapshotData = car.getAllInstances();
+				Snapshot<Generic> snapshotData = car.getSubInstances();
 				System.out.println("snapshot : " + snapshotData.size());
 				for (Generic generic : snapshotData) {
 					System.out.println("Snapshot contains " + generic.getValue());

@@ -28,15 +28,10 @@ public interface DefaultCompositesInheritance<T extends DefaultVertex<T>> extend
 		return getAttributes(targets).filter(DefaultDependencies.valueFilter(value));
 	}
 
-	@Override
-	default Snapshot<T> getAttributes() {
-		return getAttributes(getRoot().getMetaAttribute());
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getAttributes(T... targets) {
-		return getAttributes().filter(DefaultDependencies.componentsFilter(targets));
+		return getAttributes(getRoot().getMetaAttribute()).filter(DefaultDependencies.componentsFilter(targets));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -163,6 +158,18 @@ public interface DefaultCompositesInheritance<T extends DefaultVertex<T>> extend
 	@Override
 	default Snapshot<T> getLinks(T relation) {
 		return ((T) this).getHolders(relation);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Serializable getValue(T attribute, Serializable value, T... targets) {
+		return getNonAmbiguousResult(getLinks(attribute, value, targets).get()).getValue();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Serializable getValue(T attribute, T... targets) {
+		return getNonAmbiguousResult(getLinks(attribute, targets).get()).getValue();
 	}
 
 	@SuppressWarnings("unchecked")

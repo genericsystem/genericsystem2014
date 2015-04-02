@@ -255,13 +255,6 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	Snapshot<T> getAttributes(T... targets);
 
 	/**
-	 * Returns the attributes of this vertex (directly if this vertex is a type, the attributes of its type if this vertex is an instance).
-	 *
-	 * @return the attributes of this vertex regardless of the position of this vertex in the components of these attributes.
-	 */
-	Snapshot<T> getAttributes();
-
-	/**
 	 * Returns the attributes of this vertex (directly if this vertex is a type, the attributes of its type if this vertex is an instance) for which this vertex is in the specified position in their components.
 	 *
 	 * @param pos
@@ -446,6 +439,21 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	Snapshot<T> getLinks(T relation, T... targets);
 
 	/**
+	 * Return value for each holder that is instance of the specified <code>attribute</code> and position and for which this vertex is in the specified position in its components. <br>
+	 * The returned values satisfies the specified <code>targets</code>.
+	 * 
+	 * @param attribute
+	 *            the attribute of which value holders are instances.
+	 * @param targets
+	 *            the targets of returned values.
+	 *
+	 *
+	 * @return value for each holder that is instance of the specified <code>attribute</code> and position.
+	 */
+	@SuppressWarnings("unchecked")
+	Serializable getValue(T attribute, T... targets);
+
+	/**
 	 * Returns values for each holder that is instance of the specified <code>attribute</code> and position and for which this vertex is in the specified position in its components. <br>
 	 * The returned values satisfies the specified <code>targets</code>.
 	 * 
@@ -472,6 +480,23 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 * @return values for each holder that is instance of the specified <code>attribute</code> and position.
 	 */
 	Snapshot<Serializable> getValues(T attribute, int pos);
+
+	/**
+	 * Return value for each holder that is instance of the specified <code>attribute</code> and position and for which this vertex is in the specified position in its components. <br>
+	 * The returned values satisfies the specified <code>value</code> and <code>targets</code>.
+	 * 
+	 * @param attribute
+	 *            the attribute of which value holders are instances.
+	 * @param value
+	 *            the value of returned values.
+	 * @param targets
+	 *            the targets of returned values.
+	 *
+	 *
+	 * @return value for each holder that is instance of the specified <code>attribute</code> and position.
+	 */
+	@SuppressWarnings("unchecked")
+	Serializable getValue(T attribute, Serializable value, T... targets);
 
 	/**
 	 * Returns values for each holder that is instance of the specified <code>attribute</code> and position and for which this vertex is in the specified position in its components. <br>
@@ -625,6 +650,20 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	Snapshot<T> getInstances(List<T> overrides, Serializable value, T... components);
 
 	/**
+	 * Return vertex that are instances of this vertex.<br>
+	 * The returned vertex satisfies the specified <code>value</code> and <code>components</code>.
+	 *
+	 * @param value
+	 *            the value of returned vertex.
+	 * @param components
+	 *            the targets of returned vertex.
+	 *
+	 * @return the vertex that are instances of this vertex.
+	 */
+	@SuppressWarnings("unchecked")
+	T getSubInstance(Serializable value, T... components);
+
+	/**
 	 * Returns vertices that are instances of this vertex.<br>
 	 * The returned vertex satisfies the specified <code>value</code> and <code>components</code>.
 	 *
@@ -636,7 +675,19 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 * @return the vertices that are instances of this vertex.
 	 */
 	@SuppressWarnings("unchecked")
-	Snapshot<T> getAllInstances(Serializable value, T... components);
+	Snapshot<T> getSubInstances(Serializable value, T... components);
+
+	/**
+	 * Return vertex that are instances of this vertex.<br>
+	 * The returned vertex satisfies the specified <code>components</code>.
+	 *
+	 * @param components
+	 *            the targets of returned vertex.
+	 *
+	 * @return the vertex that are instances of this vertex.
+	 */
+	@SuppressWarnings("unchecked")
+	T getSubInstance(T... components);
 
 	/**
 	 * Returns vertices that are instances of this vertex.<br>
@@ -648,14 +699,30 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 * @return the vertices that are instances of this vertex.
 	 */
 	@SuppressWarnings("unchecked")
-	Snapshot<T> getAllInstances(T... components);
+	Snapshot<T> getSubInstances(T... components);
 
 	/**
 	 * Returns vertices that are instances of this vertex.
 	 *
 	 * @return the vertices that are instances of this vertex.
 	 */
-	Snapshot<T> getAllInstances();
+	Snapshot<T> getSubInstances();
+
+	/**
+	 * Return vertex that are instances of this vertex.<br>
+	 * The returned vertex satisfies the specified <code>override</code>, <code>value</code> and <code>components</code>.
+	 *
+	 * @param override
+	 *            the override of returned vertex.
+	 * @param value
+	 *            the value of returned vertex.
+	 * @param components
+	 *            the targets of returned vertex.
+	 *
+	 * @return the vertex that are instances of this vertex.
+	 */
+	@SuppressWarnings("unchecked")
+	T getSubInstance(T override, Serializable value, T... components);
 
 	/**
 	 * Returns vertices that are instances of this vertex.<br>
@@ -671,7 +738,23 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 * @return the vertices that are instances of this vertex.
 	 */
 	@SuppressWarnings("unchecked")
-	Snapshot<T> getAllInstances(T override, Serializable value, T... components);
+	Snapshot<T> getSubInstances(T override, Serializable value, T... components);
+
+	/**
+	 * Return vertex that are instances of this vertex.<br>
+	 * The returned vertex satisfies the specified <code>overrides</code>, <code>value</code> and <code>components</code>.
+	 *
+	 * @param overrides
+	 *            the overrides of returned vertex.
+	 * @param value
+	 *            the value of returned vertex.
+	 * @param components
+	 *            the targets of returned vertex.
+	 *
+	 * @return the vertex that are instance of this vertex.
+	 */
+	@SuppressWarnings("unchecked")
+	T getSubInstance(List<T> overrides, Serializable value, T... components);
 
 	/**
 	 * Returns vertices that are instances of this vertex.<br>
@@ -687,7 +770,7 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 * @return the vertices that are instances of this vertex.
 	 */
 	@SuppressWarnings("unchecked")
-	Snapshot<T> getAllInstances(List<T> overrides, Serializable value, T... components);
+	Snapshot<T> getSubInstances(List<T> overrides, Serializable value, T... components);
 
 	/**
 	 * Return vertex that have this vertex as super.<br>
@@ -766,6 +849,20 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	Snapshot<T> getInheritings();
 
 	/**
+	 * Returns vertex that inherit from this vertex.<br>
+	 * The returned vertex satisfies the specified <code>value</code> and <code>components</code>.
+	 * 
+	 * @param value
+	 *            the value of returned vertex.
+	 * @param components
+	 *            the targets of returned vertex.
+	 *
+	 * @return the vertex that inherits from this vertex.
+	 */
+	@SuppressWarnings("unchecked")
+	T getSubInheriting(Serializable value, T... components);
+
+	/**
 	 * Returns vertices that inherit from this vertex.<br>
 	 * The returned vertex satisfies the specified <code>value</code> and <code>components</code>.
 	 * 
@@ -777,7 +874,19 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 * @return the vertices that inherits from this vertex.
 	 */
 	@SuppressWarnings("unchecked")
-	Snapshot<T> getAllInheritings(Serializable value, T... components);
+	Snapshot<T> getSubInheritings(Serializable value, T... components);
+
+	/**
+	 * Returns vertex that inherit from this vertex.<br>
+	 * The returned vertex satisfies the specified <code>components</code>.
+	 * 
+	 * @param components
+	 *            the targets of returned vertex.
+	 *
+	 * @return the vertex that inherits from this vertex.
+	 */
+	@SuppressWarnings("unchecked")
+	T getSubInheriting(T... components);
 
 	/**
 	 * Returns vertices that inherit from this vertex.<br>
@@ -789,14 +898,14 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 * @return the vertices that inherits from this vertex.
 	 */
 	@SuppressWarnings("unchecked")
-	Snapshot<T> getAllInheritings(T... components);
+	Snapshot<T> getSubInheritings(T... components);
 
 	/**
 	 * Returns vertices that inherit from this vertex.
 	 *
 	 * @return the vertices that inherits from this vertex.
 	 */
-	Snapshot<T> getAllInheritings();
+	Snapshot<T> getSubInheritings();
 
 	/**
 	 * Returns composite vertices for which this vertex is a component.<br>
