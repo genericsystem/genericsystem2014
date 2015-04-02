@@ -178,18 +178,18 @@ public interface DefaultCompositesInheritance<T extends DefaultVertex<T>> extend
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<Serializable> getValues(T attribute, Serializable value, T... targets) {
-		return () -> getLinks(attribute, value, targets).get().map(T::getValue);
+		return () -> getLinks(attribute, value, targets).get().map(x -> x.getValue());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<Serializable> getValues(T attribute, T... targets) {
-		return () -> getLinks(attribute, targets).get().map(T::getValue);
+		return () -> getLinks(attribute, targets).get().map(x -> x.getValue());
 	}
 
 	@Override
 	default Snapshot<Serializable> getValues(T attribute, int pos) {
-		return () -> getHolders(attribute, pos).get().map(T::getValue);
+		return () -> getHolders(attribute, pos).get().map(x -> x.getValue());
 	}
 
 	@SuppressWarnings("unchecked")
