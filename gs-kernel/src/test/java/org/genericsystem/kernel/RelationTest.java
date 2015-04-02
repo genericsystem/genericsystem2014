@@ -40,9 +40,8 @@ public class RelationTest extends AbstractTest {
 		Generic color = root.addInstance("Color");
 		Generic carColor = car.addRelation("carColor", color);
 		assert carColor.equals(car.getRelation("carColor"));
-		assert carColor.equals(car.getRelation("carColor", car));
+		assert carColor.equals(car.getRelation("carColor"));
 		assert carColor.equals(car.getRelation("carColor", color));
-		assert carColor.equals(car.getRelation("carColor", car, color));
 	}
 
 	public void test004() {

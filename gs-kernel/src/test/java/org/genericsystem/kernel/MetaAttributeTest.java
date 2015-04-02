@@ -18,7 +18,7 @@ public class MetaAttributeTest extends AbstractTest {
 		assert metaAttribute.isInstanceOf(root);
 		assert metaAttribute.isInstanceOf(metaAttribute);
 		assert !root.getInstances().contains(metaAttribute);
-		assert !root.getAllInstances().contains(metaAttribute);
+		assert !root.getSubInstances().contains(metaAttribute);
 		assert metaAttribute.getBaseComponent().equals(root);
 	}
 

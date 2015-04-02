@@ -15,7 +15,7 @@ public class SnapshotGetByIndex extends AbstractTest {
 		Generic myBmw = car.addInstance("myBmw");
 		Generic myAudi = car.addInstance("myAudi");
 		Generic myMercedes = car.addInstance("myMercedes");
-		Snapshot<Generic> snapshot = car.getAllInstances();
+		Snapshot<Generic> snapshot = car.getSubInstances();
 		assert snapshot.getByIndex(0).equals(myBmw);
 		assert snapshot.getByIndex(1).equals(myAudi);
 		assert snapshot.getByIndex(2).equals(myMercedes);

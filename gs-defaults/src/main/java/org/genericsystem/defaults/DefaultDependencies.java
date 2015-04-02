@@ -87,32 +87,56 @@ public interface DefaultDependencies<T extends DefaultVertex<T>> extends IVertex
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default Snapshot<T> getAllInstances(Serializable value, T... components) {
-		return getAllInstances(components).filter(valueFilter(value));
-	}
-
-	@Override
-	default Snapshot<T> getAllInstances() {
-		return () -> getAllInheritings().get().flatMap(inheriting -> inheriting.getInstances().get());
+	default T getSubInstance(Serializable value, T... components) {
+		return getNonAmbiguousResult(getSubInstances(value, components).get());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default Snapshot<T> getAllInstances(T... components) {
-		return getAllInstances().filter(componentsFilter(components));
+	default Snapshot<T> getSubInstances(Serializable value, T... components) {
+		return getSubInstances(components).filter(valueFilter(value));
+	}
+
+	@Override
+	default Snapshot<T> getSubInstances() {
+		return () -> getSubInheritings().get().flatMap(inheriting -> inheriting.getInstances().get());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default Snapshot<T> getAllInstances(T override, Serializable value, T... components) {
-		return getAllInstances(Collections.singletonList(override), value, components);
+	default T getSubInstance(T... components) {
+		return getNonAmbiguousResult(getSubInstances(components).get());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default Snapshot<T> getAllInstances(List<T> overrides, Serializable value, T... components) {
+	default Snapshot<T> getSubInstances(T... components) {
+		return getSubInstances().filter(componentsFilter(components));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default T getSubInstance(T override, Serializable value, T... components) {
+		return getNonAmbiguousResult(getSubInstances(override, value, components).get());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Snapshot<T> getSubInstances(T override, Serializable value, T... components) {
+		return getSubInstances(Collections.singletonList(override), value, components);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default T getSubInstance(List<T> overrides, Serializable value, T... components) {
+		return getNonAmbiguousResult(getSubInstances(overrides, value, components).get());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Snapshot<T> getSubInstances(List<T> overrides, Serializable value, T... components) {
 		List<T> supers = getCurrentCache().computeAndCheckOverridesAreReached((T) this, overrides, value, Arrays.asList(components));
-		return getAllInstances(value, components).filter(overridesFilter(supers));
+		return getSubInstances(value, components).filter(overridesFilter(supers));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -147,20 +171,32 @@ public interface DefaultDependencies<T extends DefaultVertex<T>> extends IVertex
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default Snapshot<T> getAllInheritings(Serializable value, T... components) {
-		return getAllInheritings(components).filter(valueFilter(value));
+	default T getSubInheriting(Serializable value, T... components) {
+		return getNonAmbiguousResult(getSubInheritings(value, components).get());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default Snapshot<T> getAllInheritings(T... components) {
-		return getAllInheritings().filter(componentsFilter(components));
+	default Snapshot<T> getSubInheritings(Serializable value, T... components) {
+		return getSubInheritings(components).filter(valueFilter(value));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default Snapshot<T> getAllInheritings() {
-		return () -> Stream.concat(Stream.of((T) this), getInheritings().get().flatMap(inheriting -> inheriting.getAllInheritings().get())).distinct();
+	default T getSubInheriting(T... components) {
+		return getNonAmbiguousResult(getSubInheritings(components).get());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Snapshot<T> getSubInheritings(T... components) {
+		return getSubInheritings().filter(componentsFilter(components));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Snapshot<T> getSubInheritings() {
+		return () -> Stream.concat(Stream.of((T) this), getInheritings().get().flatMap(inheriting -> inheriting.getSubInheritings().get())).distinct();
 	}
 
 	@Override

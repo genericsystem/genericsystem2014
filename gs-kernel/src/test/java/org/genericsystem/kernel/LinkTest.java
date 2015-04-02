@@ -65,7 +65,7 @@ public class LinkTest extends AbstractTest {
 		Generic green = color.addInstance("green");
 		Generic rightDoor = door.addInstance("rightDoor");
 		Generic myCarRightDoorGreen = myCar.addLink(carColorDoor, null, green, rightDoor);
-		assert myCarRightDoorGreen.equals(myCar.getLink(carColorDoor, myCar));
+		assert myCarRightDoorGreen.equals(myCar.getLink(carColorDoor));
 		assert myCarRightDoorGreen.equals(myCar.getLink(carColorDoor, rightDoor, green));
 		assert null == myCar.getLink(carColorDoor, green, green) : myCar.getLink(carColorDoor, green, green).info();
 	}
@@ -104,6 +104,43 @@ public class LinkTest extends AbstractTest {
 		Generic myCarGreen = myCar.addLink(carColor, null, green);
 		assert myCarGreen.equals(myCar.getLink(carColor, green));
 		assert null == myCar.getLink(carColor, green, green);
+	}
+
+	public void test009() {
+		final Root root = new Root();
+		Generic humain = root.addInstance("Human");
+		Generic hierarchy = humain.addRelation("Hierarchy", humain);
+		Generic nicolas = humain.addInstance("nicolas");
+		Generic michael = humain.addInstance("michael");
+		Generic nicolasBossOfMichael = nicolas.addLink(hierarchy, "isBossOf", michael);
+		assert nicolasBossOfMichael.equals(nicolas.getLink(hierarchy));
+		assert nicolasBossOfMichael.equals(nicolas.getLink(hierarchy, michael));
+		assert nicolasBossOfMichael.equals(nicolas.getLink(hierarchy));
+		assert nicolasBossOfMichael.equals(nicolas.getLink(hierarchy, michael));
+		assert null == nicolas.getLink(hierarchy, nicolas);
+	}
+
+	public void test010() {
+		final Root root = new Root();
+		Generic humain = root.addInstance("Human");
+		Generic hierarchy = humain.addRelation("Hierarchy", humain);
+		Generic nicolas = humain.addInstance("nicolas");
+		humain.addInstance("michael");
+		assert hierarchy.equals(nicolas.getRelation(humain)) : nicolas.getRelations().info();
+		assert hierarchy.equals(nicolas.getRelation(humain));
+		assert null == nicolas.getRelation(humain, humain);
+	}
+
+	public void test011() {
+		final Root root = new Root();
+		Generic humain = root.addInstance("Human");
+		Generic hierarchy = humain.addRelation("Hierarchy", humain);
+		Generic nicolas = humain.addInstance("nicolas");
+		Generic michael = humain.addInstance("michael");
+		Generic michaelMichael = michael.addLink(hierarchy, "michaelMichael", michael);
+		michael.addLink(hierarchy, "michaelNicolas", nicolas);
+
+		assert michael.getLink(hierarchy, michael) == michaelMichael;
 	}
 
 }

@@ -17,7 +17,7 @@ public class MetaRelationTest extends AbstractTest {
 		assert metaRelation.isInstanceOf(root);
 		assert metaRelation.isInstanceOf(metaRelation);
 		assert !root.getInstances().contains(metaRelation);
-		assert !root.getAllInstances().contains(metaRelation);
+		assert !root.getSubInstances().contains(metaRelation);
 	}
 
 	public void test002() {
