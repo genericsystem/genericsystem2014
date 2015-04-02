@@ -298,7 +298,7 @@ public class AttributesTest extends AbstractTest {
 		Generic color = root.addInstance("Color");
 		Generic ultraColor = root.addInstance(color, "UltraColor");
 		Generic ultraColorVehicle = vehicle.addRelation("colorVehicle", ultraColor);
-		assert ultraColorVehicle == vehicle.getRelation("colorVehicle", vehicle, color);
+		assert null == vehicle.getRelation("colorVehicle", vehicle, color);
 		assert ultraColorVehicle == vehicle.getRelation("colorVehicle", vehicle, ultraColor);
 	}
 
@@ -310,7 +310,7 @@ public class AttributesTest extends AbstractTest {
 		Generic ultraColor = root.addInstance(color, "UltraColor");
 		vehicle.addRelation("colorVehicle", color);
 		Generic ultraColorVehicle = vehicle.addRelation("colorVehicle", ultraColor);
-		assert ultraColorVehicle == myVehicle.getRelation("colorVehicle", vehicle, color);
+		assert null == myVehicle.getRelation("colorVehicle", vehicle, color);
 		assert ultraColorVehicle == myVehicle.getRelation("colorVehicle", vehicle, ultraColor);
 	}
 

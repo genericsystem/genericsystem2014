@@ -67,8 +67,6 @@ public class LinkTest extends AbstractTest {
 		Generic myCarRightDoorGreen = myCar.addLink(carColorDoor, null, green, rightDoor);
 		assert myCarRightDoorGreen.equals(myCar.getLink(carColorDoor, myCar));
 		assert myCarRightDoorGreen.equals(myCar.getLink(carColorDoor, rightDoor, green));
-		assert myCarRightDoorGreen.equals(myCar.getLink(carColorDoor, color, door));
-		assert myCarRightDoorGreen.equals(myCar.getLink(carColorDoor, door, color));
 		assert null == myCar.getLink(carColorDoor, green, green) : myCar.getLink(carColorDoor, green, green).info();
 	}
 
@@ -94,6 +92,18 @@ public class LinkTest extends AbstractTest {
 		Generic green = color.addInstance("green");
 		Generic carGreen = car.addLink(carColor, null, green);
 		assert carGreen.equals(myCar.getLink(carColor));
+	}
+
+	public void test008() {
+		final Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic color = root.addInstance("Color");
+		Generic carColor = car.addRelation("CarColor", color);
+		Generic myCar = car.addInstance("myCar");
+		Generic green = color.addInstance("green");
+		Generic myCarGreen = myCar.addLink(carColor, null, green);
+		assert myCarGreen.equals(myCar.getLink(carColor, green));
+		assert null == myCar.getLink(carColor, green, green);
 	}
 
 }

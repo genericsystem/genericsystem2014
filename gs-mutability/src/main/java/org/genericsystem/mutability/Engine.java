@@ -10,7 +10,7 @@ import org.genericsystem.kernel.Statics;
 
 public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 
-	protected final ThreadLocal<Cache> cacheLocal = new ThreadLocal<>();
+	protected final InheritableThreadLocal<Cache> cacheLocal = new InheritableThreadLocal<>();
 
 	private final org.genericsystem.cache.Engine cacheEngine;
 
