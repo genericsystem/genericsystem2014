@@ -101,6 +101,18 @@ public interface Snapshot<T> extends Iterable<T> {
 		return get().findFirst().orElse(null);
 	}
 
+	default T getByIndex(int index) {
+		Iterator<T> iterator = iterator();
+		int i = 0;
+		while (iterator.hasNext()) {
+			if (index == i)
+				return iterator.next();
+			iterator.next();
+			i++;
+		}
+		return null;
+	}
+
 	default Snapshot<T> filter(Predicate<T> predicate) {
 		return new Snapshot<T>() {
 
