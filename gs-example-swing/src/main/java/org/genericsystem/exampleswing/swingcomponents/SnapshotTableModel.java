@@ -1,44 +1,51 @@
 package org.genericsystem.exampleswing.swingcomponents;
 
+import java.io.Serializable;
+import java.util.List;
+
 import javax.swing.table.AbstractTableModel;
 
 import org.genericsystem.api.core.Snapshot;
+import org.genericsystem.exampleswing.model.Power;
 import org.genericsystem.mutability.Generic;
 
 public class SnapshotTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = -8137410628615273305L;
 
-	// protected Object[][] datatable;
 	protected Snapshot<Generic> snapshot;
-	protected Object[] columnsIdentifiers;
+	protected List<Serializable> columnsIdentifiers;
 
-	// TODO
-	// public MyTableModel() {
-	// this(new Snapshot<Generic>[0], new Object[0]);
-	// }
-
-	public SnapshotTableModel(Snapshot<Generic> datatable, Object[] columnsIdentifiers) {
+	public SnapshotTableModel(Snapshot<Generic> datatable, List<Serializable> columnsIdentifiers) {
 		this.snapshot = datatable;
 		this.columnsIdentifiers = columnsIdentifiers;
 	}
 
+	@Override
 	public int getRowCount() {
 		return snapshot.size();
 	}
 
-	public int getColumnCount() {
-		return columnsIdentifiers.length;
+	@Override
+	public String getColumnName(int column) {
+		return (String) columnsIdentifiers.get(column);
 	}
 
+	@Override
+	public int getColumnCount() {
+		return columnsIdentifiers.size();
+	}
+
+	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		for (int i = 0; i < snapshot.size(); i++) {
-			if (i == rowIndex)
-				return snapshot.getByIndex(i).getValue();
-			// for (int j = 0; j < snapshot.getByIndex(i); j++) {
-			// TODO
-			// if (i == rowIndex && j == columnIndex)
-			// return datatable[i][j];
-			// }
+		Generic generic = snapshot.getByIndex(rowIndex);
+
+		switch (columnIndex) {
+		case 0:
+			return generic != null ? generic.getValue() : null;
+		case 1:
+			return generic != null ? generic.getHolders(generic.getRoot().find(Power.class)).first().getValue() : null;
+		default:
+			break;
 		}
 		return null;
 	}

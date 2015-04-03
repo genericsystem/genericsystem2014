@@ -260,9 +260,9 @@ public class Checker {
 			Generic baseConstraint = vertex.getComponent(ApiStatics.BASE_POSITION);
 			int axe = ((AxedPropertyClass) vertex.getMeta().getValue()).getAxe();
 			if (((AxedPropertyClass) vertex.getMeta().getValue()).getAxe() == ApiStatics.NO_POSITION)
-				baseConstraint.getAllInstances().forEach(x -> check(vertex, baseConstraint, true, true, false, x));
+				baseConstraint.getSubInstances().forEach(x -> check(vertex, baseConstraint, true, true, false, x));
 			else
-				baseConstraint.getComponents().get(axe).getAllInstances().forEach(x -> check(vertex, baseConstraint, true, true, true, x));
+				baseConstraint.getComponents().get(axe).getSubInstances().forEach(x -> check(vertex, baseConstraint, true, true, true, x));
 		}
 	}
 

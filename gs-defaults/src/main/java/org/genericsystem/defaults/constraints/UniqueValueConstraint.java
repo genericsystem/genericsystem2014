@@ -19,7 +19,7 @@ import org.genericsystem.defaults.exceptions.UniqueValueConstraintViolationExcep
 public class UniqueValueConstraint<T extends DefaultVertex<T>> implements CheckedConstraint<T> {
 	@Override
 	public void check(T modified, T attribute, Serializable value) throws ConstraintViolationException {
-		for (T instance : modified.getMeta().getAllInstances())
+		for (T instance : modified.getMeta().getSubInstances())
 			if (Objects.equals(instance.getValue(), modified.getValue()) && !instance.equals(modified))
 				throw new UniqueValueConstraintViolationException("Duplicate value : " + instance.getValue());
 	}

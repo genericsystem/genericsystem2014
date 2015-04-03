@@ -36,9 +36,9 @@ public class BindingServiceTest extends AbstractTest {
 		Generic transformer = engine.addInstance(Arrays.asList(robot, car), "Transformer");
 		Generic plasticTransformer = engine.addInstance(transformer, "PlasticTransformer");
 
-		assert !machine.getAllInheritings().contains(animal) : machine.getAllInheritings().info();
-		assert machine.getAllInheritings().containsAll(Arrays.asList(machine, vehicle, robot, car, bike, transformer, plasticTransformer)) : machine.getAllInheritings().info();
-		assert machine.getAllInheritings().size() == 7 : machine.getAllInheritings().info();
+		assert !machine.getSubInheritings().contains(animal) : machine.getSubInheritings().info();
+		assert machine.getSubInheritings().containsAll(Arrays.asList(machine, vehicle, robot, car, bike, transformer, plasticTransformer)) : machine.getSubInheritings().info();
+		assert machine.getSubInheritings().size() == 7 : machine.getSubInheritings().info();
 
 	}
 

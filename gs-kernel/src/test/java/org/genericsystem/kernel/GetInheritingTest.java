@@ -120,8 +120,8 @@ public class GetInheritingTest extends AbstractTest {
 		Generic car = root.addInstance(vehicle, "Car");
 		Generic carVehicle = root.addInstance(car, "Vehicle");
 
-		assert vehicle.getAllInheritings("Vehicle").containsAll(Arrays.asList(vehicle, carVehicle)) : root.getMetaAttribute().getAllInheritings("Vehicle").info();
-		assert vehicle.getAllInheritings("Car").first() == car;
+		assert vehicle.getSubInheritings("Vehicle").containsAll(Arrays.asList(vehicle, carVehicle)) : root.getMetaAttribute().getSubInheritings("Vehicle").info();
+		assert vehicle.getSubInheritings("Car").first() == car;
 	}
 
 	public void test009() {
@@ -136,8 +136,8 @@ public class GetInheritingTest extends AbstractTest {
 		Generic bikeColor = bike.addRelation("vehicleColor", color);
 		Generic sportCarColor = sportCar.addRelation("vehicleColor", color);
 
-		assert vehicleColor.getAllInheritings("vehicleColor", color).size() == 4 : vehicleColor.getAllInheritings("vehicleColor", color).info();
-		assert vehicleColor.getAllInheritings("vehicleColor", color).containsAll(Arrays.asList(vehicleColor, carColor, bikeColor, sportCarColor));
+		assert vehicleColor.getSubInheritings("vehicleColor", color).size() == 4 : vehicleColor.getSubInheritings("vehicleColor", color).info();
+		assert vehicleColor.getSubInheritings("vehicleColor", color).containsAll(Arrays.asList(vehicleColor, carColor, bikeColor, sportCarColor));
 	}
 
 	public void test010() {
@@ -152,8 +152,8 @@ public class GetInheritingTest extends AbstractTest {
 		bike.addRelation("vehicleColor", color);
 		sportCar.addRelation("vehicleColor", color);
 
-		assert vehicleColor.getAllInheritings(color, car).size() == 1 : vehicleColor.getAllInheritings(color, car).info();
-		assert vehicleColor.getAllInheritings(color, car).contains(carColor);
+		assert vehicleColor.getSubInheritings(color, car).size() == 1 : vehicleColor.getSubInheritings(color, car).info();
+		assert vehicleColor.getSubInheritings(color, car).contains(carColor);
 	}
 
 }

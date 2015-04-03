@@ -13,7 +13,7 @@ public class AttributesTest extends AbstractTest {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic powerVehicle = vehicle.addAttribute("power");
-		assert powerVehicle == vehicle.getAttribute("power", vehicle);
+		assert powerVehicle == vehicle.getAttribute("power");
 	}
 
 	public void test002() {
@@ -28,7 +28,7 @@ public class AttributesTest extends AbstractTest {
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic myVehicle = vehicle.addInstance("myVehicle");
 		Generic powerVehicle = vehicle.addAttribute("power");
-		assert powerVehicle == myVehicle.getAttribute("power", vehicle);
+		assert powerVehicle == myVehicle.getAttribute("power");
 	}
 
 	public void test004() {
@@ -36,7 +36,7 @@ public class AttributesTest extends AbstractTest {
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic car = root.addInstance(vehicle, "Car");
 		Generic powerVehicle = vehicle.addAttribute("power");
-		assert powerVehicle == car.getAttribute("power", vehicle);
+		assert powerVehicle == car.getAttribute("power");
 	}
 
 	public void test005() {
@@ -45,7 +45,7 @@ public class AttributesTest extends AbstractTest {
 		Generic car = root.addInstance(vehicle, "Car");
 		Generic myCar = car.addInstance("myCar");
 		Generic powerVehicle = vehicle.addAttribute("power");
-		assert powerVehicle == myCar.getAttribute("power", vehicle);
+		assert powerVehicle == myCar.getAttribute("power");
 	}
 
 	public void test006() {
@@ -289,7 +289,7 @@ public class AttributesTest extends AbstractTest {
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic color = root.addInstance("Color");
 		Generic colorVehicle = vehicle.addRelation("colorVehicle", color);
-		assert colorVehicle == vehicle.getRelation("colorVehicle", vehicle, color);
+		assert colorVehicle == vehicle.getRelation("colorVehicle", color);
 	}
 
 	public void test024() {
@@ -299,7 +299,7 @@ public class AttributesTest extends AbstractTest {
 		Generic ultraColor = root.addInstance(color, "UltraColor");
 		Generic ultraColorVehicle = vehicle.addRelation("colorVehicle", ultraColor);
 		assert null == vehicle.getRelation("colorVehicle", vehicle, color);
-		assert ultraColorVehicle == vehicle.getRelation("colorVehicle", vehicle, ultraColor);
+		assert ultraColorVehicle == vehicle.getRelation("colorVehicle", ultraColor);
 	}
 
 	public void test025() {
@@ -311,7 +311,7 @@ public class AttributesTest extends AbstractTest {
 		vehicle.addRelation("colorVehicle", color);
 		Generic ultraColorVehicle = vehicle.addRelation("colorVehicle", ultraColor);
 		assert null == myVehicle.getRelation("colorVehicle", vehicle, color);
-		assert ultraColorVehicle == myVehicle.getRelation("colorVehicle", vehicle, ultraColor);
+		assert ultraColorVehicle == myVehicle.getRelation("colorVehicle", ultraColor);
 	}
 
 }

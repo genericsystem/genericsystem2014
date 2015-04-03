@@ -1,6 +1,9 @@
 package org.genericsystem.defaults;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.genericsystem.api.core.ApiStatics;
@@ -28,15 +31,10 @@ public interface DefaultCompositesInheritance<T extends DefaultVertex<T>> extend
 		return getAttributes(targets).filter(DefaultDependencies.valueFilter(value));
 	}
 
-	@Override
-	default Snapshot<T> getAttributes() {
-		return getAttributes(getRoot().getMetaAttribute());
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getAttributes(T... targets) {
-		return getAttributes().filter(DefaultDependencies.componentsFilter(targets));
+		return getAttributes(getRoot().getMetaAttribute()).filter(componentsFilter(addThisToTargets(targets)));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -69,13 +67,13 @@ public interface DefaultCompositesInheritance<T extends DefaultVertex<T>> extend
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getHolders(T attribute, Serializable value, T... targets) {
-		return getHolders(attribute).filter(DefaultDependencies.valueFilter(value)).filter(DefaultDependencies.componentsFilter(targets));
+		return getHolders(attribute).filter(DefaultDependencies.valueFilter(value)).filter(componentsFilter(addThisToTargets(targets)));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getHolders(T attribute, T... targets) {
-		return getHolders(attribute).filter(DefaultDependencies.componentsFilter(targets));
+		return getHolders(attribute).filter(componentsFilter(addThisToTargets(targets)));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -114,7 +112,7 @@ public interface DefaultCompositesInheritance<T extends DefaultVertex<T>> extend
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getRelations(T... targets) {
-		return getRelations(getRoot().getMetaRelation()).filter(DefaultDependencies.componentsFilter(targets));
+		return getRelations(getRoot().getMetaRelation()).filter(componentsFilter(addThisToTargets(targets)));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -144,13 +142,13 @@ public interface DefaultCompositesInheritance<T extends DefaultVertex<T>> extend
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getLinks(T relation, Serializable value, T... targets) {
-		return getLinks(relation).filter(DefaultDependencies.valueFilter(value)).filter(DefaultDependencies.componentsFilter(targets));
+		return getLinks(relation).filter(DefaultDependencies.valueFilter(value)).filter(componentsFilter(addThisToTargets(targets)));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getLinks(T relation, T... targets) {
-		return getLinks(relation).filter(DefaultDependencies.componentsFilter(targets));
+		return getLinks(relation).filter(componentsFilter(addThisToTargets(targets)));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -167,19 +165,46 @@ public interface DefaultCompositesInheritance<T extends DefaultVertex<T>> extend
 
 	@SuppressWarnings("unchecked")
 	@Override
+	default Serializable getValue(T attribute, Serializable value, T... targets) {
+		return getNonAmbiguousResult(getLinks(attribute, value, targets).get()).getValue();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Serializable getValue(T attribute, T... targets) {
+		return getNonAmbiguousResult(getLinks(attribute, targets).get()).getValue();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
 	default Snapshot<Serializable> getValues(T attribute, Serializable value, T... targets) {
-		return () -> getLinks(attribute, value, targets).get().map(T::getValue);
+		return () -> getLinks(attribute, value, targets).get().map(x -> x.getValue());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<Serializable> getValues(T attribute, T... targets) {
-		return () -> getLinks(attribute, targets).get().map(T::getValue);
+		return () -> getLinks(attribute, targets).get().map(x -> x.getValue());
 	}
 
 	@Override
 	default Snapshot<Serializable> getValues(T attribute, int pos) {
-		return () -> getHolders(attribute, pos).get().map(T::getValue);
+		return () -> getHolders(attribute, pos).get().map(x -> x.getValue());
+	}
+
+	@SuppressWarnings("unchecked")
+	static <T extends DefaultVertex<T>> Predicate<T> componentsFilter(T... componentsReached) {
+		return attribute -> {
+			List<T> attributeComps = new ArrayList<>(attribute.getComponents());
+			for (T componentReach : componentsReached) {
+				T matchedComponent = attributeComps.stream().filter(attributeComp -> componentsReached[0].isSpecializationOf(attributeComp) ? true : componentReach.equals(attributeComp)).findFirst().orElse(null);
+				if (matchedComponent != null)
+					attributeComps.remove(matchedComponent);
+				else
+					return false;
+			}
+			return true;
+		};
 	}
 
 	T getNonAmbiguousResult(Stream<T> stream);
