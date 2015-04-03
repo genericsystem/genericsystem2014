@@ -40,7 +40,7 @@ public class CarBean {
 	}
 
 	public List<Generic> getCars() {
-		return car.getAllInstances().get().collect(Collectors.toList());
+		return car.getSubInstances().get().collect(Collectors.toList());
 	}
 
 	public ValueExpressionWrapper getPower(Generic instance) {
