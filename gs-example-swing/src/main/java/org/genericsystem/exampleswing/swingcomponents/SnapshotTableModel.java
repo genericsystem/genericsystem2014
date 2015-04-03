@@ -1,5 +1,8 @@
 package org.genericsystem.exampleswing.swingcomponents;
 
+import java.io.Serializable;
+import java.util.List;
+
 import javax.swing.table.AbstractTableModel;
 
 import org.genericsystem.api.core.Snapshot;
@@ -10,9 +13,9 @@ public class SnapshotTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = -8137410628615273305L;
 
 	protected Snapshot<Generic> snapshot;
-	protected Object[] columnsIdentifiers;
+	protected List<Serializable> columnsIdentifiers;
 
-	public SnapshotTableModel(Snapshot<Generic> datatable, Object[] columnsIdentifiers) {
+	public SnapshotTableModel(Snapshot<Generic> datatable, List<Serializable> columnsIdentifiers) {
 		this.snapshot = datatable;
 		this.columnsIdentifiers = columnsIdentifiers;
 	}
@@ -24,12 +27,12 @@ public class SnapshotTableModel extends AbstractTableModel {
 
 	@Override
 	public String getColumnName(int column) {
-		return (String) columnsIdentifiers[column];
+		return (String) columnsIdentifiers.get(column);
 	}
 
 	@Override
 	public int getColumnCount() {
-		return columnsIdentifiers.length;
+		return columnsIdentifiers.size();
 	}
 
 	@Override
