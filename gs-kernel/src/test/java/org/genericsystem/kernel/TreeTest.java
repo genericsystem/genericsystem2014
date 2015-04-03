@@ -1,9 +1,11 @@
 package org.genericsystem.kernel;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 import org.genericsystem.api.core.IVertex.Visitor;
+import org.genericsystem.api.core.exceptions.AmbiguousSelectionException;
 import org.genericsystem.api.core.exceptions.ExistsException;
 import org.testng.annotations.Test;
 
@@ -26,8 +28,8 @@ public class TreeTest extends AbstractTest {
 
 		assert tree.getInstances().contains(rootNode);
 		assert tree.getInstances().size() == 1;
-		assert tree.getAllInstances().contains(rootNode) : tree.getAllInstances().get().collect(Collectors.toList());
-		assert tree.getAllInstances().size() == 1;
+		assert tree.getSubInstances().contains(rootNode) : tree.getSubInstances().get().collect(Collectors.toList());
+		assert tree.getSubInstances().size() == 1;
 		assert rootNode.getSupers().isEmpty();
 	}
 
@@ -50,21 +52,21 @@ public class TreeTest extends AbstractTest {
 		assert !html.getInheritings().contains(html);
 		assert html.getInheritings().containsAll(Arrays.asList(head, body)) : html.getInheritings().info();
 		assert html.getInheritings().size() == 2;
-		assert html.getAllInheritings().containsAll(Arrays.asList(html, head, body, div));
-		assert html.getAllInheritings().size() == 4;
+		assert html.getSubInheritings().containsAll(Arrays.asList(html, head, body, div));
+		assert html.getSubInheritings().size() == 4;
 
 		assert head.getInheritings().isEmpty();
-		assert head.getAllInheritings().contains(head);
-		assert head.getAllInheritings().size() == 1;
+		assert head.getSubInheritings().contains(head);
+		assert head.getSubInheritings().size() == 1;
 
 		assert body.getInheritings().contains(div);
 		assert body.getInheritings().size() == 1;
-		assert body.getAllInheritings().containsAll(Arrays.asList(body, div));
-		assert body.getAllInheritings().size() == 2;
+		assert body.getSubInheritings().containsAll(Arrays.asList(body, div));
+		assert body.getSubInheritings().size() == 2;
 
 		assert div.getInheritings().isEmpty();
-		assert div.getAllInheritings().contains(div);
-		assert div.getAllInheritings().size() == 1;
+		assert div.getSubInheritings().contains(div);
+		assert div.getSubInheritings().size() == 1;
 
 	}
 
@@ -77,11 +79,11 @@ public class TreeTest extends AbstractTest {
 		Generic divNode = tree.addInstance(bodyNode, "divNode");
 		Generic formNode = tree.addInstance(divNode, "formNode");
 
-		assert tree.getAllInstances().contains(rootNode);
-		assert tree.getAllInstances().contains(bodyNode);
-		assert tree.getAllInstances().contains(divNode);
-		assert tree.getAllInstances().contains(formNode);
-		assert tree.getAllInstances().size() == 5;
+		assert tree.getSubInstances().contains(rootNode);
+		assert tree.getSubInstances().contains(bodyNode);
+		assert tree.getSubInstances().contains(divNode);
+		assert tree.getSubInstances().contains(formNode);
+		assert tree.getSubInstances().size() == 5;
 	}
 
 	public void test006() {
@@ -95,59 +97,32 @@ public class TreeTest extends AbstractTest {
 
 		Generic tree = root.addInstance("Tree");
 		Generic color = root.addInstance("Color");
-		Generic treeColor = tree.addAttribute("TreeColor", color);
+		Generic treeColor = tree.addRelation("TreeColor", color);
 
 		Generic blue = color.addInstance("blue");
 		Generic red = color.addInstance("red");
 		Generic green = color.addInstance("green");
 
-		tree.setHolder(treeColor, "treeIsBlueByDefault", blue);
+		tree.setLink(treeColor, "treeIsBlueByDefault", blue);
 
 		Generic html = tree.addInstance("html");
-		html.setHolder(treeColor, "htmlIsRed", red);
+		html.setLink(treeColor, "htmlIsRed", red);
 		Generic head = tree.addInstance(html, "head");
 		Generic body = tree.addInstance(html, "body");
 		Generic div = tree.addInstance(body, "div");
-		div.setHolder(treeColor, "divIsGreen", green);
+		div.setLink(treeColor, "divIsGreen", green);
 
-		assert tree.getHolders(treeColor).first().getTargetComponent().equals(blue);
-		assert html.getHolders(treeColor).first().getTargetComponent().equals(red);
-		assert head.getHolders(treeColor).first().getTargetComponent().equals(red);
-		assert body.getHolders(treeColor).first().getTargetComponent().equals(red);
-		assert div.getHolders(treeColor).first().getTargetComponent().equals(green);
+		assert tree.getLinks(treeColor).first().getTargetComponent().equals(blue);
+		assert html.getLinks(treeColor).first().getTargetComponent().equals(red);
+		assert head.getLinks(treeColor).first().getTargetComponent().equals(red);
+		assert body.getLinks(treeColor).first().getTargetComponent().equals(red);
+		assert div.getLinks(treeColor).first().getTargetComponent().equals(green);
 	}
 
 	public void test008() {
 		Root root = new Root();
 
-		Generic tree = root.addInstance("Tree");
-		Generic color = root.addInstance("Color");
-		Generic treeColor = tree.addAttribute("TreeColor", color);
-
-		Generic blue = color.addInstance("blue");
-		Generic red = color.addInstance("red");
-		Generic green = color.addInstance("green");
-
-		tree.setHolder(treeColor, "treeIsBlueByDefault", blue);
-
-		Generic html = tree.addInstance("html");
-		html.setHolder(treeColor, "htmlIsRed", red);
-		Generic head = tree.addInstance(html, "head");
-		Generic body = tree.addInstance(html, "body");
-		Generic div = tree.addInstance(body, "div");
-		div.setHolder(treeColor, "divIsGreen", green);
-
-		assert tree.getHolders(treeColor).first().getTargetComponent().equals(blue);
-		assert html.getHolders(treeColor).first().getTargetComponent().equals(red);
-		assert head.getHolders(treeColor).first().getTargetComponent().equals(red);
-		assert body.getHolders(treeColor).first().getTargetComponent().equals(red);
-		assert div.getHolders(treeColor).first().getTargetComponent().equals(green);
-	}
-
-	public void testTraverseTree() {
-		Root engine = new Root();
-
-		Generic html5Tags = engine.addInstance("Html5Tags");
+		Generic html5Tags = root.addInstance("Html5Tags");
 
 		Generic html = html5Tags.addInstance("html");
 
@@ -187,31 +162,33 @@ public class TreeTest extends AbstractTest {
 		assert result[0] == 0;
 	}
 
-	public void testTree1() {
+	public void test009() {
 		Root root = new Root();
 		Generic a1 = root.addInstance("A");
 		Generic b = root.addInstance(a1, "B");
 		Generic a2 = root.addInstance(b, "A");
-		assert root.getInstance("A").equals(a1);
+		assert root.getInstance(Collections.emptyList(), "A").equals(a1);
+		catchAndCheckCause(() -> root.getInstance("A"), AmbiguousSelectionException.class);
 		assert root.getInstance(Arrays.asList(b), "A").equals(a2);
 	}
 
-	public void testTree2() {
+	public void test010() {
 		Root root = new Root();
 		Generic a1 = root.addInstance("A");
 		Generic b = root.addInstance("B");
 		Generic a2 = root.addInstance(b, "A");
-		assert root.getInstance("A").equals(a1);
+		assert root.getInstance(Collections.emptyList(), "A").equals(a1);
+		catchAndCheckCause(() -> root.getInstance("A"), AmbiguousSelectionException.class);
 		assert root.getInstance(Arrays.asList(b), "A").equals(a2);
 	}
 
-	public void testTree3() {
+	public void test011() {
 		Root root = new Root();
 		Generic b = root.addInstance("B");
 		Generic c = root.addInstance("C");
 		Generic a1 = root.addInstance(b, "A");
-		Generic a2 = root.addInstance(c, "A");
-		assert root.getInstance("A") == null : root.getInstance("A").info();
+		root.addInstance(c, "A");
+		catchAndCheckCause(() -> root.getInstance("A"), AmbiguousSelectionException.class);
 		assert root.getInstance(Arrays.asList(b), "A").equals(a1);
 	}
 

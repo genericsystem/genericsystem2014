@@ -10,282 +10,216 @@ import org.testng.annotations.Test;
 @Test
 public class SingularConstraintTest extends AbstractTest {
 
-	public void test000_enableSingularConstraint() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic color = engine.addInstance("Color");
-		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
-		vehicleColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
-		Generic color2 = engine.addInstance("Color2");
-		Generic vehicleColor2 = vehicle.addAttribute("vehicleColor2", color2);
-		vehicleColor2.enableSingularConstraint(ApiStatics.BASE_POSITION);
-		assert vehicleColor.isSingularConstraintEnabled(0);
-		assert vehicleColor2.isSingularConstraintEnabled(0);
+	public void test000() {
+		Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic color = root.addInstance("Color");
+		Generic carColor = car.addAttribute("CarColor", color);
+		carColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
+		Generic otherColor = root.addInstance("OtherColor");
+		Generic carOtherColor = car.addAttribute("CarOtherColor", otherColor);
+		carOtherColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
+		assert carColor.isSingularConstraintEnabled(0);
+		assert carOtherColor.isSingularConstraintEnabled(0);
 	}
 
-	public void test001_enableSingularConstraint_addInstance() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic myVehicle = vehicle.addInstance("myVehicle");
-		Generic color = engine.addInstance("Color");
+	public void test001() {
+		Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic myBmw = car.addInstance("myCar");
+		Generic color = root.addInstance("Color");
 		Generic red = color.addInstance("red");
 		Generic yellow = color.addInstance("yellow");
-		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
-		vehicleColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
-		assert vehicleColor.isSingularConstraintEnabled(ApiStatics.BASE_POSITION);
-		assert !vehicleColor.isReferentialIntegrityEnabled(ApiStatics.BASE_POSITION);
-		myVehicle.addHolder(vehicleColor, "vehicleRed", red);
-		catchAndCheckCause(() -> myVehicle.addHolder(vehicleColor, "vehicleYellow", yellow), SingularConstraintViolationException.class);
+		Generic carColor = car.addRelation("CarColor", color);
+		carColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
+		assert carColor.isSingularConstraintEnabled(ApiStatics.BASE_POSITION);
+		assert !carColor.isReferentialIntegrityEnabled(ApiStatics.BASE_POSITION);
+		myBmw.addLink(carColor, "carRed", red);
+		catchAndCheckCause(() -> myBmw.addLink(carColor, "myBmwYellow", yellow), SingularConstraintViolationException.class);
 	}
 
-	public void test002_enableSingularConstraint_addInstance() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic myVehicle = vehicle.addInstance("myVehicle");
-		Generic yourVehicle = vehicle.addInstance("yourVehicle");
-		Generic color = engine.addInstance("Color");
+	public void test002() {
+		Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic myBmw = car.addInstance("myBmw");
+		Generic myAudi = car.addInstance("myAudi");
+		Generic color = root.addInstance("Color");
 		Generic red = color.addInstance("red");
-		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
-		vehicleColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
-		assert vehicleColor.isSingularConstraintEnabled(ApiStatics.BASE_POSITION);
-		myVehicle.addHolder(vehicleColor, "vehicleRed", red);
-		yourVehicle.addHolder(vehicleColor, "vehicleRed", red);
+		Generic carColor = car.addRelation("CarColor", color);
+		carColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
+		assert carColor.isSingularConstraintEnabled(ApiStatics.BASE_POSITION);
+		myBmw.addLink(carColor, "vehicleRed", red);
+		myAudi.addLink(carColor, "vehicleRed", red);
 	}
 
-	public void test003_enableSingularConstraint_addDefaultInstance() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic color = engine.addInstance("Color");
+	public void test003() {
+		Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic color = root.addInstance("Color");
 		Generic red = color.addInstance("red");
 		Generic yellow = color.addInstance("yellow");
-		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
-		vehicleColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
-		assert vehicleColor.isSingularConstraintEnabled(ApiStatics.BASE_POSITION);
-		vehicle.addHolder(vehicleColor, "vehicleRed", red);
-		catchAndCheckCause(() -> vehicle.addHolder(vehicleColor, "vehicleYellow", yellow), SingularConstraintViolationException.class);
+		Generic carColor = car.addRelation("CarColor", color);
+		carColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
+		assert carColor.isSingularConstraintEnabled(ApiStatics.BASE_POSITION);
+		car.addLink(carColor, "carRed", red);
+		catchAndCheckCause(() -> car.addLink(carColor, "carYellow", yellow), SingularConstraintViolationException.class);
 	}
 
-	public void test001_enableSingularConstraint_ternaryRelation() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic myVehicle = vehicle.addInstance("myVehicle");
-		Generic color = engine.addInstance("Color");
-		Generic time = engine.addInstance("Time");
+	public void test004() {
+		Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic myBmw = car.addInstance("myBmw");
+		Generic color = root.addInstance("Color");
+		Generic time = root.addInstance("Time");
 		Generic red = color.addInstance("red");
 		Generic today = time.addInstance("today");
 		Generic yesterday = time.addInstance("yesterday");
 
-		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color, time);
-		vehicleColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
-		assert vehicleColor.isSingularConstraintEnabled(ApiStatics.BASE_POSITION);
-		myVehicle.addHolder(vehicleColor, "vehicleRedToday", red, today);
-		catchAndCheckCause(() -> myVehicle.addHolder(vehicleColor, "vehicleRedYesterday", red, yesterday), SingularConstraintViolationException.class);
+		Generic carColor = car.addRelation("CarColor", color, time);
+		carColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
+		assert carColor.isSingularConstraintEnabled(ApiStatics.BASE_POSITION);
+		myBmw.addLink(carColor, "myBmwRedToday", red, today);
+		catchAndCheckCause(() -> myBmw.addLink(carColor, "myBmwRedYesterday", red, yesterday), SingularConstraintViolationException.class);
 
 	}
 
-	public void test005_enableSingularConstraint_targetPosition() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic myVehicle = vehicle.addInstance("myVehicle");
-		Generic myVehicle2 = vehicle.addInstance("myVehicle2");
-		Generic color = engine.addInstance("Color");
+	public void test005() {
+		Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic myBmw = car.addInstance("myBmw");
+		Generic myAudi = car.addInstance("myAudi");
+		Generic color = root.addInstance("Color");
 		Generic red = color.addInstance("red");
-		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
-		vehicleColor.enableSingularConstraint(ApiStatics.TARGET_POSITION);
-		assert vehicleColor.isSingularConstraintEnabled(ApiStatics.TARGET_POSITION);
-		myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
+		Generic carColor = car.addRelation("CarColor", color);
+		carColor.enableSingularConstraint(ApiStatics.TARGET_POSITION);
+		assert carColor.isSingularConstraintEnabled(ApiStatics.TARGET_POSITION);
+		myBmw.addLink(carColor, "myBmwRed", red);
 
-		catchAndCheckCause(() -> myVehicle2.addHolder(vehicleColor, "myVehicleRed2", red), SingularConstraintViolationException.class);
+		catchAndCheckCause(() -> myAudi.addLink(carColor, "myAudiRed", red), SingularConstraintViolationException.class);
 	}
 
-	public void test006_enableSingularConstraint_targetPosition() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic myVehicle = vehicle.addInstance("myVehicle");
-		Generic color = engine.addInstance("Color");
-		Generic red = color.addInstance("red");
-		Generic yellow = color.addInstance("yellow");
-		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
-		vehicleColor.enableSingularConstraint(ApiStatics.TARGET_POSITION);
-
-		Generic myVehicleRed = myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
-		Generic myVehicleYellow = myVehicle.addHolder(vehicleColor, "myVehicleYellow", yellow);
-
-		assert myVehicle.getHolders(vehicleColor).contains(myVehicleRed);
-		assert myVehicle.getHolders(vehicleColor).contains(myVehicleYellow);
-		assert myVehicle.getHolders(vehicleColor).size() == 2;
-	}
-
-	public void test007_enableSingularConstraint_targetPosition() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic myVehicle = vehicle.addInstance("myVehicle");
-		Generic myVehicle2 = vehicle.addInstance("myVehicle2");
-		Generic color = engine.addInstance("Color");
+	public void test006() {
+		Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic myBmw = car.addInstance("myBmw");
+		Generic color = root.addInstance("Color");
 		Generic red = color.addInstance("red");
 		Generic yellow = color.addInstance("yellow");
-		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
-		vehicleColor.enableSingularConstraint(ApiStatics.TARGET_POSITION);
+		Generic carColor = car.addRelation("CarColor", color);
+		carColor.enableSingularConstraint(ApiStatics.TARGET_POSITION);
 
-		Generic myVehicleRed = myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
-		Generic myVehicle2Yellow = myVehicle2.addHolder(vehicleColor, "myVehicle2Yellow", yellow);
+		Generic myBmwRed = myBmw.addLink(carColor, "myBmwRed", red);
+		Generic myBmwYellow = myBmw.addLink(carColor, "myBmwYellow", yellow);
 
-		assert myVehicle.getHolders(vehicleColor).contains(myVehicleRed);
-		assert myVehicle.getHolders(vehicleColor).size() == 1;
-		assert myVehicle2.getHolders(vehicleColor).contains(myVehicle2Yellow);
-		assert myVehicle2.getHolders(vehicleColor).size() == 1;
+		assert myBmw.getLinks(carColor).contains(myBmwRed);
+		assert myBmw.getLinks(carColor).contains(myBmwYellow);
+		assert myBmw.getLinks(carColor).size() == 2;
 	}
 
-	public void test008_enableSingularConstraint_targetPosition() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic myVehicle = vehicle.addInstance("myVehicle");
-		Generic myVehicle2 = vehicle.addInstance("myVehicle2");
-		Generic color = engine.addInstance("Color");
+	public void test007() {
+		Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic myBmw = car.addInstance("myBmw");
+		Generic myAudi = car.addInstance("myAudi");
+		Generic color = root.addInstance("Color");
 		Generic red = color.addInstance("red");
 		Generic yellow = color.addInstance("yellow");
-		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
-		vehicleColor.enableSingularConstraint(ApiStatics.TARGET_POSITION);
+		Generic carColor = car.addRelation("CarColor", color);
+		carColor.enableSingularConstraint(ApiStatics.TARGET_POSITION);
 
-		Generic myVehicleRed = myVehicle.addHolder(vehicleColor, "myVehicleRed", red);
-		Generic myVehicle2Yellow = myVehicle2.addHolder(vehicleColor, "myVehicle2Yellow", yellow);
+		Generic myBmwRed = myBmw.addLink(carColor, "myBmwRed", red);
+		Generic myAudiYellow = myAudi.addLink(carColor, "myAudiYellow", yellow);
 
-		catchAndCheckCause(() -> myVehicle.addHolder(vehicleColor, "myVehicleYellow", yellow), SingularConstraintViolationException.class);
+		assert myBmw.getLinks(carColor).contains(myBmwRed);
+		assert myBmw.getLinks(carColor).size() == 1;
+		assert myAudi.getLinks(carColor).contains(myAudiYellow);
+		assert myAudi.getLinks(carColor).size() == 1;
 	}
 
-	public void test009_enableSingularConstraint_ternaryPosition() {
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic myVehicle = vehicle.addInstance("myVehicle");
-		Generic myVehicle2 = vehicle.addInstance("myVehicle2");
+	public void test008() {
+		Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic myBmw = car.addInstance("myBmw");
+		Generic myAudi = car.addInstance("myAudi");
+		Generic color = root.addInstance("Color");
+		Generic red = color.addInstance("red");
+		Generic yellow = color.addInstance("yellow");
+		Generic carColor = car.addRelation("CarColor", color);
+		carColor.enableSingularConstraint(ApiStatics.TARGET_POSITION);
 
-		Generic color = engine.addInstance("Color");
+		myBmw.addLink(carColor, "myBmwRed", red);
+		myAudi.addLink(carColor, "myAudiYellow", yellow);
+
+		catchAndCheckCause(() -> myBmw.addLink(carColor, "myBmwYellow", yellow), SingularConstraintViolationException.class);
+	}
+
+	public void test009() {
+		Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic myBmw = car.addInstance("myBmw");
+		Generic myAudi = car.addInstance("myAudi");
+
+		Generic color = root.addInstance("Color");
 		Generic red = color.addInstance("red");
 
-		Generic location = engine.addInstance("Location");
+		Generic location = root.addInstance("Location");
 		Generic outside = location.addInstance("outside");
 
-		Generic vehicleColorLocation = vehicle.addRelation("vehicleColor", color, location);
-		vehicleColorLocation.enableSingularConstraint(ApiStatics.TERNARY_POSITION);
+		Generic carColorLocation = car.addRelation("CarColor", color, location);
+		carColorLocation.enableSingularConstraint(ApiStatics.TERNARY_POSITION);
 
-		Generic myVehicleRedOutside = myVehicle.addHolder(vehicleColorLocation, "myVehicleRedOutside", red, outside);
-		catchAndCheckCause(() -> myVehicle2.addHolder(vehicleColorLocation, "myVehicle2RedOutside", red, outside), SingularConstraintViolationException.class);
+		myBmw.addLink(carColorLocation, "myBmwRedOutside", red, outside);
+		catchAndCheckCause(() -> myAudi.addLink(carColorLocation, "myAudiRedOutside", red, outside), SingularConstraintViolationException.class);
 	}
 
-	public void test010_enableSingularConstraint_inherintings() {
+	public void test010() {
 
-		Root engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic car = engine.addInstance(vehicle, "Car");
-		Generic myCar = car.addInstance("myCar");
-		Generic color = engine.addInstance("Color");
+		Root root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic myBmw = car.addInstance("myBmw");
+		Generic color = root.addInstance("Color");
 		Generic red = color.addInstance("red");
 		Generic yellow = color.addInstance("yellow");
-		Generic vehicleColor = vehicle.addAttribute("vehicleColor", color);
+		Generic vehicleColor = vehicle.addRelation("vehicleColor", color);
 		vehicleColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
-		myCar.addHolder(vehicleColor, "myCarRed", red);
-		catchAndCheckCause(() -> myCar.addHolder(vehicleColor, "myCarYellow", yellow), SingularConstraintViolationException.class);
+		myBmw.addLink(vehicleColor, "myBmwRed", red);
+		catchAndCheckCause(() -> myBmw.addLink(vehicleColor, "myBmwYellow", yellow), SingularConstraintViolationException.class);
 
 	}
 
-	public void test011_enablePropertyConstraint_inherintings() {
-		Root engine = new Root();
-		Generic car = engine.addInstance("Car");
-		Generic myCar = car.addInstance("myCar");
-		Generic color = engine.addInstance("Color");
+	public void test011() {
+		Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic myBmw = car.addInstance("myBmw");
+		Generic color = root.addInstance("Color");
 		Generic red = color.addInstance("red");
-		Generic yellow = color.addInstance("yellow");
-		Generic carColor = car.addAttribute("vehicleColor", color);
+		Generic carColor = car.addRelation("CarColor", color);
 		carColor.enablePropertyConstraint();
-		Generic carRed = car.addHolder(carColor, "CarRed", red);
-		assert carRed.isSuperOf(carColor, Collections.emptyList(), "myCarRed", Arrays.asList(myCar, red));
-		Generic myCarRed = myCar.addHolder(carColor, "myCarRed", red);
-		assert myCar.getHolders(carColor).contains(myCarRed);
-		assert myCar.getHolders(carColor).size() == 1;
-		assert red.getHolders(carColor).contains(myCarRed);
-		assert red.getHolders(carColor).size() == 1;
+		Generic carRed = car.addLink(carColor, "CarRed", red);
+		assert carRed.isSuperOf(carColor, Collections.emptyList(), "myBmwRed", Arrays.asList(myBmw, red));
+		Generic myBmwRed = myBmw.addLink(carColor, "myBmwRed", red);
+		assert myBmw.getLinks(carColor).contains(myBmwRed);
+		assert myBmw.getLinks(carColor).size() == 1;
+		assert red.getLinks(carColor).contains(myBmwRed);
+		assert red.getLinks(carColor).size() == 1;
 	}
 
-	public void test0112_enableSingularConstraint_inherintings() {
-		Root engine = new Root();
-		Generic car = engine.addInstance("Car");
-		Generic myCar = car.addInstance("myCar");
-		Generic color = engine.addInstance("Color");
+	public void test012() {
+		Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic myBmw = car.addInstance("myBmw");
+		Generic color = root.addInstance("Color");
 		Generic red = color.addInstance("red");
 		Generic yellow = color.addInstance("yellow");
-		Generic carColor = car.addAttribute("vehicleColor", color);
+		Generic carColor = car.addRelation("CarColor", color);
 		carColor.enableSingularConstraint(ApiStatics.BASE_POSITION);
-		Generic carRed = car.addHolder(carColor, "CarRed", red);
-		assert carRed.isSuperOf(carColor, Collections.emptyList(), "myCarYellow", Arrays.asList(myCar, yellow));
-		Generic myCarYellow = myCar.addHolder(carColor, "myCarYellow", yellow);
-		assert myCar.getHolders(carColor).contains(myCarYellow);
-		assert myCar.getHolders(carColor).size() == 1;
-		assert yellow.getHolders(carColor).contains(myCarYellow);
-		assert yellow.getHolders(carColor).size() == 1;
+		Generic carRed = car.addLink(carColor, "CarRed", red);
+		assert carRed.isSuperOf(carColor, Collections.emptyList(), "myBmwYellow", Arrays.asList(myBmw, yellow));
+		Generic myBmwYellow = myBmw.addLink(carColor, "myBmwYellow", yellow);
+		assert myBmw.getLinks(carColor).contains(myBmwYellow);
+		assert myBmw.getLinks(carColor).size() == 1;
+		assert yellow.getLinks(carColor).contains(myBmwYellow);
+		assert yellow.getLinks(carColor).size() == 1;
 	}
-	// public void test002_enablePropertyConstraint_addInstance() {
-	// Root engine = new Root();
-	// Vertex vehicle = engine.addInstance("Vehicle");
-	// Vertex power = engine.addInstance("Power", vehicle);
-	// Vertex subPower = engine.addInstance(power, "SubPower", vehicle);
-	// assert subPower.inheritsFrom(power);
-	// power.enablePropertyConstraint();
-	// assert subPower.isPropertyConstraintEnabled();
-	// subPower.addInstance("123", vehicle);
-	// new RollbackCatcher() {
-	//
-	// @Override
-	// public void intercept() {
-	// subPower.addInstance("126", vehicle);
-	// }
-	// }.assertIsCausedBy(ExistsException.class);
-	// }
-	//
-	// public void test003_enablePropertyConstraint_addInstance() {
-	// Root engine = new Root();
-	// Vertex vehicle = engine.addInstance("Vehicle");
-	// Vertex car = engine.addInstance(vehicle, "Car");
-	// Vertex power = engine.addInstance("Power", vehicle);
-	// Vertex subPower = engine.addInstance(power, "Power", car);
-	// assert subPower.inheritsFrom(power);
-	// power.enablePropertyConstraint();
-	// assert subPower.isPropertyConstraintEnabled();
-	// subPower.addInstance("123", car);
-	// new RollbackCatcher() {
-	//
-	// @Override
-	// public void intercept() {
-	// subPower.addInstance("126", car);
-	// }
-	// }.assertIsCausedBy(ExistsException.class);
-	// }
-	//
-	// public void test001_enablePropertyConstraint_setInstance() {
-	// Root engine = new Root();
-	// Vertex vehicle = engine.addInstance("Vehicle");
-	// Vertex power = engine.addInstance("Power", vehicle);
-	// power.enablePropertyConstraint();
-	// assert power.isPropertyConstraintEnabled();
-	// power.setInstance("123", vehicle);
-	// power.setInstance("126", vehicle);
-	// assert power.getInstances().size() == 1;
-	// power.getInstances().forEach(x -> x.getValue().equals("126"));
-	// }
-	//
-	// public void test001_disablePropertyConstraint_setInstance() {
-	// Root engine = new Root();
-	// Vertex vehicle = engine.addInstance("Vehicle");
-	// Vertex power = engine.addInstance("Power", vehicle);
-	// power.enablePropertyConstraint();
-	// assert power.isPropertyConstraintEnabled();
-	// power.setInstance("123", vehicle);
-	// power.setInstance("126", vehicle);
-	// assert power.getInstances().size() == 1;
-	// power.getInstances().forEach(x -> x.getValue().equals("126"));
-	// power.disablePropertyConstraint();
-	// assert !power.isPropertyConstraintEnabled();
-	// power.setInstance("123", vehicle);
-	// assert power.getInstances().size() == 2;
-	// }
-
 }

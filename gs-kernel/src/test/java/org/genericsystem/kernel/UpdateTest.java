@@ -7,70 +7,60 @@ import org.testng.annotations.Test;
 @Test
 public class UpdateTest extends AbstractTest {
 
-	public void test001_updateValue() {
+	public void test001() {
 		Root root = new Root();
 		Generic car = root.addInstance("Car");
 		assert "Car".equals(car.getValue());
-		Generic carRename = car.update("CarRename");
+		Generic newCar = car.update("NewCar");
 		assert !car.isAlive();
-		assert "CarRename".equals(carRename.getValue());
+		assert "NewCar".equals(newCar.getValue());
 	}
 
-	public void test002_updateValue() {
-		Root root = new Root();
-		Generic car = root.addInstance("Car");
-		assert "Car".equals(car.getValue());
-		Generic carRename = car.updateValue("CarRename");
-		assert !car.isAlive();
-		assert "CarRename".equals(carRename.getValue());
-	}
-
-	public void test002_updateMeta() {
+	public void test002() {
 		Root root = new Root();
 		Generic car = root.addInstance("Car");
 		Generic power = car.addAttribute("Power");
-		Generic myCar = car.addInstance("MyCar");
+		Generic myBmw = car.addInstance("MyBmw");
+		myBmw.addHolder(power, "myBmwV233");
 
-		Generic myCarV233 = myCar.addHolder(power, "myCarV233");
-
-		assert myCar.getMeta().equals(car);
-		Generic carUpdate = car.updateValue("CarUpdate");
-		assert carUpdate.getInstances().get().allMatch(x -> "MyCar".equals(x.getValue()));
-		assert carUpdate.getInstances().get().allMatch(x -> x.getHolders(power).get().allMatch(y -> "myCarV233".equals(y.getValue())));
-		assert !myCar.isAlive();
+		assert myBmw.getMeta().equals(car);
+		Generic newCar = car.updateValue("NewCar");
+		assert newCar.getInstances().get().allMatch(x -> "MyBmw".equals(x.getValue()));
+		assert newCar.getInstances().get().allMatch(x -> x.getHolders(power).get().allMatch(y -> "myBmwV233".equals(y.getValue())));
+		assert !myBmw.isAlive();
 		assert !car.isAlive();
-		assert root.getInstances().contains(carUpdate);
+		assert root.getInstances().contains(newCar);
 		assert root.getInstances().size() == 1;
 		assert car.getMeta().equals(root);
 	}
 
-	public void test004_updateHolder() {
+	public void test003() {
 		Root root = new Root();
 		Generic car = root.addInstance("Car");
 		Generic power = car.addAttribute("Power");
-		Generic myCar = car.addInstance("MyCar");
-		Generic v233 = myCar.addHolder(power, 233);
+		Generic myBmw = car.addInstance("MyBmw");
+		Generic myBmw233 = myBmw.addHolder(power, 233);
 
-		assert myCar.getComposites().contains(v233);
-		assert myCar.getComposites().size() == 1;
-		assert v233.getValue().equals(233);
+		assert myBmw.getComposites().contains(myBmw233);
+		assert myBmw.getComposites().size() == 1;
+		assert myBmw233.getValue().equals(233);
 
-		Generic v455 = v233.updateValue(455);
+		Generic myBmw455 = myBmw233.updateValue(455);
 
-		assert !v233.isAlive();
-		assert myCar.getComposites().contains(v455);
-		assert myCar.getComposites().size() == 1;
-		assert v455.getValue().equals(455);
+		assert !myBmw233.isAlive();
+		assert myBmw.getComposites().contains(myBmw455);
+		assert myBmw.getComposites().size() == 1;
+		assert myBmw455.getValue().equals(455);
 	}
 
-	public void test005_updateSuper() {
+	public void test004() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic car = root.addInstance(vehicle, "Car");
 
 		assert car.getSupers().contains(vehicle);
-		Generic vehicleBis = root.addInstance("VehicleBis");
-		Generic carBis = car.updateSupers(vehicleBis);
+		Generic otherVehicle = root.addInstance("OtherVehicle");
+		Generic otherCar = car.updateSupers(otherVehicle);
 
 		assert !car.isAlive();
 		assert vehicle.isAlive();
@@ -78,140 +68,138 @@ public class UpdateTest extends AbstractTest {
 		assert car.getSupers().contains(vehicle);
 		assert vehicle.getInheritings().size() == 0;
 
-		assert carBis.isAlive();
-		assert carBis.getSupers().contains(vehicleBis);
+		assert otherCar.isAlive();
+		assert otherCar.getSupers().contains(otherVehicle);
 
-		assert vehicleBis.getInheritings().contains(carBis);
-		assert vehicleBis.getInheritings().size() == 1;
+		assert otherVehicle.getInheritings().contains(otherCar);
+		assert otherVehicle.getInheritings().size() == 1;
 
 	}
 
-	public void test006_attributeToRelation() {
+	public void test005() {
 		Root root = new Root();
 		Generic car = root.addInstance("Car");
 		Generic power = car.addAttribute("Power");
-		Generic myCar = car.addInstance("MyCar");
-		Generic v233 = myCar.addHolder(power, 233);
+		Generic myBmw = car.addInstance("MyBmw");
+		myBmw.addHolder(power, 233);
 		Generic powerType = root.addInstance("PowerType");
 		catchAndCheckCause(() -> power.update("carPower", powerType), MetaRuleConstraintViolationException.class);
 	}
 
-	public void test007_structurel_WithInheritings_AndInstances() {
+	public void test006() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic car = root.addInstance(vehicle, "Car");
 		Generic power = car.addAttribute("Power");
-		Generic myCar = car.addInstance("myCar");
-		Generic v233 = myCar.addHolder(power, 233);
+		Generic myBmw = car.addInstance("myBmw");
+		Generic myBmw233 = myBmw.addHolder(power, 233);
 
-		Generic vehicleUpdate = vehicle.update("VehicleUpdate");
+		Generic newVehicle = vehicle.update("NewVehicle");
 
-		assert vehicleUpdate.isAlive();
+		assert newVehicle.isAlive();
 		assert !vehicle.isAlive();
-		assert root.getInstances().contains(vehicleUpdate);
-		assert root.getInstances().contains(vehicleUpdate.getInheritings().first());
+		assert root.getInstances().contains(newVehicle);
+		assert root.getInstances().contains(newVehicle.getInheritings().first());
 		assert root.getInstances().size() == 2;
 
-		assert vehicleUpdate.getInheritings().get().allMatch(x -> "Car".equals(x.getValue()));
-		assert vehicleUpdate.getInheritings().get().allMatch(x -> x.getInstances().get().allMatch(y -> "myCar".equals(y.getValue())));
-		assert vehicleUpdate.getInheritings().get().allMatch(x -> x.getInstances().get().allMatch(y -> y.getHolders(power).get().allMatch(z -> z.getValue().equals(233))));
+		assert newVehicle.getInheritings().get().allMatch(x -> "Car".equals(x.getValue()));
+		assert newVehicle.getInheritings().get().allMatch(x -> x.getInstances().get().allMatch(y -> "myBmw".equals(y.getValue())));
+		assert newVehicle.getInheritings().get().allMatch(x -> x.getInstances().get().allMatch(y -> y.getHolders(power).get().allMatch(z -> z.getValue().equals(233))));
 
-		assert v233.getValue().equals(233);
+		assert myBmw233.getValue().equals(233);
 	}
 
-	public void test008_updateToAlreadyExists() {
+	public void test007() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
-		Generic myVehicle = vehicle.addInstance("myVehicle");
+		vehicle.addInstance("myVehicle");
 		Generic car = root.addInstance("Car");
-		Generic power = car.addAttribute("Power");
-		Generic myCar = car.addInstance("myCar");
-		Generic v233 = myCar.addHolder(power, 233);
+		Generic myBmw = car.addInstance("myBmw");
 
-		Generic carUpdate = car.update("Vehicle");
+		Generic newCar = car.update("Vehicle");
 
-		assert carUpdate.equals(vehicle) : carUpdate.info();
+		assert newCar.equals(vehicle) : newCar.info();
 		assert !car.isAlive();
-		assert !myCar.isAlive();
+		assert !myBmw.isAlive();
 
-		assert vehicle.getInstance("myCar") != null;
-		assert vehicle.getInstance("myVehicle") != null : carUpdate.getInstances().info();
+		assert vehicle.getInstance("myBmw") != null;
+		assert vehicle.getInstance("myVehicle") != null : newCar.getInstances().info();
 		assert vehicle.getInstances().size() == 2;
 	}
 
-	public void test009_updateToAlreadyExists() {
+	public void test008() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic power = vehicle.addAttribute("Power");
 		Generic myVehicle = vehicle.addInstance("myVehicle");
-		Generic v233 = myVehicle.addHolder(power, 233);
+		Generic myVehicle233 = myVehicle.addHolder(power, 233);
 
 		Generic car = root.addInstance("Car");
 		assert !root.getCurrentCache().computeDependencies(car).contains(power);
-		Generic powerBis = car.addAttribute("Power");
-		Generic myCar = car.addInstance("myCar");
-		Generic v233Bis = myCar.addHolder(powerBis, 233);
+		Generic carPower = car.addAttribute("Power");
+		Generic myBmw = car.addInstance("myBmw");
+		Generic myBmw233 = myBmw.addHolder(carPower, 233);
 
-		Generic carUpdate = car.update("Vehicle");
+		Generic newCar = car.update("Vehicle");
 		assert power.isAlive();
+		assert !carPower.isAlive();
 
-		assert carUpdate.equals(vehicle);
+		assert newCar.equals(vehicle);
 		assert !car.isAlive();
-		assert !myCar.isAlive();
+		assert !myBmw.isAlive();
 
-		assert vehicle.getInstance("myCar") != null;
+		assert vehicle.getInstance("myBmw") != null;
 		assert vehicle.getInstance("myVehicle") != null;
 		assert vehicle.getInstances().size() == 2;
 
-		myCar = vehicle.getInstance("myCar");
+		myBmw = vehicle.getInstance("myBmw");
 		myVehicle = vehicle.getInstance("myVehicle");
 		assert vehicle.isAlive();
 		assert power.isAlive();
-		// assert false : vehicle.getAttributes().first().info();
 		assert vehicle.getAttributes().contains(power);
-		assert v233.isAlive();
+		assert myVehicle233.isAlive();
 
-		assert !powerBis.isAlive();
-		assert !v233Bis.isAlive();
+		assert !carPower.isAlive();
+		assert !myBmw233.isAlive();
 
-		assert !myCar.getComposites().isEmpty();
+		assert !myBmw.getComposites().isEmpty();
 		assert !myVehicle.getHolders(power).isEmpty();
-		assert !myCar.getHolders(power).isEmpty();
+		assert !myBmw.getHolders(power).isEmpty();
 
 		assert myVehicle.getHolders(power).first().getValue().equals(233);
 		assert myVehicle.getHolders(power).first().getValue().equals(233);
 	}
 
-	public void test010_propertyConstraint() {
-		Root engine = new Root();
-		Generic car = engine.addInstance("Car");
-		Generic myCar = car.addInstance("myCar");
+	public void test009() {
+		Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic myBmw = car.addInstance("myBmw");
 
-		Generic color = engine.addInstance("Color");
+		Generic color = root.addInstance("Color");
 		Generic red = color.addInstance("red");
 		Generic yellow = color.addInstance("yellow");
 
-		Generic carColor = car.addAttribute("carColor", color);
+		Generic carColor = car.addRelation("carColor", color);
 		carColor.enablePropertyConstraint();
 
-		Generic myCarRed = carColor.addInstance("myCarRed", myCar, red);
-		carColor.addInstance("myCarYellow", myCar, yellow);
-		catchAndCheckCause(() -> myCarRed.update("myCarRed", myCar, yellow), PropertyConstraintViolationException.class);
+		Generic myBmwRed = carColor.addInstance("myBmwRed", myBmw, red);
+		carColor.addInstance("myBmwYellow", myBmw, yellow);
+		catchAndCheckCause(() -> myBmwRed.update("myBmwRed", myBmw, yellow), PropertyConstraintViolationException.class);
 	}
 
-	public void test011_propertyConstraint() {
-		Root engine = new Root();
-		Generic car = engine.addInstance("Car");
-		Generic myCar = car.addInstance("myCar");
+	public void test010() {
+		Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic myBmw = car.addInstance("myBmw");
 
-		Generic color = engine.addInstance("Color");
+		Generic color = root.addInstance("Color");
 		color.addInstance("red");
 		Generic yellow = color.addInstance("yellow");
 
-		Generic carColor = car.addAttribute("carColor", color);
+		Generic carColor = car.addRelation("carColor", color);
 		carColor.enablePropertyConstraint();
 
-		carColor.addInstance("myCarYellow", myCar, yellow);
-		catchAndCheckCause(() -> carColor.addInstance("myCarRed", myCar, yellow), PropertyConstraintViolationException.class);
+		carColor.addInstance("myBmwYellow", myBmw, yellow);
+		catchAndCheckCause(() -> carColor.addInstance("myBmwRed", myBmw, yellow), PropertyConstraintViolationException.class);
 	}
 }

@@ -1,17 +1,19 @@
 package org.genericsystem.defaults;
 
 import java.io.Serializable;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.IContext;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.core.exceptions.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.api.core.exceptions.RollbackException;
+import org.genericsystem.api.core.exceptions.UnreachableOverridesException;
 
 public interface DefaultContext<T extends DefaultVertex<T>> extends IContext<T> {
 
@@ -32,14 +34,6 @@ public interface DefaultContext<T extends DefaultVertex<T>> extends IContext<T> 
 			}
 		}
 		return vertex != null && vertex.equals(new AliveFinder().find(vertex));
-	}
-
-	default T getInstance(T meta, List<T> overrides, Serializable value, T... components) {
-		List<T> componentsList = Arrays.asList(components);
-		T adjustMeta = meta.adjustMeta(value, componentsList);
-		if (adjustMeta.getComponents().size() < components.length)
-			return null;
-		return adjustMeta.getDirectInstance(overrides, value, componentsList);
 	}
 
 	default Snapshot<T> getInstances(T vertex) {
@@ -135,6 +129,13 @@ public interface DefaultContext<T extends DefaultVertex<T>> extends IContext<T> 
 			}
 		}
 		return new OrderedRemoveDependencies().visit(node);
+	}
+
+	default List<T> computeAndCheckOverridesAreReached(T adjustedMeta, List<T> overrides, Serializable value, List<T> components) {
+		List<T> supers = new ArrayList<>(new SupersComputer<>(adjustedMeta, overrides, value, components));
+		if (!ApiStatics.areOverridesReached(supers, overrides))
+			discardWithException(new UnreachableOverridesException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
+		return supers;
 	}
 
 	Snapshot<T> getDependencies(T vertex);

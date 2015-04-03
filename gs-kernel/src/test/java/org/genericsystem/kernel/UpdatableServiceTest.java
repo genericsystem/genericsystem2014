@@ -11,292 +11,274 @@ import org.testng.annotations.Test;
 @Test
 public class UpdatableServiceTest extends AbstractTest {
 
-	public void test001_setValue_Type() {
-		Generic engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
+	public void test001() {
+		Generic root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
 		Generic vehicle2 = vehicle.updateValue("Vehicle2");
 		assert "Vehicle2".equals(vehicle2.getValue());
+		assert !vehicle.isAlive();
 		assert vehicle2.isAlive();
 	}
 
-	public void test003_setValue_InstanceOfType() {
-		Generic engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		String valueCar = "Car";
-		Generic car = vehicle.addInstance(valueCar);
-		String newValue = "elciheV";
-		Generic newVehicle = vehicle.updateValue(newValue);
-		assert newValue.equals(newVehicle.getValue());
-		assert valueCar.equals(car.getValue());
-		assert engine == newVehicle.getMeta();
-		assert engine.getCurrentCache().computeDependencies(engine).contains(newVehicle);
-		Generic newCar = newVehicle.getInstances().iterator().next();
+	public void test002() {
+		Generic root = new Root();
+		Generic car = root.addInstance("Car");
+		String valueCar = "myBmw";
+		Generic myBmw = car.addInstance(valueCar);
+		String newValue = "myAudi";
+		Generic myAudi = car.updateValue(newValue);
+		assert !myBmw.isAlive();
+		assert myAudi.isAlive();
+		assert newValue.equals(myAudi.getValue());
+		assert valueCar.equals(myBmw.getValue());
+		assert root == myAudi.getMeta();
+		assert root.getCurrentCache().computeDependencies(root).contains(myAudi);
+		Generic newCar = myAudi.getInstances().iterator().next();
 		assert newValue.equals(newCar.getMeta().getValue());
 	}
 
-	public void test004_setValue_noCollateralDommage() {
-		Generic engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		vehicle.addInstance("Car");
-		String caveValue = "Cave";
-		Generic cave = engine.addInstance(caveValue);
-		vehicle.updateValue("elciheV");
-		assert caveValue.equals(cave.getValue());
-		assert engine == cave.getMeta();
-		assert cave.getInstances().size() == 0;
-		assert cave.isAlive();
+	public void test003() {
+		Generic root = new Root();
+		Generic car = root.addInstance("Car");
+		car.addInstance("myBmw");
+		String robotValue = "Robot";
+		Generic robot = root.addInstance(robotValue);
+		car.updateValue("myAudi");
+		assert robotValue.equals(robot.getValue());
+		assert root == robot.getMeta();
+		assert robot.getInstances().size() == 0;
+		assert robot.isAlive();
 	}
 
-	public void test007_setValue_Type() {
-		Generic engine = new Root();
-		Generic bike = engine.addInstance("Bike");
-		Generic car = engine.addInstance("Car");
+	public void test004() {
+		Generic root = new Root();
+		Generic bike = root.addInstance("Bike");
+		Generic car = root.addInstance("Car");
 		Generic myBmwBike = bike.addInstance("myBmwBike");
-
 		Generic newBike = bike.updateValue("newBike");
 
-		Collection<Generic> engineAliveDependencies = newBike.getCurrentCache().computeDependencies(newBike);
-		assert engineAliveDependencies.size() == 2 : engineAliveDependencies.size();
-		assert !engineAliveDependencies.contains(car);
-		assert !engineAliveDependencies.contains(myBmwBike);
+		Collection<Generic> rootAliveDependencies = newBike.getCurrentCache().computeDependencies(newBike);
+		assert rootAliveDependencies.size() == 2 : rootAliveDependencies.size();
+		assert !rootAliveDependencies.contains(car);
+		assert !rootAliveDependencies.contains(myBmwBike);
 
-		Generic getNewBike = engine.getInstance("newBike");
+		Generic getNewBike = root.getInstance("newBike");
 		assert getNewBike != null;
-		assert engine.equals(getNewBike.getMeta());
+		assert root.equals(getNewBike.getMeta());
 
 		Generic getMyBmwBike = getNewBike.getInstance("myBmwBike");
 		assert getMyBmwBike != null;
 		assert getNewBike.equals(getMyBmwBike.getMeta());
 	}
 
-	public void test008_setValue_Type() {
-		Generic engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic car = engine.addInstance("Car");
-		Generic newBeetle = car.addInstance("NewBeetle");
-		Generic newCar = car.updateValue("raC");
+	public void test005() {
+		Generic root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic myNewBeetle = car.addInstance("myNewBeetle");
+		Generic myBmw = car.updateValue("myBmw");
 
-		Collection<Generic> engineAliveDependencies = newCar.getCurrentCache().computeDependencies(newCar);
-		assert engineAliveDependencies.size() == 2;
-		assert !engineAliveDependencies.contains(car);
-		assert !engineAliveDependencies.contains(newBeetle);
+		Collection<Generic> rootAliveDependencies = myBmw.getCurrentCache().computeDependencies(myBmw);
+		assert rootAliveDependencies.size() == 2;
+		assert !rootAliveDependencies.contains(car);
+		assert !rootAliveDependencies.contains(myNewBeetle);
 
-		Generic vertex1asNewCar = engine.getInstance("raC");
-		assert vertex1asNewCar != null;
-		assert engine.equals(vertex1asNewCar.getMeta());
+		Generic getMyBmw = root.getInstance("myBmw");
+		assert getMyBmw != null;
+		assert root.equals(getMyBmw.getMeta());
 
-		Generic vertex2asNewNewBeetle = vertex1asNewCar.getInstance("NewBeetle");
-		assert vertex2asNewNewBeetle != null;
-		assert vertex1asNewCar.equals(vertex2asNewNewBeetle.getMeta());
+		Generic getMyNewBeetle = getMyBmw.getInstance("myNewBeetle");
+		assert getMyNewBeetle != null;
+		assert getMyBmw.equals(getMyNewBeetle.getMeta());
 	}
 
-	public void test020_setValue_Inheritance() {
-		Generic engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic options = engine.addInstance(vehicle, "Options");
+	public void test006() {
+		Generic root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic options = root.addInstance(car, "Options");
 
-		Generic newVehicle = vehicle.updateValue("elciheV");
+		Generic newCar = car.updateValue("newCar");
 
-		assert newVehicle.isAlive();
-		assert !vehicle.isAlive();
+		assert newCar.isAlive();
+		assert !car.isAlive();
 		assert !options.isAlive();
 
-		assert "elciheV".equals(newVehicle.getValue());
-		assert engine.equals(newVehicle.getMeta());
-		assert engine.getCurrentCache().computeDependencies(engine).contains(newVehicle);
-		assert newVehicle.getCurrentCache().computeDependencies(newVehicle).size() == 2;
-		assert newVehicle.getCurrentCache().computeDependencies(newVehicle).contains(newVehicle);
-		Generic newOptions = newVehicle.getCurrentCache().computeDependencies(newVehicle).stream().collect(Collectors.toList()).get(0);
+		assert "newCar".equals(newCar.getValue());
+		assert root.equals(newCar.getMeta());
+		assert root.getCurrentCache().computeDependencies(root).contains(newCar);
+		assert newCar.getCurrentCache().computeDependencies(newCar).size() == 2;
+		assert newCar.getCurrentCache().computeDependencies(newCar).contains(newCar);
+		Generic newOptions = newCar.getCurrentCache().computeDependencies(newCar).stream().collect(Collectors.toList()).get(0);
 		assert newOptions.isAlive();
-		if ("elciheV".equals(newOptions.getValue()))
-			newOptions = newVehicle.getCurrentCache().computeDependencies(newVehicle).stream().collect(Collectors.toList()).get(1);
-		assert engine.equals(newOptions.getMeta());
+		if ("newCar".equals(newOptions.getValue()))
+			newOptions = newCar.getCurrentCache().computeDependencies(newCar).stream().collect(Collectors.toList()).get(1);
+		assert root.equals(newOptions.getMeta());
 		assert options.getValue().equals(newOptions.getValue());
 		List<Generic> newOptionsSupers = newOptions.getSupers();
 		assert newOptionsSupers.size() == 1;
 		Generic newVehicleFromNewOptions = newOptionsSupers.get(0);
-		assert "elciheV".equals(newVehicleFromNewOptions.getValue());
+		assert "newCar".equals(newVehicleFromNewOptions.getValue());
 	}
 
-	public void test040_setValue_Composite() {
-		Generic engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
+	public void test007() {
+		Generic root = new Root();
+		Generic car = root.addInstance("Car");
 		String valuePower = "Power";
-		Generic power = engine.addInstance(valuePower, vehicle);
-		String newValue = "elciheV";
+		Generic power = root.addInstance(valuePower, car);
+		String newValue = "newCar";
+
+		Generic newCar = car.updateValue(newValue);
+
+		assert newValue.equals(newCar.getValue());
+		assert !power.isAlive();
+		assert root.equals(newCar.getMeta());
+		assert root.getCurrentCache().computeDependencies(root).contains(newCar);
+		Generic newPower = root.getRoot().getMetaAttribute().getInstance("Power", newCar);
+		assert newPower.getComponents().size() == 1;
+		Generic compositeOfPower = newPower.getComponents().get(0);
+		assert newCar.getValue().equals(compositeOfPower.getValue());
+		assert root.equals(compositeOfPower.getMeta());
+	}
+
+	public void test008() {
+		Generic root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
+		String valuePower = "Power";
+		Generic power = root.addInstance(valuePower, car);
+		Generic myBmw = car.addInstance("myBmw");
+		String newValue = "NewVehicle";
 
 		Generic newVehicle = vehicle.updateValue(newValue);
 
-		assert newValue.equals(newVehicle.getValue());
-		assert !power.isAlive();
-		assert engine.equals(newVehicle.getMeta());
-		assert engine.getCurrentCache().computeDependencies(engine).contains(newVehicle);
-		Generic newPower = engine.getInstance("Power", newVehicle);
-		assert newPower.getComponents().size() == 1;
-		Generic compositeOfPower = newPower.getComponents().get(0);
-		assert newVehicle.getValue().equals(compositeOfPower.getValue());
-		assert engine.equals(compositeOfPower.getMeta());
-	}
-
-	public void test060_setValue_Type_Inheritance_Composite() {
-		Generic engine = new Root();
-		Generic machine = engine.addInstance("Machine");
-		Generic vehicle = engine.addInstance(machine, "Vehicle");
-		String valuePower = "Power";
-		Generic power = engine.addInstance(valuePower, vehicle);
-		Generic car = vehicle.addInstance("Car");
-		String newValue = "enihcaM";
-
-		Generic newMachine = machine.updateValue(newValue);
-
-		assert engine.isAlive();
-		assert !machine.isAlive();
+		assert root.isAlive();
 		assert !vehicle.isAlive();
-		assert !power.isAlive();
 		assert !car.isAlive();
+		assert !power.isAlive();
+		assert !myBmw.isAlive();
 
-		assert engine.equals(engine.getMeta());
-		assert engine.equals(machine.getMeta());
-		assert engine.equals(vehicle.getMeta());
-		assert engine.getRoot().getMetaAttribute().equals(power.getMeta());
-		assert vehicle.equals(car.getMeta());
+		assert root.equals(root.getMeta());
+		assert root.equals(vehicle.getMeta());
+		assert root.equals(car.getMeta());
+		assert root.getRoot().getMetaAttribute().equals(power.getMeta());
+		assert car.equals(myBmw.getMeta());
 
-		assert newValue.equals(newMachine.getValue());
-		assert newMachine.getComponents().size() == 0;
-		assert newMachine.getSupers().isEmpty();
-		assert newMachine.getInstances().size() == 0;
-		assert newMachine.getInheritings().size() == 1;
-
-		Generic newVehicle = engine.getInstance(newMachine, "Vehicle");
-		assert newVehicle != null;
+		assert newValue.equals(newVehicle.getValue());
 		assert newVehicle.getComponents().size() == 0;
-		assert newVehicle.getSupers().size() == 1;
-		assert newVehicle.getInstances().size() == 1;
-		assert newVehicle.getInheritings().size() == 0;
+		assert newVehicle.getSupers().isEmpty();
+		assert newVehicle.getInstances().size() == 0;
+		assert newVehicle.getInheritings().size() == 1;
 
-		Generic newPower = engine.getInstance("Power", newVehicle);
+		Generic newCar = root.getInstance(newVehicle, "Car");
+		assert newCar != null;
+		assert newCar.getComponents().size() == 0;
+		assert newCar.getSupers().size() == 1;
+		assert newCar.getInstances().size() == 1;
+		assert newCar.getInheritings().size() == 0;
+
+		Generic newPower = root.getRoot().getMetaAttribute().getInstance("Power", newCar);
 		assert newPower != null;
 		assert newPower.getComponents().size() == 1;
 		assert newPower.getSupers().size() == 0;
 		assert newPower.getInstances().size() == 0;
 		assert newPower.getInheritings().size() == 0;
 
-		Generic newCar = newVehicle.getInstance("Car");
-		assert newCar != null;
-		assert newCar.getComponents().size() == 0;
-		assert newCar.getSupers().size() == 0;
-		assert newCar.getInstances().size() == 0;
-		assert newCar.getInheritings().size() == 0;
+		Generic myNewBmw = newCar.getInstance("myBmw");
+		assert myNewBmw != null;
+		assert myNewBmw.getComponents().size() == 0;
+		assert myNewBmw.getSupers().size() == 0;
+		assert myNewBmw.getInstances().size() == 0;
+		assert myNewBmw.getInheritings().size() == 0;
 	}
 
-	public void test100_addSuper_Type() {
-		// given
-		Generic engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic car = engine.addInstance("Car");
+	public void test009() {
+		Generic root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance("Car");
 
 		assert !car.isSuperOf(car.getMeta(), Collections.singletonList(vehicle), car.getValue(), car.getComponents());
-		// when
-		car.updateSupers(vehicle);
+		Generic newCar = car.updateSupers(vehicle);
 
-		// then
-		assert engine.isAlive();
+		assert root.isAlive();
 		assert vehicle.isAlive();
 		assert !car.isAlive();
+		assert newCar.isAlive();
 
-		// assert engine.getAllInstances().count() == 2;
-
-		Generic newVehicle = engine.getInstance("Vehicle");
+		Generic newVehicle = root.getInstance("Vehicle");
 		assert newVehicle.getInheritings().size() == 1 : newVehicle.getInheritings().info();
-		assert engine.getInstance(newVehicle, "Car").getSupers().size() == 1;
+		assert root.getInstance(newVehicle, "Car").getSupers().size() == 1;
 	}
 
-	public void test101_addSuper_TypeBetweenTwoTypes() {
-		// given
-		Generic engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic car = engine.addInstance(vehicle, "Car");
-		Generic fourWheels = engine.addInstance(vehicle, "FourWheels");
+	public void test010() {
+		Generic root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic fourWheels = root.addInstance(vehicle, "FourWheels");
 
-		// when
 		car.updateSupers(fourWheels);
 
-		// then
-		assert engine.isAlive();
+		assert root.isAlive();
 		assert vehicle.isAlive();
 		assert !car.isAlive();
 
-		Collection<Generic> engineDependencies = engine.getCurrentCache().computeDependencies(engine);
-		// assert engineDependencies.size() == 4;
-		// assert engine.getAllInstances().count() == 3;
-
-		Generic newVehicle = engine.getInstance("Vehicle");
-		Collection<Generic> newVehicleDependencies = newVehicle.getCurrentCache().computeDependencies(newVehicle);
+		Generic getVehicle = root.getInstance("Vehicle");
+		Collection<Generic> newVehicleDependencies = getVehicle.getCurrentCache().computeDependencies(getVehicle);
 		assert newVehicleDependencies.size() == 3;
-		assert newVehicle.getInheritings().size() == 1;
+		assert getVehicle.getInheritings().size() == 1;
+		assert getVehicle.getSupers().size() == 0;
 
-		Generic newFourWheels = engine.getInstance(newVehicle, "FourWheels");
-		Collection<Generic> newFourWheelsDependencies = newFourWheels.getCurrentCache().computeDependencies(newFourWheels);
+		Generic getFourWheels = root.getInstance(getVehicle, "FourWheels");
+		Collection<Generic> newFourWheelsDependencies = getFourWheels.getCurrentCache().computeDependencies(getFourWheels);
 		assert newFourWheelsDependencies.size() == 2;
-		assert newFourWheels.getInheritings().size() == 1;
-		assert newFourWheels.getSupers().size() == 1;
+		assert getFourWheels.getInheritings().size() == 1;
+		assert getFourWheels.getSupers().size() == 1;
 
-		Generic newCar = engine.getInstance(newFourWheels, "Car");
-		assert newCar.getCurrentCache().computeDependencies(newCar).size() == 1;
-		assert newCar.getSupers().size() == 1;
+		Generic getCar = root.getInstance(getFourWheels, "Car");
+		assert getCar.getCurrentCache().computeDependencies(getCar).size() == 1;
+		assert getCar.getSupers().size() == 1;
+		assert getCar.getInheritings().size() == 0;
 	}
 
-	public void test102_addSuper_AlreadySuper() {
-		// given
-		Generic engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic car = engine.addInstance(vehicle, "Car");
+	public void test011() {
+		Generic root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
 
-		// when
 		car.updateSupers(vehicle);
 
-		// then
-		assert engine.isAlive();
+		assert root.isAlive();
 		assert vehicle.isAlive();
 		assert !car.isAlive();
 
-		Collection<Generic> engineDependencies = engine.getCurrentCache().computeDependencies(engine);
-		// assert engineDependencies.size() == 3 : engineDependencies.size();
-		// assert engine.getAllInstances().size() == 2 : engine.getAllInstances().info();
+		Generic getVehicle = root.getInstance("Vehicle");
+		Collection<Generic> getVehicleDependencies = root.getCurrentCache().computeDependencies(getVehicle);
+		assert getVehicleDependencies.size() == 2 : getVehicleDependencies;
+		assert getVehicle.getInheritings().size() == 1;
 
-		Generic newVehicle = engine.getInstance("Vehicle");
-		Collection<Generic> newVehicleDependencies = engine.getCurrentCache().computeDependencies(newVehicle);
-		assert newVehicleDependencies.size() == 2 : newVehicleDependencies;
-		assert newVehicle.getInheritings().size() == 1;
-
-		Generic newCar = engine.getInstance(newVehicle, "Car");
-		assert newCar.getCurrentCache().computeDependencies(newCar).size() == 1;
-		assert newCar.getSupers().size() == 1;
+		Generic getCar = root.getInstance(getVehicle, "Car");
+		assert getCar.getCurrentCache().computeDependencies(getCar).size() == 1;
+		assert getCar.getSupers().size() == 1;
 	}
 
-	public void test103_addSuper_NoRegressionOnDataModel() {
-		// given
-		Generic engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic animals = engine.addInstance("Animals");
+	public void test012() {
+		Generic root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic animals = root.addInstance("Animals");
 		Generic myVehicle = vehicle.addInstance("MyVehicle");
-		Generic car = engine.addInstance(vehicle, "Car");
-		Generic power = engine.addInstance("Power", car);
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic power = root.addInstance("Power", car);
 		Generic myCar = car.addInstance("MyCar");
-		Generic color = engine.addInstance("Color");
+		Generic color = root.addInstance("Color");
 		Generic red = color.addInstance("Red");
 		Generic green = color.addInstance("Green");
 		Generic blue = color.addInstance("Blue");
-		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Generic vehicleColor = root.addInstance("VehicleColor", vehicle, color);
 		Generic myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
 		Generic myVehicleGreen = vehicleColor.addInstance("MyVehicleGreen", myVehicle, green);
 
-		// when
-		Generic fourWheels = engine.addInstance(vehicle, "FourWheels");
+		Generic fourWheels = root.addInstance(vehicle, "FourWheels");
 		car.updateSupers(fourWheels);
 
-		// then
-		assert engine.isAlive();
+		assert root.isAlive();
 		assert vehicle.isAlive();
 		assert animals.isAlive();
 		assert myVehicle.isAlive();
@@ -312,41 +294,39 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert myVehicleGreen.isAlive();
 		assert fourWheels.isAlive();
 
-		Generic newVehicle = engine.getInstance("Vehicle");
+		Generic newVehicle = root.getInstance("Vehicle");
 		Collection<Generic> newVehicleDependencies = newVehicle.getCurrentCache().computeDependencies(newVehicle);
 		assert newVehicleDependencies.size() == 9;
 		assert newVehicle.getInheritings().size() == 1;
 
-		Generic newFourWheels = engine.getInstance(newVehicle, "FourWheels");
+		Generic newFourWheels = root.getInstance(newVehicle, "FourWheels");
 		assert newFourWheels.getCurrentCache().computeDependencies(newFourWheels).size() == 5;
 		assert newFourWheels.getInheritings().size() == 1;
 		assert newFourWheels.getSupers().size() == 1;
 
-		Generic newCar = engine.getInstance(newFourWheels, "Car");
+		Generic newCar = root.getInstance(newFourWheels, "Car");
 		assert newCar.getCurrentCache().computeDependencies(newCar).size() == 4;
 		assert newCar.getSupers().size() == 1;
 	}
 
-	public void test200_replaceComposite() {
-		Generic engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
+	public void test013() {
+		Generic root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
 		Generic myVehicle = vehicle.addInstance("MyVehicle");
-		Generic car = engine.addInstance(vehicle, "Car");
-		Generic power = engine.addInstance("Power", car);
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic power = root.addInstance("Power", car);
 		Generic myCar = car.addInstance("MyCar");
-		Generic color = engine.addInstance("Color");
+		Generic color = root.addInstance("Color");
 		Generic red = color.addInstance("Red");
 		Generic green = color.addInstance("Green");
 		Generic blue = color.addInstance("Blue");
-		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Generic vehicleColor = root.addInstance("VehicleColor", vehicle, color);
 		Generic myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
 		Generic myVehicleGreen = vehicleColor.addInstance("MyVehicleGreen", myVehicle, green);
 
-		// when
 		myCarRed.updateComponents(myCar, blue);
 
-		// then
-		assert engine.isAlive();
+		assert root.isAlive();
 		assert vehicle.isAlive();
 		assert myVehicle.isAlive();
 		assert car.isAlive();
@@ -365,84 +345,69 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert newCarBlueComposites.size() == 2;
 	}
 
-	public void test201_replaceComposite_KO() {
-		Generic engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic car = engine.addInstance(vehicle, "Car");
+	public void test014() {
+		Generic root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
 		Generic myCar = car.addInstance("MyCar");
-		Generic color = engine.addInstance("Color");
+		Generic color = root.addInstance("Color");
 		Generic red = color.addInstance("Red");
 		Generic blue = color.addInstance("Blue");
-		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
+		Generic vehicleColor = root.addInstance("VehicleColor", vehicle, color);
 		Generic myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
 		catchAndCheckCause(() -> myCarRed.updateComponents(blue), MetaRuleConstraintViolationException.class);
 
 	}
 
-	public void test202_replaceComposite_OK() {
-		Generic engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic car = engine.addInstance(vehicle, "Car");
-		Generic myCar = car.addInstance("MyCar");
-		Generic color = engine.addInstance("Color");
-		Generic date = engine.addInstance("Date");
+	public void test015() {
+		Generic root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic myBmw = car.addInstance("MyBmw");
+		Generic color = root.addInstance("Color");
 		Generic red = color.addInstance("Red");
 		Generic blue = color.addInstance("Blue");
-		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		vehicleColor.updateComponents(vehicle, color, date);
+		Generic vehicleColor = root.addInstance("VehicleColor", vehicle, color);
+		Generic myBmwRed = vehicleColor.addInstance("MyBmwRed", myBmw, red);
+
+		myBmwRed.update("MyBmwBlue", myBmw, blue);
+
+		assert vehicleColor.getInstance("MyBmwRed", myBmw, blue) == null;
+		assert vehicleColor.getInstance("MyBmwRed", myBmw, red) == null;
+		assert vehicleColor.getInstance("MyBmwBlue", myBmw, red) == null;
+		assert vehicleColor.getInstance("MyBmwBlue", myBmw, blue) != null;
+
+		Generic myBmwBlue = vehicleColor.getInstance("MyBmwBlue", myBmw, blue);
+		assert myBmwBlue.getCurrentCache().computeDependencies(myBmwBlue).size() == 1;
+		List<Generic> newBmwBlueComposites = myBmwBlue.getComponents();
+		assert newBmwBlueComposites.size() == 2;
+	}
+
+	public void test016() {
+		Generic root = new Root();
+		Generic vehicle = root.addInstance("Vehicle");
+		Generic car = root.addInstance(vehicle, "Car");
+		Generic myBmw = car.addInstance("MyBmw");
+		Generic color = root.addInstance("Color");
+		Generic red = color.addInstance("Red");
+		Generic blue = color.addInstance("Blue");
+		Generic vehicleColor = root.addInstance("VehicleColor", vehicle, color);
+		Generic myBmwRed = vehicleColor.addInstance("MyBmwRed", myBmw, red);
+		Generic myBmwBlue = myBmwRed.update("MyBmwBlue", myBmw, blue);
+		assert !myBmwRed.isAlive();
+		assert myBmwBlue.isAlive();
+		assert myBmwBlue.getMeta().equals(vehicleColor);
 
 	}
 
-	public void test300_replaceCompositeWithValueModification() {
-		Generic engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic car = engine.addInstance(vehicle, "Car");
-		Generic myCar = car.addInstance("MyCar");
-		Generic color = engine.addInstance("Color");
-		Generic red = color.addInstance("Red");
-		Generic blue = color.addInstance("Blue");
-		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		Generic myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
-
-		// when
-		myCarRed.update("MyCarBlue", myCar, blue);
-
-		// then
-		assert vehicleColor.getInstance("MyCarRed", myCar, blue) == null;
-		assert vehicleColor.getInstance("MyCarRed", myCar, red) == null;
-		assert vehicleColor.getInstance("MyCarBlue", myCar, red) == null;
-
-		Generic newCarBlue = vehicleColor.getInstance("MyCarBlue", myCar, blue);
-		assert newCarBlue.getCurrentCache().computeDependencies(newCarBlue).size() == 1;
-		List<Generic> newCarBlueComposites = newCarBlue.getComponents();
-		assert newCarBlueComposites.size() == 2;
-	}
-
-	public void test301_replaceCompositeWithValueModification_InsistentExceptionOK() {
-		Generic engine = new Root();
-		Generic vehicle = engine.addInstance("Vehicle");
-		Generic car = engine.addInstance(vehicle, "Car");
-		Generic myCar = car.addInstance("MyCar");
-		Generic color = engine.addInstance("Color");
-		Generic red = color.addInstance("Red");
-		Generic blue = color.addInstance("Blue");
-		Generic vehicleColor = engine.addInstance("VehicleColor", vehicle, color);
-		Generic myCarRed = vehicleColor.addInstance("MyCarRed", myCar, red);
-		Generic myCarBlue = myCarRed.update("MyCarBlue", myCar, blue);
-		assert !myCarRed.isAlive();
-		assert myCarBlue.isAlive();
-		assert myCarBlue.getMeta().equals(vehicleColor);
-
-	}
-
-	public void test021_AddInstance_AttributeWithSameNameAlreadyExisting() {
-		Root engine = new Root();
-		Generic car = engine.addInstance("Car");
-		Generic carPower = engine.setInstance("Power", car);
-		Generic power = engine.addInstance("Power");
+	public void test017() {
+		Root root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic carPower = root.setInstance("Power", car);
+		Generic power = root.addInstance("Power");
 
 		assert !carPower.isAlive();
 		assert power.isAlive();
-		assert !car.getAttributes(engine).contains(carPower);
+		assert !car.getAttributes(root).contains(carPower);
 	}
 }

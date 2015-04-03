@@ -10,40 +10,39 @@ import org.testng.annotations.Test;
 @Test
 public class NotRemovableTest extends AbstractTest {
 
-	public void test001_aliveEx() {
-		Generic engine = new Root();
-		Generic car = engine.addInstance("Car");
-		Generic color = car.addAttribute("Color");
+	public void test001() {
+		Generic root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic power = car.addAttribute("Power");
 		Generic myBmw = car.addInstance("myBmw");
-		Generic myBmwRed = myBmw.addHolder(color, "red");
+		Generic myBmw123 = myBmw.addHolder(power, 123);
 
-		myBmwRed.remove();
-		catchAndCheckCause(() -> myBmwRed.remove(), AliveConstraintViolationException.class);
-
+		myBmw123.remove();
+		catchAndCheckCause(() -> myBmw123.remove(), AliveConstraintViolationException.class);
 	}
 
-	public void test002_referenceEx() {
-		Generic engine = new Root();
-		Generic car = engine.addInstance("Car");
-		Generic color = car.addAttribute("Color");
-		Generic myBmw = car.addInstance("myBmw");
+	public void test002() {
+		Generic root = new Root();
+		Generic car = root.addInstance("Car");
+		car.addAttribute("Color");
+		car.addInstance("myBmw");
 
 		catchAndCheckCause(() -> car.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
-	public void test003_referenceEx() {
-		Generic engine = new Root();
-		Generic car = engine.addInstance("Car");
-		Generic color = car.addAttribute("Color");
+	public void test003() {
+		Generic root = new Root();
+		Generic car = root.addInstance("Car");
+		Generic power = car.addAttribute("Power");
 		Generic myBmw = car.addInstance("myBmw");
-		Generic myBmwRed = myBmw.addHolder(color, "red");
+		myBmw.addHolder(power, "red");
 
-		catchAndCheckCause(() -> color.remove(), ReferentialIntegrityConstraintViolationException.class);
+		catchAndCheckCause(() -> power.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
-	public void test004_notRemoveAnnotedClass() {
-		Root engine = new Root(Power.class);
-		Generic power = engine.find(Power.class);
+	public void test004() {
+		Root root = new Root(Power.class);
+		Generic power = root.find(Power.class);
 		assert power.isPropertyConstraintEnabled();
 		catchAndCheckCause(() -> power.disablePropertyConstraint(), IllegalAccessException.class);
 	}

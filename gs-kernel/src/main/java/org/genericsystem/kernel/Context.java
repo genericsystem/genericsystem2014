@@ -1,15 +1,12 @@
 package org.genericsystem.kernel;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.core.annotations.InstanceClass;
-import org.genericsystem.api.core.exceptions.UnreachableOverridesException;
 import org.genericsystem.defaults.DefaultContext;
 import org.genericsystem.kernel.Generic.GenericImpl;
 import org.genericsystem.kernel.GenericHandler.AddHandler;
@@ -68,15 +65,8 @@ public abstract class Context implements DefaultContext<Generic> {
 		return components;
 	}
 
-	List<Generic> computeAndCheckOverridesAreReached(Generic adjustedMeta, List<Generic> overrides, Serializable value, List<Generic> components) {
-		List<Generic> supers = new ArrayList<>(new SupersComputer<>(adjustedMeta, overrides, value, components));
-		if (!ApiStatics.areOverridesReached(supers, overrides))
-			discardWithException(new UnreachableOverridesException("Unable to reach overrides : " + overrides + " with computed supers : " + supers));
-		return supers;
-	}
-
 	protected Generic getMeta(int dim) {
-		Generic adjustedMeta = ((Generic) root).adjustMeta(root.getValue(), rootComponents(dim));
+		Generic adjustedMeta = ((Generic) root).adjustMeta(rootComponents(dim));
 		return adjustedMeta != null && adjustedMeta.getComponents().size() == dim ? adjustedMeta : null;
 	}
 

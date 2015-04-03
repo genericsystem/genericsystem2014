@@ -1,75 +1,72 @@
 package org.genericsystem.kernel;
 
-import java.util.stream.Stream;
-
 import org.genericsystem.defaults.exceptions.InstanceValueClassConstraintViolationException;
 import org.testng.annotations.Test;
 
 @Test
 public class InstanceValueClassConstraintTest extends AbstractTest {
 
-	public void test01_setAndGet() {
-		Stream.empty().count();
+	public void test001() {
 		Root root = new Root();
-		Generic vehicle = root.addInstance("Vehicle");
-		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic car = root.addInstance("Car");
+		Generic myCar = car.addInstance("myCar");
 
-		assert myVehicle.getClassConstraint() == null;
-		vehicle.setClassConstraint(String.class);
-		assert String.class.equals(vehicle.getClassConstraint());
-		vehicle.disableClassConstraint();
-		myVehicle.updateValue(null);
+		assert myCar.getClassConstraint() == null;
+		car.setClassConstraint(String.class);
+		assert String.class.equals(car.getClassConstraint());
+		car.disableClassConstraint();
+		myCar.updateValue(null);
 
-		assert vehicle.getClassConstraint() == null;
+		assert car.getClassConstraint() == null;
 
 	}
 
-	public void test02_noException() {
+	public void test002() {
 		Root root = new Root();
-		Generic vehicle = root.addInstance("Vehicle");
-		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic car = root.addInstance("Car");
+		Generic myCar = car.addInstance("myCar");
 		Generic power = root.addInstance("Power");
-		vehicle.addAttribute(power, "Power");
+		car.addAttribute(power, "Power");
 		power.setClassConstraint(Integer.class);
 
-		myVehicle.addHolder(power, 125);
+		myCar.addHolder(power, 125);
 	}
 
-	public void test03_exception() {
+	public void test003() {
 		Root root = new Root();
-		Generic vehicle = root.addInstance("Vehicle");
-		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic car = root.addInstance("Car");
+		Generic myCar = car.addInstance("myCar");
 		Generic power = root.addInstance("Power");
-		vehicle.addAttribute(power, "Power");
+		car.addAttribute(power, "Power");
 		power.setClassConstraint(Integer.class);
 
-		catchAndCheckCause(() -> myVehicle.addHolder(power, "125"), InstanceValueClassConstraintViolationException.class);
+		catchAndCheckCause(() -> myCar.addHolder(power, "125"), InstanceValueClassConstraintViolationException.class);
 
 	}
 
-	public void test04_DisableConstraint() {
+	public void test004() {
 		Root root = new Root();
-		Generic vehicle = root.addInstance("Vehicle");
-		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic car = root.addInstance("Car");
+		Generic myCar = car.addInstance("myCar");
 		Generic power = root.addInstance("Power");
-		vehicle.addAttribute(power, "Power");
+		car.addAttribute(power, "Power");
 		power.setClassConstraint(Integer.class);
 
-		myVehicle.addHolder(power, 125);
+		myCar.addHolder(power, 125);
 		power.setClassConstraint(null);
-		myVehicle.addHolder(power, "230");
+		myCar.addHolder(power, "230");
 	}
 
-	public void test05_DisableConstraint() {
+	public void test005() {
 		Root root = new Root();
-		Generic vehicle = root.addInstance("Vehicle");
-		Generic myVehicle = vehicle.addInstance("myVehicle");
+		Generic car = root.addInstance("Car");
+		Generic myCar = car.addInstance("myCar");
 		Generic power = root.addInstance("Power");
-		vehicle.addAttribute(power, "Power");
+		car.addAttribute(power, "Power");
 		power.enableClassConstraint(Integer.class);
 
-		myVehicle.addHolder(power, 125);
+		myCar.addHolder(power, 125);
 		power.disableClassConstraint();
-		myVehicle.addHolder(power, "230");
+		myCar.addHolder(power, "230");
 	}
 }
