@@ -1,10 +1,6 @@
 package org.genericsystem.exampleswing.swingcomponents;
 
 import java.awt.Dimension;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -13,16 +9,19 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 
-import org.genericsystem.exampleswing.business.CarBusiness;
 import org.genericsystem.exampleswing.swingactions.BtnCancelAction;
 import org.genericsystem.exampleswing.swingactions.BtnCreateCarAction;
 import org.genericsystem.exampleswing.swingactions.BtnFlushAction;
-import org.genericsystem.exampleswing.swingactions.BtnUpdatePowerAction;
+import org.genericsystem.mutability.Engine;
 
 public class CarViewer extends JFrame {
 	private static final long serialVersionUID = 5868325769001340979L;
+
+	private Engine engine;
+
 	private JTextField newCar;
-	private SnapshotTableModel tableModel;
+	private JTextField newPower;
+	private CarTableModel tableModel;
 
 	public CarViewer() {
 		setTitle("Cars");
@@ -30,24 +29,21 @@ public class CarViewer extends JFrame {
 		setSize(new Dimension(700, 700));
 		JPanel mainPanel = new JPanel();
 
-		List<Serializable> columnsName = new ArrayList<>();
-		columnsName.add(Objects.toString(CarBusiness.getInstance().getGeneric().getValue()));
-
-		tableModel = new SnapshotTableModel(CarBusiness.getInstance().getAllInstances(), columnsName);
-		JScrollPane scrollPane = new JScrollPane(new JTable(tableModel));
-		scrollPane.setLocation(50, 50);
-		scrollPane.setSize(new Dimension(500, 500));
-		mainPanel.add(scrollPane);
-
-		mainPanel.add(new JButton(new BtnUpdatePowerAction(this, "Update power")));
+		tableModel = new CarTableModel(this);
+		mainPanel.add(new JScrollPane(new JTable(tableModel)));
 
 		newCar = new JTextField("new car");
 		newCar.setColumns(10);
 		mainPanel.add(newCar);
+
+		newPower = new JTextField("0");
+		newPower.setColumns(10);
+		mainPanel.add(newPower);
+
 		mainPanel.add(new JButton(new BtnCreateCarAction(this, "Add car")));
 
-		mainPanel.add(new JButton(new BtnFlushAction("Save")));
-		mainPanel.add(new JButton(new BtnCancelAction("Cancel")));
+		mainPanel.add(new JButton(new BtnFlushAction(this, "Save")));
+		mainPanel.add(new JButton(new BtnCancelAction(this, "Cancel")));
 
 		add(mainPanel);
 		setVisible(true);
@@ -57,8 +53,15 @@ public class CarViewer extends JFrame {
 		tableModel.fireTableDataChanged();
 	}
 
+	public Engine getEngine() {
+		return engine;
+	}
+
 	public JTextField getNewCar() {
 		return newCar;
 	}
 
+	public JTextField getNewPower() {
+		return newPower;
+	}
 }
