@@ -2,9 +2,7 @@ package org.genericsystem.exampleswing.swingcomponents;
 
 import java.io.Serializable;
 import java.util.List;
-
 import javax.swing.table.AbstractTableModel;
-
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.exampleswing.model.Power;
 import org.genericsystem.mutability.Generic;
@@ -45,7 +43,7 @@ public class SnapshotTableModel extends AbstractTableModel {
 		case 1:
 			return generic != null ? generic.getHolders(generic.getRoot().find(Power.class)).first().getValue() : null;
 		default:
-			break;
+		break;
 		}
 		return null;
 	}

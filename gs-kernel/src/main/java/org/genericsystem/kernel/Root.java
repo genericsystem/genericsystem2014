@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
-
 import org.genericsystem.defaults.DefaultConfig.MetaAttribute;
 import org.genericsystem.defaults.DefaultConfig.MetaRelation;
 import org.genericsystem.defaults.DefaultConfig.Sequence;
@@ -134,32 +133,43 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 		return new Transaction(this, pickNewTs());
 	}
 
-	private Vertex getVertex(Generic generic) {
-		return map.get(generic);
+	// private Vertex getVertex(Generic generic) {
+	// return map.get(generic);
+	// }
+
+	private final Map<Long, IdVertex> idMap = new ConcurrentHashMap<>();
+	private final Map<Long, Generic> idMap2 = new ConcurrentHashMap<>();
+
+	private IdVertex getIdVertex(Generic generic) {
+		return idMap.get(generic.getTs());
+	}
+
+	Generic getGenericFromId(long id) {
+		return idMap2.get(id);
 	}
 
 	long getTs(Generic generic) {
-		return getVertex(generic).getTs();
+		return generic.getTs();
 	}
 
 	Generic getMeta(Generic generic) {
-		return getVertex(generic).getMeta();
+		return getGenericFromId(getIdVertex(generic).getMetaId());
 	}
 
 	Generic getNextDependency(Generic generic, Generic ancestor) {
-		return getVertex(generic).getNextDependency(ancestor);
+		return getGenericFromId(getIdVertex(generic).getNextDependencyId());
 	}
 
 	void setNextDependency(Generic generic, Generic ancestor, Generic nextDependency) {
-		getVertex(generic).setNextDependency(ancestor, nextDependency);
+		getIdVertex(generic).setNextDependency(ancestor, nextDependency);
 	}
 
 	LifeManager getLifeManager(Generic generic) {
-		return getVertex(generic).getLifeManager();
+		return getIdVertex(generic).getLifeManager();
 	}
 
 	List<Generic> getSupers(Generic generic) {
-		return getVertex(generic).getSupers();
+		return getIdVertex(generic).getSupers();
 	}
 
 	Serializable getValue(Generic generic) {
@@ -167,11 +177,11 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 	}
 
 	List<Generic> getComponents(Generic generic) {
-		return getVertex(generic).getComponents();
+		return getIdVertex(generic).getComponents();
 	}
 
 	Dependencies getDependencies(Generic generic) {
-		return getVertex(generic).getDependencies();
+		return getIdVertex(generic).getDependencies();
 	}
 
 	Generic init(Generic generic, long ts, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
