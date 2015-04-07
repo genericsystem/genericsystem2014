@@ -99,7 +99,6 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 
 	@Override
 	public void triggersMutationEvent(org.genericsystem.kernel.Generic oldDependency, org.genericsystem.kernel.Generic newDependency) {
-		System.out.println(oldDependency.info() + " " + newDependency.info());
 		Set<Generic> resultSet = reverseMultiMap.remove(oldDependency);
 		if (resultSet == null)
 			return;
