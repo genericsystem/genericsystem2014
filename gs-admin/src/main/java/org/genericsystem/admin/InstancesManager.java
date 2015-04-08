@@ -10,7 +10,6 @@ import java.awt.event.MouseEvent;
 import java.util.Objects;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -21,40 +20,25 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
 import org.genericsystem.admin.CacheManager.Refreshable;
-import org.genericsystem.mutability.Engine;
 import org.genericsystem.mutability.Generic;
 
-public class InstancesEditor extends JFrame implements Refreshable {
+public class InstancesManager extends JPanel implements Refreshable {
 	private static final long serialVersionUID = 5868325769001340979L;
-
-	private final Engine engine;
-	private final Generic type;
 
 	private final InstancesTableModel tableModel;
 
-	public InstancesEditor(Generic type) {
+	InstancesManager(Generic type) {
+		setPreferredSize(new Dimension(500, 500));
 
-		this.type = type;
-		engine = type.getRoot();
-		setTitle(Objects.toString(type.getValue()) + "(s)");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-		tableModel = new InstancesTableModel(engine.find(Power.class));
+		tableModel = new InstancesTableModel(type);
 		JTable table = new JTable(tableModel);
-		JScrollPane scrollTable = new JScrollPane(table);
 		table.setFillsViewportHeight(true);
 
 		table.getColumn("Delete").setCellRenderer(new JTableButtonRenderer());
 		table.addMouseListener(new JTableButtonMouseListener(table));
 
-		getContentPane().add(scrollTable, BorderLayout.CENTER);
-		getContentPane().add(new CreatePanel(), BorderLayout.EAST);
-		getContentPane().add(new CacheManager(engine, this), BorderLayout.SOUTH);
-
-		getContentPane().setPreferredSize(new Dimension(700, 700));
-		pack();
-		setVisible(true);
-
+		add(new JScrollPane(table), BorderLayout.CENTER);
+		add(new CreatePanel(type), BorderLayout.EAST);
 	}
 
 	@Override
@@ -65,16 +49,15 @@ public class InstancesEditor extends JFrame implements Refreshable {
 	private class CreatePanel extends JPanel {
 
 		private static final long serialVersionUID = 2790743754106657404L;
-		private final JTextField newCarField;
-		private final JTextField newPowerField;
+		private final JTextField newInstanceField;
 
-		CreatePanel() {
-			newCarField = new JTextField("myAudi");
-			newCarField.setColumns(10);
-			add(newCarField);
-			newPowerField = new JTextField("333");
-			newPowerField.setColumns(10);
-			add(newPowerField);
+		private final Generic type;
+
+		CreatePanel(Generic type) {
+			this.type = type;
+			newInstanceField = new JTextField("new Instance");
+			newInstanceField.setColumns(10);
+			add(newInstanceField);
 			add(new CreateButton("Create"));
 		}
 
@@ -89,7 +72,7 @@ public class InstancesEditor extends JFrame implements Refreshable {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				engine.find(Car.class).setInstance(newCarField.getText()).setHolder(engine.find(Power.class), Integer.parseInt(newPowerField.getText()));
+				type.setInstance(newInstanceField.getText());
 				tableModel.fireTableDataChanged();
 			}
 		}
@@ -98,10 +81,10 @@ public class InstancesEditor extends JFrame implements Refreshable {
 	private class InstancesTableModel extends AbstractTableModel {
 		private static final long serialVersionUID = -8137410628615273305L;
 
-		private final Generic[] attributes;
+		private final Generic type;
 
-		public InstancesTableModel(Generic... attributes) {
-			this.attributes = attributes;
+		public InstancesTableModel(Generic type) {
+			this.type = type;
 		}
 
 		@Override
@@ -115,12 +98,12 @@ public class InstancesEditor extends JFrame implements Refreshable {
 				return Objects.toString(type.getValue());
 			if (columnIndex == getColumnCount() - 1)
 				return "Delete";
-			return Objects.toString(attributes[columnIndex - 1].getValue());
+			return Objects.toString(type.getAttributes().getByIndex(columnIndex - 1).getValue());
 		}
 
 		@Override
 		public int getColumnCount() {
-			return attributes.length + 2;
+			return type.getAttributes().size() + 2;
 		}
 
 		@Override
@@ -138,8 +121,6 @@ public class InstancesEditor extends JFrame implements Refreshable {
 				button.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
-
-						Generic generic = type.getSubInstances().getByIndex(rowIndex);
 						int returnCode = JOptionPane.showConfirmDialog(JOptionPane.getFrameForComponent(button), "Are you sure you want to delete generic : " + generic.info());
 						if (JOptionPane.OK_OPTION == returnCode) {
 							generic.remove();
@@ -149,7 +130,11 @@ public class InstancesEditor extends JFrame implements Refreshable {
 				});
 				return button;
 			}
-			return Objects.toString(generic.getHolder(attributes[columnIndex - 1]).getValue());
+			Generic attribute = type.getAttributes().getByIndex(columnIndex);
+			if (attribute == null)
+				return null;
+			Generic holder = generic.getHolder(attribute);
+			return holder == null ? null : Objects.toString(holder.getValue());
 		}
 
 		@Override
@@ -160,7 +145,7 @@ public class InstancesEditor extends JFrame implements Refreshable {
 				return;
 			}
 			assert columnIndex != getColumnCount() - 1;
-			generic.setHolder(attributes[columnIndex - 1], Integer.parseInt(Objects.toString(value)));
+			// generic.setHolder(type.getAttributes().getByIndex(columnIndex - 1), Integer.parseInt(Objects.toString(value)));
 			fireTableDataChanged();
 		}
 	}

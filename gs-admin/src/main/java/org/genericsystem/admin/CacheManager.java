@@ -69,4 +69,5 @@ class CacheManager extends JPanel implements ActionListener {
 	public static interface Refreshable {
 		public void refresh();
 	}
+
 }
