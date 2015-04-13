@@ -166,13 +166,15 @@ public interface DefaultCompositesInheritance<T extends DefaultVertex<T>> extend
 	@SuppressWarnings("unchecked")
 	@Override
 	default Serializable getValue(T attribute, Serializable value, T... targets) {
-		return getNonAmbiguousResult(getLinks(attribute, value, targets).get()).getValue();
+		T holder = getHolder(attribute, value, targets);
+		return holder!=null ? holder.getValue() : null;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default Serializable getValue(T attribute, T... targets) {
-		return getNonAmbiguousResult(getLinks(attribute, targets).get()).getValue();
+		T holder = getHolder(attribute, targets);
+		return holder!=null ? holder.getValue() : null;
 	}
 
 	@SuppressWarnings("unchecked")

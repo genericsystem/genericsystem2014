@@ -10,6 +10,7 @@ import org.genericsystem.exampleswing.model.Color.White;
 @SystemGeneric
 @Components({ Car.class, Color.class })
 @SingularConstraint
+@StringValue("CarColor")
 public class CarColor {
 
 	@SystemGeneric

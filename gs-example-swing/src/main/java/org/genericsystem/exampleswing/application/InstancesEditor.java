@@ -9,7 +9,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Objects;
 
+import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -18,10 +21,15 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 import org.genericsystem.exampleswing.application.CacheManager.Refreshable;
 import org.genericsystem.exampleswing.model.Car;
+import org.genericsystem.exampleswing.model.CarColor;
 import org.genericsystem.exampleswing.model.Power;
 import org.genericsystem.mutability.Engine;
 import org.genericsystem.mutability.Generic;
@@ -38,15 +46,15 @@ public class InstancesEditor extends JFrame implements Refreshable {
 
 		this.type = type;
 		engine = type.getRoot();
-		setTitle(Objects.toString(type.getValue()) + "(s)");
+		setTitle(Objects.toString(type.getValue()) + "(s) Management");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		tableModel = new InstancesTableModel(engine.find(Power.class));
-		JTable table = new JTable(tableModel);
+		Generic[] attributes = new Generic[]{engine.find(Power.class),engine.find(CarColor.class)};
+
+		JTable table = new JTable(tableModel= new InstancesTableModel(attributes),buildTableColumnModel(attributes));
+
 		JScrollPane scrollTable = new JScrollPane(table);
 		table.setFillsViewportHeight(true);
-
-		table.getColumn("Delete").setCellRenderer(new JTableButtonRenderer());
 		table.addMouseListener(new JTableButtonMouseListener(table));
 
 		getContentPane().add(scrollTable, BorderLayout.CENTER);
@@ -56,7 +64,38 @@ public class InstancesEditor extends JFrame implements Refreshable {
 		getContentPane().setPreferredSize(new Dimension(700, 700));
 		pack();
 		setVisible(true);
+	}
 
+	private TableColumnModel buildTableColumnModel(Generic... attributes){
+		TableColumnModel columnModel = new DefaultTableColumnModel();
+		int i=0;
+		TableColumn tableColumn = new TableColumn(i++);
+		tableColumn.setHeaderValue( Objects.toString(type.getValue()));
+		columnModel.addColumn(tableColumn);
+		for(Generic attribute : attributes){
+			tableColumn = new TableColumn(i++,75,getRenderer(attribute),getEditor(attribute));
+			columnModel.addColumn(tableColumn);
+			tableColumn.setHeaderValue( Objects.toString(attribute.getValue()));
+		}
+		tableColumn = new TableColumn(i++,75,new JTableButtonRenderer(),null);
+		columnModel.addColumn(tableColumn);
+		return columnModel;
+	}
+
+	private TableCellRenderer getRenderer(Generic attribute){
+		if(!isAssociation(attribute))
+			return null;
+		return new ComboBoxRenderer(new String[]{"Red","Green"});
+	}
+
+	private TableCellEditor getEditor(Generic attribute){
+		if(!isAssociation(attribute))
+			return null;
+		return new ComboBoxEditor(new String[]{"Red","Green"});
+	}
+
+	private boolean isAssociation(Generic attribute){
+		return attribute.getComponents().size()==2;
 	}
 
 	@Override
@@ -111,14 +150,14 @@ public class InstancesEditor extends JFrame implements Refreshable {
 			return type.getSubInstances().size();
 		}
 
-		@Override
-		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0)
-				return Objects.toString(type.getValue());
-			if (columnIndex == getColumnCount() - 1)
-				return "Delete";
-			return Objects.toString(attributes[columnIndex - 1].getValue());
-		}
+		//		@Override
+		//		public String getColumnName(int columnIndex) {
+		//			if (columnIndex == 0)
+		//				return Objects.toString(type.getValue());
+		//			if (columnIndex == getColumnCount() - 1)
+		//				return "Delete";
+		//			return Objects.toString(attributes[columnIndex - 1].getValue());
+		//		}
 
 		@Override
 		public int getColumnCount() {
@@ -129,6 +168,7 @@ public class InstancesEditor extends JFrame implements Refreshable {
 		public boolean isCellEditable(int rowIndex, int columnIndex) {
 			return columnIndex != getColumnCount() - 1;
 		}
+
 
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
@@ -151,7 +191,7 @@ public class InstancesEditor extends JFrame implements Refreshable {
 				});
 				return button;
 			}
-			return Objects.toString(generic.getHolder(attributes[columnIndex - 1]).getValue());
+			return Objects.toString(generic.getValue(attributes[columnIndex - 1]));
 		}
 
 		@Override
@@ -167,6 +207,78 @@ public class InstancesEditor extends JFrame implements Refreshable {
 		}
 	}
 
+	public class ButtonRenderer extends JButton implements TableCellRenderer {
+
+		public ButtonRenderer() {
+			setOpaque(true);
+		}
+
+		public Component getTableCellRendererComponent(JTable table, Object value,
+				boolean isSelected, boolean hasFocus, int row, int column) {
+			if (isSelected) {
+				setForeground(table.getSelectionForeground());
+				setBackground(table.getSelectionBackground());
+			} else{
+				setForeground(table.getForeground());
+				setBackground(UIManager.getColor("Button.background"));
+			}
+			setText( (value ==null) ? "" : value.toString() );
+			return this;
+		}
+	}
+	
+	public class ButtonEditor extends DefaultCellEditor {
+		  protected JButton button;
+		  private String    label;
+		  private boolean   isPushed;
+		  
+		  public ButtonEditor(JCheckBox checkBox) {
+		    super(checkBox);
+		    button = new JButton();
+		    button.setOpaque(true);
+		    button.addActionListener(new ActionListener() {
+		      public void actionPerformed(ActionEvent e) {
+		        fireEditingStopped();
+		      }
+		    });
+		  }
+		  
+		  public Component getTableCellEditorComponent(JTable table, Object value,
+		                   boolean isSelected, int row, int column) {
+		    if (isSelected) {
+		      button.setForeground(table.getSelectionForeground());
+		      button.setBackground(table.getSelectionBackground());
+		    } else{
+		      button.setForeground(table.getForeground());
+		      button.setBackground(table.getBackground());
+		    }
+		    label = (value ==null) ? "" : value.toString();
+		    button.setText( label );
+		    isPushed = true;
+		    return button;
+		  }
+		  
+		  public Object getCellEditorValue() {
+		    if (isPushed)  {
+		      //
+		      //
+		      JOptionPane.showMessageDialog(button ,label + ": Ouch!");
+		      // System.out.println(label + ": Ouch!");
+		    }
+		    isPushed = false;
+		    return new String( label ) ;
+		  }
+		    
+		  public boolean stopCellEditing() {
+		    isPushed = false;
+		    return super.stopCellEditing();
+		  }
+		  
+		  protected void fireEditingStopped() {
+		    super.fireEditingStopped();
+		  }
+		}
+
 	private static class JTableButtonRenderer implements TableCellRenderer {
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -176,7 +288,7 @@ public class InstancesEditor extends JFrame implements Refreshable {
 				button.setBackground(table.getSelectionBackground());
 			} else {
 				button.setForeground(table.getForeground());
-				button.setBackground(UIManager.getColor("Button.background"));
+				button.setBackground(/*table.getBackground()*/UIManager.getColor("Button.background"));
 			}
 			return button;
 		}
@@ -199,6 +311,30 @@ public class InstancesEditor extends JFrame implements Refreshable {
 				if (value instanceof JButton)
 					((JButton) value).doClick();
 			}
+		}
+	}
+
+	private class ComboBoxRenderer extends JComboBox implements TableCellRenderer {
+		public ComboBoxRenderer(String[] items) {
+			super(items);
+		}
+
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,	boolean hasFocus, int row, int column) {
+			if (isSelected) {
+				setForeground(table.getSelectionForeground());
+				super.setBackground(table.getSelectionBackground());
+			} else {
+				setForeground(table.getForeground());
+				setBackground(table.getBackground());
+			}
+			setSelectedItem(value);
+			return this;
+		}
+	}
+
+	private class ComboBoxEditor extends DefaultCellEditor {
+		public ComboBoxEditor(String[] items) {
+			super(new JComboBox(items));
 		}
 	}
 }
