@@ -2,16 +2,16 @@ package org.genericsystem.admin;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.genericsystem.admin.CacheManager.Refreshable;
 import org.genericsystem.mutability.Engine;
 
-class EngineManager extends JPanel implements ActionListener {
+class EngineManager extends JPanel implements Refreshable, ActionListener {
 
 	private static final long serialVersionUID = 6698753884141032302L;
 
@@ -35,7 +35,10 @@ class EngineManager extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() instanceof JFileChooser) {
-			currentEnginePath = ((JFileChooser) e.getSource()).getSelectedFile().getAbsolutePath();
+			File selectedFile = ((JFileChooser) e.getSource()).getSelectedFile();
+			if (selectedFile == null)
+				return;
+			currentEnginePath = selectedFile.getAbsolutePath();
 			engine = new Engine("Engine", currentEnginePath);
 			if (currentEngine == null)
 				add(buildCurrentEngine());
@@ -50,6 +53,11 @@ class EngineManager extends JPanel implements ActionListener {
 			chooseEngine.setVisible(true);
 		}
 		container.refresh();
+	}
+
+	@Override
+	public void refresh() {
+		currentEngine.revalidate();
 	}
 
 	private JPanel buildChooseEngine() {

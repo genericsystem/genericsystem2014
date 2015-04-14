@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 
 import org.genericsystem.mutability.Engine;
 
-class CacheManager extends JPanel implements ActionListener {
+class CacheManager extends JPanel implements Refreshable, ActionListener {
 
 	private static final long serialVersionUID = 6698753884141032302L;
 	private final Engine engine;
@@ -43,6 +43,11 @@ class CacheManager extends JPanel implements ActionListener {
 	}
 
 	@Override
+	public void refresh() {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (flushButton.equals(e.getSource())) {
 			engine.getCurrentCache().flush();
@@ -65,9 +70,4 @@ class CacheManager extends JPanel implements ActionListener {
 			return;
 		}
 	}
-
-	public static interface Refreshable {
-		public void refresh();
-	}
-
 }

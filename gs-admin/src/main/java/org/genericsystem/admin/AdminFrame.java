@@ -6,13 +6,11 @@ import java.awt.Dimension;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import org.genericsystem.admin.CacheManager.Refreshable;
-
 public class AdminFrame extends JFrame implements Refreshable {
 	private static final long serialVersionUID = 5868325769001340979L;
 
 	EngineManager engineManager;
-	AdminPanel adminPanel;
+	AdminManager adminPanel;
 
 	public AdminFrame() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -28,17 +26,21 @@ public class AdminFrame extends JFrame implements Refreshable {
 
 	@Override
 	public void refresh() {
-		if (adminPanel == null)
-			getContentPane().add(new AdminPanel(), BorderLayout.CENTER);
+		if (adminPanel == null) {
+			adminPanel = new AdminManager();
+			getContentPane().add(adminPanel, BorderLayout.CENTER);
+		}
+		engineManager.refresh();
+		adminPanel.refresh();
 	}
 
-	class AdminPanel extends JPanel implements Refreshable {
+	class AdminManager extends JPanel implements Refreshable {
 		private static final long serialVersionUID = 3586350333741588123L;
 
 		private CacheManager cacheManager;
 		private InstancesManager instancesManager;
 
-		public AdminPanel() {
+		public AdminManager() {
 			setLayout(new BorderLayout());
 			if (cacheManager == null) {
 				cacheManager = new CacheManager(engineManager.getEngine(), AdminFrame.this);
@@ -53,13 +55,15 @@ public class AdminFrame extends JFrame implements Refreshable {
 		@Override
 		public void refresh() {
 			if (engineManager.getEngine() != null) {
-				getContentPane().add(new AdminPanel(), BorderLayout.CENTER);
+				getContentPane().add(new AdminManager(), BorderLayout.CENTER);
 				instancesManager.setVisible(true);
 				cacheManager.setVisible(true);
 			} else {
 				instancesManager.setVisible(false);
 				cacheManager.setVisible(false);
 			}
+			instancesManager.refresh();
+			cacheManager.refresh();
 		}
 	}
 }
