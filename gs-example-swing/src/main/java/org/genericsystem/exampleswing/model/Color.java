@@ -1,10 +1,16 @@
 package org.genericsystem.exampleswing.model;
 
+import org.genericsystem.api.core.annotations.Dependencies;
 import org.genericsystem.api.core.annotations.Meta;
 import org.genericsystem.api.core.annotations.SystemGeneric;
 import org.genericsystem.api.core.annotations.value.StringValue;
+import org.genericsystem.exampleswing.model.Color.Blue;
+import org.genericsystem.exampleswing.model.Color.Red;
+import org.genericsystem.exampleswing.model.Color.White;
+import org.genericsystem.exampleswing.model.Color.Yellow;
 
 @SystemGeneric
+@Dependencies({ White.class, Red.class, Blue.class, Yellow.class })
 public class Color {
 
 	@SystemGeneric
