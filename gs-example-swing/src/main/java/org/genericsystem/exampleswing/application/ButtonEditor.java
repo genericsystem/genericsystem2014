@@ -16,7 +16,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
-public class ButtonColumn extends AbstractCellEditor implements TableCellRenderer, TableCellEditor, MouseListener {
+public class ButtonEditor extends AbstractCellEditor implements TableCellRenderer, TableCellEditor, MouseListener {
 	private static final long serialVersionUID = 2833750011734533890L;
 
 	private final JTable table;
@@ -29,7 +29,7 @@ public class ButtonColumn extends AbstractCellEditor implements TableCellRendere
 	private Object editorValue;
 	private boolean isButtonColumnEditor;
 
-	public ButtonColumn(JTable table, int column) {
+	public ButtonEditor(JTable table, int column) {
 		this.table = table;
 
 		this.editButton = new JButton();

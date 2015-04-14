@@ -1,14 +1,12 @@
 package org.genericsystem.exampleswing.application;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Objects;
-import javax.swing.DefaultCellEditor;
+
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -20,6 +18,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+
 import org.genericsystem.exampleswing.application.CacheManager.Refreshable;
 import org.genericsystem.exampleswing.model.Car;
 import org.genericsystem.exampleswing.model.CarColor;
@@ -46,7 +45,7 @@ public class InstancesEditor extends JFrame implements Refreshable {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JTable table = new JTable(tableModel = new InstancesTableModel(engine.find(Power.class), engine.find(CarColor.class)));
-		table.setColumnModel(buildTableColumnModel(table));
+		table.setColumnModel(adjustColumnEditor(table));
 
 		getContentPane().add(new JScrollPane(table), BorderLayout.CENTER);
 		getContentPane().add(new CreatePanel(), BorderLayout.EAST);
@@ -57,16 +56,17 @@ public class InstancesEditor extends JFrame implements Refreshable {
 		setVisible(true);
 	}
 
-	private TableColumnModel buildTableColumnModel(JTable table) {
+	private TableColumnModel adjustColumnEditor(JTable table) {
+		int indexAttribute = 0;
 		int indexColumn = 1;
-		for (int indexAttribute = 0; indexColumn < table.getColumnModel().getColumnCount() - 1; indexColumn++) {
+		for (; indexColumn < table.getColumnModel().getColumnCount() - 1; indexColumn++) {
 			TableColumn tableColumn = table.getColumnModel().getColumn(indexColumn);
 			tableColumn.setCellEditor(getEditor(tableModel.attributes[indexAttribute]));
 			tableColumn.setCellRenderer(getRenderer(tableModel.attributes[indexAttribute]));
 			indexAttribute++;
 		}
 		TableColumn column = table.getColumnModel().getColumn(indexColumn);
-		ButtonColumn buttonColumn = new ButtonColumn(table, indexColumn);
+		ButtonEditor buttonColumn = new ButtonEditor(table, indexColumn);
 		column.setCellRenderer(buttonColumn);
 		column.setCellEditor(buttonColumn);
 		return table.getColumnModel();
@@ -86,29 +86,6 @@ public class InstancesEditor extends JFrame implements Refreshable {
 
 	private boolean isAssociation(Generic attribute) {
 		return attribute.getComponents().size() == 2;
-	}
-
-	private class ComboBoxEditor extends DefaultCellEditor implements TableCellRenderer {
-
-		private final JComboBox<?> combo;
-
-		public ComboBoxEditor(String[] items) {
-			super(new JComboBox(items));
-			combo = new JComboBox(items);
-		}
-
-		@Override
-		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-			if (isSelected) {
-				combo.setForeground(table.getSelectionForeground());
-				combo.setBackground(table.getSelectionBackground());
-			} else {
-				combo.setForeground(table.getForeground());
-				combo.setBackground(table.getBackground());
-			}
-			combo.setSelectedItem(value);
-			return combo;
-		}
 	}
 
 	@Override
