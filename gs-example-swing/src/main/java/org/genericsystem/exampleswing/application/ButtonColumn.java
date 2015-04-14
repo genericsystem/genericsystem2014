@@ -2,13 +2,10 @@ package org.genericsystem.exampleswing.application;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.AbstractCellEditor;
-import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JTable;
@@ -19,11 +16,10 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
-public class ButtonColumn extends AbstractCellEditor implements TableCellRenderer, TableCellEditor, ActionListener, MouseListener {
+public class ButtonColumn extends AbstractCellEditor implements TableCellRenderer, TableCellEditor, MouseListener {
 	private static final long serialVersionUID = 2833750011734533890L;
 
 	private final JTable table;
-	private final Action action;
 	private int mnemonic;
 	private final Border originalBorder;
 	private Border focusBorder;
@@ -33,14 +29,12 @@ public class ButtonColumn extends AbstractCellEditor implements TableCellRendere
 	private Object editorValue;
 	private boolean isButtonColumnEditor;
 
-	public ButtonColumn(JTable table, Action action, int column) {
+	public ButtonColumn(JTable table, int column) {
 		this.table = table;
-		this.action = action;
 
 		this.editButton = new JButton();
 		this.renderButton = new JButton();
 		editButton.setFocusPainted(false);
-		editButton.addActionListener(this);
 		originalBorder = editButton.getBorder();
 		setFocusBorder(new LineBorder(Color.BLUE));
 
@@ -120,17 +114,6 @@ public class ButtonColumn extends AbstractCellEditor implements TableCellRendere
 		}
 
 		return renderButton;
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		int row = table.convertRowIndexToModel(table.getEditingRow());
-		fireEditingStopped();
-
-		// Invoke the Action
-
-		ActionEvent event = new ActionEvent(table, ActionEvent.ACTION_PERFORMED, "" + row);
-		action.actionPerformed(event);
 	}
 
 	@Override
