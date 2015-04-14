@@ -6,7 +6,6 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Objects;
-
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -21,7 +20,6 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-
 import org.genericsystem.exampleswing.application.CacheManager.Refreshable;
 import org.genericsystem.exampleswing.model.Car;
 import org.genericsystem.exampleswing.model.CarColor;
@@ -77,7 +75,7 @@ public class InstancesEditor extends JFrame implements Refreshable {
 	private TableCellRenderer getRenderer(Generic attribute) {
 		if (!isAssociation(attribute))
 			return null;
-		return new ComboBoxRenderer(new String[] { "Red", "Green" });
+		return new ComboBoxEditor(new String[] { "Red", "Green" });
 	}
 
 	private TableCellEditor getEditor(Generic attribute) {
@@ -90,28 +88,26 @@ public class InstancesEditor extends JFrame implements Refreshable {
 		return attribute.getComponents().size() == 2;
 	}
 
-	private class ComboBoxRenderer extends JComboBox implements TableCellRenderer {
-		public ComboBoxRenderer(String[] items) {
-			super(items);
+	private class ComboBoxEditor extends DefaultCellEditor implements TableCellRenderer {
+
+		private final JComboBox<?> combo;
+
+		public ComboBoxEditor(String[] items) {
+			super(new JComboBox(items));
+			combo = new JComboBox(items);
 		}
 
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 			if (isSelected) {
-				setForeground(table.getSelectionForeground());
-				super.setBackground(table.getSelectionBackground());
+				combo.setForeground(table.getSelectionForeground());
+				combo.setBackground(table.getSelectionBackground());
 			} else {
-				setForeground(table.getForeground());
-				setBackground(table.getBackground());
+				combo.setForeground(table.getForeground());
+				combo.setBackground(table.getBackground());
 			}
-			setSelectedItem(value);
-			return this;
-		}
-	}
-
-	private class ComboBoxEditor extends DefaultCellEditor {
-		public ComboBoxEditor(String[] items) {
-			super(new JComboBox(items));
+			combo.setSelectedItem(value);
+			return combo;
 		}
 	}
 
