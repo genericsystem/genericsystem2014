@@ -49,13 +49,13 @@ public class InstancesEditor extends JFrame implements Refreshable {
 		columnModel.addColumn(new TableColumn(columnModel.getColumnCount()));
 		TableColumn column = columnModel.getColumn(columnModel.getColumnCount() - 1);
 		column.setHeaderValue("Delete");
-		ButtonEditor buttonColumn = new ButtonEditor(columnModel, columnModel.getColumnCount() - 1);
-		column.setCellRenderer(buttonColumn);
-		column.setCellEditor(buttonColumn);
+		ButtonEditor buttonEditor = new ButtonEditor(columnModel, columnModel.getColumnCount() - 1);
+		column.setCellRenderer(buttonEditor);
+		column.setCellEditor(buttonEditor);
 
 		tableModel = new InstancesTableModel(columnModel);
 		JTable table = new JTable(tableModel, columnModel);
-		table.addMouseListener(buttonColumn);
+		table.addMouseListener(buttonEditor);
 
 		getContentPane().add(new JScrollPane(table), BorderLayout.CENTER);
 		getContentPane().add(new CreatePanel(), BorderLayout.EAST);
