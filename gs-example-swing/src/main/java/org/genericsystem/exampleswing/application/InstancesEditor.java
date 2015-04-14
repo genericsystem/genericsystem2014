@@ -4,7 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.Serializable;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -14,6 +16,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -34,18 +37,25 @@ public class InstancesEditor extends JFrame implements Refreshable {
 
 	private final InstancesTableModel tableModel;
 
-	private static final int INSTANCE_INDEX = 0;
-	private static final int CAR_COLOR_INDEX = 2;
-	private static final int DELETE_INDEX = 3;
-
 	public InstancesEditor(Generic type) {
 		this.type = type;
 		engine = type.getRoot();
 		setTitle(Objects.toString(type.getValue()) + "(s) Management");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		JTable table = new JTable(tableModel = new InstancesTableModel(engine.find(Power.class), engine.find(CarColor.class)));
-		table.setColumnModel(adjustColumnEditor(table));
+		Generic[] attributes = new Generic[] { engine.find(Power.class), engine.find(CarColor.class) };
+		TableColumnModel columnModel = buildColumnModel(attributes);
+
+		columnModel.addColumn(new TableColumn(columnModel.getColumnCount()));
+		TableColumn column = columnModel.getColumn(columnModel.getColumnCount() - 1);
+		column.setHeaderValue("Delete");
+		ButtonEditor buttonColumn = new ButtonEditor(columnModel, columnModel.getColumnCount() - 1);
+		column.setCellRenderer(buttonColumn);
+		column.setCellEditor(buttonColumn);
+
+		tableModel = new InstancesTableModel(columnModel);
+		JTable table = new JTable(tableModel, columnModel);
+		table.addMouseListener(buttonColumn);
 
 		getContentPane().add(new JScrollPane(table), BorderLayout.CENTER);
 		getContentPane().add(new CreatePanel(), BorderLayout.EAST);
@@ -56,35 +66,35 @@ public class InstancesEditor extends JFrame implements Refreshable {
 		setVisible(true);
 	}
 
-	private TableColumnModel adjustColumnEditor(JTable table) {
-		int indexAttribute = 0;
+	private TableColumnModel buildColumnModel(Generic[] attributes) {
+		TableColumnModel columnModel = new DefaultTableColumnModel();
 		int indexColumn = 1;
-		for (; indexColumn < table.getColumnModel().getColumnCount() - 1; indexColumn++) {
-			TableColumn tableColumn = table.getColumnModel().getColumn(indexColumn);
-			tableColumn.setCellEditor(getEditor(tableModel.attributes[indexAttribute]));
-			tableColumn.setCellRenderer(getRenderer(tableModel.attributes[indexAttribute]));
-			indexAttribute++;
+		columnModel.addColumn(new TableColumn(0));
+		columnModel.getColumn(0).setHeaderValue(type.getValue());
+		for (Generic attribute : attributes) {
+			columnModel.addColumn(new GenericColumn(attribute, indexColumn));
+			TableColumn tableColumn = columnModel.getColumn(indexColumn);
+			tableColumn.setCellEditor(getEditor(attribute));
+			tableColumn.setCellRenderer(getRenderer(attribute));
+			tableColumn.setHeaderValue(attribute.getValue());
+			indexColumn++;
 		}
-		TableColumn column = table.getColumnModel().getColumn(indexColumn);
-		ButtonEditor buttonColumn = new ButtonEditor(table, indexColumn);
-		column.setCellRenderer(buttonColumn);
-		column.setCellEditor(buttonColumn);
-		return table.getColumnModel();
+		return columnModel;
 	}
 
-	private TableCellRenderer getRenderer(Generic attribute) {
+	private static TableCellRenderer getRenderer(Generic attribute) {
 		if (!isAssociation(attribute))
 			return null;
-		return new ComboBoxEditor(new String[] { "Red", "Green" });
+		return new ComboBoxEditor(attribute.getTargetComponent().getInstances().get().map(x -> (String) x.getValue()).collect(Collectors.toList()));
 	}
 
-	private TableCellEditor getEditor(Generic attribute) {
+	private static TableCellEditor getEditor(Generic attribute) {
 		if (!isAssociation(attribute))
 			return null;
-		return new ComboBoxEditor(new String[] { "Red", "Green" });
+		return new ComboBoxEditor(attribute.getTargetComponent().getInstances().get().map(x -> (String) x.getValue()).collect(Collectors.toList()));
 	}
 
-	private boolean isAssociation(Generic attribute) {
+	private static boolean isAssociation(Generic attribute) {
 		return attribute.getComponents().size() == 2;
 	}
 
@@ -129,10 +139,10 @@ public class InstancesEditor extends JFrame implements Refreshable {
 	private class InstancesTableModel extends AbstractTableModel {
 		private static final long serialVersionUID = -8137410628615273305L;
 
-		private final Generic[] attributes;
+		private final TableColumnModel columnModel;
 
-		public InstancesTableModel(Generic... attributes) {
-			this.attributes = attributes;
+		public InstancesTableModel(TableColumnModel columnModel) {
+			this.columnModel = columnModel;
 		}
 
 		@Override
@@ -141,17 +151,8 @@ public class InstancesEditor extends JFrame implements Refreshable {
 		}
 
 		@Override
-		public String getColumnName(int columnIndex) {
-			if (columnIndex == INSTANCE_INDEX)
-				return Objects.toString(type.getValue());
-			if (columnIndex == DELETE_INDEX)
-				return "Delete";
-			return Objects.toString(attributes[columnIndex - 1].getValue());
-		}
-
-		@Override
 		public int getColumnCount() {
-			return attributes.length + 2;
+			return columnModel.getColumnCount();
 		}
 
 		@Override
@@ -162,25 +163,56 @@ public class InstancesEditor extends JFrame implements Refreshable {
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			Generic generic = type.getSubInstances().getByIndex(rowIndex);
-			if (columnIndex == INSTANCE_INDEX)
+			if (columnIndex == 0)
 				return Objects.toString(generic.getValue());
-			if (columnIndex == DELETE_INDEX)
+			if (columnIndex == getColumnCount() - 1)
 				return "Delete";
-			return Objects.toString(generic.getValue(attributes[columnIndex - 1]));
+			return ((GenericColumn) columnModel.getColumn(columnIndex)).getValue(rowIndex);
 		}
 
 		@Override
 		public void setValueAt(Object value, int rowIndex, int columnIndex) {
 			Generic generic = type.getSubInstances().getByIndex(rowIndex);
-			if (columnIndex == INSTANCE_INDEX)
+			if (columnIndex == 0)
 				generic.updateValue(Objects.toString(value));
-			else if (columnIndex == DELETE_INDEX) {
+			else if (columnIndex == getColumnCount() - 1) {
 				int returnCode = JOptionPane.showConfirmDialog(JOptionPane.getFrameForComponent(InstancesEditor.this), "Are you sure you want to delete generic : " + generic.info());
 				if (JOptionPane.OK_OPTION == returnCode)
 					generic.remove();
 			} else
-				generic.setHolder(attributes[columnIndex - 1], Integer.parseInt(Objects.toString(value)));
+				((GenericColumn) columnModel.getColumn(columnIndex)).setValue(value, rowIndex);
 			fireTableDataChanged();
 		}
+	}
+
+	private class GenericColumn extends TableColumn {
+		private static final long serialVersionUID = -6057364790878771041L;
+
+		private final Generic attribute;
+
+		public GenericColumn(Generic attribute, int modelIndex) {
+			super(modelIndex);
+			this.attribute = attribute;
+		}
+
+		public Serializable getValue(int rowIndex) {
+			if (InstancesEditor.isAssociation(attribute))
+				return type.getSubInstances().getByIndex(rowIndex).getLink(attribute).getTargetComponent().getValue();
+			return type.getSubInstances().getByIndex(rowIndex).getValue(attribute);
+		}
+
+		public void setValue(Object value, int rowIndex) {
+			Generic instance = type.getSubInstances().getByIndex(rowIndex);
+			Class<?> classConstraint = attribute.getClassConstraint();
+			if (classConstraint != null && Integer.class.isAssignableFrom(classConstraint))
+				instance.setHolder(attribute, Integer.parseInt(Objects.toString(value)));
+			else if (classConstraint == null) {
+				if (!InstancesEditor.isAssociation(attribute))
+					instance.setHolder(attribute, Objects.toString(value));
+				else
+					instance.setLink(attribute, null, attribute.getTargetComponent().getInstance(Objects.toString(value)));
+			}
+		}
+
 	}
 }

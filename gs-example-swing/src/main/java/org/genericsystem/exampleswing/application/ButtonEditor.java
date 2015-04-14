@@ -19,7 +19,7 @@ import javax.swing.table.TableColumnModel;
 public class ButtonEditor extends AbstractCellEditor implements TableCellRenderer, TableCellEditor, MouseListener {
 	private static final long serialVersionUID = 2833750011734533890L;
 
-	private final JTable table;
+	// private final JTable table;
 	private int mnemonic;
 	private final Border originalBorder;
 	private Border focusBorder;
@@ -29,8 +29,13 @@ public class ButtonEditor extends AbstractCellEditor implements TableCellRendere
 	private Object editorValue;
 	private boolean isButtonColumnEditor;
 
-	public ButtonEditor(JTable table, int column) {
-		this.table = table;
+	TableColumnModel columnModel;
+	int column;
+
+	public ButtonEditor(TableColumnModel columnModel, /* JTable table, */int column) {
+		// this.table = table;
+		this.columnModel = columnModel;
+		this.column = column;
 
 		this.editButton = new JButton();
 		this.renderButton = new JButton();
@@ -38,10 +43,10 @@ public class ButtonEditor extends AbstractCellEditor implements TableCellRendere
 		originalBorder = editButton.getBorder();
 		setFocusBorder(new LineBorder(Color.BLUE));
 
-		TableColumnModel columnModel = table.getColumnModel();
-		columnModel.getColumn(column).setCellRenderer(this);
-		columnModel.getColumn(column).setCellEditor(this);
-		table.addMouseListener(this);
+		// TableColumnModel columnModel = table.getColumnModel();
+		// columnModel.getColumn(column).setCellRenderer(this);
+		// columnModel.getColumn(column).setCellEditor(this);
+		// table.addMouseListener(this);
 	}
 
 	public Border getFocusBorder() {
@@ -118,14 +123,14 @@ public class ButtonEditor extends AbstractCellEditor implements TableCellRendere
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		if (table.isEditing() && table.getCellEditor() == this)
+		if (columnModel.getColumn(column).getCellEditor() == this)
 			isButtonColumnEditor = true;
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		if (isButtonColumnEditor && table.isEditing())
-			table.getCellEditor().stopCellEditing();
+		if (isButtonColumnEditor)
+			columnModel.getColumn(column).getCellEditor().stopCellEditing();
 
 		isButtonColumnEditor = false;
 	}
