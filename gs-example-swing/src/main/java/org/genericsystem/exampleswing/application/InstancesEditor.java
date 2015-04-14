@@ -69,7 +69,7 @@ public class InstancesEditor extends JFrame implements Refreshable {
 	private TableColumnModel buildColumnModel(Generic[] attributes) {
 		TableColumnModel columnModel = new DefaultTableColumnModel();
 		int indexColumn = 1;
-		columnModel.addColumn(new TableColumn(0));
+		columnModel.addColumn(new GenericColumn(type, 0));
 		columnModel.getColumn(0).setHeaderValue(type.getValue());
 		for (Generic attribute : attributes) {
 			columnModel.addColumn(new GenericColumn(attribute, indexColumn));
@@ -162,9 +162,6 @@ public class InstancesEditor extends JFrame implements Refreshable {
 
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			Generic generic = type.getSubInstances().getByIndex(rowIndex);
-			if (columnIndex == 0)
-				return Objects.toString(generic.getValue());
 			if (columnIndex == getColumnCount() - 1)
 				return "Delete";
 			return ((GenericColumn) columnModel.getColumn(columnIndex)).getValue(rowIndex);
@@ -172,10 +169,8 @@ public class InstancesEditor extends JFrame implements Refreshable {
 
 		@Override
 		public void setValueAt(Object value, int rowIndex, int columnIndex) {
-			Generic generic = type.getSubInstances().getByIndex(rowIndex);
-			if (columnIndex == 0)
-				generic.updateValue(Objects.toString(value));
-			else if (columnIndex == getColumnCount() - 1) {
+			if (columnIndex == getColumnCount() - 1) {
+				Generic generic = type.getSubInstances().getByIndex(rowIndex);
 				int returnCode = JOptionPane.showConfirmDialog(JOptionPane.getFrameForComponent(InstancesEditor.this), "Are you sure you want to delete generic : " + generic.info());
 				if (JOptionPane.OK_OPTION == returnCode)
 					generic.remove();
@@ -188,29 +183,33 @@ public class InstancesEditor extends JFrame implements Refreshable {
 	private class GenericColumn extends TableColumn {
 		private static final long serialVersionUID = -6057364790878771041L;
 
-		private final Generic attribute;
+		private final Generic generic;
 
 		public GenericColumn(Generic attribute, int modelIndex) {
 			super(modelIndex);
-			this.attribute = attribute;
+			this.generic = attribute;
 		}
 
 		public Serializable getValue(int rowIndex) {
-			if (InstancesEditor.isAssociation(attribute))
-				return type.getSubInstances().getByIndex(rowIndex).getLink(attribute).getTargetComponent().getValue();
-			return type.getSubInstances().getByIndex(rowIndex).getValue(attribute);
+			if (generic.getComponents().size() == 0)
+				return generic.getInstances().getByIndex(rowIndex).getValue();
+			if (InstancesEditor.isAssociation(generic))
+				return type.getSubInstances().getByIndex(rowIndex).getLink(generic).getTargetComponent().getValue();
+			return type.getSubInstances().getByIndex(rowIndex).getValue(generic);
 		}
 
 		public void setValue(Object value, int rowIndex) {
 			Generic instance = type.getSubInstances().getByIndex(rowIndex);
-			Class<?> classConstraint = attribute.getClassConstraint();
+			Class<?> classConstraint = generic.getClassConstraint();
 			if (classConstraint != null && Integer.class.isAssignableFrom(classConstraint))
-				instance.setHolder(attribute, Integer.parseInt(Objects.toString(value)));
+				instance.setHolder(generic, Integer.parseInt(Objects.toString(value)));
 			else if (classConstraint == null) {
-				if (!InstancesEditor.isAssociation(attribute))
-					instance.setHolder(attribute, Objects.toString(value));
+				if (generic.getComponents().size() == 0)
+					generic.getInstances().getByIndex(rowIndex).updateValue((Serializable) value);
+				else if (!InstancesEditor.isAssociation(generic))
+					instance.setHolder(generic, Objects.toString(value));
 				else
-					instance.setLink(attribute, null, attribute.getTargetComponent().getInstance(Objects.toString(value)));
+					instance.setLink(generic, null, generic.getTargetComponent().getInstance(Objects.toString(value)));
 			}
 		}
 
