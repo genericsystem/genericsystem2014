@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -21,7 +20,6 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-
 import org.genericsystem.exampleswing.application.CacheManager.Refreshable;
 import org.genericsystem.exampleswing.model.Car;
 import org.genericsystem.exampleswing.model.CarColor;
@@ -45,17 +43,8 @@ public class InstancesEditor extends JFrame implements Refreshable {
 
 		Generic[] attributes = new Generic[] { engine.find(Power.class), engine.find(CarColor.class) };
 		TableColumnModel columnModel = buildColumnModel(attributes);
-
-		columnModel.addColumn(new TableColumn(columnModel.getColumnCount()));
-		TableColumn column = columnModel.getColumn(columnModel.getColumnCount() - 1);
-		column.setHeaderValue("Delete");
-		ButtonEditor buttonEditor = new ButtonEditor(columnModel, columnModel.getColumnCount() - 1);
-		column.setCellRenderer(buttonEditor);
-		column.setCellEditor(buttonEditor);
-
-		tableModel = new InstancesTableModel(columnModel);
-		JTable table = new JTable(tableModel, columnModel);
-		table.addMouseListener(buttonEditor);
+		JTable table = new JTable(tableModel = new InstancesTableModel(columnModel), columnModel);
+		table.addMouseListener((ButtonEditor) columnModel.getColumn(columnModel.getColumnCount() - 1).getCellEditor());
 
 		getContentPane().add(new JScrollPane(table), BorderLayout.CENTER);
 		getContentPane().add(new CreatePanel(), BorderLayout.EAST);
@@ -79,6 +68,13 @@ public class InstancesEditor extends JFrame implements Refreshable {
 			tableColumn.setHeaderValue(attribute.getValue());
 			indexColumn++;
 		}
+		TableColumn column = new TableColumn(columnModel.getColumnCount());
+		column.setHeaderValue("Delete");
+		ButtonEditor buttonEditor = new ButtonEditor(columnModel, columnModel.getColumnCount());
+		column.setCellRenderer(buttonEditor);
+		column.setCellEditor(buttonEditor);
+
+		columnModel.addColumn(column);
 		return columnModel;
 	}
 
