@@ -19,7 +19,7 @@ public class InstanceValueClassConstraint<T extends DefaultVertex<T>> implements
 	@SuppressWarnings("unchecked")
 	@Override
 	public void check(T modified, T attribute, Serializable value) throws ConstraintViolationException {
-		if (!((Class<? extends Serializable>) value).isAssignableFrom(modified.getValue().getClass()))
+		if (modified.getValue()!=null  && !((Class<? extends Serializable>) value).isAssignableFrom(modified.getValue().getClass()))
 			throw new InstanceValueClassConstraintViolationException(modified + " should be " + modified.getClassConstraint());
 	}
 }
