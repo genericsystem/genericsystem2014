@@ -47,6 +47,7 @@ public  class GenericColumn<T> extends TableColumn<Generic,T> {
 		private static final long serialVersionUID = 7709729724315030415L;
 
 		public ObservableValue<T> get(Object key,T value) {
+
 			SimpleObjectProperty<T> observable = super.get(key);
 			if(observable==null)
 				put((Generic) key,observable=new SimpleObjectProperty<T>(value));
