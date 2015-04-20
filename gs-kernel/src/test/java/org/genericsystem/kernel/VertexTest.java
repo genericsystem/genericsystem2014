@@ -15,7 +15,7 @@ public class VertexTest extends AbstractTest {
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic car = root.addInstance(vehicle, "Car");
 
-		assert vehicle.getInheritings().get().anyMatch(car::equals);
+		assert vehicle.getInheritings().stream().anyMatch(car::equals);
 	}
 
 	public void test002() {
@@ -35,7 +35,7 @@ public class VertexTest extends AbstractTest {
 	public void test003() {
 		Root root = new Root();
 		Generic vehicle = root.addInstance("Vehicle");
-		assert root.getInstances().get().anyMatch(g -> g.equals(vehicle));
+		assert root.getInstances().stream().anyMatch(g -> g.equals(vehicle));
 	}
 
 	public void test004() {
@@ -45,7 +45,7 @@ public class VertexTest extends AbstractTest {
 		Generic myBmw = car.addInstance("myBmw");
 		Generic myBmw123 = carPower.addInstance("123", myBmw);
 
-		assert myBmw.getComposites().get().anyMatch(g -> g.equals(myBmw123));
+		assert myBmw.getComposites().stream().anyMatch(g -> g.equals(myBmw123));
 	}
 
 	public void test005() {

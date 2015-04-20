@@ -54,7 +54,7 @@ public class IssueBean extends AbstractBean implements Serializable {
 	}
 
 	public List<Generic> getIssuesByStatut() {
-		return (filterBean.getPredicate(issueStatut) != null) ? issue.getSubInstances().get().filter(filterBean.getPredicate(issueStatut)).collect(Collectors.toList()) : issue.getSubInstances().get().collect(Collectors.toList());
+		return (filterBean.getPredicate(issueStatut) != null) ? issue.getSubInstances().stream().filter(filterBean.getPredicate(issueStatut)).collect(Collectors.toList()) : issue.getSubInstances().stream().collect(Collectors.toList());
 	}
 
 	public void deleteIssue(Generic issue) {
@@ -62,13 +62,13 @@ public class IssueBean extends AbstractBean implements Serializable {
 	}
 
 	public List<String> getVersionsByIssue(Generic selectedIssue) {
-		return selectedIssue.getLinks(issueVersion).get().map(generic -> Objects.toString(generic.getValue())).collect(Collectors.toList());
+		return selectedIssue.getLinks(issueVersion).stream().map(generic -> Objects.toString(generic.getValue())).collect(Collectors.toList());
 	}
 
 	public void addVersionsToIssue(Generic issue, List<String> selectedVersions) {
 		for (String selectVersion : selectedVersions)
 			issue.setLink(issueVersion, selectVersion, version);
-		for (Generic link : issue.getLinks(issueVersion).get().collect(Collectors.toList()))
+		for (Generic link : issue.getLinks(issueVersion).stream().collect(Collectors.toList()))
 			if (!selectedVersions.contains(link.getValue()))
 				issue.getLink(issueVersion, link.getValue(), version).remove();
 	}

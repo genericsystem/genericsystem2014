@@ -33,25 +33,25 @@ public interface DefaultDependencies<T extends DefaultVertex<T>> extends IVertex
 	@SuppressWarnings("unchecked")
 	@Override
 	default T getInstance(Serializable value, T... components) {
-		return getNonAmbiguousResult(getInstances(value, components).get());
+		return getNonAmbiguousResult(getInstances(value, components).stream());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default T getInstance(T... components) {
-		return getNonAmbiguousResult(getInstances(components).get());
+		return getNonAmbiguousResult(getInstances(components).stream());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default T getInstance(T override, Serializable value, T... components) {
-		return getNonAmbiguousResult(getInstances(override, value, components).get());
+		return getNonAmbiguousResult(getInstances(override, value, components).stream());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default T getInstance(List<T> overrides, Serializable value, T... components) {
-		return getNonAmbiguousResult(getInstances(overrides, value, components).get());
+		return getNonAmbiguousResult(getInstances(overrides, value, components).stream());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -88,7 +88,7 @@ public interface DefaultDependencies<T extends DefaultVertex<T>> extends IVertex
 	@SuppressWarnings("unchecked")
 	@Override
 	default T getSubInstance(Serializable value, T... components) {
-		return getNonAmbiguousResult(getSubInstances(value, components).get());
+		return getNonAmbiguousResult(getSubInstances(value, components).stream());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -99,13 +99,13 @@ public interface DefaultDependencies<T extends DefaultVertex<T>> extends IVertex
 
 	@Override
 	default Snapshot<T> getSubInstances() {
-		return () -> getSubInheritings().get().flatMap(inheriting -> inheriting.getInstances().get());
+		return () -> getSubInheritings().stream().flatMap(inheriting -> inheriting.getInstances().stream());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default T getSubInstance(T... components) {
-		return getNonAmbiguousResult(getSubInstances(components).get());
+		return getNonAmbiguousResult(getSubInstances(components).stream());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -117,7 +117,7 @@ public interface DefaultDependencies<T extends DefaultVertex<T>> extends IVertex
 	@SuppressWarnings("unchecked")
 	@Override
 	default T getSubInstance(T override, Serializable value, T... components) {
-		return getNonAmbiguousResult(getSubInstances(override, value, components).get());
+		return getNonAmbiguousResult(getSubInstances(override, value, components).stream());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -129,7 +129,7 @@ public interface DefaultDependencies<T extends DefaultVertex<T>> extends IVertex
 	@SuppressWarnings("unchecked")
 	@Override
 	default T getSubInstance(List<T> overrides, Serializable value, T... components) {
-		return getNonAmbiguousResult(getSubInstances(overrides, value, components).get());
+		return getNonAmbiguousResult(getSubInstances(overrides, value, components).stream());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -142,13 +142,13 @@ public interface DefaultDependencies<T extends DefaultVertex<T>> extends IVertex
 	@SuppressWarnings("unchecked")
 	@Override
 	default T getInheriting(Serializable value, T... components) {
-		return getNonAmbiguousResult(getInheritings(value, components).get());
+		return getNonAmbiguousResult(getInheritings(value, components).stream());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default T getInheriting(T... components) {
-		return getNonAmbiguousResult(getInheritings(components).get());
+		return getNonAmbiguousResult(getInheritings(components).stream());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -172,7 +172,7 @@ public interface DefaultDependencies<T extends DefaultVertex<T>> extends IVertex
 	@SuppressWarnings("unchecked")
 	@Override
 	default T getSubInheriting(Serializable value, T... components) {
-		return getNonAmbiguousResult(getSubInheritings(value, components).get());
+		return getNonAmbiguousResult(getSubInheritings(value, components).stream());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -184,7 +184,7 @@ public interface DefaultDependencies<T extends DefaultVertex<T>> extends IVertex
 	@SuppressWarnings("unchecked")
 	@Override
 	default T getSubInheriting(T... components) {
-		return getNonAmbiguousResult(getSubInheritings(components).get());
+		return getNonAmbiguousResult(getSubInheritings(components).stream());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -196,12 +196,12 @@ public interface DefaultDependencies<T extends DefaultVertex<T>> extends IVertex
 	@SuppressWarnings("unchecked")
 	@Override
 	default Snapshot<T> getSubInheritings() {
-		return () -> Stream.concat(Stream.of((T) this), getInheritings().get().flatMap(inheriting -> inheriting.getSubInheritings().get())).distinct();
+		return () -> Stream.concat(Stream.of((T) this), getInheritings().stream().flatMap(inheriting -> inheriting.getSubInheritings().stream())).distinct();
 	}
 
 	@Override
 	default T getComposite(Serializable value) {
-		return getNonAmbiguousResult(getComposites(value).get());
+		return getNonAmbiguousResult(getComposites(value).stream());
 	}
 
 	@Override

@@ -13,7 +13,7 @@ public interface IteratorSnapshot<T> extends Snapshot<T> {
 	public abstract Iterator<T> iterator();
 
 	@Override
-	public default Stream<T> get() {
+	public default Stream<T> stream() {
 		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator(), 0), false);
 	}
 
@@ -48,7 +48,7 @@ public interface IteratorSnapshot<T> extends Snapshot<T> {
 
 	@Override
 	default String info() {
-		return get().collect(Collectors.toList()).toString();
+		return stream().collect(Collectors.toList()).toString();
 	}
 
 	@Override

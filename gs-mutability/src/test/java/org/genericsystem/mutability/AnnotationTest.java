@@ -22,8 +22,8 @@ public class AnnotationTest extends AbstractTest {
 
 		@Override
 		@SuppressWarnings("unchecked")
-		default Stream<T> get() {
-			return ((Generic) this).getInstances().get().map(x -> (T) x.getValue());
+		default Stream<T> stream() {
+			return ((Generic) this).getInstances().stream().map(x -> (T) x.getValue());
 		}
 
 		default void add(T value) {
@@ -31,7 +31,7 @@ public class AnnotationTest extends AbstractTest {
 		}
 
 		default List<T> getValues() {
-			return get().collect(Collectors.toList());
+			return stream().collect(Collectors.toList());
 		}
 
 		default boolean remove(T value) {
@@ -102,7 +102,7 @@ public class AnnotationTest extends AbstractTest {
 		Vehicle vehicle = engine.find(Vehicle.class);
 		VehicleType vehicleType = engine.find(VehicleType.class);
 		assert ((Generic) vehicleType).addInstance("myBmw") instanceof VehicleInstance;
-		assert ((Generic) vehicleType).getInstances().get().allMatch(x -> x instanceof VehicleInstance);
+		assert ((Generic) vehicleType).getInstances().stream().allMatch(x -> x instanceof VehicleInstance);
 	}
 
 	public void test003_instanceof() {

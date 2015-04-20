@@ -59,8 +59,8 @@ public class Differential extends AbstractDifferential {
 			}
 
 			@Override
-			public Stream<Generic> get() {
-				return Stream.concat(differential.getDependencies(generic).get().filter(x -> !removes.contains(x)), adds.get().filter(x -> generic.isDirectAncestorOf(x)));
+			public Stream<Generic> stream() {
+				return Stream.concat(differential.getDependencies(generic).stream().filter(x -> !removes.contains(x)), adds.stream().filter(x -> generic.isDirectAncestorOf(x)));
 			}
 		};
 	}

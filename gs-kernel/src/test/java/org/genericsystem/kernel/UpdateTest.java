@@ -25,8 +25,8 @@ public class UpdateTest extends AbstractTest {
 
 		assert myBmw.getMeta().equals(car);
 		Generic newCar = car.updateValue("NewCar");
-		assert newCar.getInstances().get().allMatch(x -> "MyBmw".equals(x.getValue()));
-		assert newCar.getInstances().get().allMatch(x -> x.getHolders(power).get().allMatch(y -> "myBmwV233".equals(y.getValue())));
+		assert newCar.getInstances().stream().allMatch(x -> "MyBmw".equals(x.getValue()));
+		assert newCar.getInstances().stream().allMatch(x -> x.getHolders(power).stream().allMatch(y -> "myBmwV233".equals(y.getValue())));
 		assert !myBmw.isAlive();
 		assert !car.isAlive();
 		assert root.getInstances().contains(newCar);
@@ -102,9 +102,9 @@ public class UpdateTest extends AbstractTest {
 		assert root.getInstances().contains(newVehicle.getInheritings().first());
 		assert root.getInstances().size() == 2;
 
-		assert newVehicle.getInheritings().get().allMatch(x -> "Car".equals(x.getValue()));
-		assert newVehicle.getInheritings().get().allMatch(x -> x.getInstances().get().allMatch(y -> "myBmw".equals(y.getValue())));
-		assert newVehicle.getInheritings().get().allMatch(x -> x.getInstances().get().allMatch(y -> y.getHolders(power).get().allMatch(z -> z.getValue().equals(233))));
+		assert newVehicle.getInheritings().stream().allMatch(x -> "Car".equals(x.getValue()));
+		assert newVehicle.getInheritings().stream().allMatch(x -> x.getInstances().stream().allMatch(y -> "myBmw".equals(y.getValue())));
+		assert newVehicle.getInheritings().stream().allMatch(x -> x.getInstances().stream().allMatch(y -> y.getHolders(power).stream().allMatch(z -> z.getValue().equals(233))));
 
 		assert myBmw233.getValue().equals(233);
 	}

@@ -146,7 +146,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		assert newMachine.getComponents().size() == 0;
 		assert newMachine.getSupers().size() == 0;
 		assert newMachine.getInstances().size() == 0;
-		assert newMachine.getInheritings().size() == 1 : newMachine.getInheritings().get().collect(Collectors.toList());
+		assert newMachine.getInheritings().size() == 1 : newMachine.getInheritings().stream().collect(Collectors.toList());
 
 		Generic newVehicle = engine.getInstance(newMachine, "Vehicle");
 		assert newVehicle != null;
@@ -189,7 +189,7 @@ public class UpdatableServiceTest extends AbstractTest {
 
 		Generic newVehicle = engine.getInstance("Vehicle");
 		assert newVehicle == vehicle;
-		assert newVehicle.getInheritings().size() == 1 : newVehicle.getInheritings().get().collect(Collectors.toList());
+		assert newVehicle.getInheritings().size() == 1 : newVehicle.getInheritings().stream().collect(Collectors.toList());
 		assert engine.getInstance(newVehicle, "Car").getSupers().size() == 1;
 	}
 

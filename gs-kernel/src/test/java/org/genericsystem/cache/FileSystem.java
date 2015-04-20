@@ -29,7 +29,7 @@ public class FileSystem extends GenericImpl {
 		}
 
 		public File getFile(String name) {
-			return (File) getHolders(getRoot().find(FileType.class)).get().filter(x -> name.equals(x.getValue())).findFirst().orElse(null);
+			return (File) getHolders(getRoot().find(FileType.class)).stream().filter(x -> name.equals(x.getValue())).findFirst().orElse(null);
 		}
 
 		public File addFile(String name) {
@@ -53,7 +53,7 @@ public class FileSystem extends GenericImpl {
 		}
 
 		public Directory getDirectory(String name) {
-			return (Directory) getInheritings().get().filter(x -> x.getValue().equals(name)).findFirst().orElse(null);
+			return (Directory) getInheritings().stream().filter(x -> x.getValue().equals(name)).findFirst().orElse(null);
 		}
 
 		public Directory addDirectory(String name) {
@@ -105,7 +105,7 @@ public class FileSystem extends GenericImpl {
 	}
 
 	public Directory getRootDirectory(String name) {
-		return (Directory) getRootDirectories().get().filter(x -> x.getValue().equals(name)).findFirst().orElse(null);
+		return (Directory) getRootDirectories().stream().filter(x -> x.getValue().equals(name)).findFirst().orElse(null);
 	}
 
 	public Directory addRootDirectory(String name) {

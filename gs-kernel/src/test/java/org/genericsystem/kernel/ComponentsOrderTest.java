@@ -110,7 +110,7 @@ public class ComponentsOrderTest extends AbstractTest {
 		myBmw.setLink(largerThan, "myBmwLargerThanMyAudi", myAudi);
 		myMercedes.setLink(largerThan, "myMercedesLargerThanMyBmw", myBmw);
 		myBmw.setLink(largerThan, "myBmwLargerThanMymyPorsche", myPorsche);
-		List<Generic> smallerThanMyBmw = myBmw.getLinks(largerThan, ApiStatics.BASE_POSITION).get().map(Generic::getTargetComponent).collect(Collectors.toList());
+		List<Generic> smallerThanMyBmw = myBmw.getLinks(largerThan, ApiStatics.BASE_POSITION).stream().map(Generic::getTargetComponent).collect(Collectors.toList());
 		assert smallerThanMyBmw.size() == 2;
 		assert smallerThanMyBmw.contains(myAudi);
 		assert smallerThanMyBmw.contains(myPorsche);
@@ -127,7 +127,7 @@ public class ComponentsOrderTest extends AbstractTest {
 		myBmw.addLink(largerThan, "myBmwLargerThanMyAudi", myAudi);
 		myMercedes.addLink(largerThan, "myMercedesLargerThanMyBmw", myBmw);
 		myBmw.addLink(largerThan, "myBmwLargerThanMymyPorsche", myPorsche);
-		List<Generic> smallerThanMyMbw = myBmw.getLinks(largerThan, ApiStatics.BASE_POSITION).get().map(Generic::getTargetComponent).collect(Collectors.toList());
+		List<Generic> smallerThanMyMbw = myBmw.getLinks(largerThan, ApiStatics.BASE_POSITION).stream().map(Generic::getTargetComponent).collect(Collectors.toList());
 		assert smallerThanMyMbw.size() == 2;
 		assert smallerThanMyMbw.contains(myAudi);
 		assert smallerThanMyMbw.contains(myPorsche);
@@ -144,7 +144,7 @@ public class ComponentsOrderTest extends AbstractTest {
 		largerThan.setInstance("myBmwLargerThanMyAudi", myBmw, myAudi);
 		largerThan.setInstance("myMercedesLargerThanMyBmw", myMercedes, myBmw);
 		largerThan.setInstance("myBmwLargerThanMymyPorsche", myBmw, myPorsche);
-		List<Generic> smallerThanMyMbw = myBmw.getLinks(largerThan, ApiStatics.BASE_POSITION).get().map(Generic::getTargetComponent).collect(Collectors.toList());
+		List<Generic> smallerThanMyMbw = myBmw.getLinks(largerThan, ApiStatics.BASE_POSITION).stream().map(Generic::getTargetComponent).collect(Collectors.toList());
 		assert smallerThanMyMbw.size() == 2;
 		assert smallerThanMyMbw.contains(myAudi);
 		assert smallerThanMyMbw.contains(myPorsche);
@@ -161,7 +161,7 @@ public class ComponentsOrderTest extends AbstractTest {
 		largerThan.addInstance("myBmwLargerThanMyAudi", myBmw, myAudi);
 		largerThan.addInstance("myMercedesLargerThanMyBmw", myMercedes, myBmw);
 		largerThan.addInstance("myBmwLargerThanMymyPorsche", myBmw, myPorsche);
-		List<Generic> smallerThanMyMbw = myBmw.getLinks(largerThan, ApiStatics.BASE_POSITION).get().map(Generic::getTargetComponent).collect(Collectors.toList());
+		List<Generic> smallerThanMyMbw = myBmw.getLinks(largerThan, ApiStatics.BASE_POSITION).stream().map(Generic::getTargetComponent).collect(Collectors.toList());
 		assert smallerThanMyMbw.size() == 2;
 		assert smallerThanMyMbw.contains(myAudi);
 		assert smallerThanMyMbw.contains(myPorsche);

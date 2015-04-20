@@ -45,7 +45,7 @@ public class AnnotationTest extends AbstractTest {
 		Root engine = new Root(Vehicle.class);
 		assert engine.find(Vehicle.class) instanceof Vehicle;
 		assert engine.getInstance(Vehicle.class) instanceof Vehicle : engine.find(Vehicle.class).info() + "   " + engine.getInstance(Vehicle.class).info();
-		assert engine.getInstances().get().anyMatch(x -> x instanceof Vehicle);
+		assert engine.getInstances().stream().anyMatch(x -> x instanceof Vehicle);
 	}
 
 	public void test005() {
@@ -66,7 +66,7 @@ public class AnnotationTest extends AbstractTest {
 	public void test007() {
 		Root engine = new Root(VehicleType.class);
 		VehicleType vehicle = engine.find(VehicleType.class);
-		assert vehicle.getInstances().get().allMatch(x -> x instanceof VehicleInstance);
+		assert vehicle.getInstances().stream().allMatch(x -> x instanceof VehicleInstance);
 	}
 
 	public void test008() {

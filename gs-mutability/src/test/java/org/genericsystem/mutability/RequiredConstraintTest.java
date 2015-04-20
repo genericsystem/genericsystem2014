@@ -71,9 +71,9 @@ public class RequiredConstraintTest extends AbstractTest {
 		assert !car.isRequiredConstraintEnabled(ApiStatics.BASE_POSITION);
 		power.disableRequiredConstraint(ApiStatics.BASE_POSITION);
 		assert !car.isRequiredConstraintEnabled(ApiStatics.BASE_POSITION);
-		List<Generic> list = power.getHolders(engine).get().collect(Collectors.toList());
+		List<Generic> list = power.getHolders(engine).stream().collect(Collectors.toList());
 
-		assert !power.isRequiredConstraintEnabled(ApiStatics.BASE_POSITION) : power.getHolders(engine).get().map(x -> x.info()).collect(Collectors.toList()).toString();
+		assert !power.isRequiredConstraintEnabled(ApiStatics.BASE_POSITION) : power.getHolders(engine).stream().map(x -> x.info()).collect(Collectors.toList()).toString();
 	}
 
 	//

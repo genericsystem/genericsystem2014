@@ -18,8 +18,8 @@ public class UpdateWithCacheTest extends AbstractTest {
 		assert myCar.getMeta().equals(car);
 		Generic carUpdate = car.updateValue("CarUpdate");
 		engine.getCurrentCache().flush();
-		assert carUpdate.getInstances().get().allMatch(x -> "MyCar".equals(x.getValue()));
-		assert carUpdate.getInstances().get().allMatch(x -> x.getHolders(power).get().allMatch(y -> "myCarV233".equals(y.getValue())));
+		assert carUpdate.getInstances().stream().allMatch(x -> "MyCar".equals(x.getValue()));
+		assert carUpdate.getInstances().stream().allMatch(x -> x.getHolders(power).stream().allMatch(y -> "myCarV233".equals(y.getValue())));
 		// on perd les references
 		assert !myCar.isAlive();
 		assert !car.isAlive();
@@ -111,9 +111,9 @@ public class UpdateWithCacheTest extends AbstractTest {
 		assert !power.isAlive();
 		assert !myCar.isAlive();
 
-		assert vehicleUpdate.getInheritings().get().allMatch(x -> "Car".equals(x.getValue()));
-		assert vehicleUpdate.getInheritings().get().allMatch(x -> x.getInstances().get().allMatch(y -> "myCar".equals(y.getValue())));
-		assert vehicleUpdate.getInheritings().get().allMatch(x -> x.getInstances().get().allMatch(y -> y.getHolders(power).get().allMatch(z -> z.getValue().equals(233))));
+		assert vehicleUpdate.getInheritings().stream().allMatch(x -> "Car".equals(x.getValue()));
+		assert vehicleUpdate.getInheritings().stream().allMatch(x -> x.getInstances().stream().allMatch(y -> "myCar".equals(y.getValue())));
+		assert vehicleUpdate.getInheritings().stream().allMatch(x -> x.getInstances().stream().allMatch(y -> y.getHolders(power).stream().allMatch(z -> z.getValue().equals(233))));
 
 		engine.getCurrentCache().flush();
 

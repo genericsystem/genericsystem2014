@@ -81,13 +81,13 @@ public class InstancesEditor extends JFrame implements Refreshable {
 	private static TableCellRenderer getRenderer(Generic attribute) {
 		if (!isAssociation(attribute))
 			return null;
-		return new ComboBoxEditor(attribute.getTargetComponent().getInstances().get().map(x -> (String) x.getValue()).collect(Collectors.toList()));
+		return new ComboBoxEditor(attribute.getTargetComponent().getInstances().stream().map(x -> (String) x.getValue()).collect(Collectors.toList()));
 	}
 
 	private static TableCellEditor getEditor(Generic attribute) {
 		if (!isAssociation(attribute))
 			return null;
-		return new ComboBoxEditor(attribute.getTargetComponent().getInstances().get().map(x -> (String) x.getValue()).collect(Collectors.toList()));
+		return new ComboBoxEditor(attribute.getTargetComponent().getInstances().stream().map(x -> (String) x.getValue()).collect(Collectors.toList()));
 	}
 
 	private static boolean isAssociation(Generic attribute) {

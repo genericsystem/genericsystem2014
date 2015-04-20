@@ -215,7 +215,7 @@ public class Checker {
 	private void checkConstraints(boolean isOnAdd, boolean isFlushTime, Generic vertex) {
 		Generic map = getContext().getRoot().getMap();
 		if (map != null) {
-			Stream<Generic> contraintsHolders = vertex.getMeta().getHolders(map).get()
+			Stream<Generic> contraintsHolders = vertex.getMeta().getHolders(map).stream()
 					.filter(holder -> holder.getMeta().getValue() instanceof AxedPropertyClass && Constraint.class.isAssignableFrom(((AxedPropertyClass) holder.getMeta().getValue()).getClazz()))
 					.filter(holder -> holder.getValue() != null && !Boolean.FALSE.equals(holder.getValue())).sorted(CONSTRAINT_PRIORITY);
 			contraintsHolders.forEach(constraintHolder -> {

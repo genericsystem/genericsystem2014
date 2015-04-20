@@ -28,7 +28,7 @@ public class ColorBean implements Serializable {
 	@PostConstruct
 	private void init() {
 		color = engine.find(Color.class);
-		colors = color.getInstances().get().map(generic -> Objects.toString(generic.getValue())).collect(Collectors.toList());
+		colors = color.getInstances().stream().map(generic -> Objects.toString(generic.getValue())).collect(Collectors.toList());
 	}
 
 	public List<String> getColors() {

@@ -22,7 +22,7 @@ public class StatutBean implements Serializable {
 
 	@PostConstruct
 	private void init() {
-		statuts = statut.getInstances().get().map(generic -> Objects.toString(generic.getValue())).collect(Collectors.toList());
+		statuts = statut.getInstances().stream().map(generic -> Objects.toString(generic.getValue())).collect(Collectors.toList());
 	}
 
 	public List<String> getStatuts() {

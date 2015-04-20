@@ -21,9 +21,9 @@ public class PropertyConstraint<T extends DefaultVertex<T>> implements Checkable
 	@Override
 	public void check(T modified, T attribute, Serializable value) throws ConstraintViolationException {
 		T base = modified.getBaseComponent();
-		Snapshot<T> snapshot = () -> base.getHolders(attribute).get().filter(x -> modified.getComponents().equals(x.getComponents()) && modified.getMeta().equals(x.getMeta()));
+		Snapshot<T> snapshot = () -> base.getHolders(attribute).stream().filter(x -> modified.getComponents().equals(x.getComponents()) && modified.getMeta().equals(x.getMeta()));
 		if (snapshot.size() > 1)
-			throw new PropertyConstraintViolationException("For attribute : " + attribute + " these holders violates property constraint : " + snapshot.get().map(x -> x.info()).collect(Collectors.toList()));
+			throw new PropertyConstraintViolationException("For attribute : " + attribute + " these holders violates property constraint : " + snapshot.stream().map(x -> x.info()).collect(Collectors.toList()));
 	}
 
 	@Override

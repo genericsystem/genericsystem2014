@@ -24,7 +24,7 @@ public class PriorityBean extends ManyToOne implements Serializable {
 	@Override
 	@PostConstruct
 	protected void initPriority() {
-		priorities = priority.getInstances().get().map(generic -> Objects.toString(generic.getValue())).collect(Collectors.toList());
+		priorities = priority.getInstances().stream().map(generic -> Objects.toString(generic.getValue())).collect(Collectors.toList());
 	}
 
 	@Override

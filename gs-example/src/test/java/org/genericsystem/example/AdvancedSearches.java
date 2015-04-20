@@ -141,8 +141,8 @@ public class AdvancedSearches {
 		engine.getCurrentCache().flush();
 
 		// Find all instances of Vehicle with the Options air conditioning
-		Snapshot<Generic> instances = () -> vehicle.getInstances().get().filter(
-												generic -> generic.getHolders(options).get().anyMatch(
+		Snapshot<Generic> instances = () -> vehicle.getInstances().stream().filter(
+												generic -> generic.getHolders(options).stream().anyMatch(
 														holder -> holder.getValue().equals("air conditioning")
 												)
 											);

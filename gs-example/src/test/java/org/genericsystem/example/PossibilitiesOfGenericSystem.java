@@ -172,13 +172,13 @@ public class PossibilitiesOfGenericSystem {
 
 		// Query the database
 		@SuppressWarnings("unused")
-		Snapshot<Generic> searchedVehicles = () -> vehicle.getInstances().get().filter(
-														generic -> generic.getHolders(power).get().anyMatch(
+		Snapshot<Generic> searchedVehicles = () -> vehicle.getInstances().stream().filter(
+														generic -> generic.getHolders(power).stream().anyMatch(
 																holder -> (int) holder.getValue() >= 50 && (int) holder.getValue() <= 90
 														)
 												   )
 												   .filter(
-														   generic -> generic.getLinks(vehicleColor).get().anyMatch(
+														   generic -> generic.getLinks(vehicleColor).stream().anyMatch(
 																   link -> link.getTargetComponent().equals(white)
 														   )
 												   );

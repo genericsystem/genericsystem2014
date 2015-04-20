@@ -24,11 +24,11 @@ public class CommentBean extends AbstractBean implements Serializable {
 	private transient Comment comment;
 
 	public List<String> getAllComments() {
-		return comment.getInstances().get().map(generic -> Objects.toString(generic.getValue())).collect(Collectors.toList());
+		return comment.getInstances().stream().map(generic -> Objects.toString(generic.getValue())).collect(Collectors.toList());
 	}
 
 	public List<Generic> getCommentsByIssue(Generic issue) {
-		return issue.getHolders(comment).get().collect(Collectors.toList());
+		return issue.getHolders(comment).stream().collect(Collectors.toList());
 	}
 
 	public void deleteComment(Generic comment) {

@@ -69,10 +69,10 @@ class InheritanceComputer<T extends DefaultVertex<T>> extends HashSet<T> {
 	}
 
 	private static <T extends DefaultVertex<T>> Stream<T> compositesByMeta(T localBase, T holder) {
-		return localBase.getComposites().get().filter(x -> !x.equals(holder) && x.getMeta().equals(holder));
+		return localBase.getComposites().stream().filter(x -> !x.equals(holder) && x.getMeta().equals(holder));
 	}
 
 	private static <T extends DefaultVertex<T>> Stream<T> compositesBySuper(T localBase, T holder) {
-		return localBase.getComposites().get().filter(x -> x.getSupers().contains(holder));
+		return localBase.getComposites().stream().filter(x -> x.getSupers().contains(holder));
 	}
 }

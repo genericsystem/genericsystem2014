@@ -24,7 +24,7 @@ public class FilterBean implements Serializable {
 	private List<String> statuts;
 
 	public Predicate<? super Generic> getPredicate(Generic relation) {
-		predicate = (searchedStatut != null) ? generic -> generic.getLinks(relation).get().anyMatch(link -> link.getTargetComponent().getValue().equals(searchedStatut)) : null;
+		predicate = (searchedStatut != null) ? generic -> generic.getLinks(relation).stream().anyMatch(link -> link.getTargetComponent().getValue().equals(searchedStatut)) : null;
 		return predicate;
 	}
 

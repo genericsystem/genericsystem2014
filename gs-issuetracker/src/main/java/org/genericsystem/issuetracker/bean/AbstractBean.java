@@ -39,11 +39,11 @@ public abstract class AbstractBean {
 			}
 
 			private Snapshot<Generic> getTargets(Generic attribute) {
-				return () -> issue.getHolders(attribute).get().map(x -> x.getTargetComponent() != null ? x.getTargetComponent() : x);
+				return () -> issue.getHolders(attribute).stream().map(x -> x.getTargetComponent() != null ? x.getTargetComponent() : x);
 			}
 
 			private List<String> getValues(Generic attribute) {
-				return getTargets(attribute).get().map(x -> (String) x.getValue()).collect(Collectors.toList());
+				return getTargets(attribute).stream().map(x -> (String) x.getValue()).collect(Collectors.toList());
 			}
 
 			@Override

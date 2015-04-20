@@ -122,14 +122,14 @@ public class CacheTest extends AbstractTest {
 		Generic vehicle = engine.addInstance("Vehicle");
 		assert vehicle.isAlive();
 		Generic car = engine.addInstance(vehicle, "Car");
-		assert vehicle.getInheritings().get().anyMatch(car::equals);
+		assert vehicle.getInheritings().stream().anyMatch(car::equals);
 	}
 
 	public void test001_getInstances() {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		assert vehicle.isAlive();
-		assert engine.getInstances().get().anyMatch(g -> g.equals(vehicle));
+		assert engine.getInstances().stream().anyMatch(g -> g.equals(vehicle));
 	}
 
 	public void test001_getMetaComponents() {
@@ -181,7 +181,7 @@ public class CacheTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		engine.getCurrentCache().clear();
-		assert !engine.getInstances().get().anyMatch(g -> g.equals(vehicle));
+		assert !engine.getInstances().stream().anyMatch(g -> g.equals(vehicle));
 	}
 
 	public void test002_mountNewCache() {
@@ -202,13 +202,13 @@ public class CacheTest extends AbstractTest {
 		Generic vehiclePower = engine.addInstance("vehiclePower", vehicle);
 		currentCache.mount();
 		assert vehiclePower.isAlive();
-		assert !vehicle.getComposites().isEmpty() : vehicle.getComposites().get().collect(Collectors.toList());
+		assert !vehicle.getComposites().isEmpty() : vehicle.getComposites().stream().collect(Collectors.toList());
 		vehiclePower.remove();
 		assert !vehiclePower.isAlive();
-		assert vehicle.getComposites().isEmpty() : vehicle.getComposites().get().collect(Collectors.toList());
+		assert vehicle.getComposites().isEmpty() : vehicle.getComposites().stream().collect(Collectors.toList());
 		currentCache.flush();
 		assert vehicle.isAlive();
 		assert !vehiclePower.isAlive();
-		assert vehicle.getComposites().isEmpty() : vehicle.getComposites().get().collect(Collectors.toList());
+		assert vehicle.getComposites().isEmpty() : vehicle.getComposites().stream().collect(Collectors.toList());
 	}
 }

@@ -23,7 +23,7 @@ public interface DefaultSystemProperties<T extends DefaultVertex<T>> extends IVe
 	@Override
 	default T getKey(Class<? extends SystemProperty> propertyClass, int pos) {
 		T map = getRoot().getMap();
-		Stream<T> keys = map != null ? map.getInheritings().get() : Stream.empty();
+		Stream<T> keys = map != null ? map.getInheritings().stream() : Stream.empty();
 		return keys.filter(x -> Objects.equals(x.getValue(), new AxedPropertyClass(propertyClass, pos))).findFirst().orElse(null);
 	}
 
@@ -31,7 +31,7 @@ public interface DefaultSystemProperties<T extends DefaultVertex<T>> extends IVe
 	default Serializable getSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos) {
 		T key = getKey(propertyClass, pos);
 		if (key != null) {
-			T result = getHolders(key).get().filter(x -> this.isSpecializationOf(x.getBaseComponent())).findFirst().orElse(null);
+			T result = getHolders(key).stream().filter(x -> this.isSpecializationOf(x.getBaseComponent())).findFirst().orElse(null);
 			return result != null ? result.getValue() : null;
 		}
 		return null;

@@ -112,6 +112,6 @@ public class FileSystemTest extends AbstractTest {
 		Directory root = fileSystem.addRootDirectory("root");
 		System.out.println("root " + root.info());
 		assert root.equals(fileSystem.getRootDirectory("root")) : fileSystem.getRootDirectories().info();
-		assert fileSystem.getRootDirectories().get().findFirst().get().equals(root);
+		assert fileSystem.getRootDirectories().stream().findFirst().get().equals(root);
 	}
 }

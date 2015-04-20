@@ -94,8 +94,8 @@ public class AnnotationsUses {
 	public static interface SimpleCRUD<T extends Serializable> extends Snapshot<T> {
 		@Override
 		@SuppressWarnings("unchecked")
-		default Stream<T> get() {
-			return ((Generic) this).getInstances().get().map(x -> (T) x.getValue());
+		default Stream<T> stream() {
+			return ((Generic) this).getInstances().stream().map(x -> (T) x.getValue());
 		}
 
 		default void add(T value) {
@@ -103,7 +103,7 @@ public class AnnotationsUses {
 		}
 
 		default List<T> getValues() {
-			return get().collect(Collectors.toList());
+			return stream().collect(Collectors.toList());
 		}
 
 		default boolean remove(T value) {

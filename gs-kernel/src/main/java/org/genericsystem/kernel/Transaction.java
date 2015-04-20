@@ -64,7 +64,7 @@ public class Transaction extends Context {
 		return new Snapshot<Generic>() {
 
 			@Override
-			public Stream<Generic> get() {
+			public Stream<Generic> stream() {
 				return getRoot().getDependencies(generic).stream(getTs());
 			}
 

@@ -28,7 +28,7 @@ public class TreeTest extends AbstractTest {
 
 		assert tree.getInstances().contains(rootNode);
 		assert tree.getInstances().size() == 1;
-		assert tree.getSubInstances().contains(rootNode) : tree.getSubInstances().get().collect(Collectors.toList());
+		assert tree.getSubInstances().contains(rootNode) : tree.getSubInstances().stream().collect(Collectors.toList());
 		assert tree.getSubInstances().size() == 1;
 		assert rootNode.getSupers().isEmpty();
 	}
