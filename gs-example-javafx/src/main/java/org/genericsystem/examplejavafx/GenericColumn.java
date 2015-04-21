@@ -36,45 +36,20 @@ public  class GenericColumn<T> extends TableColumn<Generic,T> {
 
 	@SuppressWarnings("unchecked")
 	TableCell<Generic, T> getTCellFactory() {
-		return  new EditingCell<Generic,T>(Statics.<T>getDefaultConverter((Class<T>)attribute.getClassConstraint()),
-				FXCollections.<Generic>observableArrayList(attribute.getComponents()),
-				component -> new GenericStringConverter<String>(component),
-				component -> FXCollections.<Generic>observableArrayList(component.getSubInstances().toList()));
+		return  new EditingCell<Generic,T>(Statics.<T>getDefaultConverter((Class<T>)attribute.getClassConstraint()));
 	}
 
-	private static class  Observables<T> extends HashMap<Generic,SimpleObjectProperty<T>> {
+	
+	public static class Observables<T> extends HashMap<Generic,SimpleObjectProperty<T>> {
 
 		private static final long serialVersionUID = 7709729724315030415L;
 
 		public ObservableValue<T> get(Object key,T value) {
-
 			SimpleObjectProperty<T> observable = super.get(key);
 			if(observable==null)
 				put((Generic) key,observable=new SimpleObjectProperty<T>(value));
 			return observable;
 		};
 	};
-	
-	static class GenericStringConverter<T extends Serializable> extends StringConverter<Generic> {
-
-		private final StringConverter<T> instanceValueClassConverter;
-
-		@SuppressWarnings("unchecked")
-		GenericStringConverter(Generic component){
-			this.instanceValueClassConverter = Statics.getDefaultConverter((Class<T>)component.getClassConstraint());
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public String toString(Generic generic) {
-			return instanceValueClassConverter.toString((T)generic.getValue());
-		}
-
-		@Override
-		public Generic fromString(String string) {
-			throw new IllegalStateException();
-			//return component.getInstance(instanceValueClassConverter.fromString(string));
-		}	
-	}
 
 }

@@ -1,11 +1,15 @@
 package org.genericsystem.examplejavafx;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 
 import org.genericsystem.mutability.Generic;
@@ -30,9 +34,17 @@ public class DeleteButtonCell extends TableCell<Generic, Generic> {
 			cellButton.setOnAction(new EventHandler<ActionEvent>() {
 				@Override 
 				public void handle(ActionEvent event) {
-					t.remove();
-					getTableView().getItems().remove(t);
-					System.out.println("Remove : "+t.info());
+					Alert alert = new Alert(AlertType.CONFIRMATION);
+					alert.setTitle("Confirmation Dialog");
+					alert.setHeaderText("Confirmation is required");
+					alert.setContentText("Are you sure you want to delete : "+ t.info()+" ?");
+
+					Optional<ButtonType> result = alert.showAndWait();
+					if (result.get() == ButtonType.OK){
+						t.remove();
+						getTableView().getItems().remove(t);
+						System.out.println("Remove : "+t.info());
+					}
 				}
 			});
 

@@ -1,6 +1,5 @@
 package org.genericsystem.examplejavafx;
 
-import java.io.Serializable;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -20,7 +19,13 @@ public class GenericsTable extends TableView<Generic>{
 		getColumns().add(firstColumn);
 
 		for (Generic attribute : attributes) {
-			TableColumn<Generic, ? extends Serializable> column = new GenericColumn<>(attribute,Objects.toString(attribute.getValue()), 200, g -> g.getValue(attribute), (g, v) -> g.setHolder(attribute, v));
+			TableColumn<Generic, ?> column;
+			if(attribute.getComponents().size()<2)
+				column= new GenericColumn<>(attribute,Objects.toString(attribute.getValue()), 200, g -> g.getValue(attribute), (g, v) -> g.setHolder(attribute, v));
+			else
+				column= new TargetGenericColumn(attribute,Objects.toString(attribute.getTargetComponent().getValue()),200,
+						g -> g.getHolder(attribute).getTargetComponent(),
+						(g, v) -> g.setLink(attribute,"test", v));
 			getColumns().add(column);
 		}
 
