@@ -15,17 +15,17 @@ public class GenericsTable extends TableView<Generic>{
 	public GenericsTable(Generic type,Generic...attributes) {
 		setEditable(true);
 
-		TableColumn<Generic, String> firstColumn = new GenericColumn<>(type,Objects.toString(type.getValue()), 200, g -> Objects.toString(g.getValue()), (g, v) -> g.updateValue(v));
+		TableColumn<Generic, String> firstColumn = new GenericColumn<>(type,Objects.toString(type.getValue()), g -> Objects.toString(g.getValue()), (g, v) -> g.updateValue(v));
 		getColumns().add(firstColumn);
 
 		for (Generic attribute : attributes) {
 			TableColumn<Generic, ?> column;
 			if(attribute.getComponents().size()<2)
-				column= new GenericColumn<>(attribute,Objects.toString(attribute.getValue()), 200, g -> g.getValue(attribute), (g, v) -> g.setHolder(attribute, v));
+				column= new GenericColumn<>(attribute,Objects.toString(attribute.getValue()),  g -> g.getValue(attribute), (g, v) -> g.setHolder(attribute, v));
 			else
-				column= new TargetGenericColumn(attribute,Objects.toString(attribute.getTargetComponent().getValue()),200,
+				column= new TargetGenericColumn(attribute.getTargetComponent(),Objects.toString(attribute.getTargetComponent().getValue()),
 						g -> g.getHolder(attribute).getTargetComponent(),
-						(g, v) -> g.setLink(attribute,"test", v));
+						(g, v) -> g.setLink(attribute,null, v));
 			getColumns().add(column);
 		}
 
@@ -33,7 +33,6 @@ public class GenericsTable extends TableView<Generic>{
 		lastColumn.setMinWidth(200);
 		lastColumn.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue()));
 		lastColumn.setEditable(true);
-		lastColumn.setMinWidth(200);
 		lastColumn.setCellFactory(column->new DeleteButtonCell());
 		getColumns().add(lastColumn);
 

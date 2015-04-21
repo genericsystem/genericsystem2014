@@ -5,7 +5,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import javafx.collections.FXCollections;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.util.StringConverter;
@@ -15,28 +14,21 @@ import org.genericsystem.mutability.Generic;
 
 public class TargetGenericColumn extends TableColumn<Generic,Generic> {
 	private final Observables<Generic> observables = new Observables<>();
-	final Generic attribute;
 
-	public TargetGenericColumn(Generic attribute,String columnName, int minWidth,Function<Generic, Generic> getter,BiConsumer<Generic, Generic> setter) {
+	public TargetGenericColumn(Generic targetComponent,String columnName,Function<Generic, Generic> getter,BiConsumer<Generic, Generic> setter) {
 		super(columnName);
-		this.attribute=attribute;
-		setMinWidth(minWidth);
-
+		setMinWidth(200);
 		setCellValueFactory(cellData -> observables.get(cellData.getValue(),getter.apply(cellData.getValue())));
-		setOnEditCommit((CellEditEvent<Generic, Generic> t) -> {
+		setOnEditCommit((CellEditEvent<Generic, Generic> event) -> {
 			System.out.println("coucou");
-			Generic g =(t.getTableView().getItems().get(t.getTablePosition().getRow()));
-			setter.accept(g, t.getNewValue());
-			observables.get(g).set(t.getNewValue());
+			Generic generic =(event.getTableView().getItems().get(event.getTablePosition().getRow()));
+			setter.accept(generic, event.getNewValue());
+			observables.get(generic).set(event.getNewValue());
 		});
-		setCellFactory(tableColumn -> getTCellFactory());
+		setCellFactory(tableColumn -> new ComboBoxTableCell<Generic,Generic>(new GenericStringConverter<>(targetComponent),FXCollections.<Generic>observableArrayList(targetComponent.getSubInstances().toList())));
 		setEditable(true);	
 	}
 
-	TableCell<Generic, Generic> getTCellFactory() {
-		return new ComboBoxTableCell<Generic,Generic>(new GenericStringConverter<>(attribute.getTargetComponent()),FXCollections.<Generic>observableArrayList(attribute.getTargetComponent().getSubInstances().toList()));
-	}
-	
 	static class GenericStringConverter<T extends Serializable> extends StringConverter<Generic> {
 
 		private final StringConverter<T> instanceValueClassConverter;
