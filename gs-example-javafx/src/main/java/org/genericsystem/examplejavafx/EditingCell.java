@@ -19,6 +19,12 @@ import javafx.scene.input.KeyEvent;
 import javafx.util.StringConverter;
 
 
+/**
+ * @author Nicolas Feybesse
+ *
+ * @param <S>
+ * @param <T>
+ */
 public class EditingCell<S,T> extends TableCell<S, T> {
 
 	private final TextField textField;

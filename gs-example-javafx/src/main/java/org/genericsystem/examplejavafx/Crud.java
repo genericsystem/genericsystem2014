@@ -10,6 +10,10 @@ import javafx.scene.layout.VBox;
 
 import org.genericsystem.mutability.Generic;
 
+/**
+ * @author Nicolas Feybesse
+ *
+ */
 public class Crud extends VBox {
 	public Crud(Generic type, Generic... attributes) {
 		setSpacing(5);

@@ -11,6 +11,11 @@ import org.genericsystem.examplejavafx.model.Color;
 import org.genericsystem.examplejavafx.model.Power;
 import org.genericsystem.mutability.Engine;
 
+
+/**
+ * @author Nicolas Feybesse
+ *
+ */
 public class App extends Application {
 
 	public static void main(String args[]) {

@@ -9,6 +9,11 @@ import org.genericsystem.api.core.annotations.value.StringValue;
 import org.genericsystem.examplejavafx.model.CarColor.DefaultCarColor;
 import org.genericsystem.examplejavafx.model.Color.White;
 
+
+/**
+ * @author Nicolas Feybesse
+ *
+ */
 @SystemGeneric
 @Components({ Car.class, Color.class })
 @SingularConstraint

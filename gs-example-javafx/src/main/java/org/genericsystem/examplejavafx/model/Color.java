@@ -9,6 +9,11 @@ import org.genericsystem.examplejavafx.model.Color.Red;
 import org.genericsystem.examplejavafx.model.Color.White;
 import org.genericsystem.examplejavafx.model.Color.Yellow;
 
+
+/**
+ * @author Nicolas Feybesse
+ *
+ */
 @SystemGeneric
 @Dependencies({ White.class, Red.class, Blue.class, Yellow.class })
 @StringValue("Color")

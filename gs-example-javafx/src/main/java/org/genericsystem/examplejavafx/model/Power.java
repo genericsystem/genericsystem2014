@@ -6,6 +6,11 @@ import org.genericsystem.api.core.annotations.constraints.InstanceValueClassCons
 import org.genericsystem.api.core.annotations.constraints.PropertyConstraint;
 import org.genericsystem.api.core.annotations.value.StringValue;
 
+
+/**
+ * @author Nicolas Feybesse
+ *
+ */
 @SystemGeneric
 @Components(Car.class)
 @PropertyConstraint
