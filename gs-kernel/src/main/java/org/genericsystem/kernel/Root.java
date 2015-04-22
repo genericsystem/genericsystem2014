@@ -100,7 +100,13 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <Custom extends Generic> Custom find(Class<?> clazz) {
-		return (Custom) systemCache.get(clazz);
+		return (Custom) systemCache.find(clazz);
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <Custom extends Generic> Custom bind(Class<?> clazz) {
+		return (Custom) systemCache.bind(clazz);
 	}
 
 	@Override

@@ -48,6 +48,12 @@ public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 		return (Custom) getCurrentCache().wrap(clazz, cacheEngine.find(clazz));
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public <Custom extends Generic> Custom bind(Class<?> clazz) {
+		return (Custom) getCurrentCache().wrap(clazz, cacheEngine.bind(clazz));
+	}
+	
 	@Override
 	public Class<?> findAnnotedClass(Generic vertex) {
 		return cacheEngine.findAnnotedClass(getCurrentCache().unwrap(vertex));

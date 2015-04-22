@@ -11,7 +11,7 @@ import org.genericsystem.api.core.IVertex.SystemProperty;
  * Indicates the <code>Class</code> value for an axed property.
  * 
  * @author Nicolas Feybesse
- * @see org.genericsystem.api.core.systemproperty.AxedPropertyClass
+ * @see org.genericsystem.api.core.AxedPropertyClass
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })

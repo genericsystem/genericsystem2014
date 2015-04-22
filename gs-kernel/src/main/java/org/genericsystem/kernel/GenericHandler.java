@@ -63,6 +63,7 @@ abstract class GenericHandler {
 	}
 
 	Generic add() {
+		System.out.println(""+context.computePotentialDependencies(adjustedMeta, supers, value, components)+"    "+meta+" "+supers+" value : "+value+components);
 		return context.getRestructurator().rebuildAll(null, () -> build(), context.computePotentialDependencies(adjustedMeta, supers, value, components));
 	}
 

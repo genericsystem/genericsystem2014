@@ -20,6 +20,18 @@ public interface IRoot<T extends IVertex<T>> extends IVertex<T> {
 	 * @return a vertex.
 	 */
 	<Custom extends T> Custom find(Class<?> clazz);
+	
+	/**
+	 * Return a vertex built during new Root.
+	 * If called during Root initialization, mount system node if nesscessary
+	 * 
+	 * @param <Custom>
+	 *            an implementation of a customizable subtype of T.
+	 * @param clazz
+	 *            the expected vertex.
+	 * @return a vertex.
+	 */
+	<Custom extends T> Custom bind(Class<?> clazz);
 
 	Class<?> findAnnotedClass(T vertex);
 

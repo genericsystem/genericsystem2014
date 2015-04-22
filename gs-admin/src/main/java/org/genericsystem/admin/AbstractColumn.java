@@ -17,7 +17,7 @@ import javafx.util.converter.BooleanStringConverter;
 import javafx.util.converter.DefaultStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 
-import org.genericsystem.api.core.systemproperty.AxedPropertyClass;
+import org.genericsystem.api.core.AxedPropertyClass;
 import org.genericsystem.mutability.Generic;
 
 /**
@@ -95,8 +95,9 @@ public class AbstractColumn<T> extends TableColumn<Generic,T> {
 
 	@SuppressWarnings("unchecked")
 	static <T> StringConverter<T> getDefaultConverter(Class<T> clazz){
-		if(Boolean.class.equals(clazz))
-			return (StringConverter<T>) new BooleanStringConverter();
+//		if(Boolean.class.equals(clazz)) {
+//			return (StringConverter<T>) new BooleanStringConverter();
+//		}
 		if(Integer.class.equals(clazz))
 			return (StringConverter<T>) new IntegerStringConverter();
 		if(String.class.equals(clazz))
@@ -110,7 +111,7 @@ public class AbstractColumn<T> extends TableColumn<Generic,T> {
 				if(object instanceof Class)
 					return Objects.toString(((Class<?>)object).getSimpleName());
 				if(object instanceof AxedPropertyClass)
-					return Objects.toString(((AxedPropertyClass)object).getClazz().getSimpleName());
+					return Objects.toString(((AxedPropertyClass)object).getClazz().getSimpleName()+((AxedPropertyClass)object).getAxe());
 				return Objects.toString(object);
 			}
 
