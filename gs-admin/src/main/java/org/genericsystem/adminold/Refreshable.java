@@ -1,4 +1,4 @@
-package org.genericsystem.admin;
+package org.genericsystem.adminold;
 
 public interface Refreshable {
 

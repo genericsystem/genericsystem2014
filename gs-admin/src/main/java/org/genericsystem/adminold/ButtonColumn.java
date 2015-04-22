@@ -1,4 +1,4 @@
-package org.genericsystem.admin;
+package org.genericsystem.adminold;
 
 import java.awt.Color;
 import java.awt.Component;

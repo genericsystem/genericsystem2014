@@ -11,6 +11,7 @@ import org.genericsystem.api.core.annotations.constraints.PropertyConstraint;
 import org.genericsystem.api.core.annotations.value.AxedPropertyClassValue;
 import org.genericsystem.api.core.annotations.value.BooleanValue;
 import org.genericsystem.api.core.annotations.value.EngineValue;
+import org.genericsystem.api.core.systemproperty.AxedPropertyClass;
 import org.genericsystem.api.core.systemproperty.NoReferentialIntegrityProperty;
 
 public class DefaultConfig {
@@ -28,6 +29,7 @@ public class DefaultConfig {
 	@Supers(SystemMap.class)
 	@Components(DefaultRoot.class)
 	@AxedPropertyClassValue(propertyClass = NoReferentialIntegrityProperty.class, pos = ApiStatics.BASE_POSITION)
+	@InstanceValueClassConstraint(Boolean.class)
 	@Dependencies({ DefaultValue.class })
 	public static class DefaultNoReferentialIntegrityProperty {
 	}
