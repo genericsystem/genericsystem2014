@@ -1,10 +1,8 @@
 package org.genericsystem.defaults;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
-
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.AxedPropertyClass;
 import org.genericsystem.api.core.IVertex;
@@ -41,16 +39,15 @@ public interface DefaultSystemProperties<T extends DefaultVertex<T>> extends IVe
 	@Override
 	default T setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value, T... targets) {
 		if (pos != ApiStatics.NO_POSITION && getComponent(pos) == null)
-			((DefaultContext<T>) getCurrentCache()).discardWithException(new NotFoundException("Unable to set system property : "+propertyClass.getSimpleName()+" because no component exists for position : " + pos));
-		
+			((DefaultContext<T>) getCurrentCache()).discardWithException(new NotFoundException("Unable to set system property : " + propertyClass.getSimpleName() + " because no component exists for position : " + pos));
+
 		T map = getRoot().getMap();
-		assert map!=null;
-		T[] roots = ((DefaultContext<T>) getCurrentCache()).newTArray(targets.length + 1);
-		Arrays.fill(roots, getRoot());
-		T property = getRoot().<T>bind(propertyClass);
-		assert property!=null : propertyClass;
-			
-		map.getMeta().setInstance(property, new AxedPropertyClass(propertyClass, pos), roots).setInstance(value, addThisToTargets(targets));
+		assert map != null;
+		T property = getRoot().<T> bind(propertyClass);
+		assert property != null : propertyClass;
+		System.out.println("ZZZZZZ" + map.getMeta().setInstance(property, new AxedPropertyClass(propertyClass, pos), coerceToTArray(property.getComponents().toArray())).info());
+		System.out.println("UUUUUU" + map.getMeta().setInstance(property, new AxedPropertyClass(propertyClass, pos), coerceToTArray(property.getComponents().toArray())).setInstance(value, addThisToTargets(targets)).info());
+		map.getMeta().setInstance(property, new AxedPropertyClass(propertyClass, pos), coerceToTArray(property.getComponents().toArray())).setInstance(value, addThisToTargets(targets));
 		return (T) this;
 	}
 

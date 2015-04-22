@@ -2,7 +2,6 @@ package org.genericsystem.defaults.constraints;
 
 import java.io.Serializable;
 import java.util.Objects;
-
 import org.genericsystem.api.core.annotations.Components;
 import org.genericsystem.api.core.annotations.Meta;
 import org.genericsystem.api.core.annotations.Supers;
@@ -10,16 +9,16 @@ import org.genericsystem.api.core.annotations.SystemGeneric;
 import org.genericsystem.api.core.annotations.constraints.InstanceValueClassConstraint;
 import org.genericsystem.api.core.annotations.constraints.PropertyConstraint;
 import org.genericsystem.api.core.exceptions.ConstraintViolationException;
-import org.genericsystem.defaults.DefaultRoot;
-import org.genericsystem.defaults.DefaultVertex;
 import org.genericsystem.defaults.DefaultConfig.MetaAttribute;
 import org.genericsystem.defaults.DefaultConfig.SystemMap;
+import org.genericsystem.defaults.DefaultRoot;
+import org.genericsystem.defaults.DefaultVertex;
 import org.genericsystem.defaults.constraints.Constraint.CheckedConstraint;
 import org.genericsystem.defaults.exceptions.UniqueValueConstraintViolationException;
 
 /**
  * Represents the constraint to allow only one value for an instance.
- * 
+ *
  * @author Nicolas Feybesse
  *
  * @param <T>

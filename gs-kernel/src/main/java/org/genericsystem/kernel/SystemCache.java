@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.genericsystem.api.core.IVertex.SystemProperty;
 import org.genericsystem.api.core.annotations.Components;
 import org.genericsystem.api.core.annotations.Dependencies;
@@ -28,7 +27,6 @@ import org.genericsystem.api.core.annotations.value.LongValue;
 import org.genericsystem.api.core.annotations.value.ShortValue;
 import org.genericsystem.api.core.annotations.value.StringValue;
 import org.genericsystem.api.core.exceptions.CyclicException;
-import org.genericsystem.defaults.DefaultConfig.SystemMap;
 import org.genericsystem.defaults.DefaultRoot;
 import org.genericsystem.kernel.GenericHandler.SetSystemHandler;
 
@@ -62,17 +60,17 @@ public class SystemCache {
 			assert systemProperty.isAlive();
 			return systemProperty;
 		}
-		//System.out.println(" Mount clazz : "+clazz.getSimpleName());
-		
+		// System.out.println(" Mount clazz : "+clazz.getSimpleName());
+
 		Generic meta = setMeta(clazz);
 		List<Generic> overrides = setOverrides(clazz);
 		List<Generic> components = setComponents(clazz);
 		Generic result = new SetSystemHandler(((Generic) root).getCurrentCache(), clazz, meta, overrides, findValue(clazz), components).resolve();
 		put(clazz, result);
-		//System.out.println("Effectiv Mount clazz : "+clazz);
+		// System.out.println("Effectiv Mount clazz : "+clazz);
 		mountConstraints(clazz, result);
 		triggersDependencies(clazz);
-		
+
 		return result;
 	}
 
@@ -84,10 +82,10 @@ public class SystemCache {
 	public Generic find(Class<?> clazz) {
 		return systemCache.get(clazz);
 	}
-	
+
 	public Generic bind(Class<?> clazz) {
 		Generic result = systemCache.get(clazz);
-		if (result==null && SystemProperty.class.isAssignableFrom(clazz) && !root.isInitialized())
+		if (result == null && SystemProperty.class.isAssignableFrom(clazz) && !root.isInitialized())
 			result = set(clazz);
 		return result;
 	}
@@ -108,8 +106,10 @@ public class SystemCache {
 
 		RequiredConstraint requiredConstraint = clazz.getAnnotation(RequiredConstraint.class);
 		if (requiredConstraint != null)
-			for (int axe : requiredConstraint.value())
+			for (int axe : requiredConstraint.value()) {
 				result.enableRequiredConstraint(axe);
+				assert result.isRequiredConstraintEnabled(axe) : result.getComposites().first().info();
+			}
 
 		NoReferentialIntegrityProperty referentialIntegrity = clazz.getAnnotation(NoReferentialIntegrityProperty.class);
 		if (referentialIntegrity != null)

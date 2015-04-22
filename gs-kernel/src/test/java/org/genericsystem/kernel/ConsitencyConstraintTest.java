@@ -30,10 +30,10 @@ public class ConsitencyConstraintTest extends AbstractTest {
 		Generic myFirstCar = car.addInstance("myFirstCar");
 		Generic mySecondCar = car.addInstance("mySecondCar");
 		Generic power = root.addInstance("Power");
-		car.addAttribute(power, "Power");
+		Generic powerAttribute = car.addAttribute(power, "Power");
 		myFirstCar.addHolder(power, 125);
 		mySecondCar.addHolder(power, 125);
-		catchAndCheckCause(() -> power.enableUniqueValueConstraint(), UniqueValueConstraintViolationException.class);
+		catchAndCheckCause(() -> powerAttribute.enableUniqueValueConstraint(), UniqueValueConstraintViolationException.class);
 	}
 
 	public void test003() {
