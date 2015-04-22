@@ -7,6 +7,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.genericsystem.api.core.IVertex.SystemProperty;
 import org.genericsystem.api.core.annotations.Components;
 import org.genericsystem.api.core.annotations.Dependencies;
 import org.genericsystem.api.core.annotations.Meta;
@@ -27,6 +28,7 @@ import org.genericsystem.api.core.annotations.value.LongValue;
 import org.genericsystem.api.core.annotations.value.ShortValue;
 import org.genericsystem.api.core.annotations.value.StringValue;
 import org.genericsystem.api.core.exceptions.CyclicException;
+import org.genericsystem.defaults.DefaultConfig.SystemMap;
 import org.genericsystem.defaults.DefaultRoot;
 import org.genericsystem.kernel.GenericHandler.SetSystemHandler;
 
@@ -60,13 +62,17 @@ public class SystemCache {
 			assert systemProperty.isAlive();
 			return systemProperty;
 		}
+		//System.out.println(" Mount clazz : "+clazz.getSimpleName());
+		
 		Generic meta = setMeta(clazz);
 		List<Generic> overrides = setOverrides(clazz);
 		List<Generic> components = setComponents(clazz);
 		Generic result = new SetSystemHandler(((Generic) root).getCurrentCache(), clazz, meta, overrides, findValue(clazz), components).resolve();
 		put(clazz, result);
+		//System.out.println("Effectiv Mount clazz : "+clazz);
 		mountConstraints(clazz, result);
 		triggersDependencies(clazz);
+		
 		return result;
 	}
 
@@ -75,8 +81,15 @@ public class SystemCache {
 		reverseSystemCache.put(vertex, clazz);
 	}
 
-	public Generic get(Class<?> clazz) {
+	public Generic find(Class<?> clazz) {
 		return systemCache.get(clazz);
+	}
+	
+	public Generic bind(Class<?> clazz) {
+		Generic result = systemCache.get(clazz);
+		if (result==null && SystemProperty.class.isAssignableFrom(clazz) && !root.isInitialized())
+			result = set(clazz);
+		return result;
 	}
 
 	public Class<?> getByVertex(Generic vertex) {
@@ -137,7 +150,7 @@ public class SystemCache {
 	private Serializable findValue(Class<?> clazz) {
 		AxedPropertyClassValue axedPropertyClass = clazz.getAnnotation(AxedPropertyClassValue.class);
 		if (axedPropertyClass != null)
-			return new org.genericsystem.api.core.systemproperty.AxedPropertyClass(axedPropertyClass.propertyClass(), axedPropertyClass.pos());
+			return new org.genericsystem.api.core.AxedPropertyClass(axedPropertyClass.propertyClass(), axedPropertyClass.pos());
 
 		BooleanValue booleanValue = clazz.getAnnotation(BooleanValue.class);
 		if (booleanValue != null)

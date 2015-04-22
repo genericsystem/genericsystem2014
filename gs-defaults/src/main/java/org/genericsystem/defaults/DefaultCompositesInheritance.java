@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.api.core.systemproperty.NonHeritableProperty;
+import org.genericsystem.defaults.DefaultConfig.NonHeritableProperty;
 
 public interface DefaultCompositesInheritance<T extends DefaultVertex<T>> extends IVertex<T> {
 

@@ -12,7 +12,6 @@ public class ReferentialIntegrityConstraintTest extends AbstractTest {
 		Generic car = root.addInstance("Car");
 		Generic color = root.addInstance("Color");
 		car.addRelation("CarColor", color);
-		color.enableReferentialIntegrity(ApiStatics.BASE_POSITION);
 		catchAndCheckCause(() -> color.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 
@@ -41,7 +40,6 @@ public class ReferentialIntegrityConstraintTest extends AbstractTest {
 		Generic red = color.addInstance("red");
 		Generic carColor = car.addRelation("CarColor", color);
 		myCar.addLink(carColor, "myCarRed", red);
-		color.enableReferentialIntegrity(ApiStatics.BASE_POSITION);
 		catchAndCheckCause(() -> red.remove(), ReferentialIntegrityConstraintViolationException.class);
 	}
 

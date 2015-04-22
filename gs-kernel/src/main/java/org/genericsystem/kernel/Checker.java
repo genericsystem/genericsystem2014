@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.genericsystem.api.core.ApiStatics;
+import org.genericsystem.api.core.AxedPropertyClass;
 import org.genericsystem.api.core.annotations.Priority;
 import org.genericsystem.api.core.exceptions.AliveConstraintViolationException;
 import org.genericsystem.api.core.exceptions.ConstraintViolationException;
@@ -17,7 +18,6 @@ import org.genericsystem.api.core.exceptions.NotAliveConstraintViolationExceptio
 import org.genericsystem.api.core.exceptions.NotAllowedSerializableTypeException;
 import org.genericsystem.api.core.exceptions.ReferentialIntegrityConstraintViolationException;
 import org.genericsystem.api.core.exceptions.RollbackException;
-import org.genericsystem.api.core.systemproperty.AxedPropertyClass;
 import org.genericsystem.defaults.DefaultConfig.SystemMap;
 import org.genericsystem.defaults.DefaultRoot;
 import org.genericsystem.defaults.constraints.Constraint;
@@ -75,7 +75,7 @@ public class Checker {
 	private void checkSerializableType(Serializable value) {
 		if (value == null)
 			return;
-		if (value instanceof org.genericsystem.api.core.systemproperty.AxedPropertyClass)
+		if (value instanceof org.genericsystem.api.core.AxedPropertyClass)
 			return;
 		if (value instanceof Boolean)
 			return;

@@ -6,12 +6,12 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.genericsystem.api.core.ApiStatics;
+import org.genericsystem.api.core.AxedPropertyClass;
 import org.genericsystem.api.core.IVertex;
 import org.genericsystem.api.core.exceptions.NotFoundException;
-import org.genericsystem.api.core.systemproperty.AxedPropertyClass;
-import org.genericsystem.api.core.systemproperty.CascadeRemoveProperty;
-import org.genericsystem.api.core.systemproperty.NoReferentialIntegrityProperty;
-import org.genericsystem.api.core.systemproperty.NonHeritableProperty;
+import org.genericsystem.defaults.DefaultConfig.CascadeRemoveProperty;
+import org.genericsystem.defaults.DefaultConfig.NoReferentialIntegrityProperty;
+import org.genericsystem.defaults.DefaultConfig.NonHeritableProperty;
 import org.genericsystem.defaults.constraints.InstanceValueClassConstraint;
 import org.genericsystem.defaults.constraints.PropertyConstraint;
 import org.genericsystem.defaults.constraints.RequiredConstraint;
@@ -22,8 +22,8 @@ public interface DefaultSystemProperties<T extends DefaultVertex<T>> extends IVe
 
 	@Override
 	default T getKey(Class<? extends SystemProperty> propertyClass, int pos) {
-		T map = getRoot().getMap();
-		Stream<T> keys = map != null ? map.getInheritings().stream() : Stream.empty();
+		T property = getRoot().find(propertyClass);
+		Stream<T> keys = property != null ? property.getInheritings().stream() : Stream.empty();
 		return keys.filter(x -> Objects.equals(x.getValue(), new AxedPropertyClass(propertyClass, pos))).findFirst().orElse(null);
 	}
 
@@ -40,18 +40,23 @@ public interface DefaultSystemProperties<T extends DefaultVertex<T>> extends IVe
 	@SuppressWarnings("unchecked")
 	@Override
 	default T setSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos, Serializable value, T... targets) {
+		if (pos != ApiStatics.NO_POSITION && getComponent(pos) == null)
+			((DefaultContext<T>) getCurrentCache()).discardWithException(new NotFoundException("Unable to set system property : "+propertyClass.getSimpleName()+" because no component exists for position : " + pos));
+		
 		T map = getRoot().getMap();
+		assert map!=null;
 		T[] roots = ((DefaultContext<T>) getCurrentCache()).newTArray(targets.length + 1);
 		Arrays.fill(roots, getRoot());
-		map.getMeta().setInstance(map, new AxedPropertyClass(propertyClass, pos), roots).setInstance(value, addThisToTargets(targets));
+		T property = getRoot().<T>bind(propertyClass);
+		assert property!=null : propertyClass;
+			
+		map.getMeta().setInstance(property, new AxedPropertyClass(propertyClass, pos), roots).setInstance(value, addThisToTargets(targets));
 		return (T) this;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	default T enableSystemProperty(Class<? extends SystemProperty> propertyClass, int pos, T... targets) {
-		if (pos != ApiStatics.NO_POSITION && getComponent(pos) == null)
-			((DefaultContext<T>) getCurrentCache()).discardWithException(new NotFoundException("System property is not apply because no component exists for position : " + pos));
 		setSystemPropertyValue(propertyClass, pos, Boolean.TRUE, targets);
 		return (T) this;
 	}
