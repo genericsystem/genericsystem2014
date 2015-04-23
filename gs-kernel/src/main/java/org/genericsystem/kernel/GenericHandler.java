@@ -63,8 +63,8 @@ abstract class GenericHandler {
 	}
 
 	Generic add() {
-		System.out.println("dependencies : " + context.computePotentialDependencies(adjustedMeta, supers, value, components).stream().map(x -> x.info() + "\n").collect(Collectors.toList()));
-		System.out.println("this :     " + meta + " " + supers + " value : " + value + components);
+//		System.out.println("dependencies : " + context.computePotentialDependencies(adjustedMeta, supers, value, components).stream().map(x -> x.info() + "\n").collect(Collectors.toList()));
+//		System.out.println("this :     " + meta + " " + supers + " value : " + value + components);
 		return context.getRestructurator().rebuildAll(null, () -> build(), context.computePotentialDependencies(adjustedMeta, supers, value, components));
 	}
 

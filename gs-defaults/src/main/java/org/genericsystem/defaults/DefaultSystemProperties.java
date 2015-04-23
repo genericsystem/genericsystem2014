@@ -45,8 +45,6 @@ public interface DefaultSystemProperties<T extends DefaultVertex<T>> extends IVe
 		assert map != null;
 		T property = getRoot().<T> bind(propertyClass);
 		assert property != null : propertyClass;
-		System.out.println("ZZZZZZ" + map.getMeta().setInstance(property, new AxedPropertyClass(propertyClass, pos), coerceToTArray(property.getComponents().toArray())).info());
-		System.out.println("UUUUUU" + map.getMeta().setInstance(property, new AxedPropertyClass(propertyClass, pos), coerceToTArray(property.getComponents().toArray())).setInstance(value, addThisToTargets(targets)).info());
 		map.getMeta().setInstance(property, new AxedPropertyClass(propertyClass, pos), coerceToTArray(property.getComponents().toArray())).setInstance(value, addThisToTargets(targets));
 		return (T) this;
 	}

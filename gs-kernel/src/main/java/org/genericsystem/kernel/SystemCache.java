@@ -108,7 +108,7 @@ public class SystemCache {
 		if (requiredConstraint != null)
 			for (int axe : requiredConstraint.value()) {
 				result.enableRequiredConstraint(axe);
-				assert result.isRequiredConstraintEnabled(axe) : result.getComposites().first().info();
+				//assert result.isRequiredConstraintEnabled(axe) : result.getComposites().first().info();
 			}
 
 		NoReferentialIntegrityProperty referentialIntegrity = clazz.getAnnotation(NoReferentialIntegrityProperty.class);
