@@ -35,39 +35,30 @@ public abstract class AbstractColumn<T> extends TableColumn<Generic,T> {
 
 	public AbstractColumn(Generic generic,Function<Generic, T> getter,BiConsumer<Generic, T> setter) {
 		super(getDefaultConverter(generic.getMeta()).toString(generic.getValue()));
-		observables = buildObservables();
+		observables = buildObservables(setter);
 		setMinWidth(200);
 		setCellValueFactory(cellData -> observables.get(cellData.getValue(),getter.apply(cellData.getValue())));
 		setOnEditCommit((CellEditEvent<Generic, T> t) -> {
-			System.out.println("coucou");
 			Generic g =(t.getTableView().getItems().get(t.getTablePosition().getRow()));
-			setter.accept(g, t.getNewValue());
 			observables.get(g).setValue(t.getNewValue());
 		});
 		setEditable(true);	
 	}
 
-	public Observables<T> buildObservables(){
-		return new Observables<>();
+	public Observables<T> buildObservables(BiConsumer<Generic, T> setter){
+		return new Observables<>(setter);
 	}
 
 
 	public static class CheckBoxColumn extends AbstractColumn<Boolean>{
 		public CheckBoxColumn(Generic attribute,Function<Generic, Boolean> getter,BiConsumer<Generic, Boolean> setter) {
 			super(attribute, getter, setter);
-			//setCellFactory(CheckBoxTableCell.<Generic>forTableColumn(this));
-			setCellFactory(tableColumn -> {
-				CheckBoxTableCell<Generic,Boolean> checkBox = new CheckBoxTableCell<Generic,Boolean>(index->
-				observables.get(getTableView().getItems().get(index),getter.apply(getTableView().getItems().get(index)))
-				, getDefaultConverter(Boolean.class));
-				checkBox.setEditable(true);;
-				return checkBox;
-			});
+			setCellFactory(CheckBoxTableCell.<Generic>forTableColumn(this));
 		}
 
 		@Override
-		public Observables<Boolean> buildObservables() {
-			return new Observables<Boolean>(){
+		public Observables<Boolean> buildObservables(BiConsumer<Generic, Boolean> setter) {
+			return new Observables<Boolean>(setter){
 				private static final long serialVersionUID = 2551229764188937954L;
 
 				@Override
@@ -80,11 +71,9 @@ public abstract class AbstractColumn<T> extends TableColumn<Generic,T> {
 
 
 	public static class EditColumn<T> extends AbstractColumn<T>{
-		@SuppressWarnings("unchecked")
 		public EditColumn(Generic attribute,Function<Generic, T> getter,BiConsumer<Generic, T> setter) {
 			super(attribute, getter, setter);
-			Class<T> clazz = (Class<T>)attribute.getClassConstraint();
-			setCellFactory(tableColumn -> new EditingCell<Generic,T>(getDefaultConverter(clazz)));	
+			setCellFactory(tableColumn -> new EditingCell<Generic,T>(getDefaultConverter(attribute)));	
 		}
 	}
 
@@ -92,14 +81,19 @@ public abstract class AbstractColumn<T> extends TableColumn<Generic,T> {
 	public static class TargetComponentColumn extends AbstractColumn<Generic>{
 		public TargetComponentColumn(Generic targetComponent,Function<Generic, Generic> getter,BiConsumer<Generic, Generic> setter) {
 			super(targetComponent, getter, setter);
-			setCellFactory(tableColumn -> new ComboBoxTableCell<Generic,Generic>(new GenericStringConverter<>(targetComponent),FXCollections.<Generic>observableArrayList(targetComponent.getSubInstances().toList())));	
+			setCellFactory(ComboBoxTableCell.<Generic,Generic>forTableColumn(new GenericStringConverter<>(targetComponent),FXCollections.<Generic>observableArrayList(targetComponent.getSubInstances().toList())));
 		}
 	}
 
 	public static class Observables<T> extends HashMap<Generic,Property<T>> {
 
 		private static final long serialVersionUID = 7709729724315030415L;
-
+		private final BiConsumer<Generic, T> setter;
+		
+		public Observables(BiConsumer<Generic, T> setter) {
+			this.setter = setter;
+		}
+		
 		public ObservableValue<T> get(Object key,T value) {
 			Property<T> observable = super.get(key);
 			if(observable==null) {
@@ -108,7 +102,7 @@ public abstract class AbstractColumn<T> extends TableColumn<Generic,T> {
 					@Override
 					public void changed(ObservableValue<? extends T> observable,T oldValue, T newValue) {
 						System.out.println("Change : "+oldValue+" "+newValue);
-
+						setter.accept((Generic) key, newValue);
 					}
 				});
 			}
@@ -142,11 +136,7 @@ public abstract class AbstractColumn<T> extends TableColumn<Generic,T> {
 
 	@SuppressWarnings("unchecked")
 	static <T> StringConverter<T> getDefaultConverter(Generic generic){
-		return getDefaultConverter((Class<T>) generic.getClassConstraint());
-	}
-
-	@SuppressWarnings("unchecked")
-	static <T> StringConverter<T> getDefaultConverter(Class<T> clazz){
+		Class<T> clazz = (Class<T>) generic.getClassConstraint();
 		if(Boolean.class.equals(clazz))
 			return (StringConverter<T>) new BooleanStringConverter();
 		if(Class.class.equals(clazz))

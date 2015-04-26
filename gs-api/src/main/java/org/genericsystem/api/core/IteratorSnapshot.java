@@ -7,6 +7,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+/**
+ * @author Nicolas Feybesse
+ *
+ * @param <T>
+ */
 public interface IteratorSnapshot<T> extends Snapshot<T> {
 
 	@Override

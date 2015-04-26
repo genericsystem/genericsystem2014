@@ -10,6 +10,7 @@ import org.genericsystem.admin.model.Car;
 import org.genericsystem.admin.model.CarColor;
 import org.genericsystem.admin.model.Color;
 import org.genericsystem.admin.model.Power;
+import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.mutability.Engine;
 import org.genericsystem.mutability.Generic;
 
@@ -39,7 +40,7 @@ public class App extends Application {
 //		type.addInstance("myAudi");
 //		type.addInstance("myMercedes");
 		
-		Crud crud = new Crud(type,type.getAttributes().filter(attribute->type.inheritsFrom(attribute.getComponent(0)))/*.filter(attribute->attribute.isCompositeForInstances(engine))*/.toList());
+		Crud crud = new Crud(type,type.getAttributes().filter(attribute->type.inheritsFrom(attribute.getComponent(ApiStatics.BASE_POSITION)))/*.filter(attribute->attribute.isCompositeForInstances(engine))*/.toList());
 		//Crud crud = new Crud(type,type.getAttributes().filter(attribute->type.isInstanceOf(attribute.getComponent(0)))/*.filter(attribute->attribute.isCompositeForInstances(engine))*/.toList());
 		//Crud crud = new Crud(type,engine.find(Power.class), engine.find(CarColor.class));
 		
