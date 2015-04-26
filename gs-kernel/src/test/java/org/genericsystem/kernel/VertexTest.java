@@ -129,8 +129,6 @@ public class VertexTest extends AbstractTest {
 		assert myBmw.getHolders(power).contains(myBmw233) : myBmw.getHolders(power);
 		assert myBmw.getHolders(power).size() == 1 : myBmw.getHolders(power);
 		assert myBmw.getValues(power).contains(233);
-		assert root.isCompositeOf(myBmw);
-
 	}
 
 	@Test(enabled = false)

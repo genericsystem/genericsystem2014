@@ -20,7 +20,8 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
-import org.genericsystem.admin.AbstractColumn.GenericColumn;
+import org.genericsystem.admin.AbstractColumn.CheckBoxColumn;
+import org.genericsystem.admin.AbstractColumn.EditColumn;
 import org.genericsystem.admin.AbstractColumn.TargetComponentColumn;
 import org.genericsystem.mutability.Generic;
 
@@ -33,26 +34,32 @@ public class GenericsTable extends TableView<Generic>{
 	public GenericsTable(Generic type,List<Generic> attributes) {
 		setEditable(true);
 
-		TableColumn<Generic, String> firstColumn = new GenericColumn<>(type, g -> Objects.toString(g.getValue()), (g, v) -> g.updateValue(v));
+		TableColumn<Generic, ?> firstColumn = new EditColumn<>(type, g -> g.getValue(), (g, v) -> g.updateValue(v));
 		getColumns().add(firstColumn);
 
 		for (Generic attribute : attributes) {
 			TableColumn<Generic, ?> column;
 			if(attribute.getComponents().size()<2)
-				column= new GenericColumn<>(attribute, g -> g.getValue(attribute), (g, v) -> g.setHolder(attribute, v));
+				if(Boolean.class.equals(attribute.getClassConstraint()))
+					column=new CheckBoxColumn(attribute, g -> (Boolean) g.getValue(attribute), (g, v) -> g.setHolder(attribute, v));
+				else
+					column= new EditColumn<>(attribute, g -> g.getValue(attribute), (g, v) -> g.setHolder(attribute, v));
 			else
 				column= new TargetComponentColumn(attribute.getTargetComponent(),
-						g -> g.getHolder(attribute).getTargetComponent(),
-						(g, v) -> g.setLink(attribute,null, v));
+					g -> {
+						Generic holder = g.getHolder(attribute);
+						return holder!=null ? holder.getTargetComponent() : null;
+					},
+					(g, v) -> g.setLink(attribute,null, v));
 			getColumns().add(column);
 		}
 		getColumns().add(new DeleteColumn());
 
 
-		ObservableList<Generic> data = FXCollections.observableArrayList(type.getInstances().stream().collect(Collectors.toList()));
+		ObservableList<Generic> data = FXCollections.observableArrayList(type.getSubInstances().stream().collect(Collectors.toList()));
 		setItems(data);
 	}
-	
+
 	public static class DeleteColumn extends TableColumn<Generic, Generic> {
 		public DeleteColumn() {
 			super("Delete");
@@ -62,7 +69,7 @@ public class GenericsTable extends TableView<Generic>{
 			setCellFactory(column->new DeleteButtonCell());
 		}
 	}
-	
+
 	public static class DeleteButtonCell extends TableCell<Generic, Generic> {
 		private final Button cellButton = new Button();
 

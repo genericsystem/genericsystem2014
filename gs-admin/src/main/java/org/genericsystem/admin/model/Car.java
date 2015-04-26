@@ -1,6 +1,7 @@
 package org.genericsystem.admin.model;
 
 import org.genericsystem.api.core.annotations.SystemGeneric;
+import org.genericsystem.api.core.annotations.constraints.InstanceValueClassConstraint;
 import org.genericsystem.api.core.annotations.value.StringValue;
 
 /**
@@ -9,6 +10,7 @@ import org.genericsystem.api.core.annotations.value.StringValue;
  */
 @SystemGeneric
 @StringValue("Car")
+@InstanceValueClassConstraint(String.class)
 public class Car {
 
 }

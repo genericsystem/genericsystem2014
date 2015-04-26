@@ -60,7 +60,7 @@ class InheritanceComputer<T extends DefaultVertex<T>> extends HashSet<T> {
 		}
 
 		private Stream<T> getStream(final T holder) {
-			if (compositesBySuper(localBase, holder).count() != 0)
+			if(compositesBySuper(localBase, holder).count() != 0)
 				add(holder);
 			Stream<T> indexStream = Stream.concat(holder.getLevel() < level ? compositesByMeta(localBase, holder) : Stream.empty(), compositesBySuper(localBase, holder));
 			return Stream.concat(Stream.of(holder), indexStream.flatMap(x -> getStream(x)).distinct());

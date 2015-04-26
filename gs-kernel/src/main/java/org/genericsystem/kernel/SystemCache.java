@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.genericsystem.api.core.IRoot;
 import org.genericsystem.api.core.IVertex.SystemProperty;
 import org.genericsystem.api.core.annotations.Components;
 import org.genericsystem.api.core.annotations.Dependencies;
@@ -47,9 +49,9 @@ public class SystemCache {
 
 	public void mount(List<Class<?>> systemClasses, Class<?>... userClasses) {
 		for (Class<?> clazz : systemClasses)
-			set(clazz);
+			bind(clazz);
 		for (Class<?> clazz : userClasses)
-			set(clazz);
+			bind(clazz);
 	}
 
 	private Generic set(Class<?> clazz) {
@@ -80,17 +82,19 @@ public class SystemCache {
 	}
 
 	public Generic find(Class<?> clazz) {
+		if(IRoot.class.isAssignableFrom(clazz))
+			return root;
 		return systemCache.get(clazz);
 	}
 
 	public Generic bind(Class<?> clazz) {
-		Generic result = systemCache.get(clazz);
-		if (result == null && SystemProperty.class.isAssignableFrom(clazz) && !root.isInitialized())
+		Generic result = find(clazz);
+		if (result == null)
 			result = set(clazz);
 		return result;
 	}
 
-	public Class<?> getByVertex(Generic vertex) {
+	public Class<?> getClassByVertex(Generic vertex) {
 		return reverseSystemCache.get(vertex);
 	}
 
@@ -126,7 +130,7 @@ public class SystemCache {
 		Dependencies dependenciesClass = clazz.getAnnotation(Dependencies.class);
 		if (dependenciesClass != null)
 			for (Class<?> dependencyClass : dependenciesClass.value())
-				set(dependencyClass);
+				bind(dependencyClass);
 	}
 
 	private Generic setMeta(Class<?> clazz) {
@@ -135,7 +139,7 @@ public class SystemCache {
 			return root;
 		if (meta.value() == clazz)
 			return null;
-		return set(meta.value());
+		return bind(meta.value());
 	}
 
 	private List<Generic> setOverrides(Class<?> clazz) {
@@ -143,7 +147,7 @@ public class SystemCache {
 		org.genericsystem.api.core.annotations.Supers supersAnnotation = clazz.getAnnotation(org.genericsystem.api.core.annotations.Supers.class);
 		if (supersAnnotation != null)
 			for (Class<?> overrideClass : supersAnnotation.value())
-				overridesVertices.add(set(overrideClass));
+				overridesVertices.add(bind(overrideClass));
 		return overridesVertices;
 	}
 

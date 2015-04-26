@@ -30,6 +30,11 @@ public interface DefaultCompositesInheritance<T extends DefaultVertex<T>> extend
 	default Snapshot<T> getAttributes(Serializable value, T... targets) {
 		return getAttributes(targets).filter(DefaultDependencies.valueFilter(value));
 	}
+	
+	@Override
+	default Snapshot<T> getAttributes() {
+		return getAttributes(getRoot().getMetaAttribute());
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override

@@ -28,28 +28,25 @@ import javafx.util.StringConverter;
  */
 public class EditingCell<S,T> extends TableCell<S, T> {
 
-	private final TextField textField;
-	private StringConverter<T> converter;
-
+	private TextField textField;
+	private final StringConverter<T> converter;
 
 	public EditingCell(StringConverter<T> converter) {
 		this.converter = converter;
+	}
+
+	private void createTextField() {
 
 		textField = new TextField(converter.toString(getItem()));
 
 		textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				if(!newValue.booleanValue() && textField != null) {
-					System.out.println("coucou lost focus : "+textField.getText());
-					Platform.runLater(new Runnable() {
-						@Override
-						public void run() {
-							commitEdit(converter.fromString(textField.getText()));
-						}
-					});
+				if(!newValue.booleanValue() && textField != null) {	
+					commitEdit(converter.fromString(textField.getText()));
 				}
 			}
 		});
+
 
 		textField.setOnKeyReleased(new EventHandler<KeyEvent>() {
 			@Override public void handle(KeyEvent t) {
@@ -65,6 +62,9 @@ public class EditingCell<S,T> extends TableCell<S, T> {
 	@Override
 	public void startEdit() {
 		super.startEdit();
+		if (textField == null) {
+			createTextField();
+		}
 		setGraphic(textField);
 		setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 		Platform.runLater(new Runnable() {

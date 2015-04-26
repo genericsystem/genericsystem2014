@@ -111,7 +111,7 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 
 	@Override
 	public Class<?> findAnnotedClass(Generic vertex) {
-		return systemCache.getByVertex(vertex);
+		return systemCache.getClassByVertex(vertex);
 	}
 
 	@Override

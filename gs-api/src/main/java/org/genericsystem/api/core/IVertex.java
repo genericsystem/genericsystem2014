@@ -242,6 +242,15 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 */
 	boolean isCompositeOf(T vertex);
 
+	
+	/**
+	 * Returns the attributes of this vertex (directly if this vertex is a type, the attributes of its type if this vertex is an instance).<br>
+	 * The returned attributes satisfies the specified <code>targets</code>.
+	 *
+	 * @return the attributes of this vertex regardless of the position of this vertex in the components of these attributes.
+	 */
+	Snapshot<T> getAttributes();
+	
 	/**
 	 * Returns the attributes of this vertex (directly if this vertex is a type, the attributes of its type if this vertex is an instance).<br>
 	 * The returned attributes satisfies the specified <code>targets</code>.
