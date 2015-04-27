@@ -26,12 +26,12 @@ import javafx.util.StringConverter;
  * @param <S>
  * @param <T>
  */
-public class EditingCell<S,T> extends TableCell<S, T> {
+public class EditingTableCell<S,T> extends TableCell<S, T> {
 
 	private TextField textField;
 	private final StringConverter<T> converter;
 
-	public EditingCell(StringConverter<T> converter) {
+	public EditingTableCell(StringConverter<T> converter) {
 		this.converter = converter;
 	}
 
@@ -62,16 +62,15 @@ public class EditingCell<S,T> extends TableCell<S, T> {
 	@Override
 	public void startEdit() {
 		super.startEdit();
-		if (textField == null) {
+		if (textField == null)
 			createTextField();
-		}
 		setGraphic(textField);
 		setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+		textField.selectAll();
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
 				textField.requestFocus();
-				textField.selectAll();
 			}
 		});
 	}
@@ -81,6 +80,7 @@ public class EditingCell<S,T> extends TableCell<S, T> {
 		super.cancelEdit();
 		setText(converter.toString(getItem()));
 		setContentDisplay(ContentDisplay.TEXT_ONLY);
+		textField = null;
 	}
 
 	@Override
@@ -99,6 +99,7 @@ public class EditingCell<S,T> extends TableCell<S, T> {
 			} else {
 				setText(converter.toString(getItem()));
 				setContentDisplay(ContentDisplay.TEXT_ONLY);
+				textField = null;
 			}
 		}
 	}

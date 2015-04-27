@@ -216,4 +216,15 @@ public interface DefaultCompositesInheritance<T extends DefaultVertex<T>> extend
 
 	T getNonAmbiguousResult(Stream<T> stream);
 
+	@SuppressWarnings("unchecked")
+	default T getLinkTargetComponent(T relation, T... targets) {
+		T link = getLink(relation, targets);
+		return link!=null ? link.getTargetComponent() : null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	default T getLinkTargetComponent(T relation,Serializable value, T... targets) {
+		T link = getLink(relation, value, targets);
+		return link!=null ? link.getTargetComponent() : null;
+	}
 }

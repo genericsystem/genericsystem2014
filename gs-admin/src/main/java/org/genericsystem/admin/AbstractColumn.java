@@ -2,19 +2,17 @@ package org.genericsystem.admin;
 
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.util.StringConverter;
 import javafx.util.converter.BooleanStringConverter;
@@ -31,13 +29,12 @@ import org.genericsystem.mutability.Generic;
  * @param <T>
  */
 public abstract class AbstractColumn<T> extends TableColumn<Generic,T> {
-	protected final Observables<T> observables;
-
+	
 	public AbstractColumn(Generic generic,Function<Generic, T> getter,BiConsumer<Generic, T> setter) {
 		super(getDefaultConverter(generic.getMeta()).toString(generic.getValue()));
-		observables = buildObservables(setter);
+		GsPropertiesFactory<T> observables = buildObservables(getter,setter);
 		setMinWidth(200);
-		setCellValueFactory(cellData -> observables.get(cellData.getValue(),getter.apply(cellData.getValue())));
+		setCellValueFactory(observables);
 		setOnEditCommit((CellEditEvent<Generic, T> t) -> {
 			Generic g =(t.getTableView().getItems().get(t.getTablePosition().getRow()));
 			observables.get(g).setValue(t.getNewValue());
@@ -45,8 +42,8 @@ public abstract class AbstractColumn<T> extends TableColumn<Generic,T> {
 		setEditable(true);	
 	}
 
-	public Observables<T> buildObservables(BiConsumer<Generic, T> setter){
-		return new Observables<>(setter);
+	protected GsPropertiesFactory<T> buildObservables(Function<Generic, T> getter,BiConsumer<Generic, T> setter){
+		return new GsPropertiesFactory<>(getter,setter);
 	}
 
 
@@ -57,8 +54,8 @@ public abstract class AbstractColumn<T> extends TableColumn<Generic,T> {
 		}
 
 		@Override
-		public Observables<Boolean> buildObservables(BiConsumer<Generic, Boolean> setter) {
-			return new Observables<Boolean>(setter){
+		public GsPropertiesFactory<Boolean> buildObservables(Function<Generic, Boolean> getter,BiConsumer<Generic, Boolean> setter) {
+			return new GsPropertiesFactory<Boolean>(getter,setter){
 				private static final long serialVersionUID = 2551229764188937954L;
 
 				@Override
@@ -68,12 +65,14 @@ public abstract class AbstractColumn<T> extends TableColumn<Generic,T> {
 			};
 		}
 	}
+	
+	
 
 
 	public static class EditColumn<T> extends AbstractColumn<T>{
 		public EditColumn(Generic attribute,Function<Generic, T> getter,BiConsumer<Generic, T> setter) {
 			super(attribute, getter, setter);
-			setCellFactory(tableColumn -> new EditingCell<Generic,T>(getDefaultConverter(attribute)));	
+			setCellFactory(tableColumn -> new EditingTableCell<Generic,T>(getDefaultConverter(attribute)));	
 		}
 	}
 
@@ -81,38 +80,19 @@ public abstract class AbstractColumn<T> extends TableColumn<Generic,T> {
 	public static class TargetComponentColumn extends AbstractColumn<Generic>{
 		public TargetComponentColumn(Generic targetComponent,Function<Generic, Generic> getter,BiConsumer<Generic, Generic> setter) {
 			super(targetComponent, getter, setter);
-			setCellFactory(ComboBoxTableCell.<Generic,Generic>forTableColumn(new GenericStringConverter<>(targetComponent),FXCollections.<Generic>observableArrayList(targetComponent.getSubInstances().toList())));
+			setCellFactory(ChoiceBoxTableCell.<Generic,Generic>forTableColumn(new GenericStringConverter<>(targetComponent),FXCollections.<Generic>observableArrayList(targetComponent.getSubInstances().toList())));
 		}
 	}
-
-	public static class Observables<T> extends HashMap<Generic,Property<T>> {
-
-		private static final long serialVersionUID = 7709729724315030415L;
-		private final BiConsumer<Generic, T> setter;
-		
-		public Observables(BiConsumer<Generic, T> setter) {
-			this.setter = setter;
+	
+	public static class DeleteColumn extends TableColumn<Generic, Generic> {
+		public DeleteColumn(Generic type) {
+			super("Delete");
+			setMinWidth(200);
+			setEditable(true);
+			setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue()));
+			setCellFactory(column->new DeleteButtonTableCell<>(new GenericStringConverter<>(type)));
 		}
-		
-		public ObservableValue<T> get(Object key,T value) {
-			Property<T> observable = super.get(key);
-			if(observable==null) {
-				put((Generic) key,observable=buildProperty(value));
-				observable.addListener(new ChangeListener<T>() {
-					@Override
-					public void changed(ObservableValue<? extends T> observable,T oldValue, T newValue) {
-						System.out.println("Change : "+oldValue+" "+newValue);
-						setter.accept((Generic) key, newValue);
-					}
-				});
-			}
-			return observable;
-		};
-
-		Property<T> buildProperty(T value){
-			return new SimpleObjectProperty<T>(value);
-		}
-	};
+	}
 
 	static class GenericStringConverter<T extends Serializable> extends StringConverter<Generic> {
 
