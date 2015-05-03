@@ -2,6 +2,7 @@ package org.genericsystem.admin;
 
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -20,6 +21,7 @@ import javafx.util.converter.DefaultStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 
 import org.genericsystem.api.core.AxedPropertyClass;
+import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.mutability.Generic;
 
 
@@ -33,13 +35,8 @@ public abstract class AbstractColumn<T> extends TableColumn<Generic,T> {
 	public AbstractColumn(Generic generic,Function<Generic, T> getter,BiConsumer<Generic, T> setter) {
 		super(getDefaultConverter(generic.getMeta()).toString(generic.getValue()));
 		GsPropertiesFactory<T> observables = buildObservables(getter,setter);
-		setMinWidth(200);
+		//setMinWidth(200);
 		setCellValueFactory(observables);
-		setOnEditCommit((CellEditEvent<Generic, T> t) -> {
-			Generic g =(t.getTableView().getItems().get(t.getTablePosition().getRow()));
-			observables.get(g).setValue(t.getNewValue());
-		});
-		setEditable(true);	
 	}
 
 	protected GsPropertiesFactory<T> buildObservables(Function<Generic, T> getter,BiConsumer<Generic, T> setter){
@@ -72,7 +69,13 @@ public abstract class AbstractColumn<T> extends TableColumn<Generic,T> {
 	public static class EditColumn<T> extends AbstractColumn<T>{
 		public EditColumn(Generic attribute,Function<Generic, T> getter,BiConsumer<Generic, T> setter) {
 			super(attribute, getter, setter);
+			setOnEditCommit((CellEditEvent<Generic, T> t) -> {
+				Generic g =(t.getTableView().getItems().get(t.getTablePosition().getRow()));
+				((GsPropertiesFactory<T>)getCellValueFactory()).get(g).setValue(t.getNewValue());
+			});
+			setEditable(true);	
 			setCellFactory(tableColumn -> new EditingTableCell<Generic,T>(getDefaultConverter(attribute)));	
+			setPrefWidth(140);
 		}
 	}
 
@@ -80,17 +83,35 @@ public abstract class AbstractColumn<T> extends TableColumn<Generic,T> {
 	public static class TargetComponentColumn extends AbstractColumn<Generic>{
 		public TargetComponentColumn(Generic targetComponent,Function<Generic, Generic> getter,BiConsumer<Generic, Generic> setter) {
 			super(targetComponent, getter, setter);
+			setOnEditCommit((CellEditEvent<Generic, Generic> t) -> {
+				Generic g =(t.getTableView().getItems().get(t.getTablePosition().getRow()));
+				((GsPropertiesFactory<Generic>)getCellValueFactory()).get(g).setValue(t.getNewValue());
+			});
+			setEditable(true);	
 			setCellFactory(ChoiceBoxTableCell.<Generic,Generic>forTableColumn(new GenericStringConverter<>(targetComponent),FXCollections.<Generic>observableArrayList(targetComponent.getSubInstances().toList())));
+		}
+	}
+	
+	public static class GenericComponentColumn extends AbstractColumn<Snapshot<Generic>>{
+		public GenericComponentColumn(Generic attribute,int axe,Function<Generic, Snapshot<Generic>> getter,BiConsumer<Generic, Snapshot<Generic>> setter) {
+			super(attribute, getter, setter);
+			setCellFactory(tableColumn->new LinksTableCell(attribute,axe));	
+			setPrefWidth(320);
+		}
+
+		
+		protected GsPropertiesFactory<Snapshot<Generic>> buildObservables(Function<Generic, Snapshot<Generic>> getter,BiConsumer<Generic, Snapshot<Generic>> setter){
+			return new GsPropertiesFactory<>(getter,setter);
 		}
 	}
 	
 	public static class DeleteColumn extends TableColumn<Generic, Generic> {
 		public DeleteColumn(Generic type) {
 			super("Delete");
-			setMinWidth(200);
 			setEditable(true);
 			setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue()));
 			setCellFactory(column->new DeleteButtonTableCell<>(new GenericStringConverter<>(type)));
+			setPrefWidth(100);
 		}
 	}
 

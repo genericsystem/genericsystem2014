@@ -1,9 +1,6 @@
 package org.genericsystem.admin;
 
 
-import java.util.Arrays;
-import java.util.List;
-
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -19,20 +16,15 @@ import org.genericsystem.mutability.Generic;
  *
  */
 public class Crud extends VBox {
-	public Crud(Generic type, Generic... attributes) {
-		this(type,Arrays.asList(attributes));
-	}
-	
-	public Crud(Generic type, List<Generic> attributes) {
-		setSpacing(5);
-		setPadding(new Insets(10, 0, 0, 10));
-		
-		TableView<Generic> table = new GenericsTable(type,attributes);
-		
+
+	public Crud(Generic type) {
+		//setSpacing(5);
+		setPadding(new Insets(10, 10, 10, 10));
+		TableView<Generic> table = new GenericsTableView(type);
 		HBox hb = new HBox();
-		hb.setSpacing(5);
-		hb.setPadding(new Insets(10, 0, 0, 10));
-		
+		//hb.setSpacing(5);
+		hb.setPadding(new Insets(10, 0, 0, 0));
+
 		final TextField newTextFild = new TextField();
 		newTextFild.setMaxWidth(200);
 		final Button addButton = new Button("Add");
@@ -42,7 +34,7 @@ public class Crud extends VBox {
 				table.getItems().add(generic);
 		});	
 		hb.getChildren().addAll(newTextFild,addButton);
-	
+
 		getChildren().addAll(table,hb);
 	}
 }
