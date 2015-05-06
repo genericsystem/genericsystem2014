@@ -1,5 +1,6 @@
 package org.genericsystem.admin;
 
+import java.io.Serializable;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
@@ -28,7 +29,7 @@ public class AddDialog extends Dialog<Generic> {
 		getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 		setResultConverter(buttonType -> {
 			if (buttonType == ButtonType.OK) {
-				Generic generic = instance != null ? type.addInstance(label1.getText(), instance) : type.setInstance(text1.getText());
+				Generic generic = instance != null ? type.addInstance(AbstractColumn.<Serializable> getDefaultConverter(type).fromString(text1.getText()), instance) : type.setInstance(text1.getText());
 				if (!tableItems.contains(generic))
 					tableItems.add(generic);
 				return generic;
