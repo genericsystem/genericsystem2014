@@ -107,15 +107,15 @@ public abstract class AbstractColumn<T> extends TableColumn<Generic,T> {
 		}
 	}
 	
-	public static class DeleteColumn extends TableColumn<Generic, Generic> {
-		public DeleteColumn(Generic type) {
-			super("Delete");
-			setEditable(true);
-			setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue()));
-			setCellFactory(column->new DeleteButtonTableCell<>(new GenericStringConverter<>(type)));
-			setPrefWidth(100);
-		}
-	}
+//	public static class DeleteColumn extends TableColumn<Generic, Generic> {
+//		public DeleteColumn(Generic type) {
+//			super("Delete");
+//			setEditable(true);
+//			setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue()));
+//			setCellFactory(column->new DeleteButtonTableCell<>(new GenericStringConverter<>(type)));
+//			setPrefWidth(100);
+//		}
+//	}
 
 	static class GenericStringConverter<T extends Serializable> extends StringConverter<Generic> {
 

@@ -1,7 +1,6 @@
 package org.genericsystem.admin;
 
 
-import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -23,7 +22,7 @@ public class Crud extends VBox {
 	public Crud(Generic type) {
 		//setSpacing(5);
 		setPadding(new Insets(10, 10, 10, 10));
-		TableView<Generic> table = new GenericsTableView(type);
+		TableView<Generic> table = new InstancesTableView(type);
 		HBox hb = new HBox();
 		//hb.setSpacing(5);
 		hb.setPadding(new Insets(10, 0, 0, 0));

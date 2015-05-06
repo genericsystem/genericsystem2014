@@ -10,19 +10,18 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.util.Callback;
 
 import org.genericsystem.admin.AbstractColumn.CheckBoxColumn;
-import org.genericsystem.admin.AbstractColumn.DeleteColumn;
 import org.genericsystem.admin.AbstractColumn.EditColumn;
 import org.genericsystem.admin.AbstractColumn.GenericStringConverter;
 import org.genericsystem.admin.AbstractColumn.TargetComponentColumn;
@@ -48,7 +47,7 @@ public class LinksTableView extends TableView<Generic> {
 				}));
 			}
 		}
-		getColumns().add(new DeleteColumn(attribute));
+		//getColumns().add(new DeleteColumn(attribute));
 		setEditable(true);
 		widthProperty().addListener(new ChangeListener<Number>() {
 	        @Override

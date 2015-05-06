@@ -12,7 +12,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Dialog;
@@ -27,7 +26,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
 
-import org.genericsystem.admin.AbstractColumn.DeleteColumn;
 import org.genericsystem.admin.AbstractColumn.EditColumn;
 import org.genericsystem.admin.AbstractColumn.GenericComponentColumn;
 import org.genericsystem.admin.AbstractColumn.GenericStringConverter;
@@ -39,60 +37,48 @@ import org.genericsystem.mutability.Generic;
  * @author Nicolas Feybesse
  *
  */
-public class GenericsTableView extends TableView<Generic>{
+public class InstancesTableView extends TableView<Generic>{
 
 
+	public static class AddDialog extends Dialog<Generic> {
+		public AddDialog(Generic type,ObservableList<Generic> tableItems,String title,String headerText) {
+			setTitle(title);
+			setHeaderText(headerText);
+			setResizable(true);
 
+			Label label1 = new Label("Value : ");
+			Label label2 = new Label("Other : ");
+			TextField text1 = new TextField();
+			TextField text2 = new TextField();
 
+			GridPane grid = new GridPane();
+			grid.add(label1, 1, 1);
+			grid.add(text1, 2, 1);
+			grid.add(label2, 1, 2);
+			grid.add(text2, 2, 2);
+			getDialogPane().setContent(grid);
+			getDialogPane().getButtonTypes().addAll(ButtonType.OK,ButtonType.CANCEL);
+			setResultConverter(buttonType->{
+				if (buttonType == ButtonType.OK) {
+					Generic generic = type.setInstance(text1.getText());
+					if(!tableItems.contains(generic))
+						tableItems.add(generic);
+					return generic;
+				}
+				return null;
+			});
+		}
+	}
 
-	public GenericsTableView(Generic type) {
+	public InstancesTableView(Generic type) {
 		//setPrefWidth(1800);
 		//setPrefWidth(1580);
 		final ContextMenu menu = new ContextMenu();
 		String text = "Add New : "+new GenericStringConverter<>(type.getMeta()).toString(type);
 		final MenuItem addItem = new MenuItem(text,new ImageView(new Image(getClass().getResourceAsStream("ok.png"))));
-		addItem.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				Dialog<Generic> dialog = new Dialog<>();
-				dialog.setTitle("Add an instance");
-				dialog.setHeaderText(text);
-				dialog.setResizable(true);
-
-				Label label1 = new Label("Value : ");
-				Label label2 = new Label("Other : ");
-				TextField text1 = new TextField();
-				TextField text2 = new TextField();
-
-				GridPane grid = new GridPane();
-				grid.add(label1, 1, 1);
-				grid.add(text1, 2, 1);
-				grid.add(label2, 1, 2);
-				grid.add(text2, 2, 2);
-				dialog.getDialogPane().setContent(grid);
-
-				dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK,ButtonType.CANCEL);
-
-				dialog.setResultConverter(new Callback<ButtonType, Generic>() {
-					@Override
-					public Generic call(ButtonType b) {
-						if (b == ButtonType.OK) {
-							Generic generic = type.setInstance(text1.getText());
-							if(!getItems().contains(generic))
-								getItems().add(generic);
-							return generic;
-						}
-						return null;
-					}
-				});
-
-				Optional<Generic> result = dialog.showAndWait();	
-				if (result.isPresent()) {
-					System.out.println("Result: " + result.get());
-				}
-			}
+		addItem.setOnAction( (EventHandler<ActionEvent>) e->  {
+			new AddDialog(type,getItems(),"Add an instance",text).showAndWait().ifPresent(res->System.out.println("Result: " + res));
 		});
-
 		menu.getItems().add(addItem);
 		setContextMenu(menu);
 
@@ -107,7 +93,7 @@ public class GenericsTableView extends TableView<Generic>{
 		for (Generic attribute : type.getAttributes().filter(attribute->type.inheritsFrom(attribute.getComponent(ApiStatics.BASE_POSITION)))) {
 			getColumns().add(new GenericComponentColumn(attribute,attribute.getComponents().indexOf(type),g -> g.getHolders(attribute), null));
 		}
-		getColumns().add(new DeleteColumn(type));
+		//getColumns().add(new DeleteColumn(type));
 		setEditable(true);
 
 
