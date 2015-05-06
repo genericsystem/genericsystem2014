@@ -1,18 +1,36 @@
 package org.genericsystem.admin;
 
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
+import javafx.util.Callback;
 
 import org.genericsystem.admin.AbstractColumn.DeleteColumn;
 import org.genericsystem.admin.AbstractColumn.EditColumn;
 import org.genericsystem.admin.AbstractColumn.GenericComponentColumn;
+import org.genericsystem.admin.AbstractColumn.GenericStringConverter;
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.mutability.Generic;
 
@@ -22,10 +40,62 @@ import org.genericsystem.mutability.Generic;
  *
  */
 public class GenericsTableView extends TableView<Generic>{
+
+
+
+
+
 	public GenericsTableView(Generic type) {
 		//setPrefWidth(1800);
 		//setPrefWidth(1580);
-		
+		final ContextMenu menu = new ContextMenu();
+		String text = "Add New : "+new GenericStringConverter<>(type.getMeta()).toString(type);
+		final MenuItem addItem = new MenuItem(text,new ImageView(new Image(getClass().getResourceAsStream("ok.png"))));
+		addItem.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				Dialog<Generic> dialog = new Dialog<>();
+				dialog.setTitle("Add an instance");
+				dialog.setHeaderText(text);
+				dialog.setResizable(true);
+
+				Label label1 = new Label("Value : ");
+				Label label2 = new Label("Other : ");
+				TextField text1 = new TextField();
+				TextField text2 = new TextField();
+
+				GridPane grid = new GridPane();
+				grid.add(label1, 1, 1);
+				grid.add(text1, 2, 1);
+				grid.add(label2, 1, 2);
+				grid.add(text2, 2, 2);
+				dialog.getDialogPane().setContent(grid);
+
+				dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK,ButtonType.CANCEL);
+
+				dialog.setResultConverter(new Callback<ButtonType, Generic>() {
+					@Override
+					public Generic call(ButtonType b) {
+						if (b == ButtonType.OK) {
+							Generic generic = type.setInstance(text1.getText());
+							if(!getItems().contains(generic))
+								getItems().add(generic);
+							return generic;
+						}
+						return null;
+					}
+				});
+
+				Optional<Generic> result = dialog.showAndWait();	
+				if (result.isPresent()) {
+					System.out.println("Result: " + result.get());
+				}
+			}
+		});
+
+		menu.getItems().add(addItem);
+		setContextMenu(menu);
+
 		TableColumn<Generic, ?> firstColumn = new EditColumn<>(type, g -> g.getValue(), (g, v) -> {
 			if(type.getInstance(v)!=null)
 				throw new IllegalStateException();
@@ -33,9 +103,9 @@ public class GenericsTableView extends TableView<Generic>{
 		});
 		getColumns().add(firstColumn);
 
-		
+
 		for (Generic attribute : type.getAttributes().filter(attribute->type.inheritsFrom(attribute.getComponent(ApiStatics.BASE_POSITION)))) {
-				getColumns().add(new GenericComponentColumn(attribute,attribute.getComponents().indexOf(type),g -> g.getHolders(attribute), null));
+			getColumns().add(new GenericComponentColumn(attribute,attribute.getComponents().indexOf(type),g -> g.getHolders(attribute), null));
 		}
 		getColumns().add(new DeleteColumn(type));
 		setEditable(true);
@@ -51,12 +121,55 @@ public class GenericsTableView extends TableView<Generic>{
 				});
 			}
 		});
-		setItems(data);
-//		setFixedCellSize(100);
-//	    prefHeightProperty().bind(fixedCellSizeProperty().multiply(Bindings.size(getItems()).add(1.01)));
-//	    minHeightProperty().bind(prefHeightProperty());
-//	    maxHeightProperty().bind(prefHeightProperty());
 
+		//		setFixedCellSize(100);
+		//	    prefHeightProperty().bind(fixedCellSizeProperty().multiply(Bindings.size(getItems()).add(1.01)));
+		//	    minHeightProperty().bind(prefHeightProperty());
+		//	    maxHeightProperty().bind(prefHeightProperty());
+		setRowFactory(new Callback<TableView<Generic>, TableRow<Generic>>() {
+			@Override
+			public TableRow<Generic> call(TableView<Generic> tableView) {
+				final TableRow<Generic> row = new TableRow<>();
+				final ContextMenu rowMenu = new ContextMenu();
+				final ContextMenu tableMenu = tableView.getContextMenu();
+				if (tableMenu != null) {
+					tableMenu.getItems().forEach(item->{
+						MenuItem newItem = new MenuItem(item.getText(),item.getGraphic());
+						newItem.onActionProperty().bind(item.onActionProperty());
+						rowMenu.getItems().add(newItem);
+					});
+					//rowMenu.getItems().add(new SeparatorMenuItem());
+				}
+
+
+				final MenuItem deleteItem = new MenuItem("Delete : "+ new GenericStringConverter<>(type).toString(row.getItem()),new ImageView(new Image(getClass().getResourceAsStream("not.png"))));
+				deleteItem.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent event) {
+						Alert alert = new Alert(AlertType.CONFIRMATION);
+						alert.setTitle("Confirmation Dialog");
+						alert.setHeaderText("Confirmation is required");
+						alert.setContentText("Delete : "+ new GenericStringConverter<>(type).toString(getSelectionModel().getSelectedItem()) +" ?");
+						Optional<ButtonType> result = alert.showAndWait();
+						if (result.get() == ButtonType.OK)
+							getItems().remove(getSelectionModel().getSelectedItem());
+					}
+				});
+				// disable this menu item if nothing is selected:
+				deleteItem.disableProperty().bind(
+						Bindings.isEmpty(getSelectionModel().getSelectedItems()));
+				deleteItem.textProperty().bind(Bindings.createStringBinding(()->"Delete : "+new GenericStringConverter<>(type).toString(row.getItem()),row.itemProperty()));
+				rowMenu.getItems().add(deleteItem);
+
+				// only display context menu for non-null items:
+				row.contextMenuProperty().bind(
+						Bindings.when(Bindings.isNotNull(row.itemProperty()))
+						.then(rowMenu)
+						.otherwise((ContextMenu)null));
+				return row;
+			}
+		});
+		setItems(data);
 	}
 }
 

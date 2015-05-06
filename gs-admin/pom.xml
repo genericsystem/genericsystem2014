@@ -11,7 +11,7 @@
 		<!-- The final name for the JAR that you can find in target directory -->
 		<jar.final.name>gs-admin</jar.final.name>
 		<!-- the default class that has the public static void main(String[]) method -->
-		<main.class>org.genericsystem.examplejavafx.application.app</main.class>
+		<main.class>org.genericsystem.admin.App</main.class>
 	</properties>
 	<dependencies>
 		<dependency>
