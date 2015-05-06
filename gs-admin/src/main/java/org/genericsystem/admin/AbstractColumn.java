@@ -11,7 +11,9 @@ import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.ChoiceBoxTableCell;
 import javafx.scene.control.cell.ComboBoxTableCell;
@@ -105,15 +107,15 @@ public abstract class AbstractColumn<T> extends TableColumn<Generic,T> {
 		}
 	}
 	
-	public static class DeleteColumn extends TableColumn<Generic, Generic> {
-		public DeleteColumn(Generic type) {
-			super("Delete");
-			setEditable(true);
-			setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue()));
-			setCellFactory(column->new DeleteButtonTableCell<>(new GenericStringConverter<>(type)));
-			setPrefWidth(100);
-		}
-	}
+//	public static class DeleteColumn extends TableColumn<Generic, Generic> {
+//		public DeleteColumn(Generic type) {
+//			super("Delete");
+//			setEditable(true);
+//			setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue()));
+//			setCellFactory(column->new DeleteButtonTableCell<>(new GenericStringConverter<>(type)));
+//			setPrefWidth(100);
+//		}
+//	}
 
 	static class GenericStringConverter<T extends Serializable> extends StringConverter<Generic> {
 
