@@ -11,13 +11,13 @@ public class InstanceValueClassConstraintTest extends AbstractTest {
 		Generic car = root.addInstance("Car");
 		Generic myCar = car.addInstance("myCar");
 
-		assert myCar.getClassConstraint() == null;
+		assert myCar.getValueInstanceClassConstraint() == null;
 		car.setClassConstraint(String.class);
-		assert String.class.equals(car.getClassConstraint());
+		assert String.class.equals(car.getValueInstanceClassConstraint());
 		car.disableClassConstraint();
 		myCar.updateValue(null);
 
-		assert car.getClassConstraint() == null;
+		assert car.getValueInstanceClassConstraint() == null;
 
 	}
 

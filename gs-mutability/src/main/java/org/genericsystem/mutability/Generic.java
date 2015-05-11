@@ -1,12 +1,8 @@
 package org.genericsystem.mutability;
 
-import java.io.Serializable;
-import java.util.List;
-
 import org.genericsystem.defaults.DefaultVertex;
-import org.genericsystem.kernel.LifeManager;
 
-public interface Generic extends DefaultVertex<Generic> {
+public interface Generic extends DefaultVertex<Generic>, Comparable<Generic> {
 
 	@Override
 	default Engine getRoot() {
@@ -18,49 +14,18 @@ public interface Generic extends DefaultVertex<Generic> {
 		return getRoot().getCurrentCache();
 	}
 
-	default LifeManager getLifeManager() {
-		return getCurrentCache().unwrap(this).getLifeManager();
-	}
-
-	// @Override
-	// default int compareTo(Generic vertex) {
-	// long birthTs = getLifeManager().getBirthTs();
-	// long compareBirthTs = vertex.getLifeManager().getBirthTs();
-	// return birthTs == compareBirthTs ? Long.compare(getTs(), vertex.getTs()) : Long.compare(birthTs, compareBirthTs);
-	// }
-
-	default long getTs() {
-		return getCurrentCache().unwrap(this).getTs();
-	}
-
 	@Override
 	default boolean isSystem() {
 		return getCurrentCache().unwrap(this).isSystem();
 	}
 
 	@Override
-	default Generic getMeta() {
-		return getCurrentCache().wrap(getCurrentCache().unwrap(this).getMeta());
-	}
+	default int compareTo(Generic vertex) {
+		assert false;
+		long birthTs = getCurrentCache().unwrap(this).getLifeManager().getBirthTs();
+		long compareBirthTs = getCurrentCache().unwrap(vertex).getLifeManager().getBirthTs();
+		int result = birthTs == compareBirthTs ? Long.compare(getTs(), vertex.getTs()) : Long.compare(birthTs, compareBirthTs);
 
-	@Override
-	default List<Generic> getSupers() {
-		return getCurrentCache().wrap(getCurrentCache().unwrap(this).getSupers());
+		return result;
 	}
-
-	@Override
-	default Serializable getValue() {
-		return getCurrentCache().unwrap(this).getValue();
-	}
-
-	@Override
-	default List<Generic> getComponents() {
-		return getCurrentCache().wrap(getCurrentCache().unwrap(this).getComponents());
-	}
-
-	@Override
-	default String info() {
-		return getCurrentCache().unwrap(this).info();
-	}
-
 }

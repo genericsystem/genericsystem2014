@@ -22,20 +22,20 @@ public interface DefaultWritable<T extends DefaultVertex<T>> extends IVertex<T> 
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T updateComponents(T... newComposites) {
-		return update(getSupers(), getValue(), newComposites);
+	default T updateComponents(T... newComponents) {
+		return update(getSupers(), getValue(), newComponents);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	default T update(Serializable newValue, T... newComposites) {
-		return update(Collections.emptyList(), newValue, newComposites);
+	default T update(Serializable newValue, T... newComponents) {
+		return update(getSupers(), newValue, newComponents);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default public T update(T override, Serializable newValue, T... newComposites) {
-		return update(Collections.singletonList(override), newValue, newComposites);
+	default public T update(T override, Serializable newValue, T... newComponents) {
+		return update(Collections.singletonList(override), newValue, newComponents);
 	}
 
 	@Override

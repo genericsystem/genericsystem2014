@@ -192,7 +192,7 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 	}
 
 	private final static ProxyFactory PROXY_FACTORY = new ProxyFactory();
-	private final static MethodFilter METHOD_FILTER = method -> method.getName().equals("getRoot");
+	private final static MethodFilter METHOD_FILTER = method -> method.getName().equals("getRoot") || method.getName().equals("toString");
 
 	@SuppressWarnings("unchecked")
 	<T> T newInstance(Class<?> clazz) {

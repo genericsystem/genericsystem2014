@@ -41,7 +41,7 @@ public class AbstractColumn<T> extends TableColumn<Generic,T> {
 		@SuppressWarnings("unchecked")
 		public GenericColumn(Generic attribute,String columnName,Function<Generic, T> getter,BiConsumer<Generic, T> setter) {
 			super(attribute, columnName, getter, setter);
-			setCellFactory(tableColumn -> new EditingCell<Generic,T>(getDefaultConverter((Class<T>)attribute.getClassConstraint())));	
+			setCellFactory(tableColumn -> new EditingCell<Generic,T>(getDefaultConverter((Class<T>)attribute.getValueInstanceClassConstraint())));	
 		}
 	}
 	
@@ -70,7 +70,7 @@ public class AbstractColumn<T> extends TableColumn<Generic,T> {
 
 		@SuppressWarnings("unchecked")
 		GenericStringConverter(Generic component){
-			this.instanceValueClassConverter = getDefaultConverter((Class<T>)component.getClassConstraint());
+			this.instanceValueClassConverter = getDefaultConverter((Class<T>)component.getValueInstanceClassConstraint());
 		}
 
 		@SuppressWarnings("unchecked")

@@ -138,7 +138,7 @@ public interface DefaultSystemProperties<T extends DefaultVertex<T>> extends IVe
 	}
 
 	@Override
-	default Class<?> getClassConstraint() {
+	default Class<?> getValueInstanceClassConstraint() {
 		return (Class<?>) getSystemPropertyValue(InstanceValueClassConstraint.class, ApiStatics.NO_POSITION);
 	}
 

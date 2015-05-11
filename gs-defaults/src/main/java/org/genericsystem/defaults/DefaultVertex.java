@@ -22,6 +22,10 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 		return getRoot().getCurrentCache();
 	}
 
+	default String defaultToString() {
+		return Objects.toString(getValue());
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	default boolean isAlive() {
@@ -281,5 +285,34 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 		if (iterator.hasNext())
 			getCurrentCache().discardWithException(new AmbiguousSelectionException(result.info() + " " + iterator.next().info()));
 		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	default long getTs() {
+		return getRoot().getTs((T) this);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default T getMeta() {
+		return getRoot().getMeta((T) this);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default List<T> getSupers() {
+		return getRoot().getSupers((T) this);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Serializable getValue() {
+		return getRoot().getValue((T) this);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default List<T> getComponents() {
+		return getRoot().getComponents((T) this);
 	}
 }

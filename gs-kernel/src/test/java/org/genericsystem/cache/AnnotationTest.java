@@ -373,7 +373,7 @@ public class AnnotationTest extends AbstractTest {
 		Generic voiture = engine.find(Vehicle.class);
 		Generic puissance = engine.find(Puissance.class);
 
-		assert puissance.getClassConstraint().equals(Integer.class);
+		assert puissance.getValueInstanceClassConstraint().equals(Integer.class);
 	}
 
 	public void test020_dependencies() {

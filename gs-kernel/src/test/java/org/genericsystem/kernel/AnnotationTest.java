@@ -310,7 +310,7 @@ public class AnnotationTest extends AbstractTest {
 	public void test019_uniqueClassConstraint() {
 		Root engine = new Root(Options.class);
 		Generic options = engine.find(Options.class);
-		assert options.getClassConstraint().equals(Integer.class);
+		assert options.getValueInstanceClassConstraint().equals(Integer.class);
 	}
 
 	public void test020_dependencies() {

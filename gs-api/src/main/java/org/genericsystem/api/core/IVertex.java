@@ -1185,7 +1185,7 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 *
 	 * @return the <code>Class</code> constraint.
 	 */
-	Class<?> getClassConstraint();
+	Class<?> getValueInstanceClassConstraint();
 
 	/**
 	 * Set the <code>Class</code> value constraint of this vertex.

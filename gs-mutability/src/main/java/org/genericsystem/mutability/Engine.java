@@ -2,6 +2,7 @@ package org.genericsystem.mutability;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.List;
 
 import javassist.util.proxy.MethodHandler;
 
@@ -34,7 +35,9 @@ public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 
 	@Override
 	public Object invoke(Object self, Method m, Method proceed, Object[] args) throws Throwable {
-		return this;
+		if (m.getName().equals("getRoot"))
+			return this;
+		return ((Generic) self).defaultToString();
 	}
 
 	@Override
@@ -53,7 +56,7 @@ public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 	public <Custom extends Generic> Custom bind(Class<?> clazz) {
 		return (Custom) getCurrentCache().wrap(clazz, cacheEngine.bind(clazz));
 	}
-	
+
 	@Override
 	public Class<?> findAnnotedClass(Generic vertex) {
 		return cacheEngine.findAnnotedClass(getCurrentCache().unwrap(vertex));
@@ -91,5 +94,30 @@ public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 	@Override
 	public void close() {
 		cacheEngine.close();
+	}
+
+	@Override
+	public long getTs(Generic generic) {
+		return getCurrentCache().unwrap(generic).getTs();
+	}
+
+	@Override
+	public Generic getMeta(Generic generic) {
+		return getCurrentCache().wrap(getCurrentCache().unwrap(generic).getMeta());
+	}
+
+	@Override
+	public List<Generic> getSupers(Generic generic) {
+		return getCurrentCache().wrap(getCurrentCache().unwrap(generic).getSupers());
+	}
+
+	@Override
+	public Serializable getValue(Generic generic) {
+		return getCurrentCache().unwrap(generic).getValue();
+	}
+
+	@Override
+	public List<Generic> getComponents(Generic generic) {
+		return getCurrentCache().wrap(getCurrentCache().unwrap(generic).getComponents());
 	}
 }

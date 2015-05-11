@@ -38,11 +38,15 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 		return this;
 	}
 
-	public Root(Serializable value, String persistentDirectoryPath, Class<?>... userClasses) {
-		init(this, LifeManager.TS_SYSTEM, null, Collections.emptyList(), value, Collections.emptyList(), LifeManager.SYSTEM_TS);
+	public Root(Serializable value, String persistentDirectoryPath,
+			Class<?>... userClasses) {
+		init(this, LifeManager.TS_SYSTEM, null, Collections.emptyList(), value,
+				Collections.emptyList(), LifeManager.SYSTEM_TS);
 		contextWrapper.set(newCache());
 		systemCache = new SystemCache(this, getClass());
-		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class, Sequence.class), userClasses);
+		systemCache.mount(Arrays.asList(MetaAttribute.class,
+				MetaRelation.class, SystemMap.class, Sequence.class),
+				userClasses);
 		flushContext();
 		archiver = new Archiver(this, persistentDirectoryPath);
 		initialized = true;
@@ -102,7 +106,7 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 	public <Custom extends Generic> Custom find(Class<?> clazz) {
 		return (Custom) systemCache.find(clazz);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public <Custom extends Generic> Custom bind(Class<?> clazz) {
@@ -120,7 +124,8 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 	}
 
 	public static class TsGenerator {
-		private final long startTime = System.currentTimeMillis() * Statics.MILLI_TO_NANOSECONDS - System.nanoTime();
+		private final long startTime = System.currentTimeMillis()
+				* Statics.MILLI_TO_NANOSECONDS - System.nanoTime();
 		private final AtomicLong lastTime = new AtomicLong(0L);
 
 		public long pickNewTs() {
@@ -144,35 +149,28 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 		return map.get(generic);
 	}
 
-	long getTs(Generic generic) {
+	@Override
+	public long getTs(Generic generic) {
 		return getVertex(generic).getTs();
 	}
 
-	Generic getMeta(Generic generic) {
+	@Override
+	public Generic getMeta(Generic generic) {
 		return getVertex(generic).getMeta();
 	}
 
-	Generic getNextDependency(Generic generic, Generic ancestor) {
-		return getVertex(generic).getNextDependency(ancestor);
-	}
-
-	void setNextDependency(Generic generic, Generic ancestor, Generic nextDependency) {
-		getVertex(generic).setNextDependency(ancestor, nextDependency);
-	}
-
-	LifeManager getLifeManager(Generic generic) {
-		return getVertex(generic).getLifeManager();
-	}
-
-	List<Generic> getSupers(Generic generic) {
+	@Override
+	public List<Generic> getSupers(Generic generic) {
 		return getVertex(generic).getSupers();
 	}
 
-	Serializable getValue(Generic generic) {
+	@Override
+	public Serializable getValue(Generic generic) {
 		return getVertex(generic).getValue();
 	}
 
-	List<Generic> getComponents(Generic generic) {
+	@Override
+	public List<Generic> getComponents(Generic generic) {
 		return getVertex(generic).getComponents();
 	}
 
@@ -180,8 +178,23 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 		return getVertex(generic).getDependencies();
 	}
 
-	Generic init(Generic generic, long ts, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
-		Vertex result = map.putIfAbsent(generic, new Vertex(generic, ts, meta, supers, value, components, otherTs));
+	Generic getNextDependency(Generic generic, Generic ancestor) {
+		return getVertex(generic).getNextDependency(ancestor);
+	}
+
+	void setNextDependency(Generic generic, Generic ancestor,
+			Generic nextDependency) {
+		getVertex(generic).setNextDependency(ancestor, nextDependency);
+	}
+
+	LifeManager getLifeManager(Generic generic) {
+		return getVertex(generic).getLifeManager();
+	}
+
+	Generic init(Generic generic, long ts, Generic meta, List<Generic> supers,
+			Serializable value, List<Generic> components, long[] otherTs) {
+		Vertex result = map.putIfAbsent(generic, new Vertex(generic, ts, meta,
+				supers, value, components, otherTs));
 		assert result == null;
 		return ((GenericImpl) generic).init(Root.this);
 	}

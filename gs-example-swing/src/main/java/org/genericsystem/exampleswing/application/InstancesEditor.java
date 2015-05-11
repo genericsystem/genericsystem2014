@@ -196,7 +196,7 @@ public class InstancesEditor extends JFrame implements Refreshable {
 
 		public void setValue(Object value, int rowIndex) {
 			Generic instance = type.getSubInstances().getByIndex(rowIndex);
-			Class<?> classConstraint = generic.getClassConstraint();
+			Class<?> classConstraint = generic.getValueInstanceClassConstraint();
 			if (classConstraint != null && Integer.class.isAssignableFrom(classConstraint))
 				instance.setHolder(generic, Integer.parseInt(Objects.toString(value)));
 			else if (classConstraint == null) {

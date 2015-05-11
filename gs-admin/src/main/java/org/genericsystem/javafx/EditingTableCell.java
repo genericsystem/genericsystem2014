@@ -1,4 +1,4 @@
-package org.genericsystem.admin;
+package org.genericsystem.javafx;
 
 
 import java.util.Objects;

@@ -66,6 +66,7 @@ public class UpdateTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic car = engine.addInstance(vehicle, "Car");
+		Generic bike = engine.addInstance(vehicle, "Bike");
 		Generic superCar = engine.addInstance(car, "SuperCar");
 		Generic myCar = superCar.addInstance("myCar");
 		vehicle.update("newVehicle");
