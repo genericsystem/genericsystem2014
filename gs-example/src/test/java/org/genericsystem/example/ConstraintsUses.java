@@ -38,7 +38,7 @@ public class ConstraintsUses {
 		// Create the attribute Options for the type Vehicle
 		Generic options = vehicle.addAttribute("Options");
 		// Constrains the type of Options to String
-		options.enableClassConstraint(String.class);
+		options.setInstanceValueClassConstraint(String.class);
 
 		// Create an instance of Vehicle
 		Generic myVehicle = vehicle.addInstance("myVehicle");

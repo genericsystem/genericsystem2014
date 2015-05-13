@@ -3,6 +3,7 @@ package org.genericsystem.javafx;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -24,7 +25,7 @@ import javafx.util.StringConverter;
 
 public class AddContextMenu<G> extends ContextMenu {
 	public AddContextMenu(G base, G attribute, StringConverter<?> converter, int axe, Supplier<ObservableList<G>> items, ContextMenu aboveMenu, Function<G, List<G>> typeComponents, Function<G, ObservableList<G>> typeComponentSubInstances,
-			TriFunction<G, Serializable, List<G>, G> addAction) {
+			BiFunction<Serializable, List<G>, G> addAction) {
 		String text = "Add New " + attribute.toString() + (base != null ? " on : " + base.toString() : "");
 		final MenuItem addItem = new MenuItem(text, new ImageView(new Image(getClass().getResourceAsStream("ok.png"))));
 		addItem.setOnAction((EventHandler<ActionEvent>) e -> {
@@ -47,7 +48,7 @@ public class AddContextMenu<G> extends ContextMenu {
 
 	public static class AddDialog<G> extends Dialog<G> {
 		public AddDialog(G instance, G type, StringConverter<?> converter, int axe, ObservableList<G> tableItems, String headerText, Function<G, List<G>> typeComponents, Function<G, ObservableList<G>> typeComponentSubInstances,
-				TriFunction<G, Serializable, List<G>, G> addAction) {
+				BiFunction<Serializable, List<G>, G> addAction) {
 
 			setTitle("Add an instance");
 			setHeaderText(headerText);
@@ -78,7 +79,7 @@ public class AddContextMenu<G> extends ContextMenu {
 			setResultConverter(buttonType -> {
 				if (buttonType == ButtonType.OK) {
 					List<G> components = combos.stream().map(combo -> combo.getSelectionModel().getSelectedItem()).collect(Collectors.toList());
-					G generic = addAction.apply(type, (Serializable) converter.fromString(text1.getText()), components);
+					G generic = addAction.apply((Serializable) converter.fromString(text1.getText()), components);
 					tableItems.add(generic);
 					return generic;
 				}

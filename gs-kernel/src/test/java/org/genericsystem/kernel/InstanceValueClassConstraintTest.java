@@ -11,13 +11,13 @@ public class InstanceValueClassConstraintTest extends AbstractTest {
 		Generic car = root.addInstance("Car");
 		Generic myCar = car.addInstance("myCar");
 
-		assert myCar.getValueInstanceClassConstraint() == null;
-		car.setClassConstraint(String.class);
-		assert String.class.equals(car.getValueInstanceClassConstraint());
-		car.disableClassConstraint();
+		assert myCar.getInstanceValueClassConstraint() == null;
+		car.setInstanceValueClassConstraint(String.class);
+		assert String.class.equals(car.getInstanceValueClassConstraint());
+		car.setInstanceValueClassConstraint(null);
 		myCar.updateValue(null);
 
-		assert car.getValueInstanceClassConstraint() == null;
+		assert car.getInstanceValueClassConstraint() == null;
 
 	}
 
@@ -27,7 +27,7 @@ public class InstanceValueClassConstraintTest extends AbstractTest {
 		Generic myCar = car.addInstance("myCar");
 		Generic power = root.addInstance("Power");
 		car.addAttribute(power, "Power");
-		power.setClassConstraint(Integer.class);
+		power.setInstanceValueClassConstraint(Integer.class);
 
 		myCar.addHolder(power, 125);
 	}
@@ -38,7 +38,7 @@ public class InstanceValueClassConstraintTest extends AbstractTest {
 		Generic myCar = car.addInstance("myCar");
 		Generic power = root.addInstance("Power");
 		car.addAttribute(power, "Power");
-		power.setClassConstraint(Integer.class);
+		power.setInstanceValueClassConstraint(Integer.class);
 
 		catchAndCheckCause(() -> myCar.addHolder(power, "125"), InstanceValueClassConstraintViolationException.class);
 
@@ -50,10 +50,10 @@ public class InstanceValueClassConstraintTest extends AbstractTest {
 		Generic myCar = car.addInstance("myCar");
 		Generic power = root.addInstance("Power");
 		car.addAttribute(power, "Power");
-		power.setClassConstraint(Integer.class);
+		power.setInstanceValueClassConstraint(Integer.class);
 
 		myCar.addHolder(power, 125);
-		power.setClassConstraint(null);
+		power.setInstanceValueClassConstraint(null);
 		myCar.addHolder(power, "230");
 	}
 
@@ -63,10 +63,10 @@ public class InstanceValueClassConstraintTest extends AbstractTest {
 		Generic myCar = car.addInstance("myCar");
 		Generic power = root.addInstance("Power");
 		car.addAttribute(power, "Power");
-		power.enableClassConstraint(Integer.class);
+		power.setInstanceValueClassConstraint(Integer.class);
 
 		myCar.addHolder(power, 125);
-		power.disableClassConstraint();
+		power.setInstanceValueClassConstraint(null);
 		myCar.addHolder(power, "230");
 	}
 }

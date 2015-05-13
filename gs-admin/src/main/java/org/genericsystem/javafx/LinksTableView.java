@@ -19,26 +19,27 @@ import javafx.util.converter.BooleanStringConverter;
 import org.genericsystem.javafx.AbstractColumn.CheckBoxColumn;
 import org.genericsystem.javafx.AbstractColumn.EditColumn;
 import org.genericsystem.javafx.AbstractColumn.TargetComponentColumn;
+import org.genericsystem.mutability.Generic;
 
 public class LinksTableView<G> extends TableView<G> {
 
-	private TableColumn<G, ?> buildColumn(String columnName, StringConverter<?> converter, Function<G, ?> genericValueGetter, BiConsumer<G, ?> genericValueSetter) {
+	public static <G> TableColumn<G, ?> buildColumn(String columnName, StringConverter<?> converter, Function<G, ?> genericValueGetter, BiConsumer<G, ?> genericValueSetter) {
 		return BooleanStringConverter.class.equals(converter) ? new CheckBoxColumn<G>(columnName, (Function<G, Boolean>) genericValueGetter, (BiConsumer<G, Boolean>) genericValueSetter) : new EditColumn<G, Serializable>(columnName,
 				(StringConverter<Serializable>) converter, (Function<G, Serializable>) genericValueGetter, (BiConsumer<G, Serializable>) genericValueSetter);
 	}
 
-	public LinksTableView(G attribute, StringConverter<?> converter, int axe, Function<G, ?> genericValueGetter, BiConsumer<G, ?> genericValueSetter, Function<G, List<G>> attributesComponents, BiFunction<G, Integer, G> linkValueGetter,
-			TriConsumer<G, Integer, G> linkValueSetter, Function<G, ObservableList<G>> attributesComponentsChoice, Consumer<G> removeConsumer) {
-
-		getColumns().add(buildColumn(attribute.toString(), converter, genericValueGetter, genericValueSetter));
+	public LinksTableView(G attribute, StringConverter<?> converter, int axe, Function<G, ?> genericValueGetter, BiConsumer<G, ?> genericValueSetter, Function<G, List<G>> attributesComponents, BiFunction<G, Integer, G> componentGetter,
+			TriConsumer<G, Integer, G> componentSetter, Function<G, ObservableList<G>> genericSubInstances, Consumer<G> removeConsumer) {
+		if (((Generic) attribute).getInstanceValueGenerator() == null)
+			getColumns().add(buildColumn(attribute.toString(), converter, genericValueGetter, genericValueSetter));
 
 		int i = 0;
 		for (G component : attributesComponents.apply(attribute)) {
 			if (i != axe) {
 				final Integer pos = i;
-				getColumns().add(new TargetComponentColumn<G>(component.toString(), (t) -> linkValueGetter.apply(t, pos), (BiConsumer<G, G>) (t, u) -> {
-					linkValueSetter.accept(t, pos, u);
-				}, () -> attributesComponentsChoice.apply(component)));
+				getColumns().add(new TargetComponentColumn<G>(component.toString(), (t) -> componentGetter.apply(t, pos), (BiConsumer<G, G>) (t, u) -> {
+					componentSetter.accept(t, pos, u);
+				}, () -> genericSubInstances.apply(component)));
 			}
 			i++;
 		}
@@ -58,7 +59,7 @@ public class LinksTableView<G> extends TableView<G> {
 				}
 			}
 		});
-		setColumnResizePolicy(CONSTRAINED_RESIZE_POLICY);
+		setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		setRowFactory(new RowFactory<>(removeConsumer));
 	}
 

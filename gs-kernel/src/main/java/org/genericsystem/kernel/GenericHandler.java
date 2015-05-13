@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
+import org.genericsystem.api.core.annotations.constraints.InstanceValueGenerator.ValueGenerator;
 import org.genericsystem.api.core.exceptions.ExistsException;
 
 abstract class GenericHandler {
@@ -21,10 +22,22 @@ abstract class GenericHandler {
 		this.context = context;
 		this.meta = meta != null ? meta : (Generic) context.getRoot();
 		this.overrides = overrides;
-		this.value = value;
 		this.components = components;
+		this.value = generateValue(value);
 		check();
 		adjust();
+	}
+
+	Serializable generateValue(Serializable value) {
+		Class<? extends ValueGenerator> instanceValueGenerator = meta.getInstanceValueGenerator();
+		if (instanceValueGenerator != null) {
+			try {
+				return instanceValueGenerator.newInstance().generateInstanceValue(meta, supers, value, components);
+			} catch (InstantiationException | IllegalAccessException e) {
+				context.discardWithException(e);
+			}
+		}
+		return value;
 	}
 
 	private void check() {
@@ -50,7 +63,7 @@ abstract class GenericHandler {
 	}
 
 	Generic getEquiv() {
-		return adjustedMeta.getDirectEquivInstance(value, components);
+		return adjustedMeta.getDirectEquivInstance(supers, value, components);
 	}
 
 	public Generic getOrBuild() {
@@ -73,28 +86,34 @@ abstract class GenericHandler {
 		return context.getRestructurator().rebuildAll(update, () -> build(), context.computeDependencies(update));
 	}
 
-	Generic update(Generic update) {
-		assert update != null;
-		return context.getRestructurator().rebuildAll(update, () -> getOrBuild(), context.computeDependencies(update));
-	}
+	// Generic update(Generic update) {
+	// assert update != null;
+	// return context.getRestructurator().rebuildAll(update, () -> build(), context.computeDependencies(update));
+	// }
 
-	static class GetHandler extends GenericHandler {
-
-		GetHandler(Context context, Generic gettable) {
-			super(context, gettable.getMeta(), gettable.getSupers(), gettable.getValue(), gettable.getComponents());
-			this.gettable = gettable;
-			this.adjustedMeta = gettable.getMeta();
-			this.supers = gettable.getSupers();
-		}
-
-		GetHandler(Context context, Generic meta, List<Generic> overrides, Serializable value, List<Generic> components) {
-			super(context, meta, overrides, value, components);
-		}
-
-		Generic resolve() {
-			return get();
-		}
-	}
+	// static class GetHandler extends GenericHandler {
+	//
+	// GetHandler(Context context, Generic gettable) {
+	// super(context, gettable.getMeta(), gettable.getSupers(), gettable.getValue(), gettable.getComponents());
+	// this.gettable = gettable;
+	// this.adjustedMeta = gettable.getMeta();
+	// this.supers = gettable.getSupers();
+	// }
+	//
+	// GetHandler(Context context, Generic meta, List<Generic> overrides, Serializable value, List<Generic> components) {
+	// super(context, meta, overrides, value, components);
+	// }
+	//
+	// Generic resolve() {
+	// return get();
+	// }
+	//
+	// @Override
+	// Serializable generateValue(Serializable value) {
+	// // TODO Auto-generated method stub
+	// return null;
+	// }
+	// }
 
 	static class AddHandler extends GenericHandler {
 
@@ -135,7 +154,11 @@ abstract class GenericHandler {
 		}
 
 		Generic resolve() {
-			return update(update);
+			Generic generic = get();
+			if (generic != null)
+				if (update != generic)
+					context.discardWithException(new ExistsException("An equivalent instance already exists : " + generic.info()));
+			return set(update);
 		}
 	}
 
@@ -160,6 +183,11 @@ abstract class GenericHandler {
 		}
 
 		@Override
+		Serializable generateValue(Serializable value) {
+			return value;
+		}
+
+		@Override
 		Generic build() {
 			return gettable = context.getBuilder().buildAndPlug(clazz, isMeta() ? null : adjustedMeta, supers, value, components);
 		}
@@ -168,17 +196,17 @@ abstract class GenericHandler {
 	static class SetArchiverHandler extends AtomicHandler {
 
 		private final long ts;
-		private final long[] otherGenerics;
+		private final long[] otherTs;
 
-		SetArchiverHandler(long ts, Context context, Generic meta, List<Generic> overrides, Serializable value, List<Generic> components, long[] otherGenerics) {
+		SetArchiverHandler(long ts, Context context, Generic meta, List<Generic> overrides, Serializable value, List<Generic> components, long[] otherTs) {
 			super(context, meta, overrides, value, components);
 			this.ts = ts;
-			this.otherGenerics = otherGenerics;
+			this.otherTs = otherTs;
 		}
 
 		@Override
 		Generic build() {
-			return gettable = context.plug(context.getBuilder().build(ts, null, isMeta() ? null : adjustedMeta, supers, value, components, otherGenerics));
+			return gettable = context.getBuilder().buildAndPlug(ts, null, isMeta() ? null : adjustedMeta, supers, value, components, otherTs);
 		}
 	}
 }

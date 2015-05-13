@@ -120,4 +120,9 @@ public class Engine implements Generic, DefaultRoot<Generic>, MethodHandler {
 	public List<Generic> getComponents(Generic generic) {
 		return getCurrentCache().wrap(getCurrentCache().unwrap(generic).getComponents());
 	}
+
+	@Override
+	public String toString() {
+		return defaultToString();
+	}
 }

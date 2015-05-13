@@ -19,7 +19,6 @@ import javafx.util.StringConverter;
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.javafx.AbstractColumn;
-import org.genericsystem.javafx.AddContextMenu.TriFunction;
 import org.genericsystem.javafx.InstancesTableView;
 import org.genericsystem.javafx.LinksTableView.TriConsumer;
 import org.genericsystem.mutability.Generic;
@@ -35,7 +34,7 @@ public class Crud extends VBox {
 		System.out.println("Remove from GS : " + generic.info());
 	};
 
-	private static final Function<Generic, ?> genericValueGetter = generic -> generic.getValue();
+	private static final Function<Generic, ?> genericValueGetter = generic -> generic != null ? generic.getValue() : null;
 	private static final BiConsumer<Generic, ?> genericValueSetter = (generic, value) -> {
 		generic.updateValue((Serializable) value);
 	};
@@ -50,13 +49,13 @@ public class Crud extends VBox {
 		System.out.println("Update in GS : " + generic.info());
 	};
 
-	private static final TriFunction<Generic, Serializable, List<Generic>, Generic> attributeAddAction = (typ, value, components) -> {
+	private static final Function<Generic, BiFunction<Serializable, List<Generic>, Generic>> attributeAddAction = typ -> (value, components) -> {
 		Generic generic = typ.addInstance(value, components.toArray(new Generic[components.size()]));
 		System.out.println("Add into GS : " + generic);
 		return generic;
 	};
 
-	private static final Function<Generic, StringConverter<?>> attributeConverter = attribute -> AbstractColumn.getDefaultInstanceValueStringConverter(attribute.getValueInstanceClassConstraint());
+	private static final Function<Generic, StringConverter<?>> attributeConverter = attribute -> AbstractColumn.getDefaultInstanceValueStringConverter(attribute.getInstanceValueClassConstraint());
 
 	private static final Function<Generic, Function<Generic, ObservableList<Generic>>> attributeGetter = attribute -> generic -> FXCollections.observableArrayList((generic.getHolders(attribute).toList()));
 

@@ -20,13 +20,14 @@ public class DefaultConfig {
 	@Components(DefaultRoot.class)
 	@EngineValue
 	@Dependencies(SystemMap.class)
-	public static class MetaAttribute {}
+	public static class MetaAttribute {
+	}
 
 	@SystemGeneric
 	@Meta(MetaAttribute.class)
 	@Components(DefaultRoot.class)
 	@Dependencies({ NoReferentialIntegrityProperty.class, NonHeritableProperty.class, CascadeRemoveProperty.class, org.genericsystem.defaults.constraints.InstanceValueClassConstraint.class, org.genericsystem.defaults.constraints.PropertyConstraint.class,
-			org.genericsystem.defaults.constraints.RequiredConstraint.class, org.genericsystem.defaults.constraints.SingularConstraint.class, org.genericsystem.defaults.constraints.UniqueValueConstraint.class })
+			org.genericsystem.defaults.constraints.RequiredConstraint.class, org.genericsystem.defaults.constraints.SingularConstraint.class, org.genericsystem.defaults.constraints.UniqueValueConstraint.class, InstanceValueGeneratorProperty.class })
 	public static class SystemMap {
 
 	}
@@ -38,7 +39,8 @@ public class DefaultConfig {
 	@Dependencies({ DefaultNoReferentialAxedIntegrityProperty.class })
 	@InstanceValueClassConstraint(Boolean.class)
 	@PropertyConstraint
-	public static class NoReferentialIntegrityProperty implements SystemProperty {}
+	public static class NoReferentialIntegrityProperty implements SystemProperty {
+	}
 
 	@SystemGeneric
 	@Meta(MetaAttribute.class)
@@ -46,13 +48,15 @@ public class DefaultConfig {
 	@Components(MetaAttribute.class)
 	@AxedPropertyClassValue(propertyClass = NoReferentialIntegrityProperty.class, pos = ApiStatics.BASE_POSITION)
 	@Dependencies({ DefaultValue.class })
-	public static class DefaultNoReferentialAxedIntegrityProperty {}
+	public static class DefaultNoReferentialAxedIntegrityProperty {
+	}
 
 	@SystemGeneric
 	@Meta(DefaultNoReferentialAxedIntegrityProperty.class)
 	@Components(MetaAttribute.class)
 	@BooleanValue(true)
-	public static class DefaultValue {}
+	public static class DefaultValue {
+	}
 
 	@SystemGeneric
 	@Meta(MetaAttribute.class)
@@ -70,7 +74,18 @@ public class DefaultConfig {
 	@Components(MetaAttribute.class)
 	@InstanceValueClassConstraint(Boolean.class)
 	@PropertyConstraint
+	@Deprecated
 	public static class CascadeRemoveProperty implements SystemProperty {
+
+	}
+
+	@SystemGeneric
+	@Meta(MetaAttribute.class)
+	@Supers(SystemMap.class)
+	@Components(DefaultRoot.class)
+	@InstanceValueClassConstraint(Class.class)
+	@PropertyConstraint
+	public static class InstanceValueGeneratorProperty implements SystemProperty {
 
 	}
 
@@ -79,7 +94,8 @@ public class DefaultConfig {
 	@Supers(MetaAttribute.class)
 	@Components({ DefaultRoot.class, DefaultRoot.class })
 	@EngineValue
-	public static class MetaRelation {}
+	public static class MetaRelation {
+	}
 
 	@SystemGeneric
 	@Components(DefaultRoot.class)

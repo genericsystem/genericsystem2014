@@ -12,6 +12,7 @@ import org.genericsystem.api.core.annotations.Components;
 import org.genericsystem.api.core.annotations.Dependencies;
 import org.genericsystem.api.core.annotations.Meta;
 import org.genericsystem.api.core.annotations.constraints.InstanceValueClassConstraint;
+import org.genericsystem.api.core.annotations.constraints.InstanceValueGenerator;
 import org.genericsystem.api.core.annotations.constraints.NoReferentialIntegrityProperty;
 import org.genericsystem.api.core.annotations.constraints.PropertyConstraint;
 import org.genericsystem.api.core.annotations.constraints.RequiredConstraint;
@@ -81,7 +82,7 @@ public class SystemCache {
 	}
 
 	public Generic find(Class<?> clazz) {
-		if(IRoot.class.isAssignableFrom(clazz))
+		if (IRoot.class.isAssignableFrom(clazz))
 			return root;
 		return systemCache.get(clazz);
 	}
@@ -105,13 +106,16 @@ public class SystemCache {
 			result.enableUniqueValueConstraint();
 
 		if (clazz.getAnnotation(InstanceValueClassConstraint.class) != null)
-			result.setClassConstraint(clazz.getAnnotation(InstanceValueClassConstraint.class).value());
+			result.setInstanceValueClassConstraint(clazz.getAnnotation(InstanceValueClassConstraint.class).value());
+
+		if (clazz.getAnnotation(InstanceValueGenerator.class) != null)
+			result.setInstanceValueGenerator(clazz.getAnnotation(InstanceValueGenerator.class).value());
 
 		RequiredConstraint requiredConstraint = clazz.getAnnotation(RequiredConstraint.class);
 		if (requiredConstraint != null)
 			for (int axe : requiredConstraint.value()) {
 				result.enableRequiredConstraint(axe);
-				//assert result.isRequiredConstraintEnabled(axe) : result.getComposites().first().info();
+				// assert result.isRequiredConstraintEnabled(axe) : result.getComposites().first().info();
 			}
 
 		NoReferentialIntegrityProperty referentialIntegrity = clazz.getAnnotation(NoReferentialIntegrityProperty.class);

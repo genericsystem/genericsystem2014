@@ -2,8 +2,9 @@ package org.genericsystem.kernel;
 
 import org.genericsystem.api.core.annotations.Components;
 import org.genericsystem.api.core.annotations.SystemGeneric;
-import org.genericsystem.defaults.DefaultGenerator.IntAutoIncrementGenerator;
-import org.genericsystem.defaults.annotation.GenerateValue;
+import org.genericsystem.api.core.annotations.constraints.InstanceValueGenerator;
+import org.genericsystem.defaults.IntSequenceGenerator;
+import org.genericsystem.defaults.IntSequenceGenerator.StringSequenceGenerator;
 import org.testng.annotations.Test;
 
 @Test
@@ -18,9 +19,15 @@ public class SequenceTest extends AbstractTest {
 	}
 
 	public void testStringAutoIncrementGenerator() {
+		// Root root = new Root(Car.class);
+		// Generic car = root.find(Car.class);
+		// Generic myBmw = car.addGenerateInstance();
+		// assert myBmw.getValue() instanceof String;
+		// assert ((String) myBmw.getValue()).contains(Car.class.getSimpleName());
+
 		Root root = new Root(Car.class);
 		Generic car = root.find(Car.class);
-		Generic myBmw = car.addGenerateInstance();
+		Generic myBmw = car.addInstance(null);
 		assert myBmw.getValue() instanceof String;
 		assert ((String) myBmw.getValue()).contains(Car.class.getSimpleName());
 	}
@@ -28,7 +35,7 @@ public class SequenceTest extends AbstractTest {
 	public void testIntAutoIncrementGenerator() {
 		Root root = new Root(CarInt.class);
 		Generic car = root.find(CarInt.class);
-		Generic myBmw = car.addGenerateInstance();
+		Generic myBmw = car.addInstance(null);
 		assert myBmw.getValue() instanceof Integer;
 		assert ((Integer) myBmw.getValue()) == 0;
 	}
@@ -38,21 +45,21 @@ public class SequenceTest extends AbstractTest {
 		Generic id = root.find(Id.class);
 		Generic vehicle = root.find(Vehicle.class);
 		Generic myVehicle = vehicle.addInstance("myVehicle");
-		Generic myVehicleId = id.addGenerateInstance(myVehicle);
+		Generic myVehicleId = id.addInstance(null, myVehicle);
 		assert myVehicleId.getValue() instanceof Integer;
 		assert ((Integer) myVehicleId.getValue()) == 0;
-		Generic myVehicleId2 = id.addGenerateInstance(myVehicle);
+		Generic myVehicleId2 = id.addInstance(null, myVehicle);
 		assert ((Integer) myVehicleId2.getValue()) == 1;
 	}
 
 	@SystemGeneric
-	@GenerateValue
+	@InstanceValueGenerator(StringSequenceGenerator.class)
 	public static class Car {
 
 	}
 
 	@SystemGeneric
-	@GenerateValue(clazz = IntAutoIncrementGenerator.class)
+	@InstanceValueGenerator(IntSequenceGenerator.class)
 	public static class CarInt {
 
 	}
@@ -64,7 +71,7 @@ public class SequenceTest extends AbstractTest {
 
 	@SystemGeneric
 	@Components(Vehicle.class)
-	@GenerateValue(clazz = IntAutoIncrementGenerator.class)
+	@InstanceValueGenerator(IntSequenceGenerator.class)
 	public static class Id {
 
 	}

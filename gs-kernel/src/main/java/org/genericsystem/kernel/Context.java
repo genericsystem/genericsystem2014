@@ -82,7 +82,6 @@ public abstract class Context implements DefaultContext<Generic> {
 	@Override
 	public Generic setInstance(Generic meta, List<Generic> overrides, Serializable value, List<Generic> components) {
 		return new SetHandler(this, meta, overrides, value, components).resolve();
-
 	}
 
 	@Override
@@ -135,12 +134,16 @@ public abstract class Context implements DefaultContext<Generic> {
 			return null; // Not reached
 		}
 
-		Generic build(long ts, Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
+		private Generic build(long ts, Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
 			return Context.this.getRoot().init(newT(clazz, meta), ts, meta, supers, value, components, otherTs);
 		}
 
 		Generic buildAndPlug(Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components) {
-			return Context.this.plug(build(Context.this.getRoot().pickNewTs(), clazz, meta, supers, value, components, Context.this.getRoot().isInitialized() ? LifeManager.USER_TS : LifeManager.SYSTEM_TS));
+			return buildAndPlug(Context.this.getRoot().pickNewTs(), clazz, meta, supers, value, components, Context.this.getRoot().isInitialized() ? LifeManager.USER_TS : LifeManager.SYSTEM_TS);
+		}
+
+		Generic buildAndPlug(long ts, Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
+			return Context.this.plug(build(ts, clazz, meta, supers, value, components, otherTs));
 		}
 
 		Class<?> getAnnotedClass(Generic vertex) {

@@ -16,7 +16,7 @@ public class UpdatableServiceTest extends AbstractTest {
 		Generic vehicle = root.addInstance("Vehicle");
 		Generic vehicle2 = vehicle.updateValue("Vehicle2");
 		assert "Vehicle2".equals(vehicle2.getValue());
-		assert !vehicle.isAlive();
+		assert !vehicle.isAlive() : vehicle2.info();
 		assert vehicle2.isAlive();
 	}
 

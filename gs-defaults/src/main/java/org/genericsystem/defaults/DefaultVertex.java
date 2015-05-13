@@ -13,7 +13,6 @@ import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.exceptions.AmbiguousSelectionException;
 import org.genericsystem.api.core.exceptions.MetaRuleConstraintViolationException;
-import org.genericsystem.defaults.annotation.GenerateValue;
 
 public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncestors<T>, DefaultDependencies<T>, DefaultDisplay<T>, DefaultSystemProperties<T>, DefaultCompositesInheritance<T>, DefaultWritable<T> {
 
@@ -167,12 +166,15 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 	}
 
 	@SuppressWarnings("unchecked")
-	default T getDirectEquivInstance(Serializable value, List<T> components) {
+	default T getDirectEquivInstance(List<T> overrides, Serializable value, List<T> components) {
 		if (isMeta() && equalsRegardlessSupers(this, value, components))
 			return (T) this;
 		for (T instance : getInstances())
 			if (instance.equiv(this, value, components))
-				return instance;
+				if (ApiStatics.areOverridesReached(instance.getSupers(), overrides))
+					if (!instance.getSupers().stream().anyMatch(superG -> superG.getComponents().equals(components) && equals(superG.getMeta())) || ApiStatics.areOverridesReached(overrides, instance.getSupers()))
+
+						return instance;
 		return null;
 	}
 
@@ -258,23 +260,23 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 		visitor.traverse((T) this);
 	}
 
-	@SuppressWarnings("unchecked")
-	default T addGenerateInstance(T... components) {
-		class ValueGenerator {
-			Serializable generateValue() {
-				GenerateValue generate = getRoot().findAnnotedClass((T) DefaultVertex.this).getAnnotation(GenerateValue.class);
-				if (generate == null)
-					getCurrentCache().discardWithException(new IllegalStateException("Unable to find @Generate annotation on : " + info()));
-				try {
-					return generate.clazz().newInstance().generate(DefaultVertex.this);
-				} catch (InstantiationException | IllegalAccessException e) {
-					getCurrentCache().discardWithException(e);
-				}
-				return null;
-			}
-		}
-		return addInstance(new ValueGenerator().generateValue(), components);
-	}
+	// @SuppressWarnings("unchecked")
+	// default T addGenerateInstance(T... components) {
+	// class ValueGenerator {
+	// Serializable generateValue() {
+	// GenerateValue generate = getRoot().findAnnotedClass((T) DefaultVertex.this).getAnnotation(GenerateValue.class);
+	// if (generate == null)
+	// getCurrentCache().discardWithException(new IllegalStateException("Unable to find @Generate annotation on : " + info()));
+	// try {
+	// return generate.clazz().newInstance().generate(DefaultVertex.this);
+	// } catch (InstantiationException | IllegalAccessException e) {
+	// getCurrentCache().discardWithException(e);
+	// }
+	// return null;
+	// }
+	// }
+	// return addInstance(new ValueGenerator().generateValue(), components);
+	// }
 
 	@Override
 	default T getNonAmbiguousResult(Stream<T> stream) {

@@ -1,5 +1,6 @@
 package org.genericsystem.api.core.annotations.constraints;
 
+import java.io.Serializable;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
@@ -21,5 +22,5 @@ public @interface InstanceValueClassConstraint {
 	 * 
 	 * @return the class of type constrained.
 	 */
-	Class<?> value();
+	Class<? extends Serializable> value();
 }

@@ -7,6 +7,7 @@ import java.util.Set;
 
 import javax.json.JsonObject;
 
+import org.genericsystem.api.core.annotations.constraints.InstanceValueGenerator.ValueGenerator;
 import org.genericsystem.api.core.exceptions.RollbackException;
 
 /**
@@ -242,7 +243,6 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 */
 	boolean isCompositeOf(T vertex);
 
-	
 	/**
 	 * Returns the attributes of this vertex (directly if this vertex is a type, the attributes of its type if this vertex is an instance).<br>
 	 * The returned attributes satisfies the specified <code>targets</code>.
@@ -250,7 +250,7 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 * @return the attributes of this vertex regardless of the position of this vertex in the components of these attributes.
 	 */
 	Snapshot<T> getAttributes();
-	
+
 	/**
 	 * Returns the attributes of this vertex (directly if this vertex is a type, the attributes of its type if this vertex is an instance).<br>
 	 * The returned attributes satisfies the specified <code>targets</code>.
@@ -1185,7 +1185,7 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 *
 	 * @return the <code>Class</code> constraint.
 	 */
-	Class<?> getValueInstanceClassConstraint();
+	Class<? extends Serializable> getInstanceValueClassConstraint();
 
 	/**
 	 * Set the <code>Class</code> value constraint of this vertex.
@@ -1194,7 +1194,23 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 *            the <code>Class</code> value of the constraint.
 	 * @return <code>this</code>.
 	 */
-	T setClassConstraint(Class<?> constraintClass);
+	T setInstanceValueClassConstraint(Class<? extends Serializable> constraintClass);
+
+	/**
+	 * Get the <code>Class</code> value generator of this vertex.
+	 *
+	 * @return the <code>Class</code> constraint.
+	 */
+	Class<? extends ValueGenerator> getInstanceValueGenerator();
+
+	/**
+	 * Set the <code>Class</code> value generator of this vertex.
+	 *
+	 * @param instanceValueGeneratorClass
+	 *            the <code>Class</code> value of the generator for instance values.
+	 * @return <code>this</code>.
+	 */
+	T setInstanceValueGenerator(Class<? extends ValueGenerator> instanceValueGeneratorClass);
 
 	/**
 	 * Enable the required constraint of this vertex for the specified position.
@@ -1265,21 +1281,21 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 *
 	 * @return <code>this</code>.
 	 */
-	T enableHeritable();
+	T enableInheritance();
 
 	/**
 	 * Disable inheritance on this vertex.
 	 *
 	 * @return <code>this</code>.
 	 */
-	T disableHeritable();
+	T disableInheritance();
 
 	/**
 	 * Indicates whether this vertex is heritable.
 	 *
 	 * @return <code>true</code> if this vertex is heritable, <code>false</code> otherwise.
 	 */
-	boolean isHeritableEnabled();
+	boolean isInheritanceEnabled();
 
 	/**
 	 * Removes this vertex.
@@ -1901,23 +1917,6 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 * @return the component at the specified position.
 	 */
 	T getComponent(int pos);
-
-	/**
-	 * Enable the specified <code>constraintClass</code> of this vertex.
-	 * 
-	 * @param constraintClass
-	 *            the <code>Class</code> of the constraint.
-	 *
-	 * @return <code>this</code>.
-	 */
-	T enableClassConstraint(Class<?> constraintClass);
-
-	/**
-	 * Disable the constraint class of this vertex.
-	 * 
-	 * @return <code>this</code>.
-	 */
-	T disableClassConstraint();
 
 	/**
 	 * Returns the current cache.

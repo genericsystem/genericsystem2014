@@ -49,7 +49,7 @@ public class IssueBean extends AbstractBean implements Serializable {
 	private transient FilterBean filterBean;
 
 	public void addIssue(String newIssueDescription) {
-		issue.addGenerateInstance().setHolder(description, newIssueDescription);
+		issue.addInstance(null).setHolder(description, newIssueDescription);
 		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Priority is required."));
 	}
 

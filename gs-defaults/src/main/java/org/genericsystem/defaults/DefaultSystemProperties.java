@@ -3,11 +3,14 @@ package org.genericsystem.defaults;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.stream.Stream;
+
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.AxedPropertyClass;
 import org.genericsystem.api.core.IVertex;
+import org.genericsystem.api.core.annotations.constraints.InstanceValueGenerator.ValueGenerator;
 import org.genericsystem.api.core.exceptions.NotFoundException;
 import org.genericsystem.defaults.DefaultConfig.CascadeRemoveProperty;
+import org.genericsystem.defaults.DefaultConfig.InstanceValueGeneratorProperty;
 import org.genericsystem.defaults.DefaultConfig.NoReferentialIntegrityProperty;
 import org.genericsystem.defaults.DefaultConfig.NonHeritableProperty;
 import org.genericsystem.defaults.constraints.InstanceValueClassConstraint;
@@ -138,28 +141,6 @@ public interface DefaultSystemProperties<T extends DefaultVertex<T>> extends IVe
 	}
 
 	@Override
-	default Class<?> getValueInstanceClassConstraint() {
-		return (Class<?>) getSystemPropertyValue(InstanceValueClassConstraint.class, ApiStatics.NO_POSITION);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	default T setClassConstraint(Class<?> constraintClass) {
-		setSystemPropertyValue(InstanceValueClassConstraint.class, ApiStatics.NO_POSITION, constraintClass);
-		return (T) this;
-	}
-
-	@Override
-	default T enableClassConstraint(Class<?> constraintClass) {
-		return setClassConstraint(constraintClass);
-	}
-
-	@Override
-	default T disableClassConstraint() {
-		return setClassConstraint(null);
-	}
-
-	@Override
 	default T enableRequiredConstraint(int pos) {
 		return enableSystemProperty(RequiredConstraint.class, pos, coerceToTArray(this.getComponents().get(pos)));
 	}
@@ -176,16 +157,19 @@ public interface DefaultSystemProperties<T extends DefaultVertex<T>> extends IVe
 
 	@SuppressWarnings("unchecked")
 	@Override
+	@Deprecated
 	default T enableCascadeRemove(int pos) {
 		return enableSystemProperty(CascadeRemoveProperty.class, pos);
 	}
 
+	@Deprecated
 	@SuppressWarnings("unchecked")
 	@Override
 	default T disableCascadeRemove(int pos) {
 		return disableSystemProperty(CascadeRemoveProperty.class, pos);
 	}
 
+	@Deprecated
 	@Override
 	default boolean isCascadeRemoveEnabled(int pos) {
 		return isSystemPropertyEnabled(CascadeRemoveProperty.class, pos);
@@ -193,19 +177,45 @@ public interface DefaultSystemProperties<T extends DefaultVertex<T>> extends IVe
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T enableHeritable() {
+	default T enableInheritance() {
 		return disableSystemProperty(NonHeritableProperty.class, ApiStatics.NO_POSITION);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default T disableHeritable() {
+	default T disableInheritance() {
 		return enableSystemProperty(NonHeritableProperty.class, ApiStatics.NO_POSITION);
 	}
 
 	@Override
-	default boolean isHeritableEnabled() {
+	default boolean isInheritanceEnabled() {
 		return !isSystemPropertyEnabled(NonHeritableProperty.class, ApiStatics.NO_POSITION);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Class<? extends Serializable> getInstanceValueClassConstraint() {
+		return (Class<? extends Serializable>) getSystemPropertyValue(InstanceValueClassConstraint.class, ApiStatics.NO_POSITION);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T setInstanceValueClassConstraint(Class<? extends Serializable> instanceValueConstraintClass) {
+		setSystemPropertyValue(InstanceValueClassConstraint.class, ApiStatics.NO_POSITION, instanceValueConstraintClass);
+		return (T) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default Class<? extends ValueGenerator> getInstanceValueGenerator() {
+		return (Class<? extends ValueGenerator>) getSystemPropertyValue(InstanceValueGeneratorProperty.class, ApiStatics.NO_POSITION);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T setInstanceValueGenerator(Class<? extends ValueGenerator> instanceValueGeneratorClass) {
+		setSystemPropertyValue(InstanceValueGeneratorProperty.class, ApiStatics.NO_POSITION, instanceValueGeneratorClass);
+		return (T) this;
 	}
 
 }

@@ -11,9 +11,9 @@ public class TestSE {
 	public void test() {
 		Engine engine = new Engine();
 		Generic issue = engine.addInstance("Issue");
-		Generic statut = engine.addInstance("Statut").setClassConstraint(String.class);
+		Generic statut = engine.addInstance("Statut").setInstanceValueClassConstraint(String.class);
 		Generic issueStatut = issue.setRelation("IssueStatut", statut).enableSingularConstraint(ApiStatics.BASE_POSITION);
-		Generic priority = engine.addInstance("Priority").setClassConstraint(String.class);
+		Generic priority = engine.addInstance("Priority").setInstanceValueClassConstraint(String.class);
 		Generic issuePriority = issue.setRelation("IssuePriority", priority).enableSingularConstraint(ApiStatics.BASE_POSITION);
 		issue.setRelation("IssuePriority", priority).enableSingularConstraint(ApiStatics.BASE_POSITION);
 		issue.setRelation("IssueStatut", statut).enableSingularConstraint(ApiStatics.BASE_POSITION);
@@ -22,7 +22,7 @@ public class TestSE {
 	public void test2() {
 		Engine engine = new Engine();
 		Generic issue = engine.addInstance("Issue");
-		Generic comment = engine.addInstance("Comment").setClassConstraint(String.class);
+		Generic comment = engine.addInstance("Comment").setInstanceValueClassConstraint(String.class);
 		Generic issueComment = issue.setRelation("IssueComment", comment).enableSingularConstraint(ApiStatics.TARGET_POSITION);
 		Generic myIssue = issue.setInstance("myIssue");
 		myIssue.setLink(issueComment, "link", comment.setInstance("comment1"));

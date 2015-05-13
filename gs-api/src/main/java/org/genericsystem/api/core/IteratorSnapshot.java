@@ -11,6 +11,7 @@ import java.util.stream.StreamSupport;
  * @author Nicolas Feybesse
  *
  * @param <T>
+ *            the implementation of IVertex used for all nodes.
  */
 public interface IteratorSnapshot<T> extends Snapshot<T> {
 

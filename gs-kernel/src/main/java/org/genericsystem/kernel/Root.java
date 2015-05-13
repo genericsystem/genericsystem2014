@@ -38,15 +38,11 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 		return this;
 	}
 
-	public Root(Serializable value, String persistentDirectoryPath,
-			Class<?>... userClasses) {
-		init(this, LifeManager.TS_SYSTEM, null, Collections.emptyList(), value,
-				Collections.emptyList(), LifeManager.SYSTEM_TS);
+	public Root(Serializable value, String persistentDirectoryPath, Class<?>... userClasses) {
+		init(this, LifeManager.TS_SYSTEM, null, Collections.emptyList(), value, Collections.emptyList(), LifeManager.SYSTEM_TS);
 		contextWrapper.set(newCache());
 		systemCache = new SystemCache(this, getClass());
-		systemCache.mount(Arrays.asList(MetaAttribute.class,
-				MetaRelation.class, SystemMap.class, Sequence.class),
-				userClasses);
+		systemCache.mount(Arrays.asList(MetaAttribute.class, MetaRelation.class, SystemMap.class, Sequence.class), userClasses);
 		flushContext();
 		archiver = new Archiver(this, persistentDirectoryPath);
 		initialized = true;
@@ -124,8 +120,7 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 	}
 
 	public static class TsGenerator {
-		private final long startTime = System.currentTimeMillis()
-				* Statics.MILLI_TO_NANOSECONDS - System.nanoTime();
+		private final long startTime = System.currentTimeMillis() * Statics.MILLI_TO_NANOSECONDS - System.nanoTime();
 		private final AtomicLong lastTime = new AtomicLong(0L);
 
 		public long pickNewTs() {
@@ -182,8 +177,7 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 		return getVertex(generic).getNextDependency(ancestor);
 	}
 
-	void setNextDependency(Generic generic, Generic ancestor,
-			Generic nextDependency) {
+	void setNextDependency(Generic generic, Generic ancestor, Generic nextDependency) {
 		getVertex(generic).setNextDependency(ancestor, nextDependency);
 	}
 
@@ -191,11 +185,10 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 		return getVertex(generic).getLifeManager();
 	}
 
-	Generic init(Generic generic, long ts, Generic meta, List<Generic> supers,
-			Serializable value, List<Generic> components, long[] otherTs) {
-		Vertex result = map.putIfAbsent(generic, new Vertex(generic, ts, meta,
-				supers, value, components, otherTs));
+	Generic init(Generic generic, long ts, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
+		Vertex result = map.putIfAbsent(generic, new Vertex(generic, ts, meta, supers, value, components, otherTs));
 		assert result == null;
 		return ((GenericImpl) generic).init(Root.this);
 	}
+
 }

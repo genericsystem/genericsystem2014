@@ -10,40 +10,40 @@ public class NonHeritableTest extends AbstractTest {
 	public void test001() {
 		Root root = new Root();
 		Generic car = root.addInstance("Car");
-		car.enableHeritable();
-		assert car.isHeritableEnabled();
+		car.enableInheritance();
+		assert car.isInheritanceEnabled();
 	}
 
 	public void test002() {
 		Root root = new Root();
 		Generic car = root.addInstance("Car");
-		assert car.isHeritableEnabled();
+		assert car.isInheritanceEnabled();
 	}
 
 	public void test003() {
 		Root root = new Root();
 		Generic car = root.addInstance("Car");
-		car.disableHeritable();
-		assert !car.isHeritableEnabled();
+		car.disableInheritance();
+		assert !car.isInheritanceEnabled();
 	}
 
 	public void test004() {
 		Root root = new Root();
 		Generic car = root.addInstance("Car");
-		assert car.isHeritableEnabled();
-		car.disableHeritable();
-		assert !car.isHeritableEnabled();
-		car.enableHeritable();
-		assert car.isHeritableEnabled();
+		assert car.isInheritanceEnabled();
+		car.disableInheritance();
+		assert !car.isInheritanceEnabled();
+		car.enableInheritance();
+		assert car.isInheritanceEnabled();
 	}
 
 	public void test005() {
 		Root root = new Root();
 		Generic car = root.addInstance("Car");
-		car.enableHeritable();
-		assert car.isHeritableEnabled();
-		car.disableHeritable();
-		assert !car.isHeritableEnabled();
+		car.enableInheritance();
+		assert car.isInheritanceEnabled();
+		car.disableInheritance();
+		assert !car.isInheritanceEnabled();
 	}
 
 	public void test006() {
@@ -52,9 +52,9 @@ public class NonHeritableTest extends AbstractTest {
 		Generic power = car.addAttribute("Power");
 		Generic defaultPower = car.addHolder(power, 233);
 		Generic myCar = car.addInstance("myCar");
-		power.disableHeritable();
+		power.disableInheritance();
 		assert myCar.getHolder(power) == null;
-		power.enableHeritable();
+		power.enableInheritance();
 		assert myCar.getHolder(power).equals(defaultPower);
 	}
 
@@ -66,12 +66,12 @@ public class NonHeritableTest extends AbstractTest {
 		Generic defaultPower = vehicle.addHolder(power, 233);
 		assert defaultPower.equals(car.getHolder(power));
 		assert car.getHolder(power) != null;
-		power.disableHeritable();
+		power.disableInheritance();
 		assert car.getHolder(power) == null;
 		Generic defaultCarPower = car.addHolder(power, defaultPower, 256);
 		Generic myCar = car.addInstance("myBmw");
 		assert myCar.getHolder(power) == null;
-		power.enableHeritable();
+		power.enableInheritance();
 		assert myCar.getHolder(power) != null;
 		assert defaultCarPower.equals(myCar.getHolder(power)) : myCar.getHolder(power);
 	}
@@ -83,7 +83,7 @@ public class NonHeritableTest extends AbstractTest {
 		Generic color = root.addInstance("Color");
 		Generic carColor = car.addAttribute("CarColor", color);
 
-		carColor.disableHeritable();
+		carColor.disableInheritance();
 
 		Generic blue = color.addInstance("blue");
 		Generic red = color.addInstance("red");
@@ -122,13 +122,13 @@ public class NonHeritableTest extends AbstractTest {
 		myCar.setHolder(carColor, "myCarRed", red);
 		myPorsche.setHolder(carColor, "myPorscheGreen", green);
 
-		carColor.disableHeritable();
+		carColor.disableInheritance();
 		assert Objects.equals(car.getHolders(carColor).first().getTargetComponent(), blue);
 		assert Objects.equals(myAudi.getHolders(carColor).first(), null);
 		assert Objects.equals(myMercedes.getHolders(carColor).first(), null);
 		assert Objects.equals(myPorsche.getHolders(carColor).first().getTargetComponent(), green);
 
-		carColor.enableHeritable();
+		carColor.enableInheritance();
 		assert Objects.equals(car.getHolders(carColor).first().getTargetComponent(), blue);
 		assert Objects.equals(myAudi.getHolders(carColor).first().getTargetComponent(), red);
 		assert Objects.equals(myMercedes.getHolders(carColor).first().getTargetComponent(), red);

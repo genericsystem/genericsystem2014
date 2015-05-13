@@ -44,7 +44,7 @@ public class App extends Application {
 		Generic relation = engine.find(CarColor.class);
 		base.addHolder(attribute, 333);
 		base.addLink(relation, "myBmwRed", engine.find(Red.class));
-		base.addLink(relation, "myBmwYellow", engine.find(Yellow.class));
+		// base.addLink(relation, "myBmwYellow", engine.find(Yellow.class));
 		Generic base2 = type.addInstance("myMercedes");
 		base2.addLink(relation, "myMercedesYellow", engine.find(Yellow.class));
 

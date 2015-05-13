@@ -1,11 +1,12 @@
 package org.genericsystem.issuetracker.model;
 
 import org.genericsystem.api.core.annotations.SystemGeneric;
-import org.genericsystem.defaults.annotation.GenerateValue;
+import org.genericsystem.api.core.annotations.constraints.InstanceValueGenerator;
+import org.genericsystem.defaults.IntSequenceGenerator.StringSequenceGenerator;
 import org.genericsystem.mutability.Generic;
 
 @SystemGeneric
-@GenerateValue
+@InstanceValueGenerator(StringSequenceGenerator.class)
 public class Issue implements Generic {
 
 }

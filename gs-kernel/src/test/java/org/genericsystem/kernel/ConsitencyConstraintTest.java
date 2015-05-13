@@ -54,7 +54,7 @@ public class ConsitencyConstraintTest extends AbstractTest {
 		car.addAttribute(power, "Power");
 		myCar.addHolder(power, "125");
 
-		catchAndCheckCause(() -> power.setClassConstraint(Integer.class), InstanceValueClassConstraintViolationException.class);
+		catchAndCheckCause(() -> power.setInstanceValueClassConstraint(Integer.class), InstanceValueClassConstraintViolationException.class);
 
 	}
 }
