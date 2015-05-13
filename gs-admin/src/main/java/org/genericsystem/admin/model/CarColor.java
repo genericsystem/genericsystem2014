@@ -26,9 +26,8 @@ public class CarColor {
 
 	@SystemGeneric
 	@Meta(CarColor.class)
-	@StringValue("DefaultCarColor")
+	@StringValue("<Car-White>")
 	@Components({ Car.class, White.class })
-	public static class DefaultCarColor {
-	}
+	public static class DefaultCarColor {}
 
 }

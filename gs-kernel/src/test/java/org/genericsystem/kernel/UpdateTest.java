@@ -1,5 +1,6 @@
 package org.genericsystem.kernel;
 
+import java.util.Collections;
 import org.genericsystem.api.core.exceptions.MetaRuleConstraintViolationException;
 import org.genericsystem.defaults.exceptions.PropertyConstraintViolationException;
 import org.testng.annotations.Test;
@@ -116,7 +117,7 @@ public class UpdateTest extends AbstractTest {
 		Generic car = root.addInstance("Car");
 		Generic myBmw = car.addInstance("myBmw");
 
-		Generic newCar = car.update("Vehicle");
+		Generic newCar = root.getCurrentCache().merge(car, Collections.emptyList(), "Vehicle", Collections.emptyList());
 
 		assert newCar.equals(vehicle) : newCar.info();
 		assert !car.isAlive();
@@ -140,7 +141,7 @@ public class UpdateTest extends AbstractTest {
 		Generic myBmw = car.addInstance("myBmw");
 		Generic myBmw233 = myBmw.addHolder(carPower, 233);
 
-		Generic newCar = car.update("Vehicle");
+		Generic newCar = root.getCurrentCache().merge(car, Collections.emptyList(), "Vehicle", Collections.emptyList());
 		assert power.isAlive();
 		assert !carPower.isAlive();
 

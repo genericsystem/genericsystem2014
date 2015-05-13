@@ -1,5 +1,6 @@
 package org.genericsystem.mutability;
 
+import java.util.Collections;
 import org.genericsystem.api.core.exceptions.AliveConstraintViolationException;
 import org.testng.annotations.Test;
 
@@ -79,7 +80,8 @@ public class UpdateTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic car = engine.addInstance("Car");
 		Generic car2 = engine.addInstance("Car2");
-		car.update("Car2");
+		engine.getCurrentCache().merge(car, Collections.emptyList(), "Car2", Collections.emptyList());
+		// car.update("Car2");
 		assert car.isAlive();
 		assert car2.isAlive();
 		car2.update("Car3");

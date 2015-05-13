@@ -1,7 +1,6 @@
 package org.genericsystem.javafx;
 
 import java.util.function.Consumer;
-
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ContextMenu;
@@ -21,7 +20,6 @@ public class RowFactory<G> implements Callback<TableView<G>, TableRow<G>> {
 	@Override
 	public TableRow<G> call(TableView<G> tableView) {
 		final TableRow<G> row = new TableRow<>();
-		System.out.println("Call tablerow");
 		row.contextMenuProperty().bind(rowMenu = new ObjectBinding<ContextMenu>() {
 			{
 				super.bind(row.itemProperty());

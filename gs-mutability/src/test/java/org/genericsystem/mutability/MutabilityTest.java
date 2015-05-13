@@ -1,5 +1,6 @@
 package org.genericsystem.mutability;
 
+import java.util.Collections;
 import org.testng.annotations.Test;
 
 @Test
@@ -41,19 +42,22 @@ public class MutabilityTest extends AbstractTest {
 		Generic myMbw = car.addInstance("myMbw");
 		assert engine.getCurrentCache().unwrap(myMbw) != engine.getCurrentCache().unwrap(myAudi);
 
-		myAudi.update("myMbw");
+		// myAudi.update("myMbw");
+		engine.getCurrentCache().merge(myAudi, Collections.emptyList(), "myMbw", Collections.emptyList());
 		assert engine.getCurrentCache().unwrap(myMbw) == engine.getCurrentCache().unwrap(myAudi);
 		assert myMbw != myAudi;
 		assert myAudi.isAlive();
 		assert myMbw.isAlive();
 
-		myAudi.update("myMercedes");
+		engine.getCurrentCache().merge(myAudi, Collections.emptyList(), "myMercedes", Collections.emptyList());
+		// myAudi.update("myMercedes");
 		assert myAudi.isAlive();
 		assert myMbw.isAlive();
 
 		assert engine.getCurrentCache().unwrap(myMbw) == engine.getCurrentCache().unwrap(myAudi);
 
-		myAudi.update("myTruc");
+		engine.getCurrentCache().merge(myAudi, Collections.emptyList(), "myTruc", Collections.emptyList());
+		// myAudi.update("myTruc");
 		assert myAudi.isAlive();
 		assert myMbw.isAlive();
 

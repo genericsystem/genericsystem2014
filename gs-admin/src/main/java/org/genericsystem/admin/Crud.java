@@ -7,7 +7,6 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
-
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -15,7 +14,6 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
-
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.javafx.AbstractColumn;
@@ -37,6 +35,7 @@ public class Crud extends VBox {
 	private static final Function<Generic, ?> genericValueGetter = generic -> generic != null ? generic.getValue() : null;
 	private static final BiConsumer<Generic, ?> genericValueSetter = (generic, value) -> {
 		generic.updateValue((Serializable) value);
+		System.out.println("Update in GS : " + generic.info());
 	};
 	private static final Function<Generic, List<Generic>> genericComponents = generic -> generic.getComponents();
 
@@ -51,7 +50,7 @@ public class Crud extends VBox {
 
 	private static final Function<Generic, BiFunction<Serializable, List<Generic>, Generic>> attributeAddAction = typ -> (value, components) -> {
 		Generic generic = typ.addInstance(value, components.toArray(new Generic[components.size()]));
-		System.out.println("Add into GS : " + generic);
+		System.out.println("Add into GS : " + generic.info());
 		return generic;
 	};
 

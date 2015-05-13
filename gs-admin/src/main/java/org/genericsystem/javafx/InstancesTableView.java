@@ -8,7 +8,6 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
-
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ListBinding;
 import javafx.beans.binding.ObjectBinding;
@@ -17,11 +16,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
-import javafx.util.Callback;
 import javafx.util.StringConverter;
-
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.javafx.AbstractColumn.EditColumn;
 import org.genericsystem.javafx.AbstractColumn.GenericComponentColumn;
@@ -49,7 +45,7 @@ public class InstancesTableView<G> extends TableView<G> {
 	private final TriConsumer<G, Integer, G> genericComponentSetter;
 	private final Function<G, ObservableList<G>> genericSubInstances;
 	private final ObjectBinding<ContextMenu> contextMenuBinding;
-	private final ObjectBinding<Callback<TableView<G>, TableRow<G>>> rowFactory;
+	// private final ObjectBinding<Callback<TableView<G>, TableRow<G>>> rowFactory;
 	private final ListBinding<TableColumn<G, ?>> columnsBinding;
 	private final ListBinding<G> itemsBinding;
 
@@ -90,23 +86,23 @@ public class InstancesTableView<G> extends TableView<G> {
 			}
 		});
 
-		rowFactoryProperty().bind(rowFactory = new ObjectBinding<Callback<TableView<G>, TableRow<G>>>() {
-			{
-				super.bind(observableType);
-			}
-
-			@Override
-			public void dispose() {
-				super.unbind(observableType);
-			}
-
-			@Override
-			protected Callback<TableView<G>, TableRow<G>> computeValue() {
-				System.out.println("Compute row factory for : " + observableType.getValue());
-				return new RowFactory<>(removeConsumer);
-			}
-		});
-		// setRowFactory(new RowFactory<>(removeConsumer));
+		// rowFactoryProperty().bind(rowFactory = new ObjectBinding<Callback<TableView<G>, TableRow<G>>>() {
+		// {
+		// super.bind(observableType);
+		// }
+		//
+		// @Override
+		// public void dispose() {
+		// super.unbind(observableType);
+		// }
+		//
+		// @Override
+		// protected Callback<TableView<G>, TableRow<G>> computeValue() {
+		// System.out.println("Compute row factory for : " + observableType.getValue());
+		// return new RowFactory<>(removeConsumer);
+		// }
+		// });
+		setRowFactory(new RowFactory<>(removeConsumer));
 		Bindings.bindContent(getColumns(), columnsBinding = new ListBinding<TableColumn<G, ?>>() {
 			{
 				super.bind(observableType);

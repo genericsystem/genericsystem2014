@@ -4,12 +4,12 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.core.annotations.InstanceClass;
 import org.genericsystem.defaults.DefaultContext;
 import org.genericsystem.kernel.Generic.GenericImpl;
 import org.genericsystem.kernel.GenericHandler.AddHandler;
+import org.genericsystem.kernel.GenericHandler.MergeHandler;
 import org.genericsystem.kernel.GenericHandler.SetHandler;
 import org.genericsystem.kernel.GenericHandler.UpdateHandler;
 
@@ -90,6 +90,11 @@ public abstract class Context implements DefaultContext<Generic> {
 	}
 
 	@Override
+	public Generic merge(Generic update, List<Generic> overrides, Serializable newValue, List<Generic> newComponents) {
+		return new MergeHandler(this, update, update.getMeta(), overrides, newValue, newComponents).resolve();
+	}
+
+	@Override
 	public void forceRemove(Generic generic) {
 		getRestructurator().rebuildAll(null, null, computeDependencies(generic));
 	}
@@ -108,8 +113,7 @@ public abstract class Context implements DefaultContext<Generic> {
 
 	protected abstract void unplug(Generic generic);
 
-	protected void triggersMutation(Generic oldDependency, Generic newDependency) {
-	}
+	protected void triggersMutation(Generic oldDependency, Generic newDependency) {}
 
 	@Override
 	abstract public Snapshot<Generic> getDependencies(Generic generic);

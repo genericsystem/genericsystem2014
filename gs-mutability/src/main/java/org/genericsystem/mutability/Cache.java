@@ -13,11 +13,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
-
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.core.annotations.InstanceClass;
 import org.genericsystem.api.core.exceptions.AliveConstraintViolationException;
@@ -249,6 +247,11 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 	}
 
 	@Override
+	public Generic merge(Generic update, List<Generic> overrides, Serializable newValue, List<Generic> newComponents) {
+		return wrap(cache.merge(unwrap(update), unwrap(overrides), newValue, unwrap(newComponents)));
+	}
+
+	@Override
 	public Generic setInstance(Generic meta, List<Generic> overrides, Serializable value, List<Generic> components) {
 		return wrap(cache.setInstance(unwrap(meta), unwrap(overrides), value, unwrap(components)));
 	}
@@ -267,5 +270,4 @@ public class Cache implements DefaultContext<Generic>, ContextEventListener<org.
 	public void conserveRemove(Generic generic) {
 		cache.conserveRemove(unwrap(generic));
 	}
-
 }

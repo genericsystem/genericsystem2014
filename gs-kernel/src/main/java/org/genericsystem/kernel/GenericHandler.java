@@ -3,7 +3,6 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
-
 import org.genericsystem.api.core.annotations.constraints.InstanceValueGenerator.ValueGenerator;
 import org.genericsystem.api.core.exceptions.ExistsException;
 
@@ -76,8 +75,6 @@ abstract class GenericHandler {
 	}
 
 	Generic add() {
-		// System.out.println("dependencies : " + context.computePotentialDependencies(adjustedMeta, supers, value, components).stream().map(x -> x.info() + "\n").collect(Collectors.toList()));
-		// System.out.println("this :     " + meta + " " + supers + " value : " + value + components);
 		return context.getRestructurator().rebuildAll(null, () -> build(), context.computePotentialDependencies(adjustedMeta, supers, value, components));
 	}
 
@@ -86,10 +83,10 @@ abstract class GenericHandler {
 		return context.getRestructurator().rebuildAll(update, () -> build(), context.computeDependencies(update));
 	}
 
-	// Generic update(Generic update) {
-	// assert update != null;
-	// return context.getRestructurator().rebuildAll(update, () -> build(), context.computeDependencies(update));
-	// }
+	Generic merge(Generic update) {
+		assert update != null;
+		return context.getRestructurator().rebuildAll(update, () -> getOrBuild(), context.computeDependencies(update));
+	}
 
 	// static class GetHandler extends GenericHandler {
 	//
@@ -159,6 +156,20 @@ abstract class GenericHandler {
 				if (update != generic)
 					context.discardWithException(new ExistsException("An equivalent instance already exists : " + generic.info()));
 			return set(update);
+		}
+	}
+
+	static class MergeHandler extends GenericHandler {
+
+		private final Generic update;
+
+		MergeHandler(Context context, Generic update, Generic meta, List<Generic> overrides, Serializable value, List<Generic> components) {
+			super(context, meta, overrides, value, components);
+			this.update = update;
+		}
+
+		Generic resolve() {
+			return merge(update);
 		}
 	}
 
