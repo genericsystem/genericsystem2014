@@ -11,6 +11,12 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.util.Callback;
 
+/**
+ * @author Nicolas Feybesse
+ *
+ * @param <S>
+ * @param <T>
+ */
 public class GsPropertiesFactory<S, T> extends HashMap<S, Property<T>> implements Callback<CellDataFeatures<S, T>, ObservableValue<T>> {
 
 	private static final long serialVersionUID = 7709729724315030415L;

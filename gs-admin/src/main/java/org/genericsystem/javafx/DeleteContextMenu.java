@@ -17,6 +17,11 @@ import javafx.scene.control.TableRow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+/**
+ * @author Nicolas Feybesse
+ *
+ * @param <G>
+ */
 public class DeleteContextMenu<G> extends ContextMenu {
 
 	public DeleteContextMenu(TableRow<G> row, Supplier<ObservableList<G>> items, ContextMenu aboveMenu, Consumer<G> removeConsumer) {

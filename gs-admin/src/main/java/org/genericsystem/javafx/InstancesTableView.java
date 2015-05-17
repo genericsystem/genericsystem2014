@@ -94,12 +94,9 @@ public class InstancesTableView<G> extends TableView<G> {
 		if (observableType.getValue() != null) {
 			columns.add(new EditColumn<G, Serializable>(observableType.getValue().toString(), gsFunctions.attributeConverter.apply(observableType.getValue()), gsFunctions.genericGetter, gsFunctions.genericSetter));
 			for (G attribute : gsFunctions.typeAttributes.apply(observableType.getValue())) {
-
 				Function<G, G> baseFirstLink = base -> gsFunctions.attributeGetter.apply(attribute).apply(base).stream().findFirst().orElse(null);
-
 				List<G> attributeComponents = gsFunctions.genericComponents.apply(attribute);
 				int pos = attributeComponents.indexOf(observableType.getValue());
-
 				if ((((Generic) attribute).isSingularConstraintEnabled(pos) || ((Generic) attribute).isPropertyConstraintEnabled()) && attributeComponents.size() == 1)
 					columns.add(LinksTableView.<G> buildColumn(attribute.toString(), gsFunctions.attributeConverter.apply(attribute), base -> gsFunctions.genericGetter.apply(baseFirstLink.apply(base)), (base, newValue) -> {
 						G link = baseFirstLink.apply(base);

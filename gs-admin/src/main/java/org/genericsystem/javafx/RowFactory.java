@@ -1,6 +1,7 @@
 package org.genericsystem.javafx;
 
 import java.util.function.Consumer;
+
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ContextMenu;
@@ -8,6 +9,11 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.util.Callback;
 
+/**
+ * @author Nicolas Feybesse
+ *
+ * @param <G>
+ */
 public class RowFactory<G> implements Callback<TableView<G>, TableRow<G>> {
 
 	private final Consumer<G> removeConsumer;

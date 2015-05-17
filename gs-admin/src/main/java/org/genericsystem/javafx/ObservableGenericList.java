@@ -8,6 +8,11 @@ import org.genericsystem.api.core.Snapshot;
 
 import com.sun.javafx.collections.ObservableListWrapper;
 
+/**
+ * @author Nicolas Feybesse
+ *
+ * @param <G>
+ */
 public class ObservableGenericList<G> extends ObservableListWrapper<G> {
 
 	public ObservableGenericList(Snapshot<G> links, Consumer<G> removeConsumer) {

@@ -24,6 +24,11 @@ import javafx.util.StringConverter;
 import org.genericsystem.admin.UiFunctions;
 import org.genericsystem.admin.UiFunctions.AttributeUiFunctions;
 
+/**
+ * @author Nicolas Feybesse
+ *
+ * @param <G>
+ */
 public class AddContextMenu<G> extends ContextMenu {
 
 	public AddContextMenu(G base, G attribute, AttributeUiFunctions<G> attFunctions, int axe, Supplier<ObservableList<G>> items, ContextMenu aboveMenu) {

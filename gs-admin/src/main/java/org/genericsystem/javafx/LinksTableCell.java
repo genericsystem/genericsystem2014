@@ -7,6 +7,11 @@ import javafx.scene.control.TableCell;
 
 import org.genericsystem.admin.UiFunctions.AttributeUiFunctions;
 
+/**
+ * @author Nicolas Feybesse
+ *
+ * @param <G>
+ */
 public class LinksTableCell<G> extends TableCell<G, ObservableList<G>> {
 	private final LinksTableView<G> linksTableView;
 

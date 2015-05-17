@@ -18,6 +18,11 @@ import org.genericsystem.javafx.AbstractColumn.EditColumn;
 import org.genericsystem.javafx.AbstractColumn.TargetComponentColumn;
 import org.genericsystem.mutability.Generic;
 
+/**
+ * @author Nicolas Feybesse
+ *
+ * @param <G>
+ */
 public class LinksTableView<G> extends TableView<G> {
 
 	public static <G> TableColumn<G, ?> buildColumn(String columnName, StringConverter<Serializable> converter, Function<G, Serializable> genericValueGetter, BiConsumer<G, Serializable> genericValueSetter) {
