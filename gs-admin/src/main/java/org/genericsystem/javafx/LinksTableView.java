@@ -1,21 +1,18 @@
 package org.genericsystem.javafx;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.Pane;
 import javafx.util.StringConverter;
 import javafx.util.converter.BooleanStringConverter;
 
+import org.genericsystem.admin.UiFunctions.AttributeUiFunctions;
 import org.genericsystem.javafx.AbstractColumn.CheckBoxColumn;
 import org.genericsystem.javafx.AbstractColumn.EditColumn;
 import org.genericsystem.javafx.AbstractColumn.TargetComponentColumn;
@@ -23,23 +20,22 @@ import org.genericsystem.mutability.Generic;
 
 public class LinksTableView<G> extends TableView<G> {
 
-	public static <G> TableColumn<G, ?> buildColumn(String columnName, StringConverter<?> converter, Function<G, ?> genericValueGetter, BiConsumer<G, ?> genericValueSetter) {
-		return BooleanStringConverter.class.equals(converter) ? new CheckBoxColumn<G>(columnName, (Function<G, Boolean>) genericValueGetter, (BiConsumer<G, Boolean>) genericValueSetter) : new EditColumn<G, Serializable>(columnName,
-				(StringConverter<Serializable>) converter, (Function<G, Serializable>) genericValueGetter, (BiConsumer<G, Serializable>) genericValueSetter);
+	public static <G> TableColumn<G, ?> buildColumn(String columnName, StringConverter<Serializable> converter, Function<G, Serializable> genericValueGetter, BiConsumer<G, Serializable> genericValueSetter) {
+		return BooleanStringConverter.class.equals(converter) ? new CheckBoxColumn<G>(columnName, (Function) genericValueGetter, (BiConsumer) genericValueSetter) : new EditColumn<G, Serializable>(columnName, converter, genericValueGetter,
+				genericValueSetter);
 	}
 
-	public LinksTableView(G attribute, StringConverter<?> converter, int axe, Function<G, ?> genericValueGetter, BiConsumer<G, ?> genericValueSetter, Function<G, List<G>> attributesComponents, BiFunction<G, Integer, G> componentGetter,
-			TriConsumer<G, Integer, G> componentSetter, Function<G, ObservableList<G>> genericSubInstances, Consumer<G> removeConsumer) {
+	public LinksTableView(G attribute, AttributeUiFunctions<G> attFunctions, int axe) {
 		if (((Generic) attribute).getInstanceValueGenerator() == null)
-			getColumns().add(buildColumn(attribute.toString(), converter, genericValueGetter, genericValueSetter));
+			getColumns().add(buildColumn(attribute.toString(), attFunctions.converter, attFunctions.genericGetter, attFunctions.genericSetter));
 
 		int i = 0;
-		for (G component : attributesComponents.apply(attribute)) {
+		for (G component : attFunctions.genericComponents.apply(attribute)) {
 			if (i != axe) {
 				final Integer pos = i;
-				getColumns().add(new TargetComponentColumn<G>(component.toString(), (t) -> componentGetter.apply(t, pos), (BiConsumer<G, G>) (t, u) -> {
-					componentSetter.accept(t, pos, u);
-				}, () -> genericSubInstances.apply(component)));
+				getColumns().add(new TargetComponentColumn<G>(component.toString(), (t) -> attFunctions.genericComponentGetter.apply(t, pos), (BiConsumer<G, G>) (t, u) -> {
+					attFunctions.genericComponentSetter.accept(t, pos, u);
+				}, () -> attFunctions.genericSubInstances.apply(component)));
 			}
 			i++;
 		}
@@ -60,7 +56,7 @@ public class LinksTableView<G> extends TableView<G> {
 			}
 		});
 		setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-		setRowFactory(new RowFactory<>(removeConsumer));
+		setRowFactory(new RowFactory<>(attFunctions.removeConsumer));
 	}
 
 	@FunctionalInterface

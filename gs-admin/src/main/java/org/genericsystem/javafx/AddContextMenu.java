@@ -9,8 +9,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
@@ -23,22 +21,28 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.util.StringConverter;
 
+import org.genericsystem.admin.UiFunctions;
+import org.genericsystem.admin.UiFunctions.AttributeUiFunctions;
+
 public class AddContextMenu<G> extends ContextMenu {
-	public AddContextMenu(G base, G attribute, StringConverter<?> converter, int axe, Supplier<ObservableList<G>> items, ContextMenu aboveMenu, Function<G, List<G>> typeComponents, Function<G, ObservableList<G>> typeComponentSubInstances,
-			BiFunction<Serializable, List<G>, G> addAction) {
-		String text = "Add New " + attribute.toString() + (base != null ? " on : " + base.toString() : "");
+
+	public AddContextMenu(G base, G attribute, AttributeUiFunctions<G> attFunctions, int axe, Supplier<ObservableList<G>> items, ContextMenu aboveMenu) {
+		String text = "Add New " + attribute.toString() + " on : " + base.toString();
 		final MenuItem addItem = new MenuItem(text, new ImageView(new Image(getClass().getResourceAsStream("ok.png"))));
-		addItem.setOnAction((EventHandler<ActionEvent>) e -> {
-			new AddDialog<>(base, attribute, converter, axe, items.get(), text, typeComponents, typeComponentSubInstances, addAction).showAndWait();
-		});
+		addItem.setOnAction(e -> new AddDialog<G>(base, attribute, attFunctions.converter, axe, items.get(), text, attFunctions.genericComponents, attFunctions.genericSubInstances, attFunctions.addAction).showAndWait());
 		getItems().add(addItem);
-		if (aboveMenu != null) {
-			aboveMenu.getItems().forEach(item -> {
-				MenuItem newItem = new MenuItem(item.getText(), new ImageView(((ImageView) item.getGraphic()).getImage()));
-				getItems().add(newItem);
-				newItem.onActionProperty().bind(item.onActionProperty());
-			});
-		}
+		aboveMenu.getItems().forEach(item -> {
+			MenuItem newItem = new MenuItem(item.getText(), new ImageView(((ImageView) item.getGraphic()).getImage()));
+			getItems().add(newItem);
+			newItem.onActionProperty().bind(item.onActionProperty());
+		});
+	}
+
+	public AddContextMenu(G type, UiFunctions<G> gsFunctions, Supplier<ObservableList<G>> items) {
+		String text = "Add New " + type.toString();
+		final MenuItem addItem = new MenuItem(text, new ImageView(new Image(getClass().getResourceAsStream("ok.png"))));
+		addItem.setOnAction(e -> new AddDialog<>(null, type, gsFunctions.attributeConverter.apply(type), -1, items.get(), text, gsFunctions.genericComponents, gsFunctions.genericSubInstances, gsFunctions.attributeAddAction.apply(type)).showAndWait());
+		getItems().add(addItem);
 	}
 
 	@FunctionalInterface
@@ -47,7 +51,8 @@ public class AddContextMenu<G> extends ContextMenu {
 	}
 
 	public static class AddDialog<G> extends Dialog<G> {
-		public AddDialog(G instance, G type, StringConverter<?> converter, int axe, ObservableList<G> tableItems, String headerText, Function<G, List<G>> typeComponents, Function<G, ObservableList<G>> typeComponentSubInstances,
+
+		public AddDialog(G instance, G type, StringConverter<Serializable> converter, int axe, ObservableList<G> tableItems, String headerText, Function<G, List<G>> typeComponents, Function<G, ObservableList<G>> typeComponentSubInstances,
 				BiFunction<Serializable, List<G>, G> addAction) {
 
 			setTitle("Add an instance");
@@ -79,13 +84,13 @@ public class AddContextMenu<G> extends ContextMenu {
 			setResultConverter(buttonType -> {
 				if (buttonType == ButtonType.OK) {
 					List<G> components = combos.stream().map(combo -> combo.getSelectionModel().getSelectedItem()).collect(Collectors.toList());
-					G generic = addAction.apply((Serializable) converter.fromString(text1.getText()), components);
+					G generic = addAction.apply(converter.fromString(text1.getText()), components);
 					tableItems.add(generic);
 					return generic;
 				}
 				return null;
 			});
 		}
-	}
 
+	}
 }

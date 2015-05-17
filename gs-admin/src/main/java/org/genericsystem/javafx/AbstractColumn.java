@@ -1,11 +1,7 @@
 package org.genericsystem.javafx;
 
-import java.io.Serializable;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -20,7 +16,7 @@ import javafx.util.converter.BooleanStringConverter;
 import javafx.util.converter.DefaultStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 
-import org.genericsystem.javafx.LinksTableView.TriConsumer;
+import org.genericsystem.admin.UiFunctions.AttributeUiFunctions;
 
 /**
  * @author Nicolas Feybesse
@@ -86,10 +82,9 @@ public abstract class AbstractColumn<G, T> extends TableColumn<G, T> {
 	}
 
 	public static class GenericComponentColumn<G> extends AbstractColumn<G, ObservableList<G>> {
-		public GenericComponentColumn(G attribute, StringConverter<?> converter, int pos, Function<G, ObservableList<G>> attributeGetter, Function<G, ?> genericValueGetter, BiConsumer<G, ?> genericValueSetter, Function<G, List<G>> genericComponents,
-				BiFunction<G, Integer, G> genericComponentGetter, TriConsumer<G, Integer, G> genericComponentSetter, Function<G, ObservableList<G>> genericSubInstances, BiFunction<Serializable, List<G>, G> addAction, Consumer<G> removeConsumer) {
-			super(attribute.toString(), attributeGetter, null);
-			setCellFactory(tableColumn -> new LinksTableCell<G>(attribute, converter, pos, genericValueGetter, genericValueSetter, genericComponents, genericComponentGetter, genericComponentSetter, genericSubInstances, addAction, removeConsumer));
+		public GenericComponentColumn(G attribute, AttributeUiFunctions<G> attFunctions, int pos) {
+			super(attribute.toString(), attFunctions.linksGetter, null);
+			setCellFactory(tableColumn -> new LinksTableCell<G>(attribute, attFunctions, pos));
 			setPrefWidth(320);
 		}
 

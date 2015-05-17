@@ -118,5 +118,4 @@ public abstract class Dependencies {
 			}
 		}
 	}
-
 }
