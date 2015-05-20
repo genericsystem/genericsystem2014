@@ -1,20 +1,13 @@
 package org.genericsystem.javafx;
 
-import java.io.Serializable;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.Pane;
-import javafx.util.StringConverter;
-import javafx.util.converter.BooleanStringConverter;
 
 import org.genericsystem.admin.UiFunctions.AttributeUiFunctions;
-import org.genericsystem.javafx.AbstractColumn.CheckBoxColumn;
-import org.genericsystem.javafx.AbstractColumn.EditColumn;
 import org.genericsystem.javafx.AbstractColumn.TargetComponentColumn;
 import org.genericsystem.mutability.Generic;
 
@@ -25,14 +18,9 @@ import org.genericsystem.mutability.Generic;
  */
 public class LinksTableView<G> extends TableView<G> {
 
-	public static <G> TableColumn<G, ?> buildColumn(String columnName, StringConverter<Serializable> converter, Function<G, Serializable> genericValueGetter, BiConsumer<G, Serializable> genericValueSetter) {
-		return BooleanStringConverter.class.equals(converter.getClass()) ? new CheckBoxColumn<G>(columnName, (Function) genericValueGetter, (BiConsumer) genericValueSetter) : new EditColumn<G, Serializable>(columnName, converter, genericValueGetter,
-				genericValueSetter);
-	}
-
 	public LinksTableView(G attribute, AttributeUiFunctions<G> attFunctions, int axe) {
 		if (((Generic) attribute).getInstanceValueGenerator() == null)
-			getColumns().add(buildColumn(attribute.toString(), attFunctions.converter, attFunctions.genericGetter, attFunctions.genericSetter));
+			getColumns().add(AbstractColumn.buildColumn(attribute.toString(), attFunctions.converter, attFunctions.genericGetter, attFunctions.genericSetter));
 
 		int i = 0;
 		for (G component : attFunctions.genericComponents.apply(attribute)) {

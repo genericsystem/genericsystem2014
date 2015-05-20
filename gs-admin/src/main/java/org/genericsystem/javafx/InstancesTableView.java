@@ -92,14 +92,14 @@ public class InstancesTableView<G> extends TableView<G> {
 		List<TableColumn<G, ?>> columns = new ArrayList<TableColumn<G, ?>>();
 		if (observableType.getValue() != null) {
 			// columns.add(new EditColumn<G, Serializable>(observableType.getValue().toString(), gsFunctions.attributeConverter.apply(observableType.getValue()), gsFunctions.genericGetter, gsFunctions.genericSetter));
-			columns.add(LinksTableView.<G> buildColumn(observableType.getValue().toString(), gsFunctions.attributeConverter.apply(observableType.getValue()), gsFunctions.genericGetter, gsFunctions.genericSetter));
+			columns.add(AbstractColumn.buildColumn(observableType.getValue().toString(), gsFunctions.attributeConverter.apply(observableType.getValue()), gsFunctions.genericGetter, gsFunctions.genericSetter));
 			for (G attribute : gsFunctions.typeAttributes.apply(observableType.getValue())) {
 				AttributeUiFunctions<G> attFunctions = gsFunctions.apply(attribute);
 				Function<G, G> baseFirstLink = base -> gsFunctions.attributeGetter.apply(attribute).apply(base).stream().findFirst().orElse(null);
 				List<G> attributeComponents = gsFunctions.genericComponents.apply(attribute);
 				int pos = attributeComponents.indexOf(observableType.getValue());
 				if ((((Generic) attribute).isSingularConstraintEnabled(pos) || ((Generic) attribute).isPropertyConstraintEnabled()) && attributeComponents.size() == 1)
-					columns.add(LinksTableView.<G> buildColumn(attribute.toString(), gsFunctions.attributeConverter.apply(attribute), base -> gsFunctions.genericGetter.apply(baseFirstLink.apply(base)), (base, newValue) -> {
+					columns.add(AbstractColumn.buildColumn(attribute.toString(), gsFunctions.attributeConverter.apply(attribute), base -> gsFunctions.genericGetter.apply(baseFirstLink.apply(base)), (base, newValue) -> {
 						G link = baseFirstLink.apply(base);
 						if (link != null)
 							gsFunctions.genericSetter.accept(link, newValue);

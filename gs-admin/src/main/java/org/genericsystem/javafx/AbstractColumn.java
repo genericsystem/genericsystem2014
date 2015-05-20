@@ -1,5 +1,6 @@
 package org.genericsystem.javafx;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -30,6 +31,11 @@ public abstract class AbstractColumn<G, T> extends TableColumn<G, T> {
 		GsPropertiesFactory<G, T> observables = buildObservables(genericValueGetter, genericValueSetter);
 		// setMinWidth(200);
 		setCellValueFactory(observables);
+	}
+
+	public static <G> TableColumn<G, ?> buildColumn(String columnName, StringConverter<Serializable> converter, Function<G, Serializable> genericValueGetter, BiConsumer<G, Serializable> genericValueSetter) {
+		return BooleanStringConverter.class.equals(converter.getClass()) ? new CheckBoxColumn<G>(columnName, (Function) genericValueGetter, (BiConsumer) genericValueSetter) : new EditColumn<G, Serializable>(columnName, converter, genericValueGetter,
+				genericValueSetter);
 	}
 
 	protected GsPropertiesFactory<G, T> buildObservables(Function<G, T> getter, BiConsumer<G, T> setter) {

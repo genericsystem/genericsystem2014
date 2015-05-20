@@ -22,7 +22,8 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 	}
 
 	default String defaultToString() {
-		return Objects.toString(getValue());
+		Serializable value = getValue();
+		return value instanceof Class ? ((Class<?>) value).getSimpleName() : Objects.toString(getValue());
 	}
 
 	@SuppressWarnings("unchecked")

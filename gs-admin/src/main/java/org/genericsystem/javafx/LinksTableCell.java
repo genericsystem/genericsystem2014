@@ -24,7 +24,7 @@ public class LinksTableCell<G> extends TableCell<G, ObservableList<G>> {
 		this.pos = pos;
 		this.attFunctions = attFunctions;
 
-		this.linksTableView = new LinksTableView<G>(attribute, attFunctions, pos);
+		this.linksTableView = new LinksTableView<>(attribute, attFunctions, pos);
 		prefHeightProperty().bind(new SimpleIntegerProperty(112).multiply(Bindings.size(linksTableView.getItems()).add(1.01)));
 		// setPrefHeight(((Generic) attribute).isSingularConstraintEnabled(0) ? 30 : 100);
 		// setMinHeight(((Generic) attribute).isSingularConstraintEnabled(0) ? 30 : 100);
