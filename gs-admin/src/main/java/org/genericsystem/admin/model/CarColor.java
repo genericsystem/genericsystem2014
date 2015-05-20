@@ -8,6 +8,7 @@ import org.genericsystem.api.core.annotations.Meta;
 import org.genericsystem.api.core.annotations.SystemGeneric;
 import org.genericsystem.api.core.annotations.constraints.InstanceValueClassConstraint;
 import org.genericsystem.api.core.annotations.constraints.InstanceValueGenerator;
+import org.genericsystem.api.core.annotations.constraints.SingularConstraint;
 import org.genericsystem.api.core.annotations.value.StringValue;
 
 /**
@@ -16,7 +17,7 @@ import org.genericsystem.api.core.annotations.value.StringValue;
  */
 @SystemGeneric
 @Components({ Car.class, Color.class })
-// @SingularConstraint
+@SingularConstraint
 @InstanceValueGenerator
 @StringValue("CarColor")
 @Dependencies(DefaultCarColor.class)

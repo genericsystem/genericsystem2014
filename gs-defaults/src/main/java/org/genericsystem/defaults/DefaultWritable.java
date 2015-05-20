@@ -1,6 +1,7 @@
 package org.genericsystem.defaults;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -18,6 +19,14 @@ public interface DefaultWritable<T extends DefaultVertex<T>> extends IVertex<T> 
 	@SuppressWarnings("unchecked")
 	default T updateSupers(T... supers) {
 		return update(Arrays.asList(supers), getValue(), coerceToTArray(getComponents().toArray()));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	default T updateComponent(T targetComponent, int pos) {
+		List<T> newComponents = new ArrayList<>(getComponents());
+		newComponents.set(pos, targetComponent);
+		return getCurrentCache().update((T) this, getSupers(), getValue(), newComponents);
 	}
 
 	@Override

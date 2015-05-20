@@ -23,6 +23,7 @@ import javafx.util.StringConverter;
 
 import org.genericsystem.admin.UiFunctions;
 import org.genericsystem.admin.UiFunctions.AttributeUiFunctions;
+import org.genericsystem.mutability.Generic;
 
 /**
  * @author Nicolas Feybesse
@@ -57,7 +58,7 @@ public class AddContextMenu<G> extends ContextMenu {
 
 	public static class AddDialog<G> extends Dialog<G> {
 
-		public AddDialog(G instance, G type, StringConverter<Serializable> converter, int axe, ObservableList<G> tableItems, String headerText, Function<G, List<G>> typeComponents, Function<G, ObservableList<G>> typeComponentSubInstances,
+		public AddDialog(G base, G type, StringConverter<Serializable> converter, int axe, ObservableList<G> tableItems, String headerText, Function<G, List<G>> typeComponents, Function<G, ObservableList<G>> typeComponentSubInstances,
 				BiFunction<Serializable, List<G>, G> addAction) {
 
 			setTitle("Add an instance");
@@ -65,10 +66,13 @@ public class AddContextMenu<G> extends ContextMenu {
 			setResizable(true);
 
 			GridPane grid = new GridPane();
-			Label label1 = new Label("Value : ");
-			TextField text1 = new TextField();
-			grid.add(label1, 0, 0);
-			grid.add(text1, 1, 0);
+			Label valueLabel = new Label("Value : ");
+			TextField valueField = new TextField();
+			grid.add(valueLabel, 0, 0);
+			grid.add(valueField, 1, 0);
+			boolean visibility = ((Generic) type).getInstanceValueGenerator() == null;
+			valueLabel.setVisible(visibility);
+			valueField.setVisible(visibility);
 			int i = 0;
 			List<ComboBox<G>> combos = new ArrayList<>();
 			for (G typeComponent : typeComponents.apply(type)) {
@@ -77,7 +81,7 @@ public class AddContextMenu<G> extends ContextMenu {
 				combo.setItems(typeComponentSubInstances.apply(typeComponent));
 				combos.add(combo);
 				if (i == axe) {
-					combo.getSelectionModel().select(instance);
+					combo.getSelectionModel().select(base);
 					combo.setDisable(true);
 				}
 				grid.add(label, 0, i + 1);
@@ -89,7 +93,7 @@ public class AddContextMenu<G> extends ContextMenu {
 			setResultConverter(buttonType -> {
 				if (buttonType == ButtonType.OK) {
 					List<G> components = combos.stream().map(combo -> combo.getSelectionModel().getSelectedItem()).collect(Collectors.toList());
-					G generic = addAction.apply(converter.fromString(text1.getText()), components);
+					G generic = addAction.apply(converter.fromString(valueField.getText()), components);
 					tableItems.add(generic);
 					return generic;
 				}

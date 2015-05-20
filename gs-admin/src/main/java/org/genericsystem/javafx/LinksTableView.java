@@ -26,7 +26,7 @@ import org.genericsystem.mutability.Generic;
 public class LinksTableView<G> extends TableView<G> {
 
 	public static <G> TableColumn<G, ?> buildColumn(String columnName, StringConverter<Serializable> converter, Function<G, Serializable> genericValueGetter, BiConsumer<G, Serializable> genericValueSetter) {
-		return BooleanStringConverter.class.equals(converter) ? new CheckBoxColumn<G>(columnName, (Function) genericValueGetter, (BiConsumer) genericValueSetter) : new EditColumn<G, Serializable>(columnName, converter, genericValueGetter,
+		return BooleanStringConverter.class.equals(converter.getClass()) ? new CheckBoxColumn<G>(columnName, (Function) genericValueGetter, (BiConsumer) genericValueSetter) : new EditColumn<G, Serializable>(columnName, converter, genericValueGetter,
 				genericValueSetter);
 	}
 

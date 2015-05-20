@@ -1,7 +1,6 @@
 package org.genericsystem.admin;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -13,7 +12,6 @@ import javafx.collections.ObservableList;
 import javafx.util.StringConverter;
 
 import org.genericsystem.admin.UiFunctions.AttributeUiFunctions;
-import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.javafx.AbstractColumn;
 import org.genericsystem.javafx.LinksTableView.TriConsumer;
@@ -49,9 +47,7 @@ public abstract class UiFunctions<G> implements Function<G, AttributeUiFunctions
 			genericComponents = generic -> generic.getComponents();
 			genericComponentGetter = (generic, pos) -> generic.getComponent(pos);
 			genericComponentSetter = (generic, pos, target) -> {
-				List<Generic> components = new ArrayList<>(generic.getComponents());
-				components.set(pos, target);
-				generic.updateComponents(components.toArray(new Generic[components.size()]));// TODO create updateComponent(pos)
+				generic.updateComponent(target, pos);
 				System.out.println("Update in GS : " + generic.info());
 			};
 			attributeAddAction = attribute -> (value, components) -> {
@@ -61,7 +57,7 @@ public abstract class UiFunctions<G> implements Function<G, AttributeUiFunctions
 			};
 			attributeConverter = attribute -> AbstractColumn.getDefaultInstanceValueStringConverter(attribute.getInstanceValueClassConstraint());
 			attributeGetter = attribute -> generic -> FXCollections.observableArrayList((generic.getHolders(attribute).toList()));
-			typeAttributes = typ -> typ.getAttributes().filter(attribute -> typ.inheritsFrom(attribute.getComponent(ApiStatics.BASE_POSITION)));
+			typeAttributes = typ -> typ.getAttributes().filter(attribute -> attribute.isCompositeForInstances(typ));
 			genericSubInstances = targetComponent -> FXCollections.observableArrayList((targetComponent.getSubInstances().toList()));
 			removeConsumer = generic -> {
 				generic.remove();

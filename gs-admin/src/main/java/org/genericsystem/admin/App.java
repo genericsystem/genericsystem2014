@@ -47,6 +47,9 @@ public class App extends Application {
 		Generic base2 = type.addInstance("myMercedes");
 		base2.addLink(relation, "myMercedesYellow", engine.find(Yellow.class));
 
+		// Thread.currentThread().setUncaughtExceptionHandler((thread, throwable) -> {
+		// System.out.println("Handler caught exception: " + throwable.getMessage());
+		// });
 		Crud<Generic> crud = new Crud<>(engine, new GsUiFunctions());
 
 		((Group) scene.getRoot()).getChildren().add(crud);

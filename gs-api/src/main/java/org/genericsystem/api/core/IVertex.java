@@ -1839,7 +1839,18 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	T updateSupers(T... overrides);
 
 	/**
-	 * Update the composites of this Generic with the specified <code>newComponents</code>.
+	 * Update a component of this Generic with the specified <code>newTargetComponent</code>.
+	 * 
+	 * @param newTargetComponent
+	 *            the new target component of this Generic.
+	 * @param pos
+	 *            the position of the new target component in components
+	 * @return the updated Generic.
+	 */
+	T updateComponent(T newTargetComponent, int pos);
+
+	/**
+	 * Update the components of this Generic with the specified <code>newComponents</code>.
 	 * 
 	 * @param newComponents
 	 *            the new components of this Generic.

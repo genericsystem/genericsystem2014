@@ -69,9 +69,9 @@ public interface DefaultAncestors<T extends DefaultVertex<T>> extends IVertex<T>
 	default boolean isCompositeOf(T vertex) {
 		return getComponents().stream().anyMatch(component -> vertex.isSpecializationOf(component));
 	}
-	
+
 	default boolean isCompositeForInstances(T vertex) {
-		return getComponents().stream().anyMatch(component -> vertex.inheritsFrom(component) || vertex.isInstanceOf(component));
+		return getComponents().stream().anyMatch(component -> vertex.inheritsFrom(component));
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 package org.genericsystem.javafx;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +16,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
 import org.genericsystem.admin.UiFunctions;
-import org.genericsystem.javafx.AbstractColumn.EditColumn;
+import org.genericsystem.admin.UiFunctions.AttributeUiFunctions;
 import org.genericsystem.javafx.AbstractColumn.GenericComponentColumn;
 import org.genericsystem.javafx.AbstractColumn.TargetComponentColumn;
 import org.genericsystem.mutability.Generic;
@@ -92,8 +91,10 @@ public class InstancesTableView<G> extends TableView<G> {
 	private List<TableColumn<G, ?>> buildColumns(ObservableValue<G> observableType) {
 		List<TableColumn<G, ?>> columns = new ArrayList<TableColumn<G, ?>>();
 		if (observableType.getValue() != null) {
-			columns.add(new EditColumn<G, Serializable>(observableType.getValue().toString(), gsFunctions.attributeConverter.apply(observableType.getValue()), gsFunctions.genericGetter, gsFunctions.genericSetter));
+			// columns.add(new EditColumn<G, Serializable>(observableType.getValue().toString(), gsFunctions.attributeConverter.apply(observableType.getValue()), gsFunctions.genericGetter, gsFunctions.genericSetter));
+			columns.add(LinksTableView.<G> buildColumn(observableType.getValue().toString(), gsFunctions.attributeConverter.apply(observableType.getValue()), gsFunctions.genericGetter, gsFunctions.genericSetter));
 			for (G attribute : gsFunctions.typeAttributes.apply(observableType.getValue())) {
+				AttributeUiFunctions<G> attFunctions = gsFunctions.apply(attribute);
 				Function<G, G> baseFirstLink = base -> gsFunctions.attributeGetter.apply(attribute).apply(base).stream().findFirst().orElse(null);
 				List<G> attributeComponents = gsFunctions.genericComponents.apply(attribute);
 				int pos = attributeComponents.indexOf(observableType.getValue());
@@ -103,7 +104,7 @@ public class InstancesTableView<G> extends TableView<G> {
 						if (link != null)
 							gsFunctions.genericSetter.accept(link, newValue);
 						else
-							gsFunctions.attributeAddAction.apply(attribute).apply(newValue, Arrays.asList(base));
+							attFunctions.addAction.apply(newValue, Arrays.asList(base));
 					}));
 				else if (((Generic) attribute).isSingularConstraintEnabled(pos) && attributeComponents.size() == 2 && ((Generic) attribute).getInstanceValueGenerator() != null)
 					columns.add(new TargetComponentColumn<G>(attribute.toString(), (base) -> gsFunctions.genericComponentGetter.apply(baseFirstLink.apply(base), pos == 0 ? 1 : 0), (base, newTarget) -> {
@@ -113,11 +114,11 @@ public class InstancesTableView<G> extends TableView<G> {
 						else {
 							List<G> components = new ArrayList<G>(gsFunctions.genericComponents.apply(base));
 							components.set(pos == 0 ? 1 : 0, newTarget);
-							gsFunctions.attributeAddAction.apply(attribute).apply(null, components);
+							attFunctions.addAction.apply(null, components);
 						}
 					}, () -> gsFunctions.genericSubInstances.apply(gsFunctions.genericComponentGetter.apply(attribute, pos == 0 ? 1 : 0))));
 				else
-					columns.add(new GenericComponentColumn<G>(attribute, gsFunctions.apply(attribute), pos));
+					columns.add(new GenericComponentColumn<G>(attribute, attFunctions, pos));
 			}
 		}
 		return columns;
