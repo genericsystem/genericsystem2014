@@ -1,8 +1,11 @@
 package org.genericsystem.admin;
 
 import javafx.application.Application;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 
 import org.genericsystem.admin.UiFunctions.GsUiFunctions;
@@ -46,11 +49,28 @@ public class App extends Application {
 		// base.addLink(relation, "myBmwYellow", engine.find(Yellow.class));
 		Generic base2 = type.addInstance("myMercedes");
 		base2.addLink(relation, "myMercedesYellow", engine.find(Yellow.class));
+		class InvalidableObjectProperty extends SimpleObjectProperty<Generic> {
+			public InvalidableObjectProperty(Generic engine) {
+				super(engine);
+			}
 
-//		Thread.currentThread().setUncaughtExceptionHandler((thread, throwable) -> {
-//			System.out.println("Handler caught exception: " + throwable.getMessage());
-//		});
-		Crud<Generic> crud = new Crud<>(engine, new GsUiFunctions());
+			@Override
+			protected void fireValueChangedEvent() {
+				super.fireValueChangedEvent();
+			}
+		}
+		InvalidableObjectProperty engineProperty = new InvalidableObjectProperty(engine);
+		Thread.currentThread().setUncaughtExceptionHandler((thread, throwable) -> {
+			engineProperty.fireValueChangedEvent();
+			Alert alert = new Alert(AlertType.WARNING);
+			alert.setTitle("A problem was detected");
+			alert.setContentText(throwable.getCause() != null ? throwable.getCause().getMessage() : throwable.getMessage());
+			alert.setHeaderText(throwable.getClass().getSimpleName());
+			throwable.printStackTrace();
+			alert.showAndWait();
+		});
+
+		Crud<Generic> crud = new Crud<>(engineProperty, new GsUiFunctions());
 
 		((Group) scene.getRoot()).getChildren().add(crud);
 		stage.setScene(scene);
