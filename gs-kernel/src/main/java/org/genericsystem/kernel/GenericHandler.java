@@ -3,6 +3,7 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+
 import org.genericsystem.api.core.annotations.constraints.InstanceValueGenerator.ValueGenerator;
 import org.genericsystem.api.core.exceptions.ExistsException;
 
@@ -71,7 +72,7 @@ abstract class GenericHandler {
 	}
 
 	Generic build() {
-		return gettable = context.getBuilder().buildAndPlug(null, isMeta() ? null : adjustedMeta, supers, value, components);
+		return gettable = context.buildAndPlug(null, isMeta() ? null : adjustedMeta, supers, value, components);
 	}
 
 	Generic add() {
@@ -200,7 +201,7 @@ abstract class GenericHandler {
 
 		@Override
 		Generic build() {
-			return gettable = context.getBuilder().buildAndPlug(clazz, isMeta() ? null : adjustedMeta, supers, value, components);
+			return gettable = context.buildAndPlug(clazz, isMeta() ? null : adjustedMeta, supers, value, components);
 		}
 	}
 
@@ -217,7 +218,7 @@ abstract class GenericHandler {
 
 		@Override
 		Generic build() {
-			return gettable = context.getBuilder().buildAndPlug(ts, null, isMeta() ? null : adjustedMeta, supers, value, components, otherTs);
+			return gettable = context.buildAndPlug(ts, null, isMeta() ? null : adjustedMeta, supers, value, components, otherTs);
 		}
 	}
 }

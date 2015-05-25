@@ -35,7 +35,7 @@ public interface Generic extends DefaultVertex<Generic>, Comparable<Generic> {
 	public static class GenericImpl implements Generic {
 		private Root root;
 
-		Generic init(Root root) {
+		Generic initRoot(Root root) {
 			this.root = root;
 			return this;
 		}

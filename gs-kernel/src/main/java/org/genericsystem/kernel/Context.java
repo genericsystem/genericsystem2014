@@ -4,10 +4,9 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.api.core.annotations.InstanceClass;
 import org.genericsystem.defaults.DefaultContext;
-import org.genericsystem.kernel.Generic.GenericImpl;
 import org.genericsystem.kernel.GenericHandler.AddHandler;
 import org.genericsystem.kernel.GenericHandler.MergeHandler;
 import org.genericsystem.kernel.GenericHandler.SetHandler;
@@ -17,13 +16,11 @@ public abstract class Context implements DefaultContext<Generic> {
 
 	private final Root root;
 	private final Checker checker;
-	private final Builder builder;
 	private final Restructurator restructurator;
 
 	protected Context(Root root) {
 		this.root = root;
 		this.checker = buildChecker();
-		this.builder = new Builder();
 		this.restructurator = buildRestructurator();
 	}
 
@@ -39,10 +36,6 @@ public abstract class Context implements DefaultContext<Generic> {
 
 	protected Checker getChecker() {
 		return checker;
-	}
-
-	Builder getBuilder() {
-		return builder;
 	}
 
 	Restructurator getRestructurator() {
@@ -113,50 +106,23 @@ public abstract class Context implements DefaultContext<Generic> {
 
 	protected abstract void unplug(Generic generic);
 
-	protected void triggersMutation(Generic oldDependency, Generic newDependency) {}
+	protected void triggersMutation(Generic oldDependency, Generic newDependency) {
+	}
 
 	@Override
 	abstract public Snapshot<Generic> getDependencies(Generic generic);
 
-	class Builder {
-
-		protected Generic newT(Class<?> clazz, Generic meta) {
-			InstanceClass metaAnnotation = meta == null ? null : getAnnotedClass(meta).getAnnotation(InstanceClass.class);
-			if (metaAnnotation != null)
-				if (clazz == null || clazz.isAssignableFrom(metaAnnotation.value()))
-					clazz = metaAnnotation.value();
-				else if (!metaAnnotation.value().isAssignableFrom(clazz))
-					Context.this.discardWithException(new InstantiationException(clazz + " must extends " + metaAnnotation.value()));
-
-			try {
-				if (clazz == null || !Generic.class.isAssignableFrom(clazz))
-					return new GenericImpl();
-				return (Generic) clazz.newInstance();
-			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
-				Context.this.discardWithException(e);
-			}
-			return null; // Not reached
-		}
-
-		private Generic build(long ts, Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
-			return Context.this.getRoot().init(newT(clazz, meta), ts, meta, supers, value, components, otherTs);
-		}
-
-		Generic buildAndPlug(Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components) {
-			return buildAndPlug(Context.this.getRoot().pickNewTs(), clazz, meta, supers, value, components, Context.this.getRoot().isInitialized() ? LifeManager.USER_TS : LifeManager.SYSTEM_TS);
-		}
-
-		Generic buildAndPlug(long ts, Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
-			return Context.this.plug(build(ts, clazz, meta, supers, value, components, otherTs));
-		}
-
-		Class<?> getAnnotedClass(Generic vertex) {
-			if (vertex.isSystem()) {
-				Class<?> annotedClass = Context.this.getRoot().findAnnotedClass(vertex);
-				if (annotedClass != null)
-					return annotedClass;
-			}
-			return vertex.getClass();
-		}
+	Generic buildAndPlug(Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components) {
+		return buildAndPlug(Context.this.getRoot().pickNewTs(), clazz, meta, supers, value, components, getRoot().isInitialized() ? LifeManager.USER_TS : LifeManager.SYSTEM_TS);
 	}
+
+	// archiver acces
+	Generic buildAndPlug(long ts, Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
+		return plug(build(ts, clazz, meta, supers, value, components, otherTs));
+	}
+
+	private Generic build(long ts, Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
+		return getRoot().init(ts, clazz, meta, supers, value, components, otherTs);
+	}
+
 }

@@ -1,7 +1,5 @@
 package org.genericsystem.cache;
 
-import java.util.HashSet;
-import java.util.Set;
 import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.core.exceptions.CacheNoStartedException;
 import org.genericsystem.api.core.exceptions.ConcurrencyControlException;
@@ -9,7 +7,6 @@ import org.genericsystem.api.core.exceptions.OptimisticLockConstraintViolationEx
 import org.genericsystem.api.core.exceptions.RollbackException;
 import org.genericsystem.kernel.Context;
 import org.genericsystem.kernel.Generic;
-import org.genericsystem.kernel.LifeManager;
 import org.genericsystem.kernel.Statics;
 
 public class Cache extends Context {
@@ -23,7 +20,8 @@ public class Cache extends Context {
 	}
 
 	protected Cache(Transaction subContext) {
-		this(subContext, new ContextEventListener<Generic>() {});
+		this(subContext, new ContextEventListener<Generic>() {
+		});
 	}
 
 	protected Cache(Transaction subContext, ContextEventListener<Generic> listener) {
@@ -115,7 +113,7 @@ public class Cache extends Context {
 	}
 
 	public void unmount() {
-		AbstractDifferential subCache = cacheElement.getSubCache();
+		IDifferential subCache = cacheElement.getSubCache();
 		cacheElement = subCache instanceof Differential ? (Differential) subCache : new Differential(subCache);
 		listener.triggersClearEvent();
 		listener.triggersRefreshEvent();
@@ -167,70 +165,37 @@ public class Cache extends Context {
 		return cacheElement.getCacheLevel();
 	}
 
-	protected class TransactionDifferential extends AbstractDifferential {
+	private class TransactionDifferential implements IDifferential {
 
-		private Set<LifeManager> lockedLifeManagers = new HashSet<>();
-
-		private void writeLockAllAndCheckMvcc(Iterable<Generic> adds, Iterable<Generic> removes) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
-			for (Generic remove : removes)
-				writeLockAndCheckMvcc(remove);
-			for (Generic add : adds) {
-				writeLockAndCheckMvcc(add.getMeta());
-				for (Generic superT : add.getSupers())
-					writeLockAndCheckMvcc(superT);
-				for (Generic component : add.getComponents())
-					writeLockAndCheckMvcc(component);
-				writeLockAndCheckMvcc(add);
-			}
-		}
-
-		private void writeLockAndCheckMvcc(Generic generic) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
-			if (generic != null) {
-				LifeManager manager = generic.getLifeManager();
-				if (!lockedLifeManagers.contains(manager)) {
-					manager.writeLock();
-					lockedLifeManagers.add(manager);
-					manager.checkMvcc(getTs());
-				}
-			}
-		}
-
-		private void writeUnlockAll() {
-			for (LifeManager lifeManager : lockedLifeManagers)
-				lifeManager.writeUnlock();
-			lockedLifeManagers = new HashSet<>();
+		@Override
+		public void apply(Iterable<Generic> removes, Iterable<Generic> adds) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
+			transaction.apply(removes, adds);
 		}
 
 		@Override
-		protected void apply(Iterable<Generic> removes, Iterable<Generic> adds) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
-			try {
-				writeLockAllAndCheckMvcc(adds, removes);
-				transaction.apply(removes, adds);
-			} finally {
-				writeUnlockAll();
-			}
-		}
-
-		@Override
-		boolean isAlive(Generic generic) {
+		public boolean isAlive(Generic generic) {
 			return transaction.isAlive(generic);
 		}
 
 		@Override
-		Snapshot<Generic> getDependencies(Generic vertex) {
+		public Snapshot<Generic> getDependencies(Generic vertex) {
 			return transaction.getDependencies(vertex);
 		}
 	}
 
 	public static interface ContextEventListener<X> {
 
-		default void triggersMutationEvent(X oldDependency, X newDependency) {}
+		default void triggersMutationEvent(X oldDependency, X newDependency) {
+		}
 
-		default void triggersRefreshEvent() {}
+		default void triggersRefreshEvent() {
+		}
 
-		default void triggersClearEvent() {}
+		default void triggersClearEvent() {
+		}
 
-		default void triggersFlushEvent() {}
+		default void triggersFlushEvent() {
+		}
 	}
 
 }

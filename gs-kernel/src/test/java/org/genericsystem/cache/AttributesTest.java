@@ -23,8 +23,6 @@ public class AttributesTest extends AbstractTest {
 		Generic vehicle = engine.addInstance("Vehicle");
 		Generic power = engine.addInstance("Power", vehicle);
 		Generic car = engine.addInstance(vehicle, "Car");
-		log.info(vehicle.info());
-		log.info(power.info());
 		// assert vehicle.getAttributes(engine).size() == 1 : vehicle.getAttributes(engine);
 		assert vehicle.getAttributes(engine).contains(power);
 		// assert car.getAttributes(engine).size() == 1;
@@ -37,10 +35,6 @@ public class AttributesTest extends AbstractTest {
 		Generic car = engine.addInstance(vehicle, "Car");
 		Generic power = engine.addInstance("Power", car);
 
-		log.info(engine.info());
-		log.info(vehicle.info());
-		log.info(car.info());
-		log.info(power.info());
 		assert engine.getLevel() == 0;
 		assert vehicle.getLevel() == 1;
 		assert car.getLevel() == 1;

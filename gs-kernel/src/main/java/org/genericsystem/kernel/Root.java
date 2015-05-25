@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.genericsystem.api.core.annotations.InstanceClass;
 import org.genericsystem.defaults.DefaultConfig.MetaAttribute;
 import org.genericsystem.defaults.DefaultConfig.MetaRelation;
 import org.genericsystem.defaults.DefaultConfig.Sequence;
@@ -185,10 +186,40 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 		return getVertex(generic).getLifeManager();
 	}
 
-	Generic init(Generic generic, long ts, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
-		Vertex result = map.putIfAbsent(generic, new Vertex(generic, ts, meta, supers, value, components, otherTs));
-		assert result == null;
-		return ((GenericImpl) generic).init(Root.this);
+	Generic init(long ts, Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
+		return init(newT(clazz, meta), ts, meta, supers, value, components, otherTs);
 	}
 
+	private Generic init(Generic generic, long ts, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
+		Vertex result = map.putIfAbsent(generic, new Vertex(generic, ts, meta, supers, value, components, otherTs));
+		assert result == null;
+		return ((GenericImpl) generic).initRoot(Root.this);
+	}
+
+	private Generic newT(Class<?> clazz, Generic meta) {
+		InstanceClass metaAnnotation = meta == null ? null : getAnnotedClass(meta).getAnnotation(InstanceClass.class);
+		if (metaAnnotation != null)
+			if (clazz == null || clazz.isAssignableFrom(metaAnnotation.value()))
+				clazz = metaAnnotation.value();
+			else if (!metaAnnotation.value().isAssignableFrom(clazz))
+				getCurrentCache().discardWithException(new InstantiationException(clazz + " must extends " + metaAnnotation.value()));
+
+		try {
+			if (clazz == null || !Generic.class.isAssignableFrom(clazz))
+				return new GenericImpl().initRoot(this);
+			return (Generic) clazz.newInstance();
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException e) {
+			getCurrentCache().discardWithException(e);
+		}
+		return null; // Not reached
+	}
+
+	private Class<?> getAnnotedClass(Generic vertex) {
+		if (vertex.isSystem()) {
+			Class<?> annotedClass = findAnnotedClass(vertex);
+			if (annotedClass != null)
+				return annotedClass;
+		}
+		return vertex.getClass();
+	}
 }

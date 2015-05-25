@@ -108,9 +108,9 @@ public class FileSystemTest extends AbstractTest {
 	public void testGetRootDirectories() {
 		Engine engine = new Engine(FileSystem.class);
 		FileSystem fileSystem = engine.find(FileSystem.class);
-		System.out.println("fileSystem " + fileSystem.info());
+		// System.out.println("fileSystem " + fileSystem.info());
 		Directory root = fileSystem.addRootDirectory("root");
-		System.out.println("root " + root.info());
+		// System.out.println("root " + root.info());
 		assert root.equals(fileSystem.getRootDirectory("root")) : fileSystem.getRootDirectories().info();
 		assert fileSystem.getRootDirectories().stream().findFirst().get().equals(root);
 	}

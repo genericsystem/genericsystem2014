@@ -9,17 +9,17 @@ import org.genericsystem.api.core.exceptions.RollbackException;
 import org.genericsystem.kernel.Checker;
 import org.genericsystem.kernel.Generic;
 
-public class Differential extends AbstractDifferential {
+public class Differential implements IDifferential {
 
-	private final AbstractDifferential differential;
+	private final IDifferential differential;
 	private final PseudoConcurrentCollection<Generic> adds = new PseudoConcurrentCollection<>();
 	private final PseudoConcurrentCollection<Generic> removes = new PseudoConcurrentCollection<>();
 
-	public Differential(AbstractDifferential subCache) {
+	public Differential(IDifferential subCache) {
 		this.differential = subCache;
 	}
 
-	public AbstractDifferential getSubCache() {
+	public IDifferential getSubCache() {
 		return differential;
 	}
 
@@ -28,7 +28,7 @@ public class Differential extends AbstractDifferential {
 	}
 
 	@Override
-	boolean isAlive(Generic generic) {
+	public boolean isAlive(Generic generic) {
 		return adds.contains(generic) || (!removes.contains(generic) && differential.isAlive(generic));
 	}
 
@@ -48,7 +48,7 @@ public class Differential extends AbstractDifferential {
 	}
 
 	@Override
-	Snapshot<Generic> getDependencies(Generic generic) {
+	public Snapshot<Generic> getDependencies(Generic generic) {
 		return new Snapshot<Generic>() {
 			@Override
 			public Generic get(Object o) {
@@ -70,7 +70,7 @@ public class Differential extends AbstractDifferential {
 	}
 
 	@Override
-	protected void apply(Iterable<Generic> removes, Iterable<Generic> adds) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
+	public void apply(Iterable<Generic> removes, Iterable<Generic> adds) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
 		for (Generic generic : removes)
 			unplug(generic);
 		for (Generic generic : adds)
