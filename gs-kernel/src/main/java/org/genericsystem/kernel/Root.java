@@ -3,10 +3,12 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 import org.genericsystem.api.core.annotations.InstanceClass;
 import org.genericsystem.defaults.DefaultConfig.MetaAttribute;
@@ -22,7 +24,6 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 	protected Wrapper contextWrapper = buildContextWrapper();
 	private final SystemCache systemCache;
 	private final Archiver archiver;
-	private final Map<Generic, Vertex> map = new ConcurrentHashMap<>();
 
 	private boolean initialized = false;
 
@@ -141,6 +142,9 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 		return new Transaction(this, pickNewTs());
 	}
 
+	private final Map<Generic, Vertex> map = new ConcurrentHashMap<>();
+	private final Map<Long, Generic> idsMap = new ConcurrentHashMap<>();
+
 	private Vertex getVertex(Generic generic) {
 		return map.get(generic);
 	}
@@ -152,12 +156,12 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 
 	@Override
 	public Generic getMeta(Generic generic) {
-		return getVertex(generic).getMeta();
+		return idsMap.get(getVertex(generic).getMeta());
 	}
 
 	@Override
 	public List<Generic> getSupers(Generic generic) {
-		return getVertex(generic).getSupers();
+		return getVertex(generic).getSupers().stream().map(id -> idsMap.get(id)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -167,31 +171,57 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 
 	@Override
 	public List<Generic> getComponents(Generic generic) {
-		return getVertex(generic).getComponents();
+		return getVertex(generic).getComponents().stream().map(id -> idsMap.get(id)).collect(Collectors.toList());
 	}
 
-	Dependencies getDependencies(Generic generic) {
-		return getVertex(generic).getDependencies();
+	IDependencies<Generic> getDependencies(Generic generic) {
+		return new IDependencies<Generic>() {
+
+			@Override
+			public Generic get(Generic dependency, long ts) {
+				return getVertex(generic).getDependencies().get(dependency, ts);
+			}
+
+			@Override
+			public void add(Generic add) {
+				getVertex(generic).getDependencies().add(add);
+			}
+
+			@Override
+			public boolean remove(Generic remove) {
+				return getVertex(generic).getDependencies().remove(remove);
+			}
+
+			@Override
+			public Iterator<Generic> iterator(long ts) {
+				return getVertex(generic).getDependencies().iterator(ts);
+			}
+		};
 	}
 
 	Generic getNextDependency(Generic generic, Generic ancestor) {
-		return getVertex(generic).getNextDependency(ancestor);
+		Long nextDependencyId = getVertex(generic).getNextDependency(ancestor.getTs());
+		return nextDependencyId == null ? null : idsMap.get(getVertex(generic).getNextDependency(ancestor.getTs()));
 	}
 
 	void setNextDependency(Generic generic, Generic ancestor, Generic nextDependency) {
-		getVertex(generic).setNextDependency(ancestor, nextDependency);
+		getVertex(generic).setNextDependency(ancestor.getTs(), nextDependency != null ? nextDependency.getTs() : null);
 	}
 
 	LifeManager getLifeManager(Generic generic) {
 		return getVertex(generic).getLifeManager();
 	}
 
-	Generic init(long ts, Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
-		return init(newT(clazz, meta), ts, meta, supers, value, components, otherTs);
+	Generic init(Long ts, Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
+		return init(newT(clazz, meta), ts == null ? pickNewTs() : ts, meta, supers, value, components, otherTs);
 	}
 
 	private Generic init(Generic generic, long ts, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
-		Vertex result = map.putIfAbsent(generic, new Vertex(generic, ts, meta, supers, value, components, otherTs));
+		Vertex vertex = new Vertex(generic, ts, meta == null ? ts : meta.getTs(), supers.stream().map(g -> g.getTs()).collect(Collectors.toList()), value, components.stream().map(g -> g.getTs()).collect(Collectors.toList()), otherTs);
+		assert generic != null;
+		Generic gresult = idsMap.putIfAbsent(ts, generic);
+		assert gresult == null;
+		Vertex result = map.putIfAbsent(generic, vertex);
 		assert result == null;
 		return ((GenericImpl) generic).initRoot(Root.this);
 	}

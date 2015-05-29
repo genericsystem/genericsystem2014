@@ -69,7 +69,7 @@ public class Transaction extends Context {
 
 			@Override
 			public Generic get(Object o) {
-				return getRoot().getDependencies(generic).get(o, getTs());
+				return getRoot().getDependencies(generic).get((Generic) o, getTs());
 			}
 		};
 	}

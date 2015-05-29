@@ -7,23 +7,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.genericsystem.kernel.IDependencies.Dependencies;
+
 class Vertex {
 
 	private final long ts;
-	private final Generic meta;
-	private final List<Generic> supers;
+	private final long meta;
+	private final List<Long> supers;
 	private final Serializable value;
-	private final List<Generic> components;
+	private final List<Long> components;
 	private final LifeManager lifeManager;
 	private final Dependencies dependencies;
-	private Map<Generic, Generic> nextDependencies = new HashMap<>();
+	private Map<Long, Long> nextDependencies = new HashMap<>();
 
-	protected Vertex(Generic generic, long ts, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
+	protected Vertex(Generic generic, long ts, long meta, List<Long> supers, Serializable value, List<Long> components, long[] otherTs) {
 		// this.generic = generic;
 		this.ts = ts;
-		this.meta = meta != null ? meta : generic;
+		this.meta = meta;
 		this.value = value;
-		for (Generic component : components)
+		for (Long component : components)
 			assert component != null && !equals(component);
 		this.components = Collections.unmodifiableList(new ArrayList<>(components));
 		this.supers = Collections.unmodifiableList(new ArrayList<>(supers));
@@ -40,15 +42,15 @@ class Vertex {
 		return ts;
 	}
 
-	// Generic getGeneric() {
+	// Long getLong() {
 	// return generic;
 	// }
 
-	Generic getMeta() {
+	Long getMeta() {
 		return meta;
 	}
 
-	List<Generic> getSupers() {
+	List<Long> getSupers() {
 		return supers;
 	}
 
@@ -56,7 +58,7 @@ class Vertex {
 		return value;
 	}
 
-	List<Generic> getComponents() {
+	List<Long> getComponents() {
 		return components;
 	}
 
@@ -68,11 +70,11 @@ class Vertex {
 		return dependencies;
 	}
 
-	Generic getNextDependency(Generic ancestor) {
+	Long getNextDependency(Long ancestor) {
 		return nextDependencies.get(ancestor);
 	}
 
-	void setNextDependency(Generic ancestor, Generic nextDependency) {
+	void setNextDependency(Long ancestor, Long nextDependency) {
 		nextDependencies.put(ancestor, nextDependency);
 	}
 

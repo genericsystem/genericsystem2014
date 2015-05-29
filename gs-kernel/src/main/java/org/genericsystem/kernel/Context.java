@@ -113,15 +113,15 @@ public abstract class Context implements DefaultContext<Generic> {
 	abstract public Snapshot<Generic> getDependencies(Generic generic);
 
 	Generic buildAndPlug(Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components) {
-		return buildAndPlug(Context.this.getRoot().pickNewTs(), clazz, meta, supers, value, components, getRoot().isInitialized() ? LifeManager.USER_TS : LifeManager.SYSTEM_TS);
+		return buildAndPlug(null, clazz, meta, supers, value, components, getRoot().isInitialized() ? LifeManager.USER_TS : LifeManager.SYSTEM_TS);
 	}
 
 	// archiver acces
-	Generic buildAndPlug(long ts, Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
+	Generic buildAndPlug(Long ts, Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
 		return plug(build(ts, clazz, meta, supers, value, components, otherTs));
 	}
 
-	private Generic build(long ts, Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
+	private Generic build(Long ts, Class<?> clazz, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
 		return getRoot().init(ts, clazz, meta, supers, value, components, otherTs);
 	}
 

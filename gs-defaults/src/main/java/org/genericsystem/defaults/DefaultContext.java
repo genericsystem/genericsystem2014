@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
+
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.api.core.IContext;
 import org.genericsystem.api.core.Snapshot;
@@ -18,7 +19,6 @@ public interface DefaultContext<T extends DefaultVertex<T>> extends IContext<T> 
 
 	DefaultRoot<T> getRoot();
 
-	// TODO KK remove internal class
 	default boolean isAlive(T vertex) {
 		class AliveFinder {
 			T find(T vertex) {
@@ -32,7 +32,7 @@ public interface DefaultContext<T extends DefaultVertex<T>> extends IContext<T> 
 				return aliveMeta != null ? getInstances(aliveMeta).get(vertex) : null;
 			}
 		}
-		return vertex != null && vertex.equals(new AliveFinder().find(vertex));
+		return /* vertex != null && */vertex.equals(new AliveFinder().find(vertex));
 	}
 
 	default Snapshot<T> getInstances(T vertex) {
