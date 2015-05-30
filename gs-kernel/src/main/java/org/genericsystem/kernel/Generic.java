@@ -28,10 +28,6 @@ public interface Generic extends DefaultVertex<Generic>, Comparable<Generic> {
 		return getLifeManager().isSystem();
 	}
 
-	// default Generic getNextDependency(Generic ancestor) {
-	// return getRoot().getNextDependency(this, ancestor);
-	// }
-
 	public static class GenericImpl implements Generic {
 		private Root root;
 

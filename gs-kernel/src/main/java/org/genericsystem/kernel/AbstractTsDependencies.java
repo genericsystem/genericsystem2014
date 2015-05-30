@@ -7,19 +7,17 @@ import java.util.stream.StreamSupport;
 
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
-public abstract class AbstractTsDependencies implements IDependencies<Long> {
+public abstract class AbstractTsDependencies<T extends Generic> implements IDependencies<T> {
 
-	private Node head = null;
-	private Node tail = null;
-	private final ConcurrentHashMap<Long, Long> map = new ConcurrentHashMap<>();
+	private Node<T> head = null;
+	private Node<T> tail = null;
+	private final ConcurrentHashMap<T, T> map = new ConcurrentHashMap<>();
 
 	public abstract LifeManager getLifeManager();
 
-	public abstract Root getRoot();
-
 	@Override
-	public Long get(Long generic, long ts) {
-		Long result = map.get(generic);// this no lock read requires a concurrent hash map
+	public T get(T generic, long ts) {
+		T result = map.get(generic);// this no lock read requires a concurrent hash map
 		if (result == null) {
 			LifeManager lifeManager = getLifeManager();
 			lifeManager.readLock();
@@ -31,43 +29,43 @@ public abstract class AbstractTsDependencies implements IDependencies<Long> {
 			}
 		}
 
-		if (result != null && getRoot().getGenericFromTs(result).getLifeManager().isAlive(ts))
+		if (result != null && result.getLifeManager().isAlive(ts))
 			return result;
 		return null;
 	}
 
 	@Override
-	public void add(Long element) {
+	public void add(T element) {
 		assert element != null;
 		// assert getLifeManager().isWriteLockedByCurrentThread();
-		Node newNode = new Node(element);
+		Node<T> newNode = new Node<>(element);
 		if (head == null)
 			head = newNode;
 		else
 			tail.next = newNode;
 		tail = newNode;
-		Long result = map.put(element, element);
-		assert result == null;
+		T result = map.put(element, element);
+		assert result == null : result.info();
 	}
 
 	@Override
-	public boolean remove(Long generic) {
+	public boolean remove(T generic) {
 		assert generic != null : "generic is null";
 		assert head != null : "head is null";
 
-		Node currentNode = head;
+		Node<T> currentNode = head;
 
-		Long currentContent = currentNode.content;
+		T currentContent = currentNode.content;
 		if (generic.equals(currentContent)) {
-			Node next = currentNode.next;
+			Node<T> next = currentNode.next;
 			head = next != null ? next : null;
 			return true;
 		}
 
-		Node nextNode = currentNode.next;
+		Node<T> nextNode = currentNode.next;
 		while (nextNode != null) {
-			Long nextGeneric = nextNode.content;
-			Node nextNextNode = nextNode.next;
+			T nextGeneric = nextNode.content;
+			Node<T> nextNextNode = nextNode.next;
 			if (generic.equals(nextGeneric)) {
 				nextNode.content = null;
 				if (nextNextNode == null)
@@ -83,11 +81,11 @@ public abstract class AbstractTsDependencies implements IDependencies<Long> {
 	}
 
 	@Override
-	public Stream<Long> stream(long ts) {
+	public Stream<T> stream(long ts) {
 		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(new InternalIterator(ts), 0), false);
 	}
 
-	private class InternalIterator extends AbstractGeneralAwareIterator<Node, Long> {
+	private class InternalIterator extends AbstractGeneralAwareIterator<Node<T>, T> {
 
 		private final long ts;
 
@@ -98,7 +96,7 @@ public abstract class AbstractTsDependencies implements IDependencies<Long> {
 		@Override
 		protected void advance() {
 			for (;;) {
-				Node nextNode = (next == null) ? head : next.next;
+				Node<T> nextNode = (next == null) ? head : next.next;
 				if (nextNode == null) {
 					LifeManager lifeManager = getLifeManager();
 					lifeManager.readLock();
@@ -114,23 +112,23 @@ public abstract class AbstractTsDependencies implements IDependencies<Long> {
 					}
 				}
 				next = nextNode;
-				Long content = next.content;
-				if (content != null && getRoot().getGenericFromTs(content).getLifeManager().isAlive(ts))
+				T content = next.content;
+				if (content != null && content.getLifeManager().isAlive(ts))
 					break;
 			}
 		}
 
 		@Override
-		protected Long project() {
+		protected T project() {
 			return next.content;
 		}
 	}
 
-	private static class Node {
-		public Long content;
-		public Node next;
+	private static class Node<T> {
+		public T content;
+		public Node<T> next;
 
-		private Node(Long content) {
+		private Node(T content) {
 			this.content = content;
 		}
 	}

@@ -13,11 +13,8 @@ class Vertex {
 	private final Serializable value;
 	private final List<Long> components;
 	private final LifeManager lifeManager;
-	private final AbstractTsDependencies dependencies;
 
-	// private Map<Long, Long> nextDependencies = new HashMap<>();
-
-	protected Vertex(Generic generic, long ts, long meta, List<Long> supers, Serializable value, List<Long> components, long[] otherTs) {
+	protected Vertex(long ts, long meta, List<Long> supers, Serializable value, List<Long> components, long[] otherTs) {
 		this.ts = ts;
 		this.meta = meta;
 		this.value = value;
@@ -26,17 +23,6 @@ class Vertex {
 		this.components = Collections.unmodifiableList(new ArrayList<>(components));
 		this.supers = Collections.unmodifiableList(new ArrayList<>(supers));
 		lifeManager = new LifeManager(otherTs);
-		this.dependencies = new AbstractTsDependencies() {
-			@Override
-			public Root getRoot() {
-				return generic.getRoot();
-			}
-
-			@Override
-			public LifeManager getLifeManager() {
-				return lifeManager;
-			}
-		};
 	}
 
 	long getTs() {
@@ -63,9 +49,9 @@ class Vertex {
 		return lifeManager;
 	}
 
-	AbstractTsDependencies getDependencies() {
-		return dependencies;
-	}
+	// AbstractTsDependencies getDependencies() {
+	// return dependencies;
+	// }
 
 	// Long getNextDependency(Long ancestor) {
 	// return nextDependencies.get(ancestor);

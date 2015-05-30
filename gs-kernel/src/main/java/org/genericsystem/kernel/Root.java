@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.genericsystem.api.core.annotations.InstanceClass;
 import org.genericsystem.defaults.DefaultConfig.MetaAttribute;
@@ -142,7 +141,26 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 		return new Transaction(this, pickNewTs());
 	}
 
-	private final Map<Generic, Vertex> map = new ConcurrentHashMap<>();
+	private static class VertexWrapper {
+		private Vertex vertex;
+		private IDependencies<Generic> dependencies;
+
+		VertexWrapper(Vertex vertex, IDependencies<Generic> dependencies) {
+			this.vertex = vertex;
+			this.dependencies = dependencies;
+		}
+
+		Vertex getVertex() {
+			return vertex;
+		}
+
+		IDependencies<Generic> getDependencies() {
+			return dependencies;
+		}
+
+	}
+
+	private final Map<Generic, VertexWrapper> map = new ConcurrentHashMap<>();
 	private final Map<Long, Generic> idsMap = new ConcurrentHashMap<>();
 
 	Generic getGenericFromTs(long ts) {
@@ -150,7 +168,7 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 	}
 
 	private Vertex getVertex(Generic generic) {
-		return map.get(generic);
+		return map.get(generic).getVertex();
 	}
 
 	@Override
@@ -179,39 +197,8 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 	}
 
 	IDependencies<Generic> getDependencies(Generic generic) {
-		return new IDependencies<Generic>() {
-
-			@Override
-			public Generic get(Generic dependency, long ts) {
-				Long dependencyTs = getVertex(generic).getDependencies().get(dependency.getTs(), ts);
-				return dependencyTs != null ? getGenericFromTs(dependencyTs) : null;
-			}
-
-			@Override
-			public void add(Generic add) {
-				getVertex(generic).getDependencies().add(add.getTs());
-			}
-
-			@Override
-			public boolean remove(Generic remove) {
-				return getVertex(generic).getDependencies().remove(remove.getTs());
-			}
-
-			@Override
-			public Stream<Generic> stream(long ts) {
-				return getVertex(generic).getDependencies().stream(ts).map(Root.this::getGenericFromTs);
-			}
-		};
+		return map.get(generic).getDependencies();
 	}
-
-	// Generic getNextDependency(Generic generic, Generic ancestor) {
-	// Long nextDependencyId = getVertex(generic).getNextDependency(ancestor.getTs());
-	// return nextDependencyId == null ? null : idsMap.get(getVertex(generic).getNextDependency(ancestor.getTs()));
-	// }
-	//
-	// void setNextDependency(Generic generic, Generic ancestor, Generic nextDependency) {
-	// getVertex(generic).setNextDependency(ancestor.getTs(), nextDependency != null ? nextDependency.getTs() : null);
-	// }
 
 	LifeManager getLifeManager(Generic generic) {
 		return getVertex(generic).getLifeManager();
@@ -222,11 +209,16 @@ public class Root extends GenericImpl implements DefaultRoot<Generic> {
 	}
 
 	private Generic init(Generic generic, long ts, Generic meta, List<Generic> supers, Serializable value, List<Generic> components, long[] otherTs) {
-		Vertex vertex = new Vertex(generic, ts, meta == null ? ts : meta.getTs(), supers.stream().map(g -> g.getTs()).collect(Collectors.toList()), value, components.stream().map(g -> g.getTs()).collect(Collectors.toList()), otherTs);
+		Vertex vertex = new Vertex(ts, meta == null ? ts : meta.getTs(), supers.stream().map(g -> g.getTs()).collect(Collectors.toList()), value, components.stream().map(g -> g.getTs()).collect(Collectors.toList()), otherTs);
 		assert generic != null;
 		Generic gresult = idsMap.putIfAbsent(ts, generic);
 		assert gresult == null;
-		Vertex result = map.putIfAbsent(generic, vertex);
+		VertexWrapper result = map.putIfAbsent(generic, new VertexWrapper(vertex, new AbstractTsDependencies<Generic>() {
+			@Override
+			public LifeManager getLifeManager() {
+				return vertex.getLifeManager();
+			}
+		}));
 		assert result == null;
 		return ((GenericImpl) generic).initRoot(Root.this);
 	}
