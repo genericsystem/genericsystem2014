@@ -3,11 +3,7 @@ package org.genericsystem.kernel;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import org.genericsystem.kernel.IDependencies.Dependencies;
 
 class Vertex {
 
@@ -17,11 +13,11 @@ class Vertex {
 	private final Serializable value;
 	private final List<Long> components;
 	private final LifeManager lifeManager;
-	private final Dependencies dependencies;
-	private Map<Long, Long> nextDependencies = new HashMap<>();
+	private final AbstractTsDependencies dependencies;
+
+	// private Map<Long, Long> nextDependencies = new HashMap<>();
 
 	protected Vertex(Generic generic, long ts, long meta, List<Long> supers, Serializable value, List<Long> components, long[] otherTs) {
-		// this.generic = generic;
 		this.ts = ts;
 		this.meta = meta;
 		this.value = value;
@@ -30,10 +26,15 @@ class Vertex {
 		this.components = Collections.unmodifiableList(new ArrayList<>(components));
 		this.supers = Collections.unmodifiableList(new ArrayList<>(supers));
 		lifeManager = new LifeManager(otherTs);
-		this.dependencies = new Dependencies() {
+		this.dependencies = new AbstractTsDependencies() {
 			@Override
-			public Generic getAncestor() {
-				return generic;
+			public Root getRoot() {
+				return generic.getRoot();
+			}
+
+			@Override
+			public LifeManager getLifeManager() {
+				return lifeManager;
 			}
 		};
 	}
@@ -41,10 +42,6 @@ class Vertex {
 	long getTs() {
 		return ts;
 	}
-
-	// Long getLong() {
-	// return generic;
-	// }
 
 	Long getMeta() {
 		return meta;
@@ -66,16 +63,16 @@ class Vertex {
 		return lifeManager;
 	}
 
-	Dependencies getDependencies() {
+	AbstractTsDependencies getDependencies() {
 		return dependencies;
 	}
 
-	Long getNextDependency(Long ancestor) {
-		return nextDependencies.get(ancestor);
-	}
-
-	void setNextDependency(Long ancestor, Long nextDependency) {
-		nextDependencies.put(ancestor, nextDependency);
-	}
+	// Long getNextDependency(Long ancestor) {
+	// return nextDependencies.get(ancestor);
+	// }
+	//
+	// void setNextDependency(Long ancestor, Long nextDependency) {
+	// nextDependencies.put(ancestor, nextDependency);
+	// }
 
 }
