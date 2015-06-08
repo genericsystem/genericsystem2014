@@ -30,21 +30,22 @@ import org.genericsystem.api.core.annotations.value.ShortValue;
 import org.genericsystem.api.core.annotations.value.StringValue;
 import org.genericsystem.api.core.exceptions.CyclicException;
 import org.genericsystem.defaults.DefaultRoot;
+import org.genericsystem.defaults.DefaultVertex;
 import org.genericsystem.kernel.GenericHandler.SetSystemHandler;
 
-public class SystemCache {
+public class SystemCache<T extends DefaultVertex<T>> {
 
-	private final Map<Class<?>, Generic> systemCache = new HashMap<>();
+	private final Map<Class<?>, T> systemCache = new HashMap<>();
 
-	private final Map<Generic, Class<?>> reverseSystemCache = new IdentityHashMap<>();
+	private final Map<T, Class<?>> reverseSystemCache = new IdentityHashMap<>();
 
-	protected final Root root;
+	protected final AbstractRoot<T> root;
 
-	public SystemCache(Root root, Class<?> rootClass) {
+	public SystemCache(AbstractRoot<T> root, Class<?> rootClass) {
 		this.root = root;
-		put(DefaultRoot.class, root);
-		put(Root.class, root);
-		put(rootClass, root);
+		put(DefaultRoot.class, (T) root);
+		put(Root.class, (T) root);
+		put(rootClass, (T) root);
 	}
 
 	public void mount(List<Class<?>> systemClasses, Class<?>... userClasses) {
@@ -54,51 +55,48 @@ public class SystemCache {
 			bind(clazz);
 	}
 
-	private Generic set(Class<?> clazz) {
+	private T set(Class<?> clazz) {
 		if (root.isInitialized())
 			throw new IllegalStateException("Class : " + clazz + " has not been built at startup");
-		Generic systemProperty = systemCache.get(clazz);
+		T systemProperty = systemCache.get(clazz);
 		if (systemProperty != null) {
 			assert systemProperty.isAlive();
 			return systemProperty;
 		}
-		// System.out.println(" Mount clazz : "+clazz.getSimpleName());
-
-		Generic meta = setMeta(clazz);
-		List<Generic> overrides = setOverrides(clazz);
-		List<Generic> components = setComponents(clazz);
-		Generic result = new SetSystemHandler(((Generic) root).getCurrentCache(), clazz, meta, overrides, findValue(clazz), components).resolve();
-		put(clazz, result);
-		// System.out.println("Effectiv Mount clazz : "+clazz);
-		mountConstraints(clazz, result);
+		T meta = setMeta(clazz);
+		List<T> overrides = setOverrides(clazz);
+		List<T> components = setComponents(clazz);
+		systemProperty = new SetSystemHandler<T>(root.getCurrentCache(), clazz, meta, overrides, findValue(clazz), components).resolve();
+		put(clazz, systemProperty);
+		mountConstraints(clazz, systemProperty);
 		triggersDependencies(clazz);
 
-		return result;
+		return systemProperty;
 	}
 
-	private void put(Class<?> clazz, Generic vertex) {
+	private void put(Class<?> clazz, T vertex) {
 		systemCache.put(clazz, vertex);
 		reverseSystemCache.put(vertex, clazz);
 	}
 
-	public Generic find(Class<?> clazz) {
+	public T find(Class<?> clazz) {
 		if (IRoot.class.isAssignableFrom(clazz))
-			return root;
+			return (T) root;
 		return systemCache.get(clazz);
 	}
 
-	public Generic bind(Class<?> clazz) {
-		Generic result = find(clazz);
+	public T bind(Class<?> clazz) {
+		T result = find(clazz);
 		if (result == null)
 			result = set(clazz);
 		return result;
 	}
 
-	public Class<?> getClassByVertex(Generic vertex) {
+	public Class<?> getClassByVertex(T vertex) {
 		return reverseSystemCache.get(vertex);
 	}
 
-	void mountConstraints(Class<?> clazz, Generic result) {
+	void mountConstraints(Class<?> clazz, T result) {
 		if (clazz.getAnnotation(PropertyConstraint.class) != null)
 			result.enablePropertyConstraint();
 
@@ -136,17 +134,17 @@ public class SystemCache {
 				bind(dependencyClass);
 	}
 
-	private Generic setMeta(Class<?> clazz) {
+	private T setMeta(Class<?> clazz) {
 		Meta meta = clazz.getAnnotation(Meta.class);
 		if (meta == null)
-			return root;
+			return (T) root;
 		if (meta.value() == clazz)
 			return null;
 		return bind(meta.value());
 	}
 
-	private List<Generic> setOverrides(Class<?> clazz) {
-		List<Generic> overridesVertices = new ArrayList<>();
+	private List<T> setOverrides(Class<?> clazz) {
+		List<T> overridesVertices = new ArrayList<>();
 		org.genericsystem.api.core.annotations.Supers supersAnnotation = clazz.getAnnotation(org.genericsystem.api.core.annotations.Supers.class);
 		if (supersAnnotation != null)
 			for (Class<?> overrideClass : supersAnnotation.value())
@@ -198,8 +196,8 @@ public class SystemCache {
 		return clazz;
 	}
 
-	private List<Generic> setComponents(Class<?> clazz) {
-		List<Generic> components = new ArrayList<>();
+	private List<T> setComponents(Class<?> clazz) {
+		List<T> components = new ArrayList<>();
 		Components componentsAnnotation = clazz.getAnnotation(Components.class);
 		if (componentsAnnotation != null)
 			for (Class<?> compositeClass : componentsAnnotation.value())

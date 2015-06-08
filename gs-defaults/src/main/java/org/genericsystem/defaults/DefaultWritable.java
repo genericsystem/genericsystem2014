@@ -217,13 +217,16 @@ public interface DefaultWritable<T extends DefaultVertex<T>> extends IVertex<T> 
 
 	@Override
 	default DefaultContext<T> getCurrentCache() {
-		return (DefaultContext<T>) getRoot().getCurrentCache();
+		return getRoot().getCurrentCache();
 	}
+
+	@Override
+	public DefaultRoot<T> getRoot();
 
 	@SuppressWarnings("unchecked")
 	@Override
 	default T[] addThisToTargets(T... targets) {
-		T[] composites = getCurrentCache().newTArray(targets.length + 1);
+		T[] composites = getRoot().newTArray(targets.length + 1);
 		composites[0] = (T) this;
 		System.arraycopy(targets, 0, composites, 1, targets.length);
 		return composites;

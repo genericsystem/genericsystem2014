@@ -1,6 +1,5 @@
 package org.genericsystem.cache;
 
-import org.genericsystem.kernel.Generic;
 import org.testng.annotations.Test;
 
 @Test
@@ -15,10 +14,9 @@ public class AdjustMetaTest extends AbstractTest {
 		Engine engine = new Engine();
 		Generic metaAttribute = engine.getMetaAttribute();
 		Generic car = engine.addInstance("Car");
-		assert engine.adjustMeta(car).getValue().equals(metaAttribute.getValue());
+		assert engine.adjustMeta(car).equals(metaAttribute);
 
-		// assert engine.adjustMeta("Power", car).getMeta().equals(metaAttribute.getMeta());
-		// assert false : engine.adjustMeta("Power", car).getMeta().isRoot();
+		assert engine.adjustMeta(car).getValue().equals(metaAttribute.getValue());
 		assert metaAttribute.equals(engine.adjustMeta(car));
 	}
 

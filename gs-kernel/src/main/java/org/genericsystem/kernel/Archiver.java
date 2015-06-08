@@ -214,7 +214,7 @@ public class Archiver {
 		}
 
 		private void saveSnapshot() throws IOException {
-			writeDependencies(transaction.computeDependencies(root), new HashSet<>());
+			writeDependencies(transaction.computeDependencies((Generic) root), new HashSet<>());
 			objectOutputStream.flush();
 			objectOutputStream.close();
 		}
@@ -259,7 +259,7 @@ public class Archiver {
 
 		protected Loader(ObjectInputStream objectInputStream) {
 			this.objectInputStream = objectInputStream;
-			this.transaction = (Transaction) root.buildTransaction();
+			this.transaction = root.newCache();
 		}
 
 		public Transaction getTransaction() {
@@ -292,7 +292,7 @@ public class Archiver {
 			Generic meta = loadAncestor(ts, vertexMap);
 			List<Generic> supers = loadAncestors(ts, vertexMap);
 			List<Generic> components = loadAncestors(ts, vertexMap);
-			vertexMap.put(ts, new SetArchiverHandler(ts, transaction, meta, supers, value, components, otherTs).resolve());
+			vertexMap.put(ts, new SetArchiverHandler(ts, transaction, meta, supers, value, components, new LifeManager(otherTs)).resolve());
 			// log.info("load dependency : " + vertexMap.get(ts).info() + " " + ts + " " + vertexMap.get(ts).getTs() + " birthTs : " + vertexMap.get(ts).getLifeManager().getBirthTs());
 			assert getTransaction().isAlive(vertexMap.get(ts)) : vertexMap.get(ts).info();
 		}

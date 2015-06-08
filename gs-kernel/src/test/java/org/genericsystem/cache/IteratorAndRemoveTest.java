@@ -3,7 +3,6 @@ package org.genericsystem.cache;
 import java.util.Iterator;
 
 import org.genericsystem.api.core.Snapshot;
-import org.genericsystem.kernel.Generic;
 import org.testng.annotations.Test;
 
 @Test

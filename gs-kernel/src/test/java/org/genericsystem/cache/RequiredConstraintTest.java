@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 
 import org.genericsystem.api.core.ApiStatics;
 import org.genericsystem.defaults.exceptions.RequiredConstraintViolationException;
-import org.genericsystem.kernel.Generic;
 import org.testng.annotations.Test;
 
 @Test

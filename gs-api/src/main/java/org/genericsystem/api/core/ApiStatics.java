@@ -53,6 +53,8 @@ public class ApiStatics {
 	public static final int RELATION_SIZE = 2;
 	public static final int TERNARY_RELATION_SIZE = 3;
 
+	public static final long TS_SYSTEM = 0L;
+
 	/**
 	 * Checks that each of the <code>overrides</code> is inherited by at least one of the <code>supers</code>.
 	 * 

@@ -8,43 +8,12 @@ public interface Generic extends DefaultVertex<Generic>, Comparable<Generic> {
 	Root getRoot();
 
 	@Override
-	default Context getCurrentCache() {
-		return getRoot().getCurrentCache();
-	}
-
-	@Override
-	default int compareTo(Generic vertex) {
-		long birthTs = getLifeManager().getBirthTs();
-		long compareBirthTs = vertex.getLifeManager().getBirthTs();
-		return birthTs == compareBirthTs ? Long.compare(getTs(), vertex.getTs()) : Long.compare(birthTs, compareBirthTs);
+	default AbstractContext<Generic> getCurrentCache() {
+		return (AbstractContext<Generic>) DefaultVertex.super.getCurrentCache();
 	}
 
 	default LifeManager getLifeManager() {
 		return getRoot().getLifeManager(this);
-	}
-
-	@Override
-	default boolean isSystem() {
-		return getLifeManager().isSystem();
-	}
-
-	public static class GenericImpl implements Generic {
-		private Root root;
-
-		Generic initRoot(Root root) {
-			this.root = root;
-			return this;
-		}
-
-		@Override
-		public Root getRoot() {
-			return root;
-		}
-
-		@Override
-		public String toString() {
-			return defaultToString();
-		}
 	}
 
 }

@@ -1,7 +1,6 @@
 package org.genericsystem.cache;
 
 import org.genericsystem.defaults.exceptions.SingularConstraintViolationException;
-import org.genericsystem.kernel.Generic;
 import org.testng.annotations.Test;
 
 @Test

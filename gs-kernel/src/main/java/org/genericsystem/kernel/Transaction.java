@@ -8,11 +8,11 @@ import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.api.core.exceptions.ConcurrencyControlException;
 import org.genericsystem.api.core.exceptions.OptimisticLockConstraintViolationException;
 
-public class Transaction extends Context {
+public class Transaction extends AbstractContext<Generic> {
 
 	private final long ts;
 
-	protected Transaction(Root root, long ts) {
+	public Transaction(Root root, long ts) {
 		super(root);
 		this.ts = ts;
 	}
@@ -22,56 +22,81 @@ public class Transaction extends Context {
 	}
 
 	@Override
-	public final long getTs() {
-		return ts;
+	public Root getRoot() {
+		return (Root) super.getRoot();
 	}
 
-	public void apply(Iterable<Generic> removes, Iterable<Generic> adds) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
-		new LockedLifeManager().apply(removes, adds);
+	@Override
+	public final long getTs() {
+		return ts;
 	}
 
 	@Override
 	protected final Generic plug(Generic generic) {
 		if (getRoot().isInitialized())
 			generic.getLifeManager().beginLife(getTs());
+
 		Set<Generic> set = new HashSet<>();
 		if (!generic.isMeta())
 			set.add(generic.getMeta());
 		set.addAll(generic.getSupers());
 		set.addAll(generic.getComponents());
-		set.stream().forEach(ancestor -> getRoot().getDependencies(ancestor).add(generic));
+		set.stream().forEach(ancestor -> getDependencies(ancestor).add(generic));
 		getChecker().checkAfterBuild(true, false, generic);
 		return generic;
+
 	}
 
 	@Override
 	protected void unplug(Generic generic) {
 		getChecker().checkAfterBuild(false, false, generic);
-		generic.getLifeManager().kill(getTs());
-		// if (!result)
-		// discardWithException(new NotFoundException(generic.info()));
 		Set<Generic> set = new HashSet<>();
 		if (!generic.isMeta())
 			set.add(generic.getMeta());
 		set.addAll(generic.getSupers());
 		set.addAll(generic.getComponents());
-		set.stream().forEach(ancestor -> getRoot().getDependencies(ancestor).remove(generic));
+		set.stream().forEach(ancestor -> getDependencies(ancestor).remove(generic));
+		generic.getLifeManager().kill(getTs());
+		getRoot().getGarbageCollector().add(generic);
+	}
+
+	public Generic getGenericFromTs(long ts) {
+		Generic generic = getRoot().getGenericFromTs(ts);
+		if (generic != null)
+			getChecker().checkIsAlive(generic);
+		assert ts == 0 ? generic != null : true;
+		return generic;
 	}
 
 	@Override
-	public Snapshot<Generic> getDependencies(Generic generic) {
-		return new Snapshot<Generic>() {
+	public IDependencies<Generic> getDependencies(Generic ancestor) {
+		assert ancestor != null;
+		return new IDependencies<Generic>() {
 
 			@Override
 			public Stream<Generic> stream() {
-				return getRoot().getDependencies(generic).stream(getTs());
+				return getRoot().getDependencies(ancestor).stream(getTs());
 			}
 
 			@Override
 			public Generic get(Object o) {
-				return getRoot().getDependencies(generic).get((Generic) o, getTs());
+				return getRoot().getDependencies(ancestor).get((Generic) o, getTs());
+			}
+
+			@Override
+			public void add(Generic add) {
+				getRoot().getDependencies(ancestor).add(add);
+			}
+
+			@Override
+			public boolean remove(Generic remove) {
+				return getRoot().getDependencies(ancestor).remove(remove);
 			}
 		};
+	}
+
+	public void apply(Snapshot<Generic> removes, Snapshot<Generic> adds) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
+		new LockedLifeManager().apply(removes, adds);
 	}
 
 	private class LockedLifeManager {
@@ -85,24 +110,6 @@ public class Transaction extends Context {
 					unplug(generic);
 				for (Generic generic : adds)
 					plug(generic);
-			} finally {
-				writeUnlockAll();
-			}
-		}
-
-		private void applyAdd(Generic add) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
-			try {
-				writeLockAndCheckMvccForAdd(add);
-				plug(add);
-			} finally {
-				writeUnlockAll();
-			}
-		}
-
-		private void applyRemove(Generic remove) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
-			try {
-				writeLockAndCheckMvcc(remove);
-				unplug(remove);
 			} finally {
 				writeUnlockAll();
 			}
@@ -141,5 +148,4 @@ public class Transaction extends Context {
 			lockedLifeManagers = new HashSet<>();
 		}
 	}
-
 }

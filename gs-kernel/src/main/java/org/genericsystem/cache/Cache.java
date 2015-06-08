@@ -5,14 +5,13 @@ import org.genericsystem.api.core.exceptions.CacheNoStartedException;
 import org.genericsystem.api.core.exceptions.ConcurrencyControlException;
 import org.genericsystem.api.core.exceptions.OptimisticLockConstraintViolationException;
 import org.genericsystem.api.core.exceptions.RollbackException;
-import org.genericsystem.kernel.Context;
-import org.genericsystem.kernel.Generic;
+import org.genericsystem.kernel.AbstractContext;
 import org.genericsystem.kernel.Statics;
 
-public class Cache extends Context {
+public class Cache extends AbstractContext<Generic> {
 
 	protected Transaction transaction;
-	protected Differential cacheElement;
+	protected Differential differential;
 	private final ContextEventListener<Generic> listener;
 
 	protected Cache(Engine engine) {
@@ -38,11 +37,11 @@ public class Cache extends Context {
 
 	@Override
 	public Snapshot<Generic> getDependencies(Generic vertex) {
-		return cacheElement.getDependencies(vertex);
+		return differential.getDependencies(vertex);
 	}
 
 	protected void initialize() {
-		cacheElement = new Differential(cacheElement == null ? new TransactionDifferential() : cacheElement.getSubCache());
+		differential = new Differential(differential == null ? new TransactionDifferential() : differential.getSubCache());
 	}
 
 	public void shiftTs() throws RollbackException {
@@ -86,13 +85,13 @@ public class Cache extends Context {
 	}
 
 	protected void doSynchronizedApplyInSubContext() throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
-		Differential originalCacheElement = this.cacheElement;
-		if (this.cacheElement.getSubCache() instanceof Differential)
-			this.cacheElement = (Differential) this.cacheElement.getSubCache();
+		Differential originalCacheElement = this.differential;
+		if (this.differential.getSubCache() instanceof Differential)
+			this.differential = (Differential) this.differential.getSubCache();
 		try {
 			synchronizedApply(originalCacheElement);
 		} finally {
-			this.cacheElement = originalCacheElement;
+			this.differential = originalCacheElement;
 		}
 	}
 
@@ -109,12 +108,12 @@ public class Cache extends Context {
 	}
 
 	public void mount() {
-		cacheElement = new Differential(cacheElement);
+		differential = new Differential(differential);
 	}
 
 	public void unmount() {
-		IDifferential subCache = cacheElement.getSubCache();
-		cacheElement = subCache instanceof Differential ? (Differential) subCache : new Differential(subCache);
+		IDifferential subCache = differential.getSubCache();
+		differential = subCache instanceof Differential ? (Differential) subCache : new Differential(subCache);
 		listener.triggersClearEvent();
 		listener.triggersRefreshEvent();
 	}
@@ -140,7 +139,7 @@ public class Cache extends Context {
 
 	@Override
 	protected Generic plug(Generic generic) {
-		cacheElement.plug(generic);
+		differential.plug(generic);
 		getChecker().checkAfterBuild(true, false, generic);
 		return generic;
 	}
@@ -148,11 +147,11 @@ public class Cache extends Context {
 	@Override
 	protected void unplug(Generic generic) {
 		getChecker().checkAfterBuild(false, false, generic);
-		cacheElement.unplug(generic);
+		differential.unplug(generic);
 	}
 
 	protected void checkConstraints() throws RollbackException {
-		cacheElement.checkConstraints(getChecker());
+		differential.checkConstraints(getChecker());
 	}
 
 	@Override
@@ -162,20 +161,20 @@ public class Cache extends Context {
 	}
 
 	public int getCacheLevel() {
-		return cacheElement.getCacheLevel();
+		return differential.getCacheLevel();
 	}
 
 	private class TransactionDifferential implements IDifferential {
 
 		@Override
-		public void apply(Iterable<Generic> removes, Iterable<Generic> adds) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
+		public void apply(Snapshot<Generic> removes, Snapshot<Generic> adds) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
 			transaction.apply(removes, adds);
 		}
 
-		@Override
-		public boolean isAlive(Generic generic) {
-			return transaction.isAlive(generic);
-		}
+		// @Override
+		// public boolean isAlive(Generic generic) {
+		// return transaction.isAlive(generic);
+		// }
 
 		@Override
 		public Snapshot<Generic> getDependencies(Generic vertex) {

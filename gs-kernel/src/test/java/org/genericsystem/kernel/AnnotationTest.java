@@ -13,7 +13,6 @@ import org.genericsystem.api.core.annotations.constraints.RequiredConstraint;
 import org.genericsystem.api.core.annotations.constraints.SingularConstraint;
 import org.genericsystem.api.core.annotations.constraints.UniqueValueConstraint;
 import org.genericsystem.api.core.annotations.value.IntValue;
-import org.genericsystem.kernel.Generic.GenericImpl;
 import org.testng.annotations.Test;
 
 @Test
@@ -332,102 +331,103 @@ public class AnnotationTest extends AbstractTest {
 	 */
 
 	@SystemGeneric
-	public static class Vehicle extends GenericImpl {
+	public static interface Vehicle extends Generic {
 
 	}
 
 	@SystemGeneric
-	public static class OtherVehicle {
+	public static interface OtherVehicle {
 
 	}
 
-	public static class VehicleInstance extends GenericImpl {
-	}
-
-	@SystemGeneric
-	@Meta(VehicleType.class)
-	public static class MyAudi extends VehicleInstance {
+	public static interface VehicleInstance extends Generic {
 	}
 
 	@SystemGeneric
 	@Meta(VehicleType.class)
-	public static class MyBmw extends GenericImpl {
+	public static interface MyAudi extends VehicleInstance {
 	}
 
 	@SystemGeneric
 	@Meta(VehicleType.class)
-	public static class MyMercedes {
+	public static interface MyBmw extends Generic {
+
+	}
+
+	@SystemGeneric
+	@Meta(VehicleType.class)
+	public static interface MyMercedes {
 	}
 
 	@SystemGeneric
 	@InstanceClass(VehicleInstance.class)
-	public static class VehicleType extends GenericImpl {
+	public static interface VehicleType extends Generic {
 
 	}
 
 	@SystemGeneric
 	@InstanceClass(VehicleInstance.class)
-	public static class OtherVehicleType {
+	public static interface OtherVehicleType {
 
 	}
 
 	@SystemGeneric
-	public static class Games extends GenericImpl {
+	public static interface Games extends Generic {
 	}
 
 	@SystemGeneric
 	@Meta(Games.class)
-	public static class MyGames extends GenericImpl {
+	public static interface MyGames extends Generic {
 	}
 
 	@SystemGeneric
-	public static class Children extends GenericImpl {
+	public static interface Children extends Generic {
 	}
 
 	@SystemGeneric
 	@Meta(Children.class)
-	public static class MyChildren extends GenericImpl {
+	public static interface MyChildren extends Generic {
 	}
 
 	@SystemGeneric
 	@Supers({ Games.class, Children.class })
-	public static class ChildrenGames extends GenericImpl {
+	public static interface ChildrenGames extends Generic {
 	}
 
 	@SystemGeneric
 	@Meta(ChildrenGames.class)
-	public static class MyChildrenGames extends GenericImpl {
+	public static interface MyChildrenGames extends Generic {
 	}
 
 	@SystemGeneric
 	@Supers({ Human.class, Vehicle.class })
-	public static class Transformer extends GenericImpl {
+	public static interface Transformer extends Generic {
 	}
 
 	@SystemGeneric
 	@Meta(Transformer.class)
-	public static class MyTransformer extends GenericImpl {
+	public static interface MyTransformer extends Generic {
 	}
 
 	@SystemGeneric
 	@Supers({ Transformer.class, ChildrenGames.class })
-	public static class TransformerChildrenGames extends GenericImpl {
+	public static interface TransformerChildrenGames extends Generic {
 	}
 
 	@SystemGeneric
 	@Meta(TransformerChildrenGames.class)
-	public static class MyTransformerChildrenGames extends GenericImpl {
+	public static interface MyTransformerChildrenGames extends Generic {
 	}
 
 	@SystemGeneric
 	@Meta(Vehicle.class)
-	public static class MyVehicle extends GenericImpl {
+	public static interface MyVehicle extends Generic {
 	}
 
 	@SystemGeneric
 	@Components(Vehicle.class)
 	@RequiredConstraint
-	public static class Power extends GenericImpl {
+	public static interface Power extends Generic {
 
 	}
 
@@ -438,16 +438,16 @@ public class AnnotationTest extends AbstractTest {
 	@UniqueValueConstraint
 	@InstanceValueClassConstraint(Integer.class)
 	@Dependencies(Music.class)
-	public static class Options extends GenericImpl {
+	public static interface Options extends Generic {
 
 	}
 
-	public static class Music extends GenericImpl {
+	public static interface Music extends Generic {
 
 	}
 
 	@Dependencies(Options.class)
-	public static class MicroCar extends GenericImpl {
+	public static interface MicroCar extends Generic {
 
 	}
 
@@ -455,111 +455,111 @@ public class AnnotationTest extends AbstractTest {
 	@Meta(Power.class)
 	@Components(MyVehicle.class)
 	@IntValue(123)
-	public static class V123 extends GenericImpl {
+	public static interface V123 extends Generic {
 
 	}
 
 	@SystemGeneric
 	@Supers(Vehicle.class)
-	public static class Car extends GenericImpl {
+	public static interface Car extends Generic {
 
 	}
 
 	@SystemGeneric
 	@Meta(Car.class)
-	public static class myCar extends GenericImpl {
+	public static interface myCar extends Generic {
 	}
 
 	@SystemGeneric
 	@Components(Car.class)
 	@Supers(Power.class)
-	public static class ElectrikPower extends GenericImpl {
+	public static interface ElectrikPower extends Generic {
 
 	}
 
 	@SystemGeneric
 	@Components(ElectrikPower.class)
-	public static class Unit extends GenericImpl {
+	public static interface Unit extends Generic {
 
 	}
 
 	@SystemGeneric
-	public static class Human extends GenericImpl {
+	public static interface Human extends Generic {
 	}
 
 	@SystemGeneric
-	public static class Man extends Human {
+	public static interface Man extends Human {
 	}
 
 	@SystemGeneric
 	@Meta(Human.class)
-	public static class Myck extends GenericImpl {
+	public static interface Myck extends Generic {
 	}
 
 	@SystemGeneric
-	public static class Time extends GenericImpl {
+	public static interface Time extends Generic {
 	}
 
 	@SystemGeneric
 	@Components({ Human.class, Vehicle.class })
-	public static class HumanPossessVehicle extends GenericImpl {
+	public static interface HumanPossessVehicle extends Generic {
 	}
 
 	@SystemGeneric
 	@Components({ Human.class, Car.class })
 	@Supers(HumanPossessVehicle.class)
-	public static class HumanPossessCar extends HumanPossessVehicle {
+	public static interface HumanPossessCar extends HumanPossessVehicle {
 	}
 
 	@SystemGeneric
 	@Components({ Man.class, Car.class })
 	@Supers(HumanPossessVehicle.class)
-	public static class ManPossessCar extends HumanPossessVehicle {
+	public static interface ManPossessCar extends HumanPossessVehicle {
 	}
 
 	@SystemGeneric
 	@Components({ Human.class, Vehicle.class, Time.class })
-	public static class HumanPossessVehicleTime extends GenericImpl {
+	public static interface HumanPossessVehicleTime extends Generic {
 	}
 
 	@SystemGeneric
-	public static class GraphicComposite extends GenericImpl {
+	public static interface GraphicComposite extends Generic {
 
 	}
 
 	@SystemGeneric
 	@Components(GraphicComposite.class)
-	public static class Size extends GenericImpl {
+	public static interface Size extends Generic {
 
 	}
 
 	@SystemGeneric
 	@Supers(GraphicComposite.class)
-	public static class Window extends GraphicComposite {
+	public static interface Window extends GraphicComposite {
 
 	}
 
 	@SystemGeneric
 	@Supers(GraphicComposite.class)
-	public static class Selectable extends GenericImpl {
+	public static interface Selectable extends Generic {
 
 	}
 
 	@SystemGeneric
 	@Components(Selectable.class)
-	public static class Selected extends GenericImpl {
+	public static interface Selected extends Generic {
 
 	}
 
 	@SystemGeneric
 	@Supers({ Selectable.class, Window.class })
-	public static class SelectableWindow extends GenericImpl {
+	public static interface SelectableWindow extends Generic {
 
 	}
 
 	@SystemGeneric
 	@Meta(SelectableWindow.class)
-	public static class MySelectableWindow extends GenericImpl {
+	public static interface MySelectableWindow extends Generic {
 
 	}
 

@@ -12,8 +12,6 @@ import org.genericsystem.api.core.annotations.constraints.PropertyConstraint;
 import org.genericsystem.api.core.annotations.constraints.SingularConstraint;
 import org.genericsystem.api.core.annotations.constraints.UniqueValueConstraint;
 import org.genericsystem.api.core.annotations.value.IntValue;
-import org.genericsystem.kernel.Generic;
-import org.genericsystem.kernel.Generic.GenericImpl;
 import org.testng.annotations.Test;
 
 @Test
@@ -43,7 +41,7 @@ public class AnnotationTest extends AbstractTest {
 
 	public void test001_instanceof() {
 		Engine engine = new Engine(Vehicle.class);
-		assert engine.find(Vehicle.class) instanceof Vehicle;
+		assert engine.find(Vehicle.class) instanceof Vehicle : Vehicle.class.isInterface() + " " + engine.find(Vehicle.class).getClass();
 		assert engine.getInstance(Vehicle.class) instanceof Vehicle : engine.find(Vehicle.class).info() + "   " + engine.getInstance(Vehicle.class).info();
 		assert engine.getInstances().stream().anyMatch(x -> x instanceof Vehicle);
 	}
@@ -84,25 +82,28 @@ public class AnnotationTest extends AbstractTest {
 		catchAndCheckCause(() -> new Engine(MyMercedes.class), InstantiationException.class);
 	}
 
-	public static class VehicleInstance extends GenericImpl {
+	public static class VehicleInstance implements Generic {
 
 	}
 
 	@SystemGeneric
 	@Meta(VehicleType.class)
-	public static class MyAudi extends VehicleInstance {}
+	public static class MyAudi extends VehicleInstance {
+	}
 
 	@SystemGeneric
 	@Meta(VehicleType.class)
-	public static class MyBmw extends GenericImpl {}
+	public static class MyBmw implements Generic {
+	}
 
 	@SystemGeneric
 	@Meta(VehicleType.class)
-	public static class MyMercedes {}
+	public static class MyMercedes {
+	}
 
 	@SystemGeneric
 	@InstanceClass(VehicleInstance.class)
-	public static class VehicleType extends GenericImpl {
+	public static class VehicleType implements Generic {
 
 	}
 
@@ -385,55 +386,66 @@ public class AnnotationTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	public static class Games extends GenericImpl {}
+	public static class Games implements Generic {
+	}
 
 	@SystemGeneric
 	@Meta(Games.class)
-	public static class MyGames extends GenericImpl {}
+	public static class MyGames implements Generic {
+	}
 
 	@SystemGeneric
 	@Meta(Games.class)
-	public static class MyGames2 extends GenericImpl {}
+	public static class MyGames2 implements Generic {
+	}
 
 	@SystemGeneric
-	public static class Children extends GenericImpl {}
+	public static class Children implements Generic {
+	}
 
 	@SystemGeneric
 	@Meta(Children.class)
-	public static class MyChildren extends GenericImpl {}
+	public static class MyChildren implements Generic {
+	}
 
 	@SystemGeneric
 	@Supers({ Games.class, Children.class })
-	public static class ChildrenGames extends GenericImpl {}
+	public static class ChildrenGames implements Generic {
+	}
 
 	@SystemGeneric
 	@Meta(ChildrenGames.class)
-	public static class MyChildrenGames extends GenericImpl {}
+	public static class MyChildrenGames implements Generic {
+	}
 
 	@SystemGeneric
 	@Supers({ Human.class, Vehicle.class })
-	public static class Transformer extends GenericImpl {}
+	public static class Transformer implements Generic {
+	}
 
 	@SystemGeneric
 	@Meta(Transformer.class)
-	public static class MyTransformer extends GenericImpl {}
+	public static class MyTransformer implements Generic {
+	}
 
 	@SystemGeneric
 	@Supers({ Transformer.class, ChildrenGames.class })
-	public static class TransformerChildrenGames extends GenericImpl {}
+	public static class TransformerChildrenGames implements Generic {
+	}
 
 	@SystemGeneric
 	@Meta(TransformerChildrenGames.class)
-	public static class MyTransformerChildrenGames extends GenericImpl {}
+	public static class MyTransformerChildrenGames implements Generic {
+	}
 
 	@SystemGeneric
-	public static class GraphicComposite extends GenericImpl {
+	public static class GraphicComposite implements Generic {
 
 	}
 
 	@SystemGeneric
 	@Components(GraphicComposite.class)
-	public static class Size extends GenericImpl {
+	public static class Size implements Generic {
 
 	}
 
@@ -445,30 +457,30 @@ public class AnnotationTest extends AbstractTest {
 
 	@SystemGeneric
 	@Supers(GraphicComposite.class)
-	public static class Selectable extends GenericImpl {
+	public static class Selectable implements Generic {
 
 	}
 
 	@SystemGeneric
 	@Components(Selectable.class)
-	public static class Selected extends GenericImpl {
+	public static class Selected implements Generic {
 
 	}
 
 	@SystemGeneric
 	@Supers({ Selectable.class, Window.class })
-	public static class SelectableWindow extends GenericImpl {
+	public static class SelectableWindow implements Generic {
 
 	}
 
 	@SystemGeneric
 	@Meta(SelectableWindow.class)
-	public static class MySelectableWindow extends GenericImpl {
+	public static class MySelectableWindow implements Generic {
 
 	}
 
 	@SystemGeneric
-	public static class Vehicle extends GenericImpl {
+	public static class Vehicle implements Generic {
 
 	}
 
@@ -479,11 +491,12 @@ public class AnnotationTest extends AbstractTest {
 
 	@SystemGeneric
 	@Meta(Vehicle.class)
-	public static class MyVehicle extends GenericImpl {}
+	public static class MyVehicle implements Generic {
+	}
 
 	@SystemGeneric
 	@Components(Vehicle.class)
-	public static class Power extends GenericImpl {
+	public static class Power implements Generic {
 
 	}
 
@@ -495,16 +508,16 @@ public class AnnotationTest extends AbstractTest {
 	@UniqueValueConstraint
 	@InstanceValueClassConstraint(Integer.class)
 	@Dependencies(Couleur.class)
-	public static class Puissance extends GenericImpl {
+	public static class Puissance implements Generic {
 
 	}
 
-	public static class Couleur extends GenericImpl {
+	public static class Couleur implements Generic {
 
 	}
 
 	@Dependencies(Puissance.class)
-	public static class Voiture extends GenericImpl {
+	public static class Voiture implements Generic {
 
 	}
 
@@ -512,62 +525,71 @@ public class AnnotationTest extends AbstractTest {
 	@Meta(Power.class)
 	@Components(MyVehicle.class)
 	@IntValue(123)
-	public static class V123 extends GenericImpl {
+	public static class V123 implements Generic {
 
 	}
 
 	@SystemGeneric
 	@Supers(Vehicle.class)
-	public static class Car extends GenericImpl {
+	public static class Car implements Generic {
 
 	}
 
 	@SystemGeneric
 	@Meta(Car.class)
-	public static class myCar extends GenericImpl {}
+	public static class myCar implements Generic {
+	}
 
 	@SystemGeneric
 	@Components(Car.class)
 	@Supers(Power.class)
-	public static class ElectrikPower extends GenericImpl {
+	public static class ElectrikPower implements Generic {
 
 	}
 
 	@SystemGeneric
 	@Components(ElectrikPower.class)
-	public static class Unit extends GenericImpl {
+	public static class Unit implements Generic {
 
 	}
 
 	@SystemGeneric
-	public static class Human extends GenericImpl {}
+	public static class Human implements Generic {
+	}
 
 	@SystemGeneric
-	public static class Man extends Human {}
+	public static class Man extends Human {
+	}
 
 	@SystemGeneric
 	@Meta(Human.class)
-	public static class Myck extends GenericImpl {}
+	public static class Myck implements Generic {
+	}
 
 	@SystemGeneric
-	public static class Time extends GenericImpl {}
+	public static class Time implements Generic {
+	}
 
 	@SystemGeneric
 	@Components({ Human.class, Vehicle.class })
-	public static class HumanPossessVehicle extends GenericImpl {}
+	public static class HumanPossessVehicle implements Generic {
+	}
 
 	@SystemGeneric
 	@Components({ Human.class, Car.class })
 	@Supers(HumanPossessVehicle.class)
-	public static class HumanPossessCar extends HumanPossessVehicle {}
+	public static class HumanPossessCar extends HumanPossessVehicle {
+	}
 
 	@SystemGeneric
 	@Components({ Man.class, Car.class })
 	@Supers(HumanPossessVehicle.class)
-	public static class ManPossessCar extends HumanPossessVehicle {}
+	public static class ManPossessCar extends HumanPossessVehicle {
+	}
 
 	@SystemGeneric
 	@Components({ Human.class, Vehicle.class, Time.class })
-	public static class HumanPossessVehicleTime extends GenericImpl {}
+	public static class HumanPossessVehicleTime implements Generic {
+	}
 
 }

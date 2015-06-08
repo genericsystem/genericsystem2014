@@ -9,7 +9,7 @@ import org.genericsystem.defaults.DefaultConfig.MetaRelation;
 import org.genericsystem.defaults.DefaultConfig.Sequence;
 import org.genericsystem.defaults.DefaultConfig.SystemMap;
 
-public interface DefaultRoot<T extends DefaultVertex<T>> extends IRoot<T> {
+public interface DefaultRoot<T extends DefaultVertex<T>> extends IRoot<T>, DefaultVertex<T> {
 
 	@Override
 	DefaultContext<T> getCurrentCache();
@@ -34,9 +34,13 @@ public interface DefaultRoot<T extends DefaultVertex<T>> extends IRoot<T> {
 	default T getSequence() {
 		return find(Sequence.class);
 	}
-	
+
 	long getTs(T generic);
-	
+
+	long getBirthTs(T generic);
+
+	long getDeathTs(T generic);
+
 	T getMeta(T generic);
 
 	List<T> getSupers(T generic);
@@ -45,5 +49,5 @@ public interface DefaultRoot<T extends DefaultVertex<T>> extends IRoot<T> {
 
 	List<T> getComponents(T generic);
 
-
+	T[] newTArray(int i);
 }

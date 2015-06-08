@@ -2,7 +2,6 @@ package org.genericsystem.cache;
 
 import org.genericsystem.api.core.exceptions.AliveConstraintViolationException;
 import org.genericsystem.api.core.exceptions.ReferentialIntegrityConstraintViolationException;
-import org.genericsystem.kernel.Generic;
 import org.testng.annotations.Test;
 
 @Test
@@ -23,10 +22,12 @@ public class NotRemovableOneCacheTest extends AbstractTest {
 		Engine engine = new Engine();
 		Cache cache = engine.getCurrentCache();
 		Generic car = engine.addInstance("Car");
+		assert car.isAlive();
 		Generic color = car.addAttribute("Color");
 		Generic myBmw = car.addInstance("myBmw");
 		Generic myBmwRed = myBmw.addHolder(color, "red");
 		cache.flush();
+		assert false : myBmwRed.getBirthTs() + " " + myBmwRed.getDeathTs();
 		myBmwRed.remove();
 		catchAndCheckCause(() -> myBmwRed.remove(), AliveConstraintViolationException.class);
 	}

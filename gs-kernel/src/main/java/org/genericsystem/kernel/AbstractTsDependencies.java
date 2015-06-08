@@ -7,17 +7,17 @@ import java.util.stream.StreamSupport;
 
 import org.genericsystem.kernel.iterator.AbstractGeneralAwareIterator;
 
-public abstract class AbstractTsDependencies<T extends Generic> implements IDependencies<T> {
+public abstract class AbstractTsDependencies implements TsDependencies<Generic> {
 
-	private Node<T> head = null;
-	private Node<T> tail = null;
-	private final ConcurrentHashMap<T, T> map = new ConcurrentHashMap<>();
+	private Node head = null;
+	private Node tail = null;
+	private final ConcurrentHashMap<Generic, Generic> map = new ConcurrentHashMap<>();
 
 	public abstract LifeManager getLifeManager();
 
 	@Override
-	public T get(T generic, long ts) {
-		T result = map.get(generic);// this no lock read requires a concurrent hash map
+	public Generic get(Generic generic, long ts) {
+		Generic result = map.get(generic);// this no lock read requires a concurrent hash map
 		if (result == null) {
 			LifeManager lifeManager = getLifeManager();
 			lifeManager.readLock();
@@ -35,37 +35,37 @@ public abstract class AbstractTsDependencies<T extends Generic> implements IDepe
 	}
 
 	@Override
-	public void add(T element) {
+	public void add(Generic element) {
 		assert element != null;
 		// assert getLifeManager().isWriteLockedByCurrentThread();
-		Node<T> newNode = new Node<>(element);
+		Node newNode = new Node(element);
 		if (head == null)
 			head = newNode;
 		else
 			tail.next = newNode;
 		tail = newNode;
-		T result = map.put(element, element);
-		assert result == null : result.info();
+		Generic result = map.put(element, element);
+		assert result == null;
 	}
 
 	@Override
-	public boolean remove(T generic) {
+	public boolean remove(Generic generic) {
 		assert generic != null : "generic is null";
 		assert head != null : "head is null";
 
-		Node<T> currentNode = head;
+		Node currentNode = head;
 
-		T currentContent = currentNode.content;
+		Generic currentContent = currentNode.content;
 		if (generic.equals(currentContent)) {
-			Node<T> next = currentNode.next;
+			Node next = currentNode.next;
 			head = next != null ? next : null;
 			return true;
 		}
 
-		Node<T> nextNode = currentNode.next;
+		Node nextNode = currentNode.next;
 		while (nextNode != null) {
-			T nextGeneric = nextNode.content;
-			Node<T> nextNextNode = nextNode.next;
+			Generic nextGeneric = nextNode.content;
+			Node nextNextNode = nextNode.next;
 			if (generic.equals(nextGeneric)) {
 				nextNode.content = null;
 				if (nextNextNode == null)
@@ -81,11 +81,11 @@ public abstract class AbstractTsDependencies<T extends Generic> implements IDepe
 	}
 
 	@Override
-	public Stream<T> stream(long ts) {
+	public Stream<Generic> stream(long ts) {
 		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(new InternalIterator(ts), 0), false);
 	}
 
-	private class InternalIterator extends AbstractGeneralAwareIterator<Node<T>, T> {
+	private class InternalIterator extends AbstractGeneralAwareIterator<Node, Generic> {
 
 		private final long ts;
 
@@ -96,7 +96,7 @@ public abstract class AbstractTsDependencies<T extends Generic> implements IDepe
 		@Override
 		protected void advance() {
 			for (;;) {
-				Node<T> nextNode = (next == null) ? head : next.next;
+				Node nextNode = (next == null) ? head : next.next;
 				if (nextNode == null) {
 					LifeManager lifeManager = getLifeManager();
 					lifeManager.readLock();
@@ -112,23 +112,23 @@ public abstract class AbstractTsDependencies<T extends Generic> implements IDepe
 					}
 				}
 				next = nextNode;
-				T content = next.content;
+				Generic content = next.content;
 				if (content != null && content.getLifeManager().isAlive(ts))
 					break;
 			}
 		}
 
 		@Override
-		protected T project() {
+		protected Generic project() {
 			return next.content;
 		}
 	}
 
-	private static class Node<T> {
-		public T content;
-		public Node<T> next;
+	private static class Node {
+		public Generic content;
+		public Node next;
 
-		private Node(T content) {
+		private Node(Generic content) {
 			this.content = content;
 		}
 	}

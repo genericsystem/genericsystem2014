@@ -7,7 +7,6 @@ import org.genericsystem.api.core.exceptions.ConcurrencyControlException;
 import org.genericsystem.api.core.exceptions.OptimisticLockConstraintViolationException;
 import org.genericsystem.api.core.exceptions.RollbackException;
 import org.genericsystem.kernel.Checker;
-import org.genericsystem.kernel.Generic;
 
 public class Differential implements IDifferential {
 
@@ -27,10 +26,10 @@ public class Differential implements IDifferential {
 		return differential instanceof Differential ? ((Differential) differential).getCacheLevel() + 1 : 0;
 	}
 
-	@Override
-	public boolean isAlive(Generic generic) {
-		return adds.contains(generic) || (!removes.contains(generic) && differential.isAlive(generic));
-	}
+	// @Override
+	// public boolean isAlive(Generic generic) {
+	// return adds.contains(generic) || (!removes.contains(generic) && differential.isAlive(generic));
+	// }
 
 	void checkConstraints(Checker checker) throws RollbackException {
 		adds.forEach(x -> checker.checkAfterBuild(true, true, x));
@@ -60,7 +59,7 @@ public class Differential implements IDifferential {
 
 			@Override
 			public Stream<Generic> stream() {
-				return Stream.concat(differential.getDependencies(generic).stream().filter(x -> !removes.contains(x)), adds.stream().filter(x -> generic.isDirectAncestorOf(x)));
+				return Stream.concat(adds.contains(generic) ? Stream.empty() : differential.getDependencies(generic).stream().filter(x -> !removes.contains(x)), adds.stream().filter(x -> generic.isDirectAncestorOf(x)));
 			}
 		};
 	}
@@ -70,7 +69,7 @@ public class Differential implements IDifferential {
 	}
 
 	@Override
-	public void apply(Iterable<Generic> removes, Iterable<Generic> adds) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
+	public void apply(Snapshot<Generic> removes, Snapshot<Generic> adds) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
 		for (Generic generic : removes)
 			unplug(generic);
 		for (Generic generic : adds)

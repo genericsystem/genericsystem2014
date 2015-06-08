@@ -14,7 +14,7 @@ import org.genericsystem.api.core.ISignature;
 import org.genericsystem.api.core.exceptions.AmbiguousSelectionException;
 import org.genericsystem.api.core.exceptions.MetaRuleConstraintViolationException;
 
-public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncestors<T>, DefaultDependencies<T>, DefaultDisplay<T>, DefaultSystemProperties<T>, DefaultCompositesInheritance<T>, DefaultWritable<T> {
+public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncestors<T>, DefaultDependencies<T>, DefaultDisplay<T>, DefaultSystemProperties<T>, DefaultCompositesInheritance<T>, DefaultWritable<T>, Comparable<T> {
 
 	@Override
 	default DefaultContext<T> getCurrentCache() {
@@ -128,7 +128,7 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 	@SuppressWarnings("unchecked")
 	@Override
 	default T[] coerceToTArray(Object... array) {
-		T[] result = getCurrentCache().newTArray(array.length);
+		T[] result = getRoot().newTArray(array.length);
 		for (int i = 0; i < array.length; i++)
 			result[i] = (T) array[i];
 		return result;
@@ -261,24 +261,6 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 		visitor.traverse((T) this);
 	}
 
-	// @SuppressWarnings("unchecked")
-	// default T addGenerateInstance(T... components) {
-	// class ValueGenerator {
-	// Serializable generateValue() {
-	// GenerateValue generate = getRoot().findAnnotedClass((T) DefaultVertex.this).getAnnotation(GenerateValue.class);
-	// if (generate == null)
-	// getCurrentCache().discardWithException(new IllegalStateException("Unable to find @Generate annotation on : " + info()));
-	// try {
-	// return generate.clazz().newInstance().generate(DefaultVertex.this);
-	// } catch (InstantiationException | IllegalAccessException e) {
-	// getCurrentCache().discardWithException(e);
-	// }
-	// return null;
-	// }
-	// }
-	// return addInstance(new ValueGenerator().generateValue(), components);
-	// }
-
 	@Override
 	default T getNonAmbiguousResult(Stream<T> stream) {
 		Iterator<T> iterator = stream.iterator();
@@ -317,5 +299,48 @@ public interface DefaultVertex<T extends DefaultVertex<T>> extends DefaultAncest
 	@Override
 	default List<T> getComponents() {
 		return getRoot().getComponents((T) this);
+	}
+
+	@Override
+	default T enablePropertyConstraint() {
+		return DefaultSystemProperties.super.enablePropertyConstraint();
+	}
+
+	@Override
+	default T setInstanceValueClassConstraint(Class<? extends Serializable> constraintClass) {
+		return DefaultSystemProperties.super.setInstanceValueClassConstraint(constraintClass);
+	}
+
+	@Override
+	default T enableSingularConstraint(int pos) {
+		return DefaultSystemProperties.super.enableSingularConstraint(pos);
+
+	}
+
+	@Override
+	default int compareTo(T generic) {
+		long birthTs = getBirthTs();
+		long compareBirthTs = generic.getBirthTs();
+		return birthTs == compareBirthTs ? Long.compare(getTs(), generic.getTs()) : Long.compare(birthTs, compareBirthTs);
+	}
+
+	@SuppressWarnings("unchecked")
+	default long getBirthTs() {
+		return getRoot().getBirthTs((T) this);
+	}
+
+	@SuppressWarnings("unchecked")
+	default long getDeathTs() {
+		return getRoot().getDeathTs((T) this);
+	}
+
+	@Override
+	default boolean isSystem() {
+		return ApiStatics.TS_SYSTEM == getBirthTs();
+	}
+
+	@Override
+	default DefaultRoot<T> getRoot() {
+		throw new IllegalStateException();
 	}
 }

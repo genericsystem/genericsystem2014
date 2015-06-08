@@ -1,4 +1,4 @@
-package org.genericsystem.cache;
+package org.genericsystem.kernel;
 
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -6,17 +6,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.genericsystem.kernel.Generic;
-import org.genericsystem.kernel.Root;
-import org.genericsystem.kernel.Statics;
-
 public class GarbageCollector extends LinkedHashSet<Generic> {
 
 	private static final long serialVersionUID = -2021341943811568201L;
 	private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-	private final Root root;
+	private final AbstractRoot<Generic> root;
 
-	public GarbageCollector(Root root) {
+	public GarbageCollector(AbstractRoot<Generic> root) {
 		this.root = root;
 	}
 

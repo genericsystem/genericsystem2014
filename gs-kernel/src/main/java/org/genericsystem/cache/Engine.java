@@ -3,12 +3,16 @@ package org.genericsystem.cache;
 import java.io.Serializable;
 
 import org.genericsystem.cache.Cache.ContextEventListener;
-import org.genericsystem.kernel.Context;
-import org.genericsystem.kernel.Generic;
+import org.genericsystem.kernel.AbstractContext;
+import org.genericsystem.kernel.AbstractRoot;
 import org.genericsystem.kernel.Root;
 import org.genericsystem.kernel.Statics;
+import org.genericsystem.kernel.Vertex;
 
-public class Engine extends Root {
+public class Engine extends AbstractRoot<Generic> implements Generic {
+
+	private Root server;
+	private boolean isInitialized = false;
 
 	public Engine(Class<?>... userClasses) {
 		this(Statics.ENGINE_VALUE, userClasses);
@@ -20,10 +24,13 @@ public class Engine extends Root {
 
 	public Engine(Serializable engineValue, String persistentDirectoryPath, Class<?>... userClasses) {
 		super(engineValue, persistentDirectoryPath, userClasses);
-		// garbageCollector.startScheduler();
+		isInitialized = true;
 	}
 
-	protected final GarbageCollector garbageCollector = new GarbageCollector(this);
+	@Override
+	protected void initSubRoot(Serializable engineValue, String persistentDirectoryPath, Class<?>... userClasses) {
+		server = new Root(engineValue, persistentDirectoryPath, userClasses);
+	};
 
 	@Override
 	public Cache newCache() {
@@ -45,7 +52,6 @@ public class Engine extends Root {
 	}
 
 	protected void stop(Cache cache) {
-		garbageCollector.stopsScheduler();
 		assert contextWrapper.get() == cache;
 		contextWrapper.set(null);
 	}
@@ -58,19 +64,54 @@ public class Engine extends Root {
 		return currentCache;
 	}
 
-	GarbageCollector getGarbageCollector() {
-		return garbageCollector;
-	}
-
-	public static class LocalContextWrapper extends InheritableThreadLocal<Cache> implements Wrapper {
+	public static class LocalContextWrapper extends InheritableThreadLocal<Cache> implements Wrapper<Generic> {
 		@Override
-		public void set(Context context) {
+		public void set(AbstractContext<Generic> context) {
 			super.set((Cache) context);
 		}
 	}
 
 	@Override
-	protected Wrapper buildContextWrapper() {
+	protected Wrapper<Generic> buildContextWrapper() {
 		return new LocalContextWrapper();
 	}
+
+	@Override
+	public Generic getGenericFromTs(long ts) {
+		Generic generic = idsMap.get(ts);
+		if (generic == null) {
+			Vertex vertex = server.getVertex(ts);
+			if (vertex == null)
+				return null;
+			Class<?> clazz = server.getAnnotedClass(server.getGenericFromTs(ts));
+			generic = init(newT(clazz, ts == vertex.getMeta() ? null : getGenericFromTs(vertex.getMeta())), ts, vertex.getMeta(), vertex.getSupers(), vertex.getValue(), vertex.getComponents(), vertex.getLifeManager());
+			idsMap.put(ts, generic);
+		}
+		return generic;
+	}
+
+	@Override
+	public final Generic[] newTArray(int dim) {
+		return new Generic[dim];
+	}
+
+	@Override
+	public void close() {
+		server.close();
+	}
+
+	@Override
+	protected Class<Generic> getTClass() {
+		return Generic.class;
+	}
+
+	@Override
+	protected boolean isInitialized() {
+		return isInitialized;
+	}
+
+	public Root getServer() {
+		return server;
+	}
+
 }

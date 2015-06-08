@@ -22,13 +22,6 @@ import org.genericsystem.defaults.constraints.UniqueValueConstraint;
 public interface DefaultSystemProperties<T extends DefaultVertex<T>> extends IVertex<T> {
 
 	@Override
-	default T getKey(Class<? extends SystemProperty> propertyClass, int pos) {
-		T property = getRoot().find(propertyClass);
-		Stream<T> keys = property != null ? property.getInheritings().stream() : Stream.empty();
-		return keys.filter(x -> Objects.equals(x.getValue(), new AxedPropertyClass(propertyClass, pos))).findFirst().orElse(null);
-	}
-
-	@Override
 	default Serializable getSystemPropertyValue(Class<? extends SystemProperty> propertyClass, int pos) {
 		T key = getKey(propertyClass, pos);
 		if (key != null) {
@@ -36,6 +29,13 @@ public interface DefaultSystemProperties<T extends DefaultVertex<T>> extends IVe
 			return result != null ? result.getValue() : null;
 		}
 		return null;
+	}
+
+	@Override
+	default T getKey(Class<? extends SystemProperty> propertyClass, int pos) {
+		T property = getRoot().find(propertyClass);
+		Stream<T> keys = property != null ? property.getInheritings().stream() : Stream.empty();
+		return keys.filter(x -> Objects.equals(x.getValue(), new AxedPropertyClass(propertyClass, pos))).findFirst().orElse(null);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -106,7 +106,6 @@ public interface DefaultSystemProperties<T extends DefaultVertex<T>> extends IVe
 		return isSystemPropertyEnabled(SingularConstraint.class, pos);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	default T enablePropertyConstraint() {
 		return enableSystemProperty(PropertyConstraint.class, ApiStatics.NO_POSITION);
@@ -199,7 +198,7 @@ public interface DefaultSystemProperties<T extends DefaultVertex<T>> extends IVe
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
+	// @SuppressWarnings("unchecked")
 	default T setInstanceValueClassConstraint(Class<? extends Serializable> instanceValueConstraintClass) {
 		setSystemPropertyValue(InstanceValueClassConstraint.class, ApiStatics.NO_POSITION, instanceValueConstraintClass);
 		return (T) this;

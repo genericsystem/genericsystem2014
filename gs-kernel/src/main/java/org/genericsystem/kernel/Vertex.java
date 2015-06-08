@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-class Vertex {
+public class Vertex {
 
 	private final long ts;
 	private final long meta;
@@ -14,7 +14,7 @@ class Vertex {
 	private final List<Long> components;
 	private final LifeManager lifeManager;
 
-	protected Vertex(long ts, long meta, List<Long> supers, Serializable value, List<Long> components, long[] otherTs) {
+	protected Vertex(long ts, long meta, List<Long> supers, Serializable value, List<Long> components, LifeManager lifeManager) {
 		this.ts = ts;
 		this.meta = meta;
 		this.value = value;
@@ -22,30 +22,38 @@ class Vertex {
 			assert component != null && !equals(component);
 		this.components = Collections.unmodifiableList(new ArrayList<>(components));
 		this.supers = Collections.unmodifiableList(new ArrayList<>(supers));
-		lifeManager = new LifeManager(otherTs);
+		this.lifeManager = lifeManager;
 	}
 
-	long getTs() {
+	public long getTs() {
 		return ts;
 	}
 
-	Long getMeta() {
+	public long getBirthTs() {
+		return lifeManager.getBirthTs();
+	}
+
+	public long getDeathTs() {
+		return lifeManager.getDeathTs();
+	}
+
+	public long getMeta() {
 		return meta;
 	}
 
-	List<Long> getSupers() {
+	public List<Long> getSupers() {
 		return supers;
 	}
 
-	Serializable getValue() {
+	public Serializable getValue() {
 		return value;
 	}
 
-	List<Long> getComponents() {
+	public List<Long> getComponents() {
 		return components;
 	}
 
-	LifeManager getLifeManager() {
+	public LifeManager getLifeManager() {
 		return lifeManager;
 	}
 

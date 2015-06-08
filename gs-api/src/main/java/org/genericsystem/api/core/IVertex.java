@@ -1930,13 +1930,6 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	T getComponent(int pos);
 
 	/**
-	 * Returns the current cache.
-	 * 
-	 * @return the current cache.
-	 */
-	IContext<T> getCurrentCache();
-
-	/**
 	 * Returns the key for the property at the position
 	 * 
 	 * @param propertyClass
@@ -1946,5 +1939,12 @@ public interface IVertex<T extends IVertex<T>> extends ISignature<T> {
 	 * @return the key for the property at the position
 	 */
 	T getKey(Class<? extends SystemProperty> propertyClass, int pos);
+
+	/**
+	 * Returns the current cache.
+	 * 
+	 * @return the current cache.
+	 */
+	IContext<T> getCurrentCache();
 
 }

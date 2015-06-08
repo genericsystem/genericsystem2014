@@ -7,9 +7,6 @@ import java.util.List;
 import java.util.Random;
 
 import org.genericsystem.api.core.annotations.SystemGeneric;
-import org.genericsystem.kernel.Generic;
-import org.genericsystem.kernel.Generic.GenericImpl;
-import org.genericsystem.kernel.LifeManager;
 import org.genericsystem.kernel.Statics;
 import org.testng.annotations.Test;
 
@@ -63,7 +60,8 @@ public class PersistenceTest extends AbstractTest {
 	}
 
 	@SystemGeneric
-	public static class Vehicle extends GenericImpl {}
+	public static class Vehicle implements Generic {
+	}
 
 	public void testType() {
 		String snapshot = cleanDirectory(directoryPath + new Random().nextInt());
@@ -99,7 +97,7 @@ public class PersistenceTest extends AbstractTest {
 		car.remove();
 		root.getCurrentCache().flush();
 		assert vehicle.getTs() < truck.getTs();
-		assert vehicle.getLifeManager().getBirthTs() == truck.getLifeManager().getBirthTs();
+		assert vehicle.getBirthTs() == truck.getBirthTs();
 		root.close();
 		Engine engine = new Engine(Statics.ENGINE_VALUE, snapshot);
 		compareGraph(root, engine);
@@ -172,11 +170,11 @@ public class PersistenceTest extends AbstractTest {
 		assert persistVisit.size() == readVisit.size() : persistVisit + " \n " + readVisit;
 		for (int i = 0; i < persistVisit.size(); i++) {
 			assert persistVisit.get(i).genericEquals(readVisit.get(i));
-			LifeManager persistLifeManager = persistVisit.get(i).getLifeManager();
-			LifeManager readLifeManager = readVisit.get(i).getLifeManager();
-			assert persistLifeManager.getBirthTs() == readLifeManager.getBirthTs() : persistVisit.get(i).info() + " " + persistLifeManager.getBirthTs() + "  " + readLifeManager.getBirthTs();
+			Generic persitedGeneric = persistVisit.get(i);
+			Generic readGeneric = readVisit.get(i);
+			assert persitedGeneric.getBirthTs() == readGeneric.getBirthTs() : persistVisit.get(i).info() + " " + persitedGeneric.getBirthTs() + "  " + readGeneric.getBirthTs();
 			// assert persistLifeManager.getLastReadTs() == readLifeManager.getLastReadTs();
-			assert persistLifeManager.getDeathTs() == readLifeManager.getDeathTs();
+			assert persitedGeneric.getDeathTs() == readGeneric.getDeathTs();
 			// assert persistVisit.get(i).getTs() == readVisit.get(i).getTs();
 			assert persistVisit.get(i).genericEquals(readVisit.get(i)) : persistVisit.get(i).info() + " " + readVisit.get(i).info();
 		}
