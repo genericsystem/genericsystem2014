@@ -104,10 +104,6 @@ public class Transaction extends AbstractContext<Generic> {
 		new LockedLifeManager().apply(removes, adds);
 	}
 
-	public void apply(Snapshot<Generic> removes, Snapshot<Generic> adds) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
-		new LockedLifeManager().apply(removes, adds);
-	}
-
 	private class LockedLifeManager {
 
 		private Set<LifeManager> lockedLifeManagers = new HashSet<>();
