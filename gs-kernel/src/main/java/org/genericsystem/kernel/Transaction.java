@@ -66,7 +66,6 @@ public class Transaction extends AbstractContext<Generic> {
 		Generic generic = getRoot().getGenericFromTs(ts);
 		if (generic != null)
 			getChecker().checkIsAlive(generic);
-		assert generic != null;
 		return generic;
 	}
 
