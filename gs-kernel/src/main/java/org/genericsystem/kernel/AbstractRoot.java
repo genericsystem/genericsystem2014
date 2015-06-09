@@ -139,7 +139,7 @@ public abstract class AbstractRoot<T extends DefaultVertex<T>> implements Defaul
 		return idsMap.get(ts);
 	}
 
-	// private final Map<T, Vertex> vertexMap = new ConcurrentHashMap<>();
+	private final Map<T, Vertex> vertexMap = new ConcurrentHashMap<>();
 
 	protected Vertex getVertex(T generic) {
 		return vertexMap.get(generic);
@@ -147,6 +147,10 @@ public abstract class AbstractRoot<T extends DefaultVertex<T>> implements Defaul
 
 	public Vertex getVertex(long ts) {
 		return vertexMap.get(getGenericFromTs(ts));
+	}
+
+	public LifeManager getLifeManager(T generic) {
+		return getVertex(generic).getLifeManager();
 	}
 
 	@Override
@@ -190,6 +194,10 @@ public abstract class AbstractRoot<T extends DefaultVertex<T>> implements Defaul
 
 	protected T init(T generic, long ts, T meta, List<T> supers, Serializable value, List<T> components, LifeManager lifeMAnager) {
 		return init(generic, ts, meta == null ? ts : meta.getTs(), supers.stream().map(g -> g.getTs()).collect(Collectors.toList()), value, components.stream().map(g -> g.getTs()).collect(Collectors.toList()), lifeMAnager);
+	}
+
+	T init(Class<?> clazz, long ts, long meta, List<Long> supers, Serializable value, List<Long> components, LifeManager lifeMAnager) {
+		return init(newT(clazz, getGenericFromTs(meta)), ts, meta, supers, value, components, lifeMAnager);
 	}
 
 	protected T init(T generic, long ts, long meta, List<Long> supers, Serializable value, List<Long> components, LifeManager lifeMAnager) {

@@ -8,7 +8,7 @@ import org.genericsystem.api.core.annotations.constraints.InstanceValueGenerator
 import org.genericsystem.api.core.exceptions.ExistsException;
 import org.genericsystem.defaults.DefaultVertex;
 
-abstract class GenericHandler<T extends DefaultVertex<T>> {
+public abstract class GenericHandler<T extends DefaultVertex<T>> {
 	final AbstractContext<T> context;
 	final T meta;
 	T adjustedMeta;
@@ -114,13 +114,13 @@ abstract class GenericHandler<T extends DefaultVertex<T>> {
 	// }
 	// }
 
-	static class AddHandler<T extends DefaultVertex<T>> extends GenericHandler<T> {
+	public static class AddHandler<T extends DefaultVertex<T>> extends GenericHandler<T> {
 
 		AddHandler(AbstractContext<T> context, T meta, List<T> overrides, Serializable value, List<T> components) {
 			super(context, meta, overrides, value, components);
 		}
 
-		T resolve() {
+		public T resolve() {
 			T generic = get();
 			if (generic != null)
 				context.discardWithException(new ExistsException("An equivalent instance already exists : " + generic.info()));
@@ -147,7 +147,7 @@ abstract class GenericHandler<T extends DefaultVertex<T>> {
 
 		private final T update;
 
-		UpdateHandler(AbstractContext context, T update, T meta, List<T> overrides, Serializable value, List<T> components) {
+		UpdateHandler(AbstractContext<T> context, T update, T meta, List<T> overrides, Serializable value, List<T> components) {
 			super(context, meta, overrides, value, components);
 			this.update = update;
 		}
@@ -165,7 +165,7 @@ abstract class GenericHandler<T extends DefaultVertex<T>> {
 
 		private final T update;
 
-		MergeHandler(AbstractContext context, T update, T meta, List<T> overrides, Serializable value, List<T> components) {
+		MergeHandler(AbstractContext<T> context, T update, T meta, List<T> overrides, Serializable value, List<T> components) {
 			super(context, meta, overrides, value, components);
 			this.update = update;
 		}

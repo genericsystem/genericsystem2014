@@ -1,7 +1,9 @@
 package org.genericsystem.kernel;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.genericsystem.api.core.Snapshot;
@@ -64,7 +66,7 @@ public class Transaction extends AbstractContext<Generic> {
 		Generic generic = getRoot().getGenericFromTs(ts);
 		if (generic != null)
 			getChecker().checkIsAlive(generic);
-		assert ts == 0 ? generic != null : true;
+		assert generic != null;
 		return generic;
 	}
 
@@ -93,6 +95,13 @@ public class Transaction extends AbstractContext<Generic> {
 				return getRoot().getDependencies(ancestor).remove(remove);
 			}
 		};
+	}
+
+	public void applyFromExternal(Snapshot<Long> removeIds, Snapshot<Vertex> addVertices) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {
+		List<Generic> removes = removeIds.stream().map(removeId -> getRoot().getGenericFromTs(removeId)).collect(Collectors.toList());
+		List<Generic> adds = addVertices.stream().map(addVertex -> getRoot().init((Class) null, addVertex.getTs(), addVertex.getMeta(), addVertex.getSupers(), addVertex.getValue(), addVertex.getComponents(), addVertex.getLifeManager()))
+				.collect(Collectors.toList());
+		new LockedLifeManager().apply(removes, adds);
 	}
 
 	public void apply(Snapshot<Generic> removes, Snapshot<Generic> adds) throws ConcurrencyControlException, OptimisticLockConstraintViolationException {

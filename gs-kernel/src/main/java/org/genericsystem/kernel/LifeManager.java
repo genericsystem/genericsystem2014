@@ -8,7 +8,7 @@ import org.genericsystem.api.core.exceptions.OptimisticLockConstraintViolationEx
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class LifeManager {
+public class LifeManager {
 
 	public final static long TS_OLD_SYSTEM = 1L;
 	public final static long TS_SYSTEM = 0L;

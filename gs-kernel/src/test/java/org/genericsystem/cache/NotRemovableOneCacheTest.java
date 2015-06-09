@@ -26,8 +26,9 @@ public class NotRemovableOneCacheTest extends AbstractTest {
 		Generic color = car.addAttribute("Color");
 		Generic myBmw = car.addInstance("myBmw");
 		Generic myBmwRed = myBmw.addHolder(color, "red");
+		assert myBmwRed.isAlive();
 		cache.flush();
-		assert false : myBmwRed.getBirthTs() + " " + myBmwRed.getDeathTs();
+		assert myBmwRed.isAlive();
 		myBmwRed.remove();
 		catchAndCheckCause(() -> myBmwRed.remove(), AliveConstraintViolationException.class);
 	}

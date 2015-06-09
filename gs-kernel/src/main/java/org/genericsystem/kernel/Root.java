@@ -39,10 +39,6 @@ public class Root extends AbstractRoot<Generic> implements Generic, DefaultRoot<
 		return initialized;
 	}
 
-	LifeManager getLifeManager(Generic generic) {
-		return getVertex(generic).getLifeManager();
-	}
-
 	@Override
 	public void close() {
 		archiver.close();
