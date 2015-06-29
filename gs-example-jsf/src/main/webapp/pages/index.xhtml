@@ -33,7 +33,7 @@
 					<f:selectItems value="#{colorBean.colors}" var="color"
 						itemLabel="#{color}" itemValue="#{color}">
 					</f:selectItems>
-					<f:ajax event="blur" execute="@this" render="@form message"/>
+					<f:ajax event = "change" execute="@this" render="@this message"/>
 				</h:selectOneMenu>
 			</h:column>
 			<f:facet name="footer">
