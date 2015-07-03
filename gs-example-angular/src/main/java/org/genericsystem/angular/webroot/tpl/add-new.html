@@ -1,0 +1,20 @@
+<h2>Add new car</h2>
+<div class="row">
+    <div class="col-md-6">
+        <form novalidate name="AddNewForm" id="add-new-form" method="post" action="">
+            <div class="form-group">
+            <label>Marque:</label> 
+            <input class="form-control" type="text" ng-model="user.marque" required />
+            </div>
+            <div class="form-group">
+            <label>Puissance:</label> 
+            <input class="form-control" type="text" ng-model="user.power" required />
+            </div>
+
+            
+            <button class="btn btn-primary" ng-disabled="AddNewForm.$invalid || isUnchanged(user)" id="add-new-btn" ng-click="add_new(user)">Save!</button>
+            <a href="#/" class="btn">Cancel</a>
+            
+        </form>
+    </div>
+</div>
