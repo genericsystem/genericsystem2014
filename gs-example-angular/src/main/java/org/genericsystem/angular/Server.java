@@ -14,9 +14,7 @@ import io.vertx.ext.web.handler.SessionHandler;
 import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.sstore.LocalSessionStore;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import model.Car;
 import model.Power;
@@ -36,6 +34,17 @@ public class Server extends AbstractVerticle {
 		ExampleRunner.runJavaExample("src/main/java/", Server.class, false);
 	}
 
+	public JsonObject getJson(Generic instance, Generic... attributes) {
+
+		final JsonObject json = new JsonObject();
+
+		json.put("id", instance.getTs());
+		json.put(instance.getMeta().getValue().toString(), instance.getValue().toString());
+		for (Generic attribute : attributes)
+			json.put(attribute.getValue().toString(), instance.getHolder(attribute).getValue().toString());
+		return json;
+	}
+
 	@Override
 	public void start() throws Exception {
 
@@ -44,35 +53,32 @@ public class Server extends AbstractVerticle {
 
 		router.route().handler(CookieHandler.create());
 		router.route().handler(SessionHandler.create(LocalSessionStore.create(vertx)));
-
-		// define some REST API
-		router.get("/api/users").handler(ctx -> {
-
+		router.route().handler(ctx -> {
 			Session session = ctx.session();
 			Cache cache = session.get("cache");
 			if (cache == null) {
-				log.info("No cache found : create new one for session : " + session.id());
+				// log.info("No cache found : create new one for session : " + session.id());
 				session.put("cache", cache = engine.newCache());
 			}
 			cache.start();
+			ctx.next();
+		});
+		// define some REST API
+		router.get("/api/users").handler(ctx -> {
 			Generic car = engine.find(Car.class);
 			Generic power = engine.find(Power.class);
 
 			// now convert the list to a JsonArray because it will be easier to encode the final object as the response.
+
 				final JsonArray json = new JsonArray();
-				List<Generic> lg = car.getInstances().stream().collect(Collectors.toList());
-				for (Generic g : lg) {
-					Generic carPower = g.getHolder(power);
-					Long id = g.getTs();
-					JsonObject o = new JsonObject().put("marque", g.toString()).put("power", carPower.toString()).put("id", String.valueOf(id));
-					json.add(o);
-				}
+
+				car.getInstances().stream().forEach(i -> json.add(getJson(i, power)));
+
 				ctx.response().putHeader("users", "application/json");
 				ctx.response().end(json.encode());
 			});
 
 		router.get("/api/users/:id").handler(ctx -> {
-
 			Generic car = engine.find(Car.class);
 			Generic power = engine.find(Power.class);
 
@@ -85,7 +91,6 @@ public class Server extends AbstractVerticle {
 		});
 
 		router.post("/api/users").handler(ctx -> {
-
 			Generic car = engine.find(Car.class);
 			Generic power = engine.find(Power.class);
 
@@ -99,7 +104,6 @@ public class Server extends AbstractVerticle {
 		});
 
 		router.put("/api/users/:id").handler(ctx -> {
-
 			Generic car = engine.find(Car.class);
 			Generic power = engine.find(Power.class);
 			Generic carGs = car.getInstances().stream().filter(g -> Objects.equals(Long.valueOf(ctx.request().getParam("id")), g.getTs())).findFirst().orElse(null);
@@ -120,7 +124,6 @@ public class Server extends AbstractVerticle {
 		});
 
 		router.delete("/api/users/:id").handler(ctx -> {
-			log.info(">>>>>>>> : " + ctx.request().getParam("id"));
 			Generic car = engine.find(Car.class);
 			Generic power = engine.find(Power.class);
 
@@ -129,23 +132,23 @@ public class Server extends AbstractVerticle {
 
 			ctx.response().setStatusCode(204);
 			ctx.response().end();
-
 		});
 
-		// Test d'implémentation du flush GS
-		//
-		router.put("/api/users").handler(ctx -> {
+		// Implémentation du flush/clear/shift GS
 
+		router.put("/api/users").handler(ctx -> {
 			engine.getCurrentCache().flush();
 			ctx.response().end();
-			log.info("essai de persistance");
 		});
 
-		router.delete("/api/users").handler(ctx -> {
+		router.delete("/api/cars/shift").handler(ctx -> {
+			engine.getCurrentCache().shiftTs();
+			ctx.response().end();
+		});
 
+		router.delete("/api/cars/clear").handler(ctx -> {
 			engine.getCurrentCache().clear();
 			ctx.response().end();
-			log.info("essai de suppression");
 		});
 
 		// Create a router endpoint for the static content.

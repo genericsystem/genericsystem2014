@@ -9,11 +9,15 @@ angular.module('CrudApp', []).config(['$routeProvider', function ($routeProvider
 
 function ListCtrl($scope, $http) {
 	
+	//affichage global
     $http.get('/api/users').success(function (data) {
     	
         $scope.cars = data;
+        alert(data);
     });
     
+    
+    //persistance
     $scope.commit = function(car){
     	
         $http.put('/api/users/', car).succes(function (data) {
@@ -27,10 +31,20 @@ function ListCtrl($scope, $http) {
  $scope.reset();
          }
     
+    //shift
+    $scope.shift = function (car) {
+        var deleteCars = confirm('Are you absolutely sure you want to shift?');
+        if (deleteCars) {
+            $http.delete('/api/cars/shift/');
+            $scope.activePath = $location.path('/');
+        }
+    }; 
+    
+    //clear
     $scope.clear = function (car) {
         var deleteCars = confirm('Are you absolutely sure you want to delete?');
         if (deleteCars) {
-            $http.delete('/api/users/');
+            $http.delete('/api/cars/clear/');
             $scope.activePath = $location.path('/');
         }
     }; 
@@ -71,7 +85,7 @@ function EditCtrl($scope, $http, $location, $routeParams) {
         });
     };
 
-    $scope.delete = function (user) {
+    $scope.delete = function (car) {
         var deleteCar = confirm('Are you absolutely sure you want to delete?');
         if (deleteCar) {
             $http.delete('/api/users/' + car.id);
