@@ -1,7 +1,7 @@
 angular.module('CrudApp', []).config(['$routeProvider', function ($routeProvider) {
     $routeProvider.
         when('/', {templateUrl: '/tpl/lists.html', controller: ListCtrl}).
-        when('/add-user', {templateUrl: '/tpl/add-new.html', controller: AddCtrl}).
+        when('/add-car', {templateUrl: '/tpl/add-new.html', controller: AddCtrl}).
         when('/edit/:id', {templateUrl: '/tpl/edit.html', controller: EditCtrl}).
         otherwise({redirectTo: '/'});
    
@@ -10,17 +10,17 @@ angular.module('CrudApp', []).config(['$routeProvider', function ($routeProvider
 function ListCtrl($scope, $http) {
 	
 	//affichage global
-    $http.get('/api/users').success(function (data) {
+    $http.get('/api/cars').success(function (data) {
     	
         $scope.cars = data;
-        alert(data);
+       
     });
     
     
     //persistance
     $scope.commit = function(car){
     	
-        $http.put('/api/users/', car).succes(function (data) {
+        $http.put('/api/cars/', car).succes(function (data) {
         $scope.car = data;
          $scope.activePath = $location.path('/');
      });
@@ -57,7 +57,7 @@ function AddCtrl($scope, $http, $location) {
 
     $scope.add_new = function (car, AddNewForm) {
 
-        $http.post('/api/users', car).success(function () {
+        $http.post('/api/cars', car).success(function () {
             $scope.reset();
             $scope.activePath = $location.path('/');
         });
@@ -74,12 +74,12 @@ function EditCtrl($scope, $http, $location, $routeParams) {
     var id = $routeParams.id;    
     $scope.activePath = null;
 
-    $http.get('/api/users/' + id).success(function (data) {
+    $http.get('/api/cars/' + id).success(function (data) {
         $scope.car = data;
     });
 
     $scope.update = function (car) {
-        $http.put('/api/users/' + id, car).success(function (data) {
+        $http.put('/api/cars/' + id, car).success(function (data) {
             $scope.car = data;
             $scope.activePath = $location.path('/');
         });
@@ -88,7 +88,7 @@ function EditCtrl($scope, $http, $location, $routeParams) {
     $scope.delete = function (car) {
         var deleteCar = confirm('Are you absolutely sure you want to delete?');
         if (deleteCar) {
-            $http.delete('/api/users/' + car.id);
+            $http.delete('/api/cars/' + car.id);           
             $scope.activePath = $location.path('/');
         }
     };

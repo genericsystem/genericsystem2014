@@ -1,4 +1,4 @@
-<h2>Users</h2>
+<h2>Cars</h2>
 <table class="table table-condensed">
     <thead>
     <tr>
@@ -9,14 +9,14 @@
      <tbody>
      
      <tr ng-repeat="car in cars">
-     <td>{{car.marque}}</td>
-     <td>{{car.power}}</td>
+     <td>{{car.Car}}</td>
+     <td>{{car.Power}}</td>
 
         <td><a href="#/edit/{{car.id}}" class="btn btn-default btn-sm"><i class="glyphicon glyphicon-pencil"></i></a></td>
     </tr>
     </tbody>
 </table>
-<a class="btn btn-primary" href="#/add-user">Add New Car</a>
+<a class="btn btn-primary" href="#/add-car">Add New Car</a>
 
 <button class="btn btn-success" ng-click="commit(car)"> Save <span class="glyphicon glyphicon-floppy-disk"></span></button>
 <button class="btn btn-warning" ng-click="shift(car)"> Shift <span class="glyphicon glyphicon-fast-forward"></span></button>

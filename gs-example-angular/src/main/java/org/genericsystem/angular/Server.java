@@ -37,12 +37,20 @@ public class Server extends AbstractVerticle {
 	public JsonObject getJson(Generic instance, Generic... attributes) {
 
 		final JsonObject json = new JsonObject();
-
-		json.put("id", instance.getTs());
+		json.put("id", String.valueOf(instance.getTs()));
 		json.put(instance.getMeta().getValue().toString(), instance.getValue().toString());
 		for (Generic attribute : attributes)
 			json.put(attribute.getValue().toString(), instance.getHolder(attribute).getValue().toString());
 		return json;
+	}
+
+	public JsonObject updateNode(Generic instance, JsonObject update, Generic... attributes) {
+		instance.updateValue(update.getString(instance.getMeta().getValue().toString()));
+		for (Generic attribute : attributes)
+			instance.getHolder(attribute).updateValue(Integer.valueOf(update.getString(attribute.getValue().toString())));
+		JsonObject json = getJson(instance, attributes);
+		return json;
+
 	}
 
 	@Override
@@ -57,14 +65,15 @@ public class Server extends AbstractVerticle {
 			Session session = ctx.session();
 			Cache cache = session.get("cache");
 			if (cache == null) {
-				// log.info("No cache found : create new one for session : " + session.id());
+
 				session.put("cache", cache = engine.newCache());
 			}
 			cache.start();
 			ctx.next();
+
 		});
 		// define some REST API
-		router.get("/api/users").handler(ctx -> {
+		router.get("/api/cars").handler(ctx -> {
 			Generic car = engine.find(Car.class);
 			Generic power = engine.find(Power.class);
 
@@ -74,69 +83,59 @@ public class Server extends AbstractVerticle {
 
 				car.getInstances().stream().forEach(i -> json.add(getJson(i, power)));
 
-				ctx.response().putHeader("users", "application/json");
+				ctx.response().putHeader("cars", "application/json");
 				ctx.response().end(json.encode());
 			});
 
-		router.get("/api/users/:id").handler(ctx -> {
+		router.get("/api/cars/:id").handler(ctx -> {
 			Generic car = engine.find(Car.class);
 			Generic power = engine.find(Power.class);
 
-			Generic carGs = car.getInstances().stream().filter(g -> Objects.equals(Long.valueOf(ctx.request().getParam("id")), g.getTs())).findFirst().orElse(null);
-			Generic carPower = carGs.getHolder(power);
-			JsonObject carGsJson = new JsonObject().put("marque", carGs.toString()).put("power", carPower.toString()).put("id", String.valueOf(carGs.getTs()));
-
-			ctx.response().putHeader("cars", "application/json");
-			ctx.response().end(carGsJson.encode());
+			Generic instance = car.getInstances().stream().filter(g -> Objects.equals(Long.valueOf(ctx.request().getParam("id")), g.getTs())).findFirst().orElse(null);
+			JsonObject json = getJson(instance, power);
+			ctx.response().putHeader("car", "application/json");
+			ctx.response().end(json.encode());
 		});
 
-		router.post("/api/users").handler(ctx -> {
+		router.post("/api/cars").handler(ctx -> {
 			Generic car = engine.find(Car.class);
 			Generic power = engine.find(Power.class);
 
 			JsonObject newCar = ctx.getBodyAsJson();
 
-			car.setInstance(newCar.getString("marque")).setHolder(power, Integer.parseInt(newCar.getString("power")));
+			car.setInstance(newCar.getString("Car")).setHolder(power, Integer.parseInt(newCar.getString("Power")));
 
 			ctx.response().putHeader("car", "application/json");
 			ctx.response().end(newCar.encode());
 
 		});
 
-		router.put("/api/users/:id").handler(ctx -> {
+		router.put("/api/cars/:id").handler(ctx -> {
 			Generic car = engine.find(Car.class);
 			Generic power = engine.find(Power.class);
-			Generic carGs = car.getInstances().stream().filter(g -> Objects.equals(Long.valueOf(ctx.request().getParam("id")), g.getTs())).findFirst().orElse(null);
-			Generic carPower = carGs.getHolder(power);
-			JsonObject carGsJson = new JsonObject().put("marque", carGs.toString()).put("power", carPower.toString());
 
+			Generic instance = car.getInstances().stream().filter(g -> Objects.equals(Long.valueOf(ctx.request().getParam("id")), g.getTs())).findFirst().orElse(null);
 			JsonObject update = ctx.getBodyAsJson();
-
-			car.getInstance(carGs.toString()).updateValue(update.getString("marque"));
-			car.getInstance(carGs.toString()).getHolder(power).updateValue(Integer.parseInt(update.getString("power")));
-
-			carGsJson.put("marque", update.getString("marque"));
-			carGsJson.put("power", update.getString("power"));
+			JsonObject json = updateNode(instance, update, power);
 
 			ctx.response().putHeader("car", "application/json");
-			ctx.response().end(carGsJson.encode());
+			ctx.response().end(json.encode());
 
 		});
 
-		router.delete("/api/users/:id").handler(ctx -> {
+		router.delete("/api/cars/:id").handler(ctx -> {
 			Generic car = engine.find(Car.class);
 			Generic power = engine.find(Power.class);
 
-			Generic carGs = car.getInstances().stream().filter(g -> Objects.equals(Long.valueOf(ctx.request().getParam("id")), g.getTs())).findFirst().orElse(null);
-			carGs.remove();
-
+			Generic instance = car.getInstances().stream().filter(g -> Objects.equals(Long.valueOf(ctx.request().getParam("id")), g.getTs())).findFirst().orElse(null);
+			instance.remove();
 			ctx.response().setStatusCode(204);
 			ctx.response().end();
 		});
 
 		// Implémentation du flush/clear/shift GS
 
-		router.put("/api/users").handler(ctx -> {
+		router.put("/api/cars").handler(ctx -> {
 			engine.getCurrentCache().flush();
 			ctx.response().end();
 		});
@@ -156,4 +155,5 @@ public class Server extends AbstractVerticle {
 
 		vertx.createHttpServer().requestHandler(router::accept).listen(8080);
 	}
+
 }
