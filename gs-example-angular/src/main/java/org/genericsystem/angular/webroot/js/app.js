@@ -1,95 +1,117 @@
 angular.module('CrudApp', []).config(['$routeProvider', function ($routeProvider) {
-    $routeProvider.
-        when('/', {templateUrl: '/tpl/lists.html', controller: ListCtrl}).
-        when('/add-car', {templateUrl: '/tpl/add-new.html', controller: AddCtrl}).
-        when('/edit/:id', {templateUrl: '/tpl/edit.html', controller: EditCtrl}).
-        otherwise({redirectTo: '/'});
-   
+	$routeProvider.
+	when('/', {templateUrl: '/tpl/home.html', controller: IndexCtrl}).
+	when('/list', {templateUrl: '/tpl/lists.html', controller: ListCtrl}).
+	when('/add-inst', {templateUrl: '/tpl/add-new.html', controller: AddCtrl}).
+	when('/edit/:id', {templateUrl: '/tpl/edit.html', controller: EditCtrl}).
+	otherwise({redirectTo: '/'});
+
 }]);
 
-function ListCtrl($scope, $http) {
+function IndexCtrl($scope, $http, $location){
 	
-	//affichage global
-    $http.get('/api/cars').success(function (data) {
-    	
-        $scope.cars = data;
-       
-    });
-    
-    
-    //persistance
-    $scope.commit = function(car){
-    	
-        $http.put('/api/cars/', car).succes(function (data) {
-        $scope.car = data;
-         $scope.activePath = $location.path('/');
-     });
- $scope.reset = function () {
- $scope.car = angular.copy($scope.master);
- };
+	$http.get('/api/types').success(function(data){
 
- $scope.reset();
-         }
-    
-    //shift
-    $scope.shift = function (car) {
-        var deleteCars = confirm('Are you absolutely sure you want to shift?');
-        if (deleteCars) {
-            $http.delete('/api/cars/shift/');
-            $scope.activePath = $location.path('/');
-        }
-    }; 
-    
-    //clear
-    $scope.clear = function (car) {
-        var deleteCars = confirm('Are you absolutely sure you want to delete?');
-        if (deleteCars) {
-            $http.delete('/api/cars/clear/');
-            $scope.activePath = $location.path('/');
-        }
-    }; 
+		$scope.choices = data;
+		$scope.select = function(choice){
+			$scope.activePath = null;		
+			// place le type sélectionné dans le scope angular
+			angular.$scope = choice.type;			
+			$scope.activePath = $location.path('/list');
+
+		};
+
+	});
+}
+
+function ListCtrl($scope, $http) {
+
+	// affichage global
+	$http.get('/api/'+angular.$scope).success(function (data) {
+
+		$scope.instances = data;		
+		$scope.layout = angular.$scope;
+		// permet d'obtenir les clés des objets Json récupérés par la requête.
+		var keys = Object.keys(data[0]);
+		$scope.colNames = keys;  
+
+	}); 
+  
+
+// persistance
+$scope.commit = function(inst){
+
+	$http.put('/api/'+angular.$scope, inst).succes(function (data) {
+		$scope.instances = data;
+		$scope.activePath = $location.path('/list');
+	});
+	$scope.reset = function () {
+		$scope.inst = angular.copy($scope.master);
+	};
+
+	$scope.reset();
+};
+
+// shift
+$scope.shift = function (inst) {
+	var deleteInst = confirm('Are you absolutely sure you want to shift?');
+	if (deleteInst) {
+		$http.delete('/api/'+angular.$scope+'/shift/');
+		$scope.activePath = $location.path('/list');
+	}
+}; 
+
+// clear
+$scope.clear = function (inst) {
+	var deleteInst = confirm('Are you absolutely sure you want to delete?');
+	if (deleteInst) {
+		$http.delete('/api/'+angular.$scope+'/clear/');
+		$scope.activePath = $location.path('/list');
+	}
+}; 
 }
 
 function AddCtrl($scope, $http, $location) {
-	
-    $scope.master = {};
-    $scope.activePath = null;
 
-    $scope.add_new = function (car, AddNewForm) {
+	$scope.master = {};
+	$scope.activePath = null;
+	$scope.layout = angular.$scope;
 
-        $http.post('/api/cars', car).success(function () {
-            $scope.reset();
-            $scope.activePath = $location.path('/');
-        });
-  
-        $scope.reset = function () {
-            $scope.car = angular.copy($scope.master);
-        };
+	$scope.add_new = function (inst, AddNewForm) {
 
-        $scope.reset();
-    };
+		$http.post('/api/'+angular.$scope+'/', inst).success(function () {
+			$scope.reset();
+			$scope.activePath = $location.path('/list');
+		});
+
+		$scope.reset = function () {
+			$scope.inst = angular.copy($scope.master);
+		};
+
+		$scope.reset();
+	};
 }
 
 function EditCtrl($scope, $http, $location, $routeParams) {
-    var id = $routeParams.id;    
-    $scope.activePath = null;
+	var id = $routeParams.id;    
+	$scope.activePath = null;
+	$scope.layout = angular.$scope;
+	$http.get('/api/'+angular.$scope+'/' + id).success(function (data) {
+		$scope.inst = data;
+	});
 
-    $http.get('/api/cars/' + id).success(function (data) {
-        $scope.car = data;
-    });
+	$scope.update = function (car) {
+		$http.put('/api/'+angular.$scope+'/' + id, inst).success(function (data) {
+			$scope.inst = data;
+			$scope.activePath = $location.path('/list');
+		});
+	};
 
-    $scope.update = function (car) {
-        $http.put('/api/cars/' + id, car).success(function (data) {
-            $scope.car = data;
-            $scope.activePath = $location.path('/');
-        });
-    };
-
-    $scope.delete = function (car) {
-        var deleteCar = confirm('Are you absolutely sure you want to delete?');
-        if (deleteCar) {
-            $http.delete('/api/cars/' + car.id);           
-            $scope.activePath = $location.path('/');
-        }
-    };
+	$scope.delete = function (inst) {
+		var deleteInst = confirm('Are you absolutely sure you want to delete?');
+		if (deleteInst) {
+			$http.delete('/api/'+angular.$scope+'/' + inst.id);           
+			$scope.activePath = $location.path('/list');
+		}
+	};
 }

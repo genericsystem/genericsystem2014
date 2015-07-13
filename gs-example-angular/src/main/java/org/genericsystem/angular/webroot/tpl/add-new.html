@@ -2,18 +2,15 @@
 <div class="row">
     <div class="col-md-6">
         <form novalidate name="AddNewForm" id="add-new-form" method="post" action="">
-            <div class="form-group">
-            <label>Marque:</label> 
-            <input class="form-control" type="text" ng-model="car.Car" required />
+            <div class="form-group" ng-repeat = "name in names">
+            <label>{{name}}</label> 
+            <input class="form-control" type="text" ng-model="instance.Car" required />
             </div>
-            <div class="form-group">
-            <label>Puissance:</label> 
-            <input class="form-control" type="text" ng-model="car.Power" required />
-            </div>
+            
 
             
-            <button class="btn btn-primary" ng-disabled="AddNewForm.$invalid || isUnchanged(car)" id="add-new-btn" ng-click="add_new(car)">Save!</button>
-            <a href="#/" class="btn">Cancel</a>
+            <button class="btn btn-primary" ng-disabled="AddNewForm.$invalid || isUnchanged(instance)" id="add-new-btn" ng-click="add_new(instance)">Save!</button>
+            <a href="#/list" class="btn">Cancel</a>
             
         </form>
     </div>

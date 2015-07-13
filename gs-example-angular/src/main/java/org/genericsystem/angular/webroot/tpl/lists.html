@@ -1,26 +1,28 @@
-<h2>Cars</h2>
+<h2 ng-bind= "layout">{{layout}}</h2>
 <table class="table table-condensed">
     <thead>
-    <tr>
-    <th>Marque</th>
-    <th>Puissance</th>
+    <tr >
+    <th ng-repeat="name in colNames">{{name}}</th>
+    <th></th>
      </tr>
 
      <tbody>
      
-     <tr ng-repeat="car in cars">
-     <td>{{car.Car}}</td>
-     <td>{{car.Power}}</td>
+     <tr ng-repeat="inst in instances">
+     <td ng-repeat="name in colNames">{{inst[name]}}</td>
 
-        <td><a href="#/edit/{{car.id}}" class="btn btn-default btn-sm"><i class="glyphicon glyphicon-pencil"></i></a></td>
+
+
+<td><button class="btn btn-primary"	id="instance-choice" ng-click="edit(choice)"><i class="glyphicon glyphicon-pencil"></i></span>
+			</button></td>
     </tr>
     </tbody>
 </table>
-<a class="btn btn-primary" href="#/add-car">Add New Car</a>
+<a class="btn btn-primary" href="#/add-inst">Add New {{layout}}</a>
 
-<button class="btn btn-success" ng-click="commit(car)"> Save <span class="glyphicon glyphicon-floppy-disk"></span></button>
-<button class="btn btn-warning" ng-click="shift(car)"> Shift <span class="glyphicon glyphicon-fast-forward"></span></button>
-<button class="btn btn-danger" ng-click="clear(car)"> Cancel <span class="glyphicon glyphicon-trash"></span></button>
+<button class="btn btn-success" ng-click="commit(inst)"> Save <span class="glyphicon glyphicon-floppy-disk"></span></button>
+<button class="btn btn-warning" ng-click="shift(inst)"> Shift <span class="glyphicon glyphicon-fast-forward"></span></button>
+<button class="btn btn-danger" ng-click="clear(inst)"> Cancel <span class="glyphicon glyphicon-trash"></span></button>
 
 
 

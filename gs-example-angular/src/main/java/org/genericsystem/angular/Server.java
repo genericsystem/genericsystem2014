@@ -34,7 +34,7 @@ public class Server extends AbstractVerticle {
 		ExampleRunner.runJavaExample("src/main/java/", Server.class, false);
 	}
 
-	public JsonObject getJson(Generic instance, Generic... attributes) {
+	private JsonObject getJson(Generic instance, Generic... attributes) {
 
 		final JsonObject json = new JsonObject();
 		json.put("id", String.valueOf(instance.getTs()));
@@ -44,14 +44,13 @@ public class Server extends AbstractVerticle {
 		return json;
 	}
 
-	public JsonObject updateNode(Generic instance, JsonObject update, Generic... attributes) {
-		instance.updateValue(update.getString(instance.getMeta().getValue().toString()));
-		for (Generic attribute : attributes)
-			instance.getHolder(attribute).updateValue(Integer.valueOf(update.getString(attribute.getValue().toString())));
-		JsonObject json = getJson(instance, attributes);
-		return json;
-
-	}
+	// private JsonObject updateNode(Generic instance, JsonObject update, Generic... attributes) {
+	// instance.updateValue(update.getString(instance.getMeta().getValue().toString()));
+	// for (Generic attribute : attributes)
+	// instance.getHolder(attribute).updateValue(Integer.valueOf(update.getString(attribute.getValue().toString())));
+	// JsonObject json = getJson(instance, attributes);
+	// return json;
+	// }
 
 	@Override
 	public void start() throws Exception {
@@ -72,6 +71,18 @@ public class Server extends AbstractVerticle {
 			ctx.next();
 
 		});
+		// get available types
+		router.get("/api/types").handler(ctx -> {
+			final JsonArray json = new JsonArray();
+
+			JsonObject json1 = new JsonObject().put("type", "car").put("clé", "value");
+			JsonObject json2 = new JsonObject().put("type", "color");
+			json.add(json1);
+			json.add(json2);
+			ctx.response().putHeader("choices", "application/json");
+			ctx.response().end(json.encode());
+		});
+
 		// define some REST API
 		router.get("/api/cars").handler(ctx -> {
 			Generic car = engine.find(Car.class);
@@ -116,7 +127,10 @@ public class Server extends AbstractVerticle {
 
 			Generic instance = car.getInstances().stream().filter(g -> Objects.equals(Long.valueOf(ctx.request().getParam("id")), g.getTs())).findFirst().orElse(null);
 			JsonObject update = ctx.getBodyAsJson();
-			JsonObject json = updateNode(instance, update, power);
+
+			instance.updateValue(update.getString(instance.getMeta().getValue().toString()));
+			instance.getHolder(power).updateValue(Integer.valueOf(update.getString(power.getValue().toString())));
+			JsonObject json = getJson(instance, power);
 
 			ctx.response().putHeader("car", "application/json");
 			ctx.response().end(json.encode());
@@ -155,5 +169,4 @@ public class Server extends AbstractVerticle {
 
 		vertx.createHttpServer().requestHandler(router::accept).listen(8080);
 	}
-
 }
