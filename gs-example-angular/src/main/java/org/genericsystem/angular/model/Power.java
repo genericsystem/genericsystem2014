@@ -1,5 +1,6 @@
-package model;
+package org.genericsystem.angular.model;
 
+import org.genericsystem.angular.annotation.Column;
 import org.genericsystem.api.core.annotations.Components;
 import org.genericsystem.api.core.annotations.SystemGeneric;
 import org.genericsystem.api.core.annotations.constraints.InstanceValueClassConstraint;
@@ -10,7 +11,8 @@ import org.genericsystem.api.core.annotations.value.StringValue;
 @Components(Car.class)
 @PropertyConstraint
 @InstanceValueClassConstraint(Integer.class)
-@StringValue("Power")
+@StringValue("power")
+@Column("power")
 public class Power {
 
 }

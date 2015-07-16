@@ -1,25 +1,24 @@
-<h2 >Edit {{layout}}</h2>
+<h2 ng-bind="layout">Edit {{layout}}</h2>
 <div class="row">
 	<div class="col-md-6">
-		<form novalidate name="EditForm" id="edit-form" method="post"
-			action="">
-			<input type="hidden" ng-model="inst.id" value="{{inst.id}}" />
-
-			<div class="form-group">
-				<label>{{???}}</label> <input class="form-control" type="text"
-					ng-model="inst.Car" value = "{{car.Car}}" required />
+		<form novalidate name="EditForm" id="edit-form" method="post" action="">
+			<div >			
+					<label>{{layout}}</label> 
+					<input class="form-control" type="text"
+						ng-model="instance" value="{{instance}}" required />				
 			</div>
-			<div class="form-group">
-				<label>Puissance:</label> <input class="form-control" type="text"
-					ng-model="car.Power" value = "{{car.Power}}" required />
+			<div class="form-group" ng-repeat="name in names">			
+					<label>{{name.columnName}}</label> 
+					<input class="form-control" type="text"
+						ng-model="instance[name.columnName]" value="{{instance[name.columnName]}}" required />				
 			</div>
-			
 			<button class="btn btn-primary"
-				ng-disabled="AddNewForm.$invalid || isUnchanged(car)"	id="add-new-btn" ng-click="update(car)">
-				Update <span class="glyphicon glyphicon-floppy-disk"></span>
+				ng-disabled="AddNewForm.$invalid || isUnchanged(instance)"
+				id="add-new-btn" ng-click="update(instance)">
+				Update <span class="glyphicon glyphicon-floppy-disk" />
 			</button>
-			<button class="btn btn-danger" ng-click="delete(car)">
-				Delete <span class="glyphicon glyphicon-trash"></span>
+			<button class="btn btn-danger" ng-click="delete(instance)">
+				Delete <span class="glyphicon glyphicon-trash" />
 			</button>
 			<a href="#/list" class="btn">Cancel</a>
 		</form>

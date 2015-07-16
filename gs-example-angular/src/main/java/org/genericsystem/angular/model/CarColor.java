@@ -1,7 +1,6 @@
-package model;
+package org.genericsystem.angular.model;
 
-import model.Color.White;
-
+import org.genericsystem.angular.model.Color.White;
 import org.genericsystem.api.core.annotations.Components;
 import org.genericsystem.api.core.annotations.Meta;
 import org.genericsystem.api.core.annotations.SystemGeneric;
