@@ -20,11 +20,13 @@ import java.util.Objects;
 
 import org.genericsystem.angular.annotation.Column;
 import org.genericsystem.angular.annotation.Table;
+import org.genericsystem.angular.model.Capacity;
 import org.genericsystem.angular.model.Car;
 import org.genericsystem.angular.model.Color;
 import org.genericsystem.angular.model.Options;
 import org.genericsystem.angular.model.Power;
 import org.genericsystem.angular.model.Shade;
+import org.genericsystem.api.core.Snapshot;
 import org.genericsystem.mutability.Cache;
 import org.genericsystem.mutability.Engine;
 import org.genericsystem.mutability.Generic;
@@ -33,7 +35,7 @@ public class Server extends AbstractVerticle {
 
 	private static final Logger log = LoggerFactory.getLogger(Server.class);
 
-	private Engine engine = new Engine(Car.class, Power.class, Color.class, Options.class, Shade.class);
+	private Engine engine = new Engine(Car.class, Power.class, Color.class, Options.class, Shade.class, Capacity.class);
 	private Map<String, Class<?>> classes = new LinkedHashMap<String, Class<?>>() {
 		private static final long serialVersionUID = 5249422060289303031L;
 		{
@@ -63,20 +65,27 @@ public class Server extends AbstractVerticle {
 		JsonArray jsonArray = new JsonArray();
 		for (Generic type : engine.getSubInstances().filter(typ -> typ.getComponents().isEmpty())) {
 			String tableName = getTableName(type);
-			if (tableName != null) {
-				JsonObject json = new JsonObject();
+			JsonObject json = new JsonObject();
+			if (tableName != null)
 				json.put("tableName", tableName);
-				JsonArray attributesArray = new JsonArray();
-				for (Generic attribute : type.getAttributes().filter(att -> att.getComponents().size() == 1 && type.inheritsFrom(att.getBaseComponent()))) {
-					String columnName = getColumnName(attribute);
-					if (columnName != null)
-						attributesArray.add(new JsonObject().put("columnName", columnName));
-				}
-				json.put("columns", attributesArray);
-				jsonArray.add(json);
+			JsonArray attributesArray = new JsonArray();
+			for (Generic attribute : type.getAttributes().filter(att -> att.getComponents().size() == 1 && type.inheritsFrom(att.getBaseComponent()))) {
+				String columnName = getColumnName(attribute);
+				if (columnName != null)
+					attributesArray.add(new JsonObject().put("columnName", columnName));
 			}
+			json.put("columns", attributesArray);
+			jsonArray.add(json);
 		}
 		return jsonArray;
+	}
+
+	public Snapshot<Generic> getTypeAttributes(Generic type) {
+		return type.getAttributes().filter(att -> att.getComponents().size() == 1 && type.inheritsFrom(att.getBaseComponent()));
+	}
+
+	public Generic getInstanceById(Generic type, Long id) {
+		return type.getInstances().stream().filter(g -> Objects.equals((id), g.getTs())).findFirst().orElse(null);
 	}
 
 	// Convenience method so you can run it in your IDE
@@ -84,14 +93,16 @@ public class Server extends AbstractVerticle {
 		ExampleRunner.runJavaExample("src/main/java/", Server.class, false);
 	}
 
-	private JsonObject getJson(Generic instance, Generic... attributes) {
+	private JsonObject getJson(Generic instance, Snapshot<Generic> attributes) {
 		final JsonObject json = new JsonObject();
 		json.put("id", String.valueOf(instance.getTs()));
-		json.put(instance.getMeta().getValue().toString(), instance.getValue().toString());
+		json.put("value", instance.getValue().toString());
 		for (Generic attribute : attributes)
-			json.put(attribute.getValue().toString(), Objects.toString(instance.getValue(attribute)));
+			json.put(getColumnName(attribute), Objects.toString(instance.getValue(attribute)));
 		return json;
 	}
+
+	JsonArray jsonArray = getGSJsonCRUD();
 
 	@Override
 	public void start() throws Exception {
@@ -109,48 +120,50 @@ public class Server extends AbstractVerticle {
 		});
 
 		router.get("/api/types").handler(ctx -> {
-			JsonArray jsonArray = getGSJsonCRUD();
 			ctx.response().end(jsonArray.encode());
 		});
 
-		for (String typeName : classes.keySet()) {
+		for (int j = 0; j <= jsonArray.size() - 1; j++) {
+			String typeName = jsonArray.getJsonObject(j).getString("tableName");
 			router.get("/api/" + typeName).handler(ctx -> {
 				log.info("launch handler for type : " + typeName);
-				Generic type = engine.find(classes.get(typeName));
-				Generic power = engine.find(Power.class);
+				Generic type = engine.getInstance(typeName);
 				final JsonArray json = new JsonArray();
-				type.getInstances().stream().forEach(i -> json.add(getJson(i, power)));
+				type.getInstances().stream().forEach(i -> json.add(getJson(i, getTypeAttributes(type))));
 				ctx.response().end(json.encode());
 			});
 			router.get("/api/" + typeName + "/:id").handler(ctx -> {
-				Generic type = engine.find(classes.get(typeName));
-				Generic power = engine.find(Power.class);
-				Generic instance = type.getInstances().stream().filter(g -> Objects.equals(Long.valueOf(ctx.request().getParam("id")), g.getTs())).findFirst().orElse(null);
-				JsonObject json = getJson(instance, power);
+				Generic type = engine.getInstance(typeName);
+				Generic instance = getInstanceById(type, Long.valueOf(ctx.request().getParam("id")));
+				JsonObject json = getJson(instance, getTypeAttributes(type));
 				ctx.response().end(json.encode());
 			});
 			router.post("/api/" + typeName).handler(ctx -> {
-				Generic type = engine.find(classes.get(typeName));
-				Generic power = engine.find(Power.class);
-				JsonObject newGen = ctx.getBodyAsJson();
-				type.setInstance(newGen.getString(Objects.toString(classes.get(typeName)))).setHolder(power, Integer.parseInt(newGen.getString("Power")));
-				ctx.response().end(newGen.encode());
-
+				Generic type = engine.getInstance(typeName);
+				JsonObject newInst = ctx.getBodyAsJson();
+				Generic instance = type.setInstance(newInst.getString("value"));
+				for (Generic attribute : getTypeAttributes(type))
+					instance.setHolder(attribute, newInst.getString(getColumnName(attribute)));
+				ctx.response().end(newInst.encode());
 			});
+
 			router.put("/api/" + typeName + "/:id").handler(ctx -> {
-				Generic type = engine.find(classes.get(typeName));
-				Generic power = engine.find(Power.class);
-				Generic instance = type.getInstances().stream().filter(g -> Objects.equals(Long.valueOf(ctx.request().getParam("id")), g.getTs())).findFirst().orElse(null);
+				Generic type = engine.getInstance(typeName);
+				Generic instance = getInstanceById(type, Long.valueOf(ctx.request().getParam("id")));
 				JsonObject update = ctx.getBodyAsJson();
-				instance.updateValue(update.getString(instance.getMeta().getValue().toString()));
-				instance.getHolder(power).updateValue(Integer.valueOf(update.getString(power.getValue().toString())));
-				JsonObject json = getJson(instance, power);
+				instance.updateValue(update.getString("value"));
+				for (Generic attribute : getTypeAttributes(type)) {
+					// convert(attribute);
+					attribute.getInstanceValueClassConstraint();
+					instance.getHolder(attribute).updateValue(update.getString(getColumnName(attribute)));
+				}
+				JsonObject json = getJson(instance, getTypeAttributes(type));
 				ctx.response().end(json.encode());
 			});
 			router.delete("/api/" + typeName + "/:id").handler(ctx -> {
-				Generic type = engine.find(classes.get(typeName));
-				Generic power = engine.find(Power.class);
-				Generic instance = type.getInstances().stream().filter(g -> Objects.equals(Long.valueOf(ctx.request().getParam("id")), g.getTs())).findFirst().orElse(null);
+				Generic type = engine.getInstance(typeName);
+				Generic instance = getInstanceById(type, Long.valueOf(ctx.request().getParam("id")));
+
 				instance.remove();
 				ctx.response().setStatusCode(204);
 				ctx.response().end();
@@ -169,8 +182,8 @@ public class Server extends AbstractVerticle {
 				engine.getCurrentCache().clear();
 				ctx.response().end();
 			});
-		}
 
+		}
 		// Create a router endpoint for the static content.
 		router.route().handler(StaticHandler.create());
 		vertx.createHttpServer().requestHandler(router::accept).listen(8080);

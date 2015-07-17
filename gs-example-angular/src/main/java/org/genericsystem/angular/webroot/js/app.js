@@ -10,41 +10,32 @@ angular.module('CrudApp', []).config(['$routeProvider', function ($routeProvider
 
 function IndexCtrl($scope, $http, $location){
 
-	$http.get('/api/types').success(function(data){			
-		//alert(JSON.stringify(data));
-		$scope.choices = data;
+	$http.get('/api/types').success(function(data){	
+		$scope.choices = data;		
 		$scope.select = function(choice){
 			path = choice.tableName;
-			columns = choice.columns;
-			
+			columns = choice.columns;			
 			$scope.activePath = $location.path('/list');			
 		};		
 	});
 }
 
 function ListCtrl($scope, $http) {
-
+	
 	// affichage global
-	$http.get('/api/'+path).success(function (data) {
-		$scope.instances = data;		
-		$scope.layout = path;		
-		$scope.names = columns;
-		
-		
+	$http.get('/api/'+path).success(function (data) {	
+		//alert(JSON.stringify(data));
+		$scope.instances = data;	
+		$scope.type = path;
+		$scope.names = columns;		
 	}); 
 
 	// persistance
-	$scope.commit = function(inst){
-
-		$http.put('/api/'+angular.$scope, instance).succes(function (data) {
+	$scope.commit = function(instance){
+		$http.put('/api/'+path, instance).succes(function (data) {
 			$scope.instances = data;
 			$scope.activePath = $location.path('/list');
 		});
-		$scope.reset = function () {
-			$scope.instance = angular.copy($scope.master);
-		};
-
-		$scope.reset();
 	};
 
 //	shift
@@ -67,10 +58,9 @@ function ListCtrl($scope, $http) {
 }
 
 function AddCtrl($scope, $http, $location) {
-
 	$scope.master = {};
 	$scope.activePath = null;
-	$scope.layout = path;
+	$scope.type = path;
 	$scope.names = columns;
 	$scope.add_new = function (instance, AddNewForm) {
 		$http.post('/api/'+path+'/', instance).success(function () {
@@ -87,7 +77,7 @@ function AddCtrl($scope, $http, $location) {
 function EditCtrl($scope, $http, $location, $routeParams) {
 	var id = $routeParams.id; 
 	$scope.activePath = null;
-	$scope.layout = path;	
+	$scope.type = path;	
 	$scope.names = columns; 
 	$http.get('/api/'+path+'/' + id).success(function (data) {
 		$scope.instance = data;
