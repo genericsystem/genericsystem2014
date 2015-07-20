@@ -12,9 +12,7 @@
 					<input class="form-control" type="text"
 						ng-model="instance[name.columnName]" value="{{instance[name.columnName]}}" required />				
 			</div>
-			<button class="btn btn-primary"
-				ng-disabled="AddNewForm.$invalid || isUnchanged(instance)"
-				id="add-new-btn" ng-click="update(instance)">
+			<button class="btn btn-primary"	ng-disabled="AddNewForm.$invalid || isUnchanged(instance)" id="add-new-btn" ng-click="update(instance)">
 				Update <span class="glyphicon glyphicon-floppy-disk" />
 			</button>
 			<button class="btn btn-danger" ng-click="delete(instance)">

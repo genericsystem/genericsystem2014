@@ -15,8 +15,6 @@ import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.sstore.LocalSessionStore;
 
 import java.io.Serializable;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import org.genericsystem.angular.annotation.Column;
@@ -37,14 +35,6 @@ public class Server extends AbstractVerticle {
 	private static final Logger log = LoggerFactory.getLogger(Server.class);
 
 	private Engine engine = new Engine(Car.class, Power.class, Color.class, Options.class, Shade.class, Capacity.class);
-	private Map<String, Class<?>> classes = new LinkedHashMap<String, Class<?>>() {
-		private static final long serialVersionUID = 5249422060289303031L;
-		{
-			put("color", Color.class);
-			put("options", Options.class);
-			put("car", Car.class);
-		}
-	};
 
 	public String getTableName(Generic type) {
 		if (!type.isSystem())
@@ -93,21 +83,25 @@ public class Server extends AbstractVerticle {
 		Class<? extends Serializable> classConstraint = attribute.getInstanceValueClassConstraint();
 		if (classConstraint.equals(java.lang.Integer.class))
 			return Integer.parseInt(value);
+		else if (classConstraint.equals(java.lang.Long.class))
+			return Long.parseLong(value);
+		else if (classConstraint.equals(java.lang.Double.class))
+			return Double.parseDouble(value);
 		return null;
 	}
 
-	// Convenience method so you can run it in your IDE
-	public static void main(String[] args) {
-		ExampleRunner.runJavaExample("src/main/java/", Server.class, false);
-	}
-
-	private JsonObject getJson(Generic instance, Snapshot<Generic> attributes) {
+	public JsonObject getJson(Generic instance, Snapshot<Generic> attributes) {
 		final JsonObject json = new JsonObject();
 		json.put("id", String.valueOf(instance.getTs()));
 		json.put("value", instance.getValue().toString());
 		for (Generic attribute : attributes)
 			json.put(getColumnName(attribute), Objects.toString(instance.getValue(attribute)));
 		return json;
+	}
+
+	// Convenience method so you can run it in your IDE
+	public static void main(String[] args) {
+		ExampleRunner.runJavaExample("src/main/java/", Server.class, false);
 	}
 
 	JsonArray jsonArray = getGSJsonCRUD();

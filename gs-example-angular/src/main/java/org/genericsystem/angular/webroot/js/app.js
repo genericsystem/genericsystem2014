@@ -21,40 +21,41 @@ function IndexCtrl($scope, $http, $location){
 }
 
 function ListCtrl($scope, $http) {
+	$scope.type = path;
+	$scope.names = columns;
 	
-	// affichage global
-	$http.get('/api/'+path).success(function (data) {	
-		//alert(JSON.stringify(data));
-		$scope.instances = data;	
-		$scope.type = path;
-		$scope.names = columns;		
-	}); 
-
-	// persistance
+	// affichage global	
+	$http.get('/api/'+path).success(function (data) {			
+		$scope.instances = data;		
+	});	
+	$scope.loadData = function(){
+		$http.get('/api/'+path).success(function (data) {			
+			$scope.instances = data;		
+		});
+	};	
+	// persist
 	$scope.commit = function(instance){
 		$http.put('/api/'+path, instance).succes(function (data) {
 			$scope.instances = data;
 			$scope.activePath = $location.path('/list');
 		});
 	};
-
 //	shift
 	$scope.shift = function (instance) {
 		var deleteInst = confirm('Are you absolutely sure you want to shift?');
 		if (deleteInst) {
 			$http.delete('/api/'+path+'/shift/');
-			$scope.activePath = $location.path('/list');
-		}
+			$scope.loadData();
+		}		
 	}; 
-
 //	clear
 	$scope.clear = function (instance) {
 		var deleteInst = confirm('Are you absolutely sure you want to delete?');
 		if (deleteInst) {
 			$http.delete('/api/'+path+'/clear/');
-			$scope.activePath = $location.path('/list');
-		}
-	}; 
+			$scope.loadData();
+		}			
+	};	
 }
 
 function AddCtrl($scope, $http, $location) {
