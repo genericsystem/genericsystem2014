@@ -14,6 +14,7 @@ import io.vertx.ext.web.handler.SessionHandler;
 import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.sstore.LocalSessionStore;
 
+import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -88,6 +89,13 @@ public class Server extends AbstractVerticle {
 		return type.getInstances().stream().filter(g -> Objects.equals((id), g.getTs())).findFirst().orElse(null);
 	}
 
+	public Serializable convert(Generic attribute, String value) {
+		Class<? extends Serializable> classConstraint = attribute.getInstanceValueClassConstraint();
+		if (classConstraint.equals(java.lang.Integer.class))
+			return Integer.parseInt(value);
+		return null;
+	}
+
 	// Convenience method so you can run it in your IDE
 	public static void main(String[] args) {
 		ExampleRunner.runJavaExample("src/main/java/", Server.class, false);
@@ -142,8 +150,11 @@ public class Server extends AbstractVerticle {
 				Generic type = engine.getInstance(typeName);
 				JsonObject newInst = ctx.getBodyAsJson();
 				Generic instance = type.setInstance(newInst.getString("value"));
-				for (Generic attribute : getTypeAttributes(type))
-					instance.setHolder(attribute, newInst.getString(getColumnName(attribute)));
+				for (Generic attribute : getTypeAttributes(type)) {
+					log.info("detected constraint: " + attribute.getInstanceValueClassConstraint());
+
+					instance.setHolder(attribute, convert(attribute, newInst.getString(getColumnName(attribute))));
+				}
 				ctx.response().end(newInst.encode());
 			});
 
@@ -152,11 +163,8 @@ public class Server extends AbstractVerticle {
 				Generic instance = getInstanceById(type, Long.valueOf(ctx.request().getParam("id")));
 				JsonObject update = ctx.getBodyAsJson();
 				instance.updateValue(update.getString("value"));
-				for (Generic attribute : getTypeAttributes(type)) {
-					// convert(attribute);
-					attribute.getInstanceValueClassConstraint();
-					instance.getHolder(attribute).updateValue(update.getString(getColumnName(attribute)));
-				}
+				for (Generic attribute : getTypeAttributes(type))
+					instance.getHolder(attribute).updateValue(convert(attribute, update.getString(getColumnName(attribute))));
 				JsonObject json = getJson(instance, getTypeAttributes(type));
 				ctx.response().end(json.encode());
 			});
