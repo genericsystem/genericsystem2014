@@ -150,14 +150,10 @@ public class Server extends AbstractVerticle {
 				Generic type = engine.getInstance(typeName);
 				JsonObject newInst = ctx.getBodyAsJson();
 				Generic instance = type.setInstance(newInst.getString("value"));
-				for (Generic attribute : getTypeAttributes(type)) {
-					log.info("detected constraint: " + attribute.getInstanceValueClassConstraint());
-
+				for (Generic attribute : getTypeAttributes(type))
 					instance.setHolder(attribute, convert(attribute, newInst.getString(getColumnName(attribute))));
-				}
 				ctx.response().end(newInst.encode());
 			});
-
 			router.put("/api/" + typeName + "/:id").handler(ctx -> {
 				Generic type = engine.getInstance(typeName);
 				Generic instance = getInstanceById(type, Long.valueOf(ctx.request().getParam("id")));
