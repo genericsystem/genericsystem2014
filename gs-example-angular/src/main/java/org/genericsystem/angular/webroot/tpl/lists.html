@@ -1,4 +1,5 @@
-<h2 ng-bind="type">{{type}}</h2>
+<h2>{{type}}</h2>
+<div class="col-md-6">
 <table class="table table-condensed">
 	<thead>
 		<tr>
@@ -16,7 +17,7 @@
 <a class="btn btn-primary" href="#/add-inst">Add New {{type}}</a>
 
 
-<button class="btn btn-success" ng-click="commit(instance)">
+<button class="btn btn-success" ng-click="flush(instance)">
 	Save <span class="glyphicon glyphicon-floppy-disk" />
 </button>
 
@@ -27,6 +28,6 @@
 <button class="btn btn-danger" ng-click="clear(instance)">
 	Cancel <span class="glyphicon glyphicon-trash" />
 </button>
-
+</div>
 
 

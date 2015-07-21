@@ -20,40 +20,31 @@ function IndexCtrl($scope, $http, $location){
 	});
 }
 
-function ListCtrl($scope, $http) {
+function ListCtrl($scope, $http, $route) {
 	$scope.type = path;
 	$scope.names = columns;
-	
-	// affichage global	
+
 	$http.get('/api/'+path).success(function (data) {			
 		$scope.instances = data;		
 	});	
-	$scope.loadData = function(){
-		$http.get('/api/'+path).success(function (data) {			
-			$scope.instances = data;		
-		});
-	};	
-	// persist
-	$scope.commit = function(instance){
+
+	$scope.flush = function(instance){
 		$http.put('/api/'+path, instance).succes(function (data) {
-			$scope.instances = data;
-			$scope.activePath = $location.path('/list');
+			$scope.instances = data;			
 		});
 	};
-//	shift
 	$scope.shift = function (instance) {
-		var deleteInst = confirm('Are you absolutely sure you want to shift?');
-		if (deleteInst) {
-			$http.delete('/api/'+path+'/shift/');
-			$scope.loadData();
+		var shiftInst = confirm('Are you absolutely sure you want to shift?');
+		if (shiftInst) {
+			$http.post('/api/'+path+'/shift/');
+			$route.reload();
 		}		
 	}; 
-//	clear
 	$scope.clear = function (instance) {
-		var deleteInst = confirm('Are you absolutely sure you want to delete?');
-		if (deleteInst) {
-			$http.delete('/api/'+path+'/clear/');
-			$scope.loadData();
+		var deleteInstances = confirm('Are you absolutely sure you want to delete?');
+		if (deleteInstances) {
+			$http.delete('/api/'+path+'/clear/');			
+			$route.reload();			
 		}			
 	};	
 }
